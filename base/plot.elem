@@ -1,0 +1,178 @@
+{@ plot,
+
+  """
+    width
+    height
+    title
+    xlabel
+    strokes
+    colorlist
+    centery
+    data
+    defaultcs
+    ymax
+    ymin
+  """:fieldnames;
+
+  attr fieldnames
+
+
+  .#? plot.new\n  create a new plot instance with default settings
+  {:plt,
+    [plot.fieldnamesE,0] plot MO :plt;
+    500         plt.setwidth
+    400         plt.setheight
+    ""          plt.settitle
+    ""          plt.setxlabel
+    []          plt.setstrokes
+    F           plt.setcentery
+    []          plt.setdata
+    []          plt.setcolorlist
+    9e999       plt.setymax
+    9e999!      plt.setymin
+
+    [ colors.purple
+      colors.yellow
+      colors.green
+      colors.red
+      colors.blue
+    ]          plt.setdefaultcs
+
+    plt
+  }:new;
+
+  .#? (plot) plot.view\n  view the plot in a new window
+  {self,
+    self.propertylist self.data MX
+  }:view;
+
+  .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
+  {filename self,
+    self.propertylist
+    ["filename" filename] AK
+    ["show" F ] AK
+    self.data
+    MX
+  }:save;
+
+  .#? N plot.setybound\n  set the y bounds N and N!
+  {nN self,
+    n self.setymax
+    n! self.setymin
+  }:setybound;
+
+  .#? L<N> (plot) plot.addline\n  add a data set to the plot
+  {listL self,
+    if (list'N#isa {&}U) {
+      self.data list AK self.setdata
+      self.colorlist self.nextcolor.rgbAK self.setcolorlist
+      self.strokes 1.5K self.setstrokes
+    } {
+      "plot.addline: data is not valid. received:\n$list"
+    }
+  }:addline;
+
+
+
+  .#? N (color) L<N> plot.addcustomline\n  add a line to the plot with custom stroke and color
+  {strokeN color listL self
+    :validdata validcolor,
+    F:validdata:validcolor;
+
+    .# Data
+    if (list'N#isa {&}U) {
+      T:validdata;
+    } {
+      "plot.addcustomline: data is not valid. received:\n$list"
+    }
+
+    .# Color
+    if (colorMw ".color" =) {
+      T:validcolor;
+    } {
+      "plot.addcustomline: color is not valid. received:\n$color"
+    }
+
+    if (validdata validcolor &) {
+      self.data list AK self.setdata
+      self.colorlist color.rgb AK self.setcolorlist
+      self.strokes stroke K self.setstrokes
+    } {}
+  }:addcustomlin;
+
+
+
+  .#? NNL<E> plot.quickplot\n  draw a plot from N1 to N2 of expressions L
+  {plot.expr.view}:quickplot;
+
+  .#? NNL<E> plot.expr\n  create a plot instance whos data is the expressions L
+  {startN endN exprL : points plt,
+    start end 600.1 linspace :points;
+    plot!:plt;
+    expr # {points\#{~}} plt.setdata
+    plt
+  }:expr;
+
+  {"Plot Instance"}:show;
+
+  .###################
+  .# UTIL FUNCTIONS
+  .###################
+
+  .# return the next color in the cycle. shift the cycle once
+  {self,
+    self.defaultcs roll self.setdefaultcs
+    self.defaultcs 0 I
+  }:nextcolor;
+
+  .# return a property list for this plot
+  {self,
+    [
+      ["width" self.width]
+      ["height" self.height]
+      ["title" self.title]
+      ["xlabel" self.xlabel]
+      ["centerZero" self.centery]
+      ["ymax" self.ymax]
+      ["ymin" self.ymin]
+
+      self.strokesE0=! then {
+        ["strokes" self.strokes]
+      }
+
+      self.colorlistE0=! then {
+        ["colors" self.colorlist]
+      }
+    ]
+  }:propertylist;
+
+ {:p,plot!:p;p.addline p.view}:line;
+
+} .# END plot
+
+{plot.quickplot}:qp;
+
+
+
+
+.{? Plotting Example
+plot!:p;
+
+5 colors.green [0dy3,Ms] p.addcustomline
+
+[0dy3,Mc] p.addline
+
+[0dy3,sqrt] p.addline
+
+7 colors.aqua [0dy3,exp10/] p.addcustomline
+
+"Some Plots" p.settitle
+"Data from 0 to 3" p.setxlabel
+true p.setcentery
+300 p.setwidth
+250 p.setheight
+
+p.view
+
+"Some Plots" p.save
+.}

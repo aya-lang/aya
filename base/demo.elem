@@ -1,0 +1,85 @@
+.# demo.elem
+.# example functions
+
+.#? module: demo\n  contains various example functions
+{@ demo,
+  .#? N demo.train\n  generates an ASCII train with N carts
+  {numI, [" ______  ""|      | "" ()--() ~"]#{numLSB;'\n'+}S.P}:train;
+
+
+  .#? demo.loc\n  input a C source file and return the number of lines of code
+  {"".UG"/\\*[^/]+\\/|[\\n|\\t+|\\s+]//.+"|S".+"&{_E\"[\\t|\\s]"&E=!}IE}:loc;
+
+  .#? N demo.wall\n  print a wall
+  {[1|,"\{pi}\{ppi}"Q].P}:wall;
+
+  .#? demo.sinsrs\n  plot a sin series with coefficients
+  {:sinsrs,
+    {n : cs f,
+      .#Generate coefficients
+      nR:cs;
+
+      .#Series function
+      {x, [cs [nR,x*Ms],*]S}:f;
+
+      [0dy4pi*,f]
+    }:sinsrs;
+
+    [
+      ["strokes" [1.5] ]
+      ["title" "Fourier Sine Series"]
+      ["height" 300]
+      ["width" 600]
+      ["filename" "fss1"]
+    ]
+    4R #sinsrs
+    MX
+  }:sinsrs;
+
+  .#? demo.rainbow\n  generate a rainbow
+  {:p,
+    0 0.9+ pi 0.9-
+    for 'i [1 7,] {"{Ms $i 0.005* +}"}#~
+    plot.expr:p;
+
+    [ colors.red
+      colors.orange
+      colors.yellow
+      colors.green
+      colors.blue
+      colors.indigo
+      colors.violet
+    ]#.rgb!
+    p.setcolorlist
+
+    [9] p.setstrokes
+
+    1.0 p.setymax
+    0.8 p.setymin
+
+    p.view
+  }:rainbow;
+
+  .#? demo.basicplot\n  a basic plot
+  {
+    .#Create plot instance
+    0 2π* [{Ms}{Mc}] plot.expr :p;
+
+    .# Optional Parameters
+    "Basic Plotting Example" p.settitle
+    600 p.setwidth
+    400 p.setheight
+    [colors.green colors.blue]#.rgb p.setcolorlist
+    [4 1] p.setstrokes
+
+    .# Display the plot in a new window
+    p.view
+
+    .# Save the plot to a file
+    "plots/plotExample" p.save
+  }:basicplot;
+
+  .#? demo.sumprimes\n  generate a list of prime numbers where each number is also the sum of all the prime numbers below it
+  {1000 primes cumsum {isprime} I}:sumprimes;
+
+}
