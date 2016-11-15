@@ -5,19 +5,13 @@ import static element.ElemTypes.STRING;
 import static element.ElemTypes.abbrvToID;
 import static element.ElemTypes.anyBig;
 import static element.ElemTypes.anyChar;
-import static element.ElemTypes.anyDouble;
 import static element.ElemTypes.anyNum;
 import static element.ElemTypes.anyString;
 import static element.ElemTypes.areEqual;
 import static element.ElemTypes.bothBool;
 import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothInt;
 import static element.ElemTypes.bothNum;
 import static element.ElemTypes.bothString;
-import static element.ElemTypes.castBig;
-import static element.ElemTypes.castDouble;
-import static element.ElemTypes.castGeneral;
-import static element.ElemTypes.castInt;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
 import static element.ElemTypes.getTypeID;
@@ -25,20 +19,19 @@ import static element.ElemTypes.isBig;
 import static element.ElemTypes.isBlock;
 import static element.ElemTypes.isBool;
 import static element.ElemTypes.isChar;
-import static element.ElemTypes.isDouble;
-import static element.ElemTypes.isInt;
 import static element.ElemTypes.isList;
 import static element.ElemTypes.isModule;
 import static element.ElemTypes.isNum;
 import static element.ElemTypes.isString;
 import static element.ElemTypes.isUserObject;
 import static element.ElemTypes.length;
-import static element.ElemTypes.toBig;
 import static element.ElemTypes.toBlock;
+import static element.ElemTypes.toNum;
+import static element.ElemTypes.toBasicNum;
+import static element.ElemTypes.toBigNum;
+import static element.ElemTypes.castBigNum;
 import static element.ElemTypes.toBool;
 import static element.ElemTypes.toChar;
-import static element.ElemTypes.toDouble;
-import static element.ElemTypes.toInt;
 import static element.ElemTypes.toList;
 import static element.ElemTypes.toModule;
 import static element.ElemTypes.toUserObject;
@@ -234,12 +227,8 @@ class OP_Bang extends Operation {
 	@Override public void execute(final Block block) {
 		Object o = block.pop();
 		
-		if (isBig(o)) {
-			block.push(toBig(o).negate());
-		} else if (isDouble(o)) {
-			block.push(toDouble(o) * -1.0);
-		} else if (isInt(o)) {
-			block.push(toInt(o) * -1);
+		if (isNum(o)) {
+			block.push(toNum(o).negate());
 		} else if (isString(o)) {
 			block.push(new StringBuilder(castString(o)).reverse().toString());
 		} else if(isList(o)) {
@@ -324,8 +313,8 @@ class OP_Dollar extends Operation {
 	public void execute(final Block block) {
 		final Object a = block.pop();
 		
-		if (isInt(a)) {
-			block.push(~toInt(a));
+		if (isNum(a)) {
+			block.push(toNum(a).bnot());
 			return;
 		}
 		else if (isString(a)) {
@@ -341,11 +330,11 @@ class OP_Dollar extends Operation {
 			boolean num = false;	//Will be true if there exists a number in the list
 			
 			//Numerical ranks
-			final byte i = 0; 		// Int
+			//final byte i = 0; 		// Int
 			final byte d = 1; 		// Double
 			final byte b = 2; 		// Big Decimal
 			
-			byte highestRank = 0;			//The highest ranking number type
+			byte highestRank = 1;			//The highest ranking number type
 			
 			//The list to be sorted
 			ArrayList<Object> list = toList(a);
@@ -354,12 +343,10 @@ class OP_Dollar extends Operation {
 			for (Object item : list) {
 				if (isNum(item)) {
 					num = true;
-					//What is the highest ranking number type in the list?
+					//Are there any bigdecimals?
 					if(highestRank < b && isBig(item)) {
 						highestRank = b;
-					} else if (highestRank < d && isDouble(item)) {
-						highestRank = d;
-					} 
+					}
 				}
 				else if (isString(item)) {
 					string = true;
@@ -378,18 +365,6 @@ class OP_Dollar extends Operation {
 			//Based on the type, sort the list
 			if(num) {
 				switch(highestRank) {
-				case i:
-					ArrayList<Integer> ints = new ArrayList<Integer>();
-					for (Object item : list) {
-						ints.add(castInt(item));
-					}
-					list.clear();
-					Collections.sort(ints);
-					for(Integer item : ints) {
-						list.add(item);
-					}
-					block.push(list);
-					return;
 				case d:
 					ArrayList<Double> doubles = new ArrayList<Double>();
 					for (Object item : list) {
@@ -452,11 +427,11 @@ class OP_Percent extends Operation {
 		
 		if(bothNum(a,b)) {
 			try {
-				if(bothInt(a,b)) {
-					block.push(toInt(b) % toInt(a)); //Reverse Args
+				if (bothBasicNum(a, b)) {
+					block.push(toBasicNum(b).mod(toBasicNum(a)));
 					return;
 				} else {
-					block.push(castBig(b).remainder(castBig(a)));
+					block.push(castBigNum(b).mod(castBigNum(a)));
 					return;
 				}
 			} catch (ArithmeticException e) {
@@ -498,8 +473,8 @@ class OP_And extends Operation {
 		
 		if(bothBool(a,b)) {
 			block.push(toBool(a) && toBool(b));
-		} else if (bothInt(a,b)) {
-			block.push(toInt(a) & toInt(b));
+		} else if (bothNum(a,b)) {
+			block.push(castDouble(castInt(a) & castInt(b)));
 		} else if (isString(a) && isString(b)) {
 			ArrayList<Object> allMatches = new ArrayList<Object>();
 			Matcher m = Pattern.compile(getString(a)).matcher(getString(b));
@@ -535,18 +510,9 @@ class OP_Times extends Operation {
 			if (anyBig(a,b)) {
 				block.push(castBig(a).multiply(castBig(b)));
 				return;
-			} else if(anyDouble(a,b)) {
+			} else {
 				block.push(castDouble(a) * castDouble(b));
 				return;
-			} else {
-				try {
-					block.push(ElementMath.multiplyExact(toInt(a), toInt(b)));								//Int Int
-					return;
-				} catch (ArithmeticException e) {
-					//Promote
-					block.push((new BigDecimal(toInt(a)).multiply( new BigDecimal(toInt(b)) )) );	//Promote to big decimal
-					return;
-				}
 			}
 		} else if (isUserObject(a)) {
 			block.push(b);
@@ -577,18 +543,9 @@ class OP_Plus extends Operation {
 			if (anyBig(a,b)) {
 				block.push(castBig(a).add(castBig(b)));
 				return;
-			} else if(anyDouble(a,b)) {
+			} else {
 				block.push(castDouble(a) + castDouble(b));
 				return;
-			} else {
-				try {
-					block.push(ElementMath.addExact(toInt(a), toInt(b)));								//Int Int
-					return;
-				} catch (ArithmeticException e) {
-					//Promote
-					block.push((new BigDecimal(toInt(a)).add( new BigDecimal(toInt(b)) )) );	//Promote to big decimal
-					return;
-				}
 			}
 		} else if (isUserObject(a)) { //Must happen before anyString()
 			block.push(b);
@@ -626,18 +583,9 @@ class OP_Minus extends Operation {
 			if (anyBig(a,b)) {
 				block.push(castBig(a).subtract(castBig(b)));
 				return;
-			} else if(anyDouble(a,b)) {
+			} else {
 				block.push(castDouble(a) - castDouble(b));
 				return;
-			} else {
-				try {
-					block.push(ElementMath.addExact(toInt(a), (-1*toInt(b))));								//Int Int
-					return;
-				} catch (ArithmeticException e) {
-					//Promote
-					block.push((new BigDecimal(toInt(a)).subtract( new BigDecimal(toInt(b)) )) );	//Promote to big decimal
-					return;
-				}
 			}
 		} else if ((anyChar(a, b) && anyNum(a, b)) || (bothChar(a, b))) {
 			block.push((char) (castInt(a) - castInt(b)));
@@ -728,16 +676,16 @@ class OP_LessThan extends Operation {
 		
 		
 		
-		if(bothInt(a,b)) {
-			block.push(toInt(a) < toInt(b));
+		if(bothDouble(a,b)) {
+			block.push(toDouble(a) < toDouble(b));
 		} else if(bothNum(a,b)) {
 			block.push(castBig(a).compareTo(castBig(b)) < 0);
 		} else if (bothChar(a,b)) {
 			block.push(toChar(a) < toChar(b));
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) < 0);
-		} else if (isInt(b) && isString(a)) {
-			int n = toInt(b);
+		} else if (isNum(b) && isString(a)) {
+			int n = castInt(b);
 			String str = getString(a);
 			
 			if (n <= str.length()) {
@@ -749,9 +697,9 @@ class OP_LessThan extends Operation {
 				block.push(str + new String(pad));
 			}
 			
-		} else if (isInt(b) && isList(a)) {
+		} else if (isNum(b) && isList(a)) {
 			ArrayList<Object> list = toList(a);
-			int n = toInt(b);
+			int n = castInt(b);
 			ArrayList<Object> out = new ArrayList<Object>(n);
 			
 			if (n <= list.size()) {
@@ -799,16 +747,16 @@ class OP_GreaterThan extends Operation {
 		final Object b = block.pop();			// Popped in Reverse Order
 		final Object a = block.pop();
 		
-		if(bothInt(a,b)) {
-			block.push(toInt(a) > toInt(b));
+		if(bothDouble(a,b)) {
+			block.push(toDouble(a) > toDouble(b));
 		} else if(bothNum(a,b)) {
 			block.push(castBig(a).compareTo(castBig(b)) > 0);
 		} else if (bothChar(a,b)) {
 			block.push(toChar(a) > toChar(b));
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) > 0);
-		} else if (isInt(b) && isString(a)) {
-			int n = toInt(b);
+		} else if (isNum(b) && isString(a)) {
+			int n = castInt(b);
 			String str = getString(a);
 			
 			if (n <= str.length()) {
@@ -820,9 +768,9 @@ class OP_GreaterThan extends Operation {
 				block.push(new String(pad) + str);
 			}
 			
-		} else if (isInt(b) && isList(a)) {
+		} else if (isNum(b) && isList(a)) {
 			ArrayList<Object> list = toList(a);
-			int n = toInt(b);
+			int n = castInt(b);
 			ArrayList<Object> out = new ArrayList<Object>(n);
 			
 			if (n <= list.size()) {
@@ -976,10 +924,10 @@ class OP_D extends Operation {
 		Object b = block.pop();			//List
 		final Object o = block.pop();	//Item
 		
-		if(isInt(a) && isList(b)) {
-			toList(b).set(toInt(a), o);
+		if(isNum(a) && isList(b)) {
+			toList(b).set(castInt(a), o);
 		} else if (isUserObject(b)) {
-			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, toInt(a));
+			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, castInt(a));
 		} else {		
 			throw new TypeError(this, a, b, o);
 		}
@@ -998,13 +946,12 @@ class OP_E extends Operation {
 	@Override public void execute (final Block block) {
 		Object n = block.pop();
 		
-		if(isInt(n)) {
-			int i = toInt(n);
-			if (i > 9 || i < 0) {
-				block.push(new BigDecimal(10).pow(i, MathContext.DECIMAL32)); //Promote
-			} else {
-				block.push((int)Math.pow(10,i));
-			}
+		if(isDouble(n)) {
+			block.push(Math.pow(10, castDouble(n)));
+			return;
+		} else if (isBig(n)) {
+			//TODO: update for apfloat
+			block.push(new BigDecimal(10).pow(castInt(n), MathContext.DECIMAL32)); //Promote
 			return;
 		} else if (isList(n)) {
 			block.push(length(n));
@@ -1082,8 +1029,6 @@ class OP_G extends Operation {
 				}
 			}
 			return;
-		} else if (isInt(a)) {
-			block.push(ElementMath.isPrime(toInt(a)));
 		} else if (isDouble(a)) {
 			block.push(ElementMath.isPrime(toInt(a)));
 		} else if (isBig(a)) {
@@ -1106,7 +1051,7 @@ class OP_H extends Operation {
 		final Object num = block.pop();
 		
 		try {
-			if (bothInt(from_b, to_b)) {
+			if (bothDouble(from_b, to_b)) {
 				int from_base = toInt(from_b);
 				int to_base = toInt(to_b);
 				BigInteger out_bi;
@@ -1162,7 +1107,7 @@ class OP_H extends Operation {
 					}
 					//Smaller than int 
 					else {
-						block.push(out_bi.intValue());
+						block.push(out_bi.doubleValue());
 					}
 					return;
 				} else if (to_base == 2) {
