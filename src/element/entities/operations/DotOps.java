@@ -120,9 +120,9 @@ public class DotOps {
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
-		/* 91 [  */ null,
+		/* 91 [  */ new OP_Dot_Ceiling(),
 		/* 92 \  */ null,
-		/* 93 ]  */ null,
+		/* 93 ]  */ new OP_Dot_Floor(),
 		/* 94 ^  */ null,
 		/* 95 _  */ null,
 		/* 96 `  */ null,
@@ -152,9 +152,9 @@ public class DotOps {
 		/* 120 x */ null,
 		/* 121 y */ null,
 		/* 122 z */ null,
-		/* 123 { */ null,
+		/* 123 { */ null, // block comments
 		/* 124 | */ null,
-		/* 125 } */ null,
+		/* 125 } */ null, // block comments
 		/* 126 ~ */ new OP_Dot_Tilde(),
 	};
 	
@@ -829,6 +829,43 @@ class OP_Dot_Zed extends Operation {
 			return;
 		}
 		throw new TypeError(this, s);
+	}
+}
+
+// { - 91
+class OP_Dot_Ceiling extends Operation {
+	public OP_Dot_Ceiling() {
+		this.name = ".{";
+		this.info = "numerical ceiling function";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		Object n = block.pop();
+		
+		if (isNumeric(n)) {
+			block.push(toNumeric(n).ceil());
+		} else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
+	}
+}
+
+// } - 93
+class OP_Dot_Floor extends Operation {
+	public OP_Dot_Floor() {
+		this.name = ".}";
+		this.info = "numerical floor function";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		Object n = block.pop();
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).floor());
+		} else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
 	}
 }
 

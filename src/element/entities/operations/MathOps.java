@@ -150,9 +150,9 @@ public class MathOps {
 		/* 120 x */ null,
 		/* 121 y */ null,
 		/* 122 z */ null,
-		/* 123 { */ new OP_Ceiling(),
+		/* 123 { */ null,
 		/* 124 | */ new OP_Constants(),
-		/* 125 } */ new OP_Floor(),
+		/* 125 } */ null,
 		/* 126 ~ */ null,
 	};
 	
@@ -953,42 +953,42 @@ class OP_SysConfig extends Operation {
 	}
 }
 
-// { - 91
-class OP_Ceiling extends Operation {
-	public OP_Ceiling() {
-		this.name = "M{";
-		this.info = "numerical ceiling function";
-		this.argTypes = "N";
-	}
-	@Override
-	public void execute(Block block) {
-		Object n = block.pop();
-		
-		if (isNumeric(n)) {
-			block.push(toNumeric(n).ceil());
-		} else {
-			throw new TypeError(this.name, this.argTypes, n);
-		}
-	}
-}
+//// { - 91
+//class OP_Ceiling extends Operation {
+//	public OP_Ceiling() {
+//		this.name = "M{";
+//		this.info = "numerical ceiling function";
+//		this.argTypes = "N";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Object n = block.pop();
+//		
+//		if (isNumeric(n)) {
+//			block.push(toNumeric(n).ceil());
+//		} else {
+//			throw new TypeError(this.name, this.argTypes, n);
+//		}
+//	}
+//}
 
-// } - 93
-class OP_Floor extends Operation {
-	public OP_Floor() {
-		this.name = "M}";
-		this.info = "numerical floor function";
-		this.argTypes = "N";
-	}
-	@Override
-	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).floor());
-		} else {
-			throw new TypeError(this.name, this.argTypes, n);
-		}
-	}
-}
+//// } - 93
+//class OP_Floor extends Operation {
+//	public OP_Floor() {
+//		this.name = "M}";
+//		this.info = "numerical floor function";
+//		this.argTypes = "N";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Object n = block.pop();
+//		if(isNumeric(n)) {
+//			block.push(toNumeric(n).floor());
+//		} else {
+//			throw new TypeError(this.name, this.argTypes, n);
+//		}
+//	}
+//}
 
 // c - 99
 class OP_Cosine extends Operation {
