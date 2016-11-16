@@ -171,6 +171,15 @@ public class DotOps {
 		return out;
 	}
 	
+	/** Add all operator test cases to the test cases**/
+	public static void prepareTestCases() {
+		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
+			if(DOT_OPS[i] != null) {
+				DOT_OPS[i].prepareTestCases();
+			}
+		}
+	}
+	
 	
 	/** Returns the operation bound to the character */
 	public static Operation getOp(char op) {
@@ -209,6 +218,11 @@ class OP_Dot_Bang extends Operation {
 		} else {
 			throw new TypeError(this,o);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -261,6 +275,12 @@ class OP_Dot_SortUsing extends Operation {
 			return (int)((this.d - i.d)*10000); 
 		}
 	}
+
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }
@@ -282,6 +302,11 @@ class OP_Dot_CastChar extends Operation {
 		} else {
 			throw new TypeError(this,o);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -356,6 +381,11 @@ class OP_Dot_Plus extends Operation {
 			throw new TypeError(this, a, b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //- - 45
@@ -376,6 +406,11 @@ class OP_Dot_Minus extends Operation {
 			throw new TypeError(this, a, b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //; - 59
@@ -388,6 +423,11 @@ class OP_Dot_ClearAll extends Operation {
 	@Override
 	public void execute(Block block) {
 		block.clearStack();
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -412,6 +452,11 @@ class OP_Dot_LessThan extends Operation {
 		} else {
 			throw new TypeError(this, a, b);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -439,6 +484,11 @@ class OP_Dot_GreaterThan extends Operation {
 		}
 		
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // ? - 63
@@ -460,6 +510,12 @@ class OP_Dot_Conditional extends Operation {
 		} 
 		throw new TypeError(this, a);
 	}
+
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -477,6 +533,11 @@ class OP_Dot_ArrayAll extends Operation {
 		list.addAll((Stack<Object>)block.getStack().clone());
 		block.clearStack();	
 		block.push(list);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -502,6 +563,12 @@ class OP_Dot_Primes extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //D - 67
@@ -519,6 +586,11 @@ class OP_Dot_Error extends Operation {
 		}
 		
 		throw new TypeError(this, a);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -539,6 +611,11 @@ class OP_Dot_Len extends Operation {
 			return;
 		}
 		throw new TypeError(this, n);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -596,6 +673,11 @@ class OP_Dot_Write extends Operation {
 		}
 		throw new TypeError(this, n);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //I - 73
@@ -649,6 +731,11 @@ class OP_Dot_I extends Operation {
 		
 		throw new TypeError(this, index, list);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //K - 75
@@ -674,6 +761,11 @@ class OP_Dot_TryCatch extends Operation {
 			}
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //P - 80
@@ -686,6 +778,11 @@ class OP_Dot_Print extends Operation {
 	@Override public void execute (Block block) {
 		Element.getInstance().getOut().printAsPrint(printBare(block.pop()));
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //Q - 81
@@ -697,6 +794,11 @@ class OP_Dot_Rand extends Operation {
 	}
 	@Override public void execute (Block block) {
 		block.push(new Num(Ops.RAND.nextDouble()));
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -726,6 +828,11 @@ class OP_Dot_Case extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //T - 84
@@ -738,6 +845,11 @@ class OP_TypeOf extends Operation {
 	@Override
 	public void execute(Block block) {
 		block.push(IDToAbbrv(getTypeID(block.pop())));
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -753,6 +865,11 @@ class OP_RequestString extends Operation {
 		
 		block.push(QuickDialog.requestString(castString(block.pop())));
 
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -806,6 +923,11 @@ class OP_SimplePlot extends Operation {
 	    String strDate = sdfDate.format(now);
 	    return strDate;
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -831,6 +953,11 @@ class OP_Dot_Zed extends Operation {
 		}
 		throw new TypeError(this, s);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // { - 91
@@ -850,6 +977,11 @@ class OP_Dot_Ceiling extends Operation {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // } - 93
@@ -867,6 +999,11 @@ class OP_Dot_Floor extends Operation {
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -899,6 +1036,11 @@ class OP_Dot_Tilde extends Operation {
 		}
 		
 		throw new TypeError(this, a);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

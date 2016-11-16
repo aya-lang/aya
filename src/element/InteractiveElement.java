@@ -5,9 +5,13 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import element.entities.Block;
+import element.entities.operations.DotOps;
+import element.entities.operations.MathOps;
+import element.entities.operations.Ops;
 import element.exceptions.SyntaxError;
 import element.infix.Compiler;
 import element.parser.Parser;
+import element.test.ElementTestCases;
 
 public class InteractiveElement {
 		
@@ -193,6 +197,10 @@ public class InteractiveElement {
 	
 	public static void main(String[] args) {
 		Element elem = Element.getInstance();
+		
+		MathOps.prepareTestCases();
+		Ops.prepareTestCases();
+		DotOps.prepareTestCases();
 		
 		ElementTestCases.runTests();
 		

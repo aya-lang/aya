@@ -14,5 +14,8 @@ public abstract class Operation {
 	public String name = "No name provided";
 	public String argTypes = "A";
 	public void execute(Block b){};
+	
+	public abstract void prepareTestCases();
+	
 	@Override public String toString() {return name;}
 }

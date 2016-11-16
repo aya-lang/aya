@@ -63,6 +63,7 @@ import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
 import element.parser.CharacterParser;
 import element.parser.Parser;
+import element.test.ElementTestCases;
 import element.variable.MemberVariable;
 import element.variable.Module;
 import element.variable.Variable;
@@ -215,6 +216,18 @@ public class Ops {
 		}
 	}
 	
+	/** Add all operator test cases to the test cases**/
+	public static void prepareTestCases() {
+		for (char i = 0; i <= 96-FIRST_OP; i++) {
+			if(OPS[i] != null) {
+				OPS[i].prepareTestCases();
+			}
+		}
+		TILDE.prepareTestCases();
+		BAR.prepareTestCases();
+		APPLY_TO.prepareTestCases();
+	}
+	
 }
 
 // ! - 33
@@ -263,6 +276,16 @@ class OP_Bang extends Operation {
 		}
 		return;
 	}
+	
+	
+	@Override
+	public void prepareTestCases() {
+		ElementTestCases.addTestCase("1!", "-1", this);
+		ElementTestCases.addTestCase("'c!", "'C'", this);
+		ElementTestCases.addTestCase("'C!", "'c'", this);
+		ElementTestCases.addTestCase("\"abc\"!", "\"cba\"", this);
+		
+	}
 }
 
 //# - 35
@@ -299,6 +322,11 @@ class OP_Pound extends Operation {
 			return;
 		} 	
 		throw new TypeError(this,a);
+	}
+	@Override
+	public void prepareTestCases() {
+		ElementTestCases.addTestCase("[1 2 3]#{1+}", "[ 2 3 4 ]");
+		
 	}
 }
 
@@ -411,6 +439,11 @@ class OP_Dollar extends Operation {
 		
 		throw new TypeError(this,a);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // % - 37
@@ -449,6 +482,11 @@ class OP_Percent extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -486,6 +524,11 @@ class OP_And extends Operation {
 		}
 
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // * - 42
@@ -510,6 +553,11 @@ class OP_Times extends Operation {
 		} else {	
 			throw new TypeError(this, a,b);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -545,6 +593,11 @@ class OP_Plus extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //- - 44
@@ -576,6 +629,11 @@ class OP_Minus extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // / - 47
@@ -601,6 +659,11 @@ class OP_Divide extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -613,6 +676,11 @@ class OP_SemiColon extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		block.pop();
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -672,6 +740,11 @@ class OP_LessThan extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -685,6 +758,11 @@ class OP_Equal extends Operation {
 	@Override
 	public void execute(final Block block) {
 		block.push(areEqual(block.pop(),block.pop()));
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -740,6 +818,11 @@ class OP_GreaterThan extends Operation {
 			throw new TypeError(this, a,b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // ? - 63
@@ -774,6 +857,11 @@ class OP_Conditional extends Operation {
 		
 		throw new TypeError(this, a,b,c);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -793,6 +881,11 @@ class OP_At extends Operation {
 		block.push(a);
 		block.push(c);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //A - 65
@@ -806,6 +899,11 @@ class OP_A extends Operation {
 		final ArrayList<Object> al = new ArrayList<Object>();
 		al.add(block.pop());
 		block.push(al);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -832,6 +930,11 @@ class OP_B extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -880,6 +983,11 @@ class OP_D extends Operation {
 		}
 		
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 
@@ -902,6 +1010,11 @@ class OP_E extends Operation {
 		} else {
 			throw new TypeError(this, n);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -975,6 +1088,11 @@ class OP_G extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1072,6 +1190,11 @@ class OP_H extends Operation {
 		
 		throw new TypeError(this, num, from_b, to_b);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // I - 73
@@ -1127,6 +1250,11 @@ class OP_I extends Operation {
 			throw new TypeError(this, index, list);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // L - 76
@@ -1158,6 +1286,11 @@ class OP_L extends Operation {
 		} else {
 			throw new TypeError(this, n , item);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1201,6 +1334,11 @@ class OP_K extends Operation {
 			return;
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //N - 78
@@ -1228,6 +1366,11 @@ class OP_N extends Operation {
 			throw new TypeError(this, a, b);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // P - 80
@@ -1239,6 +1382,11 @@ class OP_P extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		block.push(castString(block.pop()));
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1271,6 +1419,11 @@ class OP_Q extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //R - 82
@@ -1293,6 +1446,11 @@ class OP_R extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1321,6 +1479,11 @@ class OP_S extends Operation {
 			return;		
 		}
 		throw new TypeError(this, a);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1363,6 +1526,11 @@ class OP_U extends Operation {
 			
 		throw new TypeError(this, a, b);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //V - 86
@@ -1388,6 +1556,11 @@ class OP_V extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1437,6 +1610,11 @@ class OP_W extends Operation {
 		}
 		throw new TypeError(this, a);
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -1450,6 +1628,11 @@ class OP_X extends Operation {
 	@Override public void execute (final Block block) {
 		Element.getInstance().getVars().setGlobalVar(new Variable("x"), block.pop());
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 //Y - 89
@@ -1461,6 +1644,11 @@ class OP_Y extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		Element.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1486,6 +1674,11 @@ class OP_Z extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // \ - 92
@@ -1500,6 +1693,11 @@ class OP_Backslash extends Operation {
 		final Object b = block.pop();
 		block.push(a);
 		block.push(b);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1529,6 +1727,11 @@ class OP_Caret extends Operation {
 		}
 
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 // _ - 95
@@ -1545,6 +1748,11 @@ class OP_Underscore extends Operation {
 		} else {
 			block.push(a);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1608,6 +1816,11 @@ class OP_Bar extends Operation {
 		}
 
 	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 
@@ -1646,6 +1859,11 @@ class OP_Tilde extends Operation {
 		}
 		
 		throw new TypeError(this, a);
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
@@ -1690,6 +1908,11 @@ class OP_ApplyTo extends Operation {
 		} else {
 			throw new TypeError(this, a,b);
 		}
+	}
+	@Override
+	public void prepareTestCases() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
