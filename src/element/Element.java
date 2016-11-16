@@ -22,7 +22,7 @@ import element.util.StringSearch;
 import element.variable.VariableData;
 
 public class Element {
-	public static final String VERSION_NAME = "Beta 0.0.4 (July 2016)";
+	public static final String VERSION_NAME = "Beta 0.0.9 (Nov 2016)";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_RED = "\u001B[31m";
 	public static final String ANSI_RESET = "\u001B[0m";

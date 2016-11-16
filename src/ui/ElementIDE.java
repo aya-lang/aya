@@ -30,7 +30,7 @@ import element.variable.Variable;
 @SuppressWarnings("serial")
 public class ElementIDE extends JFrame
 {	
-	public static final String VERSION_NAME = "2015 Nov 10";
+	public static final String VERSION_NAME = "2016 Nov 11";
 	
 	private Element element;
 	
