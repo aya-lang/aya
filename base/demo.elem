@@ -4,7 +4,7 @@
 .#? module: demo\n  contains various example functions
 {@ demo,
   .#? N demo.train\n  generates an ASCII train with N carts
-  {numI, [" ______  ""|      | "" ()--() ~"]#{numLSB;'\n'+}S.P}:train;
+  {numD, [" ______  ""|      | "" ()--() ~"]#{numLSB;'\n'+}S.P}:train;
 
 
   .#? demo.loc\n  input a C source file and return the number of lines of code

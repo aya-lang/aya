@@ -33,7 +33,7 @@
 
 .{? docs: argument type key
   D - num
-  F - bigdecimal
+  F - bignum
   N - number (D|F)
   B - boolean
   E - expression/block
@@ -101,7 +101,7 @@
 
 .{? docs: list grabbibng
   List literals can grab items from the outer stack
-  Use the format `... [num| ...]` where `num` is an integer literal
+  Use the format `... [num| ...]` where `num` is an num literal
   ex: 1 2 [1| 7 6] => 1 [2 7 6]
   ex: 4 [1|10,] => [4 5 6 7 8 9 10]
 .}
