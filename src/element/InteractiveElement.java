@@ -194,6 +194,7 @@ public class InteractiveElement {
 	public static void main(String[] args) {
 		Element elem = Element.getInstance();
 		
+		ElementTestCases.runTests();
 		
 		if (args.length > 0) {
 			

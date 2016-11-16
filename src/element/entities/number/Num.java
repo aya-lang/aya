@@ -1,11 +1,25 @@
 package element.entities.number;
 
+import java.io.File;
+
 import org.apfloat.Apfloat;
 
 import element.ElemTypes;
 import element.exceptions.ElementRuntimeException;
 
 public class Num extends Numeric {
+	
+	public static Num PI = new Num(Math.PI);
+	public static Num E = new Num(Math.E);
+	public static Num DOUBLE_MAX = new Num(Double.MAX_VALUE);
+	public static Num DOUBLE_MIN = new Num(Double.MIN_VALUE);
+	public static Num DOUBLE_NAN = new Num(Double.NaN); 
+	public static Num DOUBLE_INF = new Num(Double.POSITIVE_INFINITY);
+	public static Num DOUBLE_NINF = new Num(Double.NEGATIVE_INFINITY);
+	public static Num INT_MAX = new Num(Integer.MAX_VALUE);
+	public static Num INT_MIN = new Num(Integer.MIN_VALUE);
+
+
 	private double value;
 	
 	public Num(int n) {
@@ -59,7 +73,11 @@ public class Num extends Numeric {
 	}
 	
 	public String toString() {
-		return ElemTypes.trimZeros(String.format("%1.10f", this.value));
+		if (value % 1 == 0) {
+			return String.format("%d",(long)value);
+		} else {
+			return String.format("%s", value);
+		}
 	}
 	
 	//*******************************

@@ -38,7 +38,7 @@ public class CompilerTestCases {
 	}
 	
 	public void z(String in, String res) {
-		testCases.put(in,  res);
+		//testCases.put(in,  res);
 	}
 	
 	public static void initElement() {

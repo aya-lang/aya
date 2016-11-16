@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import element.ElemTypes;
 import element.Element;
 import element.InteractiveElement;
+import element.entities.number.Num;
 import element.exceptions.SyntaxError;
 import element.parser.Parser;
 
@@ -35,8 +36,8 @@ public class VariableData {
 		globals.setVar(new Variable("version"), Element.VERSION_NAME);
 		globals.setVar(new Variable("help"), InteractiveElement.HELP_TEXT);
 
-		globals.setVar(new Variable("e"), Math.E);				
-		globals.setVar(new Variable("pi"), Math.PI);
+		globals.setVar(new Variable("e"), Num.E);				
+		globals.setVar(new Variable("pi"), Num.PI);
 
 		varSets.add(globals);
 	}

@@ -1,6 +1,7 @@
 package element.infix;
 
 
+import element.entities.number.Num;
 import element.parser.tokens.Token;
 
 public class InfixLiteral extends InfixItem {
@@ -32,7 +33,7 @@ public class InfixLiteral extends InfixItem {
 	public Object generateElementCode() {
 		switch(subtype) {
 		case NUM:
-			return Integer.parseInt(name);
+			return new Num(Double.parseDouble(name));
 		case STRING:
 			return name;
 		default:

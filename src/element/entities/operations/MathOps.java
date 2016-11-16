@@ -1265,15 +1265,15 @@ class OP_Constants extends Operation {
 		if(isNumeric(a)) {
 			final int i = toNumeric(a).toInt();
 			switch (i) {
-			case 0: block.push(Math.PI); break;
-			case 1: block.push(Math.E); break;
-			case 2: block.push(Double.MAX_VALUE); break;
-			case 3: block.push(Double.MIN_VALUE); break;
-			case 4: block.push(Double.NaN); break; 
-			case 5: block.push(Double.POSITIVE_INFINITY); break;
-			case 6: block.push(Double.NEGATIVE_INFINITY); break;
-			case 7: block.push(Integer.MAX_VALUE); break;
-			case 8: block.push(Integer.MIN_VALUE); break;
+			case 0: block.push(Num.PI); break;
+			case 1: block.push(Num.E); break;
+			case 2: block.push(Num.DOUBLE_MAX); break;
+			case 3: block.push(Num.DOUBLE_MIN); break;
+			case 4: block.push(Num.DOUBLE_NAN); break; 
+			case 5: block.push(Num.DOUBLE_INF); break;
+			case 6: block.push(Num.DOUBLE_NINF); break;
+			case 7: block.push(Num.INT_MAX); break;
+			case 8: block.push(Num.INT_MIN); break;
 			case 9: block.push(File.separator); break;
 			case 10: block.push(File.pathSeparator); break;
 			case 11: block.push(Character.MAX_CODE_POINT); break;

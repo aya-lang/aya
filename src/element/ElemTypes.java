@@ -134,12 +134,11 @@ public class ElemTypes {
 	public static boolean isLiteral(Object o) 		{ return !isInstruction(o); }
 	
 	/** Returns the type ID of the object */
-	public static byte getTypeID(Object o) { return 	o instanceof Num		? NUM
+	public static byte getTypeID(Object o) { return 	o instanceof Num			? NUM
 													:	o instanceof BigNum			? BIGNUM
 													:	o instanceof Flag			? FLAG
 													:	o instanceof Block			? BLOCK
 													:	o instanceof Character		? CHARACTER
-												//	:	o instanceof BigDecimal		? BIG_DECIMAL
 													:	o instanceof Operation		? OP
 													:	o instanceof VariableSet	? VAR_SET
 													:	o instanceof Variable		? VAR
