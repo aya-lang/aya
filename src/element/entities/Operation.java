@@ -13,9 +13,6 @@ public abstract class Operation {
 	public String info = "No info provided";
 	public String name = "No name provided";
 	public String argTypes = "A";
-	public void execute(Block b){};
-	
-	public abstract void prepareTestCases();
-	
+	public void execute(Block b){};	
 	@Override public String toString() {return name;}
 }

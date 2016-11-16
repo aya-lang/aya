@@ -162,15 +162,6 @@ public class MathOps {
 		return out;
 	}
 	
-	/** Add all operator test cases to the test cases**/
-	public static void prepareTestCases() {
-		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-			if(MATH_OPS[i] != null) {
-				MATH_OPS[i].prepareTestCases();
-			}
-		}
-	}
-	
 	/** Returns the operation bound to the character */
 	public static Operation getOp(char op) {
 		if(op >= 33 && op <= 126) {
@@ -198,11 +189,6 @@ class OP_Fact extends Operation {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 //! - 33
@@ -215,11 +201,6 @@ class OP_SysTime extends Operation {
 	@Override
 	public void execute(Block block) {
 		block.push((double)System.currentTimeMillis());
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -251,11 +232,6 @@ class OP_ModSet extends Operation {
 		}
 				
 		throw new TypeError(this.name, this.argTypes, index, list, o);
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -293,11 +269,6 @@ class OP_ModGet extends Operation {
 				
 		throw new TypeError(this.name, this.argTypes, index, list);
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 // A - 65
@@ -317,11 +288,6 @@ class OP_Abs extends Operation {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 // C - 67
@@ -339,11 +305,6 @@ class OP_Acosine extends Operation {
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -377,11 +338,6 @@ class OP_MDate extends Operation {
 		} else {
 			throw new TypeError(this.name, this.argTypes, a);
 		}
-		
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
 		
 	}
 }
@@ -424,11 +380,6 @@ class OP_MParse_Date extends Operation {
 		}
 		
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 
@@ -448,11 +399,6 @@ class OP_Log extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -495,11 +441,6 @@ class OP_NewUserObject extends Operation {
 		
 		throw new TypeError(this.name, this.argTypes, list, mod);
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 //P - 80
@@ -527,11 +468,6 @@ class OP_PrintColor extends Operation {
 		
 		throw new TypeError(this.name, this.argTypes, a,b,c,d);
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 // S - 83
@@ -550,11 +486,6 @@ class OP_Asine extends Operation {
 		}
 		throw new TypeError(this.name, this.argTypes, n);
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 // T - 84
@@ -572,11 +503,6 @@ class OP_Atangent extends Operation {
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -652,11 +578,6 @@ class OP_Dialog extends Operation {
 		if (out != null) {
 			block.push(out);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -911,11 +832,6 @@ class OP_AdvPlot extends Operation {
 			throw new ElementRuntimeException("MX \"stroke(s)\" property expects a numeric value. Recieved: " + show(property));
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	
 	
@@ -1030,11 +946,6 @@ class OP_SysConfig extends Operation {
 
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 //// { - 91
@@ -1090,11 +1001,6 @@ class OP_Cosine extends Operation {
 		}
 		throw new TypeError(this.name, this.argTypes, n);
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 //d - 100
@@ -1121,11 +1027,6 @@ class OP_CastDouble extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -1163,11 +1064,6 @@ class OP_MShow_Date extends Operation {
 		} else {
 			throw new TypeError(this.name, this.argTypes, a, b);
 		}
-		
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
 		
 	}
 }
@@ -1217,11 +1113,6 @@ class OP_AddParserChar extends Operation {
 			throw new TypeError(this, obj_char, obj_name);
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 
@@ -1241,11 +1132,6 @@ class OP_Ln extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 // q - 113
@@ -1263,11 +1149,6 @@ class OP_SquareRoot extends Operation {
 		} else {
 			throw new TypeError(this, n);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -1287,11 +1168,6 @@ class OP_Sine extends Operation {
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -1315,11 +1191,6 @@ class OP_Tangent extends Operation {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 //w - 119
@@ -1332,11 +1203,6 @@ class OP_TypeStr extends Operation {
 	@Override
 	public void execute(Block block) {
 		block.push(ElemTypes.getTypeName(block.pop()));
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
@@ -1387,11 +1253,6 @@ class OP_Constants extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
-	}
-	@Override
-	public void prepareTestCases() {
-		// TODO Auto-generated method stub
-		
 	}
 }
 
