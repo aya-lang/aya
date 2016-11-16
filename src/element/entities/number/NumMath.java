@@ -3,8 +3,6 @@ package element.entities.number;
 import org.apfloat.ApfloatMath;
 import org.apfloat.ApintMath;
 
-import element.entities.operations.ElementMath;
-
 public class NumMath {
 	
 	public static Numeric mul(Numeric a, Numeric b) {
