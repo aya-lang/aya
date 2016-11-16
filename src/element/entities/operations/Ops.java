@@ -904,7 +904,7 @@ class OP_E extends Operation {
 			block.push(NumMath.pow(new Num(10), toNumeric(n)));
 		} else if (isList(n)) {
 			block.push(new Num(length(n)));
-		} if (isUserObject(n)) {
+		} else if (isUserObject(n)) {
 			toUserObject(n).callVariable(block, Ops.MV_LEN);
 		} else {
 			throw new TypeError(this, n);

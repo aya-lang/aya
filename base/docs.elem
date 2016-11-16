@@ -32,10 +32,9 @@
 }
 
 .{? docs: argument type key
-  I - integer
-  D - double
+  D - num
   F - bigdecimal
-  N - number (I|D|F)
+  N - number (D|F)
   B - boolean
   E - expression/block
   C - character

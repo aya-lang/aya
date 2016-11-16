@@ -137,7 +137,7 @@
 {itemA typeC,
 	[
 	  T type'A=.? .# Any
-	  {"IDFN"item.TN(-1)=!} type'N=.? .# Number is an Int, Double, or a BigDecimal
+	  {"DFN"item.TN(-1)=!} type'N=.? .# Number is an Int, Double, or a BigDecimal
 	  {"SL"item.TN(-1)=!} type'L=.? .# Number is a string or list => list
 	  type item.T = .# Normal Check
 	].S
@@ -309,7 +309,7 @@
 {la lb ex, [la lb laEL,\#{ex}]}:permusing:pu;
 
 .#? <LII> swapitems\n  swap two elements in a list given their indices
-{listL iI jI : tmp,
+{listL iD jD : tmp,
 	list i I : tmp;
 	list j I  list i D
 	tmp list j D

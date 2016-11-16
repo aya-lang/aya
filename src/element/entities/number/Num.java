@@ -273,6 +273,7 @@ public class Num extends Numeric {
 		long acc = 1;
 		while (x > 0) {
 			acc *= x;
+			x--;
 		}
 		return acc;
 	}
