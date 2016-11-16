@@ -1016,7 +1016,7 @@ class OP_CastDouble extends Operation {
 		
 		if(isString(a)) {
 			try {
-				block.push(Double.parseDouble(castString(a)));
+				block.push(new Num(Double.parseDouble(castString(a))));
 			} catch (NumberFormatException e) {
 				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to a double.");
 			}
