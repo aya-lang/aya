@@ -72,6 +72,10 @@
     }
   }:addline;
 
+  .#? NNE (plot) plot.addexpr\n  evaluate E on the domain of N1 to N2 and add it to the plot
+  {xminN xmaxN exprE self,
+    xmin xmax 600.1 linspace #expr self.addline
+  }:addexpr;
 
 
   .#? N (color) L<N> plot.addcustomline\n  add a line to the plot with custom stroke and color
