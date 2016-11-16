@@ -5,8 +5,9 @@ import org.apfloat.ApfloatMath;
 import org.apfloat.ApintMath;
 
 import element.ElemTypes;
+import element.exceptions.ElementRuntimeException;
 
-public class BigNum extends Num {
+public class BigNum extends Numeric {
 	private Apfloat value;
 	
 	public BigNum(int n) {
@@ -19,7 +20,7 @@ public class BigNum extends Num {
 		this.value = new Apfloat(d);
 	}
 	
-	public BigNum(BasicNum n) {
+	public BigNum(Num n) {
 		//16 digit precision
 		this.value = new Apfloat(n.toDouble());
 	}
@@ -104,13 +105,22 @@ public class BigNum extends Num {
 	public BigNum pow(BigNum other) {
 		return new BigNum(ApfloatMath.pow(this.value, other.value));
 	}
-		
+	
+	
 	
 	//*******************************
 	//   OVERRIDES
 	//*******************************
 	
-	
+	public static BigNum fromObj(Object o) {
+		if (o instanceof BigNum) {
+			return (BigNum)o;
+		} else if (o instanceof Num) {
+			return new BigNum((Num)o);
+		} else {
+			throw new ElementRuntimeException("Cannot cast " + o + " to a big number");
+		}
+	}	
 	
 	@Override
 	public BigNum negate() {
@@ -122,81 +132,85 @@ public class BigNum extends Num {
 		return new BigNum((double)~((int)this.toInt()));
 	}
 	
-	public BasicNum signnum() {
-		return new BasicNum(this.value.signum());
+	public Num signnum() {
+		return new Num(this.value.signum());
 	}
 
 	@Override
-	public Num factorial() {
+	public Numeric factorial() {
 		return new BigNum(ApintMath.factorial(value.longValue()));
 	}
 	
 	@Override
-	public Num abs() {
+	public Numeric abs() {
 		return new BigNum(ApfloatMath.abs(value));
 	}
 
 	@Override
-	public Num sin() {
+	public Numeric sin() {
 		return new BigNum(ApfloatMath.sin(value));
 	}
 
 	@Override
-	public Num cos() {
+	public Numeric cos() {
 		return new BigNum(ApfloatMath.cos(value));
 	}
 
 	@Override
-	public Num tan() {
+	public Numeric tan() {
 		return new BigNum(ApfloatMath.tan(value));
 	}
 
 	@Override
-	public Num asin() {
+	public Numeric asin() {
 		return new BigNum(ApfloatMath.asin(value));
 	}
 
 	@Override
-	public Num acos() {
+	public Numeric acos() {
 		return new BigNum(ApfloatMath.acos(value));
 	}
 
 	@Override
-	public Num atan() {
+	public Numeric atan() {
 		return new BigNum(ApfloatMath.atan(value));
 	}
 
 	@Override
-	public Num log() {
+	public Numeric log() {
 		return new BigNum(ApfloatMath.log(value, new Apfloat(10)));
 	}
 
 	@Override
-	public Num ln() {
+	public Numeric ln() {
 		return new BigNum(ApfloatMath.log(value));
 	}
 
 	@Override
-	public Num sqrt() {
+	public Numeric sqrt() {
 		return new BigNum(ApfloatMath.sqrt(value));
 	}
 
 	@Override
-	public Num ceil() {
+	public Numeric ceil() {
 		return new BigNum(value.ceil());
 	}
 
 	@Override
-	public Num floor() {
+	public Numeric floor() {
 		return new BigNum(value.floor());
 	}
 	
+	@Override
+	public boolean isPrime() {
+		return NumMath.isPrime(value.longValue());
+	};
 	//*******************************
 	//   IMPLEMENTS COMPARABLE
 	//*******************************
 	
 	@Override
-	public int compareTo(Num n) {
+	public int compareTo(Numeric n) {
 		//Ascending
 		return (this.value.subtract(n.toApfloat())).intValue(); 
 	}

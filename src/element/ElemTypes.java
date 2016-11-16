@@ -12,9 +12,9 @@ import element.entities.ListLiteral;
 import element.entities.Operation;
 import element.entities.Tuple;
 import element.entities.UserObject;
-import element.entities.number.BasicNum;
-import element.entities.number.BigNum;
 import element.entities.number.Num;
+import element.entities.number.BigNum;
+import element.entities.number.Numeric;
 import element.entities.number.NumMath;
 import element.exceptions.ElementRuntimeException;
 import element.variable.MemberVariable;
@@ -26,8 +26,8 @@ public class ElemTypes {
 	
 	// Type IDs
 	public static final byte UNKNOWN           = -1;
-	public static final byte BASIC_NUM         = 0;
-	public static final byte BIG_NUM           = 1;
+	public static final byte NUM        	   = 0;
+	public static final byte BIGNUM            = 1;
 	public static final byte FLAG              = 2;
 	public static final byte BLOCK             = 3;
 	public static final byte LIST              = 4;
@@ -41,7 +41,7 @@ public class ElemTypes {
 	public static final byte TUPLE             = 12;
 	public static final byte LIST_BUILDER      = 13;
 	public static final byte BOOL              = 14;
-	public static final byte NUM               = 15;
+	public static final byte NUMERIC               = 15;
 	public static final byte ANY               = 16;
 	
 	public static final byte MODULE 		   = 35;
@@ -79,8 +79,8 @@ public class ElemTypes {
 	
 	//public static boolean isInt(Object o)			{ return o instanceof Integer; }
 	//public static boolean isDouble(Object o)		{ return o instanceof Double; }
+	public static boolean isNumeric(Object o)		{ return o instanceof Numeric; }
 	public static boolean isNum(Object o)			{ return o instanceof Num; }
-	public static boolean isBasicNum(Object o)			{ return o instanceof BasicNum; }
 	public static boolean isBigNum(Object o)			{ return o instanceof BigNum; }
 	public static boolean isFlag(Object o)			{ return o instanceof Flag; }
 	public static boolean isBlock(Object o)			{ return o instanceof Block && !(o instanceof ListLiteral); }
@@ -134,8 +134,8 @@ public class ElemTypes {
 	public static boolean isLiteral(Object o) 		{ return !isInstruction(o); }
 	
 	/** Returns the type ID of the object */
-	public static byte getTypeID(Object o) { return 	o instanceof BasicNum		? BASIC_NUM
-													:	o instanceof BigNum			? BIG_NUM
+	public static byte getTypeID(Object o) { return 	o instanceof Num		? NUM
+													:	o instanceof BigNum			? BIGNUM
 													:	o instanceof Flag			? FLAG
 													:	o instanceof Block			? BLOCK
 													:	o instanceof Character		? CHARACTER
@@ -158,10 +158,9 @@ public class ElemTypes {
 	
 	//public static boolean bothInt(Object a, Object b) 		{ return a instanceof Integer && b instanceof Integer; }
 	//public static boolean bothDouble(Object a, Object b) 	{ return a instanceof Double && b instanceof Double; }
-	public static boolean bothBasicNum(Object a, Object b) 	{ return a instanceof BasicNum && b instanceof BasicNum; }
+	public static boolean bothNum(Object a, Object b) 		{ return a instanceof Num && b instanceof Num; }
 	public static boolean bothBigNum(Object a, Object b) 	{ return a instanceof BigNum && b instanceof BigNum; }
-	public static boolean bothNum(Object a, Object b) 		{ return isNum(a) && isNum(b); }
-	public static boolean bothBig(Object a, Object b)		{ return a instanceof BigDecimal && b instanceof BigDecimal; }
+	public static boolean bothNumeric(Object a, Object b) 	{ return isNumeric(a) && isNumeric(b); }
 	public static boolean bothChar(Object a, Object b)		{ return a instanceof Character && b instanceof Character; }
 	public static boolean bothString(Object a, Object b)	{ return isString(a) && isString(b); }
 	public static boolean bothBool(Object a, Object b)		{ return a instanceof Boolean && b instanceof Boolean; }
@@ -169,9 +168,9 @@ public class ElemTypes {
 	
 	public static boolean anyInt(Object a, Object b) 		{ return a instanceof Integer || b instanceof Integer; }
 	public static boolean anyDouble(Object a, Object b) 	{ return a instanceof Double || b instanceof Double; }
-	public static boolean anyBasicNum(Object a, Object b) 	{ return a instanceof BasicNum || b instanceof BasicNum; }
-	public static boolean anyBigNum(Object a, Object b) 	{ return a instanceof BigNum || b instanceof BigNum; }
 	public static boolean anyNum(Object a, Object b) 		{ return a instanceof Num || b instanceof Num; }
+	public static boolean anyBigNum(Object a, Object b) 	{ return a instanceof BigNum || b instanceof BigNum; }
+	public static boolean anyNumeric(Object a, Object b) 	{ return a instanceof Numeric || b instanceof Numeric; }
 	public static boolean anyBig(Object a, Object b)		{ return a instanceof BigDecimal || b instanceof BigDecimal; }
 	public static boolean anyChar(Object a, Object b)		{ return a instanceof Character || b instanceof Character; }
 	public static boolean anyString(Object a, Object b)		{ return isString(a) ||isString(b); }
@@ -186,8 +185,8 @@ public class ElemTypes {
 	public static Block toBlock(Object o) 				{ return (Block)o; }
 	//public static BigDecimal toBig(Object o) 			{ return (BigDecimal)o; }
 	
-	public static Num toNum(Object o) 					{ return (Num)o; }
-	public static BasicNum toBasicNum(Object o) 		{ return (BasicNum)o; }
+	public static Numeric toNumeric(Object o) 			{ return (Numeric)o; }
+	public static Num toNum(Object o) 				{ return (Num)o; }
 	public static BigNum toBigNum(Object o) 			{ return (BigNum)o; }
 
 	public static char toChar(Object o) 				{ return (Character)o; }
@@ -231,11 +230,11 @@ public class ElemTypes {
 	
 	
 	/* NUMERIC CASTING */
-//	public static int castInt(Object o)			{ return  isInt(o) 		? toInt(o)
-//														: isDouble(o) 	? toInt(o)
-//														: isBig(o)		? toBig(o).intValue()
-//														: isChar(o) 	? toChar(o)
-//														: 0;}
+	public static int castInt(Object o)			{ return  o instanceof Integer 	? (int)o
+														: o instanceof Double	? (int)o
+														: isNumeric(o)		? toNumeric(o).toInt()
+														: isChar(o) 	? toChar(o)
+														: 0;}
 //	public static double castDouble(Object o)	{ return  isInt(o) 		? toDouble(o)
 //														: isDouble(o) 	? toDouble(o)
 //														: isBig(o)		? toBig(o).doubleValue()
@@ -254,8 +253,8 @@ public class ElemTypes {
 //	public static BigNum castBigNum(Object o) {
 //		if (o instanceof BigNum) {
 //			return (BigNum)o;
-//		} else if (o instanceof BasicNum) {
-//			return new BigNum(((BasicNum)o).toDouble()());
+//		} else if (o instanceof Num) {
+//			return new BigNum(((Num)o).toDouble()());
 //		} else {
 //			throw new ElementRuntimeException("Cannont cast " + castString(o) + " to a big decimal");
 //		}
@@ -346,7 +345,7 @@ public class ElemTypes {
 //		
 //		byte inType = getTypeID(item);
 //		
-//		if (inType == NUM || inType == BasicNum || inType || BigNum) {
+//		if (inType == NUM || inType == Num || inType || BigNum) {
 //			Num num = toNum(item);
 //			switch (outType) {
 //			case STRING:
@@ -482,8 +481,8 @@ public class ElemTypes {
 		}
 		
 		//Number 
-		if(bothNum(a, b)) {
-			return NumMath.compare(toNum(a), toNum(b)) == 0;
+		if(bothNumeric(a, b)) {
+			return NumMath.compare(toNumeric(a), toNumeric(b)) == 0;
 		}
 		
 		int type = getTypeID(a);
@@ -558,9 +557,9 @@ public class ElemTypes {
 	/**Returns the name of the type of the id */
 	public static String getTypeNameFromID(byte id) {
 		switch (id) {
-			case BASIC_NUM:
+			case NUM:
 				return "BASIC_NUM";
-			case BIG_NUM:
+			case BIGNUM:
 				return "BIG_NUM";
 			case FLAG:
 				return "FLAG";
@@ -606,12 +605,12 @@ public class ElemTypes {
 		switch(c) {
 			case 'B': return BOOL;
 			case 'C': return CHARACTER;
-			case 'D': return BASIC_NUM;
+			case 'D': return NUM;
 			case 'E': return BLOCK;
-			case 'F': return BIG_NUM;
+			case 'F': return BIGNUM;
 			case 'L': return LIST;
 			case 'S': return STRING;
-			case 'N': return NUM;
+			case 'N': return NUMERIC;
 			case 'A': return ANY;
 			case 'M': return MODULE;
 			case 'U': return USER_OBJ;
@@ -624,12 +623,12 @@ public class ElemTypes {
 		switch(b) {
 		case BOOL : return 'B';
 		case CHARACTER : return 'C' ;
-		case BASIC_NUM : return 'D';
+		case NUM : return 'D';
 		case BLOCK : return 'E';
-		case BIG_NUM : return 'F';
+		case BIGNUM : return 'F';
 		case LIST : return 'L';
 		case STRING : return 'S';
-		case NUM : return 'N';
+		case NUMERIC : return 'N';
 		case ANY : return 'A';
 		case MODULE : return 'M';
 		case USER_OBJ : return 'U';
@@ -673,8 +672,8 @@ public class ElemTypes {
 		}
 		
 		byte objID = getTypeID(o);
-		if(id == NUM) {
-			return objID == BASIC_NUM || objID == BIG_NUM || objID == NUM;
+		if(id == NUMERIC) {
+			return objID == NUM || objID == BIGNUM || objID == NUMERIC;
 		}
 
 		if(id == LIST && objID == STRING) {

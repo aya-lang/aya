@@ -8,18 +8,18 @@ import static element.ElemTypes.isBool;
 import static element.ElemTypes.isChar;
 import static element.ElemTypes.isList;
 import static element.ElemTypes.isModule;
-import static element.ElemTypes.isNum;
+import static element.ElemTypes.isNumeric;
 import static element.ElemTypes.isBigNum;
-import static element.ElemTypes.isBasicNum;
+import static element.ElemTypes.isNum;
 import static element.ElemTypes.isString;
 import static element.ElemTypes.isUserObject;
 import static element.ElemTypes.show;
 import static element.ElemTypes.toBool;
 import static element.ElemTypes.toChar;
-import static element.ElemTypes.toNum;
+import static element.ElemTypes.toNumeric;
 import static element.ElemTypes.toBigNum;
-import static element.ElemTypes.toBasicNum;
-import static element.ElemTypes.bothNum;
+import static element.ElemTypes.toNum;
+import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.toList;
 import static element.ElemTypes.toModule;
 import static element.ElemTypes.toUserObject;
@@ -42,7 +42,7 @@ import element.Element;
 import element.entities.Block;
 import element.entities.Operation;
 import element.entities.UserObject;
-import element.entities.number.BasicNum;
+import element.entities.number.Num;
 import element.entities.number.BigNum;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
@@ -188,8 +188,8 @@ class OP_Fact extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)){
-			block.push(toNum(n).factorial());
+		if(isNumeric(n)){
+			block.push(toNumeric(n).factorial());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -223,8 +223,8 @@ class OP_ModSet extends Operation {
 		final Object o = block.pop();
 		
 		//Check if user object
-		if (isUserObject(list) && isNum(index)) {
-			final int ix = toNum(index).toInt();
+		if (isUserObject(list) && isNumeric(index)) {
+			final int ix = toNumeric(index).toInt();
 			UserObject user_obj = toUserObject(list);
 			if (ix <= user_obj.fieldCount() && ix>0) {
 				user_obj.setField(ix-1, o);
@@ -254,8 +254,8 @@ class OP_ModGet extends Operation {
 		final Object list = block.pop();
 		
 		//Check if user object
-		if (isUserObject(list) && isNum(index)) {
-			final int ix = toNum(index).toInt();
+		if (isUserObject(list) && isNumeric(index)) {
+			final int ix = toNumeric(index).toInt();
 			if (ix == 0) {
 				block.push(toUserObject(list).getModule());
 				return;
@@ -287,8 +287,8 @@ class OP_Abs extends Operation {
 	public void execute(Block block) {
 		Object n = block.pop();
 		
-		if(isNum(n)) {
-			block.push(toNum(n).abs());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).abs());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -305,8 +305,8 @@ class OP_Acosine extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).acos());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).acos());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -325,8 +325,8 @@ class OP_MDate extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
-		if (isNum(a)) {
-			long timeStamp = toNum(a).toLong();
+		if (isNumeric(a)) {
+			long timeStamp = toNumeric(a).toLong();
 			cal.setTimeInMillis(timeStamp);
 			
 			ArrayList<Object> fields = new ArrayList<Object>();
@@ -379,7 +379,7 @@ class OP_MParse_Date extends Operation {
 			} catch (ParseException e) {
 				throw new ElementRuntimeException("Cannot parse date: '" + date_str + "' as '" + df_str + "'");
 			}
-			block.push(new BasicNum(date.getTime()));
+			block.push(new Num(date.getTime()));
 		} else {
 			throw new TypeError(this.name, this.argTypes, a, b);
 		}
@@ -399,8 +399,8 @@ class OP_Log extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
-		if(isNum(a)) {
-			block.push(toNum(a).log());
+		if(isNumeric(a)) {
+			block.push(toNumeric(a).log());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -462,11 +462,11 @@ class OP_PrintColor extends Operation {
 		final Object c = block.pop();
 		final Object d = block.pop();
 		
-		if(bothNum(c,b) & isNum(a)) {
+		if(bothNumeric(c,b) & isNumeric(a)) {
 			try {
-				Element.getInstance().getOut().printColor(castString(d), new Color(toNum(c).toInt(), toNum(b).toInt(), toNum(a).toInt()));
+				Element.getInstance().getOut().printColor(castString(d), new Color(toNumeric(c).toInt(), toNumeric(b).toInt(), toNumeric(a).toInt()));
 			} catch (IllegalArgumentException e) {
-				throw new ElementRuntimeException("Cannot print using color (" + toNum(c).toInt() + ", " + toNum(b).toInt() + ", " + toNum(a).toInt() + ")" );
+				throw new ElementRuntimeException("Cannot print using color (" + toNumeric(c).toInt() + ", " + toNumeric(b).toInt() + ", " + toNumeric(a).toInt() + ")" );
 			}
 			return;
 		}
@@ -485,8 +485,8 @@ class OP_Asine extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).asin());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).asin());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -503,8 +503,8 @@ class OP_Atangent extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).atan());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).atan());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -541,8 +541,8 @@ class OP_Dialog extends Operation {
 		final Object _options = block.pop();
 		
 		//Check types
-		if(!(	isNum(_dialogType)
-				&& isNum(_msgType)
+		if(!(	isNumeric(_dialogType)
+				&& isNumeric(_msgType)
 				&& isString(_windowHdr)
 				&& isString(_title)
 				&& isList(_options)
@@ -551,8 +551,8 @@ class OP_Dialog extends Operation {
 		}
 		
 		//Cast values
-		final int dialogType = toNum(_dialogType).toInt();
-		final int msgType = toNum(_msgType).toInt();
+		final int dialogType = toNumeric(_dialogType).toInt();
+		final int msgType = toNumeric(_msgType).toInt();
 		final String windowHdr = getString(_windowHdr);
 		final String title = getString(_title);
 		final ArrayList<Object> options = toList(_options);
@@ -659,8 +659,8 @@ class OP_AdvPlot extends Operation {
 				ArrayList<Object> innerList = toList(list.get(k));
 				double[] dubs = new double[innerList.size()];
 				for (int i = 0; i < innerList.size(); i++) {
-					if(isNum(innerList.get(i))) {
-						dubs[i] = toNum(innerList.get(i)).toDouble();
+					if(isNumeric(innerList.get(i))) {
+						dubs[i] = toNumeric(innerList.get(i)).toDouble();
 					} else {
 						throw new ElementRuntimeException("MX: Cannot cast " + innerList.get(i) + "to a double");
 					}
@@ -696,8 +696,8 @@ class OP_AdvPlot extends Operation {
 		
 		//width
 		else if(propertyName.equals("width")) {
-			if (isNum(property)) {
-				spi.setWidth(toNum(property).toInt());
+			if (isNumeric(property)) {
+				spi.setWidth(toNumeric(property).toInt());
 			} else {
 				throw new ElementRuntimeException("MX \"width\" property is not a valid int:\n" + show(property));
 			}
@@ -705,8 +705,8 @@ class OP_AdvPlot extends Operation {
 		
 		//height
 		else if(propertyName.equals("height")) {
-			if (isNum(property)) {
-				spi.setHeight(toNum(property).toInt());
+			if (isNumeric(property)) {
+				spi.setHeight(toNumeric(property).toInt());
 			} else {
 				throw new ElementRuntimeException("MX \"height\" property is not a valid int:\n" + show(property));
 			}
@@ -783,8 +783,8 @@ class OP_AdvPlot extends Operation {
 		
 		//ymin
 		else if (propertyName.equals("ymin")) {
-			if(isNum(property)) {
-				spi.setYMinConstraint(toNum(property).toDouble());
+			if(isNumeric(property)) {
+				spi.setYMinConstraint(toNumeric(property).toDouble());
 			} else {
 				throw new ElementRuntimeException("MX \"ymin\" property is not a valid number:\n" + show(property));
 			}
@@ -792,8 +792,8 @@ class OP_AdvPlot extends Operation {
 		
 		//ymax
 		else if (propertyName.equals("ymax")) {
-			if(isNum(property)) {
-				spi.setYMaxConstraint(toNum(property).toDouble());
+			if(isNumeric(property)) {
+				spi.setYMaxConstraint(toNumeric(property).toDouble());
 			} else {
 				throw new ElementRuntimeException("MX \"ymax\" property is not a valid number:\n" + show(property));
 			}
@@ -815,8 +815,8 @@ class OP_AdvPlot extends Operation {
 			//Get the values
 			int[] rgb = new int[3];
 			for (int i = 0; i < 3; i++) {
-				if (isNum(rgb_obj.get(i))) {
-					rgb[i] = toNum(rgb_obj.get(i)).toInt();
+				if (isNumeric(rgb_obj.get(i))) {
+					rgb[i] = toNumeric(rgb_obj.get(i)).toInt();
 				} else {
 					throw new ElementRuntimeException("MX \"color(s)\" property expects a list of 3 ints. Recieved: " + show(property));
 				}
@@ -831,8 +831,8 @@ class OP_AdvPlot extends Operation {
 	}
 	
 	private static float getStroke(Object property) {
-		if(isNum(property)) {
-			return toNum(property).toFloat();
+		if(isNumeric(property)) {
+			return toNumeric(property).toFloat();
 		} else {
 			throw new ElementRuntimeException("MX \"stroke(s)\" property expects a numeric value. Recieved: " + show(property));
 		}
@@ -861,8 +861,8 @@ class OP_SysConfig extends Operation {
 		Object cmd = block.pop();
 		Object arg = block.pop();
 		
-		if(isNum(cmd)) {
-			doCommand(toNum(cmd).toInt(), arg, block);
+		if(isNumeric(cmd)) {
+			doCommand(toNumeric(cmd).toInt(), arg, block);
 		} else {	
 			throw new TypeError(this.name, this.argTypes, cmd, arg);
 		}
@@ -964,8 +964,8 @@ class OP_Ceiling extends Operation {
 	public void execute(Block block) {
 		Object n = block.pop();
 		
-		if (isNum(n)) {
-			block.push(toNum(n).ceil());
+		if (isNumeric(n)) {
+			block.push(toNumeric(n).ceil());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -982,8 +982,8 @@ class OP_Floor extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).floor());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).floor());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -1000,8 +1000,8 @@ class OP_Cosine extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).cos());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).cos());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -1026,8 +1026,8 @@ class OP_CastDouble extends Operation {
 				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to a double.");
 			}
 		} else if (isBigNum(a)){
-			block.push(new BasicNum(toBigNum(a).toDouble()));
-		} else if (isBasicNum(a)) {
+			block.push(new Num(toBigNum(a).toDouble()));
+		} else if (isNum(a)) {
 			block.push(a); //Already a double
 		} else {
 			throw new TypeError(this, a);
@@ -1051,8 +1051,8 @@ class OP_CastBig extends Operation {
 			} catch (NumberFormatException e) {
 				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to a BigDeciaml.");
 			}
-		} else if (isBasicNum(a)){
-			block.push(new BigNum(toBasicNum(a)));
+		} else if (isNum(a)){
+			block.push(new BigNum(toNum(a)));
 		} else if (isBigNum(a)) {
 			block.push(a); //Aready a big num
 		} else {
@@ -1073,9 +1073,9 @@ class OP_MShow_Date extends Operation {
 	public void execute(Block block) {
 		Object a = block.pop();
 		Object b = block.pop();
-		if (isString(a) && isNum(b)) {
+		if (isString(a) && isNumeric(b)) {
 			String df_str = castString(a);
-			long time = toNum(b).toLong();
+			long time = toNumeric(b).toLong();
 			
 			DateFormat df;
 			try {
@@ -1157,8 +1157,8 @@ class OP_Ln extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
-		if(isNum(a)) {
-			block.push(toNum(a).ln());
+		if(isNumeric(a)) {
+			block.push(toNumeric(a).ln());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1175,8 +1175,8 @@ class OP_SquareRoot extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object n = block.pop();
-		if(isNum(n)) {
-			block.push(toNum(n).sqrt());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).sqrt());
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -1194,8 +1194,8 @@ class OP_Sine extends Operation {
 	public void execute(Block block) {
 		Object n = block.pop();
 		
-		if(isNum(n)) {
-			block.push(toNum(n).sin());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).sin());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -1216,8 +1216,8 @@ class OP_Tangent extends Operation {
 	public void execute(Block block) {
 		Object n = block.pop();
 		
-		if(isNum(n)) {
-			block.push(toNum(n).tan());
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).tan());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -1262,8 +1262,8 @@ class OP_Constants extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
-		if(isNum(a)) {
-			final int i = toNum(a).toInt();
+		if(isNumeric(a)) {
+			final int i = toNumeric(a).toInt();
 			switch (i) {
 			case 0: block.push(Math.PI); break;
 			case 1: block.push(Math.E); break;

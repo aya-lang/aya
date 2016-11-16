@@ -5,7 +5,7 @@ import element.parser.tokens.Token;
 
 public class InfixLiteral extends InfixItem {
 	/** Type constants */
-	public static final int INT = Token.INT;
+	public static final int NUM = Token.NUMERIC;
 	public static final int STRING = Token.STRING;
 	public static final int BLOCK = Token.BLOCK;
 	
@@ -31,7 +31,7 @@ public class InfixLiteral extends InfixItem {
 	/** Generates the element literal */
 	public Object generateElementCode() {
 		switch(subtype) {
-		case INT:
+		case NUM:
 			return Integer.parseInt(name);
 		case STRING:
 			return name;
@@ -44,7 +44,7 @@ public class InfixLiteral extends InfixItem {
 	public String typeString() {
 		String s = "{l[";
 		switch (this.subtype) {
-		case INT:
+		case NUM:
 			s += "I";
 			break;
 		case STRING:

@@ -7,63 +7,63 @@ import element.entities.operations.ElementMath;
 
 public class NumMath {
 	
-	public static Num mul(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(a.toDouble() * b.toDouble());
+	public static Numeric mul(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(a.toDouble() * b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().multiply(b.toApfloat()));
 		}
 	}
 	
-	public static Num add(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(a.toDouble() + b.toDouble());
+	public static Numeric add(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(a.toDouble() + b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().add(b.toApfloat()));
 		}
 	}
 	
-	public static Num sub(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(a.toDouble() - b.toDouble());
+	public static Numeric sub(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(a.toDouble() - b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().subtract(b.toApfloat()));
 		}
 	}
 	
-	public static Num div(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(a.toDouble() / b.toDouble());
+	public static Numeric div(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(a.toDouble() / b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().divide(b.toApfloat()));
 		}
 	}
 	
-	public static Num idiv(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(Math.floor(a.toDouble() / b.toDouble()));
+	public static Numeric idiv(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(Math.floor(a.toDouble() / b.toDouble()));
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().divide(b.toApfloat()).floor());
 		}		
 	}
 	
-	public static Num mod(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(a.toDouble() % b.toDouble());
+	public static Numeric mod(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(a.toDouble() % b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(a.toApfloat().mod(b.toApfloat()));
 		}		
 	}
 	
-	public static Num pow(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(Math.pow(a.toDouble(), b.toDouble()));
+	public static Numeric pow(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(Math.pow(a.toDouble(), b.toDouble()));
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(ApfloatMath.pow(a.toApfloat(), b.toApfloat()));
@@ -77,8 +77,8 @@ public class NumMath {
 	 * @param b
 	 * @return
 	 */
-	public static int compare(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
+	public static int compare(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
 			return Double.compare(a.toDouble(), b.toDouble());
 		} else {
 			//At least one is a BigNum, just use their values
@@ -87,18 +87,18 @@ public class NumMath {
 	}	
 	
 	
-	public static Num gcd(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(gcd(a.toLong(), b.toLong()));
+	public static Numeric gcd(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(gcd(a.toLong(), b.toLong()));
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(ApintMath.gcd(a.toApfloat().floor(), b.toApfloat().floor()));
 		}
 	}
 	
-	public static Num lcm(Num a, Num b) {
-		if (a instanceof BasicNum && b instanceof BasicNum) {
-			return new BasicNum(lcm(a.toLong(), b.toLong()));
+	public static Numeric lcm(Numeric a, Numeric b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(lcm(a.toLong(), b.toLong()));
 		} else {
 			//At least one is a BigNum, just use their values
 			return new BigNum(ApintMath.lcm(a.toApfloat().floor(), b.toApfloat().floor()));
@@ -109,12 +109,12 @@ public class NumMath {
 	// BITWISE OPERATIONS
 	//***************************
 	
-	public static BasicNum band(Num a, Num b) {
-		return new BasicNum(a.toInt() & b.toInt());
+	public static Num band(Numeric a, Numeric b) {
+		return new Num(a.toInt() & b.toInt());
 	}
 	
-	public static BasicNum bor(Num a, Num b) {
-		return new BasicNum(a.toInt() | b.toInt());
+	public static Num bor(Numeric a, Numeric b) {
+		return new Num(a.toInt() | b.toInt());
 	}
 	
 	
@@ -154,5 +154,15 @@ public class NumMath {
 		return a * b / gcd(a,b);
 	}
 	
-	
+	/** isprime */
+	public static boolean isPrime(long n) {
+	    if(n < 2) return false;
+	    if(n == 2 || n == 3) return true;
+	    if(n%2 == 0 || n%3 == 0) return false;
+	    long sqrtN = (long)Math.sqrt(n)+1;
+	    for(long i = 6L; i <= sqrtN; i += 6) {
+	        if(n%(i-1) == 0 || n%(i+1) == 0) return false;
+	    }
+	    return true;
+	}	
 }

@@ -29,7 +29,7 @@ public class LambdaToken extends CollectionToken {
 
 				//Parse the number and negate it
 				Token t = col.get(1);
-				if(t.isa(Token.NUM)) {
+				if(t.isa(Token.NUMERIC)) {
 					try {
 						return Integer.parseInt(t.getData())*-1;
 					} catch(NumberFormatException e) {

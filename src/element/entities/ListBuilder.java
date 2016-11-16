@@ -1,30 +1,30 @@
 package element.entities;
 
-import static element.ElemTypes.anyBasicNum;
+import static element.ElemTypes.anyNum;
 import static element.ElemTypes.anyBigNum;
 import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothNum;
+import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.debugString;
 import static element.ElemTypes.getString;
-import static element.ElemTypes.isBasicNum;
+import static element.ElemTypes.isNum;
 import static element.ElemTypes.isBigNum;
 import static element.ElemTypes.isChar;
 import static element.ElemTypes.isList;
-import static element.ElemTypes.isNum;
+import static element.ElemTypes.isNumeric;
 import static element.ElemTypes.isString;
-import static element.ElemTypes.toBasicNum;
+import static element.ElemTypes.toNum;
 import static element.ElemTypes.toBigNum;
 import static element.ElemTypes.toChar;
 import static element.ElemTypes.toCharList;
 import static element.ElemTypes.toList;
-import static element.ElemTypes.toNum;
+import static element.ElemTypes.toNumeric;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
 import org.apfloat.Apfloat;
 
-import element.entities.number.BasicNum;
+import element.entities.number.Num;
 import element.entities.number.BigNum;
 import element.exceptions.ElementRuntimeException;
 
@@ -119,7 +119,7 @@ public class ListBuilder {
 		return list;
 	}
 	
-	public static ArrayList<Object> buildRange(BasicNum n) {
+	public static ArrayList<Object> buildRange(Num n) {
 		double d = n.toDouble();
 		int inc = 1;
 		if(d < 0) inc = -1;
@@ -148,8 +148,8 @@ public class ListBuilder {
 		//List range has one argument
 		case 1:
 			Object o = args.get(0);
-			if(isBasicNum(o)) {
-				return buildRange(toBasicNum(o));
+			if(isNum(o)) {
+				return buildRange(toNum(o));
 			} else if (isBigNum(o)) {
 				return buildRange(toBigNum(o));
 			} else if (isChar(o)) {
@@ -166,18 +166,18 @@ public class ListBuilder {
 		case 2:
 			Object a = args.get(0);
 			Object b = args.get(1);
-			if(bothNum(a,b)) {
+			if(bothNumeric(a,b)) {
 				if (anyBigNum(a,b)) {
-					Apfloat lo = toNum(a).toApfloat();
-					Apfloat hi = toNum(b).toApfloat();
+					Apfloat lo = toNumeric(a).toApfloat();
+					Apfloat hi = toNumeric(b).toApfloat();
 					Apfloat inc = Apfloat.ONE;
 					if(lo.compareTo(hi) > 0) {
 						inc = AP_NEG_ONE;
 					}
 					return arrToAL(apfloatRange(lo,hi,inc));
-				} else if (anyBasicNum(a,b)) {
-					double lo = toNum(a).toDouble();
-					double hi = toNum(b).toDouble();
+				} else if (anyNum(a,b)) {
+					double lo = toNumeric(a).toDouble();
+					double hi = toNumeric(b).toDouble();
 					double inc = 1.0;
 					if(lo > hi) {
 						inc = -1.0;
@@ -203,11 +203,11 @@ public class ListBuilder {
 			Object x = args.get(0);
 			Object y = args.get(1);
 			Object z = args.get(2);
-			if(bothNum(x,y) && isNum(z)) {
+			if(bothNumeric(x,y) && isNumeric(z)) {
 				if(anyBigNum(x,y) || isBigNum(z)) {
-					return arrToAL(apfloatRange(toNum(x).toApfloat(), toNum(z).toApfloat(), toNum(y).toApfloat().subtract(toNum(x).toApfloat())));
+					return arrToAL(apfloatRange(toNumeric(x).toApfloat(), toNumeric(z).toApfloat(), toNumeric(y).toApfloat().subtract(toNumeric(x).toApfloat())));
 				} else {
-					return arrToAL(doubleRange(toNum(x).toDouble(), toNum(z).toDouble(), toNum(y).toDouble()-toNum(x).toDouble()));
+					return arrToAL(doubleRange(toNumeric(x).toDouble(), toNumeric(z).toDouble(), toNumeric(y).toDouble()-toNumeric(x).toDouble()));
 				} 
 			} else if(bothChar(x,y) && isChar(z)) {
 				return arrToAL(charRange(toChar(x), toChar(z), toChar(y)-toChar(x)));
@@ -337,11 +337,18 @@ public class ListBuilder {
 		return list;
 	}
 	
+	public static Object arrToAL(int[] os) {
+		ArrayList<Object> list = new ArrayList<Object>(os.length);
+		for(int i = 0; i < os.length; i++) {
+			list.add(new Num(os[i]));
+		}
+		return list;
+	}
 	
 	public static ArrayList<Object> arrToAL(double[] os) {
 		ArrayList<Object> list = new ArrayList<Object>(os.length);
 		for(int i = 0; i < os.length; i++) {
-			list.add(new BasicNum(os[i]));
+			list.add(new Num(os[i]));
 		}
 		return list;
 	}
@@ -379,4 +386,6 @@ public class ListBuilder {
 		sb.append("]");
 		return sb.toString();
 	}
+
+	
 }
