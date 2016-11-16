@@ -68,7 +68,7 @@ public class DotOps {
 		/* 36 $  */ new OP_Dot_SortUsing(),
 		/* 37 %  */ null,
 		/* 38 &  */ null,
-		/* 39 '  */ null,
+		/* 39 '  */ new OP_Dot_CastChar(),
 		/* 40 (  */ null,
 		/* 41 )  */ null,
 		/* 42 *  */ null,
@@ -262,6 +262,26 @@ class OP_Dot_SortUsing extends Operation {
 	}
 	
 	
+}
+
+//' - 39
+class OP_Dot_CastChar extends Operation {
+	public OP_Dot_CastChar() {
+		this.name = ".'";
+		this.info = "NS cast to char";
+		this.argTypes = "NS";
+	}
+	@Override public void execute(final Block block) {
+		Object o = block.pop();
+		
+		if (isNumeric(o)) {
+			block.push((char)toNumeric(o).toInt());
+		} else if (isString(o)) {
+			block.push(castString(o).charAt(0));
+		} else {
+			throw new TypeError(this,o);
+		}
+	}
 }
 
 
