@@ -1,19 +1,16 @@
 package element.parser.tokens;
 
-import java.math.BigDecimal;
+import element.entities.number.Num;
 
 public class NumberToken extends StdToken {
 	public NumberToken(String data) {
-		super(data, Token.NUM);
+		super(data, Token.NUMERIC);
 	}
 
 	@Override
 	public Object getElementObj() {
-		try {
-			return Integer.parseInt(data);
-		} catch (NumberFormatException e) {
-			return new BigDecimal(data);
-		}
+		return new Num(Double.parseDouble(data));
+	
 	}
 
 	@Override

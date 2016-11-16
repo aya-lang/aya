@@ -79,7 +79,7 @@ public class ListToken extends CollectionToken {
 		int pops = 0;
 		//Do we need to pop from the outer stack?
 		if (arr.size() > 1 
-				&& arr.get(0).isa(Token.NUM)
+				&& arr.get(0).isa(Token.NUMERIC)
 				&& arr.get(1).isa(Token.OP)
 				&& arr.get(1).data.equals("|")) {
 			pops = ElemTypes.castInt(arr.get(0).getElementObj());

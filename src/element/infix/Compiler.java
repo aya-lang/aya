@@ -76,7 +76,7 @@ public class Compiler {
 				while(in.hasNext() && Character.isDigit(in.peek())) {
 					num.append(in.next());
 				}
-				tokens.add(new InfixLiteral(num.toString(), InfixLiteral.INT));
+				tokens.add(new InfixLiteral(num.toString(), InfixLiteral.NUM));
 			}
 			
 			//String Literals

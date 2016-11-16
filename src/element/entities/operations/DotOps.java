@@ -2,37 +2,27 @@ package element.entities.operations;
 
 import static element.ElemTypes.IDToAbbrv;
 import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothInt;
-import static element.ElemTypes.bothNum;
+import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothString;
-import static element.ElemTypes.castBig;
-import static element.ElemTypes.castDouble;
-import static element.ElemTypes.castInt;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
 import static element.ElemTypes.getTypeID;
-import static element.ElemTypes.isBig;
 import static element.ElemTypes.isBlock;
 import static element.ElemTypes.isBool;
 import static element.ElemTypes.isChar;
-import static element.ElemTypes.isDouble;
-import static element.ElemTypes.isInt;
 import static element.ElemTypes.isList;
-import static element.ElemTypes.isNum;
+import static element.ElemTypes.isNumeric;
 import static element.ElemTypes.isString;
 import static element.ElemTypes.length;
 import static element.ElemTypes.printBare;
-import static element.ElemTypes.toBig;
 import static element.ElemTypes.toBlock;
 import static element.ElemTypes.toBool;
+import static element.ElemTypes.toNumeric;
 import static element.ElemTypes.toChar;
-import static element.ElemTypes.toDouble;
-import static element.ElemTypes.toInt;
 import static element.ElemTypes.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -43,11 +33,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Stack;
 
+import org.apfloat.Apfloat;
+
 import element.ElemPrefs;
 import element.Element;
 import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.Operation;
+import element.entities.number.BigNum;
+import element.entities.number.Num;
+import element.entities.number.NumMath;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.ElementUserRuntimeException;
 import element.exceptions.SyntaxError;
@@ -74,9 +69,9 @@ public class DotOps {
 		/* 36 $  */ new OP_Dot_SortUsing(),
 		/* 37 %  */ null,
 		/* 38 &  */ null,
-		/* 39 '  */ null,
-		/* 40 (  */ new OP_Dot_OpenParen(),
-		/* 41 )  */ new OP_Dot_CloseParen(),
+		/* 39 '  */ new OP_Dot_CastChar(),
+		/* 40 (  */ null,
+		/* 41 )  */ null,
 		/* 42 *  */ null,
 		/* 43 +  */ new OP_Dot_Plus(),
 		/* 44 ,  */ null,
@@ -126,9 +121,9 @@ public class DotOps {
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
-		/* 91 [  */ null,
+		/* 91 [  */ new OP_Dot_Ceiling(),
 		/* 92 \  */ null,
-		/* 93 ]  */ null,
+		/* 93 ]  */ new OP_Dot_Floor(),
 		/* 94 ^  */ null,
 		/* 95 _  */ null,
 		/* 96 `  */ null,
@@ -158,9 +153,9 @@ public class DotOps {
 		/* 120 x */ null,
 		/* 121 y */ null,
 		/* 122 z */ null,
-		/* 123 { */ null,
+		/* 123 { */ null, // block comments
 		/* 124 | */ null,
-		/* 125 } */ null,
+		/* 125 } */ null, // block comments
 		/* 126 ~ */ new OP_Dot_Tilde(),
 	};
 	
@@ -198,43 +193,22 @@ class OP_Dot_Bang extends Operation {
 	@Override public void execute(final Block block) {
 		Object o = block.pop();
 		
-		if (isBig(o)) {
-			block.push(toBig(o).compareTo(BigDecimal.ZERO));
-		} else if (isDouble(o)) {
-			double d = toDouble(o);
-			if (d == 0.0) {
-				block.push(0);
-			} else if (d > 0.0) {
-				block.push(1);
-			} else {
-				block.push(-1);
-			}	
-		} else if (isInt(o)) {
-			int i = toInt(o);
-			if (i == 0) {
-				block.push(0);
-			} else if (i > 0) {
-				block.push(1);
-			} else {
-				block.push(-1);
-			}	
+		if (isNumeric(o)) {
+			block.push(toNumeric(o).signnum());
 		} else if (isString(o)) {
 			String numStr = getString(o).trim();
 			try {
-				block.push(Integer.parseInt(numStr));
+				block.push(new Num(Integer.parseInt(numStr)));
 			} catch (NumberFormatException e) {
 				try {
-					block.push(new BigDecimal(numStr));
+					block.push(new BigNum(new Apfloat(numStr)));
 				} catch (NumberFormatException e2) {
 					block.push(o);
 				}
 			}
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this,o);
 		}
-		return;
 	}
 }
 
@@ -258,7 +232,7 @@ class OP_Dot_SortUsing extends Operation {
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.size());
 			for (int i = 0; i < objs.size(); i++) {
-				items.add(new SUItem(objs.get(i), castDouble(key_obj.get(i))));
+				items.add(new SUItem(objs.get(i), toNumeric(key_obj.get(i)).toDouble()));
 			}
 			
 			Collections.sort(items);
@@ -287,62 +261,83 @@ class OP_Dot_SortUsing extends Operation {
 			return (int)((this.d - i.d)*10000); 
 		}
 	}
+
 	
 	
 }
 
-
-// ( - 40
-class OP_Dot_OpenParen extends Operation {
-	public OP_Dot_OpenParen() {
-		this.name = ".(";
-		this.info = "<N|C> decrement\n<L> uncons from back";
-		this.argTypes = "N|C|L";
+//' - 39
+class OP_Dot_CastChar extends Operation {
+	public OP_Dot_CastChar() {
+		this.name = ".'";
+		this.info = "NS cast to char";
+		this.argTypes = "NS";
 	}
-	@Override
-	public void execute(Block block) {
-		Object a = block.pop();
+	@Override public void execute(final Block block) {
+		Object o = block.pop();
 		
-		if(isNum(a) || isChar(a)) {
-			block.add(Ops.OPS['-'-'!']);
-			block.add(1);
-			block.add(a);
-			return;
-		} else if (isList(a)) {
-			a = toList(a);
-			toList(a).remove(0);
-			block.push(a);
-			return;
+		if (isNumeric(o)) {
+			block.push((char)toNumeric(o).toInt());
+		} else if (isString(o)) {
+			block.push(castString(o).charAt(0));
+		} else {
+			throw new TypeError(this,o);
 		}
-		throw new TypeError(this, a);
 	}
 }
 
-//) - 41
-class OP_Dot_CloseParen extends Operation {
-	public OP_Dot_CloseParen() {
-		this.name = ".)";
-		this.info = "<N|C> increment\n<L> uncons from front";
-		this.argTypes = "N|C|L";
-	}
-	@Override
-	public void execute(Block block) {
-		Object a = block.pop();
-		
-		if(isNum(a) || isChar(a)) {
-			block.add(Ops.OPS['+'-'!']);
-			block.add(1);
-			block.add(a);
-			return;
-		} else if (isList(a)) {
-			a = toList(a);
-			toList(a).remove(length(a)-1);
-			block.push(a);
-			return;
-		}
-		throw new TypeError(this, a);
-	}
-}
+
+//// ( - 40
+//class OP_Dot_OpenParen extends Operation {
+//	public OP_Dot_OpenParen() {
+//		this.name = ".(";
+//		this.info = "<N|C> decrement\n<L> uncons from back";
+//		this.argTypes = "N|C|L";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Object a = block.pop();
+//		
+//		if(isNum(a) || isChar(a)) {
+//			block.add(Ops.OPS['-'-'!']);
+//			block.add(1);
+//			block.add(a);
+//			return;
+//		} else if (isList(a)) {
+//			a = toList(a);
+//			toList(a).remove(0);
+//			block.push(a);
+//			return;
+//		}
+//		throw new TypeError(this, a);
+//	}
+//}
+
+////) - 41
+//class OP_Dot_CloseParen extends Operation {
+//	public OP_Dot_CloseParen() {
+//		this.name = ".)";
+//		this.info = "<N|C> increment\n<L> uncons from front";
+//		this.argTypes = "N|C|L";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Object a = block.pop();
+//		
+//		if(isNum(a) || isChar(a)) {
+//			block.add(Ops.OPS['+'-'!']);
+//			block.add(1);
+//			block.add(a);
+//			return;
+//		} else if (isList(a)) {
+//			a = toList(a);
+//			toList(a).remove(length(a)-1);
+//			block.push(a);
+//			return;
+//		}
+//		throw new TypeError(this, a);
+//	}
+//}
 
 //+ - 43
 class OP_Dot_Plus extends Operation {
@@ -356,15 +351,9 @@ class OP_Dot_Plus extends Operation {
 		Object a = block.pop();
 		Object b = block.pop();
 		
-		if (bothInt(a,b)) {
-			int n1 = toInt(a);
-			int n2 = toInt(b);
-			block.push(ElementMath.gcd(n1, n2));
-		} else if (bothNum(a,b)) {
-			BigDecimal b1 = castBig(a);
-			BigDecimal b2 = castBig(b);
-			block.push(new BigDecimal(b1.toBigInteger().gcd(b2.toBigInteger())));
-		} else {	
+		if (bothNumeric(a, b)) {
+			NumMath.gcd(toNumeric(a), toNumeric(b));	
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -382,16 +371,9 @@ class OP_Dot_Minus extends Operation {
 		Object a = block.pop();
 		Object b = block.pop();
 		
-		if (bothInt(a,b)) {
-			int n1 = toInt(a);
-			int n2 = toInt(b);
-			block.push(ElementMath.lcm(n1, n2));
-		} else if (bothNum(a,b)) {
-			BigDecimal b1 = castBig(a);
-			BigDecimal b2 = castBig(b);
-			BigDecimal gcd = new BigDecimal(b1.toBigInteger().gcd(b2.toBigInteger()));
-			block.push(b1.multiply(b2).divide(gcd));
-		} else {	
+		if (bothNumeric(a, b)) {
+			NumMath.lcm(toNumeric(a), toNumeric(b));	
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -422,20 +404,15 @@ class OP_Dot_LessThan extends Operation {
 		Object b = block.pop();			// Popped in Reverse Order
 		Object a = block.pop();
 		
-		if(bothInt(a,b)) {
-			block.push(toInt(a) <= toInt(b));
-			return;
-		} else if(bothNum(a,b)) {
-			block.push(castBig(a).compareTo(castBig(b)) <= 0);
-			return;
+		if (bothNumeric(a, b)) {
+			block.push(NumMath.compare(toNumeric(a),toNumeric(b)) <= 0); 
 		} else if (bothChar(a,b)) {
 			block.push(toChar(a) <= toChar(b));
-			return;
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) <= 0);
-			return;
+		} else {
+			throw new TypeError(this, a, b);
 		}
-		throw new TypeError(this, a, b);
 	}
 }
 
@@ -452,20 +429,16 @@ class OP_Dot_GreaterThan extends Operation {
 		Object b = block.pop();			// Popped in Reverse Order
 		Object a = block.pop();
 		
-		if(bothInt(a,b)) {
-			block.push(toInt(a) >= toInt(b));
-			return;
-		} else if(bothNum(a,b)) {
-			block.push(castBig(a).compareTo(castBig(b)) >= 0);
-			return;
+		if(bothNumeric(a,b)) {
+			block.push(NumMath.compare(toNumeric(a),toNumeric(b)) >= 0);
 		} else if (bothChar(a,b)) {
 			block.push(toChar(a) >= toChar(b));
-			return;
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) >= 0);
-			return;
+		} else {
+			throw new TypeError(this, a, b);
 		}
-		throw new TypeError(this, a, b);
+		
 	}
 }
 
@@ -488,6 +461,7 @@ class OP_Dot_Conditional extends Operation {
 		} 
 		throw new TypeError(this, a);
 	}
+
 }
 
 
@@ -519,8 +493,8 @@ class OP_Dot_Primes extends Operation {
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
-		if (isNum(a)) {
-			int i = castInt(a);
+		if (isNumeric(a)) {
+			int i = toNumeric(a).toInt();
 			if (i < 0) {
 				throw new ElementRuntimeException(".B: Input must be positive");
 			}
@@ -530,6 +504,7 @@ class OP_Dot_Primes extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+
 }
 
 //D - 67
@@ -563,7 +538,7 @@ class OP_Dot_Len extends Operation {
 		
 		if (isList(n)) {
 			block.push(n);
-			block.push(length(n));
+			block.push(new Num(length(n)));
 			return;
 		}
 		throw new TypeError(this, n);
@@ -590,8 +565,8 @@ class OP_Dot_Write extends Operation {
 		final Object s = block.pop();
 		final Object a = block.pop();
 		
-		if (isString(s) && isInt(n)) {
-			final int option = toInt(n);
+		if (isString(s) && isNumeric(n)) {
+			final int option = toNumeric(n).toInt();
 			final String filename = castString(s);
 			final String write = castString(a);
 			final String fstr = ElemPrefs.getWorkingDir()+filename;
@@ -643,8 +618,8 @@ class OP_Dot_I extends Operation {
 			throw new TypeError(this, index, list);
 		}
 		
-		if(isInt(index)) {
-			int i = castInt(index);
+		if(isNumeric(index)) {
+			int i = toNumeric(index).toInt();
 			//Negative numbers index from the back of the list starting at -1
 
 			if(i < 0) {
@@ -656,13 +631,13 @@ class OP_Dot_I extends Operation {
 			ArrayList<Object> indexList = toList(index);
 			ArrayList<Object> refList = toList(list);
 			for(int i = 0; i < length(index); i++) {
-				if(isInt(indexList.get(i))) {
-					int j = toInt(indexList.get(i));
+				if(isNumeric(indexList.get(i))) {
+					int j = toNumeric(indexList.get(i)).toInt();
 					//Negative numbers index from the back of the list starting at -1
 					if(j < 0) {
 						j = refList.size()-(-1*j);
 					}
-					indexList.set(i, refList.get(toInt(j)));
+					indexList.set(i, refList.get(toNumeric(j).toInt()));
 				} else {
 					throw new TypeError("I", "list of ints", indexList);
 				}
@@ -724,7 +699,7 @@ class OP_Dot_Rand extends Operation {
 		this.argTypes = "";
 	}
 	@Override public void execute (Block block) {
-		block.push(Ops.RAND.nextDouble());
+		block.push(new Num(Ops.RAND.nextDouble()));
 	}
 }
 
@@ -737,8 +712,11 @@ class OP_Dot_Case extends Operation {
 	}
 	@Override public void execute (Block block) {
 		Object a = block.pop();
+		
+		//Return the first element of a list
+		//If block, dump it
 		if(isList(a)) {
-			if(toList(a).size() == 0)
+			if(length(a) == 0)
 				throw new ElementRuntimeException(this.name + ": list contains no elements");
 			
 			Object item = toList(a).get(0);
@@ -747,9 +725,9 @@ class OP_Dot_Case extends Operation {
 			} else {
 				block.push(item);
 			}
-			return;
+		} else {
+			throw new TypeError(this, a);
 		}
-		throw new TypeError(this, a);
 	}
 }
 
@@ -801,7 +779,7 @@ class OP_SimplePlot extends Operation {
 			ArrayList<Object> list = toList(a);
 			
 			for(int i = 0; i < len; i++) {
-				data[i] = castDouble(list.get(i));
+				data[i] = toNumeric(list.get(i)).toDouble();
 			}
 			
 			SimplePlot sp = new SimplePlot(data);
@@ -855,6 +833,43 @@ class OP_Dot_Zed extends Operation {
 			return;
 		}
 		throw new TypeError(this, s);
+	}
+}
+
+// { - 91
+class OP_Dot_Ceiling extends Operation {
+	public OP_Dot_Ceiling() {
+		this.name = ".{";
+		this.info = "numerical ceiling function";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		Object n = block.pop();
+		
+		if (isNumeric(n)) {
+			block.push(toNumeric(n).ceil());
+		} else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
+	}
+}
+
+// } - 93
+class OP_Dot_Floor extends Operation {
+	public OP_Dot_Floor() {
+		this.name = ".}";
+		this.info = "numerical floor function";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		Object n = block.pop();
+		if(isNumeric(n)) {
+			block.push(toNumeric(n).floor());
+		} else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
 	}
 }
 

@@ -8,6 +8,7 @@ import element.entities.Block;
 import element.exceptions.SyntaxError;
 import element.infix.Compiler;
 import element.parser.Parser;
+import element.test.ElementTestCases;
 
 public class InteractiveElement {
 		
@@ -194,6 +195,8 @@ public class InteractiveElement {
 	public static void main(String[] args) {
 		Element elem = Element.getInstance();
 		
+		
+		System.out.println(ElementTestCases.runTests());
 		
 		if (args.length > 0) {
 			

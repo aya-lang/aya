@@ -9,7 +9,7 @@
 
   .#Constructors
 
-  {rI gI bI, [r g b] color MO}:new;
+  {rD gD bD, [r g b] color MO}:new;
 
   .#? S color.newhex\n  create a new color using a hex value represented as a string
   {cS, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;

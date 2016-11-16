@@ -83,7 +83,7 @@
   .# det
 
   .# Indexing
-  {nN iI jI m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
+  {nN iD jD m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
   {.rowsE}:r;                                   .#? (matrix) matrix.r\n  return the number of rows in the matrix
   {.rows0IE}:c;                                 .#? (matrix) matrix.r\n  return the number of cols in the matrix
   {.rows[1|~,.A]}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
@@ -195,7 +195,7 @@
   }:nextpascalr;
 
   .#? I matrix.pascal\n  generate an I by I matrix representation of pascal's triangle
-  {nI, [1nL{_matrix.nextpascalr}nV%] matrix!}:pascal;
+  {nD, [1nL{_matrix.nextpascalr}nV%] matrix!}:pascal;
 
   .#? IIN matrix.newfill\n  create a I1 by I2 matrix filled with N3
   {\L\Lmatrix!}:newfill;

@@ -67,12 +67,12 @@ public class SpecialToken extends Token {
 			return "extended";
 		case OP:
 			return "op";
-		case INT:
-			return "int";
+		case NUM:
+			return "num";
 		case CHAR:
 			return "character";
-		case FLOAT:
-			return "float";
+		case BIGNUM:
+			return "bignum";
 		case Token.COMMA:
 			return "comma";
 		case LAMBDA:
@@ -83,7 +83,7 @@ public class SpecialToken extends Token {
 			return "dot";
 		case Token.COLON:
 			return "colon";
-		case NUM:
+		case NUMERIC:
 			return "num";
 		case Token.CLOSE_CURLY:
 			return "Ccurly";

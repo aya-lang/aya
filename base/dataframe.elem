@@ -34,7 +34,7 @@
     ix this.rowbyix
   }:rowbyname;
 
-  {iI this,
+  {iD this,
     "dataframe.rowbyix: invalid column number: $i" this.numofrowsV i < i0< | conderr
     this.rows i I
   }:rowbyix;
@@ -53,7 +53,7 @@
     ix this.colbyix
   }:colbyname;
 
-  {iI this,
+  {iD this,
     "dataframe.colbyix: invalid column number: $i" this.columnsEV i < i0< | conderr
     this.columns i I
   }:colbyix;

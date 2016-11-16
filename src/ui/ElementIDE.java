@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 
 import element.Element;
 import element.InteractiveElement;
+import element.test.ElementTestCases;
 import element.variable.Variable;
 
 
@@ -232,6 +233,20 @@ public class ElementIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Open Editor   ctrl+E");
+		menu.add(mi);
+		mi =new JMenuItem(new Action() {
+			public void actionPerformed(ActionEvent e) {
+				interpreter.cw.printWarn(ElementTestCases.runTests());
+				
+			}
+			public void addPropertyChangeListener(PropertyChangeListener l) {}
+			public Object getValue(String k) {return null;}
+			public boolean isEnabled() {return true;}
+			public void putValue(String k, Object v) {}
+			public void removePropertyChangeListener(PropertyChangeListener l) {}
+			public void setEnabled(boolean b) {}
+		});
+		mi.setText("Run Tests");
 		menu.add(mi);
 		menuBar.add(menu);
 		
