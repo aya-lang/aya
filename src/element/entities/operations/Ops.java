@@ -427,7 +427,8 @@ class OP_Percent extends Operation {
 		
 		if(bothNumeric(a,b)) {
 			try {
-				block.push(NumMath.mod(toNumeric(a),toNumeric(b)));
+				//b mod a
+				block.push(NumMath.mod(toNumeric(b),toNumeric(a)));
 			} catch (ArithmeticException e) {
 				throw new ElementRuntimeException("%: Divide by 0");
 			}
@@ -590,8 +591,10 @@ class OP_Divide extends Operation {
 		final Object a = block.pop();
 		final Object b = block.pop();
 		
+		
 		if(bothNumeric(a,b)) {
-			block.push(NumMath.div(toNumeric(a), toNumeric(b)));
+			//b div a
+			block.push(NumMath.div(toNumeric(b), toNumeric(a)));
 		} else if (isUserObject(a)) {
 			block.push(b);
 			toUserObject(a).callVariable(block, Ops.MV_FSLASH);
