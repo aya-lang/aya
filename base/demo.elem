@@ -82,4 +82,39 @@
   .#? demo.sumprimes\n  generate a list of prime numbers where each number is also the sum of all the prime numbers below it
   {1000 primes cumsum {isprime} I}:sumprimes;
 
+
+  .#? demo.colorsort\n  comparison of various color sorting methods
+  {:c srtprt,
+
+    [{colors.randchoice}100%]:c;
+
+    {name clrs fn,
+      "$name:\t".P clrs {fn} .$ #{'█\.print0};
+      ""println
+    }:srtprt;
+
+    .# mean
+    "mean" c {.rgb mean} srtprt
+
+    .# Geometric mean
+    "geomean" c {.rgb geomean} srtprt
+
+    .# Sum of the squares
+    "sum of sq" c {.rgb #2^S} srtprt
+
+    .# Sum of the values raised to the 5th power
+    "sum of ^5" c {.rgb #5^S} srtprt
+
+    .# Percieved luminosity
+    "lum" c {.rgb [1|[0.2126 0.7152 0.0722],*]S} srtprt
+
+    .# Most accurate representation for percieved luminosity
+    "lum2" c {.rgb [1|[0.299 0.587 0.114],*2^]SMq} srtprt
+
+    .# Quick estimation for percieved luminocity
+    .# (R+R+B+G+G+G)/6
+    "qlum" c {:r g b, .rgb~:b;:g;:r; [r r b g g g] S} srtprt
+
+  }:colorsort;
+
 }

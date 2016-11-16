@@ -33,7 +33,7 @@
   .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
   {3@@\.grad 1I~ color!}:mid;
 
-  .#? (color) color.randcolor\n  set rgb values of (color) to random values
+  .#? (color) color.randchoice\n  set rgb values of (color) to random values
   {self,
     255Q self.setr
     255Q self.setg
@@ -95,6 +95,10 @@
 	  colors.raspberry
 .}
 {@colors,
+
+  .# colors.randchoice\n  get a random color
+  {255Q 255Q 255Q color!}:randchoice;
+
   72  72  68  color!:fg;    .# Element GUI foreground color
   39  40  34  color!:bg;    .# Element GUI background color
   0   0   0   color!:black;
