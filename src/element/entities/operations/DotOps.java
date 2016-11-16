@@ -35,11 +35,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Stack;
 
+import org.apfloat.Apfloat;
+
 import element.ElemPrefs;
 import element.Element;
 import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.Operation;
+import element.entities.number.BigNum;
 import element.entities.number.Num;
 import element.entities.number.NumMath;
 import element.exceptions.ElementRuntimeException;
@@ -197,10 +200,10 @@ class OP_Dot_Bang extends Operation {
 		} else if (isString(o)) {
 			String numStr = getString(o).trim();
 			try {
-				block.push(Integer.parseInt(numStr));
+				block.push(new Num(Integer.parseInt(numStr)));
 			} catch (NumberFormatException e) {
 				try {
-					block.push(new BigDecimal(numStr));
+					block.push(new BigNum(new Apfloat(numStr)));
 				} catch (NumberFormatException e2) {
 					block.push(o);
 				}
