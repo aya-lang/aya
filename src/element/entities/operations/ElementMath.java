@@ -1,6 +1,5 @@
 package element.entities.operations;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 public class ElementMath {

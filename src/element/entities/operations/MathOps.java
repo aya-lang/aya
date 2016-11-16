@@ -1,33 +1,29 @@
 package element.entities.operations;
 
+import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothString;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
-import static element.ElemTypes.isBig;
+import static element.ElemTypes.isBigNum;
 import static element.ElemTypes.isBool;
 import static element.ElemTypes.isChar;
 import static element.ElemTypes.isList;
 import static element.ElemTypes.isModule;
-import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.isBigNum;
 import static element.ElemTypes.isNum;
+import static element.ElemTypes.isNumeric;
 import static element.ElemTypes.isString;
 import static element.ElemTypes.isUserObject;
 import static element.ElemTypes.show;
+import static element.ElemTypes.toBigNum;
 import static element.ElemTypes.toBool;
 import static element.ElemTypes.toChar;
-import static element.ElemTypes.toNumeric;
-import static element.ElemTypes.toBigNum;
-import static element.ElemTypes.toNum;
-import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.toList;
 import static element.ElemTypes.toModule;
+import static element.ElemTypes.toNumeric;
 import static element.ElemTypes.toUserObject;
 
 import java.awt.Color;
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,7 +39,6 @@ import element.entities.Block;
 import element.entities.Operation;
 import element.entities.UserObject;
 import element.entities.number.Num;
-import element.entities.number.BigNum;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
 import element.parser.CharacterParser;
@@ -129,7 +124,7 @@ public class MathOps {
 		/* 99 c  */ new OP_Cosine(),
 		/* 100 d */ new OP_CastDouble(),
 		/* 101 e */ null,
-		/* 102 f */ new OP_CastBig(),
+		/* 102 f */ null,
 		/* 103 g */ null,
 		/* 104 h */ new OP_MShow_Date(),
 		/* 105 i */ null, //new OP_CastInt(),
@@ -1029,32 +1024,6 @@ class OP_CastDouble extends Operation {
 			block.push(new Num(toBigNum(a).toDouble()));
 		} else if (isNum(a)) {
 			block.push(a); //Already a double
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
-
-//f - 102
-class OP_CastBig extends Operation {
-	public OP_CastBig() {
-		this.name = "Mf";
-		this.info = "cast number to big. if input not number, return 0.0";
-		this.argTypes = "A";
-	}
-	@Override
-	public void execute(Block block) {
-		final Object a = block.pop();
-		if(isString(a)) {
-			try {
-				block.push(new BigDecimal(castString(a)));
-			} catch (NumberFormatException e) {
-				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to a BigDeciaml.");
-			}
-		} else if (isNum(a)){
-			block.push(new BigNum(toNum(a)));
-		} else if (isBigNum(a)) {
-			block.push(a); //Aready a big num
 		} else {
 			throw new TypeError(this, a);
 		}

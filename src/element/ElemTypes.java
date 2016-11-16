@@ -1,6 +1,5 @@
 package element;
 
-import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayList;
 
@@ -70,24 +69,15 @@ public class ElemTypes {
 
 	
 	
-	/* Big Decimal Constants */
-	//public static final BigDecimal BD_ZERO = new BigDecimal("0");
-	//public static final BigDecimal BD_ONE = new BigDecimal("1");
-	//public static final BigDecimal BD_NEG_ONE = new BigDecimal("-1");
-	
 	/* BASIC TYPE CHECKING */
 	
-	//public static boolean isInt(Object o)			{ return o instanceof Integer; }
-	//public static boolean isDouble(Object o)		{ return o instanceof Double; }
 	public static boolean isNumeric(Object o)		{ return o instanceof Numeric; }
 	public static boolean isNum(Object o)			{ return o instanceof Num; }
 	public static boolean isBigNum(Object o)			{ return o instanceof BigNum; }
 	public static boolean isFlag(Object o)			{ return o instanceof Flag; }
 	public static boolean isBlock(Object o)			{ return o instanceof Block && !(o instanceof ListLiteral); }
 	
-	//public static boolean isListOrStr(Object o)		{ return o instanceof ArrayList || o instanceof String;}
 	public static boolean isChar(Object o)			{ return o instanceof Character; }
-	public static boolean isBig(Object o)			{ return o instanceof BigDecimal; }
 	public static boolean isOp(Object o)			{ return o instanceof Operation; }
 	public static boolean isVarSet(Object o)		{ return o instanceof VariableSet; }
 	public static boolean isVar(Object o)			{ return o instanceof Variable; }
@@ -155,8 +145,6 @@ public class ElemTypes {
 	
 	/* MULTIPLE TYPE CHECKING  */
 	
-	//public static boolean bothInt(Object a, Object b) 		{ return a instanceof Integer && b instanceof Integer; }
-	//public static boolean bothDouble(Object a, Object b) 	{ return a instanceof Double && b instanceof Double; }
 	public static boolean bothNum(Object a, Object b) 		{ return a instanceof Num && b instanceof Num; }
 	public static boolean bothBigNum(Object a, Object b) 	{ return a instanceof BigNum && b instanceof BigNum; }
 	public static boolean bothNumeric(Object a, Object b) 	{ return isNumeric(a) && isNumeric(b); }
@@ -170,7 +158,6 @@ public class ElemTypes {
 	public static boolean anyNum(Object a, Object b) 		{ return a instanceof Num || b instanceof Num; }
 	public static boolean anyBigNum(Object a, Object b) 	{ return a instanceof BigNum || b instanceof BigNum; }
 	public static boolean anyNumeric(Object a, Object b) 	{ return a instanceof Numeric || b instanceof Numeric; }
-	public static boolean anyBig(Object a, Object b)		{ return a instanceof BigDecimal || b instanceof BigDecimal; }
 	public static boolean anyChar(Object a, Object b)		{ return a instanceof Character || b instanceof Character; }
 	public static boolean anyString(Object a, Object b)		{ return isString(a) ||isString(b); }
 	public static boolean anyList(Object a, Object b)		{ return a instanceof ArrayList || b instanceof ArrayList; }
@@ -178,16 +165,11 @@ public class ElemTypes {
 
 	
 	/* BASIC CONVERSION */
-	
-	//public static int toInt(Object o) 					{ return ((Number)o).intValue(); }
-	//public static double toDouble(Object o)				{ return ((Number)o).doubleValue(); }
-	public static Block toBlock(Object o) 				{ return (Block)o; }
-	//public static BigDecimal toBig(Object o) 			{ return (BigDecimal)o; }
-	
-	public static Numeric toNumeric(Object o) 			{ return (Numeric)o; }
-	public static Num toNum(Object o) 				{ return (Num)o; }
-	public static BigNum toBigNum(Object o) 			{ return (BigNum)o; }
 
+	public static Block toBlock(Object o) 				{ return (Block)o; }	
+	public static Numeric toNumeric(Object o) 			{ return (Numeric)o; }
+	public static Num toNum(Object o) 					{ return (Num)o; }
+	public static BigNum toBigNum(Object o) 			{ return (BigNum)o; }
 	public static char toChar(Object o) 				{ return (Character)o; }
 	public static Operation toOp(Object o) 				{ return (Operation)o; }
 	public static VariableSet toVarSet(Object o) 		{ return (VariableSet)o; }
@@ -234,52 +216,12 @@ public class ElemTypes {
 														: isNumeric(o)		? toNumeric(o).toInt()
 														: isChar(o) 	? toChar(o)
 														: 0;}
-//	public static double castDouble(Object o)	{ return  isInt(o) 		? toDouble(o)
-//														: isDouble(o) 	? toDouble(o)
-//														: isBig(o)		? toBig(o).doubleValue()
-//														: isChar(o)		? toDouble(castInt(o))
-//														: 0.0;}
-//	public static BigDecimal castBig(Object o)	{ try {
-//													return  isInt(o) 	? new BigDecimal(toInt(o)) 
-//														: isDouble(o) 	? new BigDecimal(toDouble(o))
-//														: isBig(o)		? toBig(o)
-//														: new BigDecimal(0);
-//												  } catch (NumberFormatException e) {
-//													  throw new ElementRuntimeException("Cannont cast " + castString(o) + " to a big decimal");
-//												  }
-//												}
-	
-//	public static BigNum castBigNum(Object o) {
-//		if (o instanceof BigNum) {
-//			return (BigNum)o;
-//		} else if (o instanceof Num) {
-//			return new BigNum(((Num)o).toDouble()());
-//		} else {
-//			throw new ElementRuntimeException("Cannont cast " + castString(o) + " to a big decimal");
-//		}
-//	}
 	
 	
 	/* OTHER CONVERSIONS */
 	
 	/** for use printing the item to the console. include type items such as " for strings and ' for chars */
 	public static String show(Object o) {
-//		if (possibleUserType(o)) {
-//			@SuppressWarnings("unchecked")
-//			Module m = ((Module)((ArrayList<Object>)o).get(0));
-//			if(m.hasVar(MEMVAR_SHOW)) {
-//				Object obj_show = m.get(MEMVAR_SHOW);
-//				if(isBlock(obj_show)) {
-//					Block blk_show = ((Block)obj_show).duplicate();
-//					blk_show.push(o);
-//					blk_show.eval();
-//					Object obj_res = blk_show.pop();
-//					return castString(obj_res);
-//				}
-//			}
-//			return castString(o);
-//		}
-		
 		
 		int type = getTypeID(o);
 		switch(type) {
@@ -287,11 +229,6 @@ public class ElemTypes {
 			return "\""+getString(o)+"\"";
 		case CHARACTER:
 			return "'"+o.toString()+"'";
-//		case BIG_DECIMAL:
-//			return trimZeros(((BigDecimal)o).toPlainString());
-//		case DOUBLE:
-//			String doubleString = String.format("%1.10f", toDouble(o));
-//			return trimZeros(doubleString);
 		case LIST:
 			StringBuilder sb = new StringBuilder("[ ");			
 			for(Object i : toList(o)) {
@@ -335,102 +272,6 @@ public class ElemTypes {
 		}
 		return s.substring(0, dsi+1);
 	}
-	
-//	/** Casts any item to any other item */
-//	public static Object castGeneral(byte outType, Object item) {
-//		if(outType == STRING)
-//			return castString(item);
-//		
-//		
-//		byte inType = getTypeID(item);
-//		
-//		if (inType == NUM || inType == Num || inType || BigNum) {
-//			Num num = toNum(item);
-//			switch (outType) {
-//			case STRING:
-//				return num.toString();
-//			case INT:
-//				
-//			}
-//		}
-//		
-//		try {
-//			switch (outType) {
-//			
-//			/* to INT: Valid Conversions
-//			 * Num		numeric cast
-//			 * String	parseInt(str)
-//			 * Char		(char)int	
-//			 * Bool		true->1, false->0
-//			 */
-////			case NUM:
-////				Num num = toNum()
-////				switch(inType) {
-////				
-////				}
-////			case INT:
-////				switch(inType) {
-////				case STRING:
-////					return Integer.parseInt(getString(item));
-////				case CHARACTER:
-////					return (int)toChar(item);
-////				case BOOL:
-////					return toBool(item) ? 1 : 0;
-////				default:
-////					if(isNum(item)) return castInt(item);
-////				}
-////			break;
-//				
-//				
-//			/* to DOUBLE: Valid Conversions
-//			 * Num		numeric cast
-//			 * String	parseInt(str)
-//			 */	
-////			case DOUBLE:
-////				switch(inType) {
-////				case STRING:
-////					return Double.parseDouble(getString(item));
-////				default:
-////					if(isNum(item)) return castDouble(item);
-////				}
-////			break;
-//				
-//				
-//			/* to BIG_DECIMAL: Valid Conversions
-//			 * Num		numeric cast
-//			 * String	parseInt(str)
-//			 */	
-//			case BIG_DECIMAL:
-//				switch(inType) {
-//				case STRING:
-//					return new BigDecimal(getString(item));
-//				default:
-//					if(isNum(item)) return castBig(item);
-//				}
-//			break;
-//			
-//			/* to CHARACTER: Valid Conversions
-//			 * int		(char)int
-//			 * String	charAt(0)
-//			 */	
-//			case CHARACTER:
-//				switch(inType) {
-//				case STRING:
-//					return getString(item).charAt(0);
-//				case INT:
-//					return (char)toInt(item);
-//				}
-//			break;
-//
-//				
-//			}
-//			
-//		} catch (Exception e) {
-//			throw new ElementRuntimeException("Cannot cast item " + show(item) + " to type " + IDToAbbrv((byte)outType));
-//		}
-//		throw new ElementRuntimeException("Cannot cast item " + show(item) + " to type " + IDToAbbrv((byte)outType));
-//
-//	}
 	
 	/** for use printing the BARE item to the console. include type items such as " for strings and ' for chars */
 	public static String printBare(Object o) {

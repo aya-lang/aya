@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.apfloat.Apfloat;
+
 import element.ElemPrefs;
 
 
@@ -52,9 +54,9 @@ public class QuickDialog {
 	}
 	
 	/** Requests an input until a valid number is entered */
-	public static BigDecimal numberInput(String title) {
+	public static Apfloat numberInput(String title) {
 		String error = "";
-		BigDecimal bd = null;
+		Apfloat bd = null;
 		do {
 			String s = null;
 			do {
@@ -62,7 +64,7 @@ public class QuickDialog {
 			} while (s == null);
 			
 			try {
-				bd = new BigDecimal(s);
+				bd = new Apfloat(s);
 			} catch (NumberFormatException e) {
 				error = "Number Format Error";
 			}

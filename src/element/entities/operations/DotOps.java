@@ -7,7 +7,6 @@ import static element.ElemTypes.bothString;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
 import static element.ElemTypes.getTypeID;
-import static element.ElemTypes.isBig;
 import static element.ElemTypes.isBlock;
 import static element.ElemTypes.isBool;
 import static element.ElemTypes.isChar;
@@ -24,7 +23,6 @@ import static element.ElemTypes.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;

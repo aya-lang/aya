@@ -263,7 +263,7 @@ public class ListBuilder {
 	}
 	
 	/**
-	 * Creates an array of BigDecimals from lower to upper using the increment
+	 * Creates an array of Apfloats from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
 	private static Apfloat[] apfloatRange(Apfloat lower, Apfloat upper, Apfloat inc) {

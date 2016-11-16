@@ -1,13 +1,16 @@
 package element.parser.tokens;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+
+import org.apfloat.Apfloat;
 
 import element.ElemTypes;
 import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.Lambda;
 import element.entities.Tuple;
+import element.entities.number.BigNum;
+import element.entities.number.Num;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
 
@@ -31,9 +34,9 @@ public class LambdaToken extends CollectionToken {
 				Token t = col.get(1);
 				if(t.isa(Token.NUMERIC)) {
 					try {
-						return Integer.parseInt(t.getData())*-1;
+						return new Num(Integer.parseInt(t.getData())*-1);
 					} catch(NumberFormatException e) {
-						return new BigDecimal(t.getData()).negate();
+						return new BigNum(new Apfloat(t.getData()).negate());
 					}
 				} 
 			}
