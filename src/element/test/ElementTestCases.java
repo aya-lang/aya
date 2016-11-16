@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import element.Element;
 import element.entities.Operation;
+import element.entities.operations.DotOps;
+import element.entities.operations.MathOps;
+import element.entities.operations.Ops;
 
 public class ElementTestCases {
 	private static ArrayList<TestCase> testCases = new ArrayList<TestCase>();
@@ -16,7 +19,7 @@ public class ElementTestCases {
 		testCases.add(new TestCase(in, res, op));
 	}
 	
-	public static boolean runTests() {
+	private static boolean runTests() {
 		for (TestCase tc : testCases) {
 	        Element.instance.run(tc.getInput());
 	        String res = Element.instance.getOut().dumpAsString();
@@ -33,6 +36,18 @@ public class ElementTestCases {
 	    
 	    //All tests passed
 	    return true;
+	}
+	
+	public static int caseCount() {
+		return testCases.size();
+	}
+	
+	public static boolean runOpTests() {
+		testCases = new ArrayList<TestCase>();
+		MathOps.prepareTestCases();
+		Ops.prepareTestCases();
+		DotOps.prepareTestCases();
+		return ElementTestCases.runTests();
 	}
 	
 }

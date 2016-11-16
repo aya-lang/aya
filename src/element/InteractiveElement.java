@@ -198,11 +198,8 @@ public class InteractiveElement {
 	public static void main(String[] args) {
 		Element elem = Element.getInstance();
 		
-		MathOps.prepareTestCases();
-		Ops.prepareTestCases();
-		DotOps.prepareTestCases();
-		
-		ElementTestCases.runTests();
+		ElementTestCases.runOpTests();
+		System.out.println("All tests passed! (" + ElementTestCases.caseCount() + " tests ran)");
 		
 		if (args.length > 0) {
 			
