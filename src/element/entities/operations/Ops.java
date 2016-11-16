@@ -151,7 +151,7 @@ public class Ops {
 		/* 87 W  */ new OP_W(),
 		/* 88 X  */ new OP_X(),
 		/* 89 Y  */ new OP_Y(),
-		/* 90 Z  */ null,
+		/* 90 Z  */ new OP_Z(),
 		/* 91 [  */ null, // List Literal
 		/* 92 \  */ new OP_Backslash(),
 		/* 93 ]  */ null, // List Literal
@@ -1468,6 +1468,30 @@ class OP_Y extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		Element.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
+	}
+}
+
+//Y - 89
+class OP_Z extends Operation {
+	public OP_Z() {
+		this.name = "Z";
+		this.info = "SN cast to bignum";
+		this.argTypes = "SN";
+	}
+	@Override public void execute (final Block block) {
+		Object a = block.pop();
+		
+		if (isNumeric(a)) {
+			block.push(BigNum.fromObj(a));
+		} else if (isString(a)) {
+			try	{
+				block.push(new BigNum(new Apfloat(castString(a))));
+			} catch (NumberFormatException e) {
+				throw new ElementRuntimeException("Cannot cast " + castString(a) + " to bignum");
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
 	}
 }
 
