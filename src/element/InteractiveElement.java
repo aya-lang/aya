@@ -195,8 +195,8 @@ public class InteractiveElement {
 	public static void main(String[] args) {
 		Element elem = Element.getInstance();
 		
-		ElementTestCases.runTests();
-		System.out.println("All tests passed! (" + ElementTestCases.caseCount() + " tests ran)");
+		
+		System.out.println(ElementTestCases.runTests());
 		
 		if (args.length > 0) {
 			
