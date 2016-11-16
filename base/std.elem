@@ -125,11 +125,11 @@
 .#		      	 TYPES               #
 .###################################
 
-{Mi}:int;					  .#? A int\n  cast to an int
+{.]}:int;					  .#? A int\n  cast to an int
 {Md}:double;				.#? A double\n  cast to an double
 {Mf}:bigdecimal;		.#? A bigdecimal\n  cast to an bigdecimal
 {P}:string;			    .#? A string\n  cast to an string
-{'CC}:char;         .#? A char\n  cast to an char
+{.'}:char;         .#? A char\n  cast to an char
 {.T}:typeof;				.#? A typeof\n  return the character representation of the type
 
 
@@ -335,7 +335,7 @@
 }:linspace;
 
 .#? III intspace\n create a range from a to b consisting of c ints\n  (also see linspace)
-{a b l, [a b l linspace,Mi]}:intspace;
+{a b l, [a b l linspace,.]]}:intspace;
 
 .#? L remdups\n removes duplicates in a list
 {l:set,
@@ -441,14 +441,14 @@ import "base/data"
 []		:emptyset;
 {2^}	:square;
 {3^}	:cube;
-[256,V'CC]:ascii;
+[256,V.']:ascii;
 
 1			 :a;
 2			 :b;
 3			 :c;
 10		 :d;
 100		 :h;
-{Mi}	 :i; .#? A i\n  cast to int
+{.]}	 :i; .#? A i\n  cast to int
 1000	 :k;
 []		 :l;
 .#m (matrix module)
@@ -474,4 +474,4 @@ import "base/data"
 {:z,#{zB:z3%-}}:descramble;
 
 .# Overwrite bowtie default
-9999'CC "bowtie" Mk
+9999.' "bowtie" Mk

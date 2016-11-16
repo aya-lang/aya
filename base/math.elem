@@ -11,13 +11,13 @@ import "base/constants"
 {MA}:abs;						.#? N abs\n  absolute value
 {_E\S\/}:avg;				.#? L avg\n  average of a list of numbers
 {1 3/^}:cbrt;    		.#? N cbrt\n  cube root
-{M{}:ceil;      		.#? N ceil\n  ceiling
+{.]}:ceil;      		.#? N ceil\n  ceiling
 {pi*180/}:deg;    	.#? N deg\n  convert deg to rad (180° => 3.14..)
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
 {mathe\^}:exp;    	.#? N exp\n  exp(x)
 {M!}:fact;      		.#? N fact\n  factorial
-{M}}:floor;      		.#? N floor\n  floor
-{_M}-}:frac;    		.#? N frac\n  fractional part
+{.]}:floor;      		.#? N floor\n  floor
+{_.]-}:frac;    		.#? N frac\n  fractional part
 {1-M!}:gamma;				.#? N gamma\n  gamma function
 {2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
 {G}:isprime;        .#? N isprime \n  tests a number for primality
@@ -34,8 +34,8 @@ import "base/constants"
 {{*}U}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
-{M$3E/'IC}:ts;      .#? ts\n  return the system time in seconds as an int
-{/Mi}:div;					.#? <NN> div\n  integer division
+{M$3E/.]}:ts;      .#? ts\n  return the system time in seconds as an int
+{/.]}:div;					.#? <NN> div\n  integer division
 {%}:rem;						.#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
@@ -57,7 +57,7 @@ import "base/constants"
 
 .#? L median \n  median value of a list
 {l,
-  l$_E2/'IC               .# Sort the list and get its middle index
+  l$_E2/.]               .# Sort the list and get its middle index
   {I} {_1-KIS2/} lE2%0=?  .# If the list has even length, average the middle two
                           .# The list has odd length, take the middle item
 }:median;

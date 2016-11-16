@@ -24,7 +24,7 @@
     7473 7584 7475 7476 7477 7478 7479 7480 7481
     7482 7484 7486 5227 7487 738 7488 7489 11389
     7490 739 696 7611
-  ]#'CC:tinyletters;
+  ]#.':tinyletters;
 
 	{nN spacerS,
 	  if (n 0=) {
@@ -40,11 +40,11 @@
 	  {["zero""one""two""three""four"
 	    "five""six""seven""eight""nine"
 	    "ten""eleven""twelve""thirteen""fourteen"
-	    "fifteen""sixteen""seventeen""eighteen""nineteen"]n MiI
+	    "fifteen""sixteen""seventeen""eighteen""nineteen"]n I
 	  } n `.< 19 .?
 
 	  {["twenty""thirty""fourty""fifty""sixty""seventy""eighty""nintey"]
-	   (n 10 div 2 - MiI)  (n 10 % "-" data.numwordhelp) +
+	   (n 10 div 2 - I)  (n 10 % "-" data.numwordhelp) +
 	  } n `.< 99 .?
 
 
@@ -57,7 +57,7 @@
 	    "Sextillion""Septillion""Octillion""Nonillion""Decillion"
 	    "Undecillion""Duodecillion""Tredecillion""Quattuordecillion"
 	    "Quindecillion""Sexdecillion""Septendecillion""Octodecillion"
-	   ] x numofdigits 3 div 1 - MiI +
+	   ] x numofdigits 3 div 1 - I +
 	   n x % " " data.numwordhelp +
 	  }
 	].S
