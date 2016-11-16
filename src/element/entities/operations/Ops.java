@@ -63,7 +63,6 @@ import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
 import element.parser.CharacterParser;
 import element.parser.Parser;
-import element.test.ElementTestCases;
 import element.variable.MemberVariable;
 import element.variable.Module;
 import element.variable.Variable;
