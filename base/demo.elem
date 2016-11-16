@@ -89,7 +89,7 @@
     [{colors.randchoice}100%]:c;
 
     {name clrs fn,
-      "$name:\t".P clrs {fn} .$ #{'█\.print0};
+      "$name:\t".P clrs {fn} .$ #{'\block'\.print0};
       ""println
     }:srtprt;
 
