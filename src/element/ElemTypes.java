@@ -15,6 +15,7 @@ import element.entities.UserObject;
 import element.entities.number.BasicNum;
 import element.entities.number.BigNum;
 import element.entities.number.Num;
+import element.entities.number.NumMath;
 import element.exceptions.ElementRuntimeException;
 import element.variable.MemberVariable;
 import element.variable.Module;
@@ -168,7 +169,9 @@ public class ElemTypes {
 	
 	public static boolean anyInt(Object a, Object b) 		{ return a instanceof Integer || b instanceof Integer; }
 	public static boolean anyDouble(Object a, Object b) 	{ return a instanceof Double || b instanceof Double; }
-	public static boolean anyNum(Object a, Object b) 		{ return isNum(a) || isNum(b); }
+	public static boolean anyBasicNum(Object a, Object b) 	{ return a instanceof BasicNum || b instanceof BasicNum; }
+	public static boolean anyBigNum(Object a, Object b) 	{ return a instanceof BigNum || b instanceof BigNum; }
+	public static boolean anyNum(Object a, Object b) 		{ return a instanceof Num || b instanceof Num; }
 	public static boolean anyBig(Object a, Object b)		{ return a instanceof BigDecimal || b instanceof BigDecimal; }
 	public static boolean anyChar(Object a, Object b)		{ return a instanceof Character || b instanceof Character; }
 	public static boolean anyString(Object a, Object b)		{ return isString(a) ||isString(b); }
@@ -248,15 +251,15 @@ public class ElemTypes {
 //												  }
 //												}
 	
-	public static BigNum castBigNum(Object o) {
-		if (o instanceof BigNum) {
-			return (BigNum)o;
-		} else if (o instanceof BasicNum) {
-			return new BigNum(((BasicNum)o).value());
-		} else {
-			throw new ElementRuntimeException("Cannont cast " + castString(o) + " to a big decimal");
-		}
-	}
+//	public static BigNum castBigNum(Object o) {
+//		if (o instanceof BigNum) {
+//			return (BigNum)o;
+//		} else if (o instanceof BasicNum) {
+//			return new BigNum(((BasicNum)o).toDouble()());
+//		} else {
+//			throw new ElementRuntimeException("Cannont cast " + castString(o) + " to a big decimal");
+//		}
+//	}
 	
 	
 	/* OTHER CONVERSIONS */
@@ -479,10 +482,8 @@ public class ElemTypes {
 		}
 		
 		//Number 
-		if(bothBasicNum(a, b)) {
-			toBasicNum(a).eq(toBasicNum(b));
-		} else if (bothNum(a, b)) {
-			return toNum(a).toApfloat().compareTo(toNum(b).toApfloat()) == 0;
+		if(bothNum(a, b)) {
+			return NumMath.compare(toNum(a), toNum(b)) == 0;
 		}
 		
 		int type = getTypeID(a);

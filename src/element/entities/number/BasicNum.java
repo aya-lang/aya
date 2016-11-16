@@ -25,12 +25,7 @@ public class BasicNum extends Num {
 		} catch (NumberFormatException n) {
 			this.value = Double.NaN;
 		}
-	}
-	
-	public double value() {
-		return this.value;
-	}
-	
+	}	
 	
 	//*******************************
 	//   CONVERSIONS
@@ -38,6 +33,14 @@ public class BasicNum extends Num {
 	
 	public int toInt() {
 		return (int)this.value;
+	}
+	
+	public long toLong() {
+		return (long)(this.value);
+	}
+	
+	public float toFloat() {
+		return (float)(this.value);
 	}
 	
 	public boolean toBool() {
@@ -107,12 +110,137 @@ public class BasicNum extends Num {
 		return new BasicNum(Math.pow(this.value, other.value));
 	}
 	
+	
+	//*******************************
+	//   OVERRIDES
+	//*******************************
+	
+	@Override
 	public BasicNum negate() {
 		return new BasicNum(this.value * -1.0);
 	}
 	
+	@Override
 	public BasicNum bnot() {
 		return new BasicNum((double)~((int)this.value));
 	}
 
+	@Override
+	public BasicNum signnum() {
+		if (this.value == 0.0) {
+			return new BasicNum(0);
+		} else if (this.value > 0.0) {
+			return new BasicNum(1);
+		} else {
+			return new BasicNum(-1);
+		}
+	}
+
+	@Override
+	public BasicNum factorial() {
+		return new BasicNum(factorial((long)value));
+	}
+	
+	@Override
+	public BasicNum abs() {
+		return new BasicNum(Math.abs(value));
+	}
+
+	@Override
+	public BasicNum sin() {
+		return new BasicNum(Math.sin(value));
+	}
+
+	@Override
+	public BasicNum cos() {
+		return new BasicNum(Math.cos(value));
+	}
+
+	@Override
+	public BasicNum tan() {
+		return new BasicNum(Math.tan(value));
+	}
+
+	@Override
+	public BasicNum asin() {
+		return new BasicNum(Math.asin(value));
+	}
+
+	@Override
+	public BasicNum acos() {
+		return new BasicNum(Math.acos(value));
+	}
+
+	@Override
+	public BasicNum atan() {
+		return new BasicNum(Math.atan(value));
+	}
+
+	@Override
+	public BasicNum log() {
+		// Logarithm base 10
+		return new BasicNum(Math.log10(value));
+	}
+
+	@Override
+	public BasicNum ln() {
+		//Natural Logarithm
+		return new BasicNum(Math.log(value));
+	}
+
+	@Override
+	public BasicNum sqrt() {
+		return new BasicNum(Math.sqrt(value));
+	}
+
+	@Override
+	public BasicNum ceil() {
+		return new BasicNum(Math.ceil(value));
+	}
+
+	@Override
+	public BasicNum floor() {
+		return new BasicNum(Math.floor(value));
+	}
+	
+	//*******************************
+	//   IMPLEMENTS COMPARABLE
+	//*******************************
+	
+	@Override
+	public int compareTo(Num n) {
+		//Ascending
+		return (int)((this.value - n.toDouble())); 
+	}
+		
+	
+	//*******************************
+	//   MATH
+	//*******************************
+
+	
+	/** logGamma: Uses Lanczos approximation formula */ 
+	private static double logGamma(double x) {
+		 double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
+		 double ser = 1.0 + 76.18009173    / (x + 0)   - 86.50532033    / (x + 1)
+				 + 24.01409822    / (x + 2)   -  1.231739516   / (x + 3)
+				 +  0.00120858003 / (x + 4)   -  0.00000536382 / (x + 5);
+		 return tmp + Math.log(ser * Math.sqrt(2 * Math.PI));
+	   }
+	
+	/** Gamma Function */
+	private static double gamma(double x) { return Math.exp(logGamma(x)); }
+	
+	
+	/** Integer Factorial */
+	private static long factorial(long x) {
+		long acc = 1;
+		while (x > 0) {
+			acc *= x;
+		}
+		return acc;
+	}
+	
+	
+	
 }

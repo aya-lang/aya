@@ -1,16 +1,38 @@
 package element.entities;
 
-import static element.ElemTypes.*;
+import static element.ElemTypes.anyBasicNum;
+import static element.ElemTypes.anyBigNum;
+import static element.ElemTypes.bothChar;
+import static element.ElemTypes.bothNum;
+import static element.ElemTypes.debugString;
+import static element.ElemTypes.getString;
+import static element.ElemTypes.isBasicNum;
+import static element.ElemTypes.isBigNum;
+import static element.ElemTypes.isChar;
+import static element.ElemTypes.isList;
+import static element.ElemTypes.isNum;
+import static element.ElemTypes.isString;
+import static element.ElemTypes.toBasicNum;
+import static element.ElemTypes.toBigNum;
+import static element.ElemTypes.toChar;
+import static element.ElemTypes.toCharList;
+import static element.ElemTypes.toList;
+import static element.ElemTypes.toNum;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import org.apfloat.Apfloat;
+
+import element.entities.number.BasicNum;
+import element.entities.number.BigNum;
 import element.exceptions.ElementRuntimeException;
 
 public class ListBuilder {
+	
+	private static final Apfloat AP_NEG_ONE = Apfloat.ONE.multiply(new Apfloat(-1));
+	private static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);
+
 	
 	private Block initialList;
 	private Block map;
@@ -97,6 +119,28 @@ public class ListBuilder {
 		return list;
 	}
 	
+	public static ArrayList<Object> buildRange(BasicNum n) {
+		double d = n.toDouble();
+		int inc = 1;
+		if(d < 0) inc = -1;
+		return arrToAL(doubleRange(1, d-1, inc));
+	}
+	
+	public static ArrayList<Object> buildRange(char c) {
+		int inc = 1;
+		if(c < 0) inc = -1;
+		return arrToAL(doubleRange(1, c-1, inc));
+	}
+	
+	public static ArrayList<Object> buildRange(BigNum n) {
+		Apfloat af = n.toApfloat();
+		if(af.compareTo(Apfloat.ZERO) < 0) {
+			return arrToAL(apfloatRange(AP_NEG_ONE, af, AP_NEG_ONE));
+		} else {
+			return arrToAL(apfloatRange(Apfloat.ONE, af, Apfloat.ONE));
+		}
+	}
+	
 	public static ArrayList<Object> buildRange(ArrayList<Object> args) {
 		
 		switch(args.size()) {
@@ -104,20 +148,10 @@ public class ListBuilder {
 		//List range has one argument
 		case 1:
 			Object o = args.get(0);
-			if(isInt(o)) {
-				return arrToAL(basicRange(toInt(o)));
-			} else if (isDouble(o)) {
-				double d = toDouble(o);
-				int inc = 1;
-				if(d < 0) inc = -1;
-				return arrToAL(doubleRange(1, d-1, inc));
-			} else if (isBig(o)) {
-				BigDecimal bd = toBig(o);
-				if(bd.compareTo(BD_ZERO) < 0) {
-					return arrToAL(bigDecimalRange(BD_NEG_ONE, bd, BD_NEG_ONE));
-				} else {
-					return arrToAL(bigDecimalRange(BD_ONE, bd, BD_ONE));
-				}
+			if(isBasicNum(o)) {
+				return buildRange(toBasicNum(o));
+			} else if (isBigNum(o)) {
+				return buildRange(toBigNum(o));
 			} else if (isChar(o)) {
 				return arrToAL(charRange('a', toChar(o), 1));
 			} else if (isString(o)) {
@@ -133,30 +167,22 @@ public class ListBuilder {
 			Object a = args.get(0);
 			Object b = args.get(1);
 			if(bothNum(a,b)) {
-				if (anyBig(a,b)) {
-					BigDecimal lo = castBig(a);
-					BigDecimal hi = castBig(b);
-					BigDecimal inc = BD_ONE;
+				if (anyBigNum(a,b)) {
+					Apfloat lo = toNum(a).toApfloat();
+					Apfloat hi = toNum(b).toApfloat();
+					Apfloat inc = Apfloat.ONE;
 					if(lo.compareTo(hi) > 0) {
-						inc = BD_NEG_ONE;
+						inc = AP_NEG_ONE;
 					}
-					return arrToAL(bigDecimalRange(lo,hi,inc));
-				} else if (anyDouble(a,b)) {
-					double lo = castDouble(a);
-					double hi = castDouble(b);
+					return arrToAL(apfloatRange(lo,hi,inc));
+				} else if (anyBasicNum(a,b)) {
+					double lo = toNum(a).toDouble();
+					double hi = toNum(b).toDouble();
 					double inc = 1.0;
 					if(lo > hi) {
 						inc = -1.0;
 					}
 					return arrToAL(doubleRange(lo,hi,inc));
-				}  else if (anyInt(a,b)) {
-					int lo = castInt(a);
-					int hi = castInt(b);
-					int inc = 1;
-					if(lo > hi) {
-						inc = -1;
-					}
-					return arrToAL(intRange(lo, hi, inc));
 				} else {
 					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
 				}
@@ -178,13 +204,11 @@ public class ListBuilder {
 			Object y = args.get(1);
 			Object z = args.get(2);
 			if(bothNum(x,y) && isNum(z)) {
-				if(anyBig(x,y) || isBig(z)) {
-					return arrToAL(bigDecimalRange(castBig(x), castBig(z), castBig(y).subtract(castBig(x))));
-				} else if (anyDouble(x,y) || isDouble(z)) {
-					return arrToAL(doubleRange(castDouble(x), castDouble(z), castDouble(y)-castDouble(x)));
-				} else /*Ints*/ {
-					return arrToAL(intRange(castInt(x), castInt(z), castInt(y)-castInt(x)));
-				}
+				if(anyBigNum(x,y) || isBigNum(z)) {
+					return arrToAL(apfloatRange(toNum(x).toApfloat(), toNum(z).toApfloat(), toNum(y).toApfloat().subtract(toNum(x).toApfloat())));
+				} else {
+					return arrToAL(doubleRange(toNum(x).toDouble(), toNum(z).toDouble(), toNum(y).toDouble()-toNum(x).toDouble()));
+				} 
 			} else if(bothChar(x,y) && isChar(z)) {
 				return arrToAL(charRange(toChar(x), toChar(z), toChar(y)-toChar(x)));
 			} else {
@@ -196,59 +220,13 @@ public class ListBuilder {
 			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
 		}
 	}
-
-	/** Creates a range from 0 to n incrementing by 1. 
-	 * If n < 0, create a range from -1 to n. 
-	 * If n == 0 create an empty list*/
-	public static int[] basicRange(int n) {
-		if(n == 1) {
-			int[] arr = {1};
-			return arr;
-		} else if (n < 0) {
-			return intRange(-1, n, -1);
-		} else {
-			return intRange(1, n, 1);
-		}
-	}
 	
-	/**
-	 * Creates an array of ints from lower to upper using the increment
-	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
-	 */
-	public static int[] intRange(int lower, int upper, int inc) {
-		//Calculate the number of items, this will return a negative value if array creation is impossible
-		int numOfItems = 1 + (int) Math.floor((upper-lower)/inc);
-		
-		if(numOfItems > 10000000) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
-		} else if (numOfItems < 0) {
-			throw new ElementRuntimeException("Cannot create range containing a negative number of elements in"
-					+ " ["+lower+" "+(lower+inc)+" "+upper+"]" );
-		}
-		
-		int[] arr = new int[numOfItems];
-		
-		
-		
-		//Increment up or down?
-		if((lower > upper && inc > 0) || (lower < upper && inc < 0)) {
-			for(int i = 0; i < arr.length; i++, lower -= inc) {
-				arr[i] = lower;
-			}
-		} else {
-			for(int i = 0; i < arr.length; i++, lower += inc) {
-				arr[i] = lower;
-			}
-		}
-		
-		return arr;
-	}
 	
 	/**
 	 * Creates an array of doubles from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
-	public static double[] doubleRange(double lower, double upper, double inc) {
+	private static double[] doubleRange(double lower, double upper, double inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
 		double numOfItemsDouble = 1 + Math.floor((upper-lower)/inc);
 		
@@ -288,12 +266,12 @@ public class ListBuilder {
 	 * Creates an array of BigDecimals from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
-	public static BigDecimal[] bigDecimalRange(BigDecimal lower, BigDecimal upper, BigDecimal inc) {
+	private static Apfloat[] apfloatRange(Apfloat lower, Apfloat upper, Apfloat inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
-		BigDecimal numOfItemsBD = upper.subtract(lower).divide(inc, MathContext.DECIMAL64).setScale(0, RoundingMode.FLOOR).add(BD_ONE);
+		Apfloat numOfItemsBD = upper.subtract(lower).divide(inc).floor().add(Apfloat.ONE);
 		
 		//Check for overflow
-		if(numOfItemsBD.compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) >= 0) {
+		if(numOfItemsBD.compareTo(AP_MAX_INT) >= 0) {
 			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
 		}
 		
@@ -304,10 +282,10 @@ public class ListBuilder {
 			throw new ElementRuntimeException("Cannot create range containing a negative number of elements in"
 					+ " ["+lower+" "+(lower.add(inc))+" "+upper+"]" );
 		}
-		BigDecimal[] arr = new BigDecimal[numOfItems];
+		Apfloat[] arr = new Apfloat[numOfItems];
 		
 		//Increment up or down?
-		if((lower.compareTo(upper) > 0 && inc.compareTo(BD_ZERO) > 0) || ( lower.compareTo(upper) < 0 && inc.compareTo(BD_ZERO) < 0 )) {
+		if((lower.compareTo(upper) > 0 && inc.compareTo(Apfloat.ZERO) > 0) || ( lower.compareTo(upper) < 0 && inc.compareTo(Apfloat.ZERO) < 0 )) {
 			for(int i = 0; i < arr.length; i++, lower = lower.subtract(inc)) {
 				arr[i] = lower;
 			}
@@ -324,7 +302,7 @@ public class ListBuilder {
 	 * Creates an array of chars from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
-	public static char[] charRange(char lower, char upper, int inc) {
+	private static char[] charRange(char lower, char upper, int inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
 		int numOfItems = 1 + (int) Math.floor((upper-lower)/inc);
 		
@@ -358,20 +336,26 @@ public class ListBuilder {
 		}
 		return list;
 	}
-	public static ArrayList<Object> arrToAL(int[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
-		for(int i = 0; i < os.length; i++) {
-			list.add(os[i]);
-		}
-		return list;
-	}
+	
+	
 	public static ArrayList<Object> arrToAL(double[] os) {
 		ArrayList<Object> list = new ArrayList<Object>(os.length);
 		for(int i = 0; i < os.length; i++) {
-			list.add(os[i]);
+			list.add(new BasicNum(os[i]));
 		}
 		return list;
 	}
+	
+	public static ArrayList<Object> arrToAL(Apfloat[] os) {
+		ArrayList<Object> list = new ArrayList<Object>(os.length);
+		for(int i = 0; i < os.length; i++) {
+			list.add(new BigNum(os[i]));
+		}
+		return list;
+	}
+	
+	
+	
 	public static ArrayList<Object> arrToAL(char[] os) {
 		ArrayList<Object> list = new ArrayList<Object>(os.length);
 		for(int i = 0; i < os.length; i++) {

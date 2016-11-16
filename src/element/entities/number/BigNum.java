@@ -2,6 +2,7 @@ package element.entities.number;
 
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
+import org.apfloat.ApintMath;
 
 import element.ElemTypes;
 
@@ -20,7 +21,7 @@ public class BigNum extends Num {
 	
 	public BigNum(BasicNum n) {
 		//16 digit precision
-		this.value = new Apfloat(n.value());
+		this.value = new Apfloat(n.toDouble());
 	}
 	
 	public BigNum(String str) {
@@ -48,6 +49,14 @@ public class BigNum extends Num {
 		return this.value.intValue();
 	}
 	
+	public long toLong() {
+		return this.value.longValue();
+	}
+	
+	public float toFloat() {
+		return this.value.floatValue();
+	}
+	
 	public double toDouble() {
 		return this.value.doubleValue();
 	}
@@ -63,23 +72,7 @@ public class BigNum extends Num {
 	public String toString() {
 		return ElemTypes.trimZeros(value.toString(true));
 	}
-	
-	//*******************************
-	//   COMPARISONS
-	//*******************************
-	
-	public boolean eq(BigNum other) {
-		return this.value.compareTo(other.value) == 0;
-	}
-	
-	public boolean lt(BigNum other) {
-		return this.value.compareTo(other.value) < 0;
-	}
-	
-	public boolean gt(BigNum other) {
-		return this.value.compareTo(other.value) > 0;
-	}
-	
+
 	//*******************************
 	//   OPERATIONS
 	//*******************************
@@ -111,6 +104,13 @@ public class BigNum extends Num {
 	public BigNum pow(BigNum other) {
 		return new BigNum(ApfloatMath.pow(this.value, other.value));
 	}
+		
+	
+	//*******************************
+	//   OVERRIDES
+	//*******************************
+	
+	
 	
 	@Override
 	public BigNum negate() {
@@ -120,6 +120,85 @@ public class BigNum extends Num {
 	@Override
 	public BigNum bnot() {
 		return new BigNum((double)~((int)this.toInt()));
+	}
+	
+	public BasicNum signnum() {
+		return new BasicNum(this.value.signum());
+	}
+
+	@Override
+	public Num factorial() {
+		return new BigNum(ApintMath.factorial(value.longValue()));
+	}
+	
+	@Override
+	public Num abs() {
+		return new BigNum(ApfloatMath.abs(value));
+	}
+
+	@Override
+	public Num sin() {
+		return new BigNum(ApfloatMath.sin(value));
+	}
+
+	@Override
+	public Num cos() {
+		return new BigNum(ApfloatMath.cos(value));
+	}
+
+	@Override
+	public Num tan() {
+		return new BigNum(ApfloatMath.tan(value));
+	}
+
+	@Override
+	public Num asin() {
+		return new BigNum(ApfloatMath.asin(value));
+	}
+
+	@Override
+	public Num acos() {
+		return new BigNum(ApfloatMath.acos(value));
+	}
+
+	@Override
+	public Num atan() {
+		return new BigNum(ApfloatMath.atan(value));
+	}
+
+	@Override
+	public Num log() {
+		return new BigNum(ApfloatMath.log(value, new Apfloat(10)));
+	}
+
+	@Override
+	public Num ln() {
+		return new BigNum(ApfloatMath.log(value));
+	}
+
+	@Override
+	public Num sqrt() {
+		return new BigNum(ApfloatMath.sqrt(value));
+	}
+
+	@Override
+	public Num ceil() {
+		return new BigNum(value.ceil());
+	}
+
+	@Override
+	public Num floor() {
+		return new BigNum(value.floor());
+	}
+	
+	//*******************************
+	//   IMPLEMENTS COMPARABLE
+	//*******************************
+	
+	@Override
+	public int compareTo(Num n) {
+		//Ascending
+		return (this.value.subtract(n.toApfloat())).intValue(); 
 	}
 	
 }
