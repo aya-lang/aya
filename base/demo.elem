@@ -94,7 +94,7 @@
     }:srtprt;
 
     .# mean
-    "mean" c {.rgb mean} srtprt
+    "mean" c {.rgb avg} srtprt
 
     .# Geometric mean
     "geomean" c {.rgb geomean} srtprt

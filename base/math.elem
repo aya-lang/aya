@@ -159,8 +159,7 @@ import "base/constants"
 {2!E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
 
 .# Statistics
-"avg".Z:mean:mu;
-{set : m, set mean:m; set#{m-2^}S setE /}:variance;
+{set : m, set avg:m; set#{m-2^}S setE /}:variance;
 {variance Mq}:stdev;
 
 .# Constants
