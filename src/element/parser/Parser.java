@@ -136,7 +136,7 @@ public class Parser {
 				}
 				
 				//Decimal
-				if(in.hasNext() && in.peek(0) == '.' && Character.isDigit(in.peek(1)) ) {
+				if(in.hasNext() && in.peek(0) == '.' && in.hasNext(1) && Character.isDigit(in.peek(1)) ) {
 					num.append('.');
 					in.next(); //Skip the '.'
 					while(in.hasNext() && Character.isDigit(in.peek())) {
