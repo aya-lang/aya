@@ -270,7 +270,7 @@ class OP_Dot_SortUsing extends Operation {
 class OP_Dot_CastChar extends Operation {
 	public OP_Dot_CastChar() {
 		this.name = ".'";
-		this.info = "NS cast to char";
+		this.info = "NSC cast to char";
 		this.argTypes = "NS";
 	}
 	@Override public void execute(final Block block) {
@@ -280,6 +280,8 @@ class OP_Dot_CastChar extends Operation {
 			block.push((char)toNumeric(o).toInt());
 		} else if (isString(o)) {
 			block.push(castString(o).charAt(0));
+		} else if (isChar(o)) {
+			block.push(o);
 		} else {
 			throw new TypeError(this,o);
 		}
