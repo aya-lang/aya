@@ -85,10 +85,6 @@
 } [0] nilmodule MO:nil;
 {nil=}:isnil;
 
-.# Number
-.#? N negate\n  negate n
-{!}:negate;
-
 .# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
 {`(10\^*)}:e;
 
@@ -106,20 +102,11 @@
 .#		  STACK MANIPULATION         #
 .###################################
 
-.# 2 copy => copy the top two elements
-.# 3 index => duplicate the item in the 3rd index
-{.;}:clear;				.#? clear\n  clear the stack
-{.A}:listall;			.#? listall\n  dump the entire stack into a list
-{~}:dump;					.#? dump\n  dump a list to the stack
-{;}:pop;					.#? pop\n  discard the item on the top of the stack
-{_}:dup;					.#? dup\n  duplicate the item on the top of that stack
-{\_@_@\}:duptwo;	.#? duptwo\n  duplicate the top two items of the stack
-{\}:exch;					.#? exch\n  swap the top two elements of the stack
-{\}:swap;					.#? swap\n  swap the top two elements of the stack
-{'`\L~}:wait;			.#? wait\n  the next item on the stack will be pushed back n times
-
-{.A{t,tV:t;~t}~}:back; .#? back\n  bring the item on the back of the stack to the top
-{:t,.A_E:t;~t}:count; .#? count\n  counts the number of items on the stack
+{i:t,[]{K}i%:t~t~}:dup; .#? N cp\n  duplicate the top N elements
+{i:t,.Ai!.I:t;~t}:cp;  .#? N ix\n  copy the Nth element from the top of the stack to the top
+{\_@_@\}:duptwo;	     .#? duptwo\n  duplicate the top two items of the stack
+{.A{t,tV:t;~t}~}:back; .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
+{:t,.A_E:t;~t}:count;   .#? count\n  counts the number of items on the stack
 
 .###################################
 .#		      	 TYPES               #
@@ -160,43 +147,22 @@
 .#? C tolower\n  converts a character to lowercase
 {cC,c!c_islower?}:tolower;
 
-.#? C swapcase\n  swaps the case of a character
-{cC,c!}:swapcase;
-
 .#? C isdigit\n  tests if a character is a digit
 { _'0.>\'9.<&}:isdigit;
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
-{a,"\"\\{$a}\""~0I}:spechar;
-
-.#? specialchars\n  print a list of all the special characters currently loaded
-{
-  "name          unicode  char" println
-  "base/charmap.txt" opencsv #{
-    .# Get only the name and the unicode
-    0I" "|[0 1]I~ {a b,
-      aP '  14 strrightpad print
-      b ' 9 strrightpad print
-      a spechar println
-    }~ 0
-  };
-}:specialchars;
+{aS,"\"\\{$a}\""~.'}:spechar;
 
 .###################################
 .#		      	 STRING              #
 .###################################
 
 {l s, [l, s+]B;l(-1)IAKS}:join;         .#? L S|C join\n  join a list of strings with another string or char
-{t:z, t 0:t; # {zBi9%:z+}}:encrypt;			.#? S encrypt\n	 basic string encryption
-{t:z, t 0:t; # {zBi9%:z-}}:decrypt;			.#? S decrypt\n	 basic string decryption
 {_{isdigit}I=}:alldigits;               .#? S alldigits\n  tests if all chars in a string are digits
-{_{}{~}@isnum?}:parseifnum;             .#? S parseifnum\n  if the str is a valid number, parse it; otherwise leave it as a string
 {"^\\s+|\\s+$" |S}:trim;                .#? S trim\n  remove whitespace from start and end of string
 {dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;  .#? SS readdlm\n  open a file, split into lines, split each line using dlm
 {"," readdlm}:opencsv;                  .#? S opencsv\n  opens and parses a csv file into a matrix
 {\_@|S=!}:strcontains;									.#? SS strcontains\n	tests if S1 contains S2
-{"\n"|}:lines;                          .#? S lines\n  splits the string into a list of lines
-{w, data.words {w^} .$ V\;}:sc;         .#? S sc\n  returns the closet english word to the input
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
 {strS padC lenI, str.E len\- {pad\K}\%}:strleftpad;
@@ -210,45 +176,7 @@
 }:replace;
 
 .#? S isnum\n  returns true if the string is a valid number
-{
-  _alldigits\                   .# The str contains all digits
-  _"\\."|S_@EV\E=\ alldigits&   .# The str contains only one decimal, other chars are digits
-  |                             .# str is a number is either of the conditions is met
-}:isnum;
-
-.#? SS levdist\n levenshtein distance between two strings
-{aS bS, a.E b.E levdistrec}:levdist;
-
-.# string 1, length of string 1, string 2, length of string 2
-{sS slenI tS tlenI : cost,
-
-  .# Base case (Empty strings)
-  if (tlen 0= slen0= |) {
-    if (tlen 0=) {
-      slen
-    } {
-      tlen
-    }
-  }
-  .# else
-  {
-    .# test if last chars of strings match
-    if (s(slenV)I t(tlenV)I =) {
-      0:cost;
-    } {
-      1:cost;
-    }
-
-    .# return min of (del char from s,
-    .#  del char from t, delchar from both)
-    [
-      s slenV t tlen  levdistrec B
-      s slen  t tlenV levdistrec B
-      s slenV t tlenV levdistrec cost+
-    ]min
-  }
-
-}:levdistrec;
+{.!'N isa}:isnum;
 
 .#? S tocamel\n  convert a string with underscores to camel case
 {str,
@@ -259,38 +187,20 @@
 }:tocamel;
 
 .###################################
-.#		      	FILE IO              #
-.###################################
-
-{G}:read;
-{G"\n"|}:readlines;
-
-
-
-.###################################
 .#		      	  LIST               #
 .###################################
 
-{A}:list;							.#? L list\n wraps the item on the top of the stack in a list
-{!}:reverse;					.#? L reverse\n  reverses a list
-{E}:length;						.#? L length\n  returns the length of a list
-{S}:sum;							.#? L sim\n  sums a list
-{I}:filter;						.#? LE filter\n  filters a list
 {\N(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
 {N(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
-{L}:lrepeat;					.#? AI lrepeat\n creates an list of length `i` filled with `a`
-{$}:sort:slg;					.#? L sort\n  sorts a list least to greatest
-{$!}:sgl;							.#? L sgl\n  sorts a list greatest to least
 {AKR}:range;					.#? NN range\n  generates a range from n1 to n2
 {lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
 {[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
-{_EQI}:randchoice;		.#? L randchoice (or rc)\n  chooses a random element from the list
 {!{K}U}:flatten;			.#? L flatten\n  flattens the list by a single dimension
 {B\K}:roll;      			.#? L roll\n  move the last element to the front
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
 {\.EV@L#QI}:rpick;    .#? LI rpick\n  pick N random items from L
-
+{[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
   [1|~,                 .# Transpose
@@ -298,7 +208,7 @@
     #{\P\>}             .# Pad each entry with spaces on the left
   ][1|~,                .# Transpose
     .AS                 .# Combine strings
-  ]'\n'join             .# Sepeaate lines
+  ]'\n'join             .# Separate lines
 }:matstr;
 
 {aL bL, [a,,b\N(-1)=]}:setminus;  .#? LL setminus\n removes an item from the first list if it is in the second
@@ -317,12 +227,7 @@
 }:swapitems;
 
 .#? <L> shuffle\n  shuffle a list
-.#{.E{.EVQB|!K!}\_+%}:shuffle; .# Golfed; slower
-{listL,
- .#swap 2 rand items..      len(list)*2 times
-	{list _E_Q\Q swapitems : list;}  list E2*%
-	list .# return the list
-}:shuffle;
+{{.Q}.$}:shuffle;
 
 .#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
 {a b nums,

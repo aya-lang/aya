@@ -83,7 +83,7 @@
         "Invalid col name: $name" ix (-1) = conderr
         ix
       } name .T 'S = .?
-      {name} name .T 'N isa .?
+      {name} name 'N isa .?
       {"Invalid colindex type. Received $name ($(name Mw))" .D}
     ].S
   }:colindex;
@@ -95,7 +95,7 @@
         "Invalid row name: $name" ix (-1) = conderr
         ix
       } name .T 'S = .?
-      {name} name .T 'N isa .?
+      {name} name 'N isa .?
       {"Invalid rowindex type. Received $name ($(name Mw))" .D}
     ].S
   }:rowindex;
@@ -151,6 +151,12 @@
     colnames rownames [table~,.A] dataframe.new
 
   }:opencsv;
+
+  {column self : i,
+    column self.colindex :i;
+    self.rows {iI} .$ [1|~,.A] self.setcolumns
+    self
+  }:sort;
 
 }
 

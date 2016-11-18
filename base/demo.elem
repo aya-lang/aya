@@ -117,4 +117,8 @@
 
   }:colorsort;
 
+  .#? S sc\n  returns the closet english word to the input
+  {w, data.words {w^} .$ V\;}:sc;
+
+
 }
