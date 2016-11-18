@@ -184,7 +184,7 @@ public class DotOps {
 	
 }
 
-//! - 33
+// ! - 33
 class OP_Dot_Bang extends Operation {
 	public OP_Dot_Bang() {
 		this.name = ".!";
@@ -213,7 +213,7 @@ class OP_Dot_Bang extends Operation {
 	}
 }
 
-//$ - 36
+// $ - 36
 class OP_Dot_SortUsing extends Operation {
 	public OP_Dot_SortUsing() {
 		this.name = ".$";
@@ -267,7 +267,7 @@ class OP_Dot_SortUsing extends Operation {
 	
 }
 
-//' - 39
+// ' - 39
 class OP_Dot_CastChar extends Operation {
 	public OP_Dot_CastChar() {
 		this.name = ".'";
@@ -289,60 +289,7 @@ class OP_Dot_CastChar extends Operation {
 	}
 }
 
-
-//// ( - 40
-//class OP_Dot_OpenParen extends Operation {
-//	public OP_Dot_OpenParen() {
-//		this.name = ".(";
-//		this.info = "<N|C> decrement\n<L> uncons from back";
-//		this.argTypes = "N|C|L";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Object a = block.pop();
-//		
-//		if(isNum(a) || isChar(a)) {
-//			block.add(Ops.OPS['-'-'!']);
-//			block.add(1);
-//			block.add(a);
-//			return;
-//		} else if (isList(a)) {
-//			a = toList(a);
-//			toList(a).remove(0);
-//			block.push(a);
-//			return;
-//		}
-//		throw new TypeError(this, a);
-//	}
-//}
-
-////) - 41
-//class OP_Dot_CloseParen extends Operation {
-//	public OP_Dot_CloseParen() {
-//		this.name = ".)";
-//		this.info = "<N|C> increment\n<L> uncons from front";
-//		this.argTypes = "N|C|L";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Object a = block.pop();
-//		
-//		if(isNum(a) || isChar(a)) {
-//			block.add(Ops.OPS['+'-'!']);
-//			block.add(1);
-//			block.add(a);
-//			return;
-//		} else if (isList(a)) {
-//			a = toList(a);
-//			toList(a).remove(length(a)-1);
-//			block.push(a);
-//			return;
-//		}
-//		throw new TypeError(this, a);
-//	}
-//}
-
-//+ - 43
+// + - 43
 class OP_Dot_Plus extends Operation {
 	public OP_Dot_Plus() {
 		this.name = ".+";
@@ -362,7 +309,7 @@ class OP_Dot_Plus extends Operation {
 	}
 }
 
-//- - 45
+// - - 45
 class OP_Dot_Minus extends Operation {
 	public OP_Dot_Minus() {
 		this.name = ".-";
@@ -376,13 +323,16 @@ class OP_Dot_Minus extends Operation {
 		
 		if (bothNumeric(a, b)) {
 			NumMath.lcm(toNumeric(a), toNumeric(b));	
+		} else if (isList(b) && isNumeric(a)) {
+			toList(b).remove(toNumeric(a).toIndex(length(b)));
+			block.push(b);
 		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
 }
 
-//; - 59
+// ; - 59
 class OP_Dot_ClearAll extends Operation {
 	public OP_Dot_ClearAll() {
 		this.name = ".;";
@@ -604,7 +554,7 @@ class OP_Dot_Write extends Operation {
 	}
 }
 
-//I - 73
+// I - 73
 //NOTE: If updating this operator, also update I
 class OP_Dot_I extends Operation {
 	public OP_Dot_I() {
@@ -622,38 +572,23 @@ class OP_Dot_I extends Operation {
 		}
 		
 		if(isNumeric(index)) {
-			int i = toNumeric(index).toInt();
-			//Negative numbers index from the back of the list starting at -1
-
-			if(i < 0) {
-				i = length(list)-(-1*i);
-			}
-			block.push(toList(list).get(i));
-			return;
+			block.push(toList(list).get(toNumeric(index).toIndex(length(list))));
 		} else if (isList(index)) {
 			ArrayList<Object> indexList = toList(index);
 			ArrayList<Object> refList = toList(list);
 			for(int i = 0; i < length(index); i++) {
 				if(isNumeric(indexList.get(i))) {
-					int j = toNumeric(indexList.get(i)).toInt();
-					//Negative numbers index from the back of the list starting at -1
-					if(j < 0) {
-						j = refList.size()-(-1*j);
-					}
-					indexList.set(i, refList.get(toNumeric(j).toInt()));
+					indexList.set(i, refList.get(toNumeric(indexList.get(i)).toIndex(refList.size())));
 				} else {
 					throw new TypeError("I", "list of ints", indexList);
 				}
 			}
 			block.push(indexList);
-			return;
 		} else if (isBlock(index)) {
 			block.push(toBlock(index).filter(toList(list)));
-			return;
+		} else {
+			throw new TypeError(this, index, list);
 		}
-		
-		
-		throw new TypeError(this, index, list);
 	}
 }
 

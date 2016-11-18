@@ -166,6 +166,7 @@ public class ElemTypes {
 	/* BASIC CONVERSION */
 
 	public static Block toBlock(Object o) 				{ return (Block)o; }	
+	/** Cast <code>o</code> to the <code>Numeric</code> abstract type */
 	public static Numeric toNumeric(Object o) 			{ return (Numeric)o; }
 	public static Num toNum(Object o) 					{ return (Num)o; }
 	public static BigNum toBigNum(Object o) 			{ return (BigNum)o; }

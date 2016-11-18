@@ -850,30 +850,6 @@ class OP_B extends Operation {
 	}
 }
 
-////C - 67
-//class OP_C extends Operation {
-//	public OP_C() {
-//		this.name = "C";
-//		this.info = "cast a to type c";
-//		this.argTypes = "AC";
-//	}
-//	@Override public void execute (final Block block) {
-//		final Object objtype = block.pop();
-//		Object item = block.pop();
-//		
-//		if(isChar(objtype)) {
-//			byte type = abbrvToID(toChar(objtype));
-//			item = castGeneral(type, item);
-//			block.push(item);
-//			return;
-//		}
-//		
-//		
-//		throw new TypeError(this, objtype, item);
-//	}
-//
-//}
-
 //D - 68
 class OP_D extends Operation {
 	public OP_D() {
@@ -887,7 +863,7 @@ class OP_D extends Operation {
 		final Object o = block.pop();	//Item
 		
 		if(isNumeric(a) && isList(b)) {
-			toList(b).set(toNumeric(a).toInt(), o);
+			toList(b).set(toNumeric(a).toIndex(length(b)), o);
 		} else if (isUserObject(b)) {
 			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, toNumeric(a).toInt());
 		} else {		
@@ -1113,24 +1089,13 @@ class OP_I extends Operation {
 		}
 		
 		if(isNumeric(index)) {
-			int i = toNumeric(index).toInt();
-			//Negative numbers index from the back of the list starting at -1
-
-			if(i < 0) {
-				i = length(list)-(-1*i);
-			}
-			block.push(toList(list).get(i));
+			block.push(toList(list).get(toNumeric(index).toIndex(length(list))));
 		} else if (isList(index)) {
 			ArrayList<Object> indexList = toList(index);
 			ArrayList<Object> refList = toList(list);
 			for(int i = 0; i < length(index); i++) {
 				if(isNumeric(indexList.get(i))) {
-					int j = toNumeric(indexList.get(i)).toInt();
-					//Negative numbers index from the back of the list starting at -1
-					if(j < 0) {
-						j = refList.size()-(-1*j);
-					}
-					indexList.set(i, refList.get(toNumeric(j).toInt()));
+					indexList.set(i, refList.get(toNumeric(indexList.get(i)).toIndex(refList.size())));
 				} else {
 					throw new TypeError("I", "list of ints", indexList);
 				}
@@ -1686,13 +1651,8 @@ class OP_ApplyTo extends Operation {
 			}
 			Block blk = new Block();
 			blk.addAll(toBlock(a).getInstructions().getInstrucionList());
-			int index = toNumeric(b).toInt();
-			
-			//Negative numbers index from the back of the list starting at -1
-			if(index < 0) {
-				index = length(c)-(-1*index);
-			}
-			
+			int index = toNumeric(b).toIndex(length(c));
+
 			//index = index==-1 ? toList(c).size()-1 : index; //Last index if index == -1
 			blk.push(toList(c).get(index));
 			blk.eval();

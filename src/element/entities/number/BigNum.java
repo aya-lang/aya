@@ -70,6 +70,11 @@ public class BigNum extends Numeric {
 		return this.value;
 	}
 	
+	public int toIndex(int size) {
+		int i = this.value.intValue();
+		return i >= 0 ? i : size + i;
+	}
+	
 	public String toString() {
 		return ElemTypes.trimZeros(value.toString(true));
 	}

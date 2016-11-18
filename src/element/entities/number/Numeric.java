@@ -13,6 +13,7 @@ public abstract class Numeric implements Comparable<Numeric> {
 	public abstract double toDouble();
 	public abstract boolean toBool();
 	public abstract Apfloat toApfloat();
+	public abstract int toIndex(int size);
 		
 	public abstract Numeric negate();
 	public abstract Numeric bnot();

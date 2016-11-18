@@ -77,6 +77,11 @@ public class Num extends Numeric {
 		}
 	}
 	
+	public int toIndex(int size) {
+		int i = (int)this.value;
+		return i >= 0 ? i : size + i;
+	}
+	
 	//*******************************
 	//   COMPARISONS
 	//*******************************
