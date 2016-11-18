@@ -116,7 +116,8 @@ public class MyConsole extends JPanel {
 			cw.clear();
 			break;
 		case Element.RETURN_EXIT:
-			break; //do nothing
+			ElementIDE.exit();
+			break;
 		case Element.RETURN_ERROR:
 			cw.printEx(elem.getOut().dumpAsString());
 			break;

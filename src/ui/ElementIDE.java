@@ -125,18 +125,7 @@ public class ElementIDE extends JFrame
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent we) { 
-				if(EditorWindow.hasText()) {
-					String ObjButtons[] = {"Yes","No"};
-				    int PromptResult = JOptionPane.showOptionDialog(null, 
-				        "Editor still has code. Are you sure you want to exit?", "Editor Has Code", 
-				        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
-				        ObjButtons,ObjButtons[1]);
-				    if(PromptResult==0) {
-				      System.exit(0);          
-				    }
-				} else {
-					System.exit(0);
-				}
+				exit();
 		    }
 		});
 		
@@ -325,6 +314,21 @@ public class ElementIDE extends JFrame
 	
 		
 		interpreter.getInputLine().grabFocus();
+	}
+	
+	public static void exit() {
+		if(EditorWindow.hasText()) {
+			String ObjButtons[] = {"Yes","No"};
+		    int PromptResult = JOptionPane.showOptionDialog(null, 
+		        "Editor still has code. Are you sure you want to exit?", "Editor Has Code", 
+		        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
+		        ObjButtons,ObjButtons[1]);
+		    if(PromptResult==0) {
+		      System.exit(0);          
+		    }
+		} else {
+			System.exit(0);
+		}
 	}
 	
 	public void insertFilenameAtCarat() {
