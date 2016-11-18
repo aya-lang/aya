@@ -88,6 +88,8 @@ public class Ops {
 	public static final MemberVariable MV_INDEX = new MemberVariable("index");
 	public static final MemberVariable MV_RANDCHOICE = new MemberVariable("randchoice");
 	public static final MemberVariable MV_SETINDEX = new MemberVariable("setindex");
+	public static final MemberVariable MV_EQ = new MemberVariable("eq");
+
 
 	
 	
@@ -678,16 +680,26 @@ class OP_LessThan extends Operation {
 }
 
 
-//= - 61
+// = - 61
 class OP_Equal extends Operation {
 	public OP_Equal() {
 		this.name = "=";
-		this.info = "equality comparison operator";
-		this.argTypes = "NN|CC|SS|LL";
+		this.info = "equality comparison operator\n(overloadable: eq )";
+		this.argTypes = "AA";
 	}
 	@Override
 	public void execute(final Block block) {
-		block.push(areEqual(block.pop(),block.pop()));
+		final Object a = block.pop();
+		final Object b = block.pop();
+		
+		if (isUserObject(a)) {
+			block.push(b);
+			toUserObject(a).callVariable(block, Ops.MV_EQ);
+		} else if (isUserObject(b)) {
+			toUserObject(b).callVariable(block, Ops.MV_EQ, a);
+		} else {
+			block.push(areEqual(a,b));
+		}
 	}
 }
 
