@@ -1183,7 +1183,7 @@ class OP_K extends Operation {
 	}
 }
 
-//N - 78
+// N - 78
 class OP_N extends Operation {
 	public OP_N() {
 		this.name = "N";
@@ -1196,6 +1196,9 @@ class OP_N extends Operation {
 		
 		int index = 0;
 		if(isList(b)) {
+			
+			block.push(b);
+
 			for (Object o : toList(b)) {
 				if (areEqual(o, a)) {
 					block.push(new Num(index));

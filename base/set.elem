@@ -9,7 +9,7 @@
   {lL, [l remdups] set MO}:new;
 
   .#? A (set) set.in\n  tests if an item is in a set
-  {item self, self.list item N(-1)=!}:in;
+  {item self, self.list item N\;(-1)=!}:in;
 
   .#? A (set) set.add\n  add an item to a set\n  overloaded operator: +
   {item self, {s.list [item] K;}{}item self.in?self}:add;
@@ -18,7 +18,7 @@
   .#? A (set) set.rem\n  remove an item from a set\n  overloaded operator: -
   {item self,
     {}
-    {self.list_ item N|V;K self.setlist}
+    {self.list_ item N\;|V;K self.setlist}
     item self.in?
     self
   }:rem;

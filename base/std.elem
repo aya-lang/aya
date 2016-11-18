@@ -190,8 +190,8 @@
 .#		      	  LIST               #
 .###################################
 
-{\N(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
-{N(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
+{\N\;(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
+{N\;(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
 {AKR}:range;					.#? NN range\n  generates a range from n1 to n2
 {lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
 {[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
@@ -211,8 +211,8 @@
   ]'\n'join             .# Separate lines
 }:matstr;
 
-{aL bL, [a,,b\N(-1)=]}:setminus;  .#? LL setminus\n removes an item from the first list if it is in the second
-{aL bL,[a,,b\N(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
+{aL bL, [a,,b\N\;(-1)=]}:setminus;  .#? LL setminus\n removes an item from the first list if it is in the second
+{aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
 {lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
 
 .#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each

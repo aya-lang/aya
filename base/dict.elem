@@ -25,7 +25,7 @@
     {.data#1I}:vals;   .#? (dict) dict.vals\n  returns a list of the dicts values
 
     .#? (key) (dict) dict.getindex\n  return value of index for the key/value pair
-    {.keys\N}:getindex;
+    {.keys\N\;}:getindex;
 
     .#? (key) (dict) dict.index\n  return value for key, return nil if not found
     {d k, k d.getindex _(-1)= {d.vals\I} {;nil} @?}:index;

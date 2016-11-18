@@ -617,7 +617,7 @@ class OP_Dot_TryCatch extends Operation {
 	}
 }
 
-//N - 78
+// N - 78
 class OP_Dot_N extends Operation {
 	public OP_Dot_N() {
 		this.name = ".N";
@@ -630,6 +630,9 @@ class OP_Dot_N extends Operation {
 		
 		int index = 0;
 		if(isList(b) && isBlock(a)) {
+			
+			block.push(b); //Push the list
+
 			final Block blk = toBlock(a);
 			for (Object o : toList(b)) {
 				Block cond = blk.duplicate();
@@ -637,7 +640,6 @@ class OP_Dot_N extends Operation {
 				cond.eval();
 				Object result = cond.pop();
 				if (isBool(result) && toBool(result)) {
-					block.push(b); //Push the list
 					block.push(new Num(index)); // ..and the index
 					return;
 				}
@@ -650,7 +652,7 @@ class OP_Dot_N extends Operation {
 	}
 }
 
-//P - 80
+// P - 80
 class OP_Dot_Print extends Operation {
 	public OP_Dot_Print() {
 		this.name = ".P";

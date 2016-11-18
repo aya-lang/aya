@@ -29,7 +29,7 @@
 
   .# Row Indexing
   {nameS this : ix,
-    this.rownames name N :ix;
+    this.rownames name N :ix;;
     "dataframe.rowbyname: unknown row name: $name" ix (-1) = conderr
     ix this.rowbyix
   }:rowbyname;
@@ -48,7 +48,7 @@
 
   .# Column Indexing
   {nameS this : ix,
-    this.colnames name N :ix;
+    this.colnames name N :ix;;
     "dataframe.colbyname: unknown column name: $name" ix (-1) = conderr
     ix this.colbyix
   }:colbyname;
@@ -79,7 +79,7 @@
   {name self : ix,
     [
       {
-        self.colnames name N :ix;
+        self.colnames name N :ix;;
         "Invalid col name: $name" ix (-1) = conderr
         ix
       } name .T 'S = .?
@@ -91,7 +91,7 @@
   {name self : ix,
     [
       {
-        self.rownames name N :ix;
+        self.rownames name N :ix;;
         "Invalid row name: $name" ix (-1) = conderr
         ix
       } name .T 'S = .?
