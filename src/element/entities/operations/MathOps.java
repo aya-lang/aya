@@ -167,7 +167,7 @@ public class MathOps {
 		if(op >= 33 && op <= 126) {
 			return MATH_OPS[op-FIRST_OP];
 		} else {
-			throw new RuntimeException("Misc. operator 'M" + op + "' does not exist");
+			throw new ElementRuntimeException("Misc. operator 'M" + op + "' does not exist");
 		}
 	}
 	
