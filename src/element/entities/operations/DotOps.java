@@ -1,6 +1,7 @@
 package element.entities.operations;
 
 import static element.ElemTypes.IDToAbbrv;
+import static element.ElemTypes.areEqual;
 import static element.ElemTypes.bothChar;
 import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothString;
@@ -108,7 +109,7 @@ public class DotOps {
 		/* 75 K  */ new OP_Dot_TryCatch(),
 		/* 76 L  */ null,
 		/* 77 M  */ null,
-		/* 78 N  */ null,
+		/* 78 N  */ new OP_Dot_N(),
 		/* 79 O  */ null,
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
@@ -677,6 +678,39 @@ class OP_Dot_TryCatch extends Operation {
 				b.eval();
 				block.appendToStack(b.getStack());
 			}
+		}
+	}
+}
+
+//N - 78
+class OP_Dot_N extends Operation {
+	public OP_Dot_N() {
+		this.name = ".N";
+		this.info = "return thee index of the first element of L that satifies E";
+		this.argTypes = "LA";
+	}
+	@Override public void execute (final Block block) {
+		final Object a = block.pop(); //Block
+		final Object b = block.pop(); //List
+		
+		int index = 0;
+		if(isList(b) && isBlock(a)) {
+			final Block blk = toBlock(a);
+			for (Object o : toList(b)) {
+				Block cond = blk.duplicate();
+				cond.push(o);
+				cond.eval();
+				Object result = cond.pop();
+				if (isBool(result) && toBool(result)) {
+					block.push(b); //Push the list
+					block.push(new Num(index)); // ..and the index
+					return;
+				}
+				index++;
+			}
+			block.push(new Num(-1));
+		} else {
+			throw new TypeError(this, a, b);
 		}
 	}
 }

@@ -267,7 +267,7 @@
   total
 }:digitstonum;
 
-{l c : out,[]:out; l {B_ {AKfalse} {outK;true} @c?}W out}:takewhile:tw;
+{e,{e!}.N|;}:takewhile:tw;
 {e,{e=}tw}:takewhileeq:twe;
 
 .###################################
