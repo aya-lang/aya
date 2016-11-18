@@ -865,7 +865,7 @@ class OP_D extends Operation {
 		if(isNumeric(a) && isList(b)) {
 			toList(b).set(toNumeric(a).toIndex(length(b)), o);
 		} else if (isUserObject(b)) {
-			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, toNumeric(a).toInt());
+			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, a);
 		} else {		
 			throw new TypeError(this, a, b, o);
 		}
