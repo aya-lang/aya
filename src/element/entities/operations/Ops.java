@@ -1521,7 +1521,7 @@ class OP_Caret extends Operation {
 			//Raise b to the ath power
 			block.push(NumMath.pow(toNumeric(b), toNumeric(a)));
 		} else if (bothString(a,b)) {
-			block.push(ElementString.levenshteinDistance(getString(a), getString(b)));
+			block.push(new Num(ElementString.levenshteinDistance(getString(a), getString(b))));
 		} else if (isUserObject(a)) {
 			block.push(b);
 			toUserObject(a).callVariable(block, Ops.MV_POW);
