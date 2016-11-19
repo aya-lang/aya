@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -19,7 +18,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import element.ElemPrefs;
@@ -161,8 +159,8 @@ public class FreeChartInterface extends JFrame
       }
       
       cp.setXvalues(xvals);
-      cp.addYvalues("sin", null,  ysin);
-      cp.addYvalues("cos", Color.YELLOW, ycos);
+      cp.addYvalues("sin", 2, null,  ysin);
+      cp.addYvalues("cos", 2, Color.YELLOW, ycos);
       
       
       drawChart(cp);

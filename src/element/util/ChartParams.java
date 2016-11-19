@@ -36,11 +36,8 @@ public class ChartParams {
 	private boolean legend;
 	private boolean horizontal;
 	private ArrayList<Color> seriesColors;
-	private ArrayList<Integer> seriesStrokes;
+	private ArrayList<Float> seriesStrokes;
 	private ArrayList<String> seriesNames;
-	
-	private static Color[] defaultColors = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.MAGENTA };
-
 
 	public ChartParams() {
 		this.type = LINE;
@@ -58,6 +55,7 @@ public class ChartParams {
 		this.show = true;
 		this.legend = true;
 		this.horizontal = false;
+		this.seriesStrokes = new ArrayList<>();
 		this.seriesColors = new ArrayList<>();
 		this.seriesNames = new ArrayList<>();
 	}
@@ -115,21 +113,24 @@ public class ChartParams {
 			//Every item in y must be a list of params
 			if (o instanceof ArrayList) {
 				ArrayList<Object> list = (ArrayList<Object>)o;
-				//Each list must have a name, color and dataset
-				if (list.size() == 3) {
+				//Each list must have a name, stroke, color and dataset
+				if (list.size() == 4) {
 					Object o_name = list.get(0);
-					Object o_colorList = list.get(1);
-					Object o_data = list.get(2);
-					if (o_name instanceof String && o_colorList instanceof ArrayList && o_data instanceof ArrayList) {
+					Object o_stroke = list.get(1);
+					Object o_colorList = list.get(2);
+					Object o_data = list.get(3);
+					if (o_name instanceof String && o_stroke instanceof Numeric && o_colorList instanceof ArrayList && o_data instanceof ArrayList) {
 						String name = (String)o_name;
+						Numeric stroke = (Numeric)o_stroke;
 						Color color = parseColor((ArrayList<Object>)o_colorList);
 						ArrayList<Numeric> data = parseData((ArrayList<Object>)o_data);
 						
-						cp.addYvalues(name, color, data);
+						cp.addYvalues(name, stroke.toFloat(), color, data);
 						
 					} else {
 						throw new ElementRuntimeException("Plot expected name, RGB color list, and data list. Recieved:\n"
 								+ "\t" + str(o_name) + "\n"
+								+ "\t" + str(o_stroke) + "\n"
 								+ "\t" + str(o_colorList) + "\n"
 								+ "\t" + str(o_data));
 					}
@@ -177,8 +178,9 @@ public class ChartParams {
 	private static Pair<Double, Double> parseAxis(ArrayList<Object> list) {
 		if (list.size() == 2) {
 			if (list.get(0) instanceof Numeric && list.get(1) instanceof Numeric) {
-				Numeric n_max = (Numeric) list.get(0);
-				Numeric n_min = (Numeric) list.get(1);
+				Numeric n_min = (Numeric) list.get(0);
+				Numeric n_max = (Numeric) list.get(1);
+
 				
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
 			} else {
@@ -307,23 +309,19 @@ public class ChartParams {
 
 
 
-	public void setLegend(boolean legend) {
-		this.legend = legend;
+	public void setLegend(Boolean l) {
+		//If input is null, leave it unchanged
+		this.legend = l == null ? this.legend : l;
 	}
 	
 	
 	
 	public Color getColor(int i) {	
-		Color c = seriesColors.get(i);
-		return c == null ? (defaultColors[i % defaultColors.length]) : c;
+		return seriesColors.get(i);
 	}
 	
-	public int getStroke(int i) {
-		if (seriesStrokes == null || i >= seriesStrokes.size()) {
-			return 2;
-		} else {
-			return seriesStrokes.get(i);
-		}
+	public float getStroke(int i) {
+		return seriesStrokes.get(i);
 	}
 	
 	public String getName(int i) {
@@ -331,11 +329,12 @@ public class ChartParams {
 		return out == null ? ("series " + i) : out;
 	}
 	
-	public void addYvalues(String name, Color color, ArrayList<Numeric> vals) {
+	public void addYvalues(String name, float stroke, Color color, ArrayList<Numeric> vals) {
 		if (vals.size() == xvalues.size()) {
 			yvalues.add(vals);
 			seriesNames.add(name);
 			seriesColors.add(color);
+			seriesStrokes.add(stroke);
 			seriesCount++;
 		} else {
 			throw new IllegalArgumentException("yvalues must be same length as x values");
@@ -424,8 +423,16 @@ public class ChartParams {
 		double max;
 		double min;
 		public Axis(double max, double min) {
-			this.max = max;
-			this.min = min;
+			if (max > min) {
+				this.max = max;
+				this.min = min;
+			} else if (max < min) {
+				this.max = min;
+				this.min = max;
+			} else {
+				this.max = max;
+				this.min = max - 1;
+			}
 		}
 	}
 	

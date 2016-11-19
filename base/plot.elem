@@ -1,17 +1,28 @@
 {@ plot,
 
+  {@axis, 
+    attr "x y"
+    {minN maxN,
+      [min max] plot.axis MO
+    }:new;
+  }
+  
+  .# Plot types
+  0:tline;     .#? plot.tline\n  line plot type id
+  1:tscatter;  .#? plot.tscatter\n  scatter plot type id
+
   """
+    type
     width
     height
     title
     xlabel
-    strokes
-    colorlist
-    centery
-    data
-    defaultcs
-    ymax
-    ymin
+    ylabel
+    legend
+    xaxis
+    yaxis
+    xvals
+    series
   """:fieldnames;
 
   attr fieldnames
@@ -20,30 +31,25 @@
   .#? plot.new\n  create a new plot instance with default settings
   {:plt,
     [plot.fieldnamesE,0] plot MO :plt;
+    
+    plot.tline  plt.settype
     500         plt.setwidth
     400         plt.setheight
     ""          plt.settitle
     ""          plt.setxlabel
-    []          plt.setstrokes
-    F           plt.setcentery
-    []          plt.setdata
-    []          plt.setcolorlist
-    9e999       plt.setymax
-    9e999!      plt.setymin
-
-    [ colors.purple
-      colors.yellow
-      colors.green
-      colors.red
-      colors.blue
-    ]          plt.setdefaultcs
-
+    ""          plt.setylabel
+    []          plt.setxvals
+    []          plt.setseries
+    T           plt.setlegend
+    0           plt.setxaxis
+    0           plt.setyaxis
+    
     plt
   }:new;
 
   .#? (plot) plot.view\n  view the plot in a new window
   {self,
-    self.propertylist self.data MX
+    self.propertylist MX
   }:view;
 
   .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
@@ -54,12 +60,6 @@
     self.data
     MX
   }:save;
-
-  .#? N plot.setybound\n  set the y bounds N and N!
-  {nN self,
-    n self.setymax
-    n! self.setymin
-  }:setybound;
 
   .#? L<N> (plot) plot.addline\n  add a data set to the plot
   {listL self,
@@ -72,39 +72,24 @@
     }
   }:addline;
 
+  {dataL self,
+    data self.setxvals
+  }:domain;
+  
+  {nameS strokeN colorL dataL self,
+    self.series [name stroke color data] AK;
+  }:addseries;
+  
+  {nameS strokeN colorL exprE self,
+    self.series [name stroke color [self.xvals, expr]] AK;
+  }:addexpr;
+  
+  .{
   .#? NNE (plot) plot.addexpr\n  evaluate E on the domain of N1 to N2 and add it to the plot
   {xminN xmaxN exprE self,
     xmin xmax 600.1 linspace #expr self.addline
   }:addexpr;
-
-
-  .#? N (color) L<N> plot.addcustomline\n  add a line to the plot with custom stroke and color
-  {strokeN color listL self
-    :validdata validcolor,
-    F:validdata:validcolor;
-
-    .# Data
-    if (list'N#isa {&}U) {
-      T:validdata;
-    } {
-      "plot.addcustomline: data is not valid. received:\n$list"
-    }
-
-    .# Color
-    if (colorMw ".color" =) {
-      T:validcolor;
-    } {
-      "plot.addcustomline: color is not valid. received:\n$color"
-    }
-
-    if (validdata validcolor &) {
-      self.data list AK self.setdata
-      self.colorlist color.rgb AK self.setcolorlist
-      self.strokes stroke K self.setstrokes
-    } {}
-  }:addcustomlin;
-
-
+  .}
 
   .#? NNL<E> plot.quickplot\n  draw a plot from N1 to N2 of expressions L
   {plot.expr.view}:quickplot;
@@ -123,12 +108,6 @@
   .# UTIL FUNCTIONS
   .###################
 
-  .# return the next color in the cycle. shift the cycle once
-  {self,
-    self.defaultcs roll self.setdefaultcs
-    self.defaultcs 0 I
-  }:nextcolor;
-
   .# return a property list for this plot
   {self,
     [
@@ -136,17 +115,19 @@
       ["height" self.height]
       ["title" self.title]
       ["xlabel" self.xlabel]
-      ["centerZero" self.centery]
-      ["ymax" self.ymax]
-      ["ymin" self.ymin]
-
-      self.strokesE0=! then {
-        ["strokes" self.strokes]
+      ["ylabel" self.ylabel]
+      ["legend" self.legend] 
+      
+      self.xaxis 0=! then {
+        ["xaxis" [self.xaxis.min self.xaxis.max]]
+      }
+        
+      self.yaxis 0=! then {
+        ["yaxis" [self.yaxis.min self.yaxis.max]]
       }
 
-      self.colorlistE0=! then {
-        ["colors" self.colorlist]
-      }
+      ["x" self.xvals]
+      ["y" self.series]
     ]
   }:propertylist;
 
