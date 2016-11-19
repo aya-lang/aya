@@ -162,6 +162,31 @@ import "base/constants"
 {set : m, set avg:m; set#{m-2^}S setE /}:variance;
 {variance Mq}:stdev;
 
+.#? xL xL regression\n  return a block that evaluates to the regression of the sets
+{x y : 
+  n a b
+  sumy sumx
+  sumxsq
+  sumxytimes,
+
+  xE:n;
+  x2#^S:sumxsq;
+  [x y,*]S:sumxytimes;
+  xS:sumx;
+  yS:sumy;
+
+
+  sumy sumxsq *  sumx sumxytimes * -
+  n sumxsq * sumx2^ -
+  /:a;
+
+  n sumxytimes * sumx sumy * -
+  n sumxsq * sumx2^- 
+  /:b;
+
+  "{($b)*($a)+}"~
+}:regression;
+
 .# Constants
 
 0_/:nan;    .#? nan \n  not a number double literal

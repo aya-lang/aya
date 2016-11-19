@@ -21,8 +21,9 @@
     plot!:plt;
     d plt.domain
     for 'n (4R) {
-      "" 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
+      nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
     };
+    "Demo: Sin Series" plt.settitle
     2 plt.setstroke
 
     plt.view

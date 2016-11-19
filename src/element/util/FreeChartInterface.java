@@ -27,7 +27,7 @@ import element.exceptions.ElementRuntimeException;
 
 @SuppressWarnings("serial")
 public class FreeChartInterface extends JFrame 
-{
+{	
    @SuppressWarnings("deprecation")
    public FreeChartInterface(ChartParams cp)
    {
@@ -110,6 +110,7 @@ public class FreeChartInterface extends JFrame
 			   throw new ElementRuntimeException("Unable to save plot to " + path);
 		   }
 	   }
+	   
    }
    
    private XYDataset createDataset(ChartParams cp)
@@ -131,7 +132,7 @@ public class FreeChartInterface extends JFrame
 	         
       return dataset;
    }
-   
+      
    public static void drawChart(ChartParams cp) {
 	   FreeChartInterface chart = new FreeChartInterface(cp);
 	   chart.pack();

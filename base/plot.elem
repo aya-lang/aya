@@ -103,6 +103,14 @@
     plt
   }:scatter;
   
+  .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
+  {xL yL : reg,
+    x y regression :reg;
+    x y plot.scatter.view
+    x [x,reg] plot.line.view
+    "Regression: y= $(1reg0reg-)x + ($(0reg))".P
+  }:scatterreg;
+  
   .# domainL rangeL plot.line\n  return a line plot with the given domain and range
   {domainL rangeL : plt,
     plot!:plt;
