@@ -122,7 +122,11 @@ public class FreeChartInterface extends JFrame
 		   for (int j = 0; j < cp.getXvalues().size(); j++) {
 			   series.add(cp.getX(j), cp.getY(i, j));
 		   }
-		   dataset.addSeries(series);
+		   try {
+			   dataset.addSeries(series);
+		   } catch (IllegalArgumentException e) {
+			   throw new ElementRuntimeException("Plot: Each series must have a unique (or empty) name");
+		   }
 	   }
 	         
       return dataset;

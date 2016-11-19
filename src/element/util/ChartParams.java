@@ -17,6 +17,17 @@ public class ChartParams {
 	public static final int LINE = 0;
 	public static final int SCATTER = 1;
 	
+	public static Color[] DEFAULT_COLORS = {
+			Color.BLUE,
+			Color.RED, 
+			Color.GREEN,
+			Color.YELLOW,
+			Color.MAGENTA,
+			Color.ORANGE,
+			Color.PINK,
+			Color.CYAN
+	};
+	
 	private int seriesCount;
 
 	private int type;
@@ -29,6 +40,7 @@ public class ChartParams {
 	private String ylabel;
 	private Axis xaxis;
 	private Axis yaxis;
+	private float stroke;
 	private ArrayList<Float> xvalues;
 	private ArrayList<ArrayList<Numeric>> yvalues;
 	private String filename;
@@ -49,6 +61,7 @@ public class ChartParams {
 		this.ylabel = "";
 		this.xaxis = null;
 		this.yaxis = null;
+		this.stroke = -1.0f;
 		this.xvalues = null;
 		this.yvalues = new ArrayList<>();
 		this.filename = null;
@@ -83,6 +96,7 @@ public class ChartParams {
 		cp.setType((Numeric)getParam("type", params));
 		cp.setWidth((Numeric)getParam("width", params));
 		cp.setHeight((Numeric)getParam("height", params));
+		cp.setStroke((Numeric)getParam("stroke", params));
 		cp.setTitle((String)getParam("title", params));
 		cp.setXlabel((String)getParam("xlabel", params));
 		cp.setYlabel((String)getParam("ylabel", params));
@@ -108,7 +122,7 @@ public class ChartParams {
 		
 		ArrayList<Object> series = (ArrayList<Object>)getParam("y", params);
 		
-		//Parse the series
+		//Parse the series (must be the last step)
 		for (Object o : series) {
 			//Every item in y must be a list of params
 			if (o instanceof ArrayList) {
@@ -149,7 +163,9 @@ public class ChartParams {
 	}
 	
 	private static Color parseColor(ArrayList<Object> o_color) {
-		if (o_color.size() == 3
+		if (o_color.size() == 0) {
+			return null;
+		} else if (o_color.size() == 3
 				&& o_color.get(0) instanceof Numeric
 				&& o_color.get(1) instanceof Numeric
 				&& o_color.get(2) instanceof Numeric) {
@@ -228,6 +244,19 @@ public class ChartParams {
 		if (this.type != SCATTER
 				&& this.type != LINE) {
 			this.type = LINE;
+		}
+	}
+	
+	private void setStroke(Numeric t) {
+		//If input is null, leave it unchanged
+		this.stroke = t == null ? this.stroke : t.toFloat();
+	}
+	
+	public float getStroke(int i) {
+		if (this.stroke == -1.0f) {
+			return seriesStrokes.get(i);
+		} else {
+			return this.stroke;
 		}
 	}
 	
@@ -317,12 +346,15 @@ public class ChartParams {
 	
 	
 	public Color getColor(int i) {	
-		return seriesColors.get(i);
+		Color c = seriesColors.get(i);
+		if (c == null) {
+			return DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+		} else {
+			return c;
+		}
 	}
 	
-	public float getStroke(int i) {
-		return seriesStrokes.get(i);
-	}
+
 	
 	public String getName(int i) {
 		String out = seriesNames.get(i);
@@ -331,8 +363,13 @@ public class ChartParams {
 	
 	public void addYvalues(String name, float stroke, Color color, ArrayList<Numeric> vals) {
 		if (vals.size() == xvalues.size()) {
+			if (name.equals("")) {
+				this.legend = false;
+				seriesNames.add(randStr());
+			} else {
+				seriesNames.add(name);
+			}
 			yvalues.add(vals);
-			seriesNames.add(name);
 			seriesColors.add(color);
 			seriesStrokes.add(stroke);
 			seriesCount++;
@@ -417,6 +454,15 @@ public class ChartParams {
 
 	public void setYvalues(ArrayList<ArrayList<Numeric>> yvalues) {
 		this.yvalues = yvalues;
+	}
+	
+	private static String randStr() {
+		Random rand = new Random();
+		String out = "";
+		for (int i = 0; i < 10; i++) {
+			out += ((char)rand.nextInt(25)) + 'A';
+		}
+		return out;
 	}
 	
 	private class Axis {
