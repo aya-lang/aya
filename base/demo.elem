@@ -14,27 +14,19 @@
   {[1|,"\{pi}\{ppi}"Q].P}:wall;
 
   .#? demo.sinsrs\n  plot a sin series with coefficients
-  {:sinsrs,
-    {n : cs f,
-      .#Generate coefficients
-      nR:cs;
+  {:d,
 
-      .#Series function
-      {x, [cs [nR,x*Ms],*]S}:f;
+    [0dy4pi*]R:d;
 
-      [0dy4pi*,f]
-    }:sinsrs;
+    plot!:plt;
+    d plt.domain
+    for 'n (4R) {
+      "" 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
+    };
+    2 plt.setstroke
 
-    [
-      ["strokes" [1.5] ]
-      ["title" "Fourier Sine Series"]
-      ["height" 300]
-      ["width" 600]
-      ["filename" "fss1"]
-    ]
-    4R #sinsrs
-    MX
-  }:sinsrs;
+    plt.view
+   }:sinsrs;
 
   .#? demo.rainbow\n  generate a rainbow
   {:p,

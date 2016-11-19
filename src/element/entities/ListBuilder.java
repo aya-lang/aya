@@ -123,13 +123,13 @@ public class ListBuilder {
 		double d = n.toDouble();
 		int inc = 1;
 		if(d < 0) inc = -1;
-		return arrToAL(doubleRange(1, d-1, inc));
+		return arrToAL(doubleRange(1, d, inc));
 	}
 	
 	public static ArrayList<Object> buildRange(char c) {
 		int inc = 1;
 		if(c < 0) inc = -1;
-		return arrToAL(doubleRange(1, c-1, inc));
+		return arrToAL(charRange((char)1, (char)(c), inc));
 	}
 	
 	public static ArrayList<Object> buildRange(BigNum n) {
