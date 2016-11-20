@@ -21,8 +21,8 @@
 
     .# Frac input is a list
     { "frac.new: must have two items" nE2=! conderr
-      "frac.new: must contain only ints" n{'Iisa} all! conderr
-      n frac MO.reduce .# All tests passed
+      "frac.new: must contain only ints" n{'Nisa} all! conderr
+      n#.] frac MO.reduce .# All tests passed
     } n 'L isa .?
 
     .# Frac input is a number

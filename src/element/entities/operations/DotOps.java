@@ -302,7 +302,7 @@ class OP_Dot_Plus extends Operation {
 		Object b = block.pop();
 		
 		if (bothNumeric(a, b)) {
-			NumMath.gcd(toNumeric(a), toNumeric(b));	
+			block.push(NumMath.gcd(toNumeric(a), toNumeric(b)));	
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -322,7 +322,7 @@ class OP_Dot_Minus extends Operation {
 		Object b = block.pop();
 		
 		if (bothNumeric(a, b)) {
-			NumMath.lcm(toNumeric(a), toNumeric(b));	
+			block.push(NumMath.lcm(toNumeric(a), toNumeric(b)));	
 		} else if (isList(b) && isNumeric(a)) {
 			toList(b).remove(toNumeric(a).toIndex(length(b)));
 			block.push(b);
