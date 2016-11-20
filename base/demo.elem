@@ -25,6 +25,7 @@
     };
     "Demo: Sine Series" plt.settitle
     2 plt.setstroke
+    0 pi4* plt.setxaxis
 
     plt.view
    }:sinsrs;
