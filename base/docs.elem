@@ -16,7 +16,7 @@
 
 .{? docs: overloaded operators
   1 arg
-    $  dollar
+    \$  dollar
     E  len
     P  str
   2 args
@@ -29,7 +29,8 @@
     ^  pow
     |  bar
     I  index (assumes second item is obj)
-}
+    D  setindex (assumes second item is obj)
+.}
 
 .{? docs: argument type key
   D - num

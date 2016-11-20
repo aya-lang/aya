@@ -232,8 +232,12 @@ class OP_Dot_SortUsing extends Operation {
 			
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.size());
-			for (int i = 0; i < objs.size(); i++) {
-				items.add(new SUItem(objs.get(i), toNumeric(key_obj.get(i)).toDouble()));
+			try {
+				for (int i = 0; i < objs.size(); i++) {
+					items.add(new SUItem(objs.get(i), toNumeric(key_obj.get(i)).toDouble()));
+				}
+			} catch (ClassCastException e) {
+				throw new ElementRuntimeException(".$: sort block must evaluate to a number");
 			}
 			
 			Collections.sort(items);

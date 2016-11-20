@@ -83,6 +83,13 @@
   {self,
     self.real 2^ self.imag 2^ + Mq
   }:mag;
+  
+  .#? (complex) (complex) complex.eq\n  test if two complex numbers are equal
+  {a b,
+    a complex.cast:a;
+    b complex.cast:b;
+    a.imag b.imag = a.real b.real = &
+  }:eq;
 
 }
 

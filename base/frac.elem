@@ -89,14 +89,21 @@
     [a.n b.n*.] a.d b.d*.]] frac MO .reduce
   }:star:mul;
 
-  .#? (frac)(frac) frac.div\n  divide two fractions
+  .#? (frac)(frac) frac.fslash\n  divide two fractions
   {a b,
     .# Convert a to a frac if needed
     a frac!:a;
     b frac!:b;
 
     [a.n b.d*.] a.d b.n*.]] frac MO .reduce
-  }:fslash:div;
+  }:fslash;
+  
+  .#? (frac)(frac) frac.eq\n  tests if two fractions are equal
+  {a b,
+    a frac!:a;
+    b frac!:b;
+    a.n b.n = a.d b.d = &
+  }:eq;
 
 } .# END frac
 

@@ -21,6 +21,7 @@
     in matrix.is?
   }:new;
 
+  {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
   {m, m.rowsE m.rows#E\#= {|}U}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
   {a b, [a.rows b.rows,[2|,+]] matrix!}:matadd;    .#? (matrix)(matrix) matrix.add\n  add two matrices
   {a b, [a.rows b.rows,[2|,-]] matrix!}:matsub;    .#? (matrix)(matrix) matrix.sub\n  subtract two matrices
@@ -35,12 +36,18 @@
     {.matmul}expV%
   }:pow;
 
-  .#? (matrix) (matrix) matrix.mul\n  multiply two matrices
+  .#? (matrix) (matrix) matrix.matmul\n  multiply two matrices
   {a b,
     "matrix.mul: dimension mismatch $(a.c) != $(b.r)" a.c b.r =! conderr
     a.rows#{r, b.transpose.rows#{r matrix.dot}}
     matrix!
   }:matmul;
+  
+  .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
+  {a b,
+    {[a.rows b.rows,=]{&}U} {F} a.dim b.dim =! ?
+  }:eq;
+  
 
   .# Elementary row operations
 
