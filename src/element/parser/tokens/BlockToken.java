@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import element.ElemTypes;
 import element.entities.Block;
 import element.entities.Flag;
+import element.entities.number.Num;
 import element.exceptions.SyntaxError;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
@@ -13,6 +14,8 @@ import element.variable.Variable;
 import element.variable.VariableSet;
 
 public class BlockToken extends CollectionToken {
+	
+	public static final Object DEFAULT_LOCAL_VAR = new Num(0);
 		
 	public BlockToken(String data, ArrayList<Token> col) {
 		super(Token.BLOCK, data, col);
@@ -93,7 +96,7 @@ public class BlockToken extends CollectionToken {
 				if(!t.isa(Token.VAR)) {
 					throw new SyntaxError("Block header: Local Variables: Must contain only variable names");
 				} else {
-					args.setVar(new Variable(t.getData()), 0);
+					args.setVar(new Variable(t.getData()), DEFAULT_LOCAL_VAR);
 				}
 			}
 			return args;
