@@ -23,54 +23,70 @@
     for 'n (4R) {
       nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
     };
-    "Demo: Sin Series" plt.settitle
+    "Demo: Sine Series" plt.settitle
     2 plt.setstroke
 
     plt.view
    }:sinsrs;
 
   .#? demo.rainbow\n  generate a rainbow
-  {:p,
-    0 0.9+ pi 0.9-
-    for 'i [1 7,] {"{Ms $i 0.005* +}"}#~
-    plot.expr:p;
+  {:p mul s,
+    plot!:p;
+    0 0.9+ pi 0.9- 600.1 linspace p.domain
+    0.857 1.1 p.setyaxis
 
-    [ colors.red
-      colors.orange
-      colors.yellow
-      colors.green
-      colors.blue
-      colors.indigo
-      colors.violet
-    ]#.rgb!
-    p.setcolorlist
+    0.011:mul;
+    16:s;
 
-    [9] p.setstrokes
-
-    1.0 p.setymax
-    0.8 p.setymin
+    "" s colors.violet.rgb {Ms 1 mul* +} p.addexpr
+    "" s colors.indigo.rgb {Ms 2 mul* +} p.addexpr
+    "" s colors.blue.rgb   {Ms 3 mul* +} p.addexpr
+    "" s colors.green.rgb  {Ms 4 mul* +} p.addexpr
+    "" s colors.yellow.rgb {Ms 5 mul* +} p.addexpr
+    "" s colors.orange.rgb {Ms 6 mul* +} p.addexpr
+    "" s colors.red.rgb    {Ms 7 mul* +} p.addexpr
 
     p.view
   }:rainbow;
 
-  .#? demo.basicplot\n  a basic plot
-  {
-    .#Create plot instance
-    0 2π* [{Ms}{Mc}] plot.expr :p;
+  .#? demo.fnplot\n  a sample function plot
+  {:p,
+    plot!:p;
 
-    .# Optional Parameters
-    "Basic Plotting Example" p.settitle
-    600 p.setwidth
-    400 p.setheight
-    [colors.green colors.blue]#.rgb p.setcolorlist
-    [4 1] p.setstrokes
+    .# The domain
+    0 2pi* 600 linspace p.domain
+    
+    .# Add each function
+    "sin" 2 colors.red.rgb    {sin} p.addexpr
+    "cos" 2 colors.blue.rgb   {cos} p.addexpr
+    "ln"  2 colors.orange.rgb {ln} p.addexpr
 
-    .# Display the plot in a new window
+    .# Plot title
+    "A Sample Expression Plot" p.settitle
+
+    .# Other plot parameters
+    (-2) 2 p.setyaxis
+    0 2pi* p.setxaxis
+    true   p.setlegend
+    "f(x)" p.setylabel
+    400    p.setwidth
+    300    p.setheight
+    
+    .# Open the plot window
     p.view
+    
+    .# Uncomment to save the plot
+    .# "sample_plot.png" p.save
 
-    .# Save the plot to a file
-    "plots/plotExample" p.save
-  }:basicplot;
+  }:fnplot;
+  
+  .#? demo.scatter\n  a simple scatter plot
+  {:p,
+    100R:x [x,.Q70*+] plot.scatter:p
+    "A Scatter Plot" p.settitle
+
+    p.view
+  }:scatter;
 
   .#? demo.sumprimes\n  generate a list of prime numbers where each number is also the sum of all the prime numbers below it
   {1000 primes cumsum {isprime} I}:sumprimes;
