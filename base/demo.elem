@@ -109,6 +109,25 @@
     "qlum" c {:r g b, .rgb~:b;:g;:r; [r r b g g g] S} srtprt
 
   }:colorsort;
+  
+  {:time level plt reg,
+
+    data.lakehuron [1! "time"] I :time;
+    data.lakehuron [1! "LakeHuron"] I :level;
+
+    plot!:plt;
+    time plt.domain
+    "Level of Lake Huron" plt.settitle
+    "Year" plt.setxlabel
+    "Level" plt.setylabel
+    level min 2- level max 5+ plt.setyaxis
+
+    level plt.addline
+
+    time level regression:reg;
+    "" 1 [] {reg} plt.addexpr
+    plt.view
+  }:lakehuron;
 
   .#? S sc\n  returns the closet english word to the input
   {w, data.words {w^} .$ V\;}:sc;
