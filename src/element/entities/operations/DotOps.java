@@ -1,7 +1,6 @@
 package element.entities.operations;
 
 import static element.ElemTypes.IDToAbbrv;
-import static element.ElemTypes.areEqual;
 import static element.ElemTypes.bothChar;
 import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothString;
@@ -18,9 +17,9 @@ import static element.ElemTypes.length;
 import static element.ElemTypes.printBare;
 import static element.ElemTypes.toBlock;
 import static element.ElemTypes.toBool;
-import static element.ElemTypes.toNumeric;
 import static element.ElemTypes.toChar;
 import static element.ElemTypes.toList;
+import static element.ElemTypes.toNumeric;
 
 import java.io.File;
 import java.io.IOException;
@@ -813,10 +812,10 @@ class OP_Dot_Zed extends Operation {
 	}
 }
 
-// { - 91
+// [ - 91
 class OP_Dot_Ceiling extends Operation {
 	public OP_Dot_Ceiling() {
-		this.name = ".{";
+		this.name = ".[";
 		this.info = "numerical ceiling function";
 		this.argTypes = "N";
 	}
@@ -832,10 +831,10 @@ class OP_Dot_Ceiling extends Operation {
 	}
 }
 
-// } - 93
+// ] - 93
 class OP_Dot_Floor extends Operation {
 	public OP_Dot_Floor() {
-		this.name = ".}";
+		this.name = ".]";
 		this.info = "numerical floor function";
 		this.argTypes = "N";
 	}
