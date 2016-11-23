@@ -100,7 +100,7 @@ public class DotOps {
 		/* 67 C  */ null,
 		/* 68 D  */ new OP_Dot_Error(),
 		/* 69 E  */ new OP_Dot_Len(),
-		/* 70 F  */ null,
+		/* 70 F  */ new OP_Dot_Flatten(),
 		/* 71 G  */ new OP_Dot_Write(),
 		/* 72 H  */ null,
 		/* 73 I  */ new OP_Dot_I(),
@@ -495,15 +495,44 @@ class OP_Dot_Len extends Operation {
 		if (isList(n)) {
 			block.push(n);
 			block.push(new Num(length(n)));
-			return;
+		} else {
+			throw new TypeError(this, n);
 		}
-		throw new TypeError(this, n);
 	}
 }
 
 
 
-//
+//F - 69
+class OP_Dot_Flatten extends Operation {
+	public OP_Dot_Flatten() {
+		this.name = ".F";
+		this.info = "L flatten nested list";
+		this.argTypes = "L";
+	}
+	@Override
+	public void execute(Block block) {
+		final Object n = block.pop();
+		
+		if (isList(n)) {
+			block.push(flatten(toList(n)));
+		} else {
+			throw new TypeError(this, n);
+		}
+	}
+	
+	private ArrayList<Object> flatten(ArrayList<Object> l) {
+		ArrayList<Object> out = new ArrayList<Object>();
+		for (Object o : l) {
+			if (o instanceof ArrayList) {
+				out.addAll(flatten(toList(o)));
+			} else {
+				out.add(o);
+			}
+		}
+		return out;
+	}
+}
 
 
 
