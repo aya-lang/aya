@@ -317,7 +317,7 @@ class OP_Dot_Plus extends Operation {
 class OP_Dot_Minus extends Operation {
 	public OP_Dot_Minus() {
 		this.name = ".-";
-		this.info = "NN lcm";
+		this.info = "NN lcm\nLN remove item N from list L";
 		this.argTypes = "NN";
 	}
 	@Override

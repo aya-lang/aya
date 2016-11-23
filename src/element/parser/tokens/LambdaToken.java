@@ -2,14 +2,11 @@ package element.parser.tokens;
 
 import java.util.ArrayList;
 
-import org.apfloat.Apfloat;
-
 import element.ElemTypes;
 import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.Lambda;
 import element.entities.Tuple;
-import element.entities.number.BigNum;
 import element.entities.number.Num;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
