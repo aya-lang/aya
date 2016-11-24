@@ -139,7 +139,7 @@
 
     .# Row names
     {[rowcount,P]} .# No headers in file, use a range of numbers
-    {table#{VP} {}{V;}colheader? } .# if there are col headers, remove the first entry
+    {table#{V\;P} {}{V;}colheader? } .# if there are col headers, remove the first entry
     rowheader ? :rownames;
 
     .# Column names
