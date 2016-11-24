@@ -313,7 +313,7 @@ public class Block {
 			b.addAll(this.instructions.getInstrucionList());
 			b.add(o);
 			b.eval();
-			out.add(b.pop());
+			out.addAll(b.stack);
 			b.clear();
 		}
 		return out;
