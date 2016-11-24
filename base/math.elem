@@ -104,6 +104,24 @@ import "base/constants"
   /
 }:pearson;
 
+.#? N factors\n  compute a number's prime factors
+.# golf: {n,{2to(nV){n\%0=}.NI_n\/fK}{n}nGn2<|?}:f;
+{n,
+  .# If the number is not prime, find the
+  .#   next factor
+  {
+    .# Range from 2..sqrt(n)
+    [2nVMq.[]R
+  
+    .# Find the next factor
+    {n\%0=}.N
+
+    I _n\/ facc K
+  } 
+  .# If the number is prime, return it as a list
+  {n} nG n2< | ?
+}:factors;
+
 
 .# Trigonometry
 
