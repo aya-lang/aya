@@ -38,7 +38,7 @@
 
 .#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
 {```({forloopcz forlooplistz forloopblkz,
-  "forlooplistz#{:$forloopcz forloopblkz}"~
+  "forlooplistz#{:$forloopcz; forloopblkz}"~
 })}:for;
 
 .#? repeat N E\n  repeat statement:\n  repeat N {\n    expressions\n  }
