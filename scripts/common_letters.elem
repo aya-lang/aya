@@ -1,0 +1,9 @@
+0 26L :count;
+
+{count \'a-Mi :B}:place;
+
+data.words #{#place}
+
+"az"R {count\'a-MiI} .$!
+
+.# "esiarntolcdupmghbyfvkwzxjq" 

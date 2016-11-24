@@ -1,0 +1,33 @@
+.# Levenstein Function
+.# same behaviour as the '^' operator
+
+{a b,
+"lev\n".P
+"\ta:"a"\n"++.P
+"\tb:"b"\n"++.P
+
+  [
+    bE aE0=?
+    aE bE0=?
+    {
+      a b levhelper
+    }
+  ].c
+
+  _"\tres: "\+"\n"+.P
+}:lev
+
+{a b,
+"levhelper\n".P
+"\ta:"a"\n"++.P
+"\tb:"b"\n"++.P
+
+  [
+    {a.)b.)lev} a1!Ib1!I=?
+    {
+      [a.)b lev1+ a b.)lev1+ a.)b.)lev1+]$0I
+    }
+  ].c
+  _"\tres: "\+"\n"+.P
+
+}:levhelper

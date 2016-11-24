@@ -1,0 +1,17 @@
+.{
+A positive integer is a Kaprekar number if:
+
+It is 1
+The decimal representation of its square may be split once into two parts consisting of positive integers which sum to the original number.
+
+Note that a split resulting in a part consisting purely of 0s is not valid, as 0 is not considered positive.
+.}
+
+
+{n,
+  [ n_*P.EVL.ER,
+    |Mi\MiK,
+    _S\1I=!,
+    Sn=
+  ]E0>
+}:iskaprekar;

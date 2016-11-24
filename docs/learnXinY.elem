@@ -1,0 +1,426 @@
+.# An introduction to the Element programming language
+.# Nicholas Paul
+
+
+.# Line comments start with a ".#"
+.# There are no block comments
+
+
+.###########################
+.#		Essentials
+.###########################
+
+.# Element is a stack based programming language.
+.# The stack is evaluated from left to right
+
+	1 3 + 2 - 4 +
+.#      4 2 - 4 +
+.#		    2 4 +
+.#			    6
+
+.# Math
+3 4 + 	.# => 7
+5 6 - 	.# => -1
+2 0.5 * .# => 1.0
+3 2 ^ 	.# => 9
+
+.# Division promotes numbers
+6 4 /	.# => 1.5
+6 2 / 	.# => 3.0
+
+.# - is never a unary operator...
+8 3 -1  .# is evaluated as (8 3-) 1 => 5 1
+-1	 	.# ERROR: Empty stack at operator '-'
+
+.# ...unless it is grouped alone with a number literal
+(-1)	.# => -1
+(-2.5)	.# => -2.5
+
+.# use '!' to negate numbers
+1.5!	.# => -1.5
+
+.# Boolean Literals
+T	.# => true
+F	.# => false
+
+.# Boolean operations
+T!		.# => false 
+F!		.# => true 
+1 1 =	.# => true
+1 1 =!	.# => false
+8 3 >	.# => true
+5 5 <	.# => false
+5 5 .<	.# => true
+
+
+.###########################
+.#	  Chars and Strings
+.###########################
+
+.# Characters
+'a		.# basic characters do not need closing quotes
+'p'q	.# => 'p' 'q'
+
+.# Unicode character literals
+.# Unicode characters are written using a \U
+.# and need closing quotes
+'\U 00FF'	.# => 'ÿ'
+.# The space is optional
+'\U00A1'	.# => '¡'
+
+.# Many characters have names
+'\alpha'	.# => 'α'
+'\pi'		.# => 'π'
+'\because'	.# => '∵'
+
+.# Binary and hexadecimal int literals are created using '#B..'
+.# where B is the base (b => binary, h => hexadecimal)
+'#b 101001'	.# => 41
+.# The space is optional
+'#h0F05'	.# => 3845
+
+
+.#Strings
+
+"I am a string"
+
+.# Strings can contain special characters using \{}
+"Jack \{heart}s Jill" 		.# => "Jack ♥s Jill" 
+"sin(\{theta}) = \{alpha}"	.# => "sin(θ) = α" 
+
+.# Strings can be treated like lists of characters
+"Hello " "world!" K .# => "Hello world!"
+['s't'r'i'n'g] .# => "string"
+"abcde" 2 & .# => 'c'
+
+
+
+.###########################
+.#		  Matrices
+.###########################
+
+
+.# Matrices are denoted by placing a 'M' before a list literal
+.# Rows are separated using commas
+.# Only number literals can be placed in matrices
+M[1 2, 3 4]	.# => [
+			.#		1.000 2.000
+            .# 		3.000 4.000
+			.# 	  ]
+			
+M[1 (-2) 4]	.# => [
+			.#		1.000 -2.000 4.000
+			.# 	  ]
+
+.# There are a few built in operators for working with matrices
+M'			.# => Transpose
+Md			.# -> Determinant
++ - * ^		.# => Matrix arithmetic
+
+
+.###########################
+.#	    Operators
+.###########################
+
+.# Most non-alpha characters are operators
+_ .# duplicate the item on the top of the stack
+; .# remove the item on the top of the stack 
+
+.# Many operators are overloaded
+? .# conditional / filter
+! .# negate / reverse / logical not / swap case
+1! .# => -1 
+'a! .# => 'A'
+"hello"! .# => "olleh"
+
+.# Almost all uppercase letters are operators
+.#		(R => range, K => concatenate, Q => rand)
+.# 		T and F are not operators 
+10Q .# => an int between 0 and 10
+
+.# Any character following a . (except numbers) are operators 
+.#		(.p => quickplot, .t => type, .< => less than or equal to)
+1.t	.# => 'I'
+
+.# Any character following a M is an operator
+.# and is usually math related
+.#   	(Ms => sin, M! => factorial, Mq =>sqrt)
+.# 		M[ is not an operator (see Matrices)
+4 Mq .# => 2
+
+
+.###########################
+.#		   Lists
+.###########################
+
+.# Lists are created using square brackets
+.# Do not use commas
+[1 2 3 4 5]
+
+.# Lists are evaluated as a stack during creation
+[1 2 + 7 2 - 3!] .# => [3 5 -3]
+
+.# Joining 2 lists 
+[1 2 3] [4 5 6] K .# => [1 2 3 4 5 6]
+
+.# Getting an element of a list 
+[7 8 9] 1 & .# => 8
+
+.# Range Operator
+
+.# One item: create a range from 1 to that number (or from 'a')
+10 R .# => [1 2 3 4 5 6 7 8 9 10]
+'d R .# => "abcd"
+
+.# List with two items: create a range from the first to the second
+[5 10] R .# => [5 6 7 8 9 10]
+['z 'w] R .# => "zyxw"
+
+.# List with three numbers: create a range from the first to
+.# the third used the second as a step
+[0 0.5 2] R .# => [0 0.5 1.0 1.5 2.0] 
+
+.# List comprehension
+.# Follows the format:
+.# 		[range, map, filter1, filter2,  ..., filterK]
+.# Range is evaluated like the R operator
+.# Map and filters are optional
+
+.# Empty map = basic range
+[10,] .# => [1 2 3 4 5 6 7 8 9 10]
+['\U00A3' '\U00B0',] .# => "£¤¥¦§¨©ª«¬­®¯°" 
+[0 3 15,] .# => [0 3 6 9 12 15]
+
+[5, 2*] .# => [2 4 6 8 10]
+[10, 2*, 5<] .# => [2 4]
+[10, 2*, 5<, 4=!] .# => [2]
+
+
+.###########################
+.#	     Variables
+.###########################
+
+.# Variables can only contain lower case letters
+.# They are assigned using :
+1 :a .# => 1
+
+.# There are many default variables
+pi	.# => 3.1415....
+w 	.# => -1
+
+.# Only the first 12 characters of a variable are used
+"hello":abcdefghijklmnop
+abcdefghijklwxyz .# => "hello"
+
+.# Any of the named special characters can be used as a variable
+0.05:α;
+100 α * 	.# => 5.0
+
+.# The compiler translates the special character into its name
+.# This means that the name of the special character and the 
+.#		special character itself are equivalent
+2:alpha;
+4:β;
+α beta *	.# => 8
+
+		
+.###########################
+.#		  Types
+.###########################		
+
+.# the .t operator returns an object's type as a character
+1 .t	.# => 'I'
+'1 .t 	.# => 'C'
+1.t.t 	.# => 'C'
+
+.# The library functinon `isa` takes a type and an item and
+.# 		returns true if the item matches the type 
+5 'I isa 				.# => true
+M[1 2,3 4] 'M isa		.# => true
+
+.# 'N' represents any number type (Int, Double, BigDecimal)
+[1 1.0 1.0Ms] #.t		.# => "IFD"
+[1 1.0 1.0Ms] 'N #isa	.# => [ true true true ] 
+
+.# 'A' represents any type
+['c "c" 1 []] 'A #isa	.# => [ true true true true ] 
+
+.# Strings are lists
+"hello" 'L isa			.# => true
+
+.# Lists are only strings if all items are characters
+[1 2 3] 'S isa			.# => false
+['a 'b 'c] 'S isa 		.# => true 
+
+
+.# TYPE CHART
+.# =========================		
+.#		I - integer
+.#   	D - double
+.#		F - bigdecimal
+.#    	N - number (I|D|F)
+.#    	B - boolean
+.#    	E - expression/block
+.#    	C - character
+.#		L - list
+.#    	S - string
+.#    	A - any
+
+
+
+.###########################
+.#		  Blocks
+.###########################
+
+.# blocks contain code
+{20 50 +}
+
+.# they can be evaluated using the ~ operator 
+{20 50 +}~ .# => 70
+
+.# when blocks are evaluated, their contents are dumped
+.# to the stack and the stack continues as normal
+.# 100 10+ {1 + 2 *}~ 
+.#     110 {1 + 2 *}~
+.#        110 1 + 2 *
+.#            111 2 *
+.#                222
+
+.# Arguments
+
+.# blocks can contain arguments
+4 {a, a2*}~ .# => 8
+
+.# arguments are local variables
+2:n 3{n, n2^}~ n .# => 2 9.0 2 
+
+.# arguments are popped in the order they are written
+8 4 {a b, [a b] R}~ .# => [8 7 6 5 4]
+
+.# arguments can have type assertions
+.# The type assertion is written as an uppercase letter  
+.#    following the argument name
+{aI bI, a b +}:addint;
+1 2 addint		.# => 3
+1.0 2.0 addint 	.# TYPE ERROR: Type error at ({ARGS}):
+				.#		Expected (INT)
+				.#      Recieved (<BIG_DECIMAL:2.0> )
+				
+				
+.# See the types section for more information on types
+{nN, n1+}:addone;
+1 addone		.# => 2
+1.0 addone 		.# => 2.0 
+"1" addone 		.# Error
+
+
+.###########################
+.#	 Stack Manipulation
+.###########################
+
+.# Sometimes we may need to traverse the stack before
+.#		it has been evaluated
+
+.# The tick (`) operator will move the item just after it
+.# 		back the unevaluated stack 1 place 
+1 `2 3 4	.# => 1 3 2 4 
+
+.# The object will be moved back BEFORE being evaluated
+1 `+ 1
+
+.# Ticks can be stacked. The object will move back one
+.#		place for every tick
+``+ 3 4
+
+.# Ticks are evaluated at run time. This meeans that users
+.# 	can define their own "infix" operators
+{`*}:times;
+3 times 4 		.# => 12
+
+
+.# Objects on the stack can be grouped using parenthesis
+.# Items in parenthesis are dumped and evaluated at run time 
+(1 2 + 3) +		.# => 6
+
+.# Since grouped items are treated as one item by the compiler,
+.#		they are especially useful when used with the tick operator
+`+ (1 2)		.# => 3
+
+.# If a block is the only thing inside a group, it will be
+.#		automatically dumped and evaluated at runtime
+1 2 {+}		.# => 1 2 {+}
+1 2 ({+}) 	.# => 3
+
+
+.###########################
+.#	     The REPL
+.###########################
+
+.# The GUI REPL can be launched by double clicking the jar
+.#		file or running the command
+.# java -jar path/to/element.jar
+
+
+.# The REPL can be launched via the command line by running
+.#		the above command but with '-i' as an argument
+.# java -jar path/to/element.jar -i
+
+.# Aside from running element code, the REPL has several useful features
+.# Enter '\h' to view the REPLs commands
+.# element> \h
+.# Help:
+.#   \q						quit interactive element
+.#   \c [infix|stack]		change compiler type
+.#   \v <expr>				view compiler output of expression
+.#   \h						view this page
+.#   \? <help text>			search for help text in Element
+.#   \cls					clear the console window
+.#   \version				display element version name
+
+.# Many of these features can be explored on your own, but the
+.# 		most useful feature is help '\?'
+.# Using help, you can search for just about anything
+
+.# Operators 
+.# element> \? $
+.#	$ (L<N>|L<S>|S)
+.#  	sort least to greatest
+.#      (operator)
+
+.# Reverse search operators
+.# element> \? sort
+.#  $ (L<N>|L<S>|S)
+.#     sort least to greatest
+.#    (operator)
+
+.# Topics
+.# element> \? type key
+.#	argument type key
+.#     I - integer
+.#     D - double
+.#     ...
+.#     A - any
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

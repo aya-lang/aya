@@ -1,0 +1,6 @@
+.# http://codegolf.stackexchange.com/questions/92776/esolang-comment-template-generator
+.# 33 Bytes (using println char)
+
+{
+X"\|"|_SE\0Y;#{_Ey+Y>}\B#{<x+println0};
+}:cmttemplate;

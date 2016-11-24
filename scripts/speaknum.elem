@@ -1,0 +1,41 @@
+.# Convert a number into a spoken english phrase
+
+{numN, numPE}:numofdigits;
+
+{nN spacerS, 
+  if (n 0=) {
+    ""
+  } {
+    spacer n speaknum +
+  }
+}:speaknumhelp;
+
+{nN : x, 
+
+[
+  {["zero""one""two""three""four"
+    "five""six""seven""eight""nine"
+    "ten""eleven""twelve""thirteen""fourteen"
+    "fifteen""sixteen""seventeen""eighteen""nineteen"]n MiI
+  } n `.< 19 .?
+  
+  {["twenty""thirty""fourty""fifty""sixty""seventy""eighty""nintey"]
+   (n 10 div 2 - MiI)  (n 10 % "-" speaknumhelp) +
+  } n `.< 99 .?
+
+
+  {(n 100 div speaknum " hundred" +) (n100% " and " speaknumhelp) +
+  } n `.< 999 .?
+
+  {n numofdigits 1 - 3 div 3 * 10 \^ : x;
+   n x div speaknum " " +
+   ["thousand""million""billion""trillion""quadrillion""quintillion"
+    "Sextillion""Septillion""Octillion""Nonillion""Decillion"
+    "Undecillion""Duodecillion""Tredecillion""Quattuordecillion"
+    "Quindecillion""Sexdecillion""Septendecillion""Octodecillion"
+   ] x numofdigits 3 div 1 - MiI +
+   n x % " " speaknumhelp +
+  }
+].S
+
+}:speaknum;
