@@ -1,0 +1,332 @@
+alice blue,#f0f8ff
+antique white,#faebd7
+light antique white,#ffefdb
+medium antique white,#cdc0b0
+dark antique white,#8b8378
+aquamarine,#7fffd4
+dark aquamarine,#458b74
+light azure,#f0ffff
+medium azure,#c1cdcd
+dark azure,#838b8b
+beige,#f5f5dc
+light bisque,#ffe4c4
+medium bisque,#cdb79e
+dark bisque,#8b7d6b
+black,#000000
+blanched almond,#ffebcd
+blue,#0000ff
+dark blue,#00008b
+blue violet,#8a2be2
+brown,#a52a2a
+light brown,#ff4040
+medium brown,#cd3333
+dark brown,#8b2323
+burlywood,#deb887
+light burlywood,#ffd39b
+medium burlywood,#cdaa7d
+dark burlywood,#8b7355
+cadet blue,#5f9ea0
+light cadet blue,#98f5ff
+medium cadet blue,#7ac5cd
+dark cadet blue,#53868b
+light chartreuse,#7fff00
+medium chartreuse,#66cd00
+dark chartreuse,#458b00
+chocolate,#d2691e
+light chocolate,#ff7f24
+medium chocolate,#cd661d
+coral,#ff7f50
+light coral,#ff7256
+medium coral,#cd5b45
+dark coral,#8b3e2f
+cornflower blue,#6495ed
+light cornsilk,#fff8dc
+medium cornsilk,#cdc8b1
+dark cornsilk,#8b8878
+light cyan,#00ffff
+medium cyan,#00cdcd
+dark cyan,#008b8b
+dark goldenrod,#b8860b
+light dark goldenrod,#ffb90f
+medium dark goldenrod,#cd950c
+dark dark goldenrod,#8b6508
+dark green,#006400
+dark khaki,#bdb76b
+dark olive green,#556b2f
+light dark olive green,#caff70
+medium dark olive green,#a2cd5a
+dark dark olive green,#6e8b3d
+dark orange,#ff8c00
+light dark orange,#ff7f00
+medium dark orange,#cd6600
+dark dark orange,#8b4500
+dark orchid,#9932cc
+light dark orchid,#bf3eff
+medium dark orchid,#9a32cd
+dark dark orchid,#68228b
+dark salmon,#e9967a
+dark sea green,#8fbc8f
+light dark sea green,#c1ffc1
+medium dark sea green,#9bcd9b
+dark dark sea green,#698b69
+dark slate blue,#483d8b
+dark slate gray,#2f4f4f
+light dark slate gray,#97ffff
+medium dark slate gray,#79cdcd
+dark dark slate gray,#528b8b
+dark turquoise,#00ced1
+dark violet,#9400d3
+light deep pink,#ff1493
+medium deep pink,#cd1076
+dark deep pink,#8b0a50
+light deep sky blue,#00bfff
+medium deep sky blue,#009acd
+dark deep sky blue,#00688b
+dim gray,#696969
+light dodger blue,#1e90ff
+medium dodger blue,#1874cd
+dark dodger blue,#104e8b
+firebrick,#b22222
+light firebrick,#ff3030
+medium firebrick,#cd2626
+dark firebrick,#8b1a1a
+floral white,#fffaf0
+forest green,#228b22
+gainsboro,#dcdcdc
+ghost white,#f8f8ff
+gold,#ffd700
+medium gold,#cdad00
+dark gold,#8b7500
+goldenrod,#daa520
+light goldenrod,#ffc125
+medium goldenrod,#cd9b1d
+dark goldenrod,#8b6914
+gray,#bebebe
+light gray,e3e3e3
+medium gray,5e5e5e
+dark gray,1f1f1f
+green,#00ff00
+medium green,#00cd00
+dark green,#008b00
+green yellow,#adff2f
+light honeydew,#f0fff0
+medium honeydew,#c1cdc1
+dark honeydew,#838b83
+hot pink,#ff69b4
+light hot pink,#ff6eb4
+medium hot pink,#cd6090
+dark hot pink,#8b3a62
+indian red,#cd5c5c
+light indian red,#ff6a6a
+medium indian red,#cd5555
+dark indian red,#8b3a3a
+light ivory,#fffff0
+medium ivory,#cdcdc1
+dark ivory,#8b8b83
+khaki,#f0e68c
+light khaki,#fff68f
+medium khaki,#cdc673
+dark khaki,#8b864e
+lavender,#e6e6fa
+light lavender blush,#fff0f5
+medium lavender blush,#cdc1c5
+dark lavender blush,#8b8386
+lawn green,#7cfc00
+light lemon chiffon,#fffacd
+medium lemon chiffon,#cdc9a5
+dark lemon chiffon,#8b8970
+light,#eedd82
+light blue,#add8e6
+light light blue,#bfefff
+medium light blue,#9ac0cd
+dark light blue,#68838b
+light coral,#f08080
+light light cyan,#e0ffff
+medium light cyan,#b4cdcd
+dark light cyan,#7a8b8b
+light light goldenrod,#ffec8b
+medium light goldenrod,#cdbe70
+dark light goldenrod,#8b814c
+light goldenrod yellow,#fafad2
+light gray,#d3d3d3
+pink,#ffb6c1
+light pink,#ffaeb9
+medium light pink,#cd8c95
+dark light pink,#8b5f65
+light light salmon,#ffa07a
+medium light salmon,#cd8162
+dark light salmon,#8b5742
+light sea green,#20b2aa
+light sky blue,#87cefa
+light light sky blue,#b0e2ff
+medium light sky blue,#8db6cd
+dark light sky blue,#607b8b
+light slate blue,#8470ff
+light slate gray,#778899
+light steel blue,#b0c4de
+light light steel blue,#cae1ff
+medium light steel blue,#a2b5cd
+dark light steel blue,#6e7b8b
+light light yellow,#ffffe0
+medium light yellow,#cdcdb4
+dark light yellow,#8b8b7a
+lime green,#32cd32
+linen,#faf0e6
+magenta,#ff00ff
+medium magenta,#cd00cd
+dark magenta,#8b008b
+maroon,#b03060
+light maroon,#ff34b3
+medium maroon,#cd2990
+dark maroon,#8b1c62
+medium,#66cdaa
+medium aquamarine,#66cdaa
+medium blue,#0000cd
+medium orchid,#ba55d3
+light medium orchid,#e066ff
+medium medium orchid,#b452cd
+dark medium orchid,#7a378b
+medium purple,#9370db
+light medium purple,#ab82ff
+medium medium purple,#8968cd
+dark medium purple,#5d478b
+medium sea green,#3cb371
+medium slate blue,#7b68ee
+medium spring green,#00fa9a
+medium turquoise,#48d1cc
+medium violet red,#c71585
+midnight blue,#191970
+mint cream,#f5fffa
+light misty rose,#ffe4e1
+medium misty rose,#cdb7b5
+dark misty rose,#8b7d7b
+moccasin,#ffe4b5
+light navajo white,#ffdead
+medium navajo white,#cdb38b
+dark navajo white,#8b795e
+navy blue,#000080
+old lace,#fdf5e6
+olive drab,#6b8e23
+light olive drab,#c0ff3e
+dark olive drab,#698b22
+orange,#ffa500
+medium orange,#cd8500
+dark orange,#8b5a00
+light orange red,#ff4500
+medium orange red,#cd3700
+dark orange red,#8b2500
+orchid,#da70d6
+light orchid,#ff83fa
+medium orchid,#cd69c9
+dark orchid,#8b4789
+pale,#db7093
+pale goldenrod,#eee8aa
+pale green,#98fb98
+light pale green,#9aff9a
+medium pale green,#7ccd7c
+dark pale green,#548b54
+pale turquoise,#afeeee
+light pale turquoise,#bbffff
+medium pale turquoise,#96cdcd
+dark pale turquoise,#668b8b
+pale violet red,#db7093
+light pale violet red,#ff82ab
+medium pale violet red,#cd6889
+dark pale violet red,#8b475d
+papaya whip,#ffefd5
+light peach puff,#ffdab9
+medium peach puff,#cdaf95
+dark peach puff,#8b7765
+pink,#ffc0cb
+light pink,#ffb5c5
+medium pink,#cd919e
+dark pink,#8b636c
+plum,#dda0dd
+light plum,#ffbbff
+medium plum,#cd96cd
+dark plum,#8b668b
+powder blue,#b0e0e6
+purple,#a020f0
+rebeccapurple,#663399
+light purple,#9b30ff
+medium purple,#7d26cd
+dark purple,#551a8b
+red,#ff0000
+medium red,#cd0000
+dark red,#8b0000
+rosy brown,#bc8f8f
+light rosy brown,#ffc1c1
+medium rosy brown,#cd9b9b
+dark rosy brown,#8b6969
+royal blue,#4169e1
+light royal blue,#4876ff
+medium royal blue,#3a5fcd
+dark royal blue,#27408b
+saddle brown,#8b4513
+salmon,#fa8072
+light salmon,#ff8c69
+medium salmon,#cd7054
+dark salmon,#8b4c39
+sandy brown,#f4a460
+light sea green,#54ff9f
+medium sea green,#43cd80
+dark sea green,#2e8b57
+light seashell,#fff5ee
+medium seashell,#cdc5bf
+dark seashell,#8b8682
+sienna,#a0522d
+light sienna,#ff8247
+medium sienna,#cd6839
+dark sienna,#8b4726
+sky blue,#87ceeb
+light sky blue,#87ceff
+medium sky blue,#6ca6cd
+dark sky blue,#4a708b
+slate blue,#6a5acd
+light slate blue,#836fff
+medium slate blue,#6959cd
+dark slate blue,#473c8b
+slate gray,#708090
+light slate gray,#c6e2ff
+medium slate gray,#9fb6cd
+dark slate gray,#6c7b8b
+light snow,#fffafa
+medium snow,#cdc9c9
+dark snow,#8b8989
+light spring green,#00ff7f
+medium spring green,#00cd66
+dark spring green,#008b45
+steel blue,#4682b4
+light steel blue,#63b8ff
+medium steel blue,#4f94cd
+dark steel blue,#36648b
+tan,#d2b48c
+light tan,#ffa54f
+medium tan,#cd853f
+dark tan,#8b5a2b
+thistle,#d8bfd8
+light thistle,#ffe1ff
+medium thistle,#cdb5cd
+dark thistle,#8b7b8b
+light tomato,#ff6347
+medium tomato,#cd4f39
+dark tomato,#8b3626
+turquoise,#40e0d0
+light turquoise,#00f5ff
+medium turquoise,#00c5cd
+dark turquoise,#00868b
+violet,#ee82ee
+violet red,#d02090
+light violet red,#ff3e96
+medium violet red,#cd3278
+dark violet red,#8b2252
+wheat,#f5deb3
+light wheat,#ffe7ba
+medium wheat,#cdba96
+dark wheat,#8b7e66
+white,#ffffff
+white smoke,#f5f5f5
+yellow,#ffff00
+medium yellow,#cdcd00
+dark yellow,#8b8b00
+yellow green,#9acd32

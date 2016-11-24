@@ -64,7 +64,11 @@
 
 	}:numword;
 
-
+  "data/colors.csv" opencsv:colorlist;
+  
+  {name, 
+    data.colorlist {0Iname^}.$0I1I6> color.newhex
+  }:color;
 
 
 

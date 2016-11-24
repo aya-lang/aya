@@ -401,24 +401,6 @@ class OP_Log extends Operation {
 	}
 }
 
-////E - 115
-//class OP_ScientificNotation extends Operation {
-//	public OP_ScientificNotation() {
-//		this.name = "ME";
-//		this.info = "converts a number into scientific notation string";
-//		this.argTypes = "N";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Object n = block.pop();
-//		if(isNum(n)) {
-//			block.push(castBig(n).setScale(-3, RoundingMode.HALF_UP).toString());
-//			return;
-//		}
-//		throw new TypeError(this.name, this.argTypes, n);
-//	}
-//}
-
 //P - 79
 class OP_NewUserObject extends Operation {
 	public OP_NewUserObject() {

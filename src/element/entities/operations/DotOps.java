@@ -78,16 +78,16 @@ public class DotOps {
 		/* 45 -  */ new OP_Dot_Minus(),
 		/* 46 .  */ null,
 		/* 47 /  */ null,
-		/* 48 0  */ null,
-		/* 49 1  */ null,
-		/* 50 2  */ null,
-		/* 51 3  */ null,
-		/* 52 4  */ null,
-		/* 53 5  */ null,
-		/* 54 6  */ null,
-		/* 55 7  */ null,
-		/* 56 8  */ null,
-		/* 57 9  */ null,
+		/* 48 0  */ null, //Number Literal
+		/* 49 1  */ null, //Number Literal
+		/* 50 2  */ null, //Number Literal
+		/* 51 3  */ null, //Number Literal
+		/* 52 4  */ null, //Number Literal
+		/* 53 5  */ null, //Number Literal
+		/* 54 6  */ null, //Number Literal
+		/* 55 7  */ null, //Number Literal
+		/* 56 8  */ null, //Number Literal
+		/* 57 9  */ null, //Number Literal
 		/* 58    */ null,
 		/* 59 ;  */ new OP_Dot_ClearAll(),
 		/* 60 <  */ new OP_Dot_LessThan(),
@@ -127,32 +127,32 @@ public class DotOps {
 		/* 94 ^  */ null,
 		/* 95 _  */ null,
 		/* 96 `  */ null,
-		/* 97 a  */ null,
-		/* 98 b  */ null,
-		/* 99 c  */ null, //new OP_Dot_Case(), (now .S)
-		/* 100 d */ null,
-		/* 101 e */ null, //new OP_Dot_Error(), (Now .E)
-		/* 102 f */ null,
-		/* 103 g */ null,
-		/* 104 h */ null,
-		/* 105 i */ null,
-		/* 106 j */ null,
-		/* 107 k */ null,
-		/* 108 l */ null,
-		/* 109 m */ null,
-		/* 110 n */ null,
-		/* 111 o */ null,
-		/* 112 p */ null, //new OP_SimplePlot(), (now .X)
-		/* 113 q */ null, //new OP_RequestString(), (now .U)
-		/* 114 r */ null,
-		/* 115 s */ null,
-		/* 116 t */ null, //new OP_TypeOf(),  (now .T)
-		/* 117 u */ null,
-		/* 118 v */ null,
-		/* 119 w */ null,
-		/* 120 x */ null,
-		/* 121 y */ null,
-		/* 122 z */ null,
+		/* 97 a  */ null, // Member Variable
+		/* 98 b  */ null, // Member Variable
+		/* 99 c  */ null, // Member Variable
+		/* 100 d */ null, // Member Variable
+		/* 101 e */ null, // Member Variable
+		/* 102 f */ null, // Member Variable
+		/* 103 g */ null, // Member Variable
+		/* 104 h */ null, // Member Variable
+		/* 105 i */ null, // Member Variable
+		/* 106 j */ null, // Member Variable
+		/* 107 k */ null, // Member Variable
+		/* 108 l */ null, // Member Variable
+		/* 109 m */ null, // Member Variable
+		/* 110 n */ null, // Member Variable
+		/* 111 o */ null, // Member Variable
+		/* 112 p */ null, // Member Variable
+		/* 113 q */ null, // Member Variable
+		/* 114 r */ null, // Member Variable
+		/* 115 s */ null, // Member Variable
+		/* 116 t */ null, // Member Variable
+		/* 117 u */ null, // Member Variable
+		/* 118 v */ null, // Member Variable
+		/* 119 w */ null, // Member Variable
+		/* 120 x */ null, // Member Variable
+		/* 121 y */ null, // Member Variable
+		/* 122 z */ null, // Member Variable
 		/* 123 { */ null, // block comments
 		/* 124 | */ null,
 		/* 125 } */ null, // block comments
