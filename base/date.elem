@@ -69,7 +69,7 @@
     {@$name,
       attr \"n\"
       {nD, [n] dateunit.$name MO}:new;
-      {.n\" date.$name\"+}:show;
+      {.n\" dates.$name\"+}:show;
       {.n $conv*}:ms;
       {\+}:plus;
       {\-}:minus;

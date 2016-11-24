@@ -165,10 +165,10 @@
 {\_@|S=!}:strcontains;									.#? SS strcontains\n	tests if S1 contains S2
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
-{strS padC lenI, str.E len\- {pad\K}\%}:strleftpad;
+{strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;
 
 .#? SCI strrightpad\n  right pad string S so it is at least length I using char C
-{strS padC lenI, str.E len\- {padK}\%}:strrightpad;
+{strS padC lenN, str.E len\- {padK}\%}:strrightpad;
 
 .#? SSS replace\n  find and replace\n  <find> <replace> <str> replace
 {find replace strS,
@@ -361,6 +361,7 @@ import "base/data"
 2			 :b;
 3			 :c;
 10		 :d;
+.#e (scientific notation)
 100		 :h;
 {.]}	 :i; .#? A i\n  cast to int
 1000	 :k;
@@ -368,6 +369,7 @@ import "base/data"
 .#m (matrix module)
 "\n"   :n;
 {VR0\K}:r; .#? N r\n  range from 0 to (1-n)
+data   :u;
 1!		 :w;
 0			 :x;
 0			 :y;

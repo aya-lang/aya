@@ -84,7 +84,7 @@
       0:s;
       (-1):h;
     }
-    h s v
+    [h s v]
   }:rgbtohsv;
 }
 

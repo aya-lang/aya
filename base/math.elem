@@ -49,7 +49,7 @@ import "base/constants"
 
 
 .#? N factors \n  returns a list of the numbers factors
-{n, [1 n,, n\%0=]}:factors;
+{n, [1 n,, n\%0=]}:divisors;
 
 .#? L geomean \n  geometric mean
 .# the nth root of the product of n numbers
@@ -110,15 +110,17 @@ import "base/constants"
   .# If the number is not prime, find the
   .#   next factor
   {
-    .# Range from 2..sqrt(n)
+    .# Range from 2..ceil(sqrt(n))
     [2nVMq.[]R
-  
+
     .# Find the next factor
     {n\%0=}.N
 
+    .# Append this factor to the list of
+    .#   factors recursively
     I _n\/ factors K
-  } 
-  .# If the number is prime, return it as a list
+  }
+  .# If the number is prime, return it
   {n} nG n2< | ?
 }:factors;
 
@@ -181,7 +183,7 @@ import "base/constants"
 {variance Mq}:stdev;
 
 .#? xL xL regression\n  return a block that evaluates to the regression of the sets
-{x y : 
+{x y :
   n a b
   sumy sumx
   sumxsq
@@ -199,7 +201,7 @@ import "base/constants"
   /:a;
 
   n sumxytimes * sumx sumy * -
-  n sumxsq * sumx2^- 
+  n sumxsq * sumx2^-
   /:b;
 
   "{($b)*($a)+}"~
