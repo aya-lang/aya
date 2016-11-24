@@ -199,8 +199,15 @@
 {B\K}:roll;      			.#? L roll\n  move the last element to the front
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
-{\.EV@L#QI}:rpick;    .#? LI rpick\n  pick N random items from L
 {[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
+
+.#? LN lottod\n  take L random distinct items from L
+{[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
+
+.#? LI lotto\n  pick N random items from L
+{\.EV@L#QI}:lotto;
+
+
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
   [1|~,                 .# Transpose
