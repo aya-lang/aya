@@ -101,7 +101,7 @@ public class ListBuilder {
 					b.addAll(map.getInstructions().getInstrucionList());
 					b.eval();		
 				}
-				list.add(b.pop());
+				list.addAll(b.getStack());
 			}
 			
 		} else {
