@@ -1,0 +1,17 @@
+{@polyn,
+  attr "coeff"
+
+  {cL, [c] polyn MO}:new;
+
+  {self, self.coeffP}:show;
+
+  {.coeff
+    [4 2 (-7) 5] .ER
+    {\P"x^"+\+" + "+}zwS
+    "\^1" "" @ replace
+    "\+ -" "- " @ replace
+     .E3- <
+  }:mathshow;
+
+  {.coeff .ER@#{\^}{*}zwS}:eval;
+}
