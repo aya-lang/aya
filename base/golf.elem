@@ -1,6 +1,7 @@
 {`range}:to;
 
 '\U82' "to"         Mk .# 130
+'\U84' "dup"        Mk .# 132
 '\U9b' "println"    Mk .# 155
 '\Ua6' "matstr"     Mk .# 166
 '\Ua7' "zw"         Mk .# 167
