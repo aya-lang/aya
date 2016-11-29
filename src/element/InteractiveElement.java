@@ -148,6 +148,11 @@ public class InteractiveElement {
 				USE_INFIX = false;
 				Element.PRINT_LARGE_ERRORS = true;
 			}
+			
+			//Run Tests
+			else if(settings[0].equals("\\test")) {
+				elem.getOut().println(ElementTestCases.runTests());
+			}
 						
 			else {
 				elem.getOut().printWarn("Invalid command. Please make sure there is a space bewteen command and its arguments.");
@@ -196,7 +201,6 @@ public class InteractiveElement {
 		Element elem = Element.getInstance();
 		
 		
-		System.out.println(ElementTestCases.runTests());
 		
 		if (args.length > 0) {
 			
