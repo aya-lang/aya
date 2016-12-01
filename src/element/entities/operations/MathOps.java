@@ -199,7 +199,7 @@ class OP_SysTime extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		block.push((double)System.currentTimeMillis());
+		block.push(new Num(System.currentTimeMillis()));
 	}
 }
 
