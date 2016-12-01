@@ -643,8 +643,9 @@ class OP_LessThan extends Operation {
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) < 0);
 		} else if (isNumeric(b) && isString(a)) {
-			int n = toNumeric(b).toInt();
 			String str = getString(a);
+			int n = toNumeric(b).toIndex(str.length());
+
 			
 			if (n <= str.length()) {
 				block.push(str.substring(0, n));
@@ -657,7 +658,7 @@ class OP_LessThan extends Operation {
 			
 		} else if (isNumeric(b) && isList(a)) {
 			ArrayList<Object> list = toList(a);
-			int n = toNumeric(b).toInt();
+			int n = toNumeric(b).toIndex(list.size());
 			ArrayList<Object> out = new ArrayList<Object>(n);
 			
 			if (n <= list.size()) {
@@ -722,8 +723,9 @@ class OP_GreaterThan extends Operation {
 		} else if (bothString(a,b)) {
 			block.push(getString(a).compareTo(getString(b)) > 0);
 		} else if (isNumeric(b) && isString(a)) {
-			int n = toNumeric(b).toInt();
 			String str = getString(a);
+			int n = toNumeric(b).toIndex(str.length());
+
 			
 			if (n <= str.length()) {
 				block.push(str.substring(str.length()-n, str.length()));
@@ -736,7 +738,7 @@ class OP_GreaterThan extends Operation {
 			
 		} else if (isNumeric(b) && isList(a)) {
 			ArrayList<Object> list = toList(a);
-			int n = toNumeric(b).toInt();
+			int n = toNumeric(b).toIndex(list.size());
 			ArrayList<Object> out = new ArrayList<Object>(n);
 			
 			if (n <= list.size()) {
