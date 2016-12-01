@@ -207,6 +207,8 @@ public class InteractiveElement {
 			//Run the arguments as code
 			if(args[0].equals("-c")) {
 				
+				loadBase(elem);
+				
 				StringBuilder input = new StringBuilder();
 				for (int i = 1; i < args.length; i++) {
 					input.append(args[i] + ' ');
@@ -214,7 +216,7 @@ public class InteractiveElement {
 				
 				elem.run(input.toString());
 			
-				System.out.print(elem.getOut().dumpAsString());		
+				System.out.println(elem.getOut().dumpAsString());		
 			} 
 			
 			
