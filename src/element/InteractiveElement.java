@@ -208,7 +208,7 @@ public class InteractiveElement {
 			if(args[0].equals("-c")) {
 				
 				StringBuilder input = new StringBuilder();
-				for (int i = 2; i < args.length; i++) {
+				for (int i = 1; i < args.length; i++) {
 					input.append(args[i] + ' ');
 				}
 				
@@ -235,6 +235,20 @@ public class InteractiveElement {
 			//Run interactive element
 			else if(args[0].equals("-i")) {
 				
+				//Attempt to load base
+				loadBase(elem);
+
+				@SuppressWarnings("resource")
+				Scanner scanner = new Scanner(System.in);
+				String input = "";
+				
+				if (System.console() == null) {
+					input = scanner.nextLine();
+					processInput(elem, input);
+					System.out.println(elem.getOut().dumpAsString());
+					return;
+				}
+					
 				
 				
 				System.out.println("      _                           _     |  A stack based progrgramming language");
@@ -244,12 +258,9 @@ public class InteractiveElement {
 				System.out.println(" \\___|_|\\___|_| |_| |_|\\___|_| |_|\\__|  |  Nicholas Paul");
 				System.out.println("\n");
 				
-				loadBase(elem);
 				System.out.println(elem.getOut().dumpAsString());
 				
-				@SuppressWarnings("resource")
-				Scanner scanner = new Scanner(System.in);
-				String input = "";
+			
 				while (true) {
 					System.out.print(ElemPrefs.getPrompt());
 					input = scanner.nextLine();
