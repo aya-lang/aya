@@ -368,12 +368,7 @@ public class Block {
 		this.instructions.addAll(b.getInstructions().getInstrucionList());
 	}
 	
-	public String toString() {
-//		if (listLiteral) {
-//			return "["+instructions+"]";
-//		}
-		return "{"+instructions+"}";
-	}
+
 
 	/** Adds an item to the front of the instruction stack. (opposite of add()) */
 	public void addToFontInstructions(Object b) {
@@ -387,6 +382,20 @@ public class Block {
 		while (!stk.empty()) {
 			this.stack.push(stk.pop());
 		}
+	}
+
+	
+	/** If true, return "{instructions}" else just "instructions" */
+	public String toString(boolean printBraces) {
+		if (printBraces) {
+			return "{" + instructions.toString() + "}";
+		} else {
+			return instructions.toString();
+		}
+	}
+	
+	public String toString() {
+		return this.toString(true);
 	}
 
 }

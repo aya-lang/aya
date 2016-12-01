@@ -104,7 +104,12 @@ public class Variable {
 	
 	@Override
 	public String toString() {
-		return decodeLong(id);
+		String name = decodeLong(id);
+		if (referanceVariable) {
+			return name;
+		} else {
+			return ":" + name;
+		}
 	}
 	
 }

@@ -76,7 +76,7 @@ public class UserObject {
 				return ElemTypes.castString(obj_str);
 			}
 		} else {
-			return module.toString() + ".show unimplemented";
+			return "<" + module.toString() + " instance>";
 		}
 	}
 	

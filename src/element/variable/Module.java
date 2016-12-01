@@ -32,7 +32,7 @@ public class Module {
 	}
 	
 	public String toString() {
-		return "{Module: " + Variable.decodeLong(id) + "}";
+		return Variable.decodeLong(id);
 	}
 
 	public ArrayList<Pair<Variable, Object>> getAllVars() {

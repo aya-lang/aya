@@ -228,7 +228,7 @@ public class ElemTypes {
 		case STRING:
 			return "\""+getString(o)+"\"";
 		case CHARACTER:
-			return "'"+o.toString()+"'";
+			return "'"+o.toString();
 		case LIST:
 			StringBuilder sb = new StringBuilder("[ ");			
 			for(Object i : toList(o)) {

@@ -38,7 +38,7 @@ public class Tuple {
 			if(i!=0) {
 				s += ", ";
 			}
-			s += elements[i].toString();
+			s += elements[i].toString(false);
 		}
 		return s + ")";
 	}

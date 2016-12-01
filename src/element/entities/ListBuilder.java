@@ -373,13 +373,13 @@ public class ListBuilder {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder("[");
-		sb.append(initialList + ", ");
+		sb.append(initialList.toString(false) + ", ");
 		if(map != null) {
-			sb.append(map + ", ");
+			sb.append(map.toString(false) + ", ");
 		}
 		if(filters != null) {
 			for (Block b : filters) {
-				sb.append(b + ", ");
+				sb.append(b.toString(false) + ", ");
 			}
 		}
 		sb.setLength(sb.length()-2);

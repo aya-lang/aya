@@ -119,6 +119,16 @@ public class VariableSet {
 				sb.append(v.toString() + " ");
 			}
 		}
+		
+		if(vars != null && vars.size() > 0) {
+			sb.append(": ");
+			Iterator<Entry<Long, Object>> it = vars.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<Long, Object> pair = (Map.Entry<Long, Object>)it.next();
+				sb.append(Variable.decodeLong(pair.getKey()) + " ");
+			}
+		}
+		
 		sb.append(",");
 		return sb.toString();
 	}
