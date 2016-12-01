@@ -1,28 +1,39 @@
 package ui;
 
 
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import element.parser.CharacterParser;
 
 @SuppressWarnings("serial")
 public class CodeTextPane extends JTextPane {
 	private boolean inFocus = false;
+	
+	final UndoManager undo = new UndoManager();
+	
 	
 	public CodeTextPane() {
 		
@@ -37,17 +48,21 @@ public class CodeTextPane extends JTextPane {
 		StyleConstants.TabSet, tabset);
 		setParagraphAttributes(aset, false);
 		
+		
 		//Font
 		getStyledDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
 		setFont(StyleTheme.DEFAULT.getFont());
+		
 		
 		//Default Colors
 		setForeground(StyleTheme.DEFAULT.getFgColor());
 		setBackground(StyleTheme.DEFAULT.getBgColor());
 		setCaretColor(StyleTheme.DEFAULT.getCaratColor()); 
 		
+		
 		//Border
 		setBorder(BorderFactory.createEmptyBorder());
+		
 		
 		//Add Focus Listeners
 		addFocusListener(new FocusListener() {
@@ -60,10 +75,53 @@ public class CodeTextPane extends JTextPane {
 			}
         });
 		
+		
 		//Override the tab key so that a tab character is not created
 	    InputMap inputMap = getInputMap();
 	    KeyStroke enterStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 	    inputMap.put(enterStroke, enterStroke.toString());
+	    
+	    //Undo Feature
+	    Document doc = this.getDocument();
+	    
+	    // Listen for undo and redo events
+	    doc.addUndoableEditListener(new UndoableEditListener() {
+	        public void undoableEditHappened(UndoableEditEvent evt) {
+	            undo.addEdit(evt.getEdit());
+	        }
+	    });
+
+	    // Create an undo action and add it to the text component
+	    this.getActionMap().put("Undo",
+	        new AbstractAction("Undo") {
+	            public void actionPerformed(ActionEvent evt) {
+	                try {
+	                    if (undo.canUndo()) {
+	                        undo.undo();
+	                    }
+	                } catch (CannotUndoException e) {
+	                }
+	            }
+	       });
+
+	    // Bind the undo action to ctl-Z
+	    this.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
+
+	    // Create a redo action and add it to the text component
+	    this.getActionMap().put("Redo",
+	        new AbstractAction("Redo") {
+	            public void actionPerformed(ActionEvent evt) {
+	                try {
+	                    if (undo.canRedo()) {
+	                        undo.redo();
+	                    }
+	                } catch (CannotRedoException e) {
+	                }
+	            }
+	        });
+
+	    // Bind the redo action to ctl-Y
+	    this.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
 		
 		setEditable(true);
 	}
