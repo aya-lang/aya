@@ -115,11 +115,11 @@ public class FreeChartInterface extends JFrame
    
    private XYDataset createDataset(ChartParams cp)
    {
-	   final XYSeriesCollection dataset = new XYSeriesCollection( );          
+	   final XYSeriesCollection dataset = new XYSeriesCollection();          
 
 	      
 	   for (int i = 0; i < cp.getSeriesCount(); i++) {
-		   final XYSeries series = new XYSeries(cp.getName(i));
+		   final XYSeries series = new XYSeries(cp.getName(i), false);
 		   for (int j = 0; j < cp.getXvalues().size(); j++) {
 			   series.add(cp.getX(j), cp.getY(i, j));
 		   }
