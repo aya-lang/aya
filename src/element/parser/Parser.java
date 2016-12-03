@@ -7,6 +7,7 @@ import element.ElemTypes;
 import element.Element;
 import element.entities.Block;
 import element.entities.InstructionStack;
+import element.entities.operations.ColonOps;
 import element.entities.operations.Ops;
 import element.exceptions.EndOfInputError;
 import element.exceptions.SyntaxError;
@@ -176,7 +177,7 @@ public class Parser {
 					
 					//Dot operator
 					else {
-						tokens.add(new OperatorToken(""+in.next(), OperatorToken.DOT));
+						tokens.add(new OperatorToken(""+in.next(), OperatorToken.DOT_OP));
 					}
 				} else {
 					throw new SyntaxError("Unexpected end of input after '.'" + in.toString());
@@ -186,7 +187,7 @@ public class Parser {
 			//Math Operators
 			else if (current == 'M') {
 				try {
-					tokens.add(new OperatorToken(""+in.next(), OperatorToken.MATH));
+					tokens.add(new OperatorToken(""+in.next(), OperatorToken.MATH_OP));
 				} catch (EndOfInputError e) {
 					throw new SyntaxError("Expected op name after 'M'" + in.toString());
 				}
@@ -408,12 +409,20 @@ public class Parser {
 			
 			//Normal Operators
 			else if (Ops.isOpChar(current)) {
-				tokens.add(new OperatorToken(""+current, OperatorToken.STD ));
+				tokens.add(new OperatorToken(""+current, OperatorToken.STD_OP ));
 			}
+			
 			
 			//Colon
 			else if (current == ':') {
-				tokens.add(SpecialToken.COLON);
+				//Colon Operator 
+				if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
+					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
+				} 
+				// Normal Colon
+				else {
+					tokens.add(SpecialToken.COLON);
+				}
 			}
 			
 			//Special Character Variables

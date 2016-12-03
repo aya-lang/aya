@@ -1,6 +1,7 @@
 package element.parser.tokens;
 
 import element.entities.Operation;
+import element.entities.operations.ColonOps;
 import element.entities.operations.DotOps;
 import element.entities.operations.MathOps;
 import element.entities.operations.Ops;
@@ -8,9 +9,10 @@ import element.exceptions.SyntaxError;
 
 public class OperatorToken extends StdToken {
 	
-	public static final int STD = 0;
-	public static final int DOT = 1;
-	public static final int MATH = 2;
+	public static final int STD_OP = 0;
+	public static final int DOT_OP = 1;
+	public static final int MATH_OP = 2;
+	public static final int COLON_OP = 3;
 	
 	private int op_type;
 	
@@ -28,15 +30,17 @@ public class OperatorToken extends StdToken {
 	public Object getElementObj() {
 		Operation op = null;
 		switch (op_type) {
-		case STD:
+		case STD_OP:
 			op = Ops.getOp(data.charAt(0));
 			break;
-		case DOT:
+		case DOT_OP:
 			op = DotOps.getOp(data.charAt(0));
 			break;
-		case MATH:
+		case MATH_OP:
 			op = MathOps.getOp(data.charAt(0));
 			break;
+		case COLON_OP:
+			op = ColonOps.getOp(data.charAt(0));
 		}
 		if (op == null) {
 			throw new SyntaxError("Operator '" + getOpTypeLetter() + data.charAt(0) + "' does not exist");
@@ -46,10 +50,12 @@ public class OperatorToken extends StdToken {
 	
 	public String getOpTypeLetter() {
 		switch (op_type) {
-		case DOT:
+		case DOT_OP:
 			return ".";
-		case MATH:
+		case MATH_OP:
 			return "M";
+		case COLON_OP:
+			return ":";
 		default:
 			return "";
 		}

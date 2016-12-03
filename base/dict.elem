@@ -31,7 +31,7 @@
     {d k, k d.getindex _(-1)= {d.vals\I} {;nil} @?}:index;
 
     .#? (value)(dict)(key) dict.put\n  assign the value to the key in the dict. create a new entry if needed
-    {v d k, k d.getindex _(-1)= {d.data\:[k v]} {;d.data[k v]AK} @?;d}:put;
+    {v d k, k d.getindex _(-1)= {d.data\ : [k v]} {;d.data[k v]AK} @?;d}:put;
 
     .#? (key)(dict) dict.haskey\n  returns true if the dictionary contains the key
     {.getindex(-1)=!}:haskey;

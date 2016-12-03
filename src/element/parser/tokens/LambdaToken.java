@@ -25,7 +25,7 @@ public class LambdaToken extends CollectionToken {
 		if(col.size() == 2 && col.get(0).isa(Token.OP)){
 			//Is it the negation op?
 			OperatorToken op = (OperatorToken) col.get(0);
-			if(op.getOpType() == OperatorToken.STD && op.getData().charAt(0) == '-') {
+			if(op.getOpType() == OperatorToken.STD_OP && op.getData().charAt(0) == '-') {
 
 				//Parse the number and negate it
 				Token t = col.get(1);
