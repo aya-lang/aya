@@ -115,7 +115,7 @@ public class DotOps {
 		/* 83 S  */ new OP_Dot_Case(),
 		/* 84 T  */ new OP_TypeOf(),
 		/* 85 U  */ new OP_RequestString(),
-		/* 86 V  */ null,
+		/* 86 V  */ new OP_Dot_AppendBack(),
 		/* 87 W  */ null,
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
@@ -440,13 +440,21 @@ class OP_Dot_ArrayAll extends Operation {
 class OP_Dot_Append extends Operation {
 	public OP_Dot_Append() {
 		this.name = ".B";
-		this.info = "append item to the fron of a list";
+		this.info = "append item to the back of a list";
 		this.argTypes = "AL";
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
-		// TODO
+		Object a = block.pop();
+		Object b = block.pop();
+		
+		if (isList(a)) {
+			toList(a).add(b);
+			block.push(a);
+		} else {
+			throw new TypeError(this, a, b);
+		}
 	}
 }
 
@@ -739,7 +747,7 @@ class OP_TypeOf extends Operation {
 	}
 }
 
-//U - 85
+// U - 85
 class OP_RequestString extends Operation {
 	public OP_RequestString() {
 		this.name = ".U";
@@ -754,7 +762,27 @@ class OP_RequestString extends Operation {
 	}
 }
 
-
+// V - 86
+class OP_Dot_AppendBack extends Operation {
+	public OP_Dot_AppendBack() {
+		this.name = ".V";
+		this.info = "append item to the back of a list";
+		this.argTypes = "AL";
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public void execute(Block block) {
+		Object a = block.pop();
+		Object b = block.pop();
+		
+		if (isList(a)) {
+			toList(a).add(0, b);
+			block.push(a);
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
 
 //X - 88
 class OP_SimplePlot extends Operation {
