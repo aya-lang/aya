@@ -2,8 +2,8 @@ package element.entities.operations;
 
 import static element.ElemTypes.IDToAbbrv;
 import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothList;
+import static element.ElemTypes.bothNumeric;
 import static element.ElemTypes.bothString;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
@@ -20,8 +20,8 @@ import static element.ElemTypes.toBlock;
 import static element.ElemTypes.toBool;
 import static element.ElemTypes.toChar;
 import static element.ElemTypes.toList;
-import static element.ElemTypes.toNumericList;
 import static element.ElemTypes.toNumeric;
+import static element.ElemTypes.toNumericList;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,7 +126,7 @@ public class DotOps {
 		/* 92 \  */ null,
 		/* 93 ]  */ new OP_Dot_Floor(),
 		/* 94 ^  */ null,
-		/* 95 _  */ null,
+		/* 95 _  */ new OP_Dot_Underscore(),
 		/* 96 `  */ null,
 		/* 97 a  */ null, // Member Variable
 		/* 98 b  */ null, // Member Variable
@@ -448,7 +448,6 @@ class OP_Dot_Append extends Operation {
 		this.info = "append item to the back of a list";
 		this.argTypes = "AL";
 	}
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
@@ -774,7 +773,6 @@ class OP_Dot_AppendBack extends Operation {
 		this.info = "append item to the back of a list";
 		this.argTypes = "AL";
 	}
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
 		Object a = block.pop();
@@ -897,6 +895,37 @@ class OP_Dot_Floor extends Operation {
 			block.push(toNumeric(n).floor());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
+		}
+	}
+}
+
+// _ - 95
+class OP_Dot_Underscore extends Operation {
+	public OP_Dot_Underscore() {
+		this.name = "._";
+		this.info = "copies the Nth item on the stack (not including N)";
+		this.argTypes = "N";
+	}
+	@Override public void execute (final Block block) {
+		final Object a = block.pop();
+		
+		if (isNumeric(a)) {
+			int size = block.getStack().size();
+			int i = toNumeric(a).toInt();
+			
+			if (i > size || i <= 0) {
+				throw new ElementRuntimeException(i + " ._ stack index out of bounds");
+			} else {
+				final Object cp = block.getStack().get(size - i);
+				
+				if(cp instanceof ArrayList) {
+					block.push(toList(cp).clone());
+				} else {
+					block.push(cp);
+				}
+			}
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }

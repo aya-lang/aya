@@ -1,19 +1,15 @@
 package element.entities.operations;
 
 import static element.ElemTypes.bothList;
-import static element.ElemTypes.bothNumeric;
-import static element.ElemTypes.isList;
 import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.length;
 import static element.ElemTypes.toList;
 import static element.ElemTypes.toNumeric;
-import static element.ElemTypes.toNumericList;
 
 import java.util.ArrayList;
 
 import element.entities.Block;
 import element.entities.Operation;
-import element.entities.number.NumMath;
+import element.exceptions.ElementRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
 
@@ -89,7 +85,7 @@ public class ColonOps {
 		/* 92 \  */ null,
 		/* 93 ]  */ null,
 		/* 94 ^  */ null,
-		/* 95 _  */ null,
+		/* 95 _  */ new OP_Colon_Underscore(),
 		/* 96 `  */ null,
 		/* 97 a  */ null, // Assignment
 		/* 98 b  */ null, // Assignment
@@ -170,6 +166,43 @@ class OP_SetMinus extends Operation {
 			block.push(b);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+//_ - 95
+class OP_Colon_Underscore extends Operation {
+	public OP_Colon_Underscore() {
+		this.name = ":_";
+		this.info = "copies the first N items on the stack (not including N)";
+		this.argTypes = "N";
+	}
+	@Override public void execute (final Block block) {
+		final Object a = block.pop();
+		
+		if (isNumeric(a)) {
+			int size = block.getStack().size();
+			int i = toNumeric(a).toInt();
+			
+			if (i > size || i <= 0) {
+				throw new ElementRuntimeException(i + " ._ stack index out of bounds");
+			} else {
+				
+				while (i > 0) {
+					final Object cp = block.getStack().get(size - i);
+					
+					if(cp instanceof ArrayList) {
+						block.push(toList(cp).clone());
+					} else {
+						block.push(cp);
+					}
+				i--;
+				}
+				
+			}
+			
+		} else {
+			
 		}
 	}
 }
