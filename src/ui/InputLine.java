@@ -40,7 +40,17 @@ public class InputLine extends CodeTextPane {
 	}
 
 	public void clear() {
-		lastText.add(getText());
+		String text = getText();
+		
+		//Only add the text to the history if it is not the most recent entry
+		//i.e. don't add multiple copies of the same text in a row
+		if (lastText.size() > 0) {
+				if (!lastText.get(lastText.size()-1).equals(text)) {
+					lastText.add(text);
+				}
+		} else {
+			lastText.add(text);
+		}
 		lastTextID = lastText.size();
 		setText("");
 	}
