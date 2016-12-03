@@ -38,7 +38,6 @@ import org.apfloat.Apfloat;
 import element.ElemPrefs;
 import element.Element;
 import element.entities.Block;
-import element.entities.ListBuilder;
 import element.entities.Operation;
 import element.entities.number.BigNum;
 import element.entities.number.Num;
@@ -96,7 +95,7 @@ public class DotOps {
 		/* 63 ?  */ new OP_Dot_Conditional(),
 		/* 64 @  */ null,
 		/* 65 A  */ new OP_Dot_ArrayAll(),
-		/* 66 B  */ new OP_Dot_Primes(),
+		/* 66 B  */ new OP_Dot_Append(),
 		/* 67 C  */ null,
 		/* 68 D  */ new OP_Dot_Error(),
 		/* 69 E  */ new OP_Dot_Len(),
@@ -420,7 +419,7 @@ class OP_Dot_Conditional extends Operation {
 }
 
 
-//A - 64
+// A - 64
 class OP_Dot_ArrayAll extends Operation {
 	public OP_Dot_ArrayAll() {
 		this.name = ".A";
@@ -437,32 +436,24 @@ class OP_Dot_ArrayAll extends Operation {
 	}
 }
 
-//B - 65
-class OP_Dot_Primes extends Operation {
-	public OP_Dot_Primes() {
+// B - 65
+class OP_Dot_Append extends Operation {
+	public OP_Dot_Append() {
 		this.name = ".B";
-		this.info = "N list all primes up to N";
-		this.argTypes = "N";
+		this.info = "append item to the fron of a list";
+		this.argTypes = "AL";
 	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if (isNumeric(a)) {
-			int i = toNumeric(a).toInt();
-			if (i < 0) {
-				throw new ElementRuntimeException(".B: Input must be positive");
-			}
-			int[] primes = ElementMath.primes(i);
-			block.push(ListBuilder.arrToAL(primes));
-		} else {
-			throw new TypeError(this, a);
-		}
+		// TODO
 	}
-
 }
 
-//D - 67
+
+
+
+// D - 67
 class OP_Dot_Error extends Operation {
 	public OP_Dot_Error() {
 		this.name = ".D";

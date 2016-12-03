@@ -30,7 +30,7 @@ import "base/constants"
 {_$.S\;}:min;       .#? L min\n  min value of a list
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
-{.B}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
+{Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
 {{*}U}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root

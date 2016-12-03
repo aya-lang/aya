@@ -34,6 +34,7 @@ import element.ElemPrefs;
 import element.ElemTypes;
 import element.Element;
 import element.entities.Block;
+import element.entities.ListBuilder;
 import element.entities.Operation;
 import element.entities.UserObject;
 import element.entities.number.Num;
@@ -133,7 +134,7 @@ public class MathOps {
 		/* 109 m */ null,
 		/* 110 n */ null,
 		/* 111 o */ null,
-		/* 112 p */ null,
+		/* 112 p */ new OP_Primes(),
 		/* 113 q */ new OP_SquareRoot(),
 		/* 114 r */ null,
 		/* 115 s */ new OP_Sine(),
@@ -895,6 +896,31 @@ class OP_Ln extends Operation {
 			throw new TypeError(this, a);
 		}
 	}
+}
+
+// p - 112
+class OP_Primes extends Operation {
+	public OP_Primes() {
+		this.name = "Mp";
+		this.info = "N list all primes up to N";
+		this.argTypes = "N";
+	}
+
+	@Override
+	public void execute(Block block) {
+		Object a = block.pop();
+		if (isNumeric(a)) {
+			int i = toNumeric(a).toInt();
+			if (i < 0) {
+				throw new ElementRuntimeException("Mp: Input must be positive");
+			}
+			int[] primes = ElementMath.primes(i);
+			block.push(ListBuilder.arrToAL(primes));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+
 }
 
 // q - 113
