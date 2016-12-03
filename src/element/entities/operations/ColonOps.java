@@ -185,7 +185,7 @@ class OP_Colon_Underscore extends Operation {
 			int i = toNumeric(a).toInt();
 			
 			if (i > size || i <= 0) {
-				throw new ElementRuntimeException(i + " ._ stack index out of bounds");
+				throw new ElementRuntimeException(i + " :_ stack index out of bounds");
 			} else {
 				
 				while (i > 0) {
