@@ -1,9 +1,21 @@
 package element.entities.operations;
 
+import static element.ElemTypes.bothList;
+import static element.ElemTypes.bothNumeric;
+import static element.ElemTypes.isList;
+import static element.ElemTypes.isNumeric;
+import static element.ElemTypes.length;
+import static element.ElemTypes.toList;
+import static element.ElemTypes.toNumeric;
+import static element.ElemTypes.toNumericList;
+
 import java.util.ArrayList;
 
+import element.entities.Block;
 import element.entities.Operation;
+import element.entities.number.NumMath;
 import element.exceptions.SyntaxError;
+import element.exceptions.TypeError;
 
 public class ColonOps {	
 	
@@ -27,7 +39,7 @@ public class ColonOps {
 		/* 42 *  */ null,
 		/* 43 +  */ null,
 		/* 44 ,  */ null,
-		/* 45 -  */ null,
+		/* 45 -  */ new OP_SetMinus(),
 		/* 46 .  */ null,
 		/* 47 /  */ null,
 		/* 48 0  */ null, //Number Literal
@@ -139,3 +151,26 @@ public class ColonOps {
 	}
 	
 }
+
+
+//- - 45
+class OP_SetMinus extends Operation {
+	public OP_SetMinus() {
+		this.name = ":-";
+		this.info = "LL remove all elements in L2 from L1";
+		this.argTypes = "LL";
+	}
+	@Override
+	public void execute(Block block) {
+		Object a = block.pop();
+		Object b = block.pop();
+		
+		if (bothList(a,b)) {
+			ListOperations.removeObjects(toList(b), toList(a));
+			block.push(b);
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
+	

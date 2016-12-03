@@ -110,6 +110,8 @@ public class Element {
 			instance.out.printEx(exToSimpleStr(iobe));
 		} catch (ElementUserRuntimeException eure) {
 			instance.out.printEx(eure.getSimpleMessage());
+		} catch (ClassCastException cce) {
+			instance.out.printEx(exToSimpleStr(cce));
 		} catch (Exception e2) {
 			System.out.println("EXCEPTION: Unhandled exception in Element.run(Block)");
 			if(PRINT_LARGE_ERRORS) {

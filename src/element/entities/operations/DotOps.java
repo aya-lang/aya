@@ -3,6 +3,7 @@ package element.entities.operations;
 import static element.ElemTypes.IDToAbbrv;
 import static element.ElemTypes.bothChar;
 import static element.ElemTypes.bothNumeric;
+import static element.ElemTypes.bothList;
 import static element.ElemTypes.bothString;
 import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
@@ -19,6 +20,7 @@ import static element.ElemTypes.toBlock;
 import static element.ElemTypes.toBool;
 import static element.ElemTypes.toChar;
 import static element.ElemTypes.toList;
+import static element.ElemTypes.toNumericList;
 import static element.ElemTypes.toNumeric;
 
 import java.io.File;
@@ -327,6 +329,9 @@ class OP_Dot_Minus extends Operation {
 			block.push(NumMath.lcm(toNumeric(a), toNumeric(b)));	
 		} else if (isList(b) && isNumeric(a)) {
 			toList(b).remove(toNumeric(a).toIndex(length(b)));
+			block.push(b);
+		} else if (bothList(a,b)) {
+			ListOperations.removeIndices(toList(b), toNumericList(a));
 			block.push(b);
 		} else {
 			throw new TypeError(this, a, b);

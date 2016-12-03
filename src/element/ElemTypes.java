@@ -15,6 +15,7 @@ import element.entities.number.BigNum;
 import element.entities.number.Num;
 import element.entities.number.NumMath;
 import element.entities.number.Numeric;
+import element.exceptions.ElementRuntimeException;
 import element.variable.MemberVariable;
 import element.variable.Module;
 import element.variable.Variable;
@@ -150,7 +151,7 @@ public class ElemTypes {
 	public static boolean bothChar(Object a, Object b)		{ return a instanceof Character && b instanceof Character; }
 	public static boolean bothString(Object a, Object b)	{ return isString(a) && isString(b); }
 	public static boolean bothBool(Object a, Object b)		{ return a instanceof Boolean && b instanceof Boolean; }
-	public static boolean bothList(Object a, Object b)		{ return a instanceof ArrayList && b instanceof ArrayList; }
+	public static boolean bothList(Object a, Object b)		{ return isList(a) && isList(b); }
 	
 	public static boolean anyInt(Object a, Object b) 		{ return a instanceof Integer || b instanceof Integer; }
 	public static boolean anyDouble(Object a, Object b) 	{ return a instanceof Double || b instanceof Double; }
@@ -193,6 +194,7 @@ public class ElemTypes {
 		}
 		return (String)o;
 	}
+	
 	/** returns the item casted as a list */
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Object> toList(Object o) {
@@ -207,6 +209,15 @@ public class ElemTypes {
 		return (ArrayList<Object>)o;
 	}
 
+	/** returns the item casted as a numeric list */
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Numeric> toNumericList(Object o) {
+		try {
+			return (ArrayList<Numeric>)o;
+		} catch (ClassCastException e) {
+			throw new ElementRuntimeException("List must contains only numbers. Recieved:\n " + show(o));
+		}
+	}
 
 	
 	
