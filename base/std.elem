@@ -249,21 +249,6 @@
 .#? III intspace\n create a range from a to b consisting of c ints\n  (also see linspace)
 {a b l, [a b l linspace,.]]}:intspace;
 
-.#? L remdups\n removes duplicates in a list
-{l:set,
-  []:set;
-
-  l#{i,
-    .# If the element is not already in the set, add it
-    {}{
-       set [i] K:set;
-    } set i N(-1)= ?
-    i
-  };
-
-  set
-}:remdups;
-
 .#? L<N> digitstonum\n  convert a list of numbers into a number
 {lL : total multip,
   1:multip;
