@@ -9,6 +9,7 @@ import java.util.EmptyStackException;
 import java.util.regex.PatternSyntaxException;
 
 import element.entities.Block;
+import element.entities.operations.ColonOps;
 import element.entities.operations.DotOps;
 import element.entities.operations.MathOps;
 import element.entities.operations.Ops;
@@ -82,6 +83,7 @@ public class Element {
 			searchList.addAll(Ops.getAllOpDescriptions());
 			searchList.addAll(MathOps.getAllOpDescriptions());
 			searchList.addAll(DotOps.getAllOpDescriptions());
+			searchList.addAll(ColonOps.getAllOpDescriptions());
 			//searchList.addAll(this.variables.getDefaultVariableDiscs(this));
 			
 			searchList.addAll(CharacterParser.getAllCharDiscs());	//always add last
