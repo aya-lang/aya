@@ -550,7 +550,7 @@ class OP_Plus extends Operation {
 	}
 }
 
-//- - 44
+// - - 44
 class OP_Minus extends Operation {
 	public OP_Minus() {
 		this.name = "-";
@@ -567,7 +567,7 @@ class OP_Minus extends Operation {
 		} else if (isNumeric(a) && isChar(b)) {
 			block.push((char) (toNumeric(a).toInt() - toChar(b)));
 		} else if (isChar(a) && isNumeric(b)) {
-			block.push(toChar(a) - toNumeric(b).toInt());
+			block.push((char) (toChar(a) - toNumeric(b).toInt()));
 		} else if (bothChar(a, b)) {
 			block.push((char)(toChar(a) - toChar(b)));
 		} else if (isUserObject(b)) {
