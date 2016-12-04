@@ -17,10 +17,7 @@
 
   .#? A (set) set.rem\n  remove an item from a set\n  overloaded operator: -
   {item self,
-    {}
-    {self.list_ item N\;|V;K self.setlist}
-    item self.in?
-    self
+    self.list [item] :-
   }:rem;
   {set.rem}:minus;
 

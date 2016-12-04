@@ -39,6 +39,6 @@
   {.listE0=}:isempty;
 
   .#? A (queue) queue.plus\nA (queue) queue.add\n  add an item to the queue
-  {self, self.list\K; self}:plus;
+  {self, self.list.B; self}:plus;
   {queue.plus}:add;
 }

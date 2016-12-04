@@ -24,7 +24,7 @@
     self.listV\;
   }:dollar;
 
-  {stack.dollar}:next;
+  {stack.dollar}:pop;
 
   .#? (stack) stack.peek\n  return the next item in the stack without removing it from the stack
   {self,
@@ -39,6 +39,6 @@
   {.listE0=}:isempty;
 
   .#? A (stack) stack.plus\nA (stack) stack.add\n  add an item to the stack
-  {self, self.listK; self}:plus;
+  {self, self.list.V; self}:plus;
   {stack.plus}:add;
 }

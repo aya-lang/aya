@@ -56,7 +56,7 @@
 
     .# The domain
     0 2pi* 600 linspace p.domain
-    
+
     .# Add each function
     "sin" 2 colors.red.rgb    {sin} p.addexpr
     "cos" 2 colors.blue.rgb   {cos} p.addexpr
@@ -72,15 +72,15 @@
     "f(x)" p.setylabel
     400    p.setwidth
     300    p.setheight
-    
+
     .# Open the plot window
     p.view
-    
+
     .# Uncomment to save the plot
     .# "sample_plot.png" p.save
 
   }:fnplot;
-  
+
   .#? demo.scatter\n  a simple scatter plot
   {:p,
     100R:x [x,.Q70*+] plot.scatter:p
@@ -126,7 +126,7 @@
     "qlum" c {:r g b, .rgb~:b;:g;:r; [r r b g g g] S} srtprt
 
   }:colorsort;
-  
+
   {:time level plt reg,
 
     data.lakehuron [1! "time"] I :time;
@@ -149,5 +149,12 @@
   .#? S sc\n  returns the closet english word to the input
   {w, data.words {w^} .$ V\;}:sc;
 
+  .#? data.spiro\n  generate a parametric spiral
+  {
+    [0dy100,]:x;
+    x#{x,xMs xMs 1 2/*-}
+    x#{x,x17 8/*Mc xMc-}
+    plot.line.view
+  }:spiro;
 
 }

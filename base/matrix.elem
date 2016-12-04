@@ -42,12 +42,12 @@
     a.rows#{r, b.transpose.rows#{r matrix.dot}}
     matrix!
   }:matmul;
-  
+
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
     {[a.rows b.rows,=]{&}U} {F} a.dim b.dim =! ?
   }:eq;
-  
+
 
   .# Elementary row operations
 
@@ -55,7 +55,7 @@
   {n rn mat,
     (mat.rows rn :           .# Assign the rnth row of mat...
 	  (mat.rows rn I #{n*})  .# ..to the rnth row times n
-	);
+	  );
     mat
   }:rowmul;
 

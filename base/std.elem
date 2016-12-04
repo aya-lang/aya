@@ -102,9 +102,7 @@
 .#		  STACK MANIPULATION         #
 .###################################
 
-{i:t,[]{.B}i%:t~t~}:dup; .#? N cp\n  duplicate the top N elements
 {i:t,.Ai!.I:t;~t}:cp;    .#? N ix\n  copy the Nth element from the top of the stack to the top
-{\_@_@\}:duptwo;	       .#? duptwo\n  duplicate the top two items of the stack
 {.A{t,tV:t;~t}~}:back;   .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
 {:t,.A_E:t;~t}:count;    .#? count\n  counts the number of items on the stack
 
@@ -195,8 +193,8 @@
 {AKR}:range;					.#? NN range\n  generates a range from n1 to n2
 {lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
 {[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
-{!{K}U}:flatten;			.#? L flatten\n  flattens the list by a single dimension
-{B\K}:roll;      			.#? L roll\n  move the last element to the front
+{{K}U}:flatten;			  .#? L flatten\n  flattens the list by a single dimension
+{B\.V}:roll;      		.#? L roll\n  move the last element to the front
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
 {[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
@@ -221,7 +219,6 @@
   ]'\n'join             .# Separate lines
 }:matstr;
 
-{aL bL, [a,,b\N\;(-1)=]}:setminus;  .#? LL setminus\n removes an item from the first list if it is in the second
 {aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
 {lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
 
@@ -237,7 +234,7 @@
 }:swapitems;
 
 .#? <L> shuffle\n  shuffle a list
-{{.Q}.$}:shuffle;
+{{;.Q}.$}:shuffle;
 
 .#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
 {a b nums,
