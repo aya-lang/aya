@@ -6,7 +6,7 @@
 {@set,
   attr "list"
 
-  {lL, [l remdups] set MO}:new;
+  {lL, [l :~] set MO}:new;
 
   .#? A (set) set.in\n  tests if an item is in a set
   {item self, self.list item N\;(-1)=!}:in;

@@ -4,3 +4,7 @@
 {
 X"\|"|_SE\0Y;#{_Ey+Y>}\B#{<x+println0};
 }:cmttemplate;
+
+
+.# Example
+.# "ab|cd|efg|h|ijk" ".#" cmttemplatea

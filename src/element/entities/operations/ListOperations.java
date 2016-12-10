@@ -43,5 +43,27 @@ public class ListOperations {
 			}
 		}
 	}
+	
+	/**
+	 * Remove duplicates from a list (rough algorithm)
+	 * TODO: This algorithm can be simplified when all types implement .equals 
+	 * @param list
+	 */
+	public static ArrayList<Object> removeDuplicates(ArrayList<Object> list) {
+		ArrayList<Object> unique = new ArrayList<Object>();
+		for (Object l : list) {
+			boolean alreadyContains = false;
+			for (Object u : unique) {
+				if (ElemTypes.areEqual(l, u)) {
+					alreadyContains = true;
+					break;
+				}
+			}
+			if (!alreadyContains) {
+				unique.add(l);
+			}
+		}
+		return unique;
+	}
 
 }

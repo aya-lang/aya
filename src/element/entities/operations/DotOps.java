@@ -95,7 +95,7 @@ public class DotOps {
 		/* 61 =  */ null,
 		/* 62 >  */ new OP_Dot_GreaterThan(),
 		/* 63 ?  */ new OP_Dot_Conditional(),
-		/* 64 @  */ null,
+		/* 64 @  */ new OP_Dot_At(),
 		/* 65 A  */ new OP_Dot_ArrayAll(),
 		/* 66 B  */ new OP_Dot_Append(),
 		/* 67 C  */ null,
@@ -423,8 +423,35 @@ class OP_Dot_Conditional extends Operation {
 
 }
 
+// @ - 64
+class OP_Dot_At extends Operation {
+	public OP_Dot_At() {
+		this.name = ".@";
+		this.info = "moves the Nth item on the stack (not including N) to the top";
+		this.argTypes = "N";
+	}
+	@Override public void execute (final Block block) {
+		final Object a = block.pop();
+		
+		if (isNumeric(a)) {
+			int size = block.getStack().size();
+			int i = toNumeric(a).toInt();
+			
+			if (i > size || i <= 0) {
+				throw new ElementRuntimeException(i + " .@ stack index out of bounds");
+			} else {
+				final Object cp = block.getStack().get(size - i);
+				block.getStack().remove(size - i);
+				block.push(cp);
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
-// A - 64
+
+// A - 65
 class OP_Dot_ArrayAll extends Operation {
 	public OP_Dot_ArrayAll() {
 		this.name = ".A";
@@ -441,7 +468,7 @@ class OP_Dot_ArrayAll extends Operation {
 	}
 }
 
-// B - 65
+// B - 66
 class OP_Dot_Append extends Operation {
 	public OP_Dot_Append() {
 		this.name = ".B";
@@ -465,7 +492,7 @@ class OP_Dot_Append extends Operation {
 
 
 
-// D - 67
+// D - 68
 class OP_Dot_Error extends Operation {
 	public OP_Dot_Error() {
 		this.name = ".D";
@@ -483,7 +510,7 @@ class OP_Dot_Error extends Operation {
 	}
 }
 
-//E - 68
+//E - 69
 class OP_Dot_Len extends Operation {
 	public OP_Dot_Len() {
 		this.name = ".E";
@@ -505,7 +532,7 @@ class OP_Dot_Len extends Operation {
 
 
 
-//F - 69
+//F - 70
 class OP_Dot_Flatten extends Operation {
 	public OP_Dot_Flatten() {
 		this.name = ".F";

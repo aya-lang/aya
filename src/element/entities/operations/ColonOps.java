@@ -1,17 +1,28 @@
 package element.entities.operations;
 
 import static element.ElemTypes.bothList;
+import static element.ElemTypes.getString;
+import static element.ElemTypes.isBlock;
+import static element.ElemTypes.isChar;
+import static element.ElemTypes.isList;
 import static element.ElemTypes.isNumeric;
+import static element.ElemTypes.isString;
+import static element.ElemTypes.toBlock;
+import static element.ElemTypes.toChar;
 import static element.ElemTypes.toList;
 import static element.ElemTypes.toNumeric;
 
 import java.util.ArrayList;
 
+import element.Element;
 import element.entities.Block;
 import element.entities.Operation;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
+import element.parser.CharacterParser;
+import element.parser.Parser;
+import element.variable.Variable;
 
 public class ColonOps {	
 	
@@ -116,7 +127,7 @@ public class ColonOps {
 		/* 123 { */ null,
 		/* 124 | */ null,
 		/* 125 } */ null,
-		/* 126 ~ */ null,
+		/* 126 ~ */ new OP_Colon_Tilde()
 	};
 	
 	
@@ -203,6 +214,25 @@ class OP_Colon_Underscore extends Operation {
 			
 		} else {
 			
+		}
+	}
+}
+
+//~ - 126
+class OP_Colon_Tilde extends Operation {
+	public OP_Colon_Tilde() {
+		this.name = ":~";
+		this.info = "remove duplicate items from a list";
+		this.argTypes = "L";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Object a = block.pop();
+		
+		if (isList(a)) {
+			block.push(ListOperations.removeDuplicates(toList(a)));
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }
