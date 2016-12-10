@@ -199,6 +199,14 @@
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
 {[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
 
+.#? L rank\n  rank a list
+{_{>}pu#{#{0 1@?}SB}}:rank;
+
+.#? AEN iter\n  start at A and iterate E N times
+{start expr len,
+  [start {_ expr} len %]
+}:iter;
+
 .#? N digits\n  convert a number into a list of digits
 {[1|{_10%\10/.]_0=!}W;]!}:digits;
 
