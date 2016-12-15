@@ -79,6 +79,7 @@
 })}:attr;
 
 
+
 .#? nil\n  represents nothing
 {@nilmodule,
   {"<nil>"}:show;
@@ -97,6 +98,33 @@
 	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
 	}
 })}:assert;
+
+
+.#? struct "name: attr1 attr2 ..."\n  create a struct with the given parameters
+{`({str : l name paramstr accessstr,
+  str":"|:l;
+
+  "struct must have name and parameters separated by a ':', recieved \"$str\"" {lE2=!} conderr
+
+  l0I trim :name;
+  l1I trim :paramstr;
+
+  "struct params must follow the ':' and be space-separated, recieved \"$paramstr\"" {paramstr "[a-z ]+"|""=!} conderr
+
+  .# build a string of the form
+  .# "$(name.attr1), $(name.attr2), ..."
+  name paramstr trim {n p, p" "|#{"\$(" n"."++\+"), "+}SB;B;}~ :accessstr;
+
+  .# Build the type definition for the struct
+  "
+  {@$name,
+    attr \"$paramstr\"
+    {$paramstr, [$paramstr] $name MO}:new;
+    {$name, [\"{$name: \" \"$accessstr\" \"}\"]S }:show
+  }
+  "~
+
+})}:struct;
 
 .###################################
 .#		  STACK MANIPULATION         #

@@ -13,3 +13,4 @@
 '\Udf' "gcd"        Mk .# 223
 '\Ue6' "surround"   Mk .# 230
 '\Ueb' "euler"      Mk .# 235
+'\Ufe' "struct"     Mk .# 254
