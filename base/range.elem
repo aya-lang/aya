@@ -1,0 +1,34 @@
+{@range,
+
+  attr "low inc hi"
+  {lowN incN hiN, [low inc hi] range MO}:new;
+
+  {currentN range,
+    current range.inc +
+  }:next;
+
+  {range, range.low}:start;
+
+  {currentN range,
+    current range.hi .>
+  }:done;
+
+  {range : out current,
+    "[ " :out;
+    range.start :current;
+
+    while {current range.done!} {
+      out current+ " "+ :out;
+      current range.next :current;
+    }
+
+    out current + " ]"+
+  }:show;
+
+  {x rng : t,
+    xMw".range"= then {x:t; rng:x; t:rng;}
+
+    [rng.low x+ rng.inc rng.hi x+] range MO
+
+  }:plus
+}
