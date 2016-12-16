@@ -4,14 +4,14 @@
 .#? module: demo\n  contains various example functions
 {@ demo,
   .#? N demo.train\n  generates an ASCII train with N carts
-  {numD, [" ______  ""|      | "" ()--() ~"]#{numLSB;'\n'+}S.P}:train;
+  {nD, [" ______  ""|      | "" ()--() ~"]#{nLSB;'\n'+}S.P}:train;
 
 
   .#? demo.loc\n  input a C source file and return the number of lines of code
   {"".UG"/\\*[^/]+\\/|[\\n|\\t+|\\s+]//.+"|S".+"&{_E\"[\\t|\\s]"&E=!}IE}:loc;
 
   .#? N demo.wall\n  print a wall
-  {[1|,"\{pi}\{ppi}"Q].P}:wall;
+  {[1|,;"\{pi}\{ppi}"Q].P}:wall;
 
   .#? demo.sinsrs\n  plot a sin series with coefficients
   {:d,
@@ -127,6 +127,7 @@
 
   }:colorsort;
 
+  .#? demo.lakehuron\n  plot lake huron water levels over time with regression
   {:time level plt reg,
 
     data.lakehuron [1! "time"] I :time;
@@ -146,10 +147,10 @@
     plt.view
   }:lakehuron;
 
-  .#? S sc\n  returns the closet english word to the input
+  .#? S demo.sc\n  returns the closet english word to the input
   {w, data.words {w^} .$ V\;}:sc;
 
-  .#? data.spiro\n  generate a parametric spiral
+  .#? demo.spiro\n  generate a parametric spiral
   {
     [0dy100,]:x;
     x#{x,xMs xMs 1 2/*-}
@@ -157,4 +158,37 @@
     plot.line.view
   }:spiro;
 
+  .#? demo.randomwalk\n  plot a random walk
+  {:vec step,
+    .# A simple 2d vector
+    struct "vec:x y"
+    .# Move the x and y values by 0,-1, or +1
+    {v, v.x 3QV+ v.setx v.y 3QV+ v.sety}:step
+
+    .# Start at (0,0)
+    0 0 vec!:v;
+    .# Record each step in a list, step 20000 times
+    [] {v step [v.x v.y]\.V} 20000 %
+    .# Transpose the list and plot the line
+    transpose~ plot.line.view
+  }:randomwalk;
+
 }
+
+{:demolist choice,
+  [
+    ["Random Walk" "randomwalk"]
+    ["Sine Series" "sinsrs"]
+    ["Parametric Spiral" "spiro"]
+    ["Regression Plot" "lakehuron"]
+    ["Rainbow" "rainbow"]
+    ["Color Sort" "colorsort"]
+    ["Scatter Plot" "scatter"]
+    ["Expression Plot" "fnplot"]
+  ]dict! :demolist;
+
+  demolist.keys "Select a Demo" "Element Demo" 1 6 MV :choice;
+
+  "demo." demolist choice I + ~
+
+}:demos;
