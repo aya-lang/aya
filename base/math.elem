@@ -26,8 +26,10 @@ import "base/constants"
 {ML}:log;      			.#? N log\n  base-10 log
 {ML\ML\/}:logn;			.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
 {1-M!MAMl}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
-{_$B\;\;}:max;      .#? L max\n  max value of a list
-{_$.S\;}:min;       .#? L min\n  min value of a list
+{2:_>?}:smaller;    .#? NN smaller\n  choose smaller
+{2:_<?}:bigger;     .#? NN bigger\n  choose bigger
+{{2:_<?}U}:max;     .#? L max\n  max value of a list
+{{2:_>?}U}:min;     .#? L min\n  min value of a list
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
