@@ -866,7 +866,7 @@ class OP_SimplePlot extends Operation {
 
 
 
-//Z - 90
+// Z - 90
 class OP_Dot_Zed extends Operation {
 	public OP_Dot_Zed() {
 		this.name = ".Z";

@@ -1,6 +1,7 @@
 package element.entities.operations;
 
 import static element.ElemTypes.bothList;
+import static element.ElemTypes.castString;
 import static element.ElemTypes.getString;
 import static element.ElemTypes.isBlock;
 import static element.ElemTypes.isChar;
@@ -91,7 +92,7 @@ public class ColonOps {
 		/* 87 W  */ null,
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
-		/* 90 Z  */ null,
+		/* 90 Z  */ new OP_Colon_Zed(),
 		/* 91 [  */ null,
 		/* 92 \  */ null,
 		/* 93 ]  */ null,
@@ -181,6 +182,30 @@ class OP_SetMinus extends Operation {
 	}
 }
 
+
+//Z - 90
+class OP_Colon_Zed extends Operation {
+	public OP_Colon_Zed() {
+		this.name = ":Z";
+		this.info = "sleep milliseconds";
+		this.argTypes = "N";
+	}
+	@Override public void execute (Block block) {
+		Object a = block.pop();
+		
+		if(isNumeric(a)) {
+			try {
+				Thread.sleep(toNumeric(a).toLong());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 //_ - 95
 class OP_Colon_Underscore extends Operation {
 	public OP_Colon_Underscore() {
@@ -217,6 +242,8 @@ class OP_Colon_Underscore extends Operation {
 		}
 	}
 }
+
+
 
 //~ - 126
 class OP_Colon_Tilde extends Operation {
