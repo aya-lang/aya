@@ -46,27 +46,4 @@ public abstract class List extends Obj {
 	
 	/** Return the number of occurrences of Obj in the list */
 	public abstract int count(Obj o);
-	
-	
-	
-	
-	///////////////////
-	// OBJ OVERRIDES //
-	///////////////////
-	
-	@Override
-	public abstract Obj deepcopy();
-
-	@Override
-	public abstract boolean bool();
-
-	@Override
-	public abstract String repr();
-
-	@Override
-	public abstract String str();
-
-	@Override
-	public abstract boolean equiv(Obj o);
-
 }

@@ -166,6 +166,15 @@ public class Str extends List implements Comparable<Str> {
 		return false;
 	}
 	
+	@Override
+	public boolean isa(byte type) {
+		return type == Obj.LIST || type == Obj.STR;
+	}
+
+	@Override
+	public byte type() {
+		return Obj.STR;
+	}
 	
 	
 	
@@ -178,5 +187,7 @@ public class Str extends List implements Comparable<Str> {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 
 }

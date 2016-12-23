@@ -11,8 +11,13 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number max() {
-		// TODO Auto-generated method stub
-		return null;
+		Number max = _list.get(0);
+		for (Number n : _list) {
+			if (n.compareTo(max) > 0) {
+				max = n;
+			}
+		}
+		return max;
 	}
 
 	@Override
@@ -277,6 +282,18 @@ public class NumberItemList extends NumberList {
 	public boolean equiv(Obj o) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public boolean isa(byte type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public byte type() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 
