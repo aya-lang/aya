@@ -24,5 +24,65 @@ public class NumberMath {
 		return acc;
 	}
 	
+	/** Greatest common denominator (long) */
+	public static long gcd(long a, long b) {
+		long r = 0;
+		long x, y;
+		a = Math.abs(a);
+		b = Math.abs(b);
+		
+		//make x larger than y
+		if (a < b) {
+			x = b;
+			y = a;
+		} else {
+			x = a;
+			y = b;
+		}
+		
+		r = y;
+		while (x % y > 0) {
+			r = x % y;
+			x = y;
+			y = r;
+		}
+		
+		return r;
+	}
 	
+	/** Greatest common denominator (int) */
+	public static int gcd(int a, int b) {
+		int r = 0;
+		int x, y;
+		a = Math.abs(a);
+		b = Math.abs(b);
+		
+		//make x larger than y
+		if (a < b) {
+			x = b;
+			y = a;
+		} else {
+			x = a;
+			y = b;
+		}
+		
+		r = y;
+		while (x % y > 0) {
+			r = x % y;
+			x = y;
+			y = r;
+		}
+		
+		return r;
+	}
+	
+	/** least common multiple (long) */
+	public static long lcm(long a, long b) {
+		return a * b / gcd(a,b);
+	}
+	
+	/** least common multiple (int) */
+	public static long lcm(int a, int b) {
+		return a * b / gcd(a,b);
+	}
 }

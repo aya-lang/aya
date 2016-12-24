@@ -19,4 +19,14 @@ public abstract class Obj {
 	public abstract boolean equiv(Obj o);
 	public abstract boolean isa(byte type);
 	public abstract byte type();
+	
+	@Override
+	public String toString() {
+		return this.repr();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return this.equiv((Obj)o);
+	}
 }

@@ -2,9 +2,10 @@ package obj.number;
 
 import org.apfloat.Apfloat;
 
+import element.exceptions.ElementRuntimeException;
 import obj.Obj;
 
-public class RationalNumber extends Number {
+public class RationalNum extends Number {
 	
 	long _num;
 	long _den;
@@ -13,20 +14,73 @@ public class RationalNumber extends Number {
 	// CONSTUCTORS //
 	/////////////////
 	
-	public RationalNumber(long num, long den) {
-		// TODO: Reduce
-		_num = num;
-		_den = den;
+	public RationalNum(long num, long den) {
+		if (num == 0L)	{
+			_num = 0L;
+			_den = 1L;
+		} else if (den == 0L) {
+			throw new ElementRuntimeException("RationalNum: Division by zero");
+		} else {
+			long gcd = NumberMath.gcd(num, den);
+			_num = num / gcd;
+			_den = den / gcd;
+		}
 	}
 	
-	public RationalNumber(int num, int den) {
-		// TODO: Reduce
-		_num = num;
-		_den = den;
+	public RationalNum(int num, int den) {
+		if (num == 0)	{
+			_num = 0;
+			_den = 1;
+		} else if (den == 0) {
+			throw new ElementRuntimeException("RationalNum: Division by zero");
+		} else {
+			int gcd = NumberMath.gcd(num, den);
+			_num = num / gcd;
+			_den = den / gcd;
+		}
 	}
 	
-	public RationalNumber(double val) {
-		// TODO
+	//Algorithm from:
+	// http://stackoverflow.com/questions/13222664/convert-floating-point-number-into-a-rational-number-in-java
+	public RationalNum(double val) {
+		
+		// 0/1
+		if (val == 0.0) {
+			_num = 0L;
+			_den = 1L;
+		}
+		// NaN
+		else if (Double.isNaN(val)) {
+			throw new ElementRuntimeException("Cannont convert NaN to rational");
+		}
+
+		else {
+			//Algorithm from:
+			// http://stackoverflow.com/questions/13222664/convert-floating-point-number-into-a-rational-number-in-java
+
+			long bits = Double.doubleToLongBits(val);
+	
+			long sign = bits >>> 63;
+			long exponent = ((bits >>> 52) ^ (sign << 11)) - 1023;
+			long fraction = bits << 12; // bits are "reversed" but that's not a problem
+	
+			_num = 1L;
+			_den = 1L;
+	
+			for (int i = 63; i >= 12; i--) {
+			    _num = _num * 2 + ((fraction >>> i) & 1);
+			    _den *= 2;
+			}
+	
+			if (exponent > 0)
+			    _num *= 1 << exponent;
+			else
+			    _den *= 1 << -exponent;
+	
+			if (sign == 1)
+			    _num *= -1;
+		}
+
 	}
 	
 	
@@ -122,7 +176,7 @@ public class RationalNumber extends Number {
 	
 	@Override
 	public Number negate() {
-		return new RationalNumber(-_num, _den);
+		return new RationalNum(-_num, _den);
 	}
 
 	@Override
@@ -149,7 +203,7 @@ public class RationalNumber extends Number {
 
 	@Override
 	public Number abs() {
-		return new RationalNumber(Math.abs(_num), Math.abs(_den));
+		return new RationalNum(Math.abs(_num), Math.abs(_den));
 	}
 
 	@Override
@@ -199,14 +253,12 @@ public class RationalNumber extends Number {
 
 	@Override
 	public Number ceil() {
-		// TODO
-		return null;
+		return new RationalNum(1L+(_num/_den), 1L);
 	}
 
 	@Override
 	public Number floor() {
-		// TODO
-		return null;
+		return new RationalNum(_num/_den, 1L);
 	}
 
 	@Override
@@ -227,7 +279,7 @@ public class RationalNumber extends Number {
 	
 	@Override
 	public Obj deepcopy() {
-		return new RationalNumber(_num, _den);
+		return new RationalNum(_num, _den);
 	}
 
 	@Override
