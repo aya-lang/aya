@@ -2,15 +2,15 @@ package obj;
 
 public abstract class Obj {	
 	
-	public static byte NUMBER = 1;
-	public static byte NUM = 11;
-	public static byte BIGNUM = 12;
-	public static byte RATIONAL_NUMBER = 13;
+	public static final byte NUMBER = 1;
+	public static final byte NUM = 11;
+	public static final byte BIGNUM = 12;
+	public static final byte RATIONAL_NUMBER = 13;
 	
-	public static byte LIST = 2;
-	public static byte STR = 21;
-	public static byte NUMBERLIST = 22;
-	public static byte NUMBERITEMLIST = 23;
+	public static final byte LIST = 2;
+	public static final byte STR = 21;
+	public static final byte NUMBERLIST = 22;
+	public static final byte NUMBERITEMLIST = 23;
 	
 	public abstract Obj deepcopy();
 	public abstract boolean bool();

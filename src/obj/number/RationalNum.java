@@ -126,44 +126,63 @@ public class RationalNum extends Number {
 	
 	@Override
 	public Number add(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.RATIONAL_NUMBER:
+			return this.r_add((RationalNum)other);
+		default:
+			return this.r_add(new RationalNum(other.toDouble()));
+		}
 	}
+	
+	
 
 	@Override
 	public Number sub(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.RATIONAL_NUMBER:
+			return this.r_sub((RationalNum)other);
+		default:
+			return this.r_sub(new RationalNum(other.toDouble()));
+		}
 	}
 
 	@Override
 	public Number mul(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.RATIONAL_NUMBER:
+			return this.r_mul((RationalNum)other);
+		default:
+			return this.r_mul(new RationalNum(other.toDouble()));
+		}
 	}
 
 	@Override
 	public Number div(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.RATIONAL_NUMBER:
+			return this.r_div((RationalNum)other);
+		default:
+			return this.r_div(new RationalNum(other.toDouble()));
+		}
 	}
 
 	@Override
 	public Number idiv(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		return new RationalNum(this.toLong() / other.toLong(), 1L);
 	}
 
 	@Override
 	public Number mod(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		return new RationalNum(this.toDouble() % other.toDouble());
 	}
 
 	@Override
 	public Number pow(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		return new RationalNum(Math.pow(this.toDouble(), other.toDouble()));
 	}
 	
 	
@@ -322,6 +341,40 @@ public class RationalNum extends Number {
 	public int compareTo(Number n) {
 		//Ascending
 		return (int)((this.toDouble() - n.toDouble())); 
+	}
+	
+	//////////////////////////
+	// RATIONAL NUMBER MATH //
+	//////////////////////////
+	
+	RationalNum r_add(RationalNum n) {
+		if(_den == n._den) {
+            return new RationalNum(n._num + _num, _den);
+        } else {
+          long den = _den * n._den;
+          long num = _num * n._num;
+          num += n._num * _den;
+          return new RationalNum(num, den);
+        }
+	}
+	
+	RationalNum r_sub(RationalNum n) {
+		if(_den == n._den) {
+            return new RationalNum(_num - n._num, _den);
+        } else {
+          long den = _den / n._den;
+          long num = _num / n._num;
+          num -= n._num * _den;
+          return new RationalNum(num, den);
+        }
+	}
+	
+	RationalNum r_mul(RationalNum n) {
+		return new RationalNum(_num * n._num, _den * n._den);
+	}
+	
+	RationalNum r_div(RationalNum n) {
+		return new RationalNum(_num * n._den, _den * n._num);
 	}
 
 }

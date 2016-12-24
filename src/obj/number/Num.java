@@ -71,44 +71,107 @@ public class Num extends Number {
 	
 	@Override
 	public Number add(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val + other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().add(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return ((RationalNum)other).r_add(new RationalNum(_val));
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number sub(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val - other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().subtract(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum(_val).r_sub((RationalNum)other);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number mul(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val * other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().multiply(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return ((RationalNum)other).r_mul(new RationalNum(_val));
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number div(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val / other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().divide(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum(_val).r_div((RationalNum)other);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number idiv(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(Math.floor(_val / other.toDouble()));
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().divide(new Apfloat(_val)).floor());
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum((long)Math.floor(_val / other.toDouble()), 1L);
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number mod(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val % other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().mod(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum(_val % other.toDouble());
+		default:
+			return null;
+		}
 	}
 
 	@Override
 	public Number pow(Number other) {
-		// TODO Auto-generated method stub
-		return null;
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(_val - other.toDouble());
+		case Obj.BIGNUM:
+			return new BigNum(other.toApfloat().subtract(new Apfloat(_val)));
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum(Math.pow(_val, other.toDouble()));
+		default:
+			return null;
+		}
 	}
 	
 	

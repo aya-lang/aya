@@ -12,9 +12,9 @@ public class NumberItemList extends NumberList {
 	@Override
 	public Number max() {
 		Number max = _list.get(0);
-		for (Number n : _list) {
-			if (n.compareTo(max) > 0) {
-				max = n;
+		for (int i = 1; i < _list.size(); i++) {
+			if (_list.get(i).compareTo(max) > 0) {
+				max = _list.get(i);
 			}
 		}
 		return max;
@@ -22,13 +22,18 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number min() {
-		// TODO Auto-generated method stub
-		return null;
+		Number min = _list.get(0);
+		for (int i = 1; i < _list.size(); i++) {
+			if (_list.get(i).compareTo(min) < 0) {
+				min = _list.get(i);
+			}
+		}
+		return min;
 	}
 
 	@Override
 	public Number mean() {
-		// TODO Auto-generated method stub
+		// TODO
 		return null;
 	}
 
