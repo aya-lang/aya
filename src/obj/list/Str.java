@@ -1,6 +1,7 @@
 package obj.list;
 
 import obj.Obj;
+import obj.character.Char;
 
 public class Str extends List implements Comparable<Str> {
 	
@@ -65,12 +66,12 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Obj head() {
-		return _str.charAt(_str.length()-1);
+		return new Char(_str.charAt(_str.length()-1));
 	}
 
 	@Override
-	public Obj tail() {
-		return _str.charAt(0);
+	public Char tail() {
+		return new Char(_str.charAt(0));
 	}
 
 	@Override

@@ -12,6 +12,8 @@ public abstract class Obj {
 	public static final byte NUMBERLIST = 22;
 	public static final byte NUMBERITEMLIST = 23;
 	
+	public static final byte CHAR = 3;
+	
 	public abstract Obj deepcopy();
 	public abstract boolean bool();
 	public abstract String repr();
