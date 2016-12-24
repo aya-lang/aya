@@ -12,10 +12,10 @@ public abstract class List extends Obj {
 	public abstract int length();
 	
 	/** Keep only the first N elements from the list */
-	public abstract void head(int i);
+	public abstract List head(int i);
 	
 	/** Remove all but the last N elements of the list */
-	public abstract void tail(int i);
+	public abstract List tail(int i);
 	
 	/** Return the head of the list */
 	public abstract Obj head();

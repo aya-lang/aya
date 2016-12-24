@@ -118,5 +118,8 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	
 	/** Primality test */
 	public abstract boolean isPrime();
+	
+	@Override
+	public abstract Number deepcopy();
 
 }

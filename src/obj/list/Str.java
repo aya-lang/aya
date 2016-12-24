@@ -21,26 +21,22 @@ public class Str extends List implements Comparable<Str> {
 	
 	/** Trim whitespace from a string */
 	public Str trim() {
-		// TODO
-		return new Str("");
+		return new Str(_str.trim());
 	}
 	
 	/** replace all occurrences of 'find' with 'replace' */
-	public Str replaceAll(String find, String replace) {
-		//TODO
-		return new Str("");
+	public Str replaceAll(String regex, String replacement) {
+		return new Str(_str.replaceAll(regex, replacement));
 	}
 	
 	/** Test if Str matches the regex */
 	public boolean matches(String regex) {
-		//TODO
-		return false;
+		return _str.matches(regex);
 	}
 	
 	/** Apply format rules to the string */
-	public Str format(Obj... objs) {
-		//TODO
-		return new Str("");
+	public Str format(Object... args) {
+		return new Str(String.format(_str, args));
 	}
 	
 	
@@ -52,32 +48,29 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public int length() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _str.length();
 	}
 
 	@Override
-	public void head(int i) {
-		// TODO Auto-generated method stub
-
+	public Str head(int i) {
+		// TODO Pad with space if out of range
+		return null;
 	}
 
 	@Override
-	public void tail(int i) {
-		// TODO Auto-generated method stub
-
+	public Str tail(int i) {
+		// TODO Pad with space if out of range
+		return null;
 	}
 
 	@Override
 	public Obj head() {
-		// TODO Auto-generated method stub
-		return null;
+		return _str.charAt(_str.length()-1);
 	}
 
 	@Override
 	public Obj tail() {
-		// TODO Auto-generated method stub
-		return null;
+		return _str.charAt(0);
 	}
 
 	@Override

@@ -1,16 +1,23 @@
 package obj.list.numberlist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import obj.Obj;
+import obj.number.Num;
 import obj.number.Number;
 
 public class NumberItemList extends NumberList {
 	
 	ArrayList<Number> _list;
+	
+	public NumberItemList(ArrayList<Number> list) {
+		_list = list;
+	}
 
 	@Override
 	public Number max() {
+		// TODO 0 length
 		Number max = _list.get(0);
 		for (int i = 1; i < _list.size(); i++) {
 			if (_list.get(i).compareTo(max) > 0) {
@@ -22,6 +29,8 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number min() {
+		// TODO 0 length
+
 		Number min = _list.get(0);
 		for (int i = 1; i < _list.size(); i++) {
 			if (_list.get(i).compareTo(min) < 0) {
@@ -33,200 +42,271 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number mean() {
-		// TODO
-		return null;
+		// TODO 0 length
+		return sum().div(new Num(_list.size()));
 	}
 
 	@Override
 	public Number sum() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO 0 length
+		Number total = _list.get(0);
+		for (int i = 1; i < _list.size(); i++) {
+			total = total.add(_list.get(i));
+		}
+		return total;
 	}
 
 	@Override
 	public NumberList add(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).add(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList sub(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).sub(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList div(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).div(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList mul(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).mul(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList mod(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).mod(n));
+		}
+		return this;
 	}
 	
 	@Override
 	public NumberList idiv(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).idiv(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList pow(Number n) {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).pow(n));
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList negate() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).negate());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList bnot() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).bnot());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList signnum() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).signnum());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList factorial() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).factorial());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList abs() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).abs());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList sin() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).sin());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList cos() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).cos());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList tan() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).tan());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList asin() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).asin());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList acos() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).acos());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList atan() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).atan());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList log() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).log());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList ln() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).ln());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList sqrt() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).sqrt());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList ceil() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).ceil());
+		}
+		return this;
 	}
 
 	@Override
 	public NumberList floor() {
-		// TODO Auto-generated method stub
-		return null;
+		for (int i = 0; i < _list.size(); i++) {
+			_list.set(i, _list.get(i).floor());
+		}
+		return this;
 	}
 
 	@Override
 	public int length() {
-		// TODO Auto-generated method stub
-		return 0;
+		return _list.size();
 	}
 
 	@Override
-	public void head(int i) {
-		// TODO Auto-generated method stub
-
+	public NumberItemList head(int n) {	
+		// TODO 0 length
+		n = index(n);
+		ArrayList<Number> out = new ArrayList<Number>(n);
+		
+		if (n <= _list.size()) {
+			for (int i = 0; i < n; i++) {
+				out.add(_list.get(i));
+			}
+		} else {
+			out.addAll(_list);
+			for (int i = _list.size(); i < n; i++) {
+				out.add(Num.ZERO); //Pad with 0s
+			}
+		}
+		return new NumberItemList(out);
 	}
 
 	@Override
-	public void tail(int i) {
-		// TODO Auto-generated method stub
-
+	public NumberItemList tail(int n) {
+		// TODO 0 length
+		n = index(n);
+		ArrayList<Number> out = new ArrayList<Number>(n);
+		if (n <= _list.size()) {
+			for (int i = _list.size()-n; i < _list.size(); i++) {
+				out.add(_list.get(i));
+			}
+		} else {
+			for (int i = 0; i < n-_list.size(); i++) {
+				out.add(Num.ZERO); //Pad with 0s
+			}
+			out.addAll(_list);
+		}	
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public Obj head() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO 0 length
+		return _list.get(_list.size()-1);
 	}
 
 	@Override
 	public Obj tail() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO 0 length
+		return _list.get(0);
 	}
 
 	@Override
-	public Obj pop() {
-		// TODO Auto-generated method stub
-		return null;
+	public Number pop() {
+		return _list.remove(_list.size()-1);
 	}
 
 	@Override
-	public Obj popBack() {
-		// TODO Auto-generated method stub
-		return null;
+	public Number popBack() {
+		return _list.remove(0);
 	}
 
 	@Override
 	public void reverse() {
-		// TODO Auto-generated method stub
-
+		Collections.reverse(_list);
 	}
 
 	@Override
@@ -236,71 +316,121 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public Obj get(int i) {
-		// TODO Auto-generated method stub
-		return null;
+	public Number get(int i) {
+		return _list.get(index(i));
 	}
 
 	@Override
 	public int find(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		int ix;
+		for (ix = 0; ix < _list.size(); ix++) {
+			if (o.equiv(_list.get(ix))) {
+				return ix;
+			}
+		}
+		return -1;
 	}
 
 	@Override
 	public int findBack(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		int ix;
+		for (ix = _list.size() - 1; ix >= 0; ix--) {
+			if (o.equiv(_list.get(ix))) {
+				return ix;
+			}
+		}
+		return -1;
 	}
 
 	@Override
 	public int count(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		int count = 0;
+		for (int i = 0; i < _list.size(); i++) {
+			count += _list.get(i).equiv(o) ? 1 : 0;
+		}
+		return count;
 	}
-
+	
+	
+	
+	///////////////////
+	// OBJ OVERRIDES //
+	///////////////////
+	
 	@Override
-	public Obj deepcopy() {
-		// TODO Auto-generated method stub
-		return null;
+	public NumberItemList deepcopy() {
+		ArrayList<Number> copy = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			copy.set(i, _list.get(i).deepcopy());
+		}
+		return new NumberItemList(copy);	
 	}
 
 	@Override
 	public boolean bool() {
-		// TODO Auto-generated method stub
-		return false;
+		return _list.size() != 0;
 	}
 
 	@Override
 	public String repr() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder sb = new StringBuilder("[ ");
+		for (Number n : _list) {
+			sb.append(n.repr() + " ");
+		}
+		return sb.append(']').toString();
 	}
 
 	@Override
 	public String str() {
-		// TODO Auto-generated method stub
-		return null;
+		return repr();
 	}
 
 	@Override
 	public boolean equiv(Obj o) {
-		// TODO Auto-generated method stub
-		return false;
+		// Must be a numeric list
+		if (o instanceof NumberList) {
+			NumberList numList = (NumberList)o;
+			// Must have the same length
+			if (numList.length() == this.length()) {
+				// Every corresponding item must be equivalent
+				for (int i = 0; i < this.length(); i++) {
+					if (!numList.get(i).equiv(_list.get(i))) {
+						return false;
+					}
+				}
+				return true;
+			} else { 
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
 	public boolean isa(byte type) {
-		// TODO Auto-generated method stub
-		return false;
+		return type == Obj.LIST || type == Obj.NUMBERLIST || type == Obj.NUMBERITEMLIST;
 	}
 
+	
+	
+	
+	
+	////////////////////
+	// HELPER METHODS //
+	////////////////////
+	
 	@Override
 	public byte type() {
-		// TODO Auto-generated method stub
-		return 0;
+		return Obj.NUMBERITEMLIST;
 	}
 
+	
+	
+	/** Index from the back if negative */
+	private int index(int i) {
+		return i >= 0 ? i : _list.size() + i;
+	}
 
 
 }

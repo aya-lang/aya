@@ -6,6 +6,8 @@ import obj.Obj;
 
 public class Num extends Number {
 
+	public static final Num ZERO = new Num(0.0);
+	
 	double _val;
 	
 	//////////////////
@@ -275,7 +277,7 @@ public class Num extends Number {
 	///////////////////
 
 	@Override
-	public Obj deepcopy() {
+	public Num deepcopy() {
 		return new Num(_val);
 	}
 

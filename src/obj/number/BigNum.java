@@ -269,7 +269,7 @@ public class BigNum extends Number {
 	}
 
 	@Override
-	public Obj deepcopy() {
+	public BigNum deepcopy() {
 		return new BigNum(_val.add(ZERO));
 	}
 

@@ -297,7 +297,7 @@ public class RationalNum extends Number {
 	
 	
 	@Override
-	public Obj deepcopy() {
+	public RationalNum deepcopy() {
 		return new RationalNum(_num, _den);
 	}
 
