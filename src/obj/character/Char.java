@@ -4,10 +4,26 @@ import obj.Obj;
 
 public class Char extends Obj implements Comparable<Char> {
 	
+	public static final Char[] CACHE = new Char[128];
+	
+	static {
+		for (char c = 0; c < 128; c++) {
+			CACHE[(int)c] = new Char(c);
+		}
+	}
+	
 	char _c;
 	
 	public Char(char c) {
 		_c = c;
+	}
+	
+	public static Char valueOf(char c) {
+		if (c < 128) {
+			return CACHE[c];
+		} else {
+			return new Char(c);
+		}
 	}
 	
 	////////////////

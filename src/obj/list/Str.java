@@ -41,8 +41,6 @@ public class Str extends List implements Comparable<Str> {
 	}
 	
 	
-	
-	
 	////////////////////
 	// LIST OVERRIDES //
 	////////////////////
@@ -66,24 +64,28 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Obj head() {
-		return new Char(_str.charAt(_str.length()-1));
+		return Char.valueOf(_str.charAt(_str.length()-1));
 	}
 
 	@Override
 	public Char tail() {
-		return new Char(_str.charAt(0));
+		return Char.valueOf(_str.charAt(0));
 	}
 
 	@Override
 	public Obj pop() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO 0 length
+		Char out = Char.valueOf(_str.charAt(_str.length()-1));
+		_str = _str.substring(0, _str.length()-1);
+		return out;
 	}
 
 	@Override
 	public Obj popBack() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO 0 length
+		Char out = Char.valueOf(_str.charAt(0));
+		_str = _str.substring(1, _str.length());
+		return out;
 	}
 
 	@Override
@@ -132,32 +134,27 @@ public class Str extends List implements Comparable<Str> {
 	
 	@Override
 	public Obj deepcopy() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Str(_str);
 	}
 
 	@Override
 	public boolean bool() {
-		// TODO Auto-generated method stub
-		return false;
+		return _str.length() != 0;
 	}
 
 	@Override
 	public String repr() {
-		// TODO Auto-generated method stub
-		return null;
+		return "\"" + _str + "\"";
 	}
 
 	@Override
 	public String str() {
-		// TODO Auto-generated method stub
-		return null;
+		return _str;
 	}
 
 	@Override
 	public boolean equiv(Obj o) {
-		// TODO Auto-generated method stub
-		return false;
+		return o instanceof Str && ((Str)o)._str.equals(_str);
 	}
 	
 	@Override
@@ -178,8 +175,7 @@ public class Str extends List implements Comparable<Str> {
 	
 	@Override
 	public int compareTo(Str o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return _str.compareTo(o._str);
 	}
 
 
