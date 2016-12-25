@@ -18,6 +18,14 @@ public class Char extends Obj implements Comparable<Char> {
 		_c = c;
 	}
 	
+	public static Char valueOf(int i) {
+		if (i < 128 && i >= 0) {
+			return CACHE[i];
+		} else {
+			return new Char((char)i);
+		}
+	}
+	
 	public static Char valueOf(char c) {
 		if (c < 128) {
 			return CACHE[c];
@@ -36,28 +44,23 @@ public class Char extends Obj implements Comparable<Char> {
 	
 	
 	public boolean isUpper() {
-		// TODO
-		return false;
+		return _c >= 'A' && _c <= 'Z';
 	}
 	
 	public boolean isLower() {
-		// TODO
-		return false;
+		return _c >= 'a' && _c <= 'z';
 	}
 	
 	public boolean isDigit() {
-		// TODO
-		return false;
+		return _c >= '0' && _c <= '9';
 	}
 	
 	public boolean isAlpha() {
-		// TODO
-		return false;
+		return isUpper() || isLower();
 	}
 	
 	public boolean isWhitespace() {
-		// TODO
-		return false;
+		return _c == ' ' || _c == '\t' || _c == '\n' || _c == '\r';
 	}
 	
 	
@@ -67,14 +70,18 @@ public class Char extends Obj implements Comparable<Char> {
 	// CHAR OPERATIONS //
 	/////////////////////
 	
-	public boolean toUpper() {
-		// TODO
-		return false;
+	public Char toUpper() {
+		if (isLower()) 
+			return Char.valueOf(_c - 32);
+		else
+			return this;
 	}
 	
-	public boolean toLower() {
-		// TODO
-		return false;
+	public Char toLower() {
+		if (isUpper()) 
+			return Char.valueOf(_c + 32);
+		else
+			return this;
 	}
 	
 	
@@ -84,54 +91,46 @@ public class Char extends Obj implements Comparable<Char> {
 	// BASIC MATH //
 	////////////////
 	
+	//TODO: Reverse ops for mod, idiv, and sub
+	
 	public Char add(Number n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c + n.intValue());
 	}
 	
 	public Char add(Char n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c + n._c);
 	}
 	
 	public Char sub(Number n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c - n.intValue());
 	}
 	
 	public Char sub(Char n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c - n._c);
 	}
 	
 	public Char mul(Number n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c * n.intValue());
 	}
 	
 	public Char mul(Char n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c * n._c);
 	}
 	
 	public Char idiv(Number n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c / n.intValue());
 	}
 	
 	public Char idiv(Char n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c / n._c);
 	}
 	
 	public Char mod(Number n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c % n.intValue());
 	}
 	
 	public Char mod(Char n) {
-		// TODO
-		return null;
+		return Char.valueOf(_c % n._c);
 	}
 	
 	
@@ -186,8 +185,8 @@ public class Char extends Obj implements Comparable<Char> {
 	
 	@Override
 	public int compareTo(Char o) {
-		// TODO Auto-generated method stub
-		return 0;
+		//Ascending
+		return (int)((_c - o._c)); 
 	}
 
 }
