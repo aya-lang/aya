@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import obj.Obj;
+import obj.list.List;
 import obj.number.Num;
 import obj.number.Number;
 
@@ -248,7 +249,7 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberItemList head(int n) {	
 		// TODO 0 length
-		n = index(n);
+		n = List.index(n, _list.size());
 		ArrayList<Number> out = new ArrayList<Number>(n);
 		
 		if (n <= _list.size()) {
@@ -267,7 +268,7 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberItemList tail(int n) {
 		// TODO 0 length
-		n = index(n);
+		n = List.index(n, _list.size());
 		ArrayList<Number> out = new ArrayList<Number>(n);
 		if (n <= _list.size()) {
 			for (int i = _list.size()-n; i < _list.size(); i++) {
@@ -310,14 +311,14 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public void slice(int i, int j) {
+	public NumberItemList slice(int i, int j) {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	@Override
 	public Number get(int i) {
-		return _list.get(index(i));
+		return _list.get(List.index(i, _list.size()));
 	}
 
 	@Override
@@ -427,10 +428,7 @@ public class NumberItemList extends NumberList {
 
 	
 	
-	/** Index from the back if negative */
-	private int index(int i) {
-		return i >= 0 ? i : _list.size() + i;
-	}
+	
 
 
 }

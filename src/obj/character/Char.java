@@ -26,6 +26,10 @@ public class Char extends Obj implements Comparable<Char> {
 		}
 	}
 	
+	public char charValue() {
+		return _c;
+	}
+	
 	////////////////
 	// CHAR TESTS //
 	////////////////

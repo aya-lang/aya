@@ -4,6 +4,11 @@ import obj.Obj;
 
 public abstract class List extends Obj {
 	
+	/** Index from the back if negative */
+	public static int index(int i, int length) {
+		return i >= 0 ? i : length + i;
+	}
+	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////
@@ -33,7 +38,7 @@ public abstract class List extends Obj {
 	public abstract void reverse();
 	
 	/** Remove the head and tail of a list */
-	public abstract void slice(int i, int j);
+	public abstract List slice(int i, int j);
 	
 	/** Get the 0-indexed item from the stack */
 	public abstract Obj get(int i);

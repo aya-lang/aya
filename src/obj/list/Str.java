@@ -95,33 +95,59 @@ public class Str extends List implements Comparable<Str> {
 	}
 
 	@Override
-	public void slice(int i, int j) {
-		// TODO Auto-generated method stub
-
+	public List slice(int i_in, int j_in) {
+		int i = List.index(i_in, _str.length());
+		int j = List.index(j_in, _str.length());
+		
+		//Swap the order if i > j
+		if (i > j) {
+			int t = i;
+			i = j;
+			j = t;
+		}
+		
+		return new Str(_str.substring(i, j));
 	}
 
 	@Override
-	public Obj get(int i) {
-		// TODO Auto-generated method stub
-		return null;
+	public Char get(int i) {
+		return Char.valueOf(_str.charAt(List.index(i, _str.length())));
 	}
 
 	@Override
 	public int find(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (o instanceof Char) {
+			char c = ((Char)o).charValue();
+			return _str.indexOf(c);
+		} else {
+			return -1;
+		}
 	}
 
 	@Override
 	public int findBack(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (o instanceof Char) {
+			char c = ((Char)o).charValue();
+			return _str.lastIndexOf(c);
+		} else {
+			return -1;
+		}
 	}
 
 	@Override
 	public int count(Obj o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (o instanceof Char) {
+			char c = ((Char)o).charValue();
+			int count = 0;
+			for (int i = 0; i < _str.length(); i++) {
+				if (c == _str.charAt(i)) {
+					count++;
+				}
+			}
+			return count;
+		} else {
+			return 0;
+		}
 	}
 
 	
