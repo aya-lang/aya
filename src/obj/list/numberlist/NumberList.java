@@ -10,13 +10,13 @@ public abstract class NumberList extends List {
 	// LIST OPERATIONS //
 	/////////////////////
 	
-	/** Return the max value of the list */
+	/** Return the max value of the list. If list.length() = 0, return Num.MIN_VALUE */
 	public abstract Number max();
 	
-	/** Return the minimum value of the list */
+	/** Return the minimum value of the list. If list.length() = 0, return Num.MAX_VALUE */
 	public abstract Number min();
 	
-	/** Return the mean value of the list */
+	/** Return the mean value of the list, If list.length() = 0, return 0 */
 	public abstract Number mean();
 	
 	/** Return the sum of the list */

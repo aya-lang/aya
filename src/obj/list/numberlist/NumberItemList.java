@@ -3,6 +3,7 @@ package obj.list.numberlist;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import element.exceptions.ElementRuntimeException;
 import obj.Obj;
 import obj.list.List;
 import obj.number.Num;
@@ -18,9 +19,8 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number max() {
-		// TODO 0 length
-		Number max = _list.get(0);
-		for (int i = 1; i < _list.size(); i++) {
+		Number max = Num.MIN_VALUE;
+		for (int i = 0; i < _list.size(); i++) {
 			if (_list.get(i).compareTo(max) > 0) {
 				max = _list.get(i);
 			}
@@ -30,10 +30,8 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number min() {
-		// TODO 0 length
-
-		Number min = _list.get(0);
-		for (int i = 1; i < _list.size(); i++) {
+		Number min = Num.MAX_VALUE;
+		for (int i = 0; i < _list.size(); i++) {
 			if (_list.get(i).compareTo(min) < 0) {
 				min = _list.get(i);
 			}
@@ -43,15 +41,13 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number mean() {
-		// TODO 0 length
-		return sum().div(new Num(_list.size()));
+		return _list.size() == 0 ? Num.ZERO : sum().div(new Num(_list.size()));
 	}
 
 	@Override
 	public Number sum() {
-		// TODO 0 length
-		Number total = _list.get(0);
-		for (int i = 1; i < _list.size(); i++) {
+		Number total = Num.ZERO;
+		for (int i = 0; i < _list.size(); i++) {
 			total = total.add(_list.get(i));
 		}
 		return total;
@@ -248,7 +244,6 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberItemList head(int n) {	
-		// TODO 0 length
 		n = List.index(n, _list.size());
 		ArrayList<Number> out = new ArrayList<Number>(n);
 		
@@ -267,7 +262,6 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberItemList tail(int n) {
-		// TODO 0 length
 		n = List.index(n, _list.size());
 		ArrayList<Number> out = new ArrayList<Number>(n);
 		if (n <= _list.size()) {
@@ -285,14 +279,20 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Obj head() {
-		// TODO 0 length
-		return _list.get(_list.size()-1);
+		if (_list.size() == 0) {
+			throw new ElementRuntimeException("Cannot return head of empty list");
+		} else {
+			return _list.get(0);
+		}
 	}
 
 	@Override
 	public Obj tail() {
-		// TODO 0 length
-		return _list.get(0);
+		if (_list.size() == 0) {
+			throw new ElementRuntimeException("Cannot return tail of empty list");
+		} else {
+			return _list.get(_list.size()-1);
+		}
 	}
 
 	@Override
@@ -312,8 +312,14 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberItemList slice(int i, int j) {
-		// TODO Auto-generated method stub
-		return null;
+		if (i >= j) {
+			throw new ElementRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
+		}
+		ArrayList<Number> out = new ArrayList<Number>(j - i);
+		for (int x = i; x < j; x++) {
+			out.add(_list.get(x));
+		}
+		return new NumberItemList(out);
 	}
 
 	@Override
@@ -362,7 +368,7 @@ public class NumberItemList extends NumberList {
 	public NumberItemList deepcopy() {
 		ArrayList<Number> copy = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			copy.set(i, _list.get(i).deepcopy());
+			copy.add(_list.get(i).deepcopy());
 		}
 		return new NumberItemList(copy);	
 	}

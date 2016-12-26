@@ -7,6 +7,12 @@ import obj.Obj;
 public class Num extends Number {
 
 	public static final Num ZERO = new Num(0.0);
+	public static final Num ONE = new Num(0.0);
+	public static final Num MIN_VALUE = new Num(Double.MIN_VALUE);
+	public static final Num MAX_VALUE = new Num(Double.MAX_VALUE);
+	public static final Num PI = new Num(Math.PI);
+	public static final Num E = new Num(Math.E);
+	
 	
 	double _val;
 	

@@ -37,7 +37,18 @@ public abstract class List extends Obj {
 	/** In-place reverse the list */
 	public abstract void reverse();
 	
-	/** Remove the head and tail of a list */
+	/**
+	 * Returns a list that is a sublist of this list. The sublist 
+	 * begins at the specified <code>i</code> and extends to the item
+	 * at index <code>j - 1</code>. Thus the length of the sublist is 
+	 * <code>j - i</code>. 
+	 * <br />
+	 * Examples:<br />
+	 * <code>
+	 * "hamburger".slice(4, 8) returns "urge"<br />
+	 * "smiles".slice(1, 5) returns "mile"
+	 * </code>
+	 */
 	public abstract List slice(int i, int j);
 	
 	/** Get the 0-indexed item from the stack */
