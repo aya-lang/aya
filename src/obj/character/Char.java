@@ -90,9 +90,7 @@ public class Char extends Obj implements Comparable<Char> {
 	////////////////
 	// BASIC MATH //
 	////////////////
-	
-	//TODO: Reverse ops for mod, idiv, and sub
-	
+		
 	public Char add(Number n) {
 		return Char.valueOf(_c + n.intValue());
 	}
@@ -107,6 +105,14 @@ public class Char extends Obj implements Comparable<Char> {
 	
 	public Char sub(Char n) {
 		return Char.valueOf(_c - n._c);
+	}
+	
+	public Char subFrom(Number n) {
+		return Char.valueOf(n.intValue() - _c);
+	}
+	
+	public Char subFrom(Char n) {
+		return Char.valueOf(n._c - _c);
 	}
 	
 	public Char mul(Number n) {
@@ -125,12 +131,28 @@ public class Char extends Obj implements Comparable<Char> {
 		return Char.valueOf(_c / n._c);
 	}
 	
+	public Char idivFrom(Number n) {
+		return Char.valueOf(n.intValue() / _c);
+	}
+	
+	public Char idivFrom(Char n) {
+		return Char.valueOf(n._c / _c);
+	}
+	
 	public Char mod(Number n) {
 		return Char.valueOf(_c % n.intValue());
 	}
 	
 	public Char mod(Char n) {
 		return Char.valueOf(_c % n._c);
+	}
+	
+	public Char modFrom(Number n) {
+		return Char.valueOf(n.intValue() % _c);
+	}
+	
+	public Char modFrom(Char n) {
+		return Char.valueOf(n._c & _c);
 	}
 	
 	
@@ -152,7 +174,6 @@ public class Char extends Obj implements Comparable<Char> {
 
 	@Override
 	public String repr() {
-		// TODO special chars
 		return "'" + _c;
 	}
 
