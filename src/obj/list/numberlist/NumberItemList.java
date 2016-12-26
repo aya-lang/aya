@@ -55,186 +55,209 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberList add(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).add(n));
+			out.add(_list.get(i).add(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sub(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).sub(n));
+			out.add(_list.get(i).sub(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList div(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).div(n));
+			out.add(_list.get(i).div(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mul(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).mul(n));
+			out.add(_list.get(i).mul(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mod(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).mod(n));
+			out.add(_list.get(i).mod(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 	
 	@Override
 	public NumberList idiv(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).idiv(n));
+			out.add(_list.get(i).idiv(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList pow(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).pow(n));
+			out.add(_list.get(i).pow(n));
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList negate() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).negate());
+			out.add(_list.get(i).negate());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList bnot() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).bnot());
+			out.add(_list.get(i).bnot());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList signnum() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).signnum());
+			out.add(_list.get(i).signnum());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList factorial() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).factorial());
+			out.add(_list.get(i).factorial());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList abs() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).abs());
+			out.add(_list.get(i).abs());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
-	public NumberList sin() {
+	public NumberList sin() {	
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).sin());
+			out.add(_list.get(i).sin());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList cos() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).cos());
+			out.add(_list.get(i).cos());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList tan() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).tan());
+			out.add(_list.get(i).tan());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList asin() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).asin());
+			out.add(_list.get(i).asin());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList acos() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).acos());
+			out.add(_list.get(i).acos());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList atan() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).atan());
+			out.add(_list.get(i).atan());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList log() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).log());
+			out.add(_list.get(i).log());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList ln() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).ln());
+			out.add(_list.get(i).ln());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sqrt() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).sqrt());
+			out.add(_list.get(i).sqrt());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList ceil() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).ceil());
+			out.add(_list.get(i).ceil());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList floor() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			_list.set(i, _list.get(i).floor());
+			out.add(_list.get(i).floor());
 		}
-		return this;
+		return new NumberItemList(out);
 	}
 
 	@Override

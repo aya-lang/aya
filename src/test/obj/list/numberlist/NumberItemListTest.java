@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import obj.list.numberlist.NumberItemList;
 import obj.number.Num;
 import obj.number.Number;
+import test.Stopwatch;
 import test.Test;
 
 public class NumberItemListTest extends Test {
@@ -87,14 +88,27 @@ public class NumberItemListTest extends Test {
 		NumberItemList lnOneSix   = new NumberItemList(lnOneSix_AL);
 		NumberItemList sqrtOneSix = new NumberItemList(sqrtOneSix_AL);
 		
-		Test.eq(oneSix.deepcopy().sin() , sinOneSix , "sin" );
-		Test.eq(oneSix.deepcopy().cos() , cosOneSix , "cos" );
-		Test.eq(oneSix.deepcopy().tan() , tanOneSix , "tan" );
-		Test.eq(oneSix.deepcopy().log() , logOneSix , "log" );
-		Test.eq(oneSix.deepcopy().ln()  , lnOneSix  , "ln"  );
-		Test.eq(oneSix.deepcopy().sqrt(), sqrtOneSix, "sqrt");
+		Test.eq(oneSix.sin() , sinOneSix , "sin" );
+		Test.eq(oneSix.cos() , cosOneSix , "cos" );
+		Test.eq(oneSix.tan() , tanOneSix , "tan" );
+		Test.eq(oneSix.log() , logOneSix , "log" );
+		Test.eq(oneSix.ln()  , lnOneSix  , "ln"  );
+		Test.eq(oneSix.sqrt(), sqrtOneSix, "sqrt");
 		
 		// Binary Math
+		
+//		// Timing
+//		ArrayList<Number> tenMillion_AL = new ArrayList<>(1_000_000);
+//		for (double i = 1.0; i <= 1_000_000.0; i++) {
+//			tenMillion_AL.add(new Num(i));
+//		}
+//		NumberItemList tenMillion = new NumberItemList(tenMillion_AL);
+//		
+//		Stopwatch sw = new Stopwatch();
+//		sw.start();
+//		Number sum = tenMillion.sin().sin().sin().sin().sum();
+//		sw.stop();
+//		System.out.println("Execution took " + sw.secs() + " seconds. The sum is " + sum);
 		
 		
 		
