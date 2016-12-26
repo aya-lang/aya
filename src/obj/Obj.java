@@ -11,6 +11,8 @@ public abstract class Obj {
 	public static final byte STR = 21;
 	public static final byte NUMBERLIST = 22;
 	public static final byte NUMBERITEMLIST = 23;
+	public static final byte OBJLIST = 24;
+
 	
 	public static final byte CHAR = 3;
 	
