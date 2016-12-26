@@ -51,30 +51,37 @@ public class Str extends List implements Comparable<Str> {
 	}
 
 	@Override
-	public Str head(int i) {
-		// TODO Pad with space if out of range
-		return null;
+	public Str head(int n) {
+		n = List.index(n, _str.length());
+		if (n <= _str.length()) {
+			return new Str(_str.substring(0, n));
+		} else {
+			return new Str(_str + repeat(' ', n-_str.length()));
+		}
 	}
 
 	@Override
-	public Str tail(int i) {
-		// TODO Pad with space if out of range
-		return null;
+	public Str tail(int n) {
+		n = List.index(n, _str.length());
+		if (n <= _str.length()) {
+			return new Str(_str.substring(_str.length() - n, _str.length()));
+		} else {
+			return new Str(repeat(' ', n-_str.length()) + _str);
+		}
 	}
 
 	@Override
 	public Obj head() {
-		return Char.valueOf(_str.charAt(_str.length()-1));
-	}
-
-	@Override
-	public Char tail() {
 		return Char.valueOf(_str.charAt(0));
 	}
 
 	@Override
+	public Char tail() {
+		return Char.valueOf(_str.charAt(_str.length()-1));
+	}
+
+	@Override
 	public Obj pop() {
-		// TODO 0 length
 		Char out = Char.valueOf(_str.charAt(_str.length()-1));
 		_str = _str.substring(0, _str.length()-1);
 		return out;
@@ -82,7 +89,6 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Obj popBack() {
-		// TODO 0 length
 		Char out = Char.valueOf(_str.charAt(0));
 		_str = _str.substring(1, _str.length());
 		return out;
@@ -90,8 +96,7 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public void reverse() {
-		// TODO Auto-generated method stub
-
+		_str = new StringBuilder(_str).reverse().toString();
 	}
 
 	@Override
@@ -204,6 +209,16 @@ public class Str extends List implements Comparable<Str> {
 		return _str.compareTo(o._str);
 	}
 
-
+	////////////////////
+	// HELPER METHODS //
+	////////////////////
+	
+	/** Generate a string with n copies of c */
+	private String repeat(char c, int n) {
+		char[] cs = new char[n];
+		for (int i = 0; i < n; i++)
+			cs[i] = c;
+		return new String(cs);
+	}
 
 }

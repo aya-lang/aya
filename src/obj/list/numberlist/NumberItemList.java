@@ -302,38 +302,22 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Obj head() {
-		if (_list.size() == 0) {
-			throw new ElementRuntimeException("Cannot return head of empty list");
-		} else {
-			return _list.get(0);
-		}
+		return _list.get(0);
 	}
 
 	@Override
 	public Obj tail() {
-		if (_list.size() == 0) {
-			throw new ElementRuntimeException("Cannot return tail of empty list");
-		} else {
-			return _list.get(_list.size()-1);
-		}
+		return _list.get(_list.size()-1);
 	}
 
 	@Override
 	public Number pop() {
-		if (_list.size() == 0) {
-			throw new ElementRuntimeException("Cannot pop from empty list");
-		} else {
-			return _list.remove(0);
-		}
+		return _list.remove(0);
 	}
 
 	@Override
 	public Number popBack() {
-		if (_list.size() == 0) {
-			throw new ElementRuntimeException("Cannot popBack from empty list");
-		} else {
-			return _list.remove(_list.size()-1);
-		}
+		return _list.remove(_list.size()-1);
 	}
 
 	@Override

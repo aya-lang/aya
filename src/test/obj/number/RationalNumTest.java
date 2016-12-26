@@ -18,7 +18,7 @@ public class RationalNumTest extends Test {
 		Test.eq(new RationalNum(-3,4).negate(), new RationalNum(-3,-4), "RationalNum().negate()");
 		Test.eq(new RationalNum(0.9651).sin().toDouble(), Math.sin(0.9651), "RationalNum().sin()");
 		
-		System.out.println("NumberItemListTest: all tests passed!");
+		System.out.println("RationalNumTest: all tests passed!");
 	}
 	
 	public static void main(String[] args) {
