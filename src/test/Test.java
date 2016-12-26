@@ -1,5 +1,9 @@
 package test;
 
+import test.obj.list.numberlist.NumberItemListTest;
+import test.obj.number.NumberBinaryOpsTest;
+import test.obj.number.RationalNumTest;
+
 public abstract class Test {
 	public abstract void runTests();
 	
@@ -15,5 +19,11 @@ public abstract class Test {
 			+ "\tRecieved: " + input.toString();
 			throw new RuntimeException(message);
 		}
+	}
+	
+	public static void main(String[] args) {
+		new NumberItemListTest().runTests();
+		new NumberBinaryOpsTest().runTests();
+		new RationalNumTest().runTests();
 	}
 }

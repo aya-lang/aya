@@ -10,6 +10,7 @@ public class NumberBinaryOpsTest extends Test {
 	public void runTests() {
 		Test.eq(new RationalNum(0.5).add(new Num(0.5)), new RationalNum(1,1), "RationalNum.add");
 
+		System.out.println("NumberBinaryOpsTest: all tests passed!");
 	}
 
 	public static void main(String[] args) {

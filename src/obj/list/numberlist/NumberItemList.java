@@ -320,12 +320,20 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number pop() {
-		return _list.remove(_list.size()-1);
+		if (_list.size() == 0) {
+			throw new ElementRuntimeException("Cannot pop from empty list");
+		} else {
+			return _list.remove(0);
+		}
 	}
 
 	@Override
 	public Number popBack() {
-		return _list.remove(0);
+		if (_list.size() == 0) {
+			throw new ElementRuntimeException("Cannot popBack from empty list");
+		} else {
+			return _list.remove(_list.size()-1);
+		}
 	}
 
 	@Override
