@@ -34,8 +34,11 @@ public abstract class List extends Obj {
 	/** Remove and return the back of the list */
 	public abstract Obj popBack();
 	
-	/** In-place reverse the list */
+	/** Return a reversed copy of the list */
 	public abstract void reverse();
+	
+	/** Sort the list */
+	public abstract void sort();
 	
 	/**
 	 * Returns a list that is a sublist of this list. The sublist 
@@ -62,4 +65,12 @@ public abstract class List extends Obj {
 	
 	/** Return the number of occurrences of Obj in the list */
 	public abstract int count(Obj o);
+	
+	////////////////////////
+	// LIST MODIFICATIONS //
+	////////////////////////
+	
+	public abstract void set(int i, Obj o);
+	
+	
 }

@@ -1,6 +1,7 @@
 package element.obj.number;
 
 import org.apfloat.Apfloat;
+import org.apfloat.ApfloatMath;
 
 import element.obj.Obj;
 
@@ -26,6 +27,10 @@ public class Num extends Number {
 	
 	public Num(double d) {
 		_val = d;
+	}
+	
+	public Num(boolean b) {
+		_val = b ? 1.0 : 0.0;
 	}
 	
 //	public Num(BigNum bn) {
@@ -172,11 +177,41 @@ public class Num extends Number {
 		byte type = other.type();
 		switch (type) {
 		case Obj.NUM: 
-			return new Num(_val - other.toDouble());
+			return new Num(Math.pow(_val, other.toDouble()));
 		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().subtract(new Apfloat(_val)));
+			return new BigNum(ApfloatMath.pow(new Apfloat(_val), other.toApfloat()));
 		case Obj.RATIONAL_NUMBER:
 			return new RationalNum(Math.pow(_val, other.toDouble()));
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	public Number band(Number other) {
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(((long)_val) & other.toLong());
+		case Obj.BIGNUM:
+			return new BigNum(((long)_val) & other.toLong());
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum( (long)_val & other.toLong() );
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	public Number bor(Number other) {
+		byte type = other.type();
+		switch (type) {
+		case Obj.NUM: 
+			return new Num(((long)_val) | other.toLong());
+		case Obj.BIGNUM:
+			return new BigNum(((long)_val) | other.toLong());
+		case Obj.RATIONAL_NUMBER:
+			return new RationalNum( (long)_val | other.toLong() );
 		default:
 			return null;
 		}

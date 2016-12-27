@@ -5,6 +5,7 @@ import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.InterpolateString;
 import element.exceptions.SyntaxError;
+import element.obj.list.Str;
 import element.parser.Parser;
 import element.parser.ParserString;
 import element.variable.Variable;
@@ -27,7 +28,7 @@ public class StringToken extends StdToken {
 	public Object getElementObj() {
 		if (interpolate && data.contains("$"))
 			return parseInterpolateStr(data);
-		return data;
+		return new Str(data);
 	}
 
 	private InterpolateString parseInterpolateStr(String data) {

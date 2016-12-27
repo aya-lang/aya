@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import element.ElemTypes;
 import element.entities.Block;
 import element.entities.Flag;
-import element.entities.number.Num;
 import element.exceptions.SyntaxError;
+import element.obj.Obj;
+import element.obj.number.Num;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
 import element.variable.ModuleFactory;
@@ -15,7 +16,7 @@ import element.variable.VariableSet;
 
 public class BlockToken extends CollectionToken {
 	
-	public static final Object DEFAULT_LOCAL_VAR = new Num(0);
+	public static final Obj DEFAULT_LOCAL_VAR = new Num(0);
 		
 	public BlockToken(String data, ArrayList<Token> col) {
 		super(Token.BLOCK, data, col);
@@ -114,7 +115,7 @@ public class BlockToken extends CollectionToken {
 					} else if (tokens.get(i+1).getType() == Token.OP) {
 						argNames.add(new Variable(tokens.get(i).getData()));
 						char c = tokens.get(i+1).getData().charAt(0);
-						argTypes.add(ElemTypes.abbrvToID(c));
+						argTypes.add(Obj.abbrvToID(c));
 						i++; //Skip the op on the next iteration
 					} else if (tokens.get(i).getType() == Token.VAR) {
 						argNames.add(new Variable(tokens.get(i).getData()));

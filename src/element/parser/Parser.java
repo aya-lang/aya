@@ -3,10 +3,10 @@ package element.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import element.ElemTypes;
 import element.Element;
 import element.entities.Block;
 import element.entities.InstructionStack;
+import element.entities.Operation;
 import element.entities.operations.ColonOps;
 import element.entities.operations.Ops;
 import element.exceptions.EndOfInputError;
@@ -27,6 +27,7 @@ import element.parser.tokens.StringToken;
 import element.parser.tokens.TickToken;
 import element.parser.tokens.Token;
 import element.parser.tokens.VarToken;
+import element.variable.MemberVariable;
 import element.variable.Variable;
 
 /**
@@ -550,14 +551,14 @@ public class Parser {
 				}
 				Object next = is.pop();
 				//Variable Assignment
-				if (ElemTypes.isVar(next)) {
-					Variable v = ElemTypes.toVar(next);
+				if (next instanceof Variable) {
+					Variable v = ((Variable)next);
 					v.flagBind();
 					is.push(v);
 				}
 				
 				//Apply block to list
-				else if (ElemTypes.isBlock(next)) {
+				else if (next instanceof Block) {
 					is.push(Ops.APPLY_TO);
 					is.push(next);
 				}
@@ -569,7 +570,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(ElemTypes.isOp(o) || ElemTypes.isVar(o) || ElemTypes.isMemVar(o)) {
+						if(o instanceof Operation || o instanceof Variable || o instanceof MemberVariable) {
 							break;
 						}
 					}
@@ -585,7 +586,7 @@ public class Parser {
 				}
 				Object next = is.pop();	
 				//Apply a block to a list
-				if (ElemTypes.isBlock(next)) {
+				if (next instanceof Block) {
 					is.push(Ops.getOp('#'));
 					is.push(next);
 				}
@@ -597,7 +598,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(ElemTypes.isOp(o) || ElemTypes.isVar(o) || ElemTypes.isMemVar(o)) {
+						if(o instanceof Operation || o instanceof Variable || o instanceof MemberVariable) {
 							break;
 						}
 					}

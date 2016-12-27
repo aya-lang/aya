@@ -1,26 +1,5 @@
 package element;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-
-import element.entities.Block;
-import element.entities.Flag;
-import element.entities.Lambda;
-import element.entities.ListBuilder;
-import element.entities.ListLiteral;
-import element.entities.Operation;
-import element.entities.Tuple;
-import element.entities.UserObject;
-import element.entities.number.BigNum;
-import element.entities.number.Num;
-import element.entities.number.NumMath;
-import element.entities.number.Numeric;
-import element.exceptions.ElementRuntimeException;
-import element.variable.MemberVariable;
-import element.variable.Module;
-import element.variable.Variable;
-import element.variable.VariableSet;
-
 public class ElemTypes {
 	
 	// Type IDs

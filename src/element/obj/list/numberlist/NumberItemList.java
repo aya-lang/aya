@@ -382,7 +382,19 @@ public class NumberItemList extends NumberList {
 		return count;
 	}
 	
-
+	@Override
+	public void sort() {
+		Collections.sort(_list);
+	}
+	
+	@Override
+	public void set(int i, Obj o) {
+		if (o.isa(Obj.NUMBER)) {
+			_list.set(List.index(i, _list.size()), (Number)o);
+		} else {
+			throw new ElementRuntimeException("Cannot set item " + o.repr() + " in numeric list " + this.repr() + ". Item must be a number.");
+		}
+	}
 	
 	
 	
@@ -457,6 +469,8 @@ public class NumberItemList extends NumberList {
 	public byte type() {
 		return Obj.NUMBERITEMLIST;
 	}
+
+
 
 	
 

@@ -2,8 +2,6 @@ package element.obj.list.numberlist;
 
 import java.util.ArrayList;
 
-import element.entities.number.Numeric;
-import element.obj.Obj;
 import element.obj.list.List;
 import element.obj.number.Number;
 

@@ -61,6 +61,12 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	/** Power */
 	public abstract Number pow(Number other);
 	
+	/** Binary AND */
+	public abstract Number band(Number other);
+	
+	/** Binary OR */
+	public abstract Number bor(Number other);
+	
 	
 	
 	

@@ -185,7 +185,15 @@ public class RationalNum extends Number {
 		return new RationalNum(Math.pow(this.toDouble(), other.toDouble()));
 	}
 	
+	@Override
+	public Number band(Number other) {
+		return new RationalNum(this.toLong() & other.toLong());
+	}
 	
+	@Override
+	public Number bor(Number other) {
+		return new RationalNum(this.toLong() | other.toLong());
+	}
 	
 	
 	

@@ -1,5 +1,8 @@
 package element.obj.list;
 
+import java.util.Arrays;
+
+import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 import element.obj.character.Char;
 
@@ -154,6 +157,24 @@ public class Str extends List implements Comparable<Str> {
 			return 0;
 		}
 	}
+	
+	@Override
+	public void sort() {
+	     char[] chars = _str.toCharArray();
+	     Arrays.sort(chars);
+	     _str = new String(chars);
+	}
+	
+	@Override
+	public void set(int i, Obj o) {
+		if (o.isa(Obj.CHAR)) {
+			char[] chars = _str.toCharArray();
+			chars[List.index(i, chars.length)] = ((Char)o).charValue();
+			_str = new String(chars);
+		} else {
+			throw new ElementRuntimeException("Cannot set item " + o.repr() + " in string " + this.repr() + ". Item must be a char.");
+		}
+	}
 
 	
 	
@@ -220,5 +241,7 @@ public class Str extends List implements Comparable<Str> {
 			cs[i] = c;
 		return new String(cs);
 	}
+
+
 
 }

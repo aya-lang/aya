@@ -1,5 +1,7 @@
 package element.parser.tokens;
 
+import element.obj.number.Num;
+
 public class BoolToken extends StdToken {
 		
 	public BoolToken(String data) {
@@ -9,7 +11,12 @@ public class BoolToken extends StdToken {
 	
 	@Override
 	public Object getElementObj() {
-		return data.charAt(0) == 'T';
+		//return data.charAt(0) == 'T';
+		if (data.charAt(0) == 'T') {
+			return Num.ONE;
+		} else {
+			return Num.ZERO;
+		}
 	}
 
 	@Override

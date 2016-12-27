@@ -1,7 +1,7 @@
 package element.infix;
 
 
-import element.entities.number.Num;
+import element.obj.number.Num;
 import element.parser.tokens.Token;
 
 public class InfixLiteral extends InfixItem {

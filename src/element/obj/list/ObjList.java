@@ -195,6 +195,16 @@ public class ObjList extends List {
 		return count;
 	}
 
+	@Override
+	public void sort() {
+		// TODO: Sort strings
+		throw new ElementRuntimeException("Cannot sort generic list: " + repr() + " Cast to numeric list or string first");
+	}
+
+	@Override
+	public void set(int i, Obj o) {
+		_list.set(List.index(i, _list.size()), o);
+	}
 	
 	
 	///////////////////
@@ -260,5 +270,7 @@ public class ObjList extends List {
 	public byte type() {
 		return Obj.OBJLIST;
 	}
+
+
 
 }

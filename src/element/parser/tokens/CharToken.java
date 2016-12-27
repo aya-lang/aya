@@ -1,5 +1,8 @@
 package element.parser.tokens;
 
+import element.obj.Obj;
+import element.obj.character.Char;
+
 public class CharToken extends StdToken {
 		
 	public CharToken(String data) {
@@ -8,8 +11,8 @@ public class CharToken extends StdToken {
 
 	
 	@Override
-	public Object getElementObj() {
-		return data.charAt(0);
+	public Obj getElementObj() {
+		return Char.valueOf(data.charAt(0));
 	}
 
 	@Override

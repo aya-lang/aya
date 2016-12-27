@@ -1,6 +1,7 @@
 package element.obj.character;
 
 import element.obj.Obj;
+import element.obj.number.Number;
 
 public class Char extends Obj implements Comparable<Char> {
 	
@@ -84,6 +85,15 @@ public class Char extends Obj implements Comparable<Char> {
 			return this;
 	}
 	
+	/** If uppercase, make lowercase, if lowercase make uppercase, otherwise do nothing */
+	public Char swapCase() {
+		if (isUpper()) {
+			return this.toLower();
+		} else {
+			return this.toUpper();
+		}
+	}
+	
 	
 	
 	
@@ -92,7 +102,7 @@ public class Char extends Obj implements Comparable<Char> {
 	////////////////
 		
 	public Char add(Number n) {
-		return Char.valueOf(_c + n.intValue());
+		return Char.valueOf(_c + n.toInt());
 	}
 	
 	public Char add(Char n) {
@@ -100,7 +110,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char sub(Number n) {
-		return Char.valueOf(_c - n.intValue());
+		return Char.valueOf(_c - n.toInt());
 	}
 	
 	public Char sub(Char n) {
@@ -108,7 +118,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char subFrom(Number n) {
-		return Char.valueOf(n.intValue() - _c);
+		return Char.valueOf(n.toInt() - _c);
 	}
 	
 	public Char subFrom(Char n) {
@@ -116,7 +126,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char mul(Number n) {
-		return Char.valueOf(_c * n.intValue());
+		return Char.valueOf(_c * n.toInt());
 	}
 	
 	public Char mul(Char n) {
@@ -124,7 +134,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char idiv(Number n) {
-		return Char.valueOf(_c / n.intValue());
+		return Char.valueOf(_c / n.toInt());
 	}
 	
 	public Char idiv(Char n) {
@@ -132,7 +142,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char idivFrom(Number n) {
-		return Char.valueOf(n.intValue() / _c);
+		return Char.valueOf(n.toInt() / _c);
 	}
 	
 	public Char idivFrom(Char n) {
@@ -140,7 +150,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char mod(Number n) {
-		return Char.valueOf(_c % n.intValue());
+		return Char.valueOf(_c % n.toInt());
 	}
 	
 	public Char mod(Char n) {
@@ -148,7 +158,7 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 	
 	public Char modFrom(Number n) {
-		return Char.valueOf(n.intValue() % _c);
+		return Char.valueOf(n.toInt() % _c);
 	}
 	
 	public Char modFrom(Char n) {
