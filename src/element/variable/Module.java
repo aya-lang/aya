@@ -3,6 +3,7 @@ package element.variable;
 import java.util.ArrayList;
 
 import element.exceptions.UndefVarException;
+import element.obj.Obj;
 import element.util.Pair;
 
 public class Module {
@@ -18,8 +19,8 @@ public class Module {
 		return vars.hasVar(v.id);
 	}
 	
-	public Object get(MemberVariable v) {
-		Object o = vars.getObject(v.id);
+	public Obj get(MemberVariable v) {
+		Obj o = vars.getObject(v.id);
 		if (o == null) {
 			throw new UndefVarException("Variable " + Variable.decodeLong(id) + v.toString() + " is not defined");
 		} else {
@@ -35,7 +36,7 @@ public class Module {
 		return Variable.decodeLong(id);
 	}
 
-	public ArrayList<Pair<Variable, Object>> getAllVars() {
+	public ArrayList<Pair<Variable, Obj>> getAllVars() {
 		return vars.getAllVars();
 	}
 

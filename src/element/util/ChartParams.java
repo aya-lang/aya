@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
-import element.ElemTypes;
-import element.entities.number.Numeric;
 import element.exceptions.ElementRuntimeException;
+import element.obj.Obj;
+import element.obj.number.Number;
+import element.obj.list.List;
+import element.obj.list.numberlist.NumberList;
 
 public class ChartParams {
 	
@@ -42,7 +44,7 @@ public class ChartParams {
 	private Axis yaxis;
 	private float stroke;
 	private ArrayList<Float> xvalues;
-	private ArrayList<ArrayList<Numeric>> yvalues;
+	private ArrayList<ArrayList<Number>> yvalues;
 	private String filename;
 	private boolean show;
 	private boolean legend;
@@ -76,8 +78,7 @@ public class ChartParams {
 	
 	
 	
-	@SuppressWarnings("unchecked")
-	public static ChartParams parseParams(ArrayList<Object> params) {
+	public static ChartParams parseParams(List params) {
 		
 		/*
 		 Sample Input
@@ -93,68 +94,68 @@ public class ChartParams {
 		
 		ChartParams cp = new ChartParams();
 		
-		cp.setType((Numeric)getParam("type", params));
-		cp.setWidth((Numeric)getParam("width", params));
-		cp.setHeight((Numeric)getParam("height", params));
-		cp.setStroke((Numeric)getParam("stroke", params));
-		cp.setTitle((String)getParam("title", params));
-		cp.setXlabel((String)getParam("xlabel", params));
-		cp.setYlabel((String)getParam("ylabel", params));
-		cp.setFilename((String)getParam("filename", params));
-		cp.setShow((Boolean)getParam("show", params));
-		cp.setLegend((Boolean)getParam("legend", params));
-		cp.setHorizontal((Boolean)getParam("horizontal", params));
+		cp.setType((Number)getParam("type", params));
+		cp.setWidth((Number)getParam("width", params));
+		cp.setHeight((Number)getParam("height", params));
+		cp.setStroke((Number)getParam("stroke", params));
+		cp.setTitle(getParam("title", params).str());
+		cp.setXlabel(getParam("xlabel", params).str());
+		cp.setYlabel(getParam("ylabel", params).str());
+		cp.setFilename(getParam("filename", params).str());
+		cp.setShow(getParam("show", params).bool());
+		cp.setLegend(getParam("legend", params).bool());
+		cp.setHorizontal(getParam("horizontal", params).bool());
 		
-		ArrayList<Object> xaxisParam = (ArrayList<Object>)getParam("xaxis", params);
+		List xaxisParam = (List)getParam("xaxis", params);
 		if (xaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(xaxisParam);
 			cp.setXaxis(pair.first(), pair.second());
 		}
 		
-		ArrayList<Object> yaxisParam = (ArrayList<Object>)getParam("yaxis", params);
+		List yaxisParam = (List)getParam("yaxis", params);
 		if (yaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(yaxisParam);
 			cp.setYaxis(pair.first(), pair.second());
 		}
 		
-		cp.setXvalues((ArrayList<Numeric>)getParam("x", params));
+		cp.setXvalues(parseData((List)getParam("x", params)));
 		
 		
-		ArrayList<Object> series = (ArrayList<Object>)getParam("y", params);
+		List series = (List)getParam("y", params);
 		
 		//Parse the series (must be the last step)
-		for (Object o : series) {
+		for (int i = 0; i < series.length(); i++) {
 			//Every item in y must be a list of params
-			if (o instanceof ArrayList) {
-				ArrayList<Object> list = (ArrayList<Object>)o;
+			if (series.get(i).isa(Obj.LIST)) {
+				List list = (List)(series.get(i));
 				//Each list must have a name, stroke, color and dataset
-				if (list.size() == 4) {
-					Object o_name = list.get(0);
-					Object o_stroke = list.get(1);
-					Object o_colorList = list.get(2);
-					Object o_data = list.get(3);
-					if (o_name instanceof String && o_stroke instanceof Numeric && o_colorList instanceof ArrayList && o_data instanceof ArrayList) {
-						String name = (String)o_name;
-						Numeric stroke = (Numeric)o_stroke;
-						Color color = parseColor((ArrayList<Object>)o_colorList);
-						ArrayList<Numeric> data = parseData((ArrayList<Object>)o_data);
+				if (list.length() == 4) {
+					Obj o_name = list.get(0);
+					Obj o_stroke = list.get(1);
+					Obj o_colorList = list.get(2);
+					Obj o_data = list.get(3);
+					if (o_name.isa(Obj.STR) && o_stroke.isa(Obj.NUMBER) && o_colorList.isa(Obj.LIST) && o_data.isa(Obj.LIST)) {
+						String name = o_name.str();
+						Number stroke = (Number)o_stroke;
+						Color color = parseColor((List)o_colorList);
+						ArrayList<Number> data = parseData((List)o_data);
 						
 						cp.addYvalues(name, stroke.toFloat(), color, data);
 						
 					} else {
 						throw new ElementRuntimeException("Plot expected name, RGB color list, and data list. Recieved:\n"
-								+ "\t" + str(o_name) + "\n"
-								+ "\t" + str(o_stroke) + "\n"
-								+ "\t" + str(o_colorList) + "\n"
-								+ "\t" + str(o_data));
+								+ "\t" + o_name.repr() + "\n"
+								+ "\t" + o_stroke.repr() + "\n"
+								+ "\t" + o_colorList.repr() + "\n"
+								+ "\t" + o_data.repr());
 					}
 				} else {
 					throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items). "
-							+ "Recieved: " + str(o));
+							+ "Recieved: " + series.get(i).repr());
 				}
 			} else {
 				throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items in a list). "
-						+ "Recieved: " + str(o));
+						+ "Recieved: " + series.get(i).repr());
 			}
 		}
 		
@@ -162,61 +163,56 @@ public class ChartParams {
 		return cp;
 	}
 	
-	private static Color parseColor(ArrayList<Object> o_color) {
-		if (o_color.size() == 0) {
+	private static Color parseColor(List o_color) {
+		if (o_color.length() == 0) {
 			return null;
-		} else if (o_color.size() == 3
-				&& o_color.get(0) instanceof Numeric
-				&& o_color.get(1) instanceof Numeric
-				&& o_color.get(2) instanceof Numeric) {
+		} else if (o_color.length() == 3
+				&& o_color.get(0).isa(Obj.NUMBER)
+				&& o_color.get(1).isa(Obj.NUMBER)
+				&& o_color.get(2).isa(Obj.NUMBER)) {
 			return new Color(
-					((Numeric)(o_color.get(0))).toInt(),
-					((Numeric)(o_color.get(1))).toInt(),
-					((Numeric)(o_color.get(2))).toInt()
+					((Number)(o_color.get(0))).toInt(),
+					((Number)(o_color.get(1))).toInt(),
+					((Number)(o_color.get(2))).toInt()
 					);
 		} else {
-			throw new ElementRuntimeException("Invalid color: " + str(o_color));
+			throw new ElementRuntimeException("Invalid color: " + o_color.repr());
 		}
 	}
 	
-	private static ArrayList<Numeric> parseData(ArrayList<Object> data) {
-		ArrayList<Numeric> nums = new ArrayList<Numeric>(data.size());
-		for (Object o : data) {
-			if (o instanceof Numeric) {
-				nums.add((Numeric)o);
-			} else {
-				throw new ElementRuntimeException("Invalid datapoint " + str(o) + " in " + str(data));
-			}
+	private static ArrayList<Number> parseData(List data) {
+		if (!data.isa(Obj.NUMBERLIST)) {
+			throw new ElementRuntimeException("Invalid datapoints in " + data.repr());
+		} else {
+			return ((NumberList)data).toArrayList();
 		}
-		return nums;
 	}
 	
-	private static Pair<Double, Double> parseAxis(ArrayList<Object> list) {
-		if (list.size() == 2) {
-			if (list.get(0) instanceof Numeric && list.get(1) instanceof Numeric) {
-				Numeric n_min = (Numeric) list.get(0);
-				Numeric n_max = (Numeric) list.get(1);
+	private static Pair<Double, Double> parseAxis(List list) {
+		if (list.length() == 2) {
+			if (list.get(0).isa(Obj.NUMBER) && list.get(1).isa(Obj.NUMBER)) {
+				Number n_min = (Number) list.get(0);
+				Number n_max = (Number) list.get(1);
 
 				
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
 			} else {
 				throw new ElementRuntimeException("Axis max/min must have 2 numbers\n"
-						+ "Recieved: " + str(list));
+						+ "Recieved: " + list.repr());
 			}
 		} else {
 			throw new ElementRuntimeException("Axis max/min must have both max and min values\n"
-					+ "Recieved: " + str(list));
+					+ "Recieved: " + list.repr());
 		}
 	}
 	
 	
-	@SuppressWarnings("unchecked")
-	private static Object getParam(String name, ArrayList<Object> params) {
-		for (Object o : params) {
-			if (o instanceof ArrayList) {
-				ArrayList<Object> list = (ArrayList<Object>)o;
-				if (list.size() > 1 && list.get(0) instanceof String) {
-					String s = (String) list.get(0);
+	private static Obj getParam(String name, List params) {
+		for (int i = 0; i < params.length(); i++) {
+			if (params.get(i).isa(Obj.LIST)) {
+				List list = (List)(params.get(i));
+				if (list.length() > 1 && list.get(0).isa(Obj.STR)) {
+					String s = list.get(0).str();
 					if (s.equals(name)) {
 						return list.get(1);
 					}
@@ -227,17 +223,11 @@ public class ChartParams {
 		return null;
 	}
 	
-	private static String str(Object o) {
-		return ElemTypes.castString(o);
-	}
-	
-
-	
 	public int getType() {
 		return type;
 	}
 
-	private void setType(Numeric t) {
+	private void setType(Number t) {
 		//If input is null, leave it unchanged
 		this.type = t == null ? this.type : t.toInt();
 		
@@ -247,7 +237,7 @@ public class ChartParams {
 		}
 	}
 	
-	private void setStroke(Numeric t) {
+	private void setStroke(Number t) {
 		//If input is null, leave it unchanged
 		this.stroke = t == null ? this.stroke : t.toFloat();
 	}
@@ -361,7 +351,7 @@ public class ChartParams {
 		return out == null ? ("series " + i) : out;
 	}
 	
-	public void addYvalues(String name, float stroke, Color color, ArrayList<Numeric> vals) {
+	public void addYvalues(String name, float stroke, Color color, ArrayList<Number> vals) {
 		if (vals.size() == xvalues.size()) {
 			if (name.equals("")) {
 				this.legend = false;
@@ -398,7 +388,7 @@ public class ChartParams {
 		return width;
 	}
 
-	public void setWidth(Numeric w) {
+	public void setWidth(Number w) {
 		//If input is null, leave it unchanged
 		this.width = w == null ? this.width : w.toInt();
 
@@ -408,7 +398,7 @@ public class ChartParams {
 		return height;
 	}
 
-	public void setHeight(Numeric h) {
+	public void setHeight(Number h) {
 		//If input is null, leave it unchanged
 		this.height = h == null ? this.height : h.toInt();
 	}
@@ -441,18 +431,18 @@ public class ChartParams {
 		return xvalues;
 	}
 
-	public void setXvalues(ArrayList<Numeric> x) {
+	public void setXvalues(ArrayList<Number> x) {
 		this.xvalues = new ArrayList<Float>(x.size());
-		for (Numeric n : x) {
+		for (Number n : x) {
 			xvalues.add(n.toFloat());
 		}
 	}
 
-	public ArrayList<ArrayList<Numeric>> getYvalues() {
+	public ArrayList<ArrayList<Number>> getYvalues() {
 		return yvalues;
 	}
 
-	public void setYvalues(ArrayList<ArrayList<Numeric>> yvalues) {
+	public void setYvalues(ArrayList<ArrayList<Number>> yvalues) {
 		this.yvalues = yvalues;
 	}
 	

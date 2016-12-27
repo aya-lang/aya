@@ -259,6 +259,15 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
+	
+	@Override
+	public ArrayList<Number> toArrayList() {
+		return _list;
+	}
+	
+	////////////////////
+	// LIST OVERRIDES //
+	////////////////////
 
 	@Override
 	public int length() {
@@ -373,6 +382,8 @@ public class NumberItemList extends NumberList {
 		return count;
 	}
 	
+
+	
 	
 	
 	///////////////////
@@ -446,6 +457,8 @@ public class NumberItemList extends NumberList {
 	public byte type() {
 		return Obj.NUMBERITEMLIST;
 	}
+
+	
 
 	
 	

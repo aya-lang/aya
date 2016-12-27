@@ -20,9 +20,10 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
+import element.obj.number.Num;
+import element.obj.number.Number;
+
 import element.ElemPrefs;
-import element.entities.number.Num;
-import element.entities.number.Numeric;
 import element.exceptions.ElementRuntimeException;
 
 @SuppressWarnings("serial")
@@ -149,18 +150,18 @@ public class FreeChartInterface extends JFrame
       
       cp.setYaxis(10, -10);
       
-      ArrayList<Numeric> xvals = new ArrayList<Numeric>();
+      ArrayList<Number> xvals = new ArrayList<Number>();
       for (double d = 0.0; d < 7.0; d += 0.1) {
     	  xvals.add(new Num(d));
       }
       
       //Create y values
-      ArrayList<Numeric> ycos = new ArrayList<>();
-      ArrayList<Numeric> ysin = new ArrayList<>();
+      ArrayList<Number> ycos = new ArrayList<>();
+      ArrayList<Number> ysin = new ArrayList<>();
             
-      for (Numeric n : xvals) {
-    	  ycos.add(new Num(Math.sin(n.toDouble())));
-    	  ysin.add(new Num(Math.tan(n.toDouble())));
+      for (Number n : xvals) {
+    	  ycos.add(n.sin());
+    	  ysin.add(n.tan());
       }
       
       cp.setXvalues(xvals);

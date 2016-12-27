@@ -1,5 +1,8 @@
 package element.obj.list.numberlist;
 
+import java.util.ArrayList;
+
+import element.entities.number.Numeric;
 import element.obj.Obj;
 import element.obj.list.List;
 import element.obj.number.Number;
@@ -97,5 +100,8 @@ public abstract class NumberList extends List {
 	
 	/** Floor */
 	public abstract NumberList floor();
+
+	/** Return the list as an arrayList of numbers */
+	public abstract ArrayList<Number> toArrayList();
 
 }

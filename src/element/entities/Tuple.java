@@ -3,6 +3,8 @@ package element.entities;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 
+import element.obj.Obj;
+
 public class Tuple {	
 	Block[] elements;
 	
@@ -19,8 +21,8 @@ public class Tuple {
 	 * of the results
 	 * @return
 	 */
-	public ArrayList<Object> evalToResults() {
-		ArrayList<Object> out = new ArrayList<Object>(elements.length);
+	public ArrayList<Obj> evalToResults() {
+		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
 			try {
 				elements[i].eval();

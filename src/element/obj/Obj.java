@@ -17,6 +17,31 @@ public abstract class Obj {
 	
 	public static final byte DICT = 4;
 	
+	public static final byte BLOCK = 5;
+	
+	public static String typeName(byte type) {
+		switch (type) {
+		case NUM:
+			return "NUM";
+		case BIGNUM:
+			return "BIGNUM";
+		case RATIONAL_NUMBER:
+			return "RATIONAL_NUMBER";
+		case STR:
+			return "STR";
+		case NUMBERITEMLIST:
+			return "NUMBERITEMLIST";
+		case OBJLIST:
+			return "OBJLIST";
+		case CHAR:
+			return "CHAR";
+		case DICT:
+			return "DICT";
+		default:
+			return "Obj.typeName(" + type + ") not set up.";				
+		}
+	}
+	
 	
 	
 	public abstract Obj deepcopy();

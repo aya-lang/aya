@@ -8,8 +8,10 @@ import java.util.Map.Entry;
 import element.ElemTypes;
 import element.Element;
 import element.InteractiveElement;
-import element.entities.number.Num;
 import element.exceptions.SyntaxError;
+import element.obj.Obj;
+import element.obj.list.Str;
+import element.obj.number.Num;
 import element.parser.Parser;
 
 /**
@@ -33,8 +35,8 @@ public class VariableData {
 		VariableSet globals = new VariableSet(null, null);
 		
 		globals.setVar(new Variable("import"), Parser.compile("`(\".elem\"+G~)", elem));
-		globals.setVar(new Variable("version"), Element.VERSION_NAME);
-		globals.setVar(new Variable("help"), InteractiveElement.HELP_TEXT);
+		globals.setVar(new Variable("version"), new Str(Element.VERSION_NAME));
+		globals.setVar(new Variable("help"), new Str(InteractiveElement.HELP_TEXT));
 
 		globals.setVar(new Variable("e"), Num.E);				
 		globals.setVar(new Variable("pi"), Num.PI);
@@ -54,10 +56,10 @@ public class VariableData {
 		}
 		
 		ArrayList<String> out = new ArrayList<String>();
-		Iterator<Map.Entry<Long, Object>> entries = varSets.get(0).getMap().entrySet().iterator();
+		Iterator<Map.Entry<Long, Obj>> entries = varSets.get(0).getMap().entrySet().iterator();
 		while (entries.hasNext()) {
-		  Entry<Long, Object> thisEntry = (Entry<Long, Object>) entries.next();
-		  out.add(Variable.decodeLong(thisEntry.getKey()) + " = " + ElemTypes.show(thisEntry.getValue()) + "\n(default variable)");
+		  Entry<Long, Obj> thisEntry = (Entry<Long, Obj>) entries.next();
+		  out.add(Variable.decodeLong(thisEntry.getKey()) + " = " + thisEntry.getValue().repr() + "\n(default variable)");
 		}
 		return out;
 	}
@@ -69,11 +71,11 @@ public class VariableData {
 		}
 	}
 	
-	public void setGlobalVar(Variable v, Object o) {
+	public void setGlobalVar(Variable v, Obj o) {
 		varSets.get(0).setVar(v, o);
 	}
 	
-	public void setGlobalVar(long v, Object o) {
+	public void setGlobalVar(long v, Obj o) {
 		varSets.get(0).setVar(v, o);
 	}
 	
@@ -85,11 +87,11 @@ public class VariableData {
 		return varSets.remove(varSets.size()-1);
 	}
 	
-	public void setVar(Variable v, Object o) {
+	public void setVar(Variable v, Obj o) {
 		setVar(v.getID(), o);
 	}
 	
-	public void setVar(long v, Object o) {
+	public void setVar(long v, Obj o) {
 		//Pre 2016.Feb.24 Code:
 		//varSets.get(varSets.size()-1).setVar(v, o);
 		
@@ -106,8 +108,8 @@ public class VariableData {
 		setGlobalVar(v, o);
 	}
 	
-	public Object getVar(Variable v) {
-		Object res = null;
+	public Obj getVar(Variable v) {
+		Obj res = null;
 		for(int i = varSets.size()-1; i >= 0; i--) {
 			res = varSets.get(i).getObject(v);
 			if(res != null) {

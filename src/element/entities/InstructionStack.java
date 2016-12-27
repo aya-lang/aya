@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import element.ElemTypes;
+import element.variable.VariableSet;
 
 /**
  *  Used by the element.Block class to hold and manage instructions
@@ -62,7 +63,7 @@ public class InstructionStack {
 		int i = 0;
 		int skip = 0;
 		while (i < ticks) {
-			if(ElemTypes.isFlag(peek(skip)) || ElemTypes.isVarSet(peek(skip))) {
+			if(peek(skip) instanceof Flag || peek(skip) instanceof VariableSet) {
 				i--; //Ignore flags and var sets
 			}
 			skip++;
@@ -74,7 +75,7 @@ public class InstructionStack {
 	@Override public String toString() {
 		StringBuilder sb = new StringBuilder("");
 		for(int i = instructions.size()-1; i >= 0; i--) {
-			sb.append(ElemTypes.show(instructions.get(i)));
+			sb.append(instructions.get(i).toString());
 			sb.append(" ");
 		}
 		if(sb.length() >1){
@@ -83,7 +84,7 @@ public class InstructionStack {
 		return sb.toString();
 	}
 	
-	/** Creates a dep copy of the InstructionStack */
+	/** Creates a deep copy of the InstructionStack */
 	public InstructionStack duplicate() {
 		InstructionStack is = new InstructionStack();
 		is.addAll(this.instructions);

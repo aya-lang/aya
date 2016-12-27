@@ -1,32 +1,23 @@
 package element.entities;
 
-import static element.ElemTypes.anyNum;
-import static element.ElemTypes.anyBigNum;
-import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothNumeric;
-import static element.ElemTypes.debugString;
-import static element.ElemTypes.getString;
-import static element.ElemTypes.isNum;
-import static element.ElemTypes.isBigNum;
-import static element.ElemTypes.isChar;
-import static element.ElemTypes.isList;
-import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.isString;
-import static element.ElemTypes.toNum;
-import static element.ElemTypes.toBigNum;
-import static element.ElemTypes.toChar;
-import static element.ElemTypes.toCharList;
-import static element.ElemTypes.toList;
-import static element.ElemTypes.toNumeric;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
 import org.apfloat.Apfloat;
+import org.jfree.chart.util.HexNumberFormat;
 
-import element.entities.number.Num;
-import element.entities.number.BigNum;
 import element.exceptions.ElementRuntimeException;
+import element.obj.Obj;
+import element.obj.character.Char;
+import element.obj.number.BigNum;
+import element.obj.number.Num;
+import element.obj.number.Number;
+import element.obj.list.List;
+import element.obj.list.ObjList;
+import element.obj.list.Str;
+import element.obj.list.numberlist.NumberItemList;
+
+// TODO: Optimize this class to work bett6er with the new classes
 
 public class ListBuilder {
 	
@@ -46,7 +37,7 @@ public class ListBuilder {
 		this.pops = pops;
 	}
 	
-	public ArrayList<Object> createList(Stack<Object> outerStack) {
+	public List createList(Stack<Obj> outerStack) {
 		Block initial = initialList.duplicate();
 
 		for (int p = 0; p < pops; p++) {
@@ -55,39 +46,40 @@ public class ListBuilder {
 		
 		initial.eval();
 		
-		ArrayList<Object> res = new ArrayList<Object>();	//Initialize the argument list
+		ArrayList<Obj> res = new ArrayList<Obj>();			//Initialize the argument list
 		res.addAll(initial.getStack());						//Copy the results into the argument list
 		
 		boolean allLists = false;							//Check if all arguments are lists
 		if(res.size() > 1) {
 			allLists = true;								//All arguments may be a list
-			for (Object o : res) {
-				if(!isList(o)) {
+			for (Obj o : res) {
+				if(o.isa(Obj.LIST)) {
 					allLists = false;
 					break;
 				}
 			}
 		}
 		
-		ArrayList<Object> list = null;
+		ArrayList<Obj> list = null;
+		List outList = null;
 		
 		//If all arguments are lists, dump each list's respective element onto the stack of the map block
 		// [[1 2][3 4], +] => 1 3 +, 2 4 + => [4 6]
 		if (allLists) {
-			ArrayList<ArrayList<Object>> listArgs = new ArrayList<ArrayList<Object>>(res.size());
+			ArrayList<List> listArgs = new ArrayList<List>(res.size());
 			int size = -1;
 			
 			//Check lengths and cast objects
 			for(int i = 0; i < res.size(); i++) {
-				listArgs.add(toList(res.get(i)));
+				listArgs.add((List)(res.get(i)));
 				if(size == -1) {
-					size = listArgs.get(0).size();
-				} else if (size != listArgs.get(i).size()) {
+					size = listArgs.get(0).length();
+				} else if (size != listArgs.get(i).length()) {
 					throw new ElementRuntimeException("List Builder: All lists must be same length");
 				}
 			}
 			
-			list = new ArrayList<Object>(size);
+			list = new ArrayList<Obj>(size);
 			
 			//Dump items from the lists into the blocks and apply the map if needed
 			for(int i = 0; i < size; i++) {
@@ -104,35 +96,37 @@ public class ListBuilder {
 				list.addAll(b.getStack());
 			}
 			
+			outList = new ObjList(list).promote();
+			
 		} else {
-			list = buildRange(res);								//Create the initial range
+			outList = buildRange(res);							//Create the initial range
 			if(map != null) {
-				list = this.map.mapTo(list);					//Map 'map' to the list
+				outList = this.map.mapTo(outList);				//Map 'map' to the list
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
 			for (Block filter : filters) {
-				list = filter.filter(list);
+				outList = filter.filter(outList);
 			}
 		}
-		return list;
+		return outList;
 	}
 	
-	public static ArrayList<Object> buildRange(Num n) {
+	public static NumberItemList buildRange(Num n) {
 		double d = n.toDouble();
 		int inc = 1;
 		if(d < 0) inc = -1;
 		return arrToAL(doubleRange(1, d, inc));
 	}
 	
-	public static ArrayList<Object> buildRange(char c) {
+	public static Str buildRange(char c) {
 		int inc = 1;
 		if(c < 0) inc = -1;
 		return arrToAL(charRange((char)1, (char)(c), inc));
 	}
 	
-	public static ArrayList<Object> buildRange(BigNum n) {
+	public static NumberItemList buildRange(BigNum n) {
 		Apfloat af = n.toApfloat();
 		if(af.compareTo(Apfloat.ZERO) < 0) {
 			return arrToAL(apfloatRange(AP_NEG_ONE, af, AP_NEG_ONE));
@@ -141,83 +135,84 @@ public class ListBuilder {
 		}
 	}
 	
-	public static ArrayList<Object> buildRange(ArrayList<Object> args) {
+	public static List buildRange(ArrayList<Obj> args) {
 		
 		switch(args.size()) {
 		
 		//List range has one argument
 		case 1:
-			Object o = args.get(0);
-			if(isNum(o)) {
-				return buildRange(toNum(o));
-			} else if (isBigNum(o)) {
-				return buildRange(toBigNum(o));
-			} else if (isChar(o)) {
-				return arrToAL(charRange('a', toChar(o), 1));
-			} else if (isString(o)) {
-				return new ArrayList<Object>(toCharList(getString(o)));
-			} else if (isList(o)) {
-				return toList(o);
-			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
+			Obj o = args.get(0);
+			switch (o.type()) {
+			case Obj.NUM:
+				return buildRange((Num)o);
+			case Obj.BIGNUM:
+				return buildRange((BigNum)o);
+			case Obj.CHAR:
+				return arrToAL(charRange('a', ((Char)o).charValue(), 1));
+			case Obj.STR:
+				return (List)o;
+			case Obj.LIST:
+				return (List)o;
+			default:
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));	
 			}
-			
+
 		//List range has 2 arguments
 		case 2:
-			Object a = args.get(0);
-			Object b = args.get(1);
-			if(bothNumeric(a,b)) {
-				if (anyBigNum(a,b)) {
-					Apfloat lo = toNumeric(a).toApfloat();
-					Apfloat hi = toNumeric(b).toApfloat();
+			Obj a = args.get(0);
+			Obj b = args.get(1);
+			if(a.isa(Obj.NUMBER) && b.isa(Obj.NUMBER)) {
+				if (a.isa(Obj.BIGNUM) || b.isa(Obj.BIGNUM)) {
+					Apfloat lo = ((Number)a).toApfloat();
+					Apfloat hi = ((Number)b).toApfloat();
 					Apfloat inc = Apfloat.ONE;
 					if(lo.compareTo(hi) > 0) {
 						inc = AP_NEG_ONE;
 					}
 					return arrToAL(apfloatRange(lo,hi,inc));
-				} else if (anyNum(a,b)) {
-					double lo = toNumeric(a).toDouble();
-					double hi = toNumeric(b).toDouble();
+				} else if (a.isa(Obj.NUM) || b.isa(Obj.NUM)) {
+					double lo = ((Number)a).toDouble();
+					double hi = ((Number)b).toDouble();
 					double inc = 1.0;
 					if(lo > hi) {
 						inc = -1.0;
 					}
 					return arrToAL(doubleRange(lo,hi,inc));
 				} else {
-					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
+					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
 				}
-			} else if (bothChar(a,b)) {
-				char lo = toChar(a);
-				char hi = toChar(b);
+			} else if (a.isa(Obj.CHAR) && b.isa(Obj.CHAR)) {
+				char lo = ((Char)a).charValue();
+				char hi = ((Char)b).charValue();
 				int inc = 1;
 				if (lo > hi) {
 					inc = -1;
 				}
 				return arrToAL(charRange(lo,hi,inc));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
 			}
 			
 		//List range has 3 arguments
 		case 3:
-			Object x = args.get(0);
-			Object y = args.get(1);
-			Object z = args.get(2);
-			if(bothNumeric(x,y) && isNumeric(z)) {
-				if(anyBigNum(x,y) || isBigNum(z)) {
-					return arrToAL(apfloatRange(toNumeric(x).toApfloat(), toNumeric(z).toApfloat(), toNumeric(y).toApfloat().subtract(toNumeric(x).toApfloat())));
+			Obj x = args.get(0);
+			Obj y = args.get(1);
+			Obj z = args.get(2);
+			if(x.isa(Obj.NUMBER) && y.isa(Obj.NUMBER) && z.isa(Obj.NUMBER)) {
+				if(x.isa(Obj.BIGNUM) || y.isa(Obj.BIGNUM) || z.isa(Obj.BIGNUM)) {
+					return arrToAL(apfloatRange(((Number)x).toApfloat(), ((Number)z).toApfloat(), ((Number)y).toApfloat().subtract(((Number)x).toApfloat())));
 				} else {
-					return arrToAL(doubleRange(toNumeric(x).toDouble(), toNumeric(z).toDouble(), toNumeric(y).toDouble()-toNumeric(x).toDouble()));
+					return arrToAL(doubleRange(((Number)x).toDouble(), ((Number)z).toDouble(), ((Number)y).toDouble()-((Number)x).toDouble()));
 				} 
-			} else if(bothChar(x,y) && isChar(z)) {
-				return arrToAL(charRange(toChar(x), toChar(z), toChar(y)-toChar(x)));
+			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
+				return arrToAL(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
 			}
 		
 		//List range has 3 or more arguments
 		default:
-			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + debugString(args));
+			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
 		}
 	}
 	
@@ -329,46 +324,42 @@ public class ListBuilder {
 		return arr;
 	}
 	
-	public static ArrayList<Object> arrToAL(Object[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
+	public static List arrToAL(Obj[] os) {
+		ArrayList<Obj> list = new ArrayList<Obj>(os.length);
 		for(int i = 0; i < os.length; i++) {
 			list.add(os[i]);
 		}
-		return list;
+		return new ObjList(list);
 	}
 	
-	public static Object arrToAL(int[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
+	public static Obj arrToAL(int[] os) {
+		ArrayList<Number> list = new ArrayList<Number>(os.length);
 		for(int i = 0; i < os.length; i++) {
 			list.add(new Num(os[i]));
 		}
-		return list;
+		return new NumberItemList(list);
 	}
 	
-	public static ArrayList<Object> arrToAL(double[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
+	public static NumberItemList arrToAL(double[] os) {
+		ArrayList<Number> list = new ArrayList<Number>(os.length);
 		for(int i = 0; i < os.length; i++) {
 			list.add(new Num(os[i]));
 		}
-		return list;
+		return new NumberItemList(list);
 	}
 	
-	public static ArrayList<Object> arrToAL(Apfloat[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
+	public static NumberItemList arrToAL(Apfloat[] os) {
+		ArrayList<Number> list = new ArrayList<Number>(os.length);
 		for(int i = 0; i < os.length; i++) {
 			list.add(new BigNum(os[i]));
 		}
-		return list;
+		return new NumberItemList(list);
 	}
 	
 	
 	
-	public static ArrayList<Object> arrToAL(char[] os) {
-		ArrayList<Object> list = new ArrayList<Object>(os.length);
-		for(int i = 0; i < os.length; i++) {
-			list.add(os[i]);
-		}
-		return list;
+	public static Str arrToAL(char[] os) {
+		return new Str(new String(os));
 	}
 	
 	public String toString() {
