@@ -1,13 +1,13 @@
-package obj.list.numberlist;
+package element.obj.list.numberlist;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import element.exceptions.ElementRuntimeException;
-import obj.Obj;
-import obj.list.List;
-import obj.number.Num;
-import obj.number.Number;
+import element.obj.Obj;
+import element.obj.list.List;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class NumberItemList extends NumberList {
 	

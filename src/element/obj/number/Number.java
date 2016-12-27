@@ -1,8 +1,8 @@
-package obj.number;
+package element.obj.number;
 
 import org.apfloat.Apfloat;
 
-import obj.Obj;
+import element.obj.Obj;
 
 public abstract class Number extends Obj implements Comparable<Number> {
 	

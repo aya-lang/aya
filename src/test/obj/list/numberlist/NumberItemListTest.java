@@ -2,9 +2,9 @@ package test.obj.list.numberlist;
 
 import java.util.ArrayList;
 
-import obj.list.numberlist.NumberItemList;
-import obj.number.Num;
-import obj.number.Number;
+import element.obj.list.numberlist.NumberItemList;
+import element.obj.number.Num;
+import element.obj.number.Number;
 import test.Test;
 
 public class NumberItemListTest extends Test {

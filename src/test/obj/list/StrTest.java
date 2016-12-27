@@ -1,7 +1,7 @@
 package test.obj.list;
 
-import obj.character.Char;
-import obj.list.Str;
+import element.obj.character.Char;
+import element.obj.list.Str;
 import test.Test;
 
 public class StrTest extends Test {

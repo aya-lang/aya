@@ -1,7 +1,7 @@
-package obj.list;
+package element.obj.list;
 
-import obj.Obj;
-import obj.character.Char;
+import element.obj.Obj;
+import element.obj.character.Char;
 
 public class Str extends List implements Comparable<Str> {
 	

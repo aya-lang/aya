@@ -1,14 +1,14 @@
-package obj.list;
+package element.obj.list;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import element.exceptions.ElementRuntimeException;
-import obj.Obj;
-import obj.character.Char;
-import obj.number.Num;
-import obj.number.Number;
-import obj.list.numberlist.NumberItemList;
+import element.obj.Obj;
+import element.obj.character.Char;
+import element.obj.list.numberlist.NumberItemList;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class ObjList extends List {
 		

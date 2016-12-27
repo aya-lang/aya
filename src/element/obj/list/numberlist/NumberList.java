@@ -1,8 +1,8 @@
-package obj.list.numberlist;
+package element.obj.list.numberlist;
 
-import obj.Obj;
-import obj.list.List;
-import obj.number.Number;
+import element.obj.Obj;
+import element.obj.list.List;
+import element.obj.number.Number;
 
 public abstract class NumberList extends List {
 

@@ -1,6 +1,6 @@
 package test.obj.number;
 
-import obj.number.RationalNum;
+import element.obj.number.RationalNum;
 import test.Test;
 
 public class RationalNumTest extends Test {

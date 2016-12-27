@@ -1,6 +1,6 @@
-package obj.character;
+package element.obj.character;
 
-import obj.Obj;
+import element.obj.Obj;
 
 public class Char extends Obj implements Comparable<Char> {
 	

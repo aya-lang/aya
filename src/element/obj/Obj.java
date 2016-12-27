@@ -1,4 +1,4 @@
-package obj;
+package element.obj;
 
 public abstract class Obj {	
 	
@@ -13,8 +13,11 @@ public abstract class Obj {
 	public static final byte NUMBERITEMLIST = 23;
 	public static final byte OBJLIST = 24;
 
-	
 	public static final byte CHAR = 3;
+	
+	public static final byte DICT = 4;
+	
+	
 	
 	public abstract Obj deepcopy();
 	public abstract boolean bool();

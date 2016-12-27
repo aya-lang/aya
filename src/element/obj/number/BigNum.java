@@ -1,10 +1,10 @@
-package obj.number;
+package element.obj.number;
 
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 import org.apfloat.ApintMath;
 
-import obj.Obj;
+import element.obj.Obj;
 
 public class BigNum extends Number {
 	

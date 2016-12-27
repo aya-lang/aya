@@ -1,9 +1,9 @@
-package obj.number;
+package element.obj.number;
 
 import org.apfloat.Apfloat;
 
 import element.exceptions.ElementRuntimeException;
-import obj.Obj;
+import element.obj.Obj;
 
 public class RationalNum extends Number {
 	

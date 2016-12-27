@@ -1,4 +1,4 @@
-package obj.number;
+package element.obj.number;
 
 public class NumberMath {
 	

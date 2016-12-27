@@ -1,6 +1,6 @@
-package obj.list;
+package element.obj.list;
 
-import obj.Obj;
+import element.obj.Obj;
 
 public abstract class List extends Obj {
 	
