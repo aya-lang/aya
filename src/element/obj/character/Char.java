@@ -5,7 +5,9 @@ import element.obj.number.Number;
 
 public class Char extends Obj implements Comparable<Char> {
 	
-	public static final Char[] CACHE = new Char[128];
+	public static final Char MAX_VALUE = new Char(Character.MAX_VALUE);
+	
+	private static final Char[] CACHE = new Char[128];
 	
 	static {
 		for (char c = 0; c < 128; c++) {

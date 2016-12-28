@@ -1,24 +1,11 @@
 package element.entities.operations;
 
-import static element.ElemTypes.bothNumeric;
-import static element.ElemTypes.bothString;
-import static element.ElemTypes.castString;
-import static element.ElemTypes.getString;
-import static element.ElemTypes.isBigNum;
-import static element.ElemTypes.isChar;
-import static element.ElemTypes.isList;
-import static element.ElemTypes.isModule;
-import static element.ElemTypes.isNum;
-import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.isString;
-import static element.ElemTypes.isUserObject;
-import static element.ElemTypes.show;
-import static element.ElemTypes.toBigNum;
-import static element.ElemTypes.toChar;
-import static element.ElemTypes.toList;
-import static element.ElemTypes.toModule;
-import static element.ElemTypes.toNumeric;
-import static element.ElemTypes.toUserObject;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.BIGNUM;
+import static element.obj.Obj.NUM;
+import static element.obj.Obj.STR;
+import static element.obj.Obj.CHAR;
+import static element.obj.Obj.LIST;
 
 import java.awt.Color;
 import java.io.File;
@@ -37,13 +24,22 @@ import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.Operation;
 import element.entities.UserObject;
-import element.entities.number.Num;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
+import element.obj.Obj;
+import element.obj.character.Char;
+import element.obj.list.List;
+import element.obj.list.ObjList;
+import element.obj.list.Str;
+import element.obj.list.numberlist.NumberItemList;
+import element.obj.number.BigNum;
+import element.obj.number.Num;
 import element.parser.CharacterParser;
 import element.util.ChartParams;
 import element.util.FreeChartInterface;
 import element.util.QuickDialog;
+
+import element.obj.number.Number;
 
 public class MathOps {	
 
@@ -82,9 +78,9 @@ public class MathOps {
 		/* 57 9  */ null,
 		/* 58    */ null,
 		/* 59 ;  */ null,
-		/* 60 <  */ new OP_ModSet(),
+		/* 60 <  */ null, //new OP_ModSet(),
 		/* 61 =  */ null,
-		/* 62 >  */ new OP_ModGet(),
+		/* 62 >  */ null, //new OP_ModGet(),
 		/* 63 ?  */ null,
 		/* 64 @  */ null,
 		/* 65 A  */ new OP_Abs(),
@@ -101,7 +97,7 @@ public class MathOps {
 		/* 76 L  */ new OP_Log(),
 		/* 77 M  */ null,
 		/* 78 N  */ null,
-		/* 79 O  */ new OP_NewUserObject(),
+		/* 79 O  */ null, // new OP_NewUserObject(),
 		/* 80 P  */ new OP_PrintColor(),
 		/* 81 Q  */ null,
 		/* 82 R  */ null,
@@ -182,9 +178,9 @@ class OP_Fact extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)){
-			block.push(toNumeric(n).factorial());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)){
+			block.push(((Number)n).factorial());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -204,72 +200,72 @@ class OP_SysTime extends Operation {
 	}
 }
 
-//< - 60 
-class OP_ModSet extends Operation {
-	public OP_ModSet() {
-		this.name = "M<";
-		this.info = "set a field from a user object";
-		this.argTypes = "AUI";
-	}
-	@Override
-	public void execute(Block block) {
-		final Object index = block.pop();
-		final Object list = block.pop();
-		final Object o = block.pop();
-		
-		//Check if user object
-		if (isUserObject(list) && isNumeric(index)) {
-			final int ix = toNumeric(index).toInt();
-			UserObject user_obj = toUserObject(list);
-			if (ix <= user_obj.fieldCount() && ix>0) {
-				user_obj.setField(ix-1, o);
-				return;
-			} else {
-				throw new ElementRuntimeException("I: User object (" 
-							+ user_obj.getModule().toString() + "): field " + ix 
-							+ " cannot be set");
-			}
-		}
-				
-		throw new TypeError(this.name, this.argTypes, index, list, o);
-	}
-}
+////< - 60 
+//class OP_ModSet extends Operation {
+//	public OP_ModSet() {
+//		this.name = "M<";
+//		this.info = "set a field from a user object";
+//		this.argTypes = "AUI";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		final Object index = block.pop();
+//		final Object list = block.pop();
+//		final Object o = block.pop();
+//		
+//		//Check if user object
+//		if (isUserObject(list) && isNumeric(index)) {
+//			final int ix = toNumeric(index).toInt();
+//			UserObject user_obj = toUserObject(list);
+//			if (ix <= user_obj.fieldCount() && ix>0) {
+//				user_obj.setField(ix-1, o);
+//				return;
+//			} else {
+//				throw new ElementRuntimeException("I: User object (" 
+//							+ user_obj.getModule().toString() + "): field " + ix 
+//							+ " cannot be set");
+//			}
+//		}
+//				
+//		throw new TypeError(this.name, this.argTypes, index, list, o);
+//	}
+//}
 
 
-//> - 62
-class OP_ModGet extends Operation {
-	public OP_ModGet() {
-		this.name = "M>";
-		this.info = "get a field from a user object";
-		this.argTypes = "UI";
-	}
-	@Override
-	public void execute(Block block) {
-		final Object index = block.pop();
-		final Object list = block.pop();
-		
-		//Check if user object
-		if (isUserObject(list) && isNumeric(index)) {
-			final int ix = toNumeric(index).toInt();
-			if (ix == 0) {
-				block.push(toUserObject(list).getModule());
-				return;
-			} else {
-				UserObject user_obj = toUserObject(list);
-				if (ix <= user_obj.fieldCount() && ix>0) {
-					block.push(toUserObject(list).getField(ix-1));
-					return;
-				} else {
-					throw new ElementRuntimeException("I: User object (" 
-								+ user_obj.getModule().toString() + "): field " + ix 
-								+ " does not exist.");
-				}
-			}
-		}
-				
-		throw new TypeError(this.name, this.argTypes, index, list);
-	}
-}
+////> - 62
+//class OP_ModGet extends Operation {
+//	public OP_ModGet() {
+//		this.name = "M>";
+//		this.info = "get a field from a user object";
+//		this.argTypes = "UI";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		final Object index = block.pop();
+//		final Object list = block.pop();
+//		
+//		//Check if user object
+//		if (isUserObject(list) && isNumeric(index)) {
+//			final int ix = toNumeric(index).toInt();
+//			if (ix == 0) {
+//				block.push(toUserObject(list).getModule());
+//				return;
+//			} else {
+//				UserObject user_obj = toUserObject(list);
+//				if (ix <= user_obj.fieldCount() && ix>0) {
+//					block.push(toUserObject(list).getField(ix-1));
+//					return;
+//				} else {
+//					throw new ElementRuntimeException("I: User object (" 
+//								+ user_obj.getModule().toString() + "): field " + ix 
+//								+ " does not exist.");
+//				}
+//			}
+//		}
+//				
+//		throw new TypeError(this.name, this.argTypes, index, list);
+//	}
+//}
 
 // A - 65
 class OP_Abs extends Operation {
@@ -280,10 +276,10 @@ class OP_Abs extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
+		Obj n = block.pop();
 		
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).abs());
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).abs());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -299,9 +295,9 @@ class OP_Acosine extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).acos());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).acos());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -319,22 +315,22 @@ class OP_MDate extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if (isNumeric(a)) {
-			long timeStamp = toNumeric(a).toLong();
+		Obj a = block.pop();
+		if (a.isa(NUMBER)) {
+			long timeStamp = ((Number)a).toLong();
 			cal.setTimeInMillis(timeStamp);
 			
-			ArrayList<Object> fields = new ArrayList<Object>();
+			ArrayList<Number> fields = new ArrayList<Number>();
 			
-			fields.add(cal.get(Calendar.DAY_OF_WEEK));
-			fields.add(cal.get(Calendar.YEAR));
-			fields.add(cal.get(Calendar.MONTH));
-			fields.add(cal.get(Calendar.DAY_OF_MONTH));
-			fields.add(cal.get(Calendar.HOUR));
-			fields.add(cal.get(Calendar.MINUTE));
-			fields.add(cal.get(Calendar.SECOND));
+			fields.add(new Num(cal.get(Calendar.DAY_OF_WEEK)));
+			fields.add(new Num(cal.get(Calendar.YEAR)));
+			fields.add(new Num(cal.get(Calendar.MONTH)));
+			fields.add(new Num(cal.get(Calendar.DAY_OF_MONTH)));
+			fields.add(new Num(cal.get(Calendar.HOUR)));
+			fields.add(new Num(cal.get(Calendar.MINUTE)));
+			fields.add(new Num(cal.get(Calendar.SECOND)));
 
-			block.push(fields);
+			block.push(new NumberItemList(fields));
 		} else {
 			throw new TypeError(this.name, this.argTypes, a);
 		}
@@ -353,13 +349,13 @@ class OP_MParse_Date extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
 		
-		if (bothString(a,b)) {
-			String df_str = castString(a);
-			String date_str = castString(b);
+		if (a.isa(STR) && b.isa(STR)) {
+			String df_str = a.str();
+			String date_str = b.str();
 			
 			DateFormat df;
 			try {
@@ -393,37 +389,37 @@ class OP_Log extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if(isNumeric(a)) {
-			block.push(toNumeric(a).log());
+		Obj a = block.pop();
+		if(a.isa(NUMBER)) {
+			block.push(((Number)a).log());
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
 }
 
-//P - 79
-class OP_NewUserObject extends Operation {
-	public OP_NewUserObject() {
-		this.name = "MO";
-		this.info = "create a new user object";
-		this.argTypes = "LM";
-	}
-	@Override
-	public void execute(Block block) {
-		final Object mod = block.pop();
-		final Object list = block.pop();
-
-		//<list> <module> MO
-		if(isModule(mod) && isList(list) && !isString(list)) {
-			block.push(new UserObject(toModule(mod), toList(list)));
-			return;
-		}
-		
-		
-		throw new TypeError(this.name, this.argTypes, list, mod);
-	}
-}
+////O - 79
+//class OP_NewUserObject extends Operation {
+//	public OP_NewUserObject() {
+//		this.name = "MO";
+//		this.info = "create a new user object";
+//		this.argTypes = "LM";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		final Object mod = block.pop();
+//		final Object list = block.pop();
+//
+//		//<list> <module> MO
+//		if(isModule(mod) && isList(list) && !isString(list)) {
+//			block.push(new UserObject(toModule(mod), toList(list)));
+//			return;
+//		}
+//		
+//		
+//		throw new TypeError(this.name, this.argTypes, list, mod);
+//	}
+//}
 
 //P - 80
 class OP_PrintColor extends Operation {
@@ -434,16 +430,20 @@ class OP_PrintColor extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object a = block.pop();
-		final Object b = block.pop();
-		final Object c = block.pop();
-		final Object d = block.pop();
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		final Obj c = block.pop();
+		final Obj d = block.pop();
 		
-		if(bothNumeric(c,b) & isNumeric(a)) {
+		if(a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
+			int ai = ((Number)a).toInt();
+			int bi = ((Number)a).toInt();
+			int ci = ((Number)a).toInt();
+			
 			try {
-				Element.getInstance().getOut().printColor(castString(d), new Color(toNumeric(c).toInt(), toNumeric(b).toInt(), toNumeric(a).toInt()));
+				Element.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
 			} catch (IllegalArgumentException e) {
-				throw new ElementRuntimeException("Cannot print using color (" + toNumeric(c).toInt() + ", " + toNumeric(b).toInt() + ", " + toNumeric(a).toInt() + ")" );
+				throw new ElementRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
 			}
 			return;
 		}
@@ -461,9 +461,9 @@ class OP_Asine extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).asin());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).asin());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -479,9 +479,9 @@ class OP_Atangent extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).atan());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).atan());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -511,28 +511,28 @@ class OP_Dialog extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object _dialogType = block.pop();
-		final Object _msgType = block.pop();
-		final Object _windowHdr = block.pop();
-		final Object _title = block.pop();
-		final Object _options = block.pop();
+		final Obj _dialogType = block.pop();
+		final Obj _msgType = block.pop();
+		final Obj _windowHdr = block.pop();
+		final Obj _title = block.pop();
+		final Obj _options = block.pop();
 		
 		//Check types
-		if(!(	isNumeric(_dialogType)
-				&& isNumeric(_msgType)
-				&& isString(_windowHdr)
-				&& isString(_title)
-				&& isList(_options)
+		if(!(	_dialogType.isa(NUMBER)
+				&& _msgType.isa(NUMBER)
+				&& _windowHdr.isa(STR)
+				&& _title.isa(STR)
+				&& _options.isa(LIST)
 				)) {
 			throw new TypeError(this, _dialogType, _msgType, _windowHdr, _title, _options);
 		}
 		
 		//Cast values
-		final int dialogType = toNumeric(_dialogType).toInt();
-		final int msgType = toNumeric(_msgType).toInt();
-		final String windowHdr = getString(_windowHdr);
-		final String title = getString(_title);
-		final ArrayList<Object> options = toList(_options);
+		final int dialogType = ((Number)_dialogType).toInt();
+		final int msgType = ((Number)_msgType).toInt();
+		final String windowHdr = _windowHdr.str();
+		final String title = _title.str();
+		final List options = ((List)_options);
 		
 		//Error checking
 		if (dialogType < QuickDialog.MIN_OPT || dialogType > QuickDialog.MAX_OPT) {
@@ -542,21 +542,21 @@ class OP_Dialog extends Operation {
 			throw new ElementRuntimeException("MV: invalid message type: " + msgType);
 		}
 		if ((dialogType == QuickDialog.OPTION_BUTTONS || dialogType == QuickDialog.OPTION_DROPDOWN)
-				&& options.size() <= 0) {
+				&& options.length() <= 0) {
 			throw new ElementRuntimeException("MV: options list must not be empty");
 		}
-		if (dialogType == QuickDialog.YES_OR_NO && options.size() != 2) {
+		if (dialogType == QuickDialog.YES_OR_NO && options.length() != 2) {
 			throw new ElementRuntimeException("MV: yes or no dialog options list length must be 2");
 		}
 
 		//Convert arraylist to string array
-		String[] optionsArr = new String[options.size()];
-		for (int i = 0; i < options.size(); i++) {
-			optionsArr[i] = castString(options.get(i));
+		String[] optionsArr = new String[options.length()];
+		for (int i = 0; i < options.length(); i++) {
+			optionsArr[i] = options.get(i).str();
 		}
 		
 		//show dialog
-		final Object out = QuickDialog.showDialog(dialogType, title, optionsArr, windowHdr, msgType);
+		final Obj out = QuickDialog.showDialog(dialogType, title, optionsArr, windowHdr, msgType);
 		if (out != null) {
 			block.push(out);
 		}
@@ -589,10 +589,10 @@ class OP_AdvPlot extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if (a instanceof ArrayList) {
+		Obj a = block.pop();
+		if (a.isa(LIST)) {
 			try {
-				ChartParams cp = ChartParams.parseParams(toList(a));
+				ChartParams cp = ChartParams.parseParams((List)a);
 				FreeChartInterface.drawChart(cp);
 			} catch (ClassCastException e) {
 				throw new ElementRuntimeException("MX: Invalid parameter type");
@@ -617,90 +617,95 @@ class OP_SysConfig extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object cmd = block.pop();
-		Object arg = block.pop();
+		Obj cmd = block.pop();
+		Obj arg = block.pop();
 		
-		if(isNumeric(cmd)) {
-			doCommand(toNumeric(cmd).toInt(), arg, block);
+		if(cmd.isa(NUMBER)) {
+			doCommand(((Number)cmd).toInt(), arg, block);
 		} else {	
 			throw new TypeError(this.name, this.argTypes, cmd, arg);
 		}
 	}
 	
-	private void doCommand(int cmdID, Object arg, Block b) {
+	private void doCommand(int cmdID, Obj arg, Block b) {
 		switch(cmdID) {
 		
 		//Change the prompt
 		case 1:
-			if(isString(arg)) {
-				ElemPrefs.setPrompt(getString(arg));
+			if(arg.isa(STR)) {
+				ElemPrefs.setPrompt(arg.str());
 			} else {
-				throw new ElementRuntimeException("arg 1 MZ: arg must be a string. Recieved:\n" + show(arg));
+				throw new ElementRuntimeException("arg 1 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 		
 		//Return working directory
 		case 2:
-			b.push(ElemPrefs.getWorkingDir());
+			b.push(new Str(ElemPrefs.getWorkingDir()));
 			break;
 			
 		//Set working directory
 		case 3:
-			if (isString(arg)) {
-				String dir = getString(arg);
+			if (arg.isa(STR)) {
+				String dir = arg.str();
 				if(dir.equals("")) {
 					ElemPrefs.resetWorkingDir();
 				} else {
-					if (!ElemPrefs.setWorkingDir(getString(arg))) {
+					if (!ElemPrefs.setWorkingDir(arg.str())) {
 						throw new ElementRuntimeException("arg 3 MZ: arg is not a valid path."
-								+ " Did you include a '/' or '\' at the end? Recieved:\n" + show(arg));
+								+ " Did you include a '/' or '\' at the end? Recieved:\n" + arg.repr());
 					}
 				}
 			}else {
-				throw new ElementRuntimeException("arg 3 MZ: arg must be a string. Recieved:\n" + show(arg));
+				throw new ElementRuntimeException("arg 3 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 		
 		//List files in working directory
 		case 4:
-			if (isString(arg)) {
-				String fstr = ElemPrefs.getWorkingDir() + getString(arg);
+			if (arg.isa(STR)) {
+				String fstr = ElemPrefs.getWorkingDir() + arg.str();
 				try {
-					b.push(ElemPrefs.listFilesAndDirsForFolder(new File(fstr)));
+					ArrayList<String> dirs = ElemPrefs.listFilesAndDirsForFolder(new File(fstr));
+					ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
+					for (String s : dirs) {
+						obj_dirs.add(new Str(s));
+					}
+					b.push(new ObjList(obj_dirs));
 				} catch (NullPointerException e) {
 					throw new ElementRuntimeException("arg 4 MZ: arg is not a valid location. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 4 MZ: arg must be a string. Recieved:\n" + show(arg));
+				throw new ElementRuntimeException("arg 4 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 			
 		//Create dir
 		case 5:
-			if(isString(arg)) {
-				String fstr = ElemPrefs.getWorkingDir() + getString(arg);
+			if(arg.isa(STR)) {
+				String fstr = ElemPrefs.getWorkingDir() + arg.str();
 				if(!ElemPrefs.mkDir(fstr)) {
 					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + show(arg));
+				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 
 		break;
 		
 		//Delete
 		case 6:
-			if(isString(arg)) {
-				String arg_str = getString(arg);
+			if(arg.isa(STR)) {
+				String arg_str = arg.str();
 				if(arg_str.equals("")) {
 					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + arg_str);
 				}
-				String fstr = ElemPrefs.getWorkingDir() + getString(arg);
+				String fstr = ElemPrefs.getWorkingDir() + arg.str();
 				if(!ElemPrefs.deleteFile(fstr)) {
 					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + show(arg));
+				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 
 		break;
@@ -721,10 +726,10 @@ class OP_SysConfig extends Operation {
 //	}
 //	@Override
 //	public void execute(Block block) {
-//		Object n = block.pop();
+//		Obj n = block.pop();
 //		
-//		if (isNumeric(n)) {
-//			block.push(toNumeric(n).ceil());
+//		if (n.isa(NUMBER)) {
+//			block.push(((Number)n).ceil());
 //		} else {
 //			throw new TypeError(this.name, this.argTypes, n);
 //		}
@@ -740,9 +745,9 @@ class OP_SysConfig extends Operation {
 //	}
 //	@Override
 //	public void execute(Block block) {
-//		Object n = block.pop();
-//		if(isNumeric(n)) {
-//			block.push(toNumeric(n).floor());
+//		Obj n = block.pop();
+//		if(n.isa(NUMBER)) {
+//			block.push(((Number)n).floor());
 //		} else {
 //			throw new TypeError(this.name, this.argTypes, n);
 //		}
@@ -758,9 +763,9 @@ class OP_Cosine extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).cos());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).cos());
 			return;
 		}
 		throw new TypeError(this.name, this.argTypes, n);
@@ -776,17 +781,17 @@ class OP_CastDouble extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
-		if(isString(a)) {
+		if(a.isa(STR)) {
 			try {
-				block.push(new Num(Double.parseDouble(castString(a))));
+				block.push(new Num(Double.parseDouble(a.str())));
 			} catch (NumberFormatException e) {
-				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to a double.");
+				throw new ElementRuntimeException("Cannot cast string \""+ a.repr() + "\" to a double.");
 			}
-		} else if (isBigNum(a)){
-			block.push(new Num(toBigNum(a).toDouble()));
-		} else if (isNum(a)) {
+		} else if (a.isa(BIGNUM)){
+			block.push(new Num(((BigNum)a).toDouble()));
+		} else if (a.isa(NUM)) {
 			block.push(a); //Already a double
 		} else {
 			throw new TypeError(this, a);
@@ -794,7 +799,7 @@ class OP_CastDouble extends Operation {
 	}
 }
 
-//h -104
+//h - 104
 class OP_MShow_Date extends Operation {
 
 	public OP_MShow_Date() {
@@ -804,11 +809,11 @@ class OP_MShow_Date extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
-		if (isString(a) && isNumeric(b)) {
-			String df_str = castString(a);
-			long time = toNumeric(b).toLong();
+		Obj a = block.pop();
+		Obj b = block.pop();
+		if (a.isa(STR) && b.isa(NUMBER)) {
+			String df_str = a.str();
+			long time = ((Number)b).toLong();
 			
 			DateFormat df;
 			try {
@@ -824,7 +829,7 @@ class OP_MShow_Date extends Operation {
 			} catch (Exception e) {
 				throw new ElementRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
 			}
-			block.push(out);
+			block.push(new Str(out));
 		} else {
 			throw new TypeError(this.name, this.argTypes, a, b);
 		}
@@ -841,7 +846,7 @@ class OP_MShow_Date extends Operation {
 //	}
 //	@Override
 //	public void execute(Block block) {
-//		final Object a = block.pop();
+//		final Obj a = block.pop();
 //		if(isString(a)) {
 //			try {
 //				block.push(Integer.parseInt(castString(a)));
@@ -863,13 +868,13 @@ class OP_AddParserChar extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object obj_name = block.pop();
-		final Object obj_char = block.pop();
+		final Obj obj_name = block.pop();
+		final Obj obj_char = block.pop();
 		
-		if (isString(obj_name) && isChar(obj_char)) {
-			String str = getString(obj_name);
+		if (obj_name.isa(STR) && obj_char.isa(CHAR)) {
+			String str = obj_name.str();
 			if (str.length() > 0 && CharacterParser.lalpha(str)) {
-				CharacterParser.add_char(str, toChar(obj_char));
+				CharacterParser.add_char(str, ((Char)obj_char).charValue());
 			} else {
 				throw new ElementRuntimeException("Cannot create special character using " + str);
 			}
@@ -889,9 +894,9 @@ class OP_Ln extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if(isNumeric(a)) {
-			block.push(toNumeric(a).ln());
+		Obj a = block.pop();
+		if(a.isa(NUMBER)) {
+			block.push(((Number)a).ln());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -908,9 +913,9 @@ class OP_Primes extends Operation {
 
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if (isNumeric(a)) {
-			int i = toNumeric(a).toInt();
+		Obj a = block.pop();
+		if (a.isa(NUMBER)) {
+			int i = ((Number)a).toInt();
 			if (i < 0) {
 				throw new ElementRuntimeException("Mp: Input must be positive");
 			}
@@ -932,9 +937,9 @@ class OP_SquareRoot extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).sqrt());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).sqrt());
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -950,10 +955,10 @@ class OP_Sine extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
+		Obj n = block.pop();
 		
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).sin());
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).sin());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -972,10 +977,10 @@ class OP_Tangent extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
+		Obj n = block.pop();
 		
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).tan());
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).tan());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -991,7 +996,7 @@ class OP_TypeStr extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		block.push(ElemTypes.getTypeName(block.pop()));
+		block.push(new Str(Obj.typeName(block.pop().type())));
 	}
 }
 
@@ -1013,15 +1018,20 @@ class OP_Constants extends Operation {
 				+ "  8: int min\n"
 				+ "  9: system file separator\n"
 				+ "  10: system path separator\n"
-				+ "  11: char max code point\n"
+				+ "  11: char max value\n"
 				+ "  12: system line separator";
 		this.argTypes = "N";
 	}
+	
+	public static final Str FILE_SEPARATOR = new Str(File.separator);
+	public static final Str FILE_PATH_SEPARATOR = new Str(File.pathSeparator);
+	public static final Str SYS_LINE_SEPARATOR = new Str(System.lineSeparator());
+	
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		if(isNumeric(a)) {
-			final int i = toNumeric(a).toInt();
+		Obj a = block.pop();
+		if(a.isa(NUMBER)) {
+			final int i = ((Number)a).toInt();
 			switch (i) {
 			case 0: block.push(Num.PI); break;
 			case 1: block.push(Num.E); break;
@@ -1032,10 +1042,10 @@ class OP_Constants extends Operation {
 			case 6: block.push(Num.DOUBLE_NINF); break;
 			case 7: block.push(Num.INT_MAX); break;
 			case 8: block.push(Num.INT_MIN); break;
-			case 9: block.push(File.separator); break;
-			case 10: block.push(File.pathSeparator); break;
-			case 11: block.push(Character.MAX_CODE_POINT); break;
-			case 12: block.push(System.lineSeparator()); break;
+			case 9: block.push(FILE_SEPARATOR); break;
+			case 10: block.push(FILE_PATH_SEPARATOR); break;
+			case 11: block.push(Char.MAX_VALUE); break;
+			case 12: block.push(SYS_LINE_SEPARATOR); break;
 			default:
 				throw new ElementRuntimeException("M|: (" + i + ") is not a valid constant id.");
 			}

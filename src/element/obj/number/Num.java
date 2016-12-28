@@ -13,6 +13,13 @@ public class Num extends Number {
 	public static final Num MAX_VALUE = new Num(Double.MAX_VALUE);
 	public static final Num PI = new Num(Math.PI);
 	public static final Num E = new Num(Math.E);
+	public static final Obj DOUBLE_MAX = new Num(Double.MAX_VALUE);
+	public static final Obj DOUBLE_MIN = new Num(Double.MIN_VALUE);
+	public static final Obj DOUBLE_NAN = new Num(Double.NaN);
+	public static final Obj DOUBLE_INF = new Num(Double.POSITIVE_INFINITY);
+	public static final Obj DOUBLE_NINF = new Num(Double.NEGATIVE_INFINITY);
+	public static final Obj INT_MAX = new Num(Integer.MAX_VALUE);
+	public static final Obj INT_MIN = new Num(Integer.MIN_VALUE);
 	
 	
 	double _val;
