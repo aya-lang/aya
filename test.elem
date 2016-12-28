@@ -90,3 +90,7 @@
 {'B 1 -} assert ['A]
 {1 'A +} assert ['B]
 {100 'A -} assert ['\#']
+
+.# String
+
+{"abcde"!} assert ["edcba"]

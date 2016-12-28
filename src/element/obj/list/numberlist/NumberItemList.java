@@ -1,6 +1,7 @@
 package element.obj.list.numberlist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import element.exceptions.ElementRuntimeException;
@@ -654,7 +655,40 @@ public class NumberItemList extends NumberList {
 	}
 
 	
-
+	// HELPER FUNCTIONS //
+	
+	/** Primes up to n **/
+	public static NumberItemList primes(int n) {
+		boolean[] flags = new boolean[n];
+		Arrays.fill(flags, true);
+		
+		//Mark every space that is not prime
+		for (int i = 2; i <= n; i++) {
+			int z = 2*i;
+			while (z <= n) {
+				flags[z-1] = false; //zero index, so sub 1
+				z += i;
+			}
+		}
+	
+//		//Count the number of primes
+//		int primeCount = 0;
+//		for (int i = 2; i <= n; i++) {
+//			primeCount += flags[i-1] ? 1 : 0;
+//		}
+		
+		//Allocate new array
+		ArrayList<Number> primeList = new ArrayList<Number>();
+		
+		//Add primes into array
+		for (int i = 2; i <= n; i++) {
+			if (flags[i-1]) {
+				primeList.add(new Num(i));
+			}
+		}
+		
+		return new NumberItemList(primeList);
+	}
 
 
 

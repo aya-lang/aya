@@ -21,7 +21,6 @@ import java.util.Locale;
 import element.ElemPrefs;
 import element.Element;
 import element.entities.Block;
-import element.entities.ListBuilder;
 import element.entities.Operation;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
@@ -788,7 +787,7 @@ class OP_Cosine extends Operation {
 			return;
 		}
 		else if (n.isa(NUMBERLIST)) {
-			block.push(((NumberList)n).acos());
+			block.push(((NumberList)n).cos());
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -947,8 +946,7 @@ class OP_Primes extends Operation {
 			if (i < 0) {
 				throw new ElementRuntimeException("Mp: Input must be positive");
 			}
-			int[] primes = ElementMath.primes(i);
-			block.push(ListBuilder.arrToAL(primes));
+			block.push(NumberItemList.primes(i));
 		} else {
 			throw new TypeError(this, a);
 		}
