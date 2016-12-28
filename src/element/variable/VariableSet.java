@@ -15,25 +15,27 @@ public class VariableSet {
 	private Variable[] argNames;
 	private byte[] argTypes;
 	private HashMap<Long, Obj> vars;
-	private boolean is_module;
+	// Setting this to true will tell VariableData to assign new variables here
+	// It emulates every variable being declared local
+	private boolean captureAllAssignments;
 
 	
 	public VariableSet(Variable[] argNames, byte[] argTypes) {
 		this.argTypes = argTypes;
 		this.argNames = argNames;
 		this.vars = new HashMap<Long, Obj>();
-		this.is_module = false;
+		this.captureAllAssignments = false;
 	}
 	
 	public VariableSet(boolean is_module) {
 		this.argNames = null;
 		this.argTypes = null;
 		this.vars = new HashMap<Long, Obj>();
-		this.is_module = is_module;
+		this.captureAllAssignments = is_module;
 	}
 	
 	public boolean isModule() {
-		return is_module;
+		return captureAllAssignments;
 	}
 	
 	public void setArgs(Block b) {

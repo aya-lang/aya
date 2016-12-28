@@ -8,18 +8,16 @@ public class Dict extends Obj {
 	
 	private VariableSet _vars;
 	
-	public Dict() {
-		_vars = new VariableSet(false);
+	public Dict(VariableSet vars) {
+		_vars = vars;
 	}
-	
+
 	public Obj get(Variable v) {
-		// TODO remove obj cast
-		return (Obj)_vars.getObject(v);
+		return _vars.getObject(v);
 	}
 	
 	public Obj get(String s) {
-		// TODO Remove Obj cast
-		return (Obj)_vars.getObject(Variable.encodeString(s));
+		return _vars.getObject(Variable.encodeString(s));
 	}
 	
 	public void set(Variable v, Obj o) {
@@ -77,8 +75,7 @@ public class Dict extends Obj {
 			Dict other = (Dict)o;
 			if (other.size() == this.size()) {
 				for (Long l : this._vars.getMap().keySet()) {
-					// TODO: Change to equiv()
-					if (!other._vars.getMap().get(l).equals(this._vars.getMap().get(l))) {
+					if (!other._vars.getMap().get(l).equiv(this._vars.getMap().get(l))) {
 						return false;
 					}
 				}
