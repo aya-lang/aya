@@ -5,6 +5,11 @@ import javax.swing.JOptionPane;
 import org.apfloat.Apfloat;
 
 import element.ElemPrefs;
+import element.obj.Obj;
+import element.obj.list.Str;
+import element.obj.number.BigNum;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 
 public class QuickDialog {
@@ -52,9 +57,9 @@ public class QuickDialog {
 	}
 	
 	/** Requests an input until a valid number is entered */
-	public static Apfloat numberInput(String title) {
+	public static Number numberInput(String title) {
 		String error = "";
-		Apfloat bd = null;
+		Number out = null;
 		do {
 			String s = null;
 			do {
@@ -62,12 +67,17 @@ public class QuickDialog {
 			} while (s == null);
 			
 			try {
-				bd = new Apfloat(s);
+				out = new Num(Double.parseDouble(s));
 			} catch (NumberFormatException e) {
-				error = "Number Format Error";
+				try {
+					out = new BigNum(new Apfloat(s));
+				} catch (NumberFormatException e2) {
+					error = "Number Format Error";
+				}
 			}
-		} while (bd == null);
-		return bd;
+			
+		} while (out == null);
+		return out;
 	}
 	
 	/** A simple alert dialog */
@@ -130,11 +140,11 @@ public class QuickDialog {
 		 }
 	}
 	
-	public static Object showDialog(int dialogType, String title, String[] options, String windowHdr, int msgType) {
+	public static Obj showDialog(int dialogType, String title, String[] options, String windowHdr, int msgType) {
 		msgType = getMsgType(msgType);
 		switch (dialogType) {
 		case REQUEST_STRING:
-			return requestString(title);
+			return new Str(requestString(title));
 		case REQUEST_NUMBER:
 			return numberInput(title);
 		case ALERT:
@@ -144,13 +154,14 @@ public class QuickDialog {
 			if (options.length < 2) {
 				throw new RuntimeException("Need two options for yes/no dialog.");
 			}
-			return yesOrNo(title, options[0], options[1], windowHdr, msgType);
+			//TODO: Change Num to ByteNum
+			return new Num(yesOrNo(title, options[0], options[1], windowHdr, msgType));
 		case OPTION_BUTTONS:
-			return selectOptionButtons(title, options, windowHdr, msgType);
+			return new Str(selectOptionButtons(title, options, windowHdr, msgType));
 		case OPTION_DROPDOWN:
-			return selectOptionDropdown(title, options, windowHdr, msgType);
+			return new Str(selectOptionDropdown(title, options, windowHdr, msgType));
 		case CHOOSE_FILE:
-			return chooseFile();
+			return new Str(chooseFile());
 		default:
 			throw new RuntimeException("dialogType is invalid. Recieved " +  dialogType);
 		}
