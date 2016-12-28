@@ -707,7 +707,7 @@ class OP_Dot_Print extends Operation {
 	}
 }
 
-//Q - 81
+// Q - 81
 class OP_Dot_Rand extends Operation {
 	public OP_Dot_Rand() {
 		this.name = ".Q";
@@ -719,7 +719,7 @@ class OP_Dot_Rand extends Operation {
 	}
 }
 
-//S - 83
+// S - 83
 class OP_Dot_Case extends Operation {
 	public OP_Dot_Case() {
 		this.name = ".S";
@@ -748,7 +748,7 @@ class OP_Dot_Case extends Operation {
 	}
 }
 
-//T - 84
+// T - 84
 class OP_TypeOf extends Operation {
 	public OP_TypeOf() {
 		this.name = ".T";
@@ -757,7 +757,7 @@ class OP_TypeOf extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		block.push(new Num(Obj.IDToAbbrv(block.pop().type())));
+		block.push(new Char(Obj.IDToAbbrv(block.pop().type())));
 	}
 }
 

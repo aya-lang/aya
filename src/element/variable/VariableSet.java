@@ -50,7 +50,7 @@ public class VariableSet {
 		} else {
 			for(int i = argNames.length-1; i >= 0; i--){
 				Obj o = b.pop();
-				if(!o.isa(argTypes[i])) {
+				if(argTypes[i] != Obj.ANY && !o.isa(argTypes[i]) ) {
 					throw new TypeError("{ARGS}", Obj.typeName(argTypes[i]), o);
 				}
 					//throw new RuntimeException("Invalid type in block argument. Expected (" + TypeUtils.getTypeNameFromID(argTypes[i]) + "). Recieved " + TypeUtils.debugString(o)+ " (" + TypeUtils.getTypeName(o) + ")");
