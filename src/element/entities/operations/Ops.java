@@ -3,6 +3,7 @@ package element.entities.operations;
 import static element.obj.Obj.BIGNUM;
 import static element.obj.Obj.BLOCK;
 import static element.obj.Obj.CHAR;
+import static element.obj.Obj.DICT;
 import static element.obj.Obj.LIST;
 import static element.obj.Obj.NUM;
 import static element.obj.Obj.NUMBER;
@@ -35,6 +36,7 @@ import element.exceptions.TypeError;
 import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
+import element.obj.dict.Dict;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
@@ -907,11 +909,14 @@ class OP_D extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();   //Index
-		Obj b = block.pop();			//List
+		final Obj b = block.pop();			//List
 		final Obj o = block.pop();	//Item
 		
 		if(a.isa(NUMBER) && b.isa(LIST)) {
 			((List)b).set( ((Number)a).toInt(), o);
+		} else if (a.isa(STR) && b.isa(DICT)) {
+			((Dict)b).set(a.str(), o);
+			block.push(b);
 		}
 //		else if (isUserObject(b)) {
 //			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, a);
@@ -937,7 +942,9 @@ class OP_E extends Operation {
 			block.push( new Num(10).pow((Number)n) );
 		} else if (n.isa(LIST)) {
 			block.push( new Num(((List)n).length()) );
-		} 
+		} else if (n.isa(DICT)) {
+			block.push( new Num(((Dict)n).size()) );
+		}
 //		else if (isUserObject(n)) {
 //			toUserObject(n).callVariable(block, Ops.MV_LEN);
 //		}
@@ -1120,7 +1127,7 @@ class OP_H extends Operation {
 class OP_I extends Operation {
 	public OP_I() {
 		this.name = "I";
-		this.info = "<LL>|<LI> index\n<LE>filter\n(overloadable: index, must be <UA>)";
+		this.info = "<LL>|<LI> index\n<LE> filter\n<RS> gey key\n(overloadable: index, must be <UA>)";
 		this.argTypes = "LL|LI|LE";
 	}
 	@Override public void execute (final Block block) {
@@ -1134,21 +1141,28 @@ class OP_I extends Operation {
 		
 		//Normal list execution
 		
-		if(!list.isa(LIST)) {
-			throw new TypeError(this, index, list);
-		}
-		
-		if(index.isa(NUMBER)) {
-			block.push( ((List)list).get(((Number)index).toInt()) );
-		} else if (index.isa(NUMBERLIST)) {
-			NumberList indexList = ((List)index).toNumberList();
-			List refList = (List)list;
-			for(int i = 0; i < indexList.length(); i++) {
-				indexList.set( i, refList.get(indexList.get(i).toInt()) );
+		if(list.isa(LIST)) {
+			if(index.isa(NUMBER)) {
+				block.push( ((List)list).get(((Number)index).toInt()) );
+			} else if (index.isa(NUMBERLIST)) {
+				NumberList indexList = ((List)index).toNumberList();
+				List refList = (List)list;
+				for(int i = 0; i < indexList.length(); i++) {
+					indexList.set( i, refList.get(indexList.get(i).toInt()) );
+				}
+				block.push(indexList);
+			} else if (index.isa(BLOCK)) {
+				block.push( ((Block)index).filter((List)list) );
+			} else {
+				throw new TypeError(this, index, list);
 			}
-			block.push(indexList);
-		} else if (index.isa(BLOCK)) {
-			block.push( ((Block)index).filter((List)list) );
+		} else if (list.isa(DICT) && index.isa(STR)) {
+			Obj out = ((Dict)list).get(index.str());
+			if (out.isa(BLOCK)) {
+				block.addAll( ((Block)out).getInstructions().getInstrucionList() );
+			} else {
+				block.push(out);
+			}
 		} else {
 			throw new TypeError(this, index, list);
 		}
