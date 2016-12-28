@@ -1,30 +1,31 @@
 package element.parser.tokens;
 
 import element.ElemTypes;
+import element.obj.Obj;
 
 public abstract class Token {
 	int type;
 	String data;
 	
 	//IDs
-	public static final int STRING 		= ElemTypes.STRING;
-	public static final int BLOCK 		= ElemTypes.BLOCK;
+	public static final int STRING 		= Obj.STR;
+	public static final int BLOCK 		= Obj.BLOCK;
 	public static final int VAR 		= ElemTypes.VAR;
 	public static final int EXTENDED 	= ElemTypes.T_EXTENDED;
 	public static final int OP 			= ElemTypes.OP;
-	public static final int BIGNUM  	= ElemTypes.BIGNUM;
-	public static final int NUM	        = ElemTypes.NUM;
+	public static final int BIGNUM  	= Obj.BIGNUM;
+	public static final int NUM	        = Obj.NUM;
 	//public static final int INT 		= ElemTypes.INT;
 	public static final int DOT 		= ElemTypes.T_DOT;
-	public static final int CHAR 		= ElemTypes.CHARACTER;
-	//public static final int FLOAT 		= ElemTypes.T_FLOAT;
+	public static final int CHAR 		= Obj.CHAR;
+	//public static final int FLOAT 	= ElemTypes.T_FLOAT;
 	public static final int LAMBDA 		= ElemTypes.LAMBDA;
 	public static final int COMMA		= ElemTypes.T_COMMA;
 	public static final int COLON		= ElemTypes.T_COLON;
 	public static final int LIST 		= ElemTypes.T_LIST;
 	public static final int TICK		= ElemTypes.T_TICK;
-	public static final int NUMERIC		= ElemTypes.NUMERIC;
-	public static final int BOOL		= ElemTypes.BOOL;
+	public static final int NUMERIC		= Obj.NUMBER;
+//	public static final int BOOL		= ElemTypes.BOOL;
 	public static final int MEM_VAR		= ElemTypes.MEM_VAR;
 	
 

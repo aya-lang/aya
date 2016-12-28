@@ -2,7 +2,6 @@ package element.parser.tokens;
 
 import java.util.ArrayList;
 
-import element.ElemTypes;
 import element.entities.Block;
 import element.entities.Flag;
 import element.exceptions.SyntaxError;
@@ -111,7 +110,7 @@ public class BlockToken extends CollectionToken {
 				if (tokens.get(i).getType() == Token.VAR) {
 					if (i+1 > tokens.size()-1) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(ElemTypes.ANY);
+						argTypes.add(Obj.ANY);
 					} else if (tokens.get(i+1).getType() == Token.OP) {
 						argNames.add(new Variable(tokens.get(i).getData()));
 						char c = tokens.get(i+1).getData().charAt(0);
@@ -119,7 +118,7 @@ public class BlockToken extends CollectionToken {
 						i++; //Skip the op on the next iteration
 					} else if (tokens.get(i).getType() == Token.VAR) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(ElemTypes.ANY);
+						argTypes.add(Obj.ANY);
 					} else {
 						//Should always be a VAR or an OP
 						throw new SyntaxError("All arguments must be names or type assertions");
@@ -135,7 +134,7 @@ public class BlockToken extends CollectionToken {
 			byte[] types = new byte[argTypes.size()];
 			for (int i = 0; i < types.length; i++) {
 				types[i] = argTypes.get(i).byteValue();
-				if(types[i] != ElemTypes.ANY) {
+				if(types[i] != Obj.ANY) {
 					allAny = false;
 				}
 			}

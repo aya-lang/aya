@@ -4,6 +4,8 @@ public abstract class Obj {
 	
 	public static final byte UNKNOWN = -1;
 	
+	public static final byte ANY = 0;
+
 	public static final byte NUMBER = 1;
 	public static final byte NUM = 11;
 	public static final byte BIGNUM = 12;
@@ -39,6 +41,8 @@ public abstract class Obj {
 			return "CHAR";
 		case DICT:
 			return "DICT";
+		case ANY:
+			return "ANY";
 		default:
 			return "Obj.typeName(" + type + ") not set up.";				
 		}

@@ -3,48 +3,48 @@ package element;
 public class ElemTypes {
 	
 	// Type IDs
-	public static final byte UNKNOWN           = -1;
-	public static final byte NUM        	   = 0;
-	public static final byte BIGNUM            = 1;
-	public static final byte FLAG              = 2;
-	public static final byte BLOCK             = 3;
-	public static final byte LIST              = 4;
-	public static final byte CHARACTER         = 5;
-	//public static final byte BIG_DECIMAL       = 6;
-	public static final byte OP                = 7;
-	public static final byte VAR_SET           = 8;
-	public static final byte VAR               = 9;
-	public static final byte STRING            = 10;
-	public static final byte LAMBDA            = 11;
-	public static final byte TUPLE             = 12;
-	public static final byte LIST_BUILDER      = 13;
-	public static final byte BOOL              = 14;
-	public static final byte NUMERIC               = 15;
-	public static final byte ANY               = 16;
-	
-	public static final byte MODULE 		   = 35;
-	public static final byte MEM_VAR           = 36;
-	public static final byte USER_OBJ          = 37;
+//	public static final byte UNKNOWN           = -1;
+//	public static final byte NUM        	   = 0;
+//	public static final byte BIGNUM            = 1;
+	public static final byte FLAG              = 101;
+//	public static final byte BLOCK             = 3;
+//	public static final byte LIST              = 4;
+//	public static final byte CHARACTER         = 5;
+//	//public static final byte BIG_DECIMAL       = 6;
+	public static final byte OP                = 102;
+	public static final byte VAR_SET           = 103;
+	public static final byte VAR               = 104;
+//	public static final byte STRING            = 10;
+	public static final byte LAMBDA            = 105;
+	public static final byte TUPLE             = 106;
+	public static final byte LIST_BUILDER      = 107;
+//	public static final byte BOOL              = 14;
+//	public static final byte NUMERIC               = 15;
+//	public static final byte ANY               = 16;
+//	
+//	public static final byte MODULE 		   = 35;
+	public static final byte MEM_VAR           = 108;
+//	public static final byte USER_OBJ          = 37;
 
 	//Token-Only Types
-	public static final byte T_EXTENDED        = 17; // Math Operators
-	public static final byte T_DOT             = 18; // (.) special operator
-	public static final byte T_FLOAT           = 19; // Numbers with decimals
-	public static final byte T_COMMA           = 20; // (,) special operator
-	public static final byte T_COLON           = 21; // (:) special operator
-	public static final byte T_LIST            = 22; // List literals
-	public static final byte T_TICK            = 23; // (`) special operator
-	public static final byte T_OPEN_PAREN      = 24; // ( token
-	public static final byte T_CLOSE_PAREN     = 25; // ) token
-	public static final byte T_OPEN_SQBRACKET  = 26; // [ token
-	public static final byte T_CLOSE_SQBRACKET = 27; // ] token
-	public static final byte T_OPEN_CURLY      = 28; // { token
-	public static final byte T_CLOSE_CURLY     = 29; // } token
-	public static final byte T_OP_DOT          = 30; // .<op> token
-	public static final byte T_OP_MATH         = 31; // M<op> token
-	public static final byte T_POUND           = 32; // (#) special operator
-	public static final byte T_BOOL_FALSE      = 33; // (T) true literal
-	public static final byte T_BOOL_TRUE       = 34; // (F) false literal
+	public static final byte T_EXTENDED        = 109; // Math Operators
+	public static final byte T_DOT             = 110; // (.) special operator
+	public static final byte T_FLOAT           = 111; // Numbers with decimals
+	public static final byte T_COMMA           = 112; // (,) special operator
+	public static final byte T_COLON           = 113; // (:) special operator
+	public static final byte T_LIST            = 114; // List literals
+	public static final byte T_TICK            = 115; // (`) special operator
+	public static final byte T_OPEN_PAREN      = 116; // ( token
+	public static final byte T_CLOSE_PAREN     = 117; // ) token
+	public static final byte T_OPEN_SQBRACKET  = 118; // [ token
+	public static final byte T_CLOSE_SQBRACKET = 119; // ] token
+	public static final byte T_OPEN_CURLY      = 120; // { token
+	public static final byte T_CLOSE_CURLY     = 121; // } token
+	public static final byte T_OP_DOT          = 122; // .<op> token
+	public static final byte T_OP_MATH         = 123; // M<op> token
+	public static final byte T_POUND           = 124; // (#) special operator
+	public static final byte T_BOOL_FALSE      = 125; // (T) true literal
+	public static final byte T_BOOL_TRUE       = 126; // (F) false literal
 
 	
 	

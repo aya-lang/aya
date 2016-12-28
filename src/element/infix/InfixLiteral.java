@@ -1,6 +1,7 @@
 package element.infix;
 
 
+import element.obj.Obj;
 import element.obj.number.Num;
 import element.parser.tokens.Token;
 
@@ -32,9 +33,9 @@ public class InfixLiteral extends InfixItem {
 	/** Generates the element literal */
 	public Object generateElementCode() {
 		switch(subtype) {
-		case NUM:
+		case Obj.NUM:
 			return new Num(Double.parseDouble(name));
-		case STRING:
+		case Obj.STR:
 			return name;
 		default:
 			throw new RuntimeException("Cannot generate element code for literal type " + this.subtype);
@@ -45,10 +46,10 @@ public class InfixLiteral extends InfixItem {
 	public String typeString() {
 		String s = "{l[";
 		switch (this.subtype) {
-		case NUM:
+		case Obj.NUM:
 			s += "I";
 			break;
-		case STRING:
+		case Obj.STR:
 			s+= "S";
 			break;
 		default:

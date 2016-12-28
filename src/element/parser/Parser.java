@@ -14,7 +14,6 @@ import element.exceptions.SyntaxError;
 import element.parser.token.TokenQueue;
 import element.parser.token.TokenStack;
 import element.parser.tokens.BlockToken;
-import element.parser.tokens.BoolToken;
 import element.parser.tokens.CharToken;
 import element.parser.tokens.LambdaToken;
 import element.parser.tokens.ListToken;
@@ -405,7 +404,13 @@ public class Parser {
 
 			//Boolean Literals
 			else if(current == 'T' || current == 'F') {
-				tokens.add(new BoolToken(""+current));
+				//tokens.add(new BoolToken(""+current));
+				if (current == 'T') {
+					tokens.add(new NumberToken(""+1));
+				} else {
+					tokens.add(new NumberToken(""+1));
+				}
+				
 			}
 			
 			//Normal Operators

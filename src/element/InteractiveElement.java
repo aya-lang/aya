@@ -207,7 +207,7 @@ public class InteractiveElement {
 			//Run the arguments as code
 			if(args[0].equals("-c")) {
 				
-				loadBase(elem);
+				//loadBase(elem);
 				
 				StringBuilder input = new StringBuilder();
 				for (int i = 1; i < args.length; i++) {
@@ -238,7 +238,7 @@ public class InteractiveElement {
 			else if(args[0].equals("-i")) {
 				
 				//Attempt to load base
-				loadBase(elem);
+				//loadBase(elem);
 
 				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(System.in);
