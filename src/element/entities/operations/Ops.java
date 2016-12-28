@@ -1665,7 +1665,7 @@ class OP_Underscore extends Operation {
 //		} else {
 //			block.push(a);
 //		}
-		block.push(block.pop().deepcopy());
+		block.push(block.peek().deepcopy());
 	}
 }
 
