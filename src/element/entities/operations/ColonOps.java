@@ -1,29 +1,19 @@
 package element.entities.operations;
 
-import static element.ElemTypes.bothList;
-import static element.ElemTypes.castString;
-import static element.ElemTypes.getString;
-import static element.ElemTypes.isBlock;
-import static element.ElemTypes.isChar;
-import static element.ElemTypes.isList;
-import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.isString;
-import static element.ElemTypes.toBlock;
-import static element.ElemTypes.toChar;
-import static element.ElemTypes.toList;
-import static element.ElemTypes.toNumeric;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.LIST;
 
 import java.util.ArrayList;
 
-import element.Element;
 import element.entities.Block;
 import element.entities.Operation;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
-import element.parser.CharacterParser;
-import element.parser.Parser;
-import element.variable.Variable;
+import element.obj.Obj;
+import element.obj.list.List;
+import element.obj.number.Number;
+
 
 public class ColonOps {	
 	
@@ -47,7 +37,7 @@ public class ColonOps {
 		/* 42 *  */ null,
 		/* 43 +  */ null,
 		/* 44 ,  */ null,
-		/* 45 -  */ new OP_SetMinus(),
+		/* 45 -  */ null, //Special number literals
 		/* 46 .  */ null,
 		/* 47 /  */ null,
 		/* 48 0  */ null, //Number Literal
@@ -161,26 +151,26 @@ public class ColonOps {
 }
 
 
-//- - 45
-class OP_SetMinus extends Operation {
-	public OP_SetMinus() {
-		this.name = ":-";
-		this.info = "LL remove all elements in L2 from L1";
-		this.argTypes = "LL";
-	}
-	@Override
-	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
-		
-		if (bothList(a,b)) {
-			ListOperations.removeObjects(toList(b), toList(a));
-			block.push(b);
-		} else {
-			throw new TypeError(this, a, b);
-		}
-	}
-}
+////- - 45
+//class OP_SetMinus extends Operation {
+//	public OP_SetMinus() {
+//		this.name = ":-";
+//		this.info = "LL remove all elements in L2 from L1";
+//		this.argTypes = "LL";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Object a = block.pop();
+//		Object b = block.pop();
+//		
+//		if (bothList(a,b)) {
+//			ListOperations.removeObjects(toList(b), toList(a));
+//			block.push(b);
+//		} else {
+//			throw new TypeError(this, a, b);
+//		}
+//	}
+//}
 
 
 //Z - 90
@@ -191,11 +181,11 @@ class OP_Colon_Zed extends Operation {
 		this.argTypes = "N";
 	}
 	@Override public void execute (Block block) {
-		Object a = block.pop();
+		Obj a = block.pop();
 		
-		if(isNumeric(a)) {
+		if(a.isa(NUMBER)) {
 			try {
-				Thread.sleep(toNumeric(a).toLong());
+				Thread.sleep(((Number)a).toLong());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -214,21 +204,21 @@ class OP_Colon_Underscore extends Operation {
 		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
-		if (isNumeric(a)) {
+		if (a.isa(NUMBER)) {
 			int size = block.getStack().size();
-			int i = toNumeric(a).toInt();
+			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
 				throw new ElementRuntimeException(i + " :_ stack index out of bounds");
 			} else {
 				
 				while (i > 0) {
-					final Object cp = block.getStack().get(size - i);
+					final Obj cp = block.getStack().get(size - i);
 					
-					if(cp instanceof ArrayList) {
-						block.push(toList(cp).clone());
+					if(cp.isa(LIST)) {
+						block.push( ((List)cp).deepcopy() );
 					} else {
 						block.push(cp);
 					}
@@ -254,10 +244,10 @@ class OP_Colon_Tilde extends Operation {
 	}
 	@Override
 	public void execute(final Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
-		if (isList(a)) {
-			block.push(ListOperations.removeDuplicates(toList(a)));
+		if (a.isa(LIST)) {
+			block.push( ((List)a).unique() );
 		} else {
 			throw new TypeError(this, a);
 		}

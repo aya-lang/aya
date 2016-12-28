@@ -239,6 +239,24 @@ public class ObjList extends List {
 	}
 	
 	@Override
+	public ObjList unique() {
+		ArrayList<Obj> unique = new ArrayList<Obj>();
+		for (Obj l : _list) {
+			boolean alreadyContains = false;
+			for (Obj u : unique) {
+				if (l.equiv(u)) {
+					alreadyContains = true;
+					break;
+				}
+			}
+			if (!alreadyContains) {
+				unique.add(l);
+			}
+		}
+		return new ObjList(unique);
+	}
+	
+	@Override
 	public void add(Obj o) {
 		incCharNumCounter(o);
 		_list.add(o);

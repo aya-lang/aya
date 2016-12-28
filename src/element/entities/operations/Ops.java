@@ -1,13 +1,13 @@
 package element.entities.operations;
 
-import static element.obj.Obj.NUMBER;
-import static element.obj.Obj.NUM;
 import static element.obj.Obj.BIGNUM;
-import static element.obj.Obj.NUMBERLIST;
-import static element.obj.Obj.LIST;
-import static element.obj.Obj.STR;
 import static element.obj.Obj.BLOCK;
 import static element.obj.Obj.CHAR;
+import static element.obj.Obj.LIST;
+import static element.obj.Obj.NUM;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.NUMBERLIST;
+import static element.obj.Obj.STR;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,8 +17,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
@@ -42,13 +40,12 @@ import element.obj.list.ObjList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.list.numberlist.NumberList;
-import element.obj.number.Number;
 import element.obj.number.BigNum;
 import element.obj.number.Num;
+import element.obj.number.Number;
 import element.parser.CharacterParser;
 import element.parser.Parser;
 import element.variable.MemberVariable;
-import element.variable.Module;
 import element.variable.Variable;
 
 public class Ops {
@@ -1221,7 +1218,6 @@ class OP_N extends Operation {
 		final Obj a = block.pop(); //Item
 		final Obj b = block.pop(); //List
 		
-		int index = 0;
 		if(b.isa(Obj.LIST)) {
 			
 			block.push(b);

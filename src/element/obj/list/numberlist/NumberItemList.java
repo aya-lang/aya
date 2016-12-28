@@ -7,6 +7,7 @@ import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 import element.obj.character.Char;
 import element.obj.list.List;
+import element.obj.list.ObjList;
 import element.obj.number.Num;
 import element.obj.number.Number;
 
@@ -412,6 +413,24 @@ public class NumberItemList extends NumberList {
 			l.add(number);
 		}
 		return l;
+	}
+	
+	@Override
+	public NumberItemList unique() {
+		ArrayList<Number> unique = new ArrayList<Number>();
+		for (Number l : _list) {
+			boolean alreadyContains = false;
+			for (Number u : unique) {
+				if (l.equiv(u)) {
+					alreadyContains = true;
+					break;
+				}
+			}
+			if (!alreadyContains) {
+				unique.add(l);
+			}
+		}
+		return new NumberItemList(unique);
 	}
 	
 	

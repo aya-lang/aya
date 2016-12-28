@@ -200,7 +200,19 @@ public class Str extends List implements Comparable<Str> {
 		}
 		return l;
 	}
-
+	
+	@Override
+	public Str unique() {
+		StringBuilder unique = new StringBuilder();
+	    for (int i = 0; i < _str.length(); i++) {
+	        String si = _str.substring(i, i + 1);
+	        if (unique.indexOf(si) == -1) {
+	            unique.append(si);
+	        }
+	    }
+	    return new Str(unique.toString());
+	}
+	
 	@Override
 	public NumberItemList toNumberList() {
 		char[] chars = _str.toCharArray();

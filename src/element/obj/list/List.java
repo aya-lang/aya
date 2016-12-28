@@ -73,6 +73,9 @@ public abstract class List extends Obj {
 	/** Return the underlying Obj ArrayList */
 	public abstract ArrayList<Obj> getObjAL();
 	
+	/** Return a list containing the unique elements of the original list */
+	public abstract List unique();
+	
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////
