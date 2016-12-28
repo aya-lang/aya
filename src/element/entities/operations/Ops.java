@@ -57,8 +57,8 @@ public class Ops {
 	
 	public static final KeyVariable KEYVAR_NEW = new KeyVariable("new");
 //
-//	public static final MemberVariable MV_DOLLAR = new MemberVariable("dollar");
-//	public static final MemberVariable MV_LEN = new MemberVariable("len");
+	public static final KeyVariable MV_DOLLAR = new KeyVariable("dollar");
+//	public static final KeyVariable KEYVAR_LEN = new KeyVariable("len");
 //	public static final MemberVariable MV_STR = new MemberVariable("show");
 //	public static final MemberVariable MV_PERCENT = new MemberVariable("percent");
 //	public static final MemberVariable MV_AMP = new MemberVariable("amp");
@@ -313,6 +313,8 @@ class OP_Dollar extends Operation {
 		else if(a.isa(LIST)) {
 			((List)a).sort();
 			block.push(a);
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.MV_DOLLAR);
 		} else {
 			throw new TypeError(this,a);
 		}
@@ -396,10 +398,7 @@ class OP_Dollar extends Operation {
 //				return;
 //			}
 //		} 
-//		else if (isUserObject(a)) {
-//			toUserObject(a).callVariable(block, Ops.MV_DOLLAR);
-//			return;
-//		}
+		
 		
 		
 	}
@@ -941,7 +940,7 @@ class OP_D extends Operation {
 
 }
 
-//E - 69
+// E - 69
 class OP_E extends Operation {
 	public OP_E() {
 		this.name = "E";
@@ -968,7 +967,7 @@ class OP_E extends Operation {
 
 // F - 70
 
-//G - 71
+// G - 71
 class OP_G extends Operation {
 	public OP_G() {
 		this.name = "G";

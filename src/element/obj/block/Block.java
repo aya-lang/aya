@@ -401,6 +401,26 @@ public class Block extends Obj {
 		}
 	}
 	
+	/** Calls the variable and dumps the result to the stack existing in the input block */
+	public void callVariable(Dict dict, KeyVariable keyVar, Obj... push_first) {
+		//Push self
+		stack.push(dict);
+		
+		//push others
+		for (Obj o : push_first) {
+			stack.push(o);
+		}
+		
+		Obj obj = dict.get(keyVar);
+		
+		if(obj.isa(Obj.BLOCK)) {
+			Block blk = ((Block)obj).duplicate();
+			instructions.addAll(blk.getInstructions().getInstrucionList());
+		} else {
+			stack.push(obj);
+		}
+	}
+	
 	/** If true, return "{instructions}" else just "instructions" */
 	public String toString(boolean printBraces) {
 		if (printBraces) {
