@@ -26,7 +26,6 @@ import element.parser.tokens.StringToken;
 import element.parser.tokens.TickToken;
 import element.parser.tokens.Token;
 import element.parser.tokens.VarToken;
-import element.variable.MemberVariable;
 import element.variable.Variable;
 
 /**
@@ -575,7 +574,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(o instanceof Operation || o instanceof Variable || o instanceof MemberVariable) {
+						if(o instanceof Operation || o instanceof Variable) {
 							break;
 						}
 					}
@@ -603,7 +602,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(o instanceof Operation || o instanceof Variable || o instanceof MemberVariable) {
+						if(o instanceof Operation || o instanceof Variable) {
 							break;
 						}
 					}

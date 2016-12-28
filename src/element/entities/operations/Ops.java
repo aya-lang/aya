@@ -45,7 +45,6 @@ import element.obj.number.Num;
 import element.obj.number.Number;
 import element.parser.CharacterParser;
 import element.parser.Parser;
-import element.variable.MemberVariable;
 import element.variable.Variable;
 
 public class Ops {
@@ -53,23 +52,23 @@ public class Ops {
 	public static final Random RAND = new Random((new Date()).getTime());
 	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
 	
-	public static final MemberVariable MEMVAR_NEW = new MemberVariable("new");
-
-	public static final MemberVariable MV_DOLLAR = new MemberVariable("dollar");
-	public static final MemberVariable MV_LEN = new MemberVariable("len");
-	public static final MemberVariable MV_STR = new MemberVariable("show");
-	public static final MemberVariable MV_PERCENT = new MemberVariable("percent");
-	public static final MemberVariable MV_AMP = new MemberVariable("amp");
-	public static final MemberVariable MV_STAR = new MemberVariable("star");
-	public static final MemberVariable MV_PLUS = new MemberVariable("plus");
-	public static final MemberVariable MV_MINUS = new MemberVariable("minus");
-	public static final MemberVariable MV_FSLASH = new MemberVariable("fslash");
-	public static final MemberVariable MV_BAR = new MemberVariable("bar");
-	public static final MemberVariable MV_POW = new MemberVariable("pow");
-	public static final MemberVariable MV_INDEX = new MemberVariable("index");
-	public static final MemberVariable MV_RANDCHOICE = new MemberVariable("randchoice");
-	public static final MemberVariable MV_SETINDEX = new MemberVariable("setindex");
-	public static final MemberVariable MV_EQ = new MemberVariable("eq");
+//	public static final MemberVariable MEMVAR_NEW = new MemberVariable("new");
+//
+//	public static final MemberVariable MV_DOLLAR = new MemberVariable("dollar");
+//	public static final MemberVariable MV_LEN = new MemberVariable("len");
+//	public static final MemberVariable MV_STR = new MemberVariable("show");
+//	public static final MemberVariable MV_PERCENT = new MemberVariable("percent");
+//	public static final MemberVariable MV_AMP = new MemberVariable("amp");
+//	public static final MemberVariable MV_STAR = new MemberVariable("star");
+//	public static final MemberVariable MV_PLUS = new MemberVariable("plus");
+//	public static final MemberVariable MV_MINUS = new MemberVariable("minus");
+//	public static final MemberVariable MV_FSLASH = new MemberVariable("fslash");
+//	public static final MemberVariable MV_BAR = new MemberVariable("bar");
+//	public static final MemberVariable MV_POW = new MemberVariable("pow");
+//	public static final MemberVariable MV_INDEX = new MemberVariable("index");
+//	public static final MemberVariable MV_RANDCHOICE = new MemberVariable("randchoice");
+//	public static final MemberVariable MV_SETINDEX = new MemberVariable("setindex");
+//	public static final MemberVariable MV_EQ = new MemberVariable("eq");
 
 
 	
