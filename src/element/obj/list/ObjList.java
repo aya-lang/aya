@@ -65,7 +65,7 @@ public class ObjList extends List {
 	public NumberItemList toNumberList() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			if (_list.get(i).isa(Obj.NUMBER)) {
+			if (!_list.get(i).isa(Obj.NUMBER)) {
 				throw new ElementRuntimeException("Cannot convert list " + repr() + " to a numeric list.");
 			} else {
 				out.add((Number)(_list.get(i)));

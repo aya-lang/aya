@@ -402,17 +402,17 @@ public class Parser {
 				tokens.add(new VarToken(sb.toString()));
 			}
 
-			//Boolean Literals
-			else if(current == 'T' || current == 'F') {
-				//tokens.add(new BoolToken(""+current));
-				if (current == 'T') {
-					tokens.add(new NumberToken(""+1));
-				} else {
-					tokens.add(new NumberToken(""+1));
-				}
-				
-			}
-			
+//			//Boolean Literals
+//			else if(current == 'T' || current == 'F') {
+//				//tokens.add(new BoolToken(""+current));
+//				if (current == 'T') {
+//					tokens.add(new NumberToken(""+1));
+//				} else {
+//					tokens.add(new NumberToken(""+1));
+//				}
+//				
+//			}
+//			
 			//Normal Operators
 			else if (Ops.isOpChar(current)) {
 				tokens.add(new OperatorToken(""+current, OperatorToken.STD_OP ));

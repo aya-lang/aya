@@ -193,8 +193,7 @@ public class InteractiveElement {
 			return true;
 		}
 	}
-	
-	
+
 	
 	
 	public static void main(String[] args) {
@@ -239,17 +238,19 @@ public class InteractiveElement {
 				
 				//Attempt to load base
 				//loadBase(elem);
+				
+				elem.run("\"..\\\\test.elem\"G~");
 
 				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(System.in);
 				String input = "";
 				
-				if (System.console() == null) {
-					input = scanner.nextLine();
-					processInput(elem, input);
-					System.out.println(elem.getOut().dumpAsString());
-					return;
-				}
+//				if (System.console() == null) {
+//					input = scanner.nextLine();
+//					processInput(elem, input);
+//					System.out.println(elem.getOut().dumpAsString());
+//					return;
+//				}
 					
 				
 				

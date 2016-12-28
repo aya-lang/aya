@@ -154,7 +154,7 @@ public class Ops {
 	
 	public static boolean isOpChar(char c) {
 		char[] op_exceptions = {
-				',','(',')','[',']','`','.','"','\'', '#','T','F'
+				',','(',')','[',']','`','.','"','\'', '#',
 			};		
 		
 		//Check Exceptions
