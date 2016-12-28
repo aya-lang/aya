@@ -50,7 +50,7 @@ public class ListBuilder {
 		if(res.size() > 1) {
 			allLists = true;								//All arguments may be a list
 			for (Obj o : res) {
-				if(o.isa(Obj.LIST)) {
+				if(!o.isa(Obj.LIST)) {
 					allLists = false;
 					break;
 				}
