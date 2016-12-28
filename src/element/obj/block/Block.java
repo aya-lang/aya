@@ -389,7 +389,17 @@ public class Block extends Obj {
 			this.stack.push(stk.pop());
 		}
 	}
-
+	
+	/** If the variable is a block, dump to the instructions
+	 * else add the item to the stack
+	 */
+	public void addOrDumpVar(Obj o) {
+		if (o.isa(Obj.BLOCK)) {
+			instructions.addAll( ((Block)o).getInstructions().getInstrucionList() );
+		} else {
+			stack.push(o);
+		}
+	}
 	
 	/** If true, return "{instructions}" else just "instructions" */
 	public String toString(boolean printBraces) {

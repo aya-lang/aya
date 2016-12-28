@@ -2,6 +2,7 @@ package element.entities.operations;
 
 import static element.obj.Obj.BIGNUM;
 import static element.obj.Obj.CHAR;
+import static element.obj.Obj.DICT;
 import static element.obj.Obj.LIST;
 import static element.obj.Obj.NUM;
 import static element.obj.Obj.NUMBER;
@@ -26,6 +27,7 @@ import element.exceptions.TypeError;
 import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
+import element.obj.dict.Dict;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
@@ -95,7 +97,7 @@ public class MathOps {
 		/* 76 L  */ new OP_Log(),
 		/* 77 M  */ null,
 		/* 78 N  */ null,
-		/* 79 O  */ null, // new OP_NewUserObject(),
+		/* 79 O  */ new OP_NewUserObject(),
 		/* 80 P  */ new OP_PrintColor(),
 		/* 81 Q  */ null,
 		/* 82 R  */ null,
@@ -408,28 +410,27 @@ class OP_Log extends Operation {
 	}
 }
 
-////O - 79
-//class OP_NewUserObject extends Operation {
-//	public OP_NewUserObject() {
-//		this.name = "MO";
-//		this.info = "create a new user object";
-//		this.argTypes = "LM";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		final Object mod = block.pop();
-//		final Object list = block.pop();
-//
-//		//<list> <module> MO
-//		if(isModule(mod) && isList(list) && !isString(list)) {
-//			block.push(new UserObject(toModule(mod), toList(list)));
-//			return;
-//		}
-//		
-//		
-//		throw new TypeError(this.name, this.argTypes, list, mod);
-//	}
-//}
+//O - 79
+class OP_NewUserObject extends Operation {
+	public OP_NewUserObject() {
+		this.name = "MO";
+		this.info = "create a new user object using the first dict as the metatable";
+		this.argTypes = "RR";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj meta = block.pop();
+		final Obj dict = block.pop();
+
+
+		if(dict.isa(DICT) && meta.isa(DICT)) {
+			((Dict)dict).setMetaTable((Dict)meta);
+			block.push(dict);
+		} else {
+			throw new TypeError(this.name, this.argTypes, meta, dict);
+		}
+	}
+}
 
 //P - 80
 class OP_PrintColor extends Operation {

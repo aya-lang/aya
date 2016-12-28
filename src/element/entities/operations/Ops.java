@@ -37,6 +37,7 @@ import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.dict.Dict;
+import element.obj.dict.KeyVariable;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
@@ -54,7 +55,7 @@ public class Ops {
 	public static final Random RAND = new Random((new Date()).getTime());
 	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
 	
-//	public static final MemberVariable MEMVAR_NEW = new MemberVariable("new");
+	public static final KeyVariable KEYVAR_NEW = new KeyVariable("new");
 //
 //	public static final MemberVariable MV_DOLLAR = new MemberVariable("dollar");
 //	public static final MemberVariable MV_LEN = new MemberVariable("len");
@@ -229,8 +230,13 @@ class OP_Bang extends Operation {
 		}
 		
 		else if (o.isa(DICT)) {
-			//Create a new empty dict with the input as its metatable
-			block.push(new Dict((Dict)o));
+			Dict d = (Dict)o;
+			if (d.containsKey(Ops.KEYVAR_NEW)) {
+				block.addOrDumpVar(d.get(Ops.KEYVAR_NEW));
+			} else {
+				//Create a new empty dict with the input as its metatable
+				block.push(new Dict((Dict)o));
+			}
 
 		}
 //		else if (isModule(o)) {

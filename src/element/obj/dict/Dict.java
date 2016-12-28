@@ -35,37 +35,60 @@ public class Dict extends Obj {
 	public void setMetaTable(Dict d) {
 		_meta = d._vars;
 	}
-
+	
+	/** Set the metatable to the input variable set */
+	public void setMetaTable(VariableSet vs) {
+		_meta = vs;
+	}
+	
+	
+	/////////////
+	// GETTERS //
+	/////////////
+	
 	/** Get the object assigned to key {@code v} 
 	 * If this key is unassigned, throw an error */
 	public Obj get(KeyVariable v) {
-		// First search object vars...
-		Obj o = _vars.getObject(v);
-		if (o == null) {
-			// ...then search meta vars if there are any
-			o = _meta == null ? null : _meta.getObject(v);
-			if (o == null) {
-				throw new UndefVarException("Dict does not contain key '" + v.toString() + "'");
-			}
-		}
-		return o;
+		return get(v.getID());
 	}
 	
 	/** Get the object assigned to key whos name is {@code s} 
 	 * If this key is unassigned, throw an error
 	 */
 	public Obj get(String s) {
+		return get(Variable.encodeString(s));
+	}
+	
+	public Obj get(long id) {
 		// First search object vars...
-		Obj o = _vars.getObject(Variable.encodeString(s));
+		Obj o = _vars.getObject(id);
 		if (o == null) {
 			// ...then search meta vars if there are any
-			o = _meta == null ? null : _meta.getObject(Variable.encodeString(s));
+			o = _meta == null ? null : _meta.getObject(id);
 			if (o == null) {
-				throw new UndefVarException("Dict does not contain key '" + s + "'");
+				throw new UndefVarException("Dict does not contain key '" 
+						+ new KeyVariable(id).toString() + "'");
 			}
 		}
 		return o;
 	}
+	
+	public boolean containsKey(KeyVariable var) {
+		// First search object vars...
+		Obj o = _vars.getObject(var);
+		if (o == null) {
+			// ...then search meta vars if there are any
+			o = _meta == null ? null : _meta.getObject(var);
+			if (o == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/////////////
+	// SETTERS //
+	/////////////
 	
 	/** Set a key-value pair.
 	 * If a pair exists, overwrite
@@ -104,8 +127,10 @@ public class Dict extends Obj {
 	
 	@Override
 	public Obj deepcopy() {
-		// TODO: Decide how to perform a deepcopy
-		return this;
+		// deep copy only the vars, not the metatable
+		Dict d = new Dict(_vars.clone());
+		d.setMetaTable(_meta);
+		return d;
 	}
 
 	@Override

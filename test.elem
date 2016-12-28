@@ -123,8 +123,9 @@
 assert
 [6]
 
-
-
+{{, {x y, {, x:x; y:y;} {, 3:z} MO }:new }:t; 3 4 t!:ta; ta.x ta.y ta.z}
+assert
+[3 4 3]
 
 
 

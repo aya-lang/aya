@@ -20,13 +20,17 @@ public class DictFactory {
 		Element.getInstance().getVars().add(module);
 		
 		//Run the block
-		b.eval();
+		b.duplicate().eval();
 		
 		//Retrieve the variableSet
 		module = Element.getInstance().getVars().popGet();
 		
 		//Create a new dict using the assignments from the variable set
 		return new Dict(module);
-		
+	}
+	
+	@Override
+	public String toString() {
+		return b.toString();
 	}
 }
