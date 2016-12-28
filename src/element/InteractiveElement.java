@@ -8,7 +8,7 @@ import element.exceptions.SyntaxError;
 import element.infix.Compiler;
 import element.obj.block.Block;
 import element.parser.Parser;
-import element.test.ElementTestCases;
+import test.ElementTestCases;
 
 public class InteractiveElement {
 		

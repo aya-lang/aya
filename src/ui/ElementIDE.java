@@ -23,8 +23,8 @@ import javax.swing.JPanel;
 
 import element.Element;
 import element.InteractiveElement;
-import element.test.ElementTestCases;
 import element.variable.Variable;
+import test.ElementTestCases;
 
 
 @SuppressWarnings("serial")
