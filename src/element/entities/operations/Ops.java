@@ -28,12 +28,12 @@ import org.apfloat.Apfloat;
 
 import element.ElemPrefs;
 import element.Element;
-import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.Operation;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.list.List;
 import element.obj.list.ObjList;

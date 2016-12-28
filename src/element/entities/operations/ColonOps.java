@@ -5,12 +5,12 @@ import static element.obj.Obj.LIST;
 
 import java.util.ArrayList;
 
-import element.entities.Block;
 import element.entities.Operation;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.obj.list.List;
 import element.obj.number.Number;
 

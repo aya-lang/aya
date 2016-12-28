@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.Scanner;
 
 import element.Element;
-import element.entities.Block;
 import element.entities.InstructionStack;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
 import element.parser.CharacterParser;
 import element.parser.ParserString;
 import element.variable.Variable;

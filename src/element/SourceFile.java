@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 
-import element.entities.Block;
+import element.obj.block.Block;
 import element.parser.Parser;
 
 /**

@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import element.Element;
-import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.Operation;
 import element.entities.operations.ColonOps;
 import element.entities.operations.Ops;
 import element.exceptions.EndOfInputError;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
 import element.obj.dict.KeyVariable;
 import element.parser.token.TokenQueue;
 import element.parser.token.TokenStack;

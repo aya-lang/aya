@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import element.Element;
-import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.operations.Ops;
+import element.obj.block.Block;
 import element.parser.Parser;
 import element.variable.Variable;
 

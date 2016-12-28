@@ -1,7 +1,7 @@
 package element.obj.dict;
 
 import element.Element;
-import element.entities.Block;
+import element.obj.block.Block;
 import element.variable.VariableSet;
 
 public class DictFactory {

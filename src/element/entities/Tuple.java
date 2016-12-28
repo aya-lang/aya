@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 
 import element.obj.Obj;
+import element.obj.block.Block;
 
 public class Tuple {	
 	Block[] elements;

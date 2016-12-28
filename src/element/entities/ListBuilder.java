@@ -7,6 +7,7 @@ import org.apfloat.Apfloat;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.list.List;
 import element.obj.list.ObjList;

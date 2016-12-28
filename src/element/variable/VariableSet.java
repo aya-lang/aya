@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import element.entities.Block;
 import element.exceptions.TypeError;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.util.Pair;
 
 public class VariableSet {

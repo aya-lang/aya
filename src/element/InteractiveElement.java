@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import element.entities.Block;
 import element.exceptions.SyntaxError;
 import element.infix.Compiler;
+import element.obj.block.Block;
 import element.parser.Parser;
 import element.test.ElementTestCases;
 

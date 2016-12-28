@@ -2,10 +2,10 @@ package element.parser.tokens;
 
 import java.util.ArrayList;
 
-import element.entities.Block;
 import element.entities.Flag;
 import element.exceptions.SyntaxError;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.obj.dict.DictFactory;
 import element.obj.number.Num;
 import element.parser.Parser;

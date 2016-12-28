@@ -1,6 +1,7 @@
 package element.entities;
 
 import element.Element;
+import element.obj.block.Block;
 import element.obj.list.Str;
 import element.variable.Variable;
 

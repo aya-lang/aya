@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.regex.PatternSyntaxException;
 
-import element.entities.Block;
 import element.entities.operations.ColonOps;
 import element.entities.operations.DotOps;
 import element.entities.operations.MathOps;
@@ -17,6 +16,7 @@ import element.exceptions.ElementRuntimeException;
 import element.exceptions.ElementUserRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
+import element.obj.block.Block;
 import element.parser.CharacterParser;
 import element.parser.Parser;
 import element.util.StringSearch;

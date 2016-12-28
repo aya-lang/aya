@@ -1,10 +1,10 @@
 package element.parser.tokens;
 
 import element.Element;
-import element.entities.Block;
 import element.entities.InstructionStack;
 import element.entities.InterpolateString;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
 import element.obj.list.Str;
 import element.parser.Parser;
 import element.parser.ParserString;

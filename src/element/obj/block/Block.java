@@ -1,4 +1,4 @@
-package element.entities;
+package element.obj.block;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,6 +7,14 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import element.Element;
+import element.entities.Flag;
+import element.entities.InstructionStack;
+import element.entities.InterpolateString;
+import element.entities.Lambda;
+import element.entities.ListBuilder;
+import element.entities.ListLiteral;
+import element.entities.Operation;
+import element.entities.Tuple;
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 import element.obj.dict.Dict;
