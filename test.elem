@@ -94,3 +94,15 @@
 .# String
 
 {"abcde"!} assert ["edcba"]
+
+.# Argument Types
+{1  {sN,s} ~} assert [1]
+{1  {sD,s} ~} assert [1]
+{1Z {sF,s} ~} assert [1Z]
+{[] {sL,s} ~} assert [[]]
+{"" {sL,s} ~} assert [""]
+{"" {sS,s} ~} assert [""]
+{"hi" {sS,s} ~} assert ["hi"]
+{"hi" {sL,s} ~} assert ["hi"]
+{'C {sC,s} ~} assert ['C]
+

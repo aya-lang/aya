@@ -77,6 +77,7 @@ public abstract class Obj {
 			case 'L': return LIST;
 			case 'S': return STR;
 			case 'N': return NUMBER;
+			case 'C': return CHAR;
 			//case 'A': return ANY;
 			//case 'M': return MODULE;
 			//case 'U': return USER_OBJ;
