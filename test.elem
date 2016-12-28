@@ -128,7 +128,8 @@ assert
 [3 4 3]
 
 
-
+.# Operator Overloads
+{ {,} {,{self, 2}:dollar;} MO $} assert [2]
 
 
 
