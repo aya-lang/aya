@@ -1,6 +1,7 @@
 package element.obj.list;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import element.obj.Obj;
 import element.obj.list.numberlist.NumberList;
@@ -56,7 +57,7 @@ public abstract class List extends Obj {
 	 * </code>
 	 */
 	public abstract List slice(int i, int j);
-	
+		
 	/** Get the 0-indexed item from the stack */
 	public abstract Obj get(int i);
 	
@@ -85,6 +86,7 @@ public abstract class List extends Obj {
 	public abstract void addAll(List l);
 	
 	public abstract NumberList toNumberList();
+
 	
 	
 }
