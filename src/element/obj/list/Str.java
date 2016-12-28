@@ -1,10 +1,14 @@
 package element.obj.list;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 import element.obj.character.Char;
+import element.obj.list.numberlist.NumberItemList;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class Str extends List implements Comparable<Str> {
 	
@@ -18,11 +22,17 @@ public class Str extends List implements Comparable<Str> {
 		_str = s;
 	}
 	
+	/** Create a new string by repeating c n times */
+	public Str(char c, int repeats) {
+		_str = repeat(c, repeats);
+	}
 	
 	///////////////////////
 	// STRING OPERATIONS //
 	///////////////////////
 	
+	
+
 	/** Trim whitespace from a string */
 	public Str trim() {
 		return new Str(_str.trim());
@@ -175,6 +185,63 @@ public class Str extends List implements Comparable<Str> {
 			throw new ElementRuntimeException("Cannot set item " + o.repr() + " in string " + this.repr() + ". Item must be a char.");
 		}
 	}
+	
+	@Override
+	public ArrayList<Obj> getObjAL() {
+		ArrayList<Obj> l = new ArrayList<Obj>(_str.length());
+		char[] chars = _str.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			l.add(Char.valueOf(chars[i]));
+		}
+		return l;
+	}
+
+	@Override
+	public NumberItemList toNumberList() {
+		char[] chars = _str.toCharArray();
+		ArrayList<Number> nums = new ArrayList<Number>(chars.length);
+		for (char c : chars) {
+			nums.add(new Num(c));
+		}
+		return new NumberItemList(nums);
+	}
+	
+	
+
+	@Override
+	public void add(Obj o) {
+		if (o.isa(Obj.CHAR)) {
+			_str += ((Char)o).charValue();
+		} else {
+			throw new ElementRuntimeException("Cannot append " + o.repr() + " to string " + repr()
+					+ ". Use + to convert to string and concat or convert string to a generic list");
+		}
+	}
+	
+	@Override
+	public void add(int i, Obj o) {
+		if (o.isa(Obj.CHAR)) {
+			i = List.index(i, _str.length());
+			// If 0, just append to front
+			if (i == 0) {
+				_str = ((Char)o) + _str;
+			} else {
+				_str = new StringBuilder(_str).insert(i, ((Char)o).charValue()).toString();
+			}
+		} else {
+			throw new ElementRuntimeException("Cannot append " + o.repr() + " to string " + repr()
+					+ ". Use + to convert to string and concat or convert string to a generic list");
+		}
+	}
+
+	@Override
+	public void addAll(List l) {
+		for (int i = 0; i < l.length(); i++) {
+			add(l.get(i));
+		}
+	}
+
+
 
 	
 	
@@ -242,6 +309,7 @@ public class Str extends List implements Comparable<Str> {
 		return new String(cs);
 	}
 
+	
 
 
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
+import element.obj.character.Char;
 import element.obj.list.List;
 import element.obj.number.Num;
 import element.obj.number.Number;
@@ -15,6 +16,14 @@ public class NumberItemList extends NumberList {
 	
 	public NumberItemList(ArrayList<Number> list) {
 		_list = list;
+	}
+	
+	/** Create a new numeric list by repeating item, repeats times */
+	public NumberItemList(Number item, int repeats) {
+		_list = new ArrayList<Number>(repeats);
+		for (int i = 0; i < repeats; i++) {
+			_list.add(item);
+		}
 	}
 
 	@Override
@@ -396,6 +405,48 @@ public class NumberItemList extends NumberList {
 		}
 	}
 	
+	@Override
+	public ArrayList<Obj> getObjAL() {
+		ArrayList<Obj> l = new ArrayList<Obj>(_list.size());
+		for (Number number : _list) {
+			l.add(number);
+		}
+		return l;
+	}
+	
+	
+	@Override
+	public NumberItemList toNumberList() {
+		return this;
+	}
+
+	@Override
+	public void add(Obj o) {
+		if (o.isa(Obj.NUMBER)) {
+			_list.add((Number)o);
+		} else {
+			throw new ElementRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
+					+ ". Use convert list to a generic list to add the item");
+		}
+	}
+	
+	@Override
+	public void add(int i, Obj o) {
+		if (o.isa(Obj.NUMBER)) {
+			_list.add(List.index(i, _list.size()) , (Number)o);
+		} else {
+			throw new ElementRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
+					+ ". Use convert list to a generic list to add the item");
+		}
+	}
+
+	@Override
+	public void addAll(List l) {
+		for (int i = 0; i < l.length(); i++) {
+			add(l.get(i));
+		}
+	}
+	
 	
 	
 	///////////////////
@@ -457,18 +508,13 @@ public class NumberItemList extends NumberList {
 		return type == Obj.LIST || type == Obj.NUMBERLIST || type == Obj.NUMBERITEMLIST;
 	}
 
-	
-	
-	
-	
-	////////////////////
-	// HELPER METHODS //
-	////////////////////
-	
 	@Override
 	public byte type() {
 		return Obj.NUMBERITEMLIST;
 	}
+
+
+
 
 
 

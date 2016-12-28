@@ -1,6 +1,9 @@
 package element.obj.list;
 
+import java.util.ArrayList;
+
 import element.obj.Obj;
+import element.obj.list.numberlist.NumberList;
 
 public abstract class List extends Obj {
 	
@@ -66,11 +69,22 @@ public abstract class List extends Obj {
 	/** Return the number of occurrences of Obj in the list */
 	public abstract int count(Obj o);
 	
+	/** Return the underlying Obj ArrayList */
+	public abstract ArrayList<Obj> getObjAL();
+	
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////
 	
 	public abstract void set(int i, Obj o);
+	
+	public abstract void add(Obj o);
+	
+	public abstract void add(int i, Obj o);
+	
+	public abstract void addAll(List l);
+	
+	public abstract NumberList toNumberList();
 	
 	
 }

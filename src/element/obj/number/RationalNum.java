@@ -7,6 +7,8 @@ import element.obj.Obj;
 
 public class RationalNum extends Number {
 	
+	public static final RationalNum ONE = new RationalNum(1L, 1L);
+	
 	long _num;
 	long _den;
 	
@@ -205,6 +207,16 @@ public class RationalNum extends Number {
 	public Number negate() {
 		return new RationalNum(-_num, _den);
 	}
+	
+	@Override
+	public Number inc() {
+		return this.r_add(ONE);
+	}
+
+	@Override
+	public Number dec() {
+		return this.r_sub(ONE);
+	}
 
 	@Override
 	public Number bnot() {
@@ -384,5 +396,7 @@ public class RationalNum extends Number {
 	RationalNum r_div(RationalNum n) {
 		return new RationalNum(_num * n._den, _den * n._num);
 	}
+
+
 
 }

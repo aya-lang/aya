@@ -22,11 +22,23 @@ public class ObjList extends List {
 		_nums = 0;
 		
 		for (Obj o : _list) {
-			if (o.isa(Obj.CHAR)) {
-				_chars++;
-			} else if (o.isa(Obj.NUMBER)) {
-				_nums++;
-			}
+			incCharNumCounter(o);
+		}
+	}
+	
+	/** Create a new numeric list by repeating item, repeats times. 
+	 * Uses deepcopy() to copy the items into the list 
+	 */
+	public ObjList(Obj item, int repeats) {
+		_list = new ArrayList<Obj>(repeats);
+		for (int i = 0; i < repeats; i++) {
+			_list.add(item.deepcopy());
+		}
+		
+		if (item.isa(Obj.CHAR)) {
+			_chars = repeats;
+		} else if (item.isa(NUMBER)) {
+			_nums = repeats;
 		}
 	}
 	
@@ -50,10 +62,14 @@ public class ObjList extends List {
 		return new Str(new String(cs));
 	}
 	
-	private NumberItemList asNumericList() {
+	public NumberItemList toNumberList() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add((Number)(_list.get(i)));
+			if (_list.get(i).isa(Obj.NUMBER)) {
+				throw new ElementRuntimeException("Cannot convert list " + repr() + " to a numeric list.");
+			} else {
+				out.add((Number)(_list.get(i)));
+			}
 		}
 		return new NumberItemList(out);
 	}
@@ -68,7 +84,7 @@ public class ObjList extends List {
 		if (isStr()) {
 			return asStr();
 		} else if (isNumericList()) {
-			return asNumericList();
+			return toNumberList();
 		} else {
 			return this;
 		}
@@ -134,12 +150,16 @@ public class ObjList extends List {
 
 	@Override
 	public Obj pop() {
-		return _list.remove(0);
+		final Obj o = _list.remove(0);
+		decCharNumCounter(o);
+		return o;
 	}
 
 	@Override
 	public Obj popBack() {
-		return _list.remove(_list.size()-1);
+		final Obj o = _list.remove(_list.size()-1);
+		decCharNumCounter(o);
+		return o;
 	}
 
 	@Override
@@ -203,8 +223,41 @@ public class ObjList extends List {
 
 	@Override
 	public void set(int i, Obj o) {
+		// Decrement the _char / _num counter
+		Obj old = _list.get(List.index(i, _list.size()));
+		decCharNumCounter(old);
+		
+		// Increment the _char / _num counter
+		incCharNumCounter(o);
+		
 		_list.set(List.index(i, _list.size()), o);
 	}
+	
+	@Override
+	public ArrayList<Obj> getObjAL() {
+		return _list;
+	}
+	
+	@Override
+	public void add(Obj o) {
+		incCharNumCounter(o);
+		_list.add(o);
+	}
+	
+	@Override
+	public void add(int i, Obj o) {
+		incCharNumCounter(o);
+		_list.add(List.index(i, _list.size()), o);
+	}
+
+	@Override
+	public void addAll(List l) {
+		for (int i = 0; i < l.length(); i++) {
+			incCharNumCounter(l.get(i));
+			_list.add(_list.get(i));
+		}
+	}
+
 	
 	
 	///////////////////
@@ -272,5 +325,24 @@ public class ObjList extends List {
 	}
 
 
+	////////////////////
+	// HELPER METHODS //
+	////////////////////
+	
+	private void incCharNumCounter(Obj o) {
+		if (o.isa(Obj.CHAR)) {
+			_chars += 1;
+		} else if (o.isa(NUMBER)) {
+			_nums += 1;
+		}
+	}
+	
+	private void decCharNumCounter(Obj o) {
+		if (o.isa(Obj.CHAR)) {
+			_chars += 1;
+		} else if (o.isa(NUMBER)) {
+			_nums += 1;
+		}
+	}
 
 }

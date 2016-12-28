@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import org.apfloat.Apfloat;
-import org.jfree.chart.util.HexNumberFormat;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 import element.obj.character.Char;
-import element.obj.number.BigNum;
-import element.obj.number.Num;
-import element.obj.number.Number;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
-
-// TODO: Optimize this class to work bett6er with the new classes
+import element.obj.number.BigNum;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class ListBuilder {
 	
@@ -99,7 +96,7 @@ public class ListBuilder {
 			outList = new ObjList(list).promote();
 			
 		} else {
-			outList = buildRange(res);							//Create the initial range
+			outList = buildRange(new ObjList(res));							//Create the initial range
 			if(map != null) {
 				outList = this.map.mapTo(outList);				//Map 'map' to the list
 			}
@@ -135,9 +132,9 @@ public class ListBuilder {
 		}
 	}
 	
-	public static List buildRange(ArrayList<Obj> args) {
+	public static List buildRange(List args) {
 		
-		switch(args.size()) {
+		switch(args.length()) {
 		
 		//List range has one argument
 		case 1:
@@ -154,7 +151,7 @@ public class ListBuilder {
 			case Obj.LIST:
 				return (List)o;
 			default:
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));	
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
 			}
 
 		//List range has 2 arguments
@@ -179,7 +176,7 @@ public class ListBuilder {
 					}
 					return arrToAL(doubleRange(lo,hi,inc));
 				} else {
-					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
+					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 				}
 			} else if (a.isa(Obj.CHAR) && b.isa(Obj.CHAR)) {
 				char lo = ((Char)a).charValue();
@@ -190,7 +187,7 @@ public class ListBuilder {
 				}
 				return arrToAL(charRange(lo,hi,inc));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 			}
 			
 		//List range has 3 arguments
@@ -207,12 +204,12 @@ public class ListBuilder {
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return arrToAL(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
+				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 			}
 		
 		//List range has 3 or more arguments
 		default:
-			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + (new ObjList(args).repr()));
+			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 		}
 	}
 	

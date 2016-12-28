@@ -1,6 +1,9 @@
 package element.entities.operations;
 
 import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.NUM;
+import static element.obj.Obj.BIGNUM;
+import static element.obj.Obj.NUMBERLIST;
 import static element.obj.Obj.LIST;
 import static element.obj.Obj.STR;
 import static element.obj.Obj.BLOCK;
@@ -37,6 +40,8 @@ import element.obj.character.Char;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
+import element.obj.list.numberlist.NumberItemList;
+import element.obj.list.numberlist.NumberList;
 import element.obj.number.Number;
 import element.obj.number.BigNum;
 import element.obj.number.Num;
@@ -765,26 +770,26 @@ class OP_Conditional extends Operation {
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
-		Obj c = block.pop();
+		final Obj c = block.pop();
+		//   c      b     a
+		//{true} {false} cond
 		
-		if(isBool(a)) {
-			//   c      b     a
-			//{true} {false} cond
-			
-			if(toBool(a)) {
-				//if the condition is false, use the second block
-				c = b;
-			}
-			
-			if(isBlock(c)) {
-				block.addAll(toBlock(c).duplicate().getInstructions().getInstrucionList());
+		
+		if(a.bool()) {			
+			if(c.isa(BLOCK)) {
+				block.addAll(((Block)c).duplicate().getInstructions().getInstrucionList());
 			} else {
 				block.push(c);
 			}
-			return;
-		} 
+		} else {
+			if(b.isa(BLOCK)) {
+				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
+			} else {
+				block.push(b);
+			}
+		}
 		
-		throw new TypeError(this, a,b,c);
+		//throw new TypeError(this, a,b,c);
 	}
 }
 
@@ -815,9 +820,9 @@ class OP_A extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
-		final ArrayList<Object> al = new ArrayList<Object>();
+		final ArrayList<Obj> al = new ArrayList<Obj>();
 		al.add(block.pop());
-		block.push(al);
+		block.push(new ObjList(al));
 	}
 }
 
@@ -833,14 +838,19 @@ class OP_B extends Operation {
 		Obj a = block.pop();
 		
 		if (a.isa(Obj.NUMBER)) {
-			block.push(NumMath.add((Number)(a), new Num(1)));
-		} else if (isChar(a)) {
-			block.push(toChar(a) + 1);
+			block.push( ((Number)a).inc() );
+		} else if (a.isa(CHAR)) {
+			block.push( ((Char)a).inc() );
 		} else if (a.isa(LIST)) {
-			ArrayList<Object> l = toList(a);
-			Object popped = l.remove(l.size()-1);
-			block.push(l.clone()); //Keep list on stack
+			//ArrayList<Object> l = toList(a);
+			//Object popped = l.remove(l.size()-1);
+			//block.push(l.clone()); //Keep list on stack
+			//block.push(popped);
+			List l = (List)a;
+			Obj popped = l.pop();
+			block.push(l);
 			block.push(popped);
+			
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -859,11 +869,13 @@ class OP_D extends Operation {
 		Obj b = block.pop();			//List
 		final Obj o = block.pop();	//Item
 		
-		if(a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			toList(b).set((Number)(a).toIndex(length(b)), o);
-		} else if (isUserObject(b)) {
-			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, a);
-		} else {		
+		if(a.isa(NUMBER) && b.isa(LIST)) {
+			((List)b).set( ((Number)a).toInt(), o);
+		}
+//		else if (isUserObject(b)) {
+//			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, a);
+//		} 
+		else {		
 			throw new TypeError(this, a, b, o);
 		}
 		
@@ -880,13 +892,15 @@ class OP_E extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		Obj n = block.pop();
-		if (isNumeric(n)) {
-			block.push(NumMath.pow(new Num(10), toNumeric(n)));
-		} else if (isList(n)) {
-			block.push(new Num(length(n)));
-		} else if (isUserObject(n)) {
-			toUserObject(n).callVariable(block, Ops.MV_LEN);
-		} else {
+		if (n.isa(NUMBER)) {
+			block.push( new Num(10).pow((Number)n) );
+		} else if (n.isa(LIST)) {
+			block.push( new Num(((List)n).length()) );
+		} 
+//		else if (isUserObject(n)) {
+//			toUserObject(n).callVariable(block, Ops.MV_LEN);
+//		}
+		else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -906,9 +920,8 @@ class OP_G extends Operation {
 		final Obj a = block.pop();
 		
 		
-		
-		if(a.isa(Obj.STR)) {
-			String name = getString(a);
+		if(a.isa(STR)) {
+			String name = a.str();
 			
 			if(Ops.PATTERN_URL.matcher(name).matches()) {
 				Scanner scnr = null;
@@ -920,7 +933,7 @@ class OP_G extends Operation {
 					while(scnr.hasNext()) {
 						sb.append(scnr.nextLine()).append('\n');
 					}
-					block.push(sb.toString());
+					block.push(new Str(sb.toString()));
 				}
 				catch(IOException ex) {
 					throw new ElementRuntimeException("Cannot read URL: " + name);
@@ -944,7 +957,7 @@ class OP_G extends Operation {
 					while((line = br.readLine()) != null) {
 						sb.append(line+'\n');
 					}
-					block.push(sb.toString());
+					block.push( new Str(sb.toString()) );
 				} catch (IOException e) {
 					throw new ElementRuntimeException("Cannot open file: " + file.getAbsolutePath());
 				} finally {
@@ -957,8 +970,8 @@ class OP_G extends Operation {
 				}
 			}
 			return;
-		} else if (a.isa(Obj.NUMBER)) {
-			block.push((Number)(a).isPrime());
+		} else if (a.isa(NUMBER)) {
+			block.push( new Num(((Number)a).isPrime()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -972,14 +985,14 @@ class OP_H extends Operation {
 		this.argTypes = "SII|NII";
 	}
 	@Override public void execute (final Block block) {
-		final Object to_b = block.pop();
-		final Object from_b = block.pop();
-		final Object num = block.pop();
+		final Obj to_b = block.pop();
+		final Obj from_b = block.pop();
+		final Obj num = block.pop();
 		
 		try {
-			if (bothNumeric(from_b, to_b)) {
-				int from_base = toNumeric(from_b).toInt();
-				int to_base = toNumeric(to_b).toInt();
+			if (from_b.isa(NUMBER) && to_b.isa(NUMBER)) {
+				int from_base = ((Number)from_b).toInt();
+				int to_base = ((Number)to_b).toInt();
 				BigInteger out_bi;
 				
 				//Check Radix Ranges
@@ -991,23 +1004,23 @@ class OP_H extends Operation {
 				}
 				
 				//String
-				if(isString(num)) {
-					out_bi  = new BigInteger(getString(num), from_base);
+				if(num.isa(STR)) {
+					out_bi  = new BigInteger(num.str(), from_base);
 					
 				}
 				
 				//Always base ten
-				else if(isNumeric(num)) {
-					out_bi = toNumeric(num).toApfloat().floor().toBigInteger();
+				else if(num.isa(NUMBER)) {
+					out_bi = ((Number)num).toApfloat().floor().toBigInteger();
 				} 
 				
 				//Assume base 2
-				else if (isList(num)) {
-					ArrayList<Object> bin_list = toList(num);
-					StringBuilder sb = new StringBuilder(bin_list.size());
+				else if (num.isa(NUMBERLIST)) {
+					NumberList bin_list = ((NumberList)num);
+					StringBuilder sb = new StringBuilder(bin_list.length());
 	
-						for (Object o : bin_list) {
-							int c = toNumeric(o).toInt();
+						for (int i = 0; i < bin_list.length(); i++) {
+							int c = bin_list.get(i).toInt();
 							//Check for binary only
 							if (c == 1 || c == 0) {
 								sb.append(c);
@@ -1038,22 +1051,22 @@ class OP_H extends Operation {
 					return;
 				} else if (to_base == 2) {
 					String bin_str = out_bi.toString(2);
-					ArrayList<Object> out_list = new ArrayList<Object>(bin_str.length());
+					ArrayList<Number> out_list = new ArrayList<Number>(bin_str.length());
 					
 					for (char c : bin_str.toCharArray()) {
 						out_list.add(new Num(c-'0'));
 					}
-					block.push(out_list);
+					block.push(new NumberItemList(out_list));
 					return;
 				} else {
-					block.push(out_bi.toString(to_base));
+					block.push(new Str(out_bi.toString(to_base)));
 					return;
 				}
 			}
 		}
 		catch (NumberFormatException nfe) {
 			throw new ElementRuntimeException("H: invalid number format (" 
-					+ castString(num) + ", " + castString(from_b) + ", " + castString(to_b) + ")");
+					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
 		}
 		
 		
@@ -1070,35 +1083,31 @@ class OP_I extends Operation {
 		this.argTypes = "LL|LI|LE";
 	}
 	@Override public void execute (final Block block) {
-		Object index = block.pop();
-		final Object list = block.pop();
+		Obj index = block.pop();
+		final Obj list = block.pop();
 		
-		if (isUserObject(list)) {
-			toUserObject(list).callVariable(block, Ops.MV_INDEX, index);
-			return;
-		}
+//		if (isUserObject(list)) {
+//			toUserObject(list).callVariable(block, Ops.MV_INDEX, index);
+//			return;
+//		}
 		
 		//Normal list execution
 		
-		if(!isList(list)) {
+		if(!list.isa(LIST)) {
 			throw new TypeError(this, index, list);
 		}
 		
-		if(isNumeric(index)) {
-			block.push(toList(list).get(toNumeric(index).toIndex(length(list))));
-		} else if (isList(index)) {
-			ArrayList<Object> indexList = toList(index);
-			ArrayList<Object> refList = toList(list);
-			for(int i = 0; i < length(index); i++) {
-				if(isNumeric(indexList.get(i))) {
-					indexList.set(i, refList.get(toNumeric(indexList.get(i)).toIndex(refList.size())));
-				} else {
-					throw new TypeError("I", "list of ints", indexList);
-				}
+		if(index.isa(NUMBER)) {
+			block.push( ((List)list).get(((Number)index).toInt()) );
+		} else if (index.isa(NUMBERLIST)) {
+			NumberList indexList = ((List)index).toNumberList();
+			List refList = (List)list;
+			for(int i = 0; i < indexList.length(); i++) {
+				indexList.set( i, refList.get(indexList.get(i).toInt()) );
 			}
 			block.push(indexList);
-		} else if (isBlock(index)) {
-			block.push(toBlock(index).filter(toList(list)));
+		} else if (index.isa(BLOCK)) {
+			block.push( ((Block)index).filter((List)list) );
 		} else {
 			throw new TypeError(this, index, list);
 		}
@@ -1115,22 +1124,30 @@ class OP_L extends Operation {
 	@Override public void execute (final Block block) {
 		Obj n = block.pop();
 		Obj item = block.pop();
-		if(isNumeric(n)) {
-			int repeats = toNumeric(n).toInt();
+		if(n.isa(NUMBER)) {
+			int repeats = ((Number)n).toInt();
 			if(repeats < 0) {
 				throw new ElementRuntimeException("Cannot create list with negative number of elements");
 			}
-			ArrayList<Object> list = new ArrayList<Object>(repeats);
-			if(isList(item)) {
-				for(int i = 0; i < repeats; i++) {
-					list.add(toList(item).clone());
-				}				
+//			ArrayList<Object> list = new ArrayList<Object>(repeats);
+//			if(isList(item)) {
+//				for(int i = 0; i < repeats; i++) {
+//					list.add(toList(item).clone());
+//				}				
+//			} else {
+//				for(int i = 0; i < repeats; i++) {
+//					list.add(item);
+//				}
+//			}
+			
+			if (item.isa(CHAR)) {
+				block.push( new Str( ((Char)item).charValue(), repeats) );
+			} else if (item.isa(NUMBER)) {
+				block.push( new NumberItemList((Number)item, repeats) );
 			} else {
-				for(int i = 0; i < repeats; i++) {
-					list.add(item);
-				}
+				block.push( new ObjList(item, repeats) );
 			}
-			block.push(list);
+
 		} else {
 			throw new TypeError(this, n , item);
 		}
@@ -1147,34 +1164,48 @@ class OP_K extends Operation {
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
-		int a_type = getTypeID(a);
-		int b_type = getTypeID(b);
+		//int a_type = getTypeID(a);
+		//int b_type = getTypeID(b);
 		
 		// Zero length list is a string, we want it to behave as a list
-		if(a_type == STRING && length(a)==0) {a_type = LIST;}
-		if(b_type == STRING && length(b)==0) {b_type = LIST;}
+		//if(a.isa(STR) && ((Str)a).length() == 0 ) {a_type = LIST;}
+		//if(b.isa(STR) && ((Str)b).length() == 0 ) {b_type = LIST;}
 		
-		if ((a_type == LIST && b_type == LIST) || (a_type == STRING && b_type == STRING)) {
-			final ArrayList<Object> bl = toList(b);
-			bl.addAll(toList(a));
-			block.push(bl);
-			return;
-		} else if (a_type == LIST || a_type == STRING){//&& !a.isa(Obj.STR)) {
-			final ArrayList<Object> al = toList(a);
-			al.add(0,b);
-			block.push(al);
-			return;
-		} else if (b_type == LIST || b_type == STRING){//&& !b.isa(Obj.STR)) {
-			final ArrayList<Object> bl = toList(b);
-			bl.add(a);
-			block.push(bl);
-			return;
+		if (a.isa(LIST) && b.isa(LIST)) {
+			//final ArrayList<Object> bl = toList(b);
+			//bl.addAll(toList(a));
+			
+			((List)b).addAll((List)a);
+			block.push(b);
+			
+		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {
+			//final ArrayList<Object> al = toList(a);
+			//al.add(0,b);
+			//block.push(al);
+			
+			((List)a).add(0, b);
+			block.push(a);
+			
+		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
+//			final ArrayList<Object> bl = toList(b);
+//			bl.add(a);
+//			block.push(bl);
+			
+			((List)b).add(a);
+			block.push(b);
+			
 		} else {
-			final ArrayList<Object> list = new ArrayList<Object>(2);
-			list.add(b);	//Stack - Add in reverse order
+			
+//			final ArrayList<Object> list = new ArrayList<Object>(2);
+//			list.add(b);	//Stack - Add in reverse order
+//			list.add(a);
+//			block.push(list);
+//			return;
+			
+			final ArrayList<Obj> list = new ArrayList<Obj>();
+			list.add(b);  //Stack - Add in reverse order
 			list.add(a);
-			block.push(list);
-			return;
+			block.push(new ObjList(list).promote());
 		}
 	}
 }
@@ -1194,15 +1225,18 @@ class OP_N extends Operation {
 		if(b.isa(Obj.LIST)) {
 			
 			block.push(b);
+			
+			List l = (List)b;
+			block.push(new Num(l.find(a)));
 
-			for (Object o : toList(b)) {
-				if (areEqual(o, a)) {
-					block.push(new Num(index));
-					return;
-				}
-				index++;
-			}
-			block.push(new Num(-1));
+//			for (Object o : toList(b)) {
+//				if (areEqual(o, a)) {
+//					block.push(new Num(index));
+//					return;
+//				}
+//				index++;
+//			}
+//			block.push(new Num(-1));
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1217,7 +1251,7 @@ class OP_P extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
-		block.push(castString(block.pop()));
+		block.push(new Str(block.pop().str()));
 	}
 }
 
@@ -1232,7 +1266,7 @@ class OP_Q extends Operation {
 		final Obj a = block.pop();
 		
 		if(a.isa(Obj.NUMBER)) {
-			int i = (Number)(a).toInt();
+			int i = ((Number)a).toInt();
 			if (i > 0) {
 				block.push(new Num(Ops.RAND.nextInt(i)));
 			} else if (i < 0) {
@@ -1240,13 +1274,15 @@ class OP_Q extends Operation {
 			} else {
 				block.push(new Num(Ops.RAND.nextInt()));
 			}
-		} else if (isUserObject(a)) {
-			toUserObject(a).callVariable(block, Ops.MV_RANDCHOICE);
-		} else if (a.isa(LIST)) {
-			ArrayList<Object> list = toList(a);
-			int ix = Ops.RAND.nextInt(list.size());
-			block.push(toList(a).get(ix));
-		} else {
+		}
+//		else if (isUserObject(a)) {
+//			toUserObject(a).callVariable(block, Ops.MV_RANDCHOICE);
+//		} else if (a.isa(LIST)) {
+//			ArrayList<Object> list = toList(a);
+//			int ix = Ops.RAND.nextInt(list.size());
+//			block.push(toList(a).get(ix));
+//		}
+		else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -1262,13 +1298,13 @@ class OP_R extends Operation {
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
 		if(a.isa(LIST)) {
-			block.push(ListBuilder.buildRange(toList(a)));
-		} else if (isNum(a)) {
-			block.push(ListBuilder.buildRange(toNum(a)));
-		} else if (isBigNum(a)) {
-			block.push(ListBuilder.buildRange(toBigNum(a)));
-		} else if (isChar(a)) {
-			block.push(ListBuilder.buildRange(toChar(a)));
+			block.push( ListBuilder.buildRange((List)a) );
+		} else if (a.isa(NUM)) {
+			block.push(ListBuilder.buildRange((Num)a));
+		} else if (a.isa(BIGNUM)) {
+			block.push(ListBuilder.buildRange((BigNum)a));
+		} else if (a.isa(CHAR)) {
+			block.push(ListBuilder.buildRange(((Char)a).charValue()));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1284,22 +1320,46 @@ class OP_S extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
-		if(a.isa(LIST)) {
-			Object[] list = toList(a).toArray(new Object[length(a)]);
-			if(list.length == 0) {
-				block.push(0);
-				return;
+		
+		if (a.isa(LIST)) {
+			
+			// Attempt to promote the list
+			List l = (List)a;
+			if (l.isa(Obj.OBJLIST)) {
+				l = ((ObjList)l).promote();
 			}
-			//Push all but the last item
-			for(int i = list.length-1; i > 0; i--) {
-				block.add(Ops.getOp('+'));
-				block.add(list[i]);
+			
+			//Using the new Promoted list, use Str, NumberList, or ObjList
+			if (l.isa(STR)) {
+				char total = 0;
+				char[] chars = ((Str)l).str().toCharArray();
+				for (char c : chars) {
+					total += c;
+				}
+				block.push(Char.valueOf(total));
 			}
-			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-			block.add(list[0]); 
-			return;		
+			else if(l.isa(NUMBERLIST)) {
+				block.push( ((NumberList)l).sum() );
+			} 
+			else {
+				
+				// If a normal list, fold using '+'
+				Obj[] list = l.getObjAL().toArray(new Obj[l.length()]);
+				if(list.length == 0) {
+					block.push(Num.ZERO);
+					return;
+				}
+				//Push all but the last item
+				for(int i = list.length-1; i > 0; i--) {
+					block.add(Ops.getOp('+'));
+					block.add(list[i]);
+				}
+				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+				block.add(list[0]); 
+			}
+		} else {
+			throw new TypeError(this, a);
 		}
-		throw new TypeError(this, a);
 	}
 }
 
@@ -1318,25 +1378,26 @@ class OP_U extends Operation {
 		Obj b = block.pop();
 		
 		
-		if(a.isa(Obj.BLOCK) && b.isa(Obj.LIST)) {
-			int length = length(b);
+		if(a.isa(BLOCK) && b.isa(LIST)) {
+			List blist = (List)b;
+			
+			int length = blist.length();
 			if(length == 0) {
-				block.push(0);
+				block.push(Num.ZERO);
 				return;
 			}
 			
 			Block foldBlock = ((Block)(a));
-			ArrayList<Object> list = toList(b);
 			
 			//Push all but the last item
 			//for(int i = 0; i < list.size()-1; i++) {
 			for(int i = length-1; i > 0; i--) {
 				block.addAll(foldBlock.getInstructions().getInstrucionList());
-				block.add(list.get(i));
+				block.add(blist.get(i));
 			}
 			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
 			//block.add(list.get(list.size()-1));
-			block.add(list.get(0));
+			block.add(blist.get(0));
 			return;
 		}
 			

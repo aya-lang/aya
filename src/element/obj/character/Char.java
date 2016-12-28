@@ -100,6 +100,14 @@ public class Char extends Obj implements Comparable<Char> {
 	////////////////
 	// BASIC MATH //
 	////////////////
+	
+	public Char inc() {
+		return Char.valueOf(_c + 1);
+	}
+	
+	public Char dec() {
+		return Char.valueOf(_c - 1);
+	}
 		
 	public Char add(Number n) {
 		return Char.valueOf(_c + n.toInt());

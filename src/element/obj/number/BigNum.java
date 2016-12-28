@@ -216,6 +216,17 @@ public class BigNum extends Number {
 	public Number negate() {
 		return new BigNum(_val.negate());
 	}
+	
+	@Override
+	public Number inc() {
+		return new BigNum(_val.add(Apfloat.ONE));
+	}
+
+	@Override
+	public Number dec() {
+		return new BigNum(_val.subtract(Apfloat.ONE));
+
+	}
 
 	@Override
 	public Number bnot() {
@@ -357,6 +368,8 @@ public class BigNum extends Number {
 		}
 		return s.substring(0, dsi+1);
 	}
+
+
 
 
 

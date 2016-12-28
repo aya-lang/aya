@@ -77,6 +77,12 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	/** Negate */
 	public abstract Number negate();
 	
+	/** Increment */
+	public abstract Number inc();
+	
+	/** Decrement */
+	public abstract Number dec();
+	
 	/** Bitwise Not */
 	public abstract Number bnot();
 	

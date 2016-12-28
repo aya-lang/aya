@@ -101,5 +101,11 @@ public abstract class NumberList extends List {
 
 	/** Return the list as an arrayList of numbers */
 	public abstract ArrayList<Number> toArrayList();
+	
+	///////////////
+	// OVERRIDES //
+	///////////////
+	
+	public abstract Number get(int i);
 
 }

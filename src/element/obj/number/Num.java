@@ -226,6 +226,16 @@ public class Num extends Number {
 	public Number negate() {
 		return new Num(-_val);
 	}
+	
+	@Override
+	public Number inc() {
+		return new Num(_val + 1.0);
+	}
+
+	@Override
+	public Number dec() {
+		return new Num(_val - 1.0);
+	}
 
 	@Override
 	public Number bnot() {
@@ -366,5 +376,7 @@ public class Num extends Number {
 		//Ascending
 		return (int)((_val - n.toDouble())); 
 	}
+
+
 
 }
