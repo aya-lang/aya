@@ -91,8 +91,6 @@ public class ObjList extends List {
 	}
 	
 	
-	
-	
 	////////////////////
 	// LIST OVERRIDES //
 	////////////////////
@@ -183,6 +181,27 @@ public class ObjList extends List {
 	public Obj get(int i) {
 		return _list.get(List.index(i, _list.size()));
 	}
+	
+	@Override
+	public Obj remove(int i) {
+		return _list.remove(List.index(i, _list.size()));
+	}
+	
+	@Override
+	public void removeAll(Integer[] ixs) {
+		int size = _list.size();
+		
+		for (int i = 0; i < ixs.length; i++) {
+			_list.set(List.index(ixs[i], size), null);
+		}
+		
+		for (int i = 0; i < _list.size(); i++) {
+			if (_list.get(i) == null) {
+				_list.remove(i);
+				i--;
+			}
+		}
+	}
 
 	@Override
 	public int find(Obj o) {
@@ -257,13 +276,13 @@ public class ObjList extends List {
 	}
 	
 	@Override
-	public void add(Obj o) {
+	public void addItem(Obj o) {
 		incCharNumCounter(o);
 		_list.add(o);
 	}
 	
 	@Override
-	public void add(int i, Obj o) {
+	public void addItem(int i, Obj o) {
 		incCharNumCounter(o);
 		_list.add(List.index(i, _list.size()), o);
 	}

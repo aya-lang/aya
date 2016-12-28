@@ -62,6 +62,15 @@ public class NumberItemList extends NumberList {
 		}
 		return total;
 	}
+	
+	@Override
+	public Integer[] toIntegerArray() {
+		Integer[] ints = new Integer[_list.size()];
+		for (int i = 0; i < _list.size(); i++) {
+			ints[i] = _list.get(i).toInt();
+		}
+		return ints;
+	}
 
 	@Override
 	public NumberList add(Number n) {
@@ -360,6 +369,27 @@ public class NumberItemList extends NumberList {
 	public Number get(int i) {
 		return _list.get(List.index(i, _list.size()));
 	}
+	
+	@Override
+	public Number remove(int i) {
+		return _list.remove(List.index(i, _list.size()));
+	}
+	
+	@Override
+	public void removeAll(Integer[] ixs) {
+		int size = _list.size();
+		
+		for (int i = 0; i < ixs.length; i++) {
+			_list.set(List.index(ixs[i], size), null);
+		}
+		
+		for (int i = 0; i < _list.size(); i++) {
+			if (_list.get(i) == null) {
+				_list.remove(i);
+				i--;
+			}
+		}
+	}
 
 	@Override
 	public int find(Obj o) {
@@ -440,7 +470,7 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public void add(Obj o) {
+	public void addItem(Obj o) {
 		if (o.isa(Obj.NUMBER)) {
 			_list.add((Number)o);
 		} else {
@@ -450,7 +480,7 @@ public class NumberItemList extends NumberList {
 	}
 	
 	@Override
-	public void add(int i, Obj o) {
+	public void addItem(int i, Obj o) {
 		if (o.isa(Obj.NUMBER)) {
 			_list.add(List.index(i, _list.size()) , (Number)o);
 		} else {
@@ -462,7 +492,7 @@ public class NumberItemList extends NumberList {
 	@Override
 	public void addAll(List l) {
 		for (int i = 0; i < l.length(); i++) {
-			add(l.get(i));
+			addItem(l.get(i));
 		}
 	}
 	

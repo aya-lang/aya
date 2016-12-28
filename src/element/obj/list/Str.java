@@ -2,6 +2,8 @@ package element.obj.list;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
@@ -136,6 +138,27 @@ public class Str extends List implements Comparable<Str> {
 	public Char get(int i) {
 		return Char.valueOf(_str.charAt(List.index(i, _str.length())));
 	}
+	
+	@Override
+	public Char remove(int i) {
+		int index = List.index(i, _str.length());
+		Char c = Char.valueOf(_str.charAt(index));
+		_str = _str.substring(0, index) + _str.substring(index+1);
+		return c;
+	}
+	
+	@Override
+	public void removeAll(Integer[] ixs) {
+		//Remove all duplicates from ixs
+		Set<Integer> uniqKeys = new TreeSet<Integer>();
+		uniqKeys.addAll(Arrays.asList(ixs));
+		Integer[] uniqueIxs = uniqKeys.toArray(new Integer[uniqKeys.size()]);
+		
+		//Start from the highest valued index and work down
+		for (int i = uniqueIxs.length-1; i >= 0; i--) {
+			remove(i);
+		}
+	}
 
 	@Override
 	public int find(Obj o) {
@@ -226,7 +249,7 @@ public class Str extends List implements Comparable<Str> {
 	
 
 	@Override
-	public void add(Obj o) {
+	public void addItem(Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			_str += ((Char)o).charValue();
 		} else {
@@ -236,7 +259,7 @@ public class Str extends List implements Comparable<Str> {
 	}
 	
 	@Override
-	public void add(int i, Obj o) {
+	public void addItem(int i, Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			i = List.index(i, _str.length());
 			// If 0, just append to front
@@ -254,7 +277,7 @@ public class Str extends List implements Comparable<Str> {
 	@Override
 	public void addAll(List l) {
 		for (int i = 0; i < l.length(); i++) {
-			add(l.get(i));
+			addItem(l.get(i));
 		}
 	}
 

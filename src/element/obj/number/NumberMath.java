@@ -1,6 +1,29 @@
 package element.obj.number;
 
+import org.apfloat.ApintMath;
+
+import element.obj.number.Number;
+
 public class NumberMath {
+	
+	public static Number gcd(Number a, Number b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(gcd(a.toLong(), b.toLong()));
+		} else {
+			//At least one is a BigNum, just use their values
+			return new BigNum(ApintMath.gcd(a.toApfloat().floor(), b.toApfloat().floor()));
+		}
+	}
+	
+	public static Number lcm(Number a, Number b) {
+		if (a instanceof Num && b instanceof Num) {
+			return new Num(lcm(a.toLong(), b.toLong()));
+		} else {
+			//At least one is a BigNum, just use their values
+			return new BigNum(ApintMath.lcm(a.toApfloat().floor(), b.toApfloat().floor()));
+		}
+	}
+	
 	
 	/** isprime */
 	public static boolean isPrime(long n) {

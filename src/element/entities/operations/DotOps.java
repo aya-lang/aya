@@ -1,27 +1,11 @@
 package element.entities.operations;
 
-import static element.ElemTypes.IDToAbbrv;
-import static element.ElemTypes.bothChar;
-import static element.ElemTypes.bothList;
-import static element.ElemTypes.bothNumeric;
-import static element.ElemTypes.bothString;
-import static element.ElemTypes.castString;
-import static element.ElemTypes.getString;
-import static element.ElemTypes.getTypeID;
-import static element.ElemTypes.isBlock;
-import static element.ElemTypes.isBool;
-import static element.ElemTypes.isChar;
-import static element.ElemTypes.isList;
-import static element.ElemTypes.isNumeric;
-import static element.ElemTypes.isString;
-import static element.ElemTypes.length;
-import static element.ElemTypes.printBare;
-import static element.ElemTypes.toBlock;
-import static element.ElemTypes.toBool;
-import static element.ElemTypes.toChar;
-import static element.ElemTypes.toList;
-import static element.ElemTypes.toNumeric;
-import static element.ElemTypes.toNumericList;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.STR;
+import static element.obj.Obj.BLOCK;
+import static element.obj.Obj.CHAR;
+import static element.obj.Obj.LIST;
+import static element.obj.Obj.OBJLIST;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,13 +25,19 @@ import element.ElemPrefs;
 import element.Element;
 import element.entities.Block;
 import element.entities.Operation;
-import element.entities.number.BigNum;
-import element.entities.number.Num;
-import element.entities.number.NumMath;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.ElementUserRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
+import element.obj.Obj;
+import element.obj.character.Char;
+import element.obj.list.List;
+import element.obj.list.ObjList;
+import element.obj.list.numberlist.NumberList;
+import element.obj.number.BigNum;
+import element.obj.number.Number;
+import element.obj.number.NumberMath;
+import element.obj.number.Num;
 import element.parser.CharacterParser;
 import element.parser.Parser;
 import element.util.QuickDialog;
@@ -192,12 +182,12 @@ class OP_Dot_Bang extends Operation {
 		this.argTypes = "NS";
 	}
 	@Override public void execute(final Block block) {
-		Object o = block.pop();
+		Obj o = block.pop();
 		
-		if (isNumeric(o)) {
-			block.push(toNumeric(o).signnum());
-		} else if (isString(o)) {
-			String numStr = getString(o).trim();
+		if (o.isa(NUMBER)) {
+			block.push(((Number)o).signnum());
+		} else if (o.isa(STR)) {
+			String numStr = o.str().trim();
 			try {
 				block.push(new Num(Integer.parseInt(numStr)));
 			} catch (NumberFormatException e) {
@@ -222,19 +212,19 @@ class OP_Dot_SortUsing extends Operation {
 	}
 	
 	@Override public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (isBlock(a) && isList(b)) {
-			final Block blk = toBlock(a).duplicate();
-			ArrayList<Object> objs = toList(b);
-			ArrayList<Object> key_obj = blk.mapTo(objs);
+		if (a.isa(BLOCK) && b.isa(LIST)) {
+			final Block blk = ((Block)a).duplicate();
+			List objs = ((List)b);
+			List key_obj = blk.mapTo(objs);
 			
 			//Convert keys to int array
-			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.size());
+			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
 			try {
-				for (int i = 0; i < objs.size(); i++) {
-					items.add(new SUItem(objs.get(i), toNumeric(key_obj.get(i)).toDouble()));
+				for (int i = 0; i < objs.length(); i++) {
+					items.add(new SUItem(objs.get(i), ((Number)(key_obj.get(i))).toDouble()));
 				}
 			} catch (ClassCastException e) {
 				throw new ElementRuntimeException(".$: sort block must evaluate to a number");
@@ -242,12 +232,12 @@ class OP_Dot_SortUsing extends Operation {
 			
 			Collections.sort(items);
 						
-			ArrayList<Object> out = new ArrayList<Object>(items.size());
+			ArrayList<Obj> out = new ArrayList<Obj>(items.size());
 			for (SUItem i : items) {
 				out.add(i.o);
 			}
 			
-			block.push(out);
+			block.push(new ObjList(out).promote());
 			
 		} else {
 			throw new TypeError(this, a);
@@ -255,9 +245,9 @@ class OP_Dot_SortUsing extends Operation {
 	}
 	
 	class SUItem implements Comparable<SUItem>{
-		public Object o;
+		public Obj o;
 		public double d;
-		public SUItem(Object o, double d) {
+		public SUItem(Obj o, double d) {
 			this.o = o;
 			this.d = d;
 		}
@@ -279,13 +269,13 @@ class OP_Dot_CastChar extends Operation {
 		this.argTypes = "NS";
 	}
 	@Override public void execute(final Block block) {
-		Object o = block.pop();
+		Obj o = block.pop();
 		
-		if (isNumeric(o)) {
-			block.push((char)toNumeric(o).toInt());
-		} else if (isString(o)) {
-			block.push(castString(o).charAt(0));
-		} else if (isChar(o)) {
+		if (o.isa(NUMBER)) {
+			block.push( Char.valueOf(((Number)o).toInt()) );
+		} else if (o.isa(STR)) {
+			block.push( Char.valueOf(o.str().charAt(0)) );
+		} else if (o.isa(CHAR)) {
 			block.push(o);
 		} else {
 			throw new TypeError(this,o);
@@ -302,11 +292,11 @@ class OP_Dot_Plus extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (bothNumeric(a, b)) {
-			block.push(NumMath.gcd(toNumeric(a), toNumeric(b)));	
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push(NumberMath.gcd((Number)a, (Number)b));	
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -322,16 +312,18 @@ class OP_Dot_Minus extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (bothNumeric(a, b)) {
-			block.push(NumMath.lcm(toNumeric(a), toNumeric(b)));	
-		} else if (isList(b) && isNumeric(a)) {
-			toList(b).remove(toNumeric(a).toIndex(length(b)));
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push(NumberMath.lcm((Number)a, (Number)b));	
+		} else if (b.isa(LIST) && a.isa(NUMBER)) {
+			((List)b).remove( ((Number)a).toInt() );
 			block.push(b);
-		} else if (bothList(a,b)) {
-			ListOperations.removeIndices(toList(b), toNumericList(a));
+		} else if (a.isa(LIST) && b.isa(LIST)) {
+			List l = (List)a;
+			NumberList ns = l.toNumberList();
+			((List)b).removeAll(ns.toIntegerArray());
 			block.push(b);
 		} else {
 			throw new TypeError(this, a, b);
@@ -361,15 +353,15 @@ class OP_Dot_LessThan extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object b = block.pop();			// Popped in Reverse Order
-		Object a = block.pop();
+		Obj b = block.pop();			// Popped in Reverse Order
+		Obj a = block.pop();
 		
-		if (bothNumeric(a, b)) {
-			block.push(NumMath.compare(toNumeric(a),toNumeric(b)) <= 0); 
-		} else if (bothChar(a,b)) {
-			block.push(toChar(a) <= toChar(b));
-		} else if (bothString(a,b)) {
-			block.push(getString(a).compareTo(getString(b)) <= 0);
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( new Num(((Number)a).compareTo((Number)b) <= 0) ); 
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
+			block.push( new Num(((Char)a).compareTo((Char)b) <= 0) );
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push( new Num(a.str().compareTo(b.str()) <= 0) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -386,15 +378,15 @@ class OP_Dot_GreaterThan extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object b = block.pop();			// Popped in Reverse Order
-		Object a = block.pop();
+		Obj b = block.pop();			// Popped in Reverse Order
+		Obj a = block.pop();
 		
-		if(bothNumeric(a,b)) {
-			block.push(NumMath.compare(toNumeric(a),toNumeric(b)) >= 0);
-		} else if (bothChar(a,b)) {
-			block.push(toChar(a) >= toChar(b));
-		} else if (bothString(a,b)) {
-			block.push(getString(a).compareTo(getString(b)) >= 0);
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( new Num(((Number)a).compareTo((Number)b) >= 0) ); 
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
+			block.push( new Num(((Char)a).compareTo((Char)b) >= 0) );
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push( new Num(a.str().compareTo(b.str()) >= 0) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -412,8 +404,8 @@ class OP_Dot_Conditional extends Operation {
 	
 	@Override
 	public void execute(final Block block) {
-		final Object a = block.pop();
-		if(isBool(a) && toBool(a)) {
+		final Obj a = block.pop();
+		if(a.bool()) {
 			//If true, dont pop
 		} else {
 			//If anything else, pop
@@ -431,16 +423,16 @@ class OP_Dot_At extends Operation {
 		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
-		if (isNumeric(a)) {
+		if (a.isa(NUMBER)) {
 			int size = block.getStack().size();
-			int i = toNumeric(a).toInt();
+			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
 				throw new ElementRuntimeException(i + " .@ stack index out of bounds");
 			} else {
-				final Object cp = block.getStack().get(size - i);
+				final Obj cp = block.getStack().get(size - i);
 				block.getStack().remove(size - i);
 				block.push(cp);
 			}
@@ -455,16 +447,16 @@ class OP_Dot_At extends Operation {
 class OP_Dot_ArrayAll extends Operation {
 	public OP_Dot_ArrayAll() {
 		this.name = ".A";
-		this.info = "wrap the entire stack in a list";
+		this.info = "wrap the entire stack in a generic list";
 		this.argTypes = "A";
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
-		ArrayList<Object> list = new ArrayList<Object>();
-		list.addAll((Stack<Object>)block.getStack().clone());
+		ArrayList<Obj> list = new ArrayList<Obj>();
+		list.addAll((Stack<Obj>)block.getStack().clone());
 		block.clearStack();	
-		block.push(list);
+		block.push(new ObjList(list));
 	}
 }
 
@@ -477,11 +469,11 @@ class OP_Dot_Append extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (isList(a)) {
-			toList(a).add(b);
+		if (a.isa(LIST)) {
+			((List)a).addItem(b);
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
@@ -500,13 +492,13 @@ class OP_Dot_Error extends Operation {
 		this.argTypes = "S";
 	}
 	@Override public void execute (Block block) {
-		Object a = block.pop();
+		Obj a = block.pop();
 		
-		if(isString(a)) {
-			throw new ElementUserRuntimeException(getString(a));
+		if(a.isa(STR)) {
+			throw new ElementUserRuntimeException(a.str());
+		} else {
+			throw new TypeError(this, a);
 		}
-		
-		throw new TypeError(this, a);
 	}
 }
 
@@ -519,11 +511,11 @@ class OP_Dot_Len extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object n = block.pop();
+		final Obj n = block.pop();
 		
-		if (isList(n)) {
+		if (n.isa(LIST)) {
 			block.push(n);
-			block.push(new Num(length(n)));
+			block.push( new Num(((List)n).length()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -541,25 +533,17 @@ class OP_Dot_Flatten extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object n = block.pop();
+		final Obj n = block.pop();
 		
-		if (isList(n)) {
-			block.push(flatten(toList(n)));
+		if (n.isa(LIST)) {
+			if (n.isa(OBJLIST)) {
+				block.push(List.flatten((ObjList)l));
+			} else {
+				block.push(n.deepcopy());
+			}
 		} else {
 			throw new TypeError(this, n);
 		}
-	}
-	
-	private ArrayList<Object> flatten(ArrayList<Object> l) {
-		ArrayList<Object> out = new ArrayList<Object>();
-		for (Object o : l) {
-			if (o instanceof ArrayList) {
-				out.addAll(flatten(toList(o)));
-			} else {
-				out.add(o);
-			}
-		}
-		return out;
 	}
 }
 
@@ -575,12 +559,12 @@ class OP_Dot_Write extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		final Object n = block.pop();
-		final Object s = block.pop();
-		final Object a = block.pop();
+		final Obj n = block.pop();
+		final Obj s = block.pop();
+		final Obj a = block.pop();
 		
-		if (isString(s) && isNumeric(n)) {
-			final int option = toNumeric(n).toInt();
+		if (isString(s) && n.isa(NUMBER)) {
+			final int option = ((Number)n).toInt();
 			final String filename = castString(s);
 			final String write = castString(a);
 			final String fstr = ElemPrefs.getWorkingDir()+filename;
@@ -686,11 +670,11 @@ class OP_Dot_N extends Operation {
 		this.argTypes = "LA";
 	}
 	@Override public void execute (final Block block) {
-		final Object a = block.pop(); //Block
-		final Object b = block.pop(); //List
+		final Obj a = block.pop(); //Block
+		final Obj b = block.pop(); //List
 		
 		int index = 0;
-		if(isList(b) && isBlock(a)) {
+		if(b.isa(LIST) && a.isa(BLOCK)) {
 			
 			block.push(b); //Push the list
 
@@ -745,11 +729,11 @@ class OP_Dot_Case extends Operation {
 		this.argTypes = "L";
 	}
 	@Override public void execute (Block block) {
-		Object a = block.pop();
+		Obj a = block.pop();
 		
 		//Return the first element of a list
 		//If block, dump it
-		if(isList(a)) {
+		if(a.isa(LIST)) {
 			if(length(a) == 0)
 				throw new ElementRuntimeException(this.name + ": list contains no elements");
 			
@@ -802,11 +786,11 @@ class OP_Dot_AppendBack extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
-		Object b = block.pop();
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (isList(a)) {
-			toList(a).add(0, b);
+		if (a.isa(LIST)) {
+			toList(a).addItem(0, b);
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
@@ -823,10 +807,10 @@ class OP_SimplePlot extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object a = block.pop();
+		Obj a = block.pop();
 		
 		
-		if(isList(a)) {
+		if(a.isa(LIST)) {
 			int len = length(a);
 			double[] data = new double[len];
 			ArrayList<Object> list = toList(a);
@@ -898,10 +882,10 @@ class OP_Dot_Ceiling extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
+		Obj n = block.pop();
 		
-		if (isNumeric(n)) {
-			block.push(toNumeric(n).ceil());
+		if (n.isa(NUMBER)) {
+			block.push(((Number)n).ceil());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -917,9 +901,9 @@ class OP_Dot_Floor extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Object n = block.pop();
-		if(isNumeric(n)) {
-			block.push(toNumeric(n).floor());
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).floor());
 		} else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -934,9 +918,9 @@ class OP_Dot_Underscore extends Operation {
 		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
-		if (isNumeric(a)) {
+		if (a.isa(NUMBER)) {
 			int size = block.getStack().size();
 			int i = toNumeric(a).toInt();
 			
@@ -968,10 +952,10 @@ class OP_Dot_Tilde extends Operation {
 	}
 	@Override
 	public void execute(final Block block) {
-		final Object a = block.pop();
+		final Obj a = block.pop();
 		
 		if (isString(a)) {
-			block.add(Parser.compile(getString(a), Element.getInstance()));
+			block.addItem(Parser.compile(getString(a), Element.getInstance()));
 			return;
 		} else if (isChar(a)) {
 			final char c = toChar(a);

@@ -23,8 +23,11 @@ public abstract class NumberList extends List {
 	/** Return the sum of the list */
 	public abstract Number sum();
 	
+	/////////////////
+	// CONVERSIONS //
+	/////////////////
 	
-	
+	public abstract Integer[] toIntegerArray();
 	
 	///////////////////////////
 	// VECTORIZED OPERATIONS //

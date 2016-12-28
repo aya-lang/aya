@@ -13,6 +13,19 @@ public abstract class List extends Obj {
 		return i >= 0 ? i : length + i;
 	}
 	
+	/** Completely flatten a nested list structure. Promote if possible */
+	public static List flatten(List l) {
+		ArrayList<Obj> out = new ArrayList<Obj>();
+		for (int i = 0; i < l.length(); i++) {
+			if (l.get(i).isa(Obj.LIST)) {
+				out.addAll(flatten((List)l.get(i)).getObjAL());
+			} else {
+				out.add(l.get(i));
+			}
+		}
+		return new ObjList(out).promote();
+	}
+	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////
@@ -58,8 +71,14 @@ public abstract class List extends Obj {
 	 */
 	public abstract List slice(int i, int j);
 		
-	/** Get the 0-indexed item from the stack */
+	/** Get the 0-indexed item from the list */
 	public abstract Obj get(int i);
+	
+	/** Remove the 0-indexed item from the list */
+	public abstract Obj remove(int i);
+	
+	/** Remove each of the 0-indexed items from the list */
+	public abstract void removeAll(Integer[] ixs);
 	
 	/** Return the index of the first occurrence of Obj in the list */
 	public abstract int find(Obj o);
@@ -82,9 +101,9 @@ public abstract class List extends Obj {
 	
 	public abstract void set(int i, Obj o);
 	
-	public abstract void add(Obj o);
+	public abstract void addItem(Obj o);
 	
-	public abstract void add(int i, Obj o);
+	public abstract void addItem(int i, Obj o);
 	
 	public abstract void addAll(List l);
 	

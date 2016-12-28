@@ -1180,7 +1180,7 @@ class OP_K extends Operation {
 			//al.add(0,b);
 			//block.push(al);
 			
-			((List)a).add(0, b);
+			((List)a).addItem(0, b);
 			block.push(a);
 			
 		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
@@ -1188,7 +1188,7 @@ class OP_K extends Operation {
 //			bl.add(a);
 //			block.push(bl);
 			
-			((List)b).add(a);
+			((List)b).addItem(a);
 			block.push(b);
 			
 		} else {
