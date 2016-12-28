@@ -1,5 +1,6 @@
 package element.obj.dict;
 
+import element.exceptions.ElementRuntimeException;
 import element.exceptions.UndefVarException;
 import element.obj.Obj;
 import element.variable.Variable;
@@ -48,7 +49,12 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(KeyVariable v, Obj o) {
-		_vars.setVar(v, o);
+		if (o.equals(this)) {
+			throw new ElementRuntimeException("Error assigning '" + v.toString() + "': "
+					+ "Cannot assign dict as member of itself");
+		} else {
+			_vars.setVar(v, o);
+		}
 	}
 	
 	/** Set a key-value pair.
@@ -56,7 +62,12 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(String s, Obj o) {
-		_vars.setVar(Variable.encodeString(s), o);
+		if (o.equals(this)) {
+			throw new ElementRuntimeException("Error assigning '" + s + "': "
+					+ "Cannot assign dict as member of itself");
+		} else {
+			_vars.setVar(Variable.encodeString(s), o);
+		}
 	}
 	
 	/** The number of items in this dict */
@@ -81,7 +92,7 @@ public class Dict extends Obj {
 
 	@Override
 	public String repr() {
-		StringBuilder sb = new StringBuilder("{@, ");
+		StringBuilder sb = new StringBuilder("{, ");
 		for (Long l : _vars.getMap().keySet()) {
 			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
 		}
@@ -91,7 +102,7 @@ public class Dict extends Obj {
 
 	@Override
 	public String str() {
-		StringBuilder sb = new StringBuilder("{@, ");
+		StringBuilder sb = new StringBuilder("{, ");
 		for (Long l : _vars.getMap().keySet()) {
 			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
 		}

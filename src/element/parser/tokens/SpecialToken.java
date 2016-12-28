@@ -4,18 +4,17 @@ public class SpecialToken extends Token {
 	String name;
 		
 	public static final SpecialToken COMMA 				= new SpecialToken(Token.COMMA,",");
-	public static final SpecialToken DOT 				    = new SpecialToken(Token.DOT, ".");
+	public static final SpecialToken DOT 				= new SpecialToken(Token.DOT, ".");
 	public static final SpecialToken OPEN_PAREN			= new SpecialToken(Token.OPEN_PAREN, "(");
-	public static final SpecialToken CLOSE_PAREN			= new SpecialToken(Token.CLOSE_PAREN, ")");
+	public static final SpecialToken CLOSE_PAREN		= new SpecialToken(Token.CLOSE_PAREN, ")");
 	public static final SpecialToken OPEN_SQBRACKET		= new SpecialToken(Token.OPEN_SQBRACKET, "[");
-	public static final SpecialToken CLOSE_SQBRACKET		= new SpecialToken(Token.CLOSE_SQBRACKET, "]");
+	public static final SpecialToken CLOSE_SQBRACKET	= new SpecialToken(Token.CLOSE_SQBRACKET, "]");
 	public static final SpecialToken OPEN_CURLY			= new SpecialToken(Token.OPEN_CURLY, "{");
-	public static final SpecialToken CLOSE_CURLY			= new SpecialToken(Token.CLOSE_CURLY, "}");
-	public static final SpecialToken TICK				    = new SpecialToken(Token.TICK, "`");
+	public static final SpecialToken CLOSE_CURLY		= new SpecialToken(Token.CLOSE_CURLY, "}");
+	public static final SpecialToken TICK				= new SpecialToken(Token.TICK, "`");
 	public static final SpecialToken COLON			    = new SpecialToken(Token.COLON, ":");
 	public static final SpecialToken POUND				= new SpecialToken(Token.POUND, "#");
-	public static final SpecialToken TRUE				    = new SpecialToken(Token.BOOL_TRUE, "T");
-	public static final SpecialToken FALSE				= new SpecialToken(Token.BOOL_FALSE, "F");	
+	public static final SpecialToken DOT_COLON			= new SpecialToken(Token.DOT_COLON, ".:");
 	
 	
 	public SpecialToken(int type, String name) {
@@ -103,6 +102,8 @@ public class SpecialToken extends Token {
 			return "dot op";
 		case LIST:
 			return "list";
+		case Token.DOT_COLON:
+			return "dotColon";
 				
 		default:
 			return "not specified";

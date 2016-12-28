@@ -12,4 +12,13 @@ public class KeyVariable extends Variable {
 		super(s);
 	}
 
+	@Override
+	public String toString() {
+		String name = decodeLong(id);
+		if (referanceVariable) {
+			return "." + name;
+		} else {
+			return ".:" + name;
+		}
+	}
 }

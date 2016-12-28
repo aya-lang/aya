@@ -7,8 +7,8 @@ package element.variable;
  * @author Nick
  */
 public class Variable {
-	private long id;
-	private boolean referanceVariable = true;
+	protected long id;
+	protected boolean referanceVariable = true;
 	
 	/** Creates a variable object using a string.
 	 *  Only the first 12 characters of the string are used

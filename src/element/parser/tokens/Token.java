@@ -38,8 +38,7 @@ public abstract class Token {
 	public static final int OP_DOT          = ElemTypes.T_OP_DOT;
 	public static final int OP_MATH         = ElemTypes.T_OP_MATH;
 	public static final int POUND           = ElemTypes.T_POUND;
-	public static final int BOOL_FALSE      = ElemTypes.T_BOOL_FALSE;
-	public static final int BOOL_TRUE       = ElemTypes.T_BOOL_TRUE;
+	public static final int DOT_COLON		= ElemTypes.T_DOT_COLON;
 	
 	
 	protected Token(int type) {

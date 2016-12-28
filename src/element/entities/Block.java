@@ -128,7 +128,8 @@ public class Block extends Obj {
 				}
 				
 				if (var.shouldBind()) {
-					// TODO: dict assignment
+					dict.set(var, stack.pop());
+					stack.push(dict);
 				} else {
 					Obj o = dict.get(var);
 					if (o.isa(Obj.BLOCK)) {
@@ -158,11 +159,6 @@ public class Block extends Obj {
 				stack.push(((DictFactory)current).getDict());
 				//Element.getInstance().getVars().setVar(mod.id, mod);
 			}
-			
-//			else if (current instanceof ModuleFactory) {
-//				Module mod = ((ModuleFactory)current).getModule();
-//				Element.getInstance().getVars().setVar(mod.id, mod);
-//			}
 			
 //			//Member Variable
 //			else if (current instanceof MemberVariable) {
@@ -279,23 +275,13 @@ public class Block extends Obj {
 				stack.push(((ListBuilder)current).createList(stack));
 			}
 			
+			//ListFactory
 			else if (current instanceof ListLiteral) {				
 				stack.push(((ListLiteral)current).getListCopy(stack));
 			}
 			
-			//Block: If it is a list literal, execute it and wrap it in a list
-//			else if (current instanceof Block) {
-//				if(toBlock(current).isListLiteral()) {
-//					//Block b = toBlock(current);
-//					Block b = toBlock(current).duplicate();
-//					b.eval();
-//					stack.push(new ArrayList<Object>(b.getStack()));
-//				} else {
-//					push(current);
-//				}
-//			}
+			//Literal
 			else {
-				//Literal
 				this.push((Obj)current);
 			}
 		}

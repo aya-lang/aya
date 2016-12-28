@@ -43,8 +43,7 @@ public class ElemTypes {
 	public static final byte T_OP_DOT          = 122; // .<op> token
 	public static final byte T_OP_MATH         = 123; // M<op> token
 	public static final byte T_POUND           = 124; // (#) special operator
-	public static final byte T_BOOL_FALSE      = 125; // (T) true literal
-	public static final byte T_BOOL_TRUE       = 126; // (F) false literal
+	public static final byte T_DOT_COLON       = 125; // (.:) dot colon operator
 
 	
 	

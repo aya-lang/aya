@@ -31,8 +31,8 @@ public class BlockToken extends CollectionToken {
 			return new Block(Parser.generate(blockData.get(0)));
 		case 2:
 			TokenQueue header = blockData.get(0);
-			if (header.hasNext() && header.peek().isa(Token.OP) && header.peek().data.equals("@")) {
-				header.next();
+			if (!header.hasNext()) { //header.hasNext() && header.peek().isa(Token.OP) && header.peek().data.equals("@")) {
+				//header.next();
 				//if (header.size() > 1) { throw new SyntaxError("Must include only module name in header"); }
 				//String modname = header.next().data;
 				Block b = new Block();

@@ -11,6 +11,7 @@ import element.entities.operations.ColonOps;
 import element.entities.operations.Ops;
 import element.exceptions.EndOfInputError;
 import element.exceptions.SyntaxError;
+import element.obj.dict.KeyVariable;
 import element.parser.token.TokenQueue;
 import element.parser.token.TokenStack;
 import element.parser.tokens.BlockToken;
@@ -160,7 +161,7 @@ public class Parser {
 						tokens.add(new NumberToken(num.toString()));
 					}
 					
-					//Member Variable
+					//Key Variable
 					else if ('a' <= in.peek() && in.peek() <= 'z') {
 						String varname = ""+in.next();
 						while(in.hasNext() && 'a' <= in.peek() && in.peek() <= 'z') {
@@ -169,9 +170,14 @@ public class Parser {
 						tokens.add(new KeyVarToken(varname));
 					}
 					
-					//Special Character MeMVar
+					//Special Character Key Variable
 					else if (CharacterParser.isSpecialChar(in.peek())) {
 						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
+					}
+					
+					// Dot Colon
+					else if (in.peek() == ':') {
+						tokens.add(SpecialToken.DOT_COLON);
 					}
 					
 					//Dot operator
@@ -580,6 +586,19 @@ public class Parser {
 					}
 					is.push(Ops.APPLY_TO);
 					is.push(colonBlock);	
+				}
+			}
+			
+			else if (current.isa(Token.DOT_COLON)) {
+				if(is.isEmpty()) {
+					throw new SyntaxError("Expected token after '.:' in:\n\t" + tokens_in.toString());
+				}
+				Object next = is.pop();
+				//Key Variable Assignment
+				if (next instanceof Variable) {
+					KeyVariable kv = new KeyVariable(((Variable)next).getID());
+					kv.flagBind();
+					is.push(kv);
 				}
 			}
 			
