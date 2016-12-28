@@ -29,6 +29,8 @@ public abstract class NumberList extends List {
 	
 	public abstract Integer[] toIntegerArray();
 	
+	public abstract double[] todoubleArray();
+	
 	///////////////////////////
 	// VECTORIZED OPERATIONS //
 	///////////////////////////
@@ -110,5 +112,7 @@ public abstract class NumberList extends List {
 	///////////////
 	
 	public abstract Number get(int i);
+
+	
 
 }

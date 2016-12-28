@@ -71,6 +71,15 @@ public class NumberItemList extends NumberList {
 		}
 		return ints;
 	}
+	
+	@Override
+	public double[] todoubleArray() {
+		double[] ds = new double[_list.size()];
+		for (int i = 0; i < _list.size(); i++) {
+			ds[i] = _list.get(i).toDouble();
+		}
+		return ds;
+	}
 
 	@Override
 	public NumberList add(Number n) {

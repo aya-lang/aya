@@ -1,11 +1,11 @@
 package element.entities.operations;
 
-import static element.obj.Obj.NUMBER;
-import static element.obj.Obj.STR;
 import static element.obj.Obj.BLOCK;
 import static element.obj.Obj.CHAR;
 import static element.obj.Obj.LIST;
-import static element.obj.Obj.OBJLIST;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.NUMBERLIST;
+import static element.obj.Obj.STR;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +33,12 @@ import element.obj.Obj;
 import element.obj.character.Char;
 import element.obj.list.List;
 import element.obj.list.ObjList;
+import element.obj.list.Str;
 import element.obj.list.numberlist.NumberList;
 import element.obj.number.BigNum;
+import element.obj.number.Num;
 import element.obj.number.Number;
 import element.obj.number.NumberMath;
-import element.obj.number.Num;
 import element.parser.CharacterParser;
 import element.parser.Parser;
 import element.util.QuickDialog;
@@ -536,10 +537,10 @@ class OP_Dot_Flatten extends Operation {
 		final Obj n = block.pop();
 		
 		if (n.isa(LIST)) {
-			if (n.isa(OBJLIST)) {
-				block.push(List.flatten((ObjList)l));
-			} else {
+			if (n.isa(STR) || n.isa(NUMBERLIST)) {
 				block.push(n.deepcopy());
+			} else {
+				block.push(List.flatten((ObjList)n));
 			}
 		} else {
 			throw new TypeError(this, n);
@@ -563,10 +564,10 @@ class OP_Dot_Write extends Operation {
 		final Obj s = block.pop();
 		final Obj a = block.pop();
 		
-		if (isString(s) && n.isa(NUMBER)) {
+		if (s.isa(STR) && n.isa(NUMBER)) {
 			final int option = ((Number)n).toInt();
-			final String filename = castString(s);
-			final String write = castString(a);
+			final String filename = s.str();
+			final String write = a.str();
 			final String fstr = ElemPrefs.getWorkingDir()+filename;
 
 			
@@ -608,29 +609,25 @@ class OP_Dot_I extends Operation {
 		this.argTypes = "LL|LI|LE";
 	}
 	@Override public void execute (final Block block) {
-		Object index = block.pop();
-		final Object list = block.pop();
+		Obj index = block.pop();
+		final Obj list = block.pop();
 		block.push(list); //.I keeps the list on the stack
 		
-		if(!isList(list)) {
+		if(!list.isa(LIST)) {
 			throw new TypeError(this, index, list);
 		}
 		
-		if(isNumeric(index)) {
-			block.push(toList(list).get(toNumeric(index).toIndex(length(list))));
-		} else if (isList(index)) {
-			ArrayList<Object> indexList = toList(index);
-			ArrayList<Object> refList = toList(list);
-			for(int i = 0; i < length(index); i++) {
-				if(isNumeric(indexList.get(i))) {
-					indexList.set(i, refList.get(toNumeric(indexList.get(i)).toIndex(refList.size())));
-				} else {
-					throw new TypeError("I", "list of ints", indexList);
-				}
+		if(index.isa(NUMBER)) {
+			block.push( ((List)list).get(((Number)index).toInt()) );
+		} else if (index.isa(NUMBERLIST)) {
+			NumberList indexList = ((List)index).toNumberList();
+			List refList = (List)list;
+			for(int i = 0; i < indexList.length(); i++) {
+				indexList.set( i, refList.get(indexList.get(i).toInt()) );
 			}
 			block.push(indexList);
-		} else if (isBlock(index)) {
-			block.push(toBlock(index).filter(toList(list)));
+		} else if (index.isa(BLOCK)) {
+			block.push( ((Block)index).filter((List)list) );
 		} else {
 			throw new TypeError(this, index, list);
 		}
@@ -645,16 +642,16 @@ class OP_Dot_TryCatch extends Operation {
 		this.argTypes = "EE";
 	}
 	@Override public void execute (Block block) {
-		Object catchBlock = block.pop();
-		Object tryBlock = block.pop();
+		Obj catchBlock = block.pop();
+		Obj tryBlock = block.pop();
 		
-		if(isBlock(tryBlock) && isBlock(catchBlock)) {
+		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				Block b = toBlock(tryBlock).duplicate();
+				Block b = ((Block)tryBlock).duplicate();
 				b.eval();
 				block.appendToStack(b.getStack());
 			} catch (Exception e) {
-				Block b = toBlock(catchBlock).duplicate();
+				Block b = ((Block)catchBlock).duplicate();
 				b.eval();
 				block.appendToStack(b.getStack());
 			}
@@ -678,13 +675,14 @@ class OP_Dot_N extends Operation {
 			
 			block.push(b); //Push the list
 
-			final Block blk = toBlock(a);
-			for (Object o : toList(b)) {
+			final Block blk = (Block)a;
+			List l = (List)b;
+			for (int i = 0; i < l.length(); i++) {
 				Block cond = blk.duplicate();
-				cond.push(o);
+				cond.push(l.get(i));
 				cond.eval();
-				Object result = cond.pop();
-				if (isBool(result) && toBool(result)) {
+				Obj result = cond.pop();
+				if (result.bool()) {
 					block.push(new Num(index)); // ..and the index
 					return;
 				}
@@ -705,7 +703,7 @@ class OP_Dot_Print extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (Block block) {
-		Element.getInstance().getOut().printAsPrint(printBare(block.pop()));
+		Element.getInstance().getOut().printAsPrint(block.pop().str());
 	}
 }
 
@@ -734,12 +732,13 @@ class OP_Dot_Case extends Operation {
 		//Return the first element of a list
 		//If block, dump it
 		if(a.isa(LIST)) {
-			if(length(a) == 0)
+			List l = (List)a;
+			if(l.length() == 0)
 				throw new ElementRuntimeException(this.name + ": list contains no elements");
 			
-			Object item = toList(a).get(0);
-			if(isBlock(item)) {
-				block.addAll(toBlock(item).getInstructions().getInstrucionList());
+			Obj item = l.get(0);
+			if(item.isa(BLOCK)) {
+				block.addAll(((Block)item).getInstructions().getInstrucionList());
 			} else {
 				block.push(item);
 			}
@@ -758,7 +757,7 @@ class OP_TypeOf extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		block.push(IDToAbbrv(getTypeID(block.pop())));
+		block.push(new Num(Obj.IDToAbbrv(block.pop().type())));
 	}
 }
 
@@ -772,7 +771,7 @@ class OP_RequestString extends Operation {
 	@Override
 	public void execute(Block block) {
 		
-		block.push(QuickDialog.requestString(castString(block.pop())));
+		block.push(new Str(QuickDialog.requestString(block.pop().str())));
 
 	}
 }
@@ -790,7 +789,7 @@ class OP_Dot_AppendBack extends Operation {
 		Obj b = block.pop();
 		
 		if (a.isa(LIST)) {
-			toList(a).addItem(0, b);
+			((List)a).addItem(0, b);
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
@@ -811,13 +810,9 @@ class OP_SimplePlot extends Operation {
 		
 		
 		if(a.isa(LIST)) {
-			int len = length(a);
-			double[] data = new double[len];
-			ArrayList<Object> list = toList(a);
+			List l = (List)a;
 			
-			for(int i = 0; i < len; i++) {
-				data[i] = toNumeric(list.get(i)).toDouble();
-			}
+			double[] data = l.toNumberList().todoubleArray();
 			
 			SimplePlot sp = new SimplePlot(data);
 			
@@ -858,10 +853,10 @@ class OP_Dot_Zed extends Operation {
 		this.argTypes = "S";
 	}
 	@Override public void execute (Block block) {
-		Object s = block.pop();
+		Obj s = block.pop();
 		
-		if(isString(s)) {
-			String str = castString(s);
+		if(s.isa(STR)) {
+			String str = s.str();
 			if(str.contains(".")) {
 				throw new ElementRuntimeException(".Z: Cannot look up module variables");
 			}
@@ -922,15 +917,15 @@ class OP_Dot_Underscore extends Operation {
 		
 		if (a.isa(NUMBER)) {
 			int size = block.getStack().size();
-			int i = toNumeric(a).toInt();
+			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
 				throw new ElementRuntimeException(i + " ._ stack index out of bounds");
 			} else {
-				final Object cp = block.getStack().get(size - i);
+				final Obj cp = block.getStack().get(size - i);
 				
-				if(cp instanceof ArrayList) {
-					block.push(toList(cp).clone());
+				if(cp.isa(LIST)) {
+					block.push(((List)cp).deepcopy());
 				} else {
 					block.push(cp);
 				}
@@ -952,13 +947,13 @@ class OP_Dot_Tilde extends Operation {
 	}
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
+		final Obj a = block.pop();	
 		
-		if (isString(a)) {
-			block.addItem(Parser.compile(getString(a), Element.getInstance()));
+		if (a.isa(STR)) {
+			block.push( Parser.compile(a.str(), Element.getInstance()) );
 			return;
-		} else if (isChar(a)) {
-			final char c = toChar(a);
+		} else if (a.isa(CHAR)) {
+			final char c = ((Char)a).charValue();
 			final String varname = CharacterParser.getName(c);
 			if(varname == null) {
 				throw new ElementRuntimeException("Character '" + c + " is not a valid variable");
