@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import element.ElemTypes;
 import element.Element;
 import element.InteractiveElement;
 import element.exceptions.SyntaxError;

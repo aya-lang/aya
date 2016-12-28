@@ -1,11 +1,11 @@
 package element.entities.operations;
 
-import static element.obj.Obj.NUMBER;
 import static element.obj.Obj.BIGNUM;
-import static element.obj.Obj.NUM;
-import static element.obj.Obj.STR;
 import static element.obj.Obj.CHAR;
 import static element.obj.Obj.LIST;
+import static element.obj.Obj.NUM;
+import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.STR;
 
 import java.awt.Color;
 import java.io.File;
@@ -18,12 +18,10 @@ import java.util.Date;
 import java.util.Locale;
 
 import element.ElemPrefs;
-import element.ElemTypes;
 import element.Element;
 import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.Operation;
-import element.entities.UserObject;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.TypeError;
 import element.obj.Obj;
@@ -34,12 +32,11 @@ import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.number.BigNum;
 import element.obj.number.Num;
+import element.obj.number.Number;
 import element.parser.CharacterParser;
 import element.util.ChartParams;
 import element.util.FreeChartInterface;
 import element.util.QuickDialog;
-
-import element.obj.number.Number;
 
 public class MathOps {	
 

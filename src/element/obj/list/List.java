@@ -1,7 +1,6 @@
 package element.obj.list;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import element.obj.Obj;
 import element.obj.list.numberlist.NumberList;

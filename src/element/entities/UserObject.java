@@ -2,7 +2,6 @@ package element.entities;
 
 import java.util.ArrayList;
 
-import element.ElemTypes;
 import element.obj.Obj;
 import element.variable.MemberVariable;
 import element.variable.Module;

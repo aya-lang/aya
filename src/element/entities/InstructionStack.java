@@ -3,7 +3,6 @@ package element.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import element.ElemTypes;
 import element.variable.VariableSet;
 
 /**

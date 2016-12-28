@@ -5,9 +5,7 @@ import java.util.Collections;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
-import element.obj.character.Char;
 import element.obj.list.List;
-import element.obj.list.ObjList;
 import element.obj.number.Num;
 import element.obj.number.Number;
 
