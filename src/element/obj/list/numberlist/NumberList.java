@@ -41,8 +41,14 @@ public abstract class NumberList extends List {
 	/** Subtraction */
 	public abstract NumberList sub(Number n);
 	
+	/** Reverse Subtraction */
+	public abstract NumberList subFrom(Number n);
+	
 	/** Division */
 	public abstract NumberList div(Number n);
+	
+	/** Reverse Division */
+	public abstract NumberList divFrom(Number n);
 	
 	/** Multiplication */
 	public abstract NumberList mul(Number n);
@@ -50,11 +56,33 @@ public abstract class NumberList extends List {
 	/** Modulus */
 	public abstract NumberList mod(Number n);
 	
-	/** Integer devision */
+	/** Reverse Modulus */
+	public abstract NumberList modFrom(Number n);
+	
+	/** Integer division */
 	public abstract NumberList idiv(Number n);
+	
+	/** Reverse division */
+	public abstract NumberList idivFrom(Number n);
 	
 	/** Power */
 	public abstract NumberList pow(Number n);
+	
+	/** Reverse Power */
+	public abstract NumberList powFrom(Number n);
+	
+	/** Binary And */
+	public abstract NumberList band(Number n);
+	
+	/** Reverse Binary And */
+	public abstract NumberList bandFrom(Number n);
+	
+	/** Binary Or */
+	public abstract NumberList bor(Number n);
+	
+	/** Reverse Binary Or */
+	public abstract NumberList borFrom(Number n);
+	
 	
 	/** Negate */
 	public abstract NumberList negate();

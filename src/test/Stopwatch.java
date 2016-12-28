@@ -15,6 +15,6 @@ public class Stopwatch {
 	}
 	
 	public double secs() {
-		return ((double)_elapsed/1000000000);
+		return ((double)_elapsed/1000);
 	}
 }

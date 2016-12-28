@@ -522,10 +522,22 @@ class OP_Plus extends Operation {
 //		} else if (isUserObject(b)) { //Must happen before anyString()
 //			toUserObject(b).callVariable(block, Ops.MV_PLUS, a);
 //		} 
+		
 		else if (a.isa(STR) || b.isa(STR)) {
 			//Must reverse order
 			block.push(new Str(b.str() + a.str()));
-		} else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
+		} 
+		
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).add((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).add((Number)a) );
+		}
+		
+		
+		else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
 			block.push( ((Char)b).add((Number)a) );
 		} else if (a.isa(CHAR) && b.isa(NUMBER)) {
 			block.push( ((Char)a).add((Number)b) );

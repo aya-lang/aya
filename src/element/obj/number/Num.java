@@ -8,7 +8,7 @@ import element.obj.Obj;
 public class Num extends Number {
 
 	public static final Num ZERO = new Num(0.0);
-	public static final Num ONE = new Num(0.0);
+	public static final Num ONE = new Num(1.0);
 	public static final Num MIN_VALUE = new Num(Double.MIN_VALUE);
 	public static final Num MAX_VALUE = new Num(Double.MAX_VALUE);
 	public static final Num PI = new Num(Math.PI);

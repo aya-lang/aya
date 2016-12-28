@@ -143,6 +143,90 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
+	public NumberList subFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.sub(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList divFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.div(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList modFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.mod(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList idivFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.idiv(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList powFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.pow(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList band(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(_list.get(i).band(n));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList bandFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.band(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList bor(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(_list.get(i).bor(n));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList borFrom(Number n) {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(n.bor(_list.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+	
+	
+	
+	
+	@Override
 	public NumberList negate() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
@@ -568,6 +652,8 @@ public class NumberItemList extends NumberList {
 	public byte type() {
 		return Obj.NUMBERITEMLIST;
 	}
+
+	
 
 
 
