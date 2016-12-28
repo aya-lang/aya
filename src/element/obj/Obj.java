@@ -59,7 +59,8 @@ public abstract class Obj {
 		case LIST : return 'L';
 		case STR : return 'S';
 		case NUMBER : return 'N';
-		//case ANY : return 'A';
+		case DICT : return 'R';
+		case ANY : return 'A';
 		//case MODULE : return 'M';
 		//case USER_OBJ : return 'U';
 		default: return '?';
@@ -79,6 +80,7 @@ public abstract class Obj {
 			case 'N': return NUMBER;
 			case 'C': return CHAR;
 			case 'A': return ANY;
+			case 'R': return DICT;
 			//case 'M': return MODULE;
 			//case 'U': return USER_OBJ;
 			default: return UNKNOWN;

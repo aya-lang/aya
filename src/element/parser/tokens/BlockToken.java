@@ -6,10 +6,10 @@ import element.entities.Block;
 import element.entities.Flag;
 import element.exceptions.SyntaxError;
 import element.obj.Obj;
+import element.obj.dict.DictFactory;
 import element.obj.number.Num;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
-import element.variable.ModuleFactory;
 import element.variable.Variable;
 import element.variable.VariableSet;
 
@@ -33,11 +33,11 @@ public class BlockToken extends CollectionToken {
 			TokenQueue header = blockData.get(0);
 			if (header.hasNext() && header.peek().isa(Token.OP) && header.peek().data.equals("@")) {
 				header.next();
-				if (header.size() > 1) { throw new SyntaxError("Must include only module name in header"); }
-				String modname = header.next().data;
+				//if (header.size() > 1) { throw new SyntaxError("Must include only module name in header"); }
+				//String modname = header.next().data;
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				return new ModuleFactory(modname, b);
+				return new DictFactory(b);
 			} else {
 				Block b = new Block();
 				b.add(Flag.getFlag(Flag.POPVAR)); //Pop the local variables when the block is finished

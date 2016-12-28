@@ -15,9 +15,9 @@ import element.parser.token.TokenQueue;
 import element.parser.token.TokenStack;
 import element.parser.tokens.BlockToken;
 import element.parser.tokens.CharToken;
+import element.parser.tokens.KeyVarToken;
 import element.parser.tokens.LambdaToken;
 import element.parser.tokens.ListToken;
-import element.parser.tokens.MemVarToken;
 import element.parser.tokens.NumberToken;
 import element.parser.tokens.OperatorToken;
 import element.parser.tokens.SpecialToken;
@@ -167,12 +167,12 @@ public class Parser {
 						while(in.hasNext() && 'a' <= in.peek() && in.peek() <= 'z') {
 							varname += in.next();
 						}
-						tokens.add(new MemVarToken(varname));
+						tokens.add(new KeyVarToken(varname));
 					}
 					
 					//Special Character MeMVar
 					else if (CharacterParser.isSpecialChar(in.peek())) {
-						tokens.add(new MemVarToken(CharacterParser.getName(in.next())));
+						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
 					}
 					
 					//Dot operator

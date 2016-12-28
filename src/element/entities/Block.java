@@ -9,6 +9,9 @@ import java.util.Stack;
 import element.Element;
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
+import element.obj.dict.Dict;
+import element.obj.dict.DictFactory;
+import element.obj.dict.KeyVariable;
 import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
@@ -112,6 +115,30 @@ public class Block extends Obj {
 				Element.getInstance().getVars().add(vars);
 			}
 			
+			// KeyVariable
+			else if (current instanceof KeyVariable) {
+				KeyVariable var = ((KeyVariable)current);
+				Obj dict_obj = stack.pop();
+				Dict dict;
+				if (dict_obj.isa(Obj.DICT)) {
+					dict = (Dict)dict_obj;
+				} else {
+					throw new ElementRuntimeException("Expected dict before key " + var.toString()
+							+ ", recieved " + dict_obj.str()); 
+				}
+				
+				if (var.shouldBind()) {
+					// TODO: dict assignment
+				} else {
+					Obj o = dict.get(var);
+					if (o.isa(Obj.BLOCK)) {
+						instructions.addAll( ((Block)o).getInstructions().getInstrucionList() );
+					} else {
+						stack.push(o);
+					}
+				}
+			}
+			
 			//Variable: Decide weather to read or write
 			else if (current instanceof Variable) {
 				Variable var = ((Variable)current);
@@ -125,6 +152,11 @@ public class Block extends Obj {
 						stack.push(o);
 					}
 				}
+			}
+			
+			else if (current instanceof DictFactory) {
+				stack.push(((DictFactory)current).getDict());
+				//Element.getInstance().getVars().setVar(mod.id, mod);
 			}
 			
 //			else if (current instanceof ModuleFactory) {

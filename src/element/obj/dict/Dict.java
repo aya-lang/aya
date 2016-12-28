@@ -1,33 +1,65 @@
 package element.obj.dict;
 
+import element.exceptions.UndefVarException;
 import element.obj.Obj;
 import element.variable.Variable;
 import element.variable.VariableSet;
 
+/**
+ * A set of key-value pairs accessible as a runtime object
+ * @author Nick
+ *
+ */
 public class Dict extends Obj {
 	
+	/** The map of key-value pairs */
 	private VariableSet _vars;
 	
+	/** Create a new dict given a variable set */
 	public Dict(VariableSet vars) {
 		_vars = vars;
 	}
 
-	public Obj get(Variable v) {
-		return _vars.getObject(v);
+	/** Get the object assigned to key {@code v} 
+	 * If this key is unassigned, throw an error */
+	public Obj get(KeyVariable v) {
+		Obj o = _vars.getObject(v);
+		if (o == null) {
+			throw new UndefVarException("Dict does not contain key '" + v.toString() + "'");
+		} else {
+			return o;
+		}
 	}
 	
+	/** Get the object assigned to key whos name is {@code s} 
+	 * If this key is unassigned, throw an error
+	 */
 	public Obj get(String s) {
-		return _vars.getObject(Variable.encodeString(s));
+		Obj o = _vars.getObject(Variable.encodeString(s));
+		if (o == null) {
+			throw new UndefVarException("Dict does not contain key \"" + s + "\"");
+		} else {
+			return o;
+		}
 	}
 	
-	public void set(Variable v, Obj o) {
+	/** Set a key-value pair.
+	 * If a pair exists, overwrite
+	 * if not, create a new pair
+	 */ 
+	public void set(KeyVariable v, Obj o) {
 		_vars.setVar(v, o);
 	}
 	
+	/** Set a key-value pair.
+	 * If a pair exists, overwrite
+	 * if not, create a new pair
+	 */ 
 	public void set(String s, Obj o) {
 		_vars.setVar(Variable.encodeString(s), o);
 	}
 	
+	/** The number of items in this dict */
 	public int size() {
 		return _vars.getMap().size();
 	}
@@ -38,8 +70,8 @@ public class Dict extends Obj {
 	
 	@Override
 	public Obj deepcopy() {
-		// TODO Dict.deepcopy()
-		return null;
+		// TODO: Decide how to perform a deepcopy
+		return this;
 	}
 
 	@Override
@@ -51,8 +83,7 @@ public class Dict extends Obj {
 	public String repr() {
 		StringBuilder sb = new StringBuilder("{@, ");
 		for (Long l : _vars.getMap().keySet()) {
-			//TODO: Change to repr()
-			sb.append(_vars.getMap().get(l).toString() + ":" + Variable.decodeLong(l) + "; ");
+			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
 		}
 		sb.append("}");
 		return sb.toString();
@@ -62,8 +93,7 @@ public class Dict extends Obj {
 	public String str() {
 		StringBuilder sb = new StringBuilder("{@, ");
 		for (Long l : _vars.getMap().keySet()) {
-			//TODO: Change to repr()
-			sb.append(_vars.getMap().get(l).toString() + ":" + Variable.decodeLong(l) + "; ");
+			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
 		}
 		sb.append("}");
 		return sb.toString();
