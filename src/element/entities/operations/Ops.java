@@ -224,7 +224,7 @@ class OP_Bang extends Operation {
 		//	 return;
 		// }
 		else if (o.isa(Obj.CHAR)) {
-			((Char)o).swapCase();
+			block.push(((Char)o).swapCase());
 		}
 //		else if (isModule(o)) {
 //			Module m = toModule(o);
