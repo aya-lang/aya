@@ -3,6 +3,7 @@ package test;
 import test.obj.list.StrTest;
 import test.obj.list.numberlist.NumberItemListTest;
 import test.obj.number.NumberBinaryOpsTest;
+import test.obj.number.NumberTest;
 import test.obj.number.RationalNumTest;
 
 public abstract class Test {
@@ -27,5 +28,6 @@ public abstract class Test {
 		new NumberBinaryOpsTest().runTests();
 		new RationalNumTest().runTests();
 		new StrTest().runTests();
+		new NumberTest().runTests();
 	}
 }

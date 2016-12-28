@@ -769,20 +769,20 @@ class OP_Conditional extends Operation {
 		final Obj b = block.pop();
 		final Obj c = block.pop();
 		//   c      b     a
-		//{true} {false} cond
+		//{false} {true} cond
 		
 		
 		if(a.bool()) {			
-			if(c.isa(BLOCK)) {
-				block.addAll(((Block)c).duplicate().getInstructions().getInstrucionList());
-			} else {
-				block.push(c);
-			}
-		} else {
 			if(b.isa(BLOCK)) {
 				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
 			} else {
 				block.push(b);
+			}
+		} else {
+			if(c.isa(BLOCK)) {
+				block.addAll(((Block)c).duplicate().getInstructions().getInstrucionList());
+			} else {
+				block.push(c);
 			}
 		}
 		
