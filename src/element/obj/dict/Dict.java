@@ -14,34 +14,57 @@ import element.variable.VariableSet;
 public class Dict extends Obj {
 	
 	/** The map of key-value pairs */
-	private VariableSet _vars;
+	protected VariableSet _vars;
+	
+	/** Metatable for the dict */
+	protected VariableSet _meta;
+
+	/** Create a new empty dict, use the unput dict as the metatable */
+	public Dict(Dict metatable) {
+		_vars = new VariableSet(false);
+		_meta = metatable._vars;
+	}
 	
 	/** Create a new dict given a variable set */
 	public Dict(VariableSet vars) {
 		_vars = vars;
+		_meta = null;
+	}
+	
+	/** Set the metatable to the input dict */
+	public void setMetaTable(Dict d) {
+		_meta = d._vars;
 	}
 
 	/** Get the object assigned to key {@code v} 
 	 * If this key is unassigned, throw an error */
 	public Obj get(KeyVariable v) {
+		// First search object vars...
 		Obj o = _vars.getObject(v);
 		if (o == null) {
-			throw new UndefVarException("Dict does not contain key '" + v.toString() + "'");
-		} else {
-			return o;
+			// ...then search meta vars if there are any
+			o = _meta == null ? null : _meta.getObject(v);
+			if (o == null) {
+				throw new UndefVarException("Dict does not contain key '" + v.toString() + "'");
+			}
 		}
+		return o;
 	}
 	
 	/** Get the object assigned to key whos name is {@code s} 
 	 * If this key is unassigned, throw an error
 	 */
 	public Obj get(String s) {
+		// First search object vars...
 		Obj o = _vars.getObject(Variable.encodeString(s));
 		if (o == null) {
-			throw new UndefVarException("Dict does not contain key \"" + s + "\"");
-		} else {
-			return o;
+			// ...then search meta vars if there are any
+			o = _meta == null ? null : _meta.getObject(Variable.encodeString(s));
+			if (o == null) {
+				throw new UndefVarException("Dict does not contain key '" + s + "'");
+			}
 		}
+		return o;
 	}
 	
 	/** Set a key-value pair.
@@ -137,6 +160,10 @@ public class Dict extends Obj {
 	@Override
 	public byte type() {
 		return Obj.DICT;
+	}
+
+	public boolean hasMetaTable() {
+		return _meta != null; 
 	}
 
 }

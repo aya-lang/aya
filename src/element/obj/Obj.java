@@ -22,6 +22,8 @@ public abstract class Obj {
 	public static final byte DICT = 4;
 	
 	public static final byte BLOCK = 5;
+
+	public static final byte USEROBJ = 6;
 	
 	public static String typeName(byte type) {
 		switch (type) {

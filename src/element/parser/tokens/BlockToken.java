@@ -38,7 +38,8 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				return new DictFactory(b);
-			} else {
+			}			
+			else {
 				Block b = new Block();
 				b.add(Flag.getFlag(Flag.POPVAR)); //Pop the local variables when the block is finished
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions

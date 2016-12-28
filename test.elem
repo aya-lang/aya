@@ -118,7 +118,10 @@
 { {,{,5:x}:x;}.x.x} assert [5]
 
 
-
+.# Objects 
+{{, {self, self.x 2* self.:x}:double}:d; d!:p; 3p.:x; p.double.x}
+assert
+[6]
 
 
 

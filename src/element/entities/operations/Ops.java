@@ -227,6 +227,12 @@ class OP_Bang extends Operation {
 		else if (o.isa(Obj.CHAR)) {
 			block.push(((Char)o).swapCase());
 		}
+		
+		else if (o.isa(DICT)) {
+			//Create a new empty dict with the input as its metatable
+			block.push(new Dict((Dict)o));
+
+		}
 //		else if (isModule(o)) {
 //			Module m = toModule(o);
 //			if(m.hasVar(Ops.MEMVAR_NEW)) {
