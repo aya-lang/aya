@@ -3,6 +3,7 @@ package element.obj.dict;
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.UndefVarException;
 import element.obj.Obj;
+import element.obj.block.Block;
 import element.variable.Variable;
 import element.variable.VariableSet;
 
@@ -12,6 +13,9 @@ import element.variable.VariableSet;
  *
  */
 public class Dict extends Obj {
+	
+	public static final long STR = Variable.encodeString("str");
+	public static final long REPR = Variable.encodeString("repr");
 	
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
@@ -140,22 +144,38 @@ public class Dict extends Obj {
 
 	@Override
 	public String repr() {
-		StringBuilder sb = new StringBuilder("{, ");
-		for (Long l : _vars.getMap().keySet()) {
-			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+		if (_meta != null &&_meta.getObject(REPR) != null) {
+			Obj obj_str = _meta.getObject(REPR);
+			if(obj_str.isa(Obj.BLOCK)) {
+				Block blk_show = ((Block)obj_str).duplicate();
+				blk_show.push(this);
+				blk_show.eval();
+				Obj obj_res = blk_show.pop();
+				return obj_res.str();
+			} else {
+				return obj_str.str();
+			}
+		} else {
+			return dictStr();
 		}
-		sb.append("}");
-		return sb.toString();
 	}
 
 	@Override
 	public String str() {
-		StringBuilder sb = new StringBuilder("{, ");
-		for (Long l : _vars.getMap().keySet()) {
-			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+		if (_meta != null && _meta.getObject(STR) != null) {
+			Obj obj_str = _meta.getObject(STR);
+			if(obj_str.isa(Obj.BLOCK)) {
+				Block blk_show = ((Block)obj_str).duplicate();
+				blk_show.push(this);
+				blk_show.eval();
+				Obj obj_res = blk_show.pop();
+				return obj_res.str();
+			} else {
+				return obj_str.str();
+			}
+		} else {
+			return dictStr();
 		}
-		sb.append("}");
-		return sb.toString();
 	}
 
 	@Override
@@ -190,5 +210,33 @@ public class Dict extends Obj {
 	public boolean hasMetaTable() {
 		return _meta != null; 
 	}
+	
+	////////////////////
+	// HELPER METHODS //
+	////////////////////
+	
+	private String dictStr() {
+		StringBuilder sb = new StringBuilder("{, ");
+		for (Long l : _vars.getMap().keySet()) {
+			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
+//	if(module.hasVar(MV_STR)) {
+//		Obj obj_str = module.get(MV_STR);
+//		if(obj_str.isa(Obj.BLOCK)) {
+//			Block blk_show = ((Block)obj_str).duplicate();
+//			blk_show.push(this);
+//			blk_show.eval();
+//			Obj obj_res = blk_show.pop();
+//			return obj_res.str();
+//		} else {
+//			return obj_str.str();
+//		}
+//	} else {
+//		return "<" + module.toString() + " instance>";
+//	}
 
 }
