@@ -550,7 +550,7 @@ class OP_Minus extends Operation {
 
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).add((Number)b) );
+			block.push( ((Number)a).sub((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(CHAR)) {
 			block.push(((Char)b).subFrom((Number)a));
 		} else if (a.isa(CHAR) && b.isa(Obj.NUMBER)) {
