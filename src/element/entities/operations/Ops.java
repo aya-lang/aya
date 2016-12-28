@@ -411,7 +411,15 @@ class OP_Percent extends Operation {
 			} catch (ArithmeticException e) {
 				throw new ElementRuntimeException("%: Divide by 0");
 			}
-		} else if (a.isa(NUMBER) && b.isa(BLOCK)) {
+		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).modFrom((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).mod((Number)a) );
+		}
+		else if (a.isa(NUMBER) && b.isa(BLOCK)) {
 			int repeats = ((Number)(a)).toInt();
 			Block blk = ((Block)b);
 			for (int i = 0; i < repeats; i ++) {
@@ -453,6 +461,7 @@ class OP_And extends Operation {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).band((Number)b) );
 		} 
+		
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
 			Matcher m = Pattern.compile(a.str()).matcher(b.str());
@@ -488,6 +497,13 @@ class OP_Times extends Operation {
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).mul((Number)b) );
+		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).mul((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).mul((Number)a) );
 		}
 //		else if (isUserObject(a)) {
 //			block.push(b);
@@ -570,6 +586,15 @@ class OP_Minus extends Operation {
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
 			block.push( ((Char)a).sub((Char)b) );
 		}
+		
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).sub((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).subFrom((Number)a) );
+		}
+		
 //		else if (isUserObject(b)) {
 //			block.push(a);
 //			toUserObject(b).callVariable(block, Ops.MV_MINUS);
@@ -599,12 +624,20 @@ class OP_Divide extends Operation {
 			//b div a
 			block.push( ((Number)b).div((Number)a) );
 		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).divFrom((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).div((Number)a) );
+		}
 //		else if (isUserObject(a)) {
 //			block.push(b);
 //			toUserObject(a).callVariable(block, Ops.MV_FSLASH);
 //		} else if (isUserObject(b)) {
 //			toUserObject(b).callVariable(block, Ops.MV_FSLASH, a);
 //		}
+	
 		else {
 			throw new TypeError(this, a,b);
 		}
@@ -1571,6 +1604,14 @@ class OP_Caret extends Operation {
 			block.push( ((Number)b).pow((Number)a) );
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push(new Num( ((Str)a).levDist((Str)b) ));
+		}
+		
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).powFrom((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).pow((Number)a) );
 		}
 //		else if (isUserObject(a)) {
 //			block.push(b);

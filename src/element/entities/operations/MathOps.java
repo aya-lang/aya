@@ -5,6 +5,7 @@ import static element.obj.Obj.CHAR;
 import static element.obj.Obj.LIST;
 import static element.obj.Obj.NUM;
 import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.NUMBERLIST;
 import static element.obj.Obj.STR;
 
 import java.awt.Color;
@@ -30,6 +31,7 @@ import element.obj.list.List;
 import element.obj.list.ObjList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
+import element.obj.list.numberlist.NumberList;
 import element.obj.number.BigNum;
 import element.obj.number.Num;
 import element.obj.number.Number;
@@ -277,7 +279,11 @@ class OP_Abs extends Operation {
 		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).abs());
-		} else {
+		}
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).abs());
+		}
+		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
@@ -295,7 +301,11 @@ class OP_Acosine extends Operation {
 		Obj n = block.pop();
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).acos());
-		} else {
+		}
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).acos());
+		}
+		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
@@ -389,7 +399,11 @@ class OP_Log extends Operation {
 		Obj a = block.pop();
 		if(a.isa(NUMBER)) {
 			block.push(((Number)a).log());
-		} else {
+		}
+		else if (a.isa(NUMBERLIST)) {
+			block.push(((NumberList)a).log());
+		}
+		else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -461,9 +475,13 @@ class OP_Asine extends Operation {
 		Obj n = block.pop();
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).asin());
-			return;
+		}		
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).asin());
 		}
-		throw new TypeError(this.name, this.argTypes, n);
+		else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
 	}
 }
 
@@ -479,9 +497,13 @@ class OP_Atangent extends Operation {
 		Obj n = block.pop();
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).atan());
-			return;
 		}
-		throw new TypeError(this.name, this.argTypes, n);
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).atan());
+		}
+		else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
 	}
 }
 
@@ -765,7 +787,12 @@ class OP_Cosine extends Operation {
 			block.push(((Number)n).cos());
 			return;
 		}
-		throw new TypeError(this.name, this.argTypes, n);
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).acos());
+		}
+		else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
 	}
 }
 
@@ -891,11 +918,15 @@ class OP_Ln extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		Obj a = block.pop();
-		if(a.isa(NUMBER)) {
-			block.push(((Number)a).ln());
-		} else {
-			throw new TypeError(this, a);
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).ln());
+		} 
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).ln());
+		}
+		else {
+			throw new TypeError(this, n);
 		}
 	}
 }
@@ -937,7 +968,11 @@ class OP_SquareRoot extends Operation {
 		Obj n = block.pop();
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sqrt());
-		} else {
+		}
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).sqrt());
+		}
+		else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -956,7 +991,11 @@ class OP_Sine extends Operation {
 		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sin());
-		} else {
+		}
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).sin());
+		}
+		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
@@ -978,7 +1017,11 @@ class OP_Tangent extends Operation {
 		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).tan());
-		} else {
+		}
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).tan());
+		}
+		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
