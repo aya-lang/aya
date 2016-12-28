@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.number.Num;
 import element.obj.number.Number;
-import test.Stopwatch;
 import test.Test;
 
 public class NumberItemListTest extends Test {
@@ -109,17 +108,17 @@ public class NumberItemListTest extends Test {
 		Test.eq(oneSix.slice(4,6), ls(5,6), "slice 4 6");
 		
 		// Timing
-		ArrayList<Number> tenMillion_AL = new ArrayList<>(1_000_000);
-		for (double i = 1.0; i <= 10_000_000.0; i++) {
-			tenMillion_AL.add(new Num(i));
-		}
-		NumberItemList oneMillion = new NumberItemList(tenMillion_AL);
-		
-		Stopwatch sw = new Stopwatch();
-		sw.start();
-		Number sum = oneMillion.add(Num.ONE).sum();
-		sw.stop();
-		System.out.println("Execution took " + sw.secs() + " seconds. The sum is " + sum);
+//		ArrayList<Number> tenMillion_AL = new ArrayList<>(1_000_000);
+//		for (double i = 1.0; i <= 1_000_000.0; i++) {
+//			tenMillion_AL.add(new Num(i));
+//		}
+//		NumberItemList oneMillion = new NumberItemList(tenMillion_AL);
+//		
+//		Stopwatch sw = new Stopwatch();
+//		sw.start();
+//		Number sum = oneMillion.add(Num.ONE).sum();
+//		sw.stop();
+//		System.out.println("Execution took " + sw.secs() + " seconds. The sum is " + sum);
 		
 		
 		
