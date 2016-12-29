@@ -165,8 +165,8 @@ import "base/std"
 {ascii {islower} I #toupper} assert ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
 {["ab""cd""ef"] "_" join } assert ["ab_cd_ef"]
 {["ab"] "_" join } assert ["ab"]
-
-"All tests passed! ($(M$))" .P
+{"\n \tabc\n \t " trim} assert ["abc"]
+"All tests passed! ($(M$))\n" .P
 
 
 

@@ -248,6 +248,15 @@ public class Parser {
 						case 'n':
 							str.append('\n');
 							break;
+						case 'r':
+							str.append('\r');
+							break;
+						case 'b':
+							str.append('\b');
+							break;
+						case 'f':
+							str.append('\f');
+							break;
 						case 't':
 							str.append('\t');
 							break;
@@ -653,6 +662,15 @@ public class Parser {
 					break;
 				case 't':
 					str.append('\t');
+					break;
+				case 'r':
+					str.append('\r');
+					break;
+				case 'b':
+					str.append('\b');
+					break;
+				case 'f':
+					str.append('\f');
 					break;
 				case '"':
 					str.append('"');
