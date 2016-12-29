@@ -3,18 +3,18 @@
 .{? type: date
     The date type provides operations for accessing date and time variables.
 .}
-{@date,
-  attr "ms"
+{,
 
-  {[M$] date MO}:now;
+  {{,M$:ms} date MO}:now;
 
   {in, [
-    {[in] date MO} in.T'D= .?
-    {[in "yyyy-MM-dd" MH] date MO} in.T'S= .?
+    {{,in:ms} date MO} in.T'D= .?
+    {{,in "yyyy-MM-dd" MH:ms} date MO} in.T'S= .?
     {"Expected S|D, recieved: $in".D}
   ].S }:new;
 
-  {.ms "MMM dd, yyyy h:mm:ss a" Mh}:show;
+  {.ms "MMM dd, yyyy h:mm:ss a" Mh}:repr;
+  {.repr}:str;
 
   {.msMD0I}:dayofweekid;
   {.msMD0I dates.weekdays\V I}:dayofweek;
@@ -30,14 +30,14 @@
   {.ms"a"Mh}:ampm;
 
   {unit self,
-    self.ms unit.ms + self.setms
+    self.ms unit.ms + self.:ms;
     self
-  }:plus;
+  }:add;
 
   {unit self,
-    self.ms unit.ms - self.setms
+    self.ms unit.ms - self.:ms;
     self
-  }:minus;
+  }:sub;
 
   {.ms}:dollar;
 
@@ -48,10 +48,10 @@
   {.ms"MM/dd/yy"Mh}:mmddyy;
   {.ms"MM/dd/yyyy"Mh}:mmddyyyy;
   {d, "$(d.h):$(d.m)"}:timestr;
-}
+}:date;
 
 .#? module: dateunit\n  static namespace defining units related to dates
-{@dateunit,
+{,
   [
     ["year" 31536000000]
     ["month" 2628000000]
@@ -66,20 +66,19 @@
     u0I:name;
     u1I:conv;
     "
-    {@$name,
-      attr \"n\"
-      {nD, [n] dateunit.$name MO}:new;
+    {,
+      {nD, {,n:n} dateunit.$name MO}:new;
       {.n\" dates.$name\"+}:show;
       {.n $conv*}:ms;
-      {\+}:plus;
-      {\-}:minus;
-    }
+      {\+}:add;
+      {\-}:sub;
+    }:$name;
     "~
   };
-}
+}:dateunit;
 
 .#? module: dates\n  static namespace for date related variables
-{@dates,
+{,
   .# Units
   for 'u (dateunit.units) {:name,
     u0I:name;
@@ -101,6 +100,6 @@
    "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"
   ]:monthsabb;
 
-}
+}:dates;
 
 {date.now}:now;
