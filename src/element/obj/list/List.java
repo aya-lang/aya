@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import element.obj.Obj;
 import element.obj.list.numberlist.NumberList;
 
+/** List supertype */
 public abstract class List extends Obj {
 	
 	/** Index from the back if negative */
@@ -98,14 +99,33 @@ public abstract class List extends Obj {
 	// LIST MODIFICATIONS //
 	////////////////////////
 	
+	/** Set index i of the list to Obj o, throws an exception 
+	 * if the list is of lower type than o. (Ex: insert "hello" 
+	 * into a NumberList)
+	 */
 	public abstract void set(int i, Obj o);
 	
+	/** Add item to the end of the list. throws an exception 
+	 * if the list is of lower type than o. (Ex: insert "hello" 
+	 * into a NumberList)
+	 */
 	public abstract void addItem(Obj o);
 	
+	/** Insert an item into the list at pos i. throws an exception 
+	 * if the list is of lower type than o. (Ex: insert "hello" 
+	 * into a NumberList)
+	 */
 	public abstract void addItem(int i, Obj o);
 	
+	/** Extent the current list with l. throws an exception 
+	 * if the list is of lower type than o.
+	 * ( Ex. {@code [1 2 3].extend(['a 'b 'c])} )
+	 */
 	public abstract void addAll(List l);
 	
+	/** Convert to numeric list. Throw an exception
+	 * if the list contains non-numbers
+	 */
 	public abstract NumberList toNumberList();
 
 	
