@@ -26,6 +26,25 @@ public abstract class List extends Obj {
 		return new GenericList(out).promote();
 	}
 	
+	/** Remove all occurrences of the items in objs from list */
+	public static void removeAllOccurances(List list, List objs) {
+		List unique = objs.unique();
+		 
+		// Loop through each item in the unique list
+		for (int i = 0; i < unique.length(); i++) {
+			// As long as there exists this item in the list, remove it
+			boolean moreItems = true;
+			do {
+				int idx = list.find(unique.get(i));
+				if (idx == -1) {
+					moreItems = false;
+				} else {
+					list.remove(idx);
+				}
+			} while (moreItems);
+		}
+	}
+	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////

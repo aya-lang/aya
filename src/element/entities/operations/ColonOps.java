@@ -116,7 +116,7 @@ public class ColonOps {
 		/* 121 y */ null, // Assignment
 		/* 122 z */ null, // Assignment
 		/* 123 { */ null,
-		/* 124 | */ null,
+		/* 124 | */ new OP_SetMinus(),
 		/* 125 } */ null,
 		/* 126 ~ */ new OP_Colon_Tilde()
 	};
@@ -151,26 +151,7 @@ public class ColonOps {
 }
 
 
-////- - 45
-//class OP_SetMinus extends Operation {
-//	public OP_SetMinus() {
-//		this.name = ":-";
-//		this.info = "LL remove all elements in L2 from L1";
-//		this.argTypes = "LL";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Object a = block.pop();
-//		Object b = block.pop();
-//		
-//		if (bothList(a,b)) {
-//			ListOperations.removeObjects(toList(b), toList(a));
-//			block.push(b);
-//		} else {
-//			throw new TypeError(this, a, b);
-//		}
-//	}
-//}
+
 
 
 //Z - 90
@@ -233,7 +214,26 @@ class OP_Colon_Underscore extends Operation {
 	}
 }
 
-
+//| - 124
+class OP_SetMinus extends Operation {
+	public OP_SetMinus() {
+		this.name = ":|";
+		this.info = "LL remove all elements in L2 from L1";
+		this.argTypes = "LL";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
+		
+		if (a.isa(LIST) && b.isa(LIST)) {
+			List.removeAllOccurances((List)b, (List)a);
+			block.push(b);
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
 
 //~ - 126
 class OP_Colon_Tilde extends Operation {

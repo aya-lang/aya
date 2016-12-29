@@ -236,7 +236,7 @@ public class Str extends List implements Comparable<Str> {
 	    }
 	    return new Str(unique.toString());
 	}
-	
+
 	@Override
 	public NumberItemList toNumberList() {
 		char[] chars = _str.toCharArray();

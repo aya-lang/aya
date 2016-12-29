@@ -233,6 +233,9 @@ import "base/date"
 import "base/dialog"
 import "base/docs"
 import "base/files"
+import "base/golf"
+import "base/queue"
+import "base/set"
 
 .# import "base/demo"
 

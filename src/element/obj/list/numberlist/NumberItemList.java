@@ -566,6 +566,7 @@ public class NumberItemList extends NumberList {
 		return this;
 	}
 
+
 	@Override
 	public void addItem(Obj o) {
 		if (o.isa(Obj.NUMBER)) {
@@ -689,6 +690,8 @@ public class NumberItemList extends NumberList {
 		
 		return new NumberItemList(primeList);
 	}
+
+
 
 
 

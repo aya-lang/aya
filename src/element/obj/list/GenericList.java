@@ -207,6 +207,8 @@ public class GenericList extends List {
 			}
 		}
 	}
+	
+
 
 	@Override
 	public int find(Obj o) {
