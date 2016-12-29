@@ -1,5 +1,7 @@
 package element.obj.number;
 
+import java.text.DecimalFormat;
+
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 
@@ -345,12 +347,15 @@ public class Num extends Number {
 		return _val != 0.0;
 	}
 
+	private static final DecimalFormat _df = new DecimalFormat("#");
+    static {_df.setMaximumFractionDigits(8);}
+    
 	@Override
 	public String repr() {
 		if (_val % 1 == 0) {
 			return String.format("%d",(long)_val);
 		} else {
-			return String.format("%s", _val);
+			return _df.format(_val);
 		}
 	}
 
@@ -359,7 +364,7 @@ public class Num extends Number {
 		if (_val % 1 == 0) {
 			return String.format("%d",(long)_val);
 		} else {
-			return String.format("%s", _val);
+			return _df.format(_val);
 		}
 	}
 

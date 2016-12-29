@@ -223,7 +223,11 @@ import "base/colors"
 
 {"2d2d5a" color.newhex} assert [45 45 90 color!]
 
-.# import "base/constans"
+import "base/constants"
+
+import "base/dataframe"
+
+import "base/data"
 
 "All tests passed! ($(M$))\n" .P
 

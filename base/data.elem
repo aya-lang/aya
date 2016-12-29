@@ -1,4 +1,4 @@
-{@data,
+{,
 	`:cardsabb		(['\heart''\diamnd''\club''\spade']"A23456789TJQK"{P+}permusing!{K}U);
 	`:monthsname	["January" "February" "March" "April" "May" "June" "July"
 				 "August" "September" "October" "November" "December"];
@@ -74,12 +74,12 @@
 
 	.# R Datasets
 	.#? data.haireyecolor\n  hair color, eye color, and sex for a group of people
-	"data/rdatasets/HairEyeColor.csv" TT dataframe.opencsv:haireyecolor;
+	"data/rdatasets/HairEyeColor.csv" 1 1 dataframe.opencsv:haireyecolor;
 	.#? data.lakehuron\n  water levels for lake huron from 1875 to 1972
-	"data/rdatasets/LakeHuron.csv" TT dataframe.opencsv:lakehuron;
+	"data/rdatasets/LakeHuron.csv" 1 1 dataframe.opencsv:lakehuron;
 
 	.#? data.words \n complete list of english scrabble words
 	"data/words.txt"G"\n"|:words;
 
 
-} .# end data module
+}:data; 
