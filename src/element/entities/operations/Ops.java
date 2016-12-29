@@ -119,7 +119,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ null, 
+		/* 84 T  */ new OP_T(), 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),
