@@ -10,6 +10,7 @@ import element.obj.list.List;
 import element.obj.number.Num;
 import element.obj.number.Number;
 
+/** List containing a list of Number objects */
 public class NumberItemList extends NumberList {
 	
 	ArrayList<Number> _list;
@@ -26,6 +27,10 @@ public class NumberItemList extends NumberList {
 		}
 	}
 
+	//////////////////////////
+	// NUMBERLIST OVERRIDES //
+	//////////////////////////
+	
 	@Override
 	public Number max() {
 		Number max = Num.MIN_VALUE;
@@ -654,8 +659,9 @@ public class NumberItemList extends NumberList {
 		return Obj.NUMBERITEMLIST;
 	}
 
-	
+	//////////////////////
 	// HELPER FUNCTIONS //
+	//////////////////////
 	
 	/** Primes up to n **/
 	public static NumberItemList primes(int n) {
@@ -670,12 +676,6 @@ public class NumberItemList extends NumberList {
 				z += i;
 			}
 		}
-	
-//		//Count the number of primes
-//		int primeCount = 0;
-//		for (int i = 2; i <= n; i++) {
-//			primeCount += flags[i-1] ? 1 : 0;
-//		}
 		
 		//Allocate new array
 		ArrayList<Number> primeList = new ArrayList<Number>();
