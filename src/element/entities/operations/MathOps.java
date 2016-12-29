@@ -29,7 +29,7 @@ import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.dict.Dict;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.list.numberlist.NumberList;
@@ -690,7 +690,7 @@ class OP_SysConfig extends Operation {
 					for (String s : dirs) {
 						obj_dirs.add(new Str(s));
 					}
-					b.push(new ObjList(obj_dirs));
+					b.push(new GenericList(obj_dirs));
 				} catch (NullPointerException e) {
 					throw new ElementRuntimeException("arg 4 MZ: arg is not a valid location. Recieved:\n" + fstr);
 				}

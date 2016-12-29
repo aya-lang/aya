@@ -32,7 +32,7 @@ import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberList;
 import element.obj.number.BigNum;
@@ -238,7 +238,7 @@ class OP_Dot_SortUsing extends Operation {
 				out.add(i.o);
 			}
 			
-			block.push(new ObjList(out).promote());
+			block.push(new GenericList(out).promote());
 			
 		} else {
 			throw new TypeError(this, a);
@@ -457,7 +457,7 @@ class OP_Dot_ArrayAll extends Operation {
 		ArrayList<Obj> list = new ArrayList<Obj>();
 		list.addAll((Stack<Obj>)block.getStack().clone());
 		block.clearStack();	
-		block.push(new ObjList(list));
+		block.push(new GenericList(list));
 	}
 }
 
@@ -540,7 +540,7 @@ class OP_Dot_Flatten extends Operation {
 			if (n.isa(STR) || n.isa(NUMBERLIST)) {
 				block.push(n.deepcopy());
 			} else {
-				block.push(List.flatten((ObjList)n));
+				block.push(List.flatten((GenericList)n));
 			}
 		} else {
 			throw new TypeError(this, n);

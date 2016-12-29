@@ -23,7 +23,7 @@ public abstract class List extends Obj {
 				out.add(l.get(i));
 			}
 		}
-		return new ObjList(out).promote();
+		return new GenericList(out).promote();
 	}
 	
 	/////////////////////

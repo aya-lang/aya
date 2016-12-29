@@ -10,13 +10,14 @@ import element.obj.list.numberlist.NumberItemList;
 import element.obj.number.Num;
 import element.obj.number.Number;
 
-public class ObjList extends List {
+/** List of objects of any type */
+public class GenericList extends List {
 		
 	private ArrayList<Obj> _list;
 	private int _chars;
 	private int _nums;
 	
-	public ObjList(ArrayList<Obj> list) {
+	public GenericList(ArrayList<Obj> list) {
 		_list = list;
 		_chars = 0;
 		_nums = 0;
@@ -29,7 +30,7 @@ public class ObjList extends List {
 	/** Create a new numeric list by repeating item, repeats times. 
 	 * Uses deepcopy() to copy the items into the list 
 	 */
-	public ObjList(Obj item, int repeats) {
+	public GenericList(Obj item, int repeats) {
 		_list = new ArrayList<Obj>(repeats);
 		for (int i = 0; i < repeats; i++) {
 			_list.add(item.deepcopy());
@@ -46,14 +47,17 @@ public class ObjList extends List {
 	// CONVERSION & PROMOTION //
 	////////////////////////////
 	
+	/** Return true if all elements are of type Char */
 	private boolean isStr() {
 		return _list.size() != 0 && _chars == _list.size();
 	}
 	
+	/** Return true if all elements ar of type Number */
 	private boolean isNumericList() {
 		return _list.size() != 0 && _nums == _list.size();
 	}
 	
+	/** Convert to string assuming all items are Char */
 	private Str asStr() {
 		char[] cs = new char[_list.size()];
 		for (int i = 0; i < _list.size(); i++) {
@@ -62,6 +66,7 @@ public class ObjList extends List {
 		return new Str(new String(cs));
 	}
 	
+	@Override
 	public NumberItemList toNumberList() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
@@ -116,7 +121,7 @@ public class ObjList extends List {
 				out.add(Num.ZERO); //Pad with 0s
 			}
 		}
-		return new ObjList(out);
+		return new GenericList(out);
 	}
 
 	@Override
@@ -133,7 +138,7 @@ public class ObjList extends List {
 			}
 			out.addAll(_list);
 		}	
-		return new ObjList(out);
+		return new GenericList(out);
 	}
 
 	@Override
@@ -174,7 +179,7 @@ public class ObjList extends List {
 		for (int x = i; x < j; x++) {
 			out.add(_list.get(x));
 		}
-		return new ObjList(out);
+		return new GenericList(out);
 	}
 
 	@Override
@@ -258,7 +263,7 @@ public class ObjList extends List {
 	}
 	
 	@Override
-	public ObjList unique() {
+	public GenericList unique() {
 		ArrayList<Obj> unique = new ArrayList<Obj>();
 		for (Obj l : _list) {
 			boolean alreadyContains = false;
@@ -272,7 +277,7 @@ public class ObjList extends List {
 				unique.add(l);
 			}
 		}
-		return new ObjList(unique);
+		return new GenericList(unique);
 	}
 	
 	@Override
@@ -307,7 +312,7 @@ public class ObjList extends List {
 		for (Obj o : _list) {
 			out.add(o.deepcopy());
 		}
-		return new ObjList(out);
+		return new GenericList(out);
 	}
 
 	@Override
@@ -332,8 +337,8 @@ public class ObjList extends List {
 	@Override
 	public boolean equiv(Obj o) {
 		// Must be an ObjList
-		if (o instanceof ObjList) {
-			ObjList objList = (ObjList)o;
+		if (o instanceof GenericList) {
+			GenericList objList = (GenericList)o;
 			// Must have the same length
 			if (objList.length() == this.length()) {
 				// Every corresponding item must be equivalent

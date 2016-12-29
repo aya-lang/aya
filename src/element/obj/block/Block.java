@@ -21,7 +21,7 @@ import element.obj.dict.Dict;
 import element.obj.dict.DictFactory;
 import element.obj.dict.KeyVariable;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 import element.obj.list.Str;
 import element.variable.Variable;
 import element.variable.VariableSet;
@@ -264,7 +264,7 @@ public class Block extends Obj {
 			out.addAll(b.stack);
 			b.clear();
 		}
-		return new ObjList(out).promote();
+		return new GenericList(out).promote();
 	}
 	
 	/** Applies this block as a filter to a list */
@@ -280,7 +280,7 @@ public class Block extends Obj {
 			}
 			b.clear();
 		}
-		return new ObjList(out).promote();
+		return new GenericList(out).promote();
 	}
 	
 	/** Returns a string representation of the output stack */

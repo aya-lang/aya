@@ -10,7 +10,7 @@ import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.number.BigNum;
@@ -94,10 +94,10 @@ public class ListBuilder {
 				list.addAll(b.getStack());
 			}
 			
-			outList = new ObjList(list).promote();
+			outList = new GenericList(list).promote();
 			
 		} else {
-			outList = buildRange(new ObjList(res));							//Create the initial range
+			outList = buildRange(new GenericList(res));							//Create the initial range
 			if(map != null) {
 				outList = this.map.mapTo(outList);				//Map 'map' to the list
 			}
@@ -327,7 +327,7 @@ public class ListBuilder {
 		for(int i = 0; i < os.length; i++) {
 			list.add(os[i]);
 		}
-		return new ObjList(list);
+		return new GenericList(list);
 	}
 	
 	public static Obj arrToAL(int[] os) {

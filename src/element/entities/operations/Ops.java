@@ -37,7 +37,7 @@ import element.obj.character.Char;
 import element.obj.dict.Dict;
 import element.obj.dict.KeyVariable;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.list.numberlist.NumberList;
@@ -474,7 +474,7 @@ class OP_And extends Operation {
 			while (m.find()) {
 				 allMatches.add(new Str(m.group()));
 			}
-			block.push(new ObjList(allMatches));
+			block.push(new GenericList(allMatches));
 		}
 		else if (a.isa(DICT)) {
 			block.push(b);
@@ -867,7 +867,7 @@ class OP_A extends Operation {
 	@Override public void execute (final Block block) {
 		final ArrayList<Obj> al = new ArrayList<Obj>();
 		al.add(block.pop());
-		block.push(new ObjList(al));
+		block.push(new GenericList(al));
 	}
 }
 
@@ -1187,7 +1187,7 @@ class OP_L extends Operation {
 			} else if (item.isa(NUMBER)) {
 				block.push( new NumberItemList((Number)item, repeats) );
 			} else {
-				block.push( new ObjList(item, repeats) );
+				block.push( new GenericList(item, repeats) );
 			}
 
 		} else {
@@ -1247,7 +1247,7 @@ class OP_K extends Operation {
 			final ArrayList<Obj> list = new ArrayList<Obj>();
 			list.add(b);  //Stack - Add in reverse order
 			list.add(a);
-			block.push(new ObjList(list).promote());
+			block.push(new GenericList(list).promote());
 		}
 	}
 }
@@ -1363,7 +1363,7 @@ class OP_S extends Operation {
 			// Attempt to promote the list
 			List l = (List)a;
 			if (l.isa(Obj.OBJLIST)) {
-				l = ((ObjList)l).promote();
+				l = ((GenericList)l).promote();
 			}
 			
 			//Using the new Promoted list, use Str, NumberList, or ObjList
@@ -1668,7 +1668,7 @@ class OP_Bar extends Operation {
 			for(String s : list) {
 				res.add(new Str(s));
 			}
-			block.push(new ObjList(res));
+			block.push(new GenericList(res));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
 			int index = ((Number)a).toInt();
 			List l = (List)b;

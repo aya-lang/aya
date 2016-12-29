@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.list.List;
-import element.obj.list.ObjList;
+import element.obj.list.GenericList;
 
 public class ListLiteral extends Block {
 	//The number of items that should be popped from the stack and added to the front of this list
@@ -32,7 +32,7 @@ public class ListLiteral extends Block {
 		}
 		
 		ll.eval();
-		return new ObjList(new ArrayList<Obj>(ll.stack)).promote();
+		return new GenericList(new ArrayList<Obj>(ll.stack)).promote();
 	}
 	
 	@Override
