@@ -163,7 +163,8 @@ import "base/std"
 {ascii {isupper} I} assert ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"] 
 {ascii {isupper} I #tolower} assert ["abcdefghijklmnopqrstuvwxyz"]
 {ascii {islower} I #toupper} assert ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
-
+{["ab""cd""ef"] "_" join } assert ["ab_cd_ef"]
+{["ab"] "_" join } assert ["ab"]
 
 "All tests passed! ($(M$))" .P
 

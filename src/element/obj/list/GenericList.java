@@ -296,7 +296,7 @@ public class GenericList extends List {
 	public void addAll(List l) {
 		for (int i = 0; i < l.length(); i++) {
 			incCharNumCounter(l.get(i));
-			_list.add(_list.get(i));
+			_list.add(l.get(i));
 		}
 	}
 
