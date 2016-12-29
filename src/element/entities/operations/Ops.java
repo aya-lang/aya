@@ -716,7 +716,7 @@ class OP_LessThan extends Operation {
 //			}
 			
 			
-			block.push(((List)a).head(((Number)a).toInt()));
+			block.push(((List)a).head(((Number)b).toInt()));
 
 		} else {
 			throw new TypeError(this, a,b);

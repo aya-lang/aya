@@ -230,6 +230,9 @@ import "base/dataframe"
 import "base/data"
 
 import "base/date"
+import "base/dialog"
+
+.# import "base/demo"
 
 "All tests passed! ($(M$))\n" .P
 
