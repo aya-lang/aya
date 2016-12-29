@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import element.obj.list.List;
 import element.obj.number.Number;
 
+/** Supertype for all lists containing only numbers */
 public abstract class NumberList extends List {
 
 	/////////////////////
@@ -27,8 +28,10 @@ public abstract class NumberList extends List {
 	// CONVERSIONS //
 	/////////////////
 	
+	/** Convert to Integer[] */
 	public abstract Integer[] toIntegerArray();
 	
+	/** Convert to double[] */
 	public abstract double[] todoubleArray();
 	
 	///////////////////////////
@@ -139,6 +142,7 @@ public abstract class NumberList extends List {
 	// OVERRIDES //
 	///////////////
 	
+	@Override
 	public abstract Number get(int i);
 
 	
