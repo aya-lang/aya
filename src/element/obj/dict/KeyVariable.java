@@ -2,6 +2,7 @@ package element.obj.dict;
 
 import element.variable.Variable;
 
+/** Key variables are used for accessing/assigning dict variables */
 public class KeyVariable extends Variable {
 
 	public KeyVariable(long id) {
