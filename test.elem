@@ -231,6 +231,8 @@ import "base/data"
 
 import "base/date"
 import "base/dialog"
+import "base/docs"
+import "base/files"
 
 .# import "base/demo"
 
