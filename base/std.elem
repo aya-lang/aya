@@ -123,8 +123,7 @@
 .#		  STACK MANIPULATION         #
 .###################################
 
-{i:t,.Ai!.I:t;~t}:cp;    .#? N ix\n  copy the Nth element from the top of the stack to the top
-{.A{t,tV:t;~t}~}:back;   .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
+{.A{:t, V_@.V\:t;~t}~}:back;  .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
 {:t,.A_E:t;~t}:count;    .#? count\n  counts the number of items on the stack
 
 .###################################

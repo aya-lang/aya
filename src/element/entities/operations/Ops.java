@@ -105,7 +105,7 @@ public class Ops {
 		/* 67 C  */ null,
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ null, //False Literal
+		/* 70 F  */ null,
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ new OP_I(),
@@ -119,7 +119,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ null, //True Literal
+		/* 84 T  */ null, 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),
@@ -202,14 +202,14 @@ public class Ops {
 class OP_Bang extends Operation {
 	public OP_Bang() {
 		this.name = "!";
-		this.info = "<N> negate\n<S|L> reverse\n<B> logical not\n<C> swap case";
+		this.info = "<N> negate\n<S|L> reverse\n<N> 1-N (loginal not, complementary probability)\n<C> swap case";
 		this.argTypes = "S|N|L|B|C";
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
 		
 		if (o.isa(Obj.NUMBER)) {
-			block.push(((Number)o).negate());
+			block.push(Num.ONE.sub((Number)o));
 		} else if (o.isa(Obj.STR)) {
 			((Str)o).reverse();
 			block.push(o);
@@ -1396,7 +1396,22 @@ class OP_S extends Operation {
 	}
 }
 
-//T - 84 (True Literal)
+//T - 84 
+class OP_T extends Operation {
+	public OP_T() {
+		this.name = "T";
+		this.info = "N negate";
+		this.argTypes = "N";
+	}
+	@Override public void execute (final Block block) {
+		Obj a = block.pop();
+		if (a.isa(NUMBER)) {
+			block.push(((Number)a).negate());
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
 //U - 85
 class OP_U extends Operation {
@@ -1432,9 +1447,9 @@ class OP_U extends Operation {
 			//block.add(list.get(list.size()-1));
 			block.add(blist.get(0));
 			return;
+		} else {
+			throw new TypeError(this, a, b);
 		}
-			
-		throw new TypeError(this, a, b);
 	}
 }
 
