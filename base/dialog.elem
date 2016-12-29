@@ -3,13 +3,13 @@
     all functions in this module are shortcuts for the MV operator
 .}
 
-{@ dialog,
+{,
 
   .#? S dialog.requeststr\n  request a string from the user
-  {question, [] questionP [] 1 1 MV}:requeststr;
+  {question, [] questionP "" 1 1 MV}:requeststr;
 
   .#? S dialog.requestnum\n  request a number from the user
-  {question, [] questionP [] 1 2 MV}:requestnum;
+  {question, [] questionP "" 1 2 MV}:requestnum;
 
   .#? S dialog.alert\n  display a dialog box with a given message
   {text, [] text "Element" 1 3 MV}:alert;
@@ -30,8 +30,8 @@
   {question optionsL, options question "Element" 2 6 MV}:dropdown;
 
   .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
-  {[] [] [] 1 7 MV}:choosefile;
+  {[] "" "" 1 7 MV}:choosefile;
 
   .#? dialog.sci\n  interactive spell check: request a word from the user and output the top 10 closest words
   {:w, "Enter a word:" dialog.requeststr#tolower:w; data.words {w^}.$10< [1|.ER,\AK] matstr.P}:sci;
-}
+}:dialog;
