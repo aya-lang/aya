@@ -187,18 +187,13 @@
 .#? SCI strrightpad\n  right pad string S so it is at least length I using char C
 {strS padC lenN, str.E len\- {padK}\%}:strrightpad;
 
-.#? SSS replace\n  find and replace\n  <find> <replace> <str> replace
-{find replace strS,
-	str findP | | #{replace}B;S
-}:replace;
-
 .#? S isnum\n  returns true if the string is a valid number
 {.!'N isa}:isnum;
 
 .#? S tocamel\n  convert a string with underscores to camel case
 {str,
   for 'c ['a'z,] {
-    "_$c" c!P str replace :str;
+    "_$c" c! str .& :str;
   };
   str
 }:tocamel;
@@ -210,8 +205,7 @@
 {\N\;(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
 {N\;(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
 {AKR}:range;					.#? NN range\n  generates a range from n1 to n2
-{lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
-{[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
+{R#{;.Q}}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
 {{K}U}:flatten;			  .#? L flatten\n  flattens the list by a single dimension
 {B\.V}:roll;      		.#? L roll\n  move the last element to the front
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L

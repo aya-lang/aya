@@ -336,14 +336,14 @@ public class GenericList extends List {
 
 	@Override
 	public boolean equiv(Obj o) {
-		// Must be an ObjList
-		if (o instanceof GenericList) {
-			GenericList objList = (GenericList)o;
+		// Must be a list
+		if (o instanceof List) {
+			List list = (List)o;
 			// Must have the same length
-			if (objList.length() == this.length()) {
+			if (list.length() == this.length()) {
 				// Every corresponding item must be equivalent
 				for (int i = 0; i < this.length(); i++) {
-					if (!objList.get(i).equiv(_list.get(i))) {
+					if (!list.get(i).equiv(_list.get(i))) {
 						return false;
 					}
 				}

@@ -54,6 +54,10 @@ public abstract class Obj {
 			return "STR";
 		case NUMBERITEMLIST:
 			return "NUMBERITEMLIST";
+		case LIST:
+			return "LIST";
+		case BLOCK: 
+			return "BLOCK";
 		case OBJLIST:
 			return "OBJLIST";
 		case CHAR:

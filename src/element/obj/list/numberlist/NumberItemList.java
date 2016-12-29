@@ -630,13 +630,13 @@ public class NumberItemList extends NumberList {
 	@Override
 	public boolean equiv(Obj o) {
 		// Must be a numeric list
-		if (o instanceof NumberList) {
-			NumberList numList = (NumberList)o;
+		if (o instanceof List) {
+			List list = (List)o;
 			// Must have the same length
-			if (numList.length() == this.length()) {
+			if (list.length() == this.length()) {
 				// Every corresponding item must be equivalent
 				for (int i = 0; i < this.length(); i++) {
-					if (!numList.get(i).equiv(_list.get(i))) {
+					if (!list.get(i).equiv(_list.get(i))) {
 						return false;
 					}
 				}
