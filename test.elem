@@ -207,7 +207,13 @@ import "base/math"
 {[3 (-3)] #abs} assert [[3 3]]
 {[1 2 3] avg} assert [2]
 {64Z cbrt} assert [4]
-
+{1.4Z ceil} assert [2]
+{90 deg} assert [pi 2 /]
+{pi 2 / rad} assert [90]
+{1 2 smaller} assert [1]
+{1 2 bigger} assert [2]
+{[1 2 3 4 5 6] cumsum} assert [[ 1 3 6 10 15 21 ]]
+{[1 4 3 2 5] [2 5 3 1 4] pearson} assert [0.8]
 
 
 "All tests passed! ($(M$))\n" .P

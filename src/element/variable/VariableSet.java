@@ -147,6 +147,15 @@ public class VariableSet {
 		out.setAllVars((HashMap<Long, Obj>)vars.clone());
 		return out;
 	}
+	
+	/** Create a deep copy of the variable set */
+	public VariableSet deepcopy() {
+		VariableSet out = new VariableSet(argNames, argTypes);
+		for (Long l : vars.keySet()) {
+			out.setVar(l, vars.get(l).deepcopy());
+		}
+		return out;
+	}
 
 	public void clear() {
 		vars.clear();

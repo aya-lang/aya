@@ -148,7 +148,7 @@ public class Dict extends Obj {
 	@Override
 	public Obj deepcopy() {
 		// deep copy only the vars, not the metatable
-		Dict d = new Dict(_vars.clone());
+		Dict d = new Dict(_vars.deepcopy());
 		d.setMetaTable(_meta);
 		return d;
 	}

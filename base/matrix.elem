@@ -2,13 +2,13 @@
     Matrix manipulations and representations
 .}
 
-{@ matrix,
+{,
 
-  attr "rows"
+  .# attr "rows"
 
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
-  	false
+  	0
   	{											.# Both of the following must be true:
   		m#E{m0IE=}all 			.# All of the list lengths are the same
   	} m#.T{'L=}all ? 			.# The list is made up of only other lists
@@ -17,7 +17,7 @@
   .# matrix constructor: first test if it is a valid matrix
   {in,
     {P" is not a valid matrix"+.D}
-    {[in] matrix MO}
+    {{,in:rows} matrix MO}
     in matrix.is?
   }:new;
 
@@ -45,7 +45,7 @@
 
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
-    {[a.rows b.rows,=]{&}U} {F} a.dim b.dim =! ?
+    {[a.rows b.rows,=]{&}U} {0} a.dim b.dim =! ?
   }:eq;
 
 
@@ -142,7 +142,7 @@
       {a b matrix.matmul} aMw".matrix"= bMw".matrix"= & .?
       {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:star;
+  }:mul;
 
   {a b,
     [
@@ -151,7 +151,7 @@
       {a b matrix.matadd} aMw".matrix"= bMw".matrix"= & .?
       {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:plus;
+  }:add;
 
   {a b,
     [
@@ -160,7 +160,7 @@
       {a b matrix.matsub} aMw".matrix"= bMw".matrix"= & .?
       {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:minus;
+  }:sub;
 
 
   {a b,
@@ -169,19 +169,19 @@
       {b a matrix.zdiv} b'Nisa a Mw ".matrix" = & .?
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:fslash;
+  }:div;
 
   {mat expr,
     mat.rows#{#expr} mat.setrows
     mat
-  }:amp;
+  }:and;
 
   .#? (matrix) matrix.show\n  converts a matrix to a string
   {.rows matstr
-    "\n"" |\n|"@replace .# Inside bars
+    "\n"" |\n|"@.& .# Inside bars
     " |"K'|\K            .# Outside bars
     "\n"+
-  }:show;
+  }:repr;
 
   .#? N matrix.i\n  generate an Nd identity matrix
   {n,
@@ -228,6 +228,6 @@
   .#? N matrix.multiptable\n  generate n N by N multiplication table
   {[1|_R_@L\,#*] matrix!}:multiptable;
 
-}
+}:matrix;
 
 matrix:m;
