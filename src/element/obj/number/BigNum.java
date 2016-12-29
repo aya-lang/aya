@@ -321,12 +321,12 @@ public class BigNum extends Number {
 
 	@Override
 	public String repr() {
-		return trimZeros(_val.toString());
+		return trimZeros(_val.toString(true));
 	}
 
 	@Override
 	public String str() {
-		return trimZeros(_val.toString());
+		return trimZeros(_val.toString(true));
 	}
 
 	@Override
