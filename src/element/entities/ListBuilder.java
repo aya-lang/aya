@@ -147,12 +147,12 @@ public class ListBuilder {
 				return buildRange((BigNum)o);
 			case Obj.CHAR:
 				return arrToAL(charRange('a', ((Char)o).charValue(), 1));
-			case Obj.STR:
-				return (List)o;
-			case Obj.LIST:
-				return (List)o;
 			default:
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
+				if (o.isa(Obj.LIST)) {
+					return ((List)o);
+				} else {
+					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
+				}
 			}
 
 		//List range has 2 arguments

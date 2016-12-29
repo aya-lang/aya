@@ -158,9 +158,14 @@ import "base/std"
 {try { 1 10 + } {2}} assert [11]
 {1 2 3 count} assert [1 2 3 3]
 {1 2 3 back} assert [1 2 3 1]
+{ascii {islower} I} assert ["abcdefghijklmnopqrstuvwxyz"] 
+{ascii {isdigit} I} assert ["0123456789"] 
+{ascii {isupper} I} assert ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"] 
+{ascii {isupper} I #tolower} assert ["abcdefghijklmnopqrstuvwxyz"]
+{ascii {islower} I #toupper} assert ["ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
 
 
-"All tests passed!\n\n" .P
+"All tests passed! ($(M$))" .P
 
 
 
