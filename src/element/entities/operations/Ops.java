@@ -1256,8 +1256,8 @@ class OP_K extends Operation {
 class OP_N extends Operation {
 	public OP_N() {
 		this.name = "N";
-		this.info = "L<A> returns the index of the first occurance of A in L. returns -1 if not found";
-		this.argTypes = "LA";
+		this.info = "L<A> returns the index of the first occurance of A in L. returns -1 if not found\n<RS> contains key";
+		this.argTypes = "LA,RS";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop(); //Item
@@ -1269,17 +1269,8 @@ class OP_N extends Operation {
 			
 			List l = (List)b;
 			block.push(new Num(l.find(a)));
-
-//			for (Object o : toList(b)) {
-//				if (areEqual(o, a)) {
-//					block.push(new Num(index));
-//					return;
-//				}
-//				index++;
-//			}
-//			block.push(new Num(-1));
 		}
-		else if (b.isa(BLOCK) && a.isa(STR)) {
+		else if (b.isa(DICT) && a.isa(STR)) {
 			// TODO ByteNum
 			block.push( new Num(((Dict)b).containsKey(a.str())) );
 		}
