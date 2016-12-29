@@ -15,6 +15,7 @@ import element.obj.number.Number;
 /** Wrapper for strings */
 public class Str extends List implements Comparable<Str> {
 	
+	public static final Str EMPTY = new Str("");
 	private String _str;
 	
 	public String getStr() {

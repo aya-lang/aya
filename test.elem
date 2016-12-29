@@ -237,8 +237,9 @@ import "base/golf"
 import "base/queue"
 import "base/set"
 import "base/stack"
+import "base/plot"
 
-.# import "base/demo"
+import "base/demo"
 
 "All tests passed! ($(M$))\n" .P
 

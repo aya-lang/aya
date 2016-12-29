@@ -6,15 +6,19 @@ import java.util.Random;
 
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
-import element.obj.number.Number;
+import element.obj.dict.Dict;
 import element.obj.list.List;
-import element.obj.list.numberlist.NumberList;
+import element.obj.list.Str;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class ChartParams {
 	
 	public static final Random RAND = new Random();
 	public static final int DEFAULT_HEIGHT = 367;
 	public static final int DEFAULT_WIDTH = 560;
+	public static final String NONE = "";
+	public static final Str STRNONE = new Str(NONE);
 	
 	public static final int LINE = 0;
 	public static final int SCATTER = 1;
@@ -66,7 +70,7 @@ public class ChartParams {
 		this.stroke = -1.0f;
 		this.xvalues = null;
 		this.yvalues = new ArrayList<>();
-		this.filename = null;
+		this.filename = NONE;
 		this.show = true;
 		this.legend = true;
 		this.horizontal = false;
@@ -78,7 +82,7 @@ public class ChartParams {
 	
 	
 	
-	public static ChartParams parseParams(List params) {
+	public static ChartParams parseParams(Dict params) {
 		
 		/*
 		 Sample Input
@@ -94,68 +98,78 @@ public class ChartParams {
 		
 		ChartParams cp = new ChartParams();
 		
-		cp.setType((Number)getParam("type", params));
-		cp.setWidth((Number)getParam("width", params));
-		cp.setHeight((Number)getParam("height", params));
-		cp.setStroke((Number)getParam("stroke", params));
-		cp.setTitle(getParam("title", params).str());
-		cp.setXlabel(getParam("xlabel", params).str());
-		cp.setYlabel(getParam("ylabel", params).str());
-		cp.setFilename(getParam("filename", params).str());
-		cp.setShow(getParam("show", params).bool());
-		cp.setLegend(getParam("legend", params).bool());
-		cp.setHorizontal(getParam("horizontal", params).bool());
+		cp.setType((Number)getNumber("type", params, null));
+		cp.setWidth((Number)getNumber("width", params, null));
+		cp.setHeight((Number)getNumber("height", params, null));
+		cp.setStroke((Number)getNumber("stroke", params, null));
+		cp.setTitle(getParam("title", params, STRNONE).str());
+		cp.setXlabel(getParam("xlabel", params, STRNONE).str());
+		cp.setYlabel(getParam("ylabel", params, STRNONE).str());
+		cp.setFilename(getParam("filename", params, STRNONE).str());
+		cp.setShow(getParam("show", params, Num.ONE).bool());
+		cp.setLegend(getParam("legend", params, Num.ZERO).bool());
+		cp.setHorizontal(getParam("horizontal", params, Num.ZERO).bool());
 		
-		List xaxisParam = (List)getParam("xaxis", params);
+		List xaxisParam = getList("xaxis", params, null);
 		if (xaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(xaxisParam);
 			cp.setXaxis(pair.first(), pair.second());
 		}
 		
-		List yaxisParam = (List)getParam("yaxis", params);
+		List yaxisParam = getList("yaxis", params, null);
 		if (yaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(yaxisParam);
 			cp.setYaxis(pair.first(), pair.second());
 		}
 		
-		cp.setXvalues(parseData((List)getParam("x", params)));
+		List xValues = getList("x", params, null);
+		if (xValues == null) {
+			throw new ElementRuntimeException("MX: input dict does not contain key 'x'");
+		} else {
+			cp.setXvalues(parseData(xValues));
+		}
 		
+		List series = getList("y", params, null);
 		
-		List series = (List)getParam("y", params);
+		if (series == null) {
+			throw new ElementRuntimeException("MX: input dict does not contain key 'y'");
+		}
 		
 		//Parse the series (must be the last step)
 		for (int i = 0; i < series.length(); i++) {
 			//Every item in y must be a list of params
-			if (series.get(i).isa(Obj.LIST)) {
-				List list = (List)(series.get(i));
+			if (series.get(i).isa(Obj.DICT)) {
+				Dict dict = (Dict)(series.get(i));
 				//Each list must have a name, stroke, color and dataset
-				if (list.length() == 4) {
-					Obj o_name = list.get(0);
-					Obj o_stroke = list.get(1);
-					Obj o_colorList = list.get(2);
-					Obj o_data = list.get(3);
-					if (o_name.isa(Obj.STR) && o_stroke.isa(Obj.NUMBER) && o_colorList.isa(Obj.LIST) && o_data.isa(Obj.LIST)) {
-						String name = o_name.str();
-						Number stroke = (Number)o_stroke;
-						Color color = parseColor((List)o_colorList);
-						ArrayList<Number> data = parseData((List)o_data);
-						
-						cp.addYvalues(name, stroke.toFloat(), color, data);
-						
-					} else {
-						throw new ElementRuntimeException("Plot expected name, RGB color list, and data list. Recieved:\n"
-								+ "\t" + o_name.repr() + "\n"
-								+ "\t" + o_stroke.repr() + "\n"
-								+ "\t" + o_colorList.repr() + "\n"
-								+ "\t" + o_data.repr());
-					}
+				Obj o_name = getParam("name", dict, Str.EMPTY);
+				String name = o_name.str();
+				
+				Obj o_stroke = getParam("stroke", dict, Num.ONE);
+				Number stroke = Num.ONE;
+				if (o_stroke.isa(Obj.NUMBER)) {
+					stroke = (Number)o_stroke;
 				} else {
-					throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items). "
-							+ "Recieved: " + series.get(i).repr());
+					throw new ElementRuntimeException("Series key 'stroke' must be a number");
 				}
-			} else {
-				throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items in a list). "
-						+ "Recieved: " + series.get(i).repr());
+				
+				Obj o_color = getParam("color", dict, Num.ZERO);  // Use '0' if not given
+				Color color = Color.BLUE;
+				if (o_color.isa(Obj.LIST)) {
+					color = parseColor((List)o_color);
+				} else {
+					throw new ElementRuntimeException("Series key 'color' must be a list of numbers [r g b]");
+				}
+				
+				Obj o_data = getParam("data", dict, Num.ZERO);  // Use '0' if not given
+				ArrayList<Number> data = null;
+				if (o_data.isa(Obj.LIST)) {
+					data = ((List)o_data).toNumberList().toArrayList();
+				} else {
+					throw new ElementRuntimeException("Series key 'data' must be a list of numbers");
+				}
+				
+				
+				cp.addYvalues(name, stroke.toFloat(), color, data);
 			}
 		}
 		
@@ -181,10 +195,10 @@ public class ChartParams {
 	}
 	
 	private static ArrayList<Number> parseData(List data) {
-		if (!data.isa(Obj.NUMBERLIST)) {
+		if (!data.isa(Obj.LIST)) {
 			throw new ElementRuntimeException("Invalid datapoints in " + data.repr());
 		} else {
-			return ((NumberList)data).toArrayList();
+			return data.toNumberList().toArrayList();
 		}
 	}
 	
@@ -206,21 +220,37 @@ public class ChartParams {
 		}
 	}
 	
+	private static Number getNumber(String name, Dict params, Obj dflt) {
+		Obj o = getParam(name, params, dflt);
+		if (o instanceof Number) {
+			return (Number)o;
+		} else if (o != null) {
+			throw new ElementRuntimeException("MX: Param name '" + name + "' should be a number."
+					+ " Recieved " + o.repr());
+		} else {
+			return null;
+		}
+	}
 	
-	private static Obj getParam(String name, List params) {
-		for (int i = 0; i < params.length(); i++) {
-			if (params.get(i).isa(Obj.LIST)) {
-				List list = (List)(params.get(i));
-				if (list.length() > 1 && list.get(0).isa(Obj.STR)) {
-					String s = list.get(0).str();
-					if (s.equals(name)) {
-						return list.get(1);
-					}
-				}
-			}
+	private static List getList(String name, Dict params, Obj dflt) {
+		Obj o = getParam(name, params, dflt);
+		if (o instanceof List) {
+			return (List)o;
+		} else if (o != null) {
+			throw new ElementRuntimeException("MX: Param name '" + name + "' should be a list."
+					+ " Recieved " + o.repr());
+		} else {
+			return null;
+		}
+	}
+	
+	private static Obj getParam(String name, Dict params, Obj dflt) {
+		if (params.containsKey(name)) {
+			return params.get(name);
+		} else {
+			return dflt;
 		}
 		
-		return null;
 	}
 	
 	public int getType() {
@@ -303,7 +333,7 @@ public class ChartParams {
 
 
 	public void setFilename(String filename) {
-		this.filename = filename;
+		this.filename = filename.equals(NONE) ? null : filename;
 	}
 
 
@@ -408,7 +438,7 @@ public class ChartParams {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.equals(NONE) ? null : title;
 	}
 
 	public String getXlabel() {
@@ -416,7 +446,7 @@ public class ChartParams {
 	}
 
 	public void setXlabel(String xlabel) {
-		this.xlabel = xlabel;
+		this.xlabel = xlabel.equals(NONE) ? null : xlabel;
 	}
 
 	public String getYlabel() {
@@ -424,7 +454,7 @@ public class ChartParams {
 	}
 
 	public void setYlabel(String ylabel) {
-		this.ylabel = ylabel;
+		this.ylabel = ylabel.equals(NONE) ? null : ylabel;
 	}
 
 	public ArrayList<Float> getXvalues() {
