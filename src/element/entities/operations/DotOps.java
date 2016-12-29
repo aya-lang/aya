@@ -60,7 +60,7 @@ public class DotOps {
 		/* 35 #  */ null, //Comment
 		/* 36 $  */ new OP_Dot_SortUsing(),
 		/* 37 %  */ null,
-		/* 38 &  */ null,
+		/* 38 &  */ new OP_Dot_And(),
 		/* 39 '  */ new OP_Dot_CastChar(),
 		/* 40 (  */ null,
 		/* 41 )  */ null,
@@ -260,6 +260,26 @@ class OP_Dot_SortUsing extends Operation {
 
 	
 	
+}
+
+//.& - 38
+class OP_Dot_And extends Operation {
+	public OP_Dot_And() {
+		this.name = ".&";
+		this.info = "SSS replace all occurances of the regex S1 with S2 in S3";
+		this.argTypes = "SSS";
+	}
+	@Override public void execute(final Block block) {
+		Obj a = block.pop();  // str
+		Obj b = block.pop();  // replace
+		Obj c = block.pop();  // find
+		
+		if ( a.isa(STR) && (b.isa(STR) || b.isa(CHAR)) && (c.isa(STR) || c.isa(CHAR))) {
+			block.push(new Str( a.str().replaceAll(c.str(), b.str()) ));
+		} else {
+			throw new TypeError(this,a,b,c);
+		}
+	}
 }
 
 // ' - 39

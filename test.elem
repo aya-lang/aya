@@ -166,6 +166,14 @@ import "base/std"
 {["ab""cd""ef"] "_" join } assert ["ab_cd_ef"]
 {["ab"] "_" join } assert ["ab"]
 {"\n\r \tabc\n \t " trim} assert ["abc"]
+{"hello" '7 10 strleftpad} assert ["77777hello"]
+{"hello" '7 10 strrightpad} assert ["hello77777"]
+
+
+
+
+
+
 "All tests passed! ($(M$))\n" .P
 
 

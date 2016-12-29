@@ -189,7 +189,7 @@
 
 .#? SSS replace\n  find and replace\n  <find> <replace> <str> replace
 {find replace strS,
-	str findP | # {replace+} S {B;}replacePE%
+	str findP | | #{replace}B;S
 }:replace;
 
 .#? S isnum\n  returns true if the string is a valid number
