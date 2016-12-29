@@ -5,7 +5,7 @@ import element.obj.dict.KeyVariable;
 public class KeyVarToken extends StdToken {
 
 	public KeyVarToken(String data) {
-		super(data, Token.MEM_VAR);
+		super(data, Token.KEY_VAR);
 	}
 
 	@Override

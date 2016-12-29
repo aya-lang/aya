@@ -31,14 +31,13 @@ public class BlockToken extends CollectionToken {
 			return new Block(Parser.generate(blockData.get(0)));
 		case 2:
 			TokenQueue header = blockData.get(0);
-			if (!header.hasNext()) { //header.hasNext() && header.peek().isa(Token.OP) && header.peek().data.equals("@")) {
-				//header.next();
-				//if (header.size() > 1) { throw new SyntaxError("Must include only module name in header"); }
-				//String modname = header.next().data;
+			//Empty header, dict literal
+			if (!header.hasNext()) {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				return new DictFactory(b);
-			}			
+			}
+			//Non-empty header, args and local variables
 			else {
 				Block b = new Block();
 				b.add(Flag.getFlag(Flag.POPVAR)); //Pop the local variables when the block is finished

@@ -10,7 +10,7 @@ public class TypeIDs {
 	public static final byte LAMBDA            = 105;
 	public static final byte TUPLE             = 106;
 	public static final byte LIST_BUILDER      = 107;
-	public static final byte MEM_VAR           = 108;
+	public static final byte KEY_VAR           = 108;
 
 	//Token-Only Types
 	public static final byte T_EXTENDED        = 109; // Math Operators
