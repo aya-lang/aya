@@ -406,18 +406,7 @@ public class Parser {
 				}
 				tokens.add(new VarToken(sb.toString()));
 			}
-
-//			//Boolean Literals
-//			else if(current == 'T' || current == 'F') {
-//				//tokens.add(new BoolToken(""+current));
-//				if (current == 'T') {
-//					tokens.add(new NumberToken(""+1));
-//				} else {
-//					tokens.add(new NumberToken(""+1));
-//				}
-//				
-//			}
-//			
+			
 			//Normal Operators
 			else if (Ops.isOpChar(current)) {
 				tokens.add(new OperatorToken(""+current, OperatorToken.STD_OP ));
@@ -715,25 +704,6 @@ public class Parser {
 		}
 		return str.toString();
 	}
-
-//	/** Splits a list of tokens wherever a comma is */
-//	private static ArrayList<TokenList> splitCommas(ArrayList<Token> tokens) {
-//		ArrayList<TokenList> out = new ArrayList<TokenList>();
-//		int splits = 0;
-//		out.add(new TokenList()); 		//Instantiate the first list
-//		for(Token t : tokens) {
-//			if (t.getType() == Token.COMMA) {
-//				splits++;
-//				out.add(new TokenList());
-//			} else {
-//				out.get(splits).add(t);
-//			}
-//		}
-//		return out;
-//	}
-	
-
-	
 	
 	
 	
@@ -754,47 +724,5 @@ public class Parser {
 	public static InstructionStack compileIS(String s, Element elem) {
 		return generate(assemble(tokenize(elem, s)));
 	}
-	
-	
-//	public static void main(String[] args) {
-//		String inputs[] = {
-//				"2 `- 1",
-//				"1 {nI, n1+}~ I",
-//				"[1 2 3 4]S",
-//				"1.(1.1(.1)",
-//				"\"hello\\{pi}\"",
-//				"'\\'",
-//				"1 1 +.#test",
-//				"\"he\\nll\\\"o\"",
-//				"'c'h\t'a'r",
-//				"'\\0x00FF'",
-//				"'\\theta'",
-//				"'\\pi'",
-//				"θ1+",
-//				"[10,1+,3<]",
-//				".({n,n1+.)}",
-//				"[]3K",
-//				"{}",
-//				"()",
-//				"[[1][2 3]{n,{m,1}(2())}]",
-//				"3{n,1}~",
-//				".1.23.45.67.89"
-//				
-//		};
-//		
-//		for (String input : inputs) {
-//			Element element = new Element();
-//			
-//			TokenList tokenized = tokenize(input);
-//			TokenList assembled = assemble(tokenized);
-//			InstructionStack code = generate(assembled);
-//			element.run(input);
-//			
-//			System.out.println(input + " => " + tokenized + "\n"
-//					+ "\t-> " + assembled + "\n"
-//					+ "\t#> " + code + "\n"
-//					+ "\t=> " + element.getOut().dump());
-//		}
-//	}
 
 }
