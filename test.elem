@@ -198,6 +198,17 @@ import "base/std"
 {["a""bc"]{E1=} all} assert [0]
 {10 bits unbit} assert [10]
 
+.#######
+.# MATH
+.#######
+
+import "base/math"
+
+{[3 (-3)] #abs} assert [[3 3]]
+{[1 2 3] avg} assert [2]
+{64Z cbrt} assert [4]
+
+
 
 "All tests passed! ($(M$))\n" .P
 

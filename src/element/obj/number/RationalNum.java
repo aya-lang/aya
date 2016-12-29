@@ -340,7 +340,7 @@ public class RationalNum extends Number {
 
 	@Override
 	public boolean equiv(Obj o) {
-		return o instanceof Number && ((Number)o).toDouble() == this.toDouble();
+		return o instanceof Number && ((Number)o).compareTo(this) == 0;
 	}
 
 	@Override

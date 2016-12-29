@@ -365,7 +365,7 @@ public class Num extends Number {
 
 	@Override
 	public boolean equiv(Obj o) {
-		return o instanceof Number && ((Number)o).toDouble() == _val;
+		return o instanceof Number && ((Number)o).compareTo(this) == 0.0;
 	}
 	
 
