@@ -223,6 +223,8 @@ import "base/colors"
 
 {"2d2d5a" color.newhex} assert [45 45 90 color!]
 
+.# import "base/constans"
+
 "All tests passed! ($(M$))\n" .P
 
 

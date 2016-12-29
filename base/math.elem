@@ -14,7 +14,7 @@ import "base/constants"
 {.[}:ceil;      		.#? N ceil\n  ceiling
 {pi*180/}:deg;    	.#? N deg\n  convert deg to rad (180° => 3.14..)
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
-{mathe\^}:exp;    	.#? N exp\n  exp(x)
+{euler\^}:exp;    	.#? N exp\n  exp(x)
 {M!}:fact;      		.#? N fact\n  factorial
 {.]}:floor;      		.#? N floor\n  floor
 {_.]-}:frac;    		.#? N frac\n  fractional part
