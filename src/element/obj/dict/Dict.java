@@ -1,5 +1,7 @@
 package element.obj.dict;
 
+import java.util.ArrayList;
+
 import element.exceptions.ElementRuntimeException;
 import element.exceptions.UndefVarException;
 import element.obj.Obj;
@@ -141,6 +143,16 @@ public class Dict extends Obj {
 		return _vars.getMap().size();
 	}
 	
+	/** A list of keys */
+	public ArrayList<Long> keys() {
+		return _vars.keys();
+	}
+	
+	/** A list of values */
+	public ArrayList<Obj> values() {
+		return _vars.values();
+	}
+	
 	///////////////////
 	// OBJ OVERRIDES //
 	///////////////////
@@ -240,6 +252,8 @@ public class Dict extends Obj {
 		sb.append("}");
 		return sb.toString();
 	}
+
+	
 
 
 

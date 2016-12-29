@@ -1,7 +1,8 @@
 package element.entities.operations;
 
-import static element.obj.Obj.NUMBER;
+import static element.obj.Obj.DICT;
 import static element.obj.Obj.LIST;
+import static element.obj.Obj.NUMBER;
 
 import java.util.ArrayList;
 
@@ -11,8 +12,12 @@ import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
 import element.obj.Obj;
 import element.obj.block.Block;
+import element.obj.dict.Dict;
+import element.obj.list.GenericList;
 import element.obj.list.List;
+import element.obj.list.Str;
 import element.obj.number.Number;
+import element.variable.Variable;
 
 
 public class ColonOps {	
@@ -67,7 +72,7 @@ public class ColonOps {
 		/* 72 H  */ null,
 		/* 73 I  */ null,
 		/* 74 J  */ null,
-		/* 75 K  */ null,
+		/* 75 K  */ new OP_Colon_K(),
 		/* 76 L  */ null,
 		/* 77 M  */ null,
 		/* 78 N  */ null,
@@ -78,7 +83,7 @@ public class ColonOps {
 		/* 83 S  */ null,
 		/* 84 T  */ null,
 		/* 85 U  */ null,
-		/* 86 V  */ null,
+		/* 86 V  */ new OP_Colon_V(),
 		/* 87 W  */ null,
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
@@ -150,7 +155,50 @@ public class ColonOps {
 	
 }
 
+//K - 75
+class OP_Colon_K extends Operation {
+	public OP_Colon_K() {
+		this.name = ":K";
+		this.info = "R return a list of keys as strings";
+		this.argTypes = "R";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			ArrayList<Long> keys = ((Dict)a).keys();
+			ArrayList<Obj> keyNames = new ArrayList<Obj>(keys.size());
+			for (Long l : keys) {
+				keyNames.add(new Str(Variable.decodeLong(l)));
+			}
+			block.push(new GenericList(keyNames));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
+
+
+//K - 86
+class OP_Colon_V extends Operation {
+	public OP_Colon_V() {
+		this.name = ":V";
+		this.info = "R return a list of values as strings";
+		this.argTypes = "R";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			block.push( new GenericList(((Dict)a).values()) );
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
 
 

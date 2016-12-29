@@ -28,8 +28,8 @@ import element.obj.Obj;
 import element.obj.block.Block;
 import element.obj.character.Char;
 import element.obj.dict.Dict;
-import element.obj.list.List;
 import element.obj.list.GenericList;
+import element.obj.list.List;
 import element.obj.list.Str;
 import element.obj.list.numberlist.NumberItemList;
 import element.obj.list.numberlist.NumberList;
@@ -609,13 +609,9 @@ class OP_AdvPlot extends Operation {
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
-		if (a.isa(LIST)) {
-			try {
-				ChartParams cp = ChartParams.parseParams((List)a);
-				FreeChartInterface.drawChart(cp);
-			} catch (ClassCastException e) {
-				throw new ElementRuntimeException("MX: Invalid parameter type");
-			}
+		if (a.isa(DICT)) {
+			ChartParams cp = ChartParams.parseParams((Dict)a);
+			FreeChartInterface.drawChart(cp);
 		}
 	}
 }

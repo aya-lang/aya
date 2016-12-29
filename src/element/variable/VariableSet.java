@@ -180,5 +180,28 @@ public class VariableSet {
 	    }
 	    return out;
 	}
+
+	/** Return all variables */
+	public ArrayList<Long> keys() {
+		ArrayList<Long> out = new ArrayList<Long>();
+		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	out.add(pair.getKey());
+	    }
+	    return out;
+	}
+	
+	/** Return all Objs */
+	public ArrayList<Obj> values() {
+		ArrayList<Obj> out = new ArrayList<Obj>();
+		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	out.add(pair.getValue());
+	    }
+	    return out;
+	}
+	
 	
 }
