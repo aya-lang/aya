@@ -448,8 +448,8 @@ class OP_PrintColor extends Operation {
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
 			int ai = ((Number)a).toInt();
-			int bi = ((Number)a).toInt();
-			int ci = ((Number)a).toInt();
+			int bi = ((Number)b).toInt();
+			int ci = ((Number)c).toInt();
 			
 			try {
 				Element.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));

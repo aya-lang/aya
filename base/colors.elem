@@ -4,12 +4,12 @@
 .{? module: color
     A module for manipulating and printing colors in element
 .}
-{@color,
-  attr "r g b"
+{,
+  .# attr "r g b"
 
   .#Constructors
 
-  {rD gD bD, [r g b] color MO}:new;
+  {rD gD bD, {, r:r g:g b:b} color MO}:new;
 
   .#? S color.newhex\n  create a new color using a hex value represented as a string
   {cS, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
@@ -56,7 +56,9 @@
   .#? A (color) color.println\n  print A using the color; append a newline
   {.print"\n".P}:println;
   .#? (color) color.show\n  print a square of color and return the rgb values of the color
-  {c, "\{U2588} " c.rgb~ MP "($(c.r), $(c.g), $(c.b))"}:show;
+  {c, "\{U2588} " c.rgb~ MP "($(c.r), $(c.g), $(c.b))"}:repr;
+  {c, "($(c.r), $(c.g), $(c.b))"}:str;
+
 
   .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
   {r g b : h s v delta maxv minv,
@@ -86,7 +88,7 @@
     }
     [h s v]
   }:rgbtohsv;
-}
+}:color;
 
 .{? module: colors
     The colors module defines several color objects. Here are some examples:
@@ -94,10 +96,10 @@
 	  colors.aqua
 	  colors.raspberry
 .}
-{@colors,
+{,
 
   .# colors.randchoice\n  get a random color
-  {255Q 255Q 255Q color!}:randchoice;
+  {;255Q 255Q 255Q color!}:rand;
 
   72  72  68  color!:fg;    .# Element GUI foreground color
   39  40  34  color!:bg;    .# Element GUI background color
@@ -203,4 +205,4 @@
   211 211 211 color!:lightgrey;
   169 169 169 color!:darkgray;
 
-}
+}:colors;
