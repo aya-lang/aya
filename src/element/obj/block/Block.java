@@ -26,16 +26,23 @@ import element.obj.list.Str;
 import element.variable.Variable;
 import element.variable.VariableSet;
 
+/** 
+ * Block contain instructions and the resulting stacks 
+ * @author Nick
+ *
+ */
 public class Block extends Obj {
+	
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
-	//private boolean listLiteral = false;
 	
+	/** Create a new block with empty instructions and stack */
 	public Block() {
 		this.stack = new Stack<Obj>();
 		this.instructions = new InstructionStack();
 	}
 	
+	/** Create a new block with empty stack */
 	public Block(InstructionStack il) {
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
@@ -169,73 +176,7 @@ public class Block extends Obj {
 			
 			else if (current instanceof DictFactory) {
 				stack.push(((DictFactory)current).getDict());
-				//Element.getInstance().getVars().setVar(mod.id, mod);
 			}
-			
-//			//Member Variable
-//			else if (current instanceof MemberVariable) {
-//				Object m = null;
-//				try {
-//					m = stack.pop();
-//				} catch (EmptyStackException e) {
-//					throw new ElementRuntimeException("Expected module name before " + ((MemberVariable)current).toString());
-//				}
-//				
-//				if (m instanceof Module) {
-//					Object o = ((Module)m).get((MemberVariable)current);
-//					if (isBlock(o)) {
-//						instructions.addAll(toBlock(o).getInstructions().getInstrucionList());
-//					} else {
-//						stack.push(o);
-//					}
-//				}
-////				//Of the form [module [data]] .var -> [module [data]] (deref module.var)
-////				else if (m instanceof ArrayList) {
-////					ArrayList<Object> l = (ArrayList<Object>)m;
-////					if (l.size() == 2 && l.get(0) instanceof Module && l.get(1) instanceof ArrayList) {
-////						stack.push(m); //Leave the obj on the stack
-////						Object o = ((Module)l.get(0)).get((MemberVariable)current);
-////						if (isBlock(o)) {
-////							instructions.addAll(toBlock(o).getInstructions().getInstrucionList());
-////						} else {
-////							stack.push(o);
-////						}
-////					} else {
-////						throw new ElementRuntimeException("Invalid struct: " + show(m));
-////					}
-////				} else {
-////					throw new ElementRuntimeException("No module found before " + toMemVar(current).toString());
-////				}
-//				
-//				//The first argument is a user object
-//				else if (isUserObject(m)) {
-//					stack.push(m); //Leave the obj on the stack
-//					UserObject user_obj = toUserObject(m);
-//					Object o = user_obj.getModule().get((MemberVariable)current);
-//					if (isBlock(o)) {
-//						instructions.addAll(toBlock(o).getInstructions().getInstrucionList());
-//					} else {
-//						stack.push(o);
-//					}
-//				} 
-//				
-//				//The second argument is a user object
-//				else if(isUserObject(stack.peek())) {
-//					//Leave the second arg on the stack
-//					UserObject user_obj = toUserObject(stack.peek());
-//					//Put the first back onto the stack
-//					stack.push(m);
-//					
-//					//Call the member variable
-//					Object o = user_obj.getModule().get((MemberVariable)current);
-//					if (isBlock(o)) {
-//						instructions.addAll(toBlock(o).getInstructions().getInstrucionList());
-//					} else {
-//						stack.push(o);
-//					}
-//					
-//				}
-//			}
 			
 			//Flag: Special instructions for the interpreter
 			//Negative valued flags are ticks (`)
@@ -304,9 +245,6 @@ public class Block extends Obj {
 	public Block duplicate() {
 		Block out = new Block(this.instructions.duplicate());
 		out.stack.addAll(this.stack);
-//		Stack<Object> dupStack = new Stack<Object>();
-//		dupStack.addAll(this.stack);
-//		out.setStack(dupStack);
 		return out;
 	}
 
@@ -464,7 +402,7 @@ public class Block extends Obj {
 
 	@Override
 	public boolean equiv(Obj o) {
-		// TODO: Block.equiv
+		// Always return false
 		return false;
 	}
 
