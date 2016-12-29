@@ -887,12 +887,8 @@ class OP_B extends Operation {
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).inc() );
 		} else if (a.isa(LIST)) {
-			//ArrayList<Object> l = toList(a);
-			//Object popped = l.remove(l.size()-1);
-			//block.push(l.clone()); //Keep list on stack
-			//block.push(popped);
 			List l = (List)a;
-			Obj popped = l.pop();
+			Obj popped = l.popBack();
 			block.push(l);
 			block.push(popped);
 			
@@ -1458,13 +1454,8 @@ class OP_V extends Operation {
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).dec() );
 		} else if (a.isa(LIST)) {
-//			ArrayList<Object> l = toList(a);
-//			Object popped = l.remove(0);
-//			block.push(l.clone()); //Keep list on stack
-//			block.push(popped);
-			
 			List l = (List)a;
-			Obj popped = l.popBack();
+			Obj popped = l.pop();
 			block.push(l);
 			block.push(popped);
 		} else {

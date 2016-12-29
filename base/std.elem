@@ -41,9 +41,6 @@
   "forlooplistz#{:$forloopcz; forloopblkz}"~
 })}:for;
 
-.#? repeat N E\n  repeat statement:\n  repeat N {\n    expressions\n  }
-{``(\%)}:repeat;
-
 .#? A print\n  convert to string a print to console
 {.P}:print;
 
@@ -62,6 +59,7 @@
   creates setters for each variable in the form setvarname
   each variable must be whitespace separated
 .}
+.{
 .# {`([1|" "| _ER, {v n, "{1I$(nV)I}:$v;"}]#{_~};)}:attr;
 {`({:varnamesz fieldindexzz,
   "[a-z]+"&:varnameszz;
@@ -77,6 +75,7 @@
     fieldindexzzB:fieldindexzz;
   };
 })}:attr;
+.}
 
 .# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
 {`(10\^*)}:e;

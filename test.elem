@@ -153,9 +153,11 @@ import "base/std"
 {:a,  0:a; dowhile {a 0 >} {aV:a;} a} assert [(-1)] 
 {:a,  3:a; while {a 0 >} {aV:a;} a} assert [0] 
 {:a,  0:a; while {a 0 >} {aV:a;} a} assert [0] 
-{:a, 3R:a; for 'i a {} }
-
-
+{:a, 3R:a; for 'i a {iP} S } assert ["123"]
+{try { 1 {} + } {2}} assert [2]
+{try { 1 10 + } {2}} assert [11]
+{1 2 3 count} assert [1 2 3 3]
+{1 2 3 back} assert [1 2 3 1]
 
 
 "All tests passed!\n\n" .P
