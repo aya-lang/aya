@@ -318,31 +318,25 @@
 .###################################
 
 
-.# import "base/math"
-.# import "base/docs"
+import "base/math"
+import "base/docs"
+import "base/regex"
+import "base/matrix"
+import "base/date"
+import "base/demo"
+import "base/stack"
+import "base/colors"
+import "base/set"
+import "base/queue"
+import "base/stack"
+import "base/plot"
+import "base/files"
+import "base/dataframe"
+import "base/dialog"
+import "base/dataframe"
+import "base/golf"
+import "base/data"
 
-
-.# Modules
-.# import "base/regex"
-.# import "base/dict"
-.# import "base/matrix"
-.# import "base/frac"
-.# import "base/date"
-.# import "base/demo"
-.# import "base/stack"
-.# import "base/colors"
-.# import "base/set"
-.# import "base/complex"
-.# import "base/queue"
-.# import "base/stack"
-.# import "base/plot"
-.# import "base/files"
-.# import "base/dataframe"
-.# import "base/dialog"
-.# import "base/dataframe"
-.# import "base/golf"
-
-.# import "base/data"
 
 
 
