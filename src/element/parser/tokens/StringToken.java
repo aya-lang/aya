@@ -58,7 +58,7 @@ public class StringToken extends StdToken {
 					}
 					
 					//Add and reset the string builder
-					instrs.insert(0, sb.toString());
+					instrs.insert(0, new Str(sb.toString()));
 					sb.setLength(0);
 					
 					//Add the variable
@@ -105,7 +105,7 @@ public class StringToken extends StdToken {
 					
 					
 					//Add and reset the string builder
-					instrs.insert(0, sb.toString());
+					instrs.insert(0, new Str(sb.toString()));
 					sb.setLength(0);
 					
 					//Add the block
@@ -125,7 +125,7 @@ public class StringToken extends StdToken {
 			}
 		}
 		
-		instrs.insert(0, sb.toString());
+		instrs.insert(0, new Str(sb.toString()));
 		return new InterpolateString(instrs);
 	}
 

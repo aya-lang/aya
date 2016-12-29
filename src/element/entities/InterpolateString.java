@@ -54,7 +54,7 @@ public class InterpolateString  {
 			} else if (o instanceof Block) {
 				sb.append("$(").append(((Block)o).str()).append(")"); 
 			} else {
-				throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + o.toString());
+				throw new RuntimeException("Invalid object in string: " + o.toString());
 			}
 		}
 		return "\""+sb.toString()+"\"";
