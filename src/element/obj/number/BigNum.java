@@ -6,6 +6,7 @@ import org.apfloat.ApintMath;
 
 import element.obj.Obj;
 
+/** Contains an ApFloat */
 public class BigNum extends Number {
 	
 	private static Apfloat ZERO = new Apfloat(0);

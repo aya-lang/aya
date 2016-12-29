@@ -4,6 +4,7 @@ import org.apfloat.Apfloat;
 
 import element.obj.Obj;
 
+/** Abstract supertype for all numbers */
 public abstract class Number extends Obj implements Comparable<Number> {
 	
 	public static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);

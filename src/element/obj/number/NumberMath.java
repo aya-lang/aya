@@ -4,8 +4,10 @@ import org.apfloat.ApintMath;
 
 import element.obj.number.Number;
 
+/** Various static functions for doing math on numbers */
 public class NumberMath {
 	
+	/** Greatest common denominator */
 	public static Number gcd(Number a, Number b) {
 		if (a instanceof Num && b instanceof Num) {
 			return new Num(gcd(a.toLong(), b.toLong()));
@@ -15,6 +17,7 @@ public class NumberMath {
 		}
 	}
 	
+	/** Least common multiple */
 	public static Number lcm(Number a, Number b) {
 		if (a instanceof Num && b instanceof Num) {
 			return new Num(lcm(a.toLong(), b.toLong()));

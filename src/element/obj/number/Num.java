@@ -5,6 +5,7 @@ import org.apfloat.ApfloatMath;
 
 import element.obj.Obj;
 
+/** Contains a double */
 public class Num extends Number {
 
 	public static final Num ZERO = new Num(0.0);

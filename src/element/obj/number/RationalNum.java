@@ -5,6 +5,7 @@ import org.apfloat.Apfloat;
 import element.exceptions.ElementRuntimeException;
 import element.obj.Obj;
 
+/** Represented by two long ints */
 public class RationalNum extends Number {
 	
 	public static final RationalNum ONE = new RationalNum(1L, 1L);
@@ -44,6 +45,7 @@ public class RationalNum extends Number {
 	
 	//Algorithm from:
 	// http://stackoverflow.com/questions/13222664/convert-floating-point-number-into-a-rational-number-in-java
+	/** Create a new rational num by approximating the value of the double */
 	public RationalNum(double val) {
 		
 		// 0/1
@@ -367,6 +369,7 @@ public class RationalNum extends Number {
 	// RATIONAL NUMBER MATH //
 	//////////////////////////
 	
+	/** Add two rational numbers */
 	RationalNum r_add(RationalNum n) {
 		if(_den == n._den) {
             return new RationalNum(n._num + _num, _den);
@@ -378,6 +381,7 @@ public class RationalNum extends Number {
         }
 	}
 	
+	/** Subtract two rational numbers */
 	RationalNum r_sub(RationalNum n) {
 		if(_den == n._den) {
             return new RationalNum(_num - n._num, _den);
@@ -389,10 +393,12 @@ public class RationalNum extends Number {
         }
 	}
 	
+	/** Multiply two rational  numbers */
 	RationalNum r_mul(RationalNum n) {
 		return new RationalNum(_num * n._num, _den * n._den);
 	}
 	
+	/** Divide two rational numbers */
 	RationalNum r_div(RationalNum n) {
 		return new RationalNum(_num * n._den, _den * n._num);
 	}
