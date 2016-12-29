@@ -211,9 +211,11 @@
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
 {[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
+{{2:_<?}U}:max;     .#? L max\n  max value of a list
+{{2:_>?}U}:min;     .#? L min\n  min value of a list
 
 .#? L rank\n  rank a list
-{_{>}pu#{#{0 1@?}SB}}:rank;
+{_{>}pu#S1+}:rank;
 
 .#? AEN iter\n  start at A and iterate E N times
 {start expr len,
@@ -230,6 +232,7 @@
 {\.EV@L#QI}:lotto;
 
 
+
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
   [1|~,                 .# Transpose
@@ -240,7 +243,7 @@
   ]'\n'join             .# Separate lines
 }:matstr;
 
-{aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
+.# {aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
 {lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
 
 .#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each
@@ -287,12 +290,7 @@
 .#		 BOOLEANS / COMPARISONS      #
 .###################################
 
-{`!}:not;						.#? not\n  logical NOT\n  (infix)
-{`&}:and;						.#? and\n  logical AND\n  (infix)
-{`|}:or;						.#? or\n  logical OR\n  (infix)
-{"unimplemented".P}:xor;							.#? xor\n  logical XOR\n  (infix)
-
-.# Operators
+.# Operators (for special characters)
 {.>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
 {.<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
 {=!}:ne;				.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
@@ -313,9 +311,6 @@
 
 .#? N bits\n  takes a positive number and returns its bits as a list
 {10 2 H}:bits;
-
-.#? L<I> N bleftpad\n  append 0s to the left end of L until L is length N
-{>}:blpad;
 
 
 .###################################

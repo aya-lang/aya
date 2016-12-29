@@ -177,17 +177,26 @@ import "base/std"
 {[[1 [2]][3]4] flatten} assert [[1 [ 2 ] 3 4]]
 {"abc" "_" surround} assert ["_abc_"]
 {[1 2 3][4 5 6]{+} zw} assert [[5 7 9]]
-{[[1 2 3][4 5 6]] transpose} assert [ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]
-
-
-
-
-
-
-
-
-
-
+{ [[1 2 3][4 5 6]] transpose } assert [ [[ 1 4 ] [ 2 5 ] [ 3 6 ]] ]
+{[6 2 9 7 2 6 5 3 3 4] rank} assert [ [ 3 9 1 2 9 3 5 7 7 6 ] ]
+{1 {1+} 3 iter} assert [[1 2 3 4]]
+{123 digits} assert [[1 2 3]]
+{"hi" irange} assert [[0 1]]
+{"ab""cd"{P+}pu#SS} assert ["cadacbdb"]
+{[1 2 3 4] 0 1 swapitems} assert [ [ 2 1 3 4 ] ]
+{1 10 3 linspace} assert [[1 5.5 10]]
+{1 10 3 intspace} assert [[1 5 10]]
+{[1 2 3] digitstonum} assert [123]
+{[1 2 3 4] {3<} tw} assert [[1 2]]
+{[1 1 1]allt} assert [1]
+{[1 0 1]allt} assert [0]
+{[0 0 0]allf} assert [1]
+{[0 1 0]allf} assert [0]
+{["a""b"]{E2=} any} assert [0]
+{["a""bc"]{E2=} any} assert [1]
+{["a""b"]{E1=} all} assert [1]
+{["a""bc"]{E1=} all} assert [0]
+{10 bits unbit} assert [10]
 
 
 "All tests passed! ($(M$))\n" .P
