@@ -12,6 +12,7 @@ import element.obj.list.numberlist.NumberItemList;
 import element.obj.number.Num;
 import element.obj.number.Number;
 
+/** Wrapper for strings */
 public class Str extends List implements Comparable<Str> {
 	
 	private String _str;
