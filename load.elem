@@ -1,3 +1,5 @@
 {`(".elem"+G~)}:import;
 
-import "base/std"
+import "test"
+
+.# import "base/std"

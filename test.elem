@@ -1,4 +1,4 @@
-"Test file loaded!\n\n" .P
+"Test file loaded!\n" .P
 
 {```({ifstmtcondzN ifstmtthenz ifstmtelsez,
   {ifstmtelsez} {ifstmtthenz} ifstmtcondz?
@@ -95,6 +95,10 @@
 
 {"abcde"!} assert ["edcba"]
 
+.# InterpolateString
+
+{:a, 0:a; "$a"} assert ["0"]
+
 .# Argument Types
 
 {1  {sN,s} ~} assert [1]
@@ -134,7 +138,27 @@ assert
 { {,} {,{self, 2}:dollar;} MO $} assert [2]
 
 
+.######
+.# STD
+.######
 
+
+import "base/std"
+
+{ if 1 1 2} assert [1]
+{ if 0 {1} {2}} assert [2]
+{ 0 then {1} } assert []
+{ 1 then {2} } assert [2]
+{:a,  3:a; dowhile {a 0 >} {aV:a;} a} assert [0] 
+{:a,  0:a; dowhile {a 0 >} {aV:a;} a} assert [(-1)] 
+{:a,  3:a; while {a 0 >} {aV:a;} a} assert [0] 
+{:a,  0:a; while {a 0 >} {aV:a;} a} assert [0] 
+{:a, 3R:a; for 'i a {} }
+
+
+
+
+"All tests passed!\n\n" .P
 
 
 

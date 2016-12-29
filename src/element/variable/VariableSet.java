@@ -94,23 +94,24 @@ public class VariableSet {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder("{");
-		for(Variable v : argNames) {
-			sb.append(v.toString() + " ");
-		}
-		sb.append("|");
-		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
-		boolean addComma = false;
-	    while (it.hasNext()) {
-	    	if(addComma) {
-	    		sb.append(", ");
-	    	}
-	        Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
-	        sb.append(Variable.decodeLong(pair.getKey()) + " = " + pair.getValue());
-	        addComma = true;
-	    }
-	    sb.append("}");
-		return sb.toString();
+//		StringBuilder sb = new StringBuilder("{");
+//		for(Variable v : argNames) {
+//			sb.append(v.toString() + " ");
+//		}
+//		sb.append("|");
+//		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+//		boolean addComma = false;
+//	    while (it.hasNext()) {
+//	    	if(addComma) {
+//	    		sb.append(", ");
+//	    	}
+//	        Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
+//	        sb.append(Variable.decodeLong(pair.getKey()) + " = " + pair.getValue());
+//	        addComma = true;
+//	    }
+//	    sb.append("}");
+//		return sb.toString();
+		return show();
 	}
 	
 	
