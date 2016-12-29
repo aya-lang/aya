@@ -44,15 +44,16 @@ public class Flag {
 	
 	@Override
 	public String toString() {
-		switch(id) {
-		case NULL:
-			return "NULL";
-		case POPVAR:
-			return "POPVAR";
-		case EVAL_BLOCK:
-			return "EVAL_BLOCK";
-		default:
-			return "(Flag.toString(): Type not set up yet)";
-		}
+		return "";
+//		switch(id) {
+//		case NULL:
+//			return "NULL";
+//		case POPVAR:
+//			return "POPVAR";
+//		case EVAL_BLOCK:
+//			return "EVAL_BLOCK";
+//		default:
+//			return "(Flag.toString(): Type not set up yet)";
+//		}
 	}
 }
