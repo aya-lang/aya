@@ -1,6 +1,15 @@
 package element.obj;
 
+/**
+ * Superclass for all runtime objects existing on the stack
+ * @author Nick
+ *
+ */
 public abstract class Obj {	
+	
+	//////////////
+	// TYPE IDS //
+	//////////////
 	
 	public static final byte UNKNOWN = -1;
 	
@@ -25,6 +34,14 @@ public abstract class Obj {
 
 	public static final byte USEROBJ = 6;
 	
+	
+	
+	
+	////////////////////
+	// TYPE UTILITIES //
+	////////////////////
+	
+	/** Given the typeId, return the full type name */
 	public static String typeName(byte type) {
 		switch (type) {
 		case NUM:
@@ -58,13 +75,17 @@ public abstract class Obj {
 		case NUM : return 'D';
 		case BLOCK : return 'E';
 		case BIGNUM : return 'F';
+		
 		case LIST : return 'L';
+		case NUMBERLIST : return 'L';
+		case NUMBERITEMLIST : return 'L';
+		case OBJLIST : return 'L';
+		
 		case STR : return 'S';
 		case NUMBER : return 'N';
 		case DICT : return 'R';
 		case ANY : return 'A';
-		//case MODULE : return 'M';
-		//case USER_OBJ : return 'U';
+
 		default: return '?';
 		}
 	}
@@ -90,13 +111,28 @@ public abstract class Obj {
 	}
 	
 	
-	
+	/** Create a deep copy of the obj */
 	public abstract Obj deepcopy();
+	
+	/** Return the bool value of the object */
 	public abstract boolean bool();
+	
+	/** Return a string representation of the object
+	 * used for printing to the console during interactive
+	 * sessions
+	 */
 	public abstract String repr();
+	
+	/** Cast the obj to a string */
 	public abstract String str();
+	
+	/** Equivalence test */
 	public abstract boolean equiv(Obj o);
+	
+	/** Returns true if the item is a type or sub-type of the given id */
 	public abstract boolean isa(byte type);
+	
+	/** Returns the object's most specific type id */
 	public abstract byte type();
 	
 	@Override
