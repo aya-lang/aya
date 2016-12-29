@@ -1,6 +1,6 @@
 package element.parser.tokens;
 
-import element.ElemTypes;
+import element.TypeIDs;
 import element.obj.Obj;
 
 public abstract class Token {
@@ -10,35 +10,35 @@ public abstract class Token {
 	//IDs
 	public static final int STRING 		= Obj.STR;
 	public static final int BLOCK 		= Obj.BLOCK;
-	public static final int VAR 		= ElemTypes.VAR;
-	public static final int EXTENDED 	= ElemTypes.T_EXTENDED;
-	public static final int OP 			= ElemTypes.OP;
+	public static final int VAR 		= TypeIDs.VAR;
+	public static final int EXTENDED 	= TypeIDs.T_EXTENDED;
+	public static final int OP 			= TypeIDs.OP;
 	public static final int BIGNUM  	= Obj.BIGNUM;
 	public static final int NUM	        = Obj.NUM;
 	//public static final int INT 		= ElemTypes.INT;
-	public static final int DOT 		= ElemTypes.T_DOT;
+	public static final int DOT 		= TypeIDs.T_DOT;
 	public static final int CHAR 		= Obj.CHAR;
 	//public static final int FLOAT 	= ElemTypes.T_FLOAT;
-	public static final int LAMBDA 		= ElemTypes.LAMBDA;
-	public static final int COMMA		= ElemTypes.T_COMMA;
-	public static final int COLON		= ElemTypes.T_COLON;
-	public static final int LIST 		= ElemTypes.T_LIST;
-	public static final int TICK		= ElemTypes.T_TICK;
+	public static final int LAMBDA 		= TypeIDs.LAMBDA;
+	public static final int COMMA		= TypeIDs.T_COMMA;
+	public static final int COLON		= TypeIDs.T_COLON;
+	public static final int LIST 		= TypeIDs.T_LIST;
+	public static final int TICK		= TypeIDs.T_TICK;
 	public static final int NUMERIC		= Obj.NUMBER;
 //	public static final int BOOL		= ElemTypes.BOOL;
-	public static final int MEM_VAR		= ElemTypes.MEM_VAR;
+	public static final int MEM_VAR		= TypeIDs.MEM_VAR;
 	
 
-	public static final int OPEN_PAREN      = ElemTypes.T_OPEN_PAREN;
-	public static final int CLOSE_PAREN     = ElemTypes.T_CLOSE_PAREN;
-	public static final int OPEN_SQBRACKET  = ElemTypes.T_OPEN_SQBRACKET;
-	public static final int CLOSE_SQBRACKET = ElemTypes.T_CLOSE_SQBRACKET;
-	public static final int OPEN_CURLY      = ElemTypes.T_OPEN_CURLY;
-	public static final int CLOSE_CURLY     = ElemTypes.T_CLOSE_CURLY;
-	public static final int OP_DOT          = ElemTypes.T_OP_DOT;
-	public static final int OP_MATH         = ElemTypes.T_OP_MATH;
-	public static final int POUND           = ElemTypes.T_POUND;
-	public static final int DOT_COLON		= ElemTypes.T_DOT_COLON;
+	public static final int OPEN_PAREN      = TypeIDs.T_OPEN_PAREN;
+	public static final int CLOSE_PAREN     = TypeIDs.T_CLOSE_PAREN;
+	public static final int OPEN_SQBRACKET  = TypeIDs.T_OPEN_SQBRACKET;
+	public static final int CLOSE_SQBRACKET = TypeIDs.T_CLOSE_SQBRACKET;
+	public static final int OPEN_CURLY      = TypeIDs.T_OPEN_CURLY;
+	public static final int CLOSE_CURLY     = TypeIDs.T_CLOSE_CURLY;
+	public static final int OP_DOT          = TypeIDs.T_OP_DOT;
+	public static final int OP_MATH         = TypeIDs.T_OP_MATH;
+	public static final int POUND           = TypeIDs.T_POUND;
+	public static final int DOT_COLON		= TypeIDs.T_DOT_COLON;
 	
 	
 	protected Token(int type) {

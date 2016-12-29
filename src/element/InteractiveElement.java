@@ -1,13 +1,14 @@
 package element;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 import element.exceptions.SyntaxError;
 import element.infix.Compiler;
 import element.obj.block.Block;
 import element.parser.Parser;
+import element.util.FileUtils;
 import test.ElementTestCases;
 
 public class InteractiveElement {
@@ -224,11 +225,12 @@ public class InteractiveElement {
 				String filename = args[1];
 
 				try {
-					SourceFile src = new SourceFile(new File(filename), elem);
-					Element.instance.run(src.getRawText());
-
+					Element.instance.run(FileUtils.readAllText(filename));
 				} catch (FileNotFoundException e) {
 					Element.instance.getOut().printEx("Cannot open file: " + filename);
+				} catch (IOException e) {
+					Element.instance.getOut().printEx("File not found: " + filename);
+
 				}
 				
 			}
@@ -316,12 +318,4 @@ public class InteractiveElement {
 	    	throw new RuntimeException(e);
 	    }
 	}
-	
-	
-//	private static String exToString(Exception e) {
-//		StringWriter sw = new StringWriter();
-//		PrintWriter pw = new PrintWriter(sw);
-//		e.printStackTrace(pw);
-//		return sw.toString();
-//	}
 }

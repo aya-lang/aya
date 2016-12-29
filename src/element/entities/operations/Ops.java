@@ -10,9 +10,7 @@ import static element.obj.Obj.NUMBER;
 import static element.obj.Obj.NUMBERLIST;
 import static element.obj.Obj.STR;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -48,6 +46,7 @@ import element.obj.number.Num;
 import element.obj.number.Number;
 import element.parser.CharacterParser;
 import element.parser.Parser;
+import element.util.FileUtils;
 import element.variable.Variable;
 
 public class Ops {
@@ -999,26 +998,11 @@ class OP_G extends Operation {
 				} else {
 					path = ElemPrefs.getWorkingDir() + name;
 				}
-				File file = new File(path);
-				BufferedReader br = null;
-				StringBuilder sb = new StringBuilder();
 				try {
-					String line;
-					br = new BufferedReader(new FileReader(file));
-					while((line = br.readLine()) != null) {
-						sb.append(line+'\n');
-					}
-					block.push( new Str(sb.toString()) );
+					block.push( new Str(FileUtils.readAllText(path)) );
 				} catch (IOException e) {
-					throw new ElementRuntimeException("Cannot open file: " + file.getAbsolutePath());
-				} finally {
-					try {
-						if (br != null)
-							br.close();
-					} catch (IOException e) {
-						throw new ElementRuntimeException("Cannot close file: " + file.getAbsolutePath());
-					}
-				}
+					throw new ElementRuntimeException("Cannot open file: " + new File(path).getAbsolutePath());
+				} 
 			}
 			return;
 		} else if (a.isa(NUMBER)) {
