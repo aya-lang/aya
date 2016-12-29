@@ -223,20 +223,9 @@ public class Dict extends Obj {
 		sb.append("}");
 		return sb.toString();
 	}
-	
-//	if(module.hasVar(MV_STR)) {
-//		Obj obj_str = module.get(MV_STR);
-//		if(obj_str.isa(Obj.BLOCK)) {
-//			Block blk_show = ((Block)obj_str).duplicate();
-//			blk_show.push(this);
-//			blk_show.eval();
-//			Obj obj_res = blk_show.pop();
-//			return obj_res.str();
-//		} else {
-//			return obj_str.str();
-//		}
-//	} else {
-//		return "<" + module.toString() + " instance>";
-//	}
+
+	public VariableSet getVarSet() {
+		return _vars;
+	}
 
 }

@@ -56,22 +56,19 @@ public class Ops {
 	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
 	
 	public static final KeyVariable KEYVAR_NEW = new KeyVariable("new");
-//
-	public static final KeyVariable MV_DOLLAR = new KeyVariable("dollar");
-//	public static final KeyVariable KEYVAR_LEN = new KeyVariable("len");
-//	public static final MemberVariable MV_STR = new MemberVariable("show");
-//	public static final MemberVariable MV_PERCENT = new MemberVariable("percent");
-//	public static final MemberVariable MV_AMP = new MemberVariable("amp");
-//	public static final MemberVariable MV_STAR = new MemberVariable("star");
-//	public static final MemberVariable MV_PLUS = new MemberVariable("plus");
-//	public static final MemberVariable MV_MINUS = new MemberVariable("minus");
-//	public static final MemberVariable MV_FSLASH = new MemberVariable("fslash");
-//	public static final MemberVariable MV_BAR = new MemberVariable("bar");
-//	public static final MemberVariable MV_POW = new MemberVariable("pow");
-//	public static final MemberVariable MV_INDEX = new MemberVariable("index");
-//	public static final MemberVariable MV_RANDCHOICE = new MemberVariable("randchoice");
-//	public static final MemberVariable MV_SETINDEX = new MemberVariable("setindex");
-//	public static final MemberVariable MV_EQ = new MemberVariable("eq");
+	public static final KeyVariable KEYVAR_DOLLAR = new KeyVariable("dollar");
+
+	public static final KeyVariable KEYVAR_MOD	= new KeyVariable("mod");
+	public static final KeyVariable KEYVAR_AND	= new KeyVariable("and");
+	public static final KeyVariable KEYVAR_MUL	= new KeyVariable("mul");
+	public static final KeyVariable KEYVAR_ADD	= new KeyVariable("add");
+	public static final KeyVariable KEYVAR_SUB	= new KeyVariable("sub");
+	public static final KeyVariable KEYVAR_DIV	= new KeyVariable("div");
+	public static final KeyVariable KEYVAR_OR	= new KeyVariable("or");
+	public static final KeyVariable KEYVAR_POW	= new KeyVariable("pow");
+	public static final KeyVariable KEYVAR_RAND	= new KeyVariable("rand");
+	public static final KeyVariable KEYVAR_EQ	= new KeyVariable("eq");
+
 
 
 	
@@ -314,7 +311,7 @@ class OP_Dollar extends Operation {
 			((List)a).sort();
 			block.push(a);
 		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.MV_DOLLAR);
+			block.callVariable((Dict)a, Ops.KEYVAR_DOLLAR);
 		} else {
 			throw new TypeError(this,a);
 		}
@@ -439,14 +436,12 @@ class OP_Percent extends Operation {
 			}
 			return;
 		} 
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_PERCENT);
-//			return;
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_PERCENT, a);
-//			return;
-//		}
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_MOD);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_MOD, a);
+		}
 		else {
 			throw new TypeError(this, a,b);
 		}
@@ -482,12 +477,12 @@ class OP_And extends Operation {
 			}
 			block.push(new ObjList(allMatches));
 		}
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_AMP);
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_AMP, a);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_AND);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_AND, a);
+		}
 		else {
 			throw new TypeError(this, a);
 		}
@@ -517,12 +512,12 @@ class OP_Times extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).mul((Number)a) );
 		}
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_STAR);
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_STAR, a);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_MUL);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_MUL, a);
+		}
 		else {	
 			throw new TypeError(this, a,b);
 		}
@@ -544,12 +539,12 @@ class OP_Plus extends Operation {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).add((Number)b) );
 		}
-//		else if (isUserObject(a)) { //Must happen before anyString()
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_PLUS);
-//		} else if (isUserObject(b)) { //Must happen before anyString()
-//			toUserObject(b).callVariable(block, Ops.MV_PLUS, a);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_ADD);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_ADD, a);
+		}
 		
 		else if (a.isa(STR) || b.isa(STR)) {
 			//Must reverse order
@@ -606,13 +601,12 @@ class OP_Minus extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).subFrom((Number)a) );
 		}
-		
-//		else if (isUserObject(b)) {
-//			block.push(a);
-//			toUserObject(b).callVariable(block, Ops.MV_MINUS);
-//		} else if (isUserObject(a)) {
-//			toUserObject(a).callVariable(block, Ops.MV_MINUS, b);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_SUB);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_SUB, a);
+		}
 		else {
 			throw new TypeError(this, a,b);
 		}
@@ -643,12 +637,12 @@ class OP_Divide extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).div((Number)a) );
 		}
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_FSLASH);
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_FSLASH, a);
-//		}
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_DIV);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_DIV, a);
+		}
 	
 		else {
 			throw new TypeError(this, a,b);
@@ -744,16 +738,14 @@ class OP_Equal extends Operation {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		
-//		if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_EQ);
-//		} 
-//		else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_EQ, a);
-//		} 
-//		else {
+		if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_EQ);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_EQ, a);
+		} else {
 			block.push(new Num(a.equiv(b)));
-//		}
+		}
 	}
 }
 
@@ -1340,13 +1332,13 @@ class OP_Q extends Operation {
 				block.push(new Num(Ops.RAND.nextInt()));
 			}
 		}
-//		else if (isUserObject(a)) {
-//			toUserObject(a).callVariable(block, Ops.MV_RANDCHOICE);
-//		} else if (a.isa(LIST)) {
-//			ArrayList<Object> list = toList(a);
-//			int ix = Ops.RAND.nextInt(list.size());
-//			block.push(toList(a).get(ix));
-//		}
+		else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_RAND);
+		} else if (a.isa(LIST)) {
+			List l = (List)a;
+			int ix = Ops.RAND.nextInt(l.length());
+			block.push(l.get(ix));
+		}
 		else {
 			throw new TypeError(this, a);
 		}
@@ -1539,11 +1531,11 @@ class OP_W extends Operation {
 			
 			return;
 		}
-//		else if(isModule(a)) {
-//			Module m = toModule(a);
-//			Element.getInstance().getVars().getGlobals().merge(m.getVarSet());
-//			return;
-//		}
+		else if(a.isa(DICT)) {
+			Dict d = (Dict)a;
+			Element.getInstance().getVars().getGlobals().merge(d.getVarSet());
+			return;
+		}
 		throw new TypeError(this, a);
 	}
 }
@@ -1637,12 +1629,12 @@ class OP_Caret extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).pow((Number)a) );
 		}
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_POW);
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_POW, a);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_POW);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_POW, a);
+		}
 		else {
 			throw new TypeError(this, a, b);
 		}
@@ -1716,13 +1708,12 @@ class OP_Bar extends Operation {
 				throw new TypeError(this, a, b);
 			}
 		}
-//		//User object
-//		else if (isUserObject(a)) {
-//			block.push(b);
-//			toUserObject(a).callVariable(block, Ops.MV_BAR);
-//		} else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_BAR, a);
-//		} 
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_OR);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_OR, a);
+		}
 		else {
 			throw new TypeError(this, a, b);
 		}
