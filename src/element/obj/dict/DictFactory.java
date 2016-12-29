@@ -4,6 +4,11 @@ import element.Element;
 import element.obj.block.Block;
 import element.variable.VariableSet;
 
+/** DictFactories sit on the instruction stack. When evoked, they generate a dict
+ * given the current scope of variables
+ * @author Nick
+ *
+ */
 public class DictFactory {
 	Block b;
 	
@@ -11,6 +16,7 @@ public class DictFactory {
 		this.b = b;
 	}
 	
+	/** Run the dict, collect variables, return the Dict object */
 	public Dict getDict() {
 		
 		//Capture all assignments within the scope
