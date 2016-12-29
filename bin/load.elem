@@ -1,6 +1,0 @@
-.# This file redirects element to /Element and
-.# calls the load.elem file from there
-
-""2MZ "/"|B;#"/"+S 3MZ
-
-import "load"

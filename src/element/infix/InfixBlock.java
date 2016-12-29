@@ -2,10 +2,10 @@ package element.infix;
 
 import java.util.ArrayList;
 
-import element.entities.Block;
 import element.entities.Flag;
 import element.entities.InstructionStack;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
 import element.variable.Variable;
 import element.variable.VariableSet;
 

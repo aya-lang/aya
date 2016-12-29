@@ -4,12 +4,12 @@
 .{? module: color
     A module for manipulating and printing colors in element
 .}
-{@color,
-  attr "r g b"
+{,
+  .# attr "r g b"
 
   .#Constructors
 
-  {rD gD bD, [r g b] color MO}:new;
+  {rD gD bD, {, r:r g:g b:b} color MO}:new;
 
   .#? S color.newhex\n  create a new color using a hex value represented as a string
   {cS, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
@@ -21,25 +21,17 @@
   .#? (color) color.hex\n  return a hexadecimal string representation of the color
   {.rgb#{10 16 H '0 2 strleftpad}S}:hex;
   .#? (color) color.hsv\n  return a list containing hue, sat, and val respectively
-  {.rgb#255/~ color.rgbtohsv}:hsv;
+  {.rgb255/~ color.rgbtohsv}:hsv;
 
   .#Gradients
   .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
-  {n a b, [ [a.rgb b.rgb, n intspace]~, [3|] ]}:grad;
+  {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
   .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
   {a b, '\block' 38L a b color.printgrad}:quickgrad;
   .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
   {oL a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
   .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
   {3@@\.grad 1I~ color!}:mid;
-
-  .#? (color) color.randchoice\n  set rgb values of (color) to random values
-  {self,
-    255Q self.setr
-    255Q self.setg
-    255Q self.setb
-    self
-  }:randchoice;
 
   .#Printing
 
@@ -56,7 +48,9 @@
   .#? A (color) color.println\n  print A using the color; append a newline
   {.print"\n".P}:println;
   .#? (color) color.show\n  print a square of color and return the rgb values of the color
-  {c, "\{U2588} " c.rgb~ MP "($(c.r), $(c.g), $(c.b))"}:show;
+  {c, "\{U2588} " c.rgb~ MP "($(c.r), $(c.g), $(c.b))"}:repr;
+  {c, "($(c.r), $(c.g), $(c.b))"}:str;
+
 
   .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
   {r g b : h s v delta maxv minv,
@@ -86,7 +80,7 @@
     }
     [h s v]
   }:rgbtohsv;
-}
+}:color;
 
 .{? module: colors
     The colors module defines several color objects. Here are some examples:
@@ -94,10 +88,10 @@
 	  colors.aqua
 	  colors.raspberry
 .}
-{@colors,
+{,
 
   .# colors.randchoice\n  get a random color
-  {255Q 255Q 255Q color!}:randchoice;
+  {;255Q 255Q 255Q color!}:rand;
 
   72  72  68  color!:fg;    .# Element GUI foreground color
   39  40  34  color!:bg;    .# Element GUI background color
@@ -203,4 +197,4 @@
   211 211 211 color!:lightgrey;
   169 169 169 color!:darkgray;
 
-}
+}:colors;

@@ -1,13 +1,8 @@
 package element.entities;
 
-import static element.ElemTypes.castString;
-import static element.ElemTypes.isBlock;
-import static element.ElemTypes.isString;
-import static element.ElemTypes.isVar;
-import static element.ElemTypes.toBlock;
-import static element.ElemTypes.toVar;
-
 import element.Element;
+import element.obj.block.Block;
+import element.obj.list.Str;
 import element.variable.Variable;
 
 public class InterpolateString  {
@@ -29,20 +24,20 @@ public class InterpolateString  {
 		while(!is.isEmpty()) {
 			Object current = is.pop();
 			
-			if (isString(current)) {
-				sb.append(castString(current));
-			} else if (isVar(current)) {
-				sb.append(castString(Element.getInstance().getVars().getVar(toVar(current))));
-			} else if (isBlock(current)) {
-				Block b = toBlock(current).duplicate();
+			if (current instanceof Str) {
+				sb.append(((Str)current).str());
+			} else if (current instanceof Variable) {
+				sb.append(Element.getInstance().getVars().getVar((Variable)current).str());
+			} else if (current instanceof Block) {
+				Block b = ((Block)current).duplicate();
 				b.eval();
 				if (b.getStack().size() == 1) {
-					sb.append(castString(b.getStack().pop()));
+					sb.append(b.getStack().pop().str());
 				} else {
 					sb.append("[ " + b.getPrintOutputState() + "]");
 				}
 			} else {
-				throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + castString(current));
+				throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + current.toString());
 			}
 		}
 		
@@ -52,14 +47,14 @@ public class InterpolateString  {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for(Object o : instructions.instructions) {
-			if (isString(o)) {
-				sb.append(castString(o));
-			} else if (isVar(o)) {
-				sb.append("$").append(Variable.decodeLong(toVar(o).getID()));
-			} else if (isBlock(o)) {
-				sb.append("$(").append(toBlock(o).toString()).append(")"); 
+			if (o instanceof Str) {
+				sb.append(((Str)o).str());
+			} else if (o instanceof Variable) {
+				sb.append("$").append(Variable.decodeLong(((Variable)o).getID()));
+			} else if (o instanceof Block) {
+				sb.append("$(").append(((Block)o).str()).append(")"); 
 			} else {
-				throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + castString(o));
+				throw new RuntimeException("Invalid object in string: " + o.toString());
 			}
 		}
 		return "\""+sb.toString()+"\"";

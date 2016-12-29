@@ -6,34 +6,36 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import element.ElemTypes;
-import element.entities.Block;
 import element.exceptions.TypeError;
+import element.obj.Obj;
+import element.obj.block.Block;
 import element.util.Pair;
 
 public class VariableSet {
 	private Variable[] argNames;
 	private byte[] argTypes;
-	private HashMap<Long, Object> vars;
-	private boolean is_module;
+	private HashMap<Long, Obj> vars;
+	// Setting this to true will tell VariableData to assign new variables here
+	// It emulates every variable being declared local
+	private boolean captureAllAssignments;
 
 	
 	public VariableSet(Variable[] argNames, byte[] argTypes) {
 		this.argTypes = argTypes;
 		this.argNames = argNames;
-		this.vars = new HashMap<Long, Object>();
-		this.is_module = false;
+		this.vars = new HashMap<Long, Obj>();
+		this.captureAllAssignments = false;
 	}
 	
 	public VariableSet(boolean is_module) {
 		this.argNames = null;
 		this.argTypes = null;
-		this.vars = new HashMap<Long, Object>();
-		this.is_module = is_module;
+		this.vars = new HashMap<Long, Obj>();
+		this.captureAllAssignments = is_module;
 	}
 	
 	public boolean isModule() {
-		return is_module;
+		return captureAllAssignments;
 	}
 	
 	public void setArgs(Block b) {
@@ -49,9 +51,9 @@ public class VariableSet {
 			}
 		} else {
 			for(int i = argNames.length-1; i >= 0; i--){
-				Object o = b.pop();
-				if(!ElemTypes.isType(argTypes[i], o)) {
-					throw new TypeError("{ARGS}", ElemTypes.getTypeNameFromID(argTypes[i]), o);
+				Obj o = b.pop();
+				if(argTypes[i] != Obj.ANY && !o.isa(argTypes[i]) ) {
+					throw new TypeError("{ARGS}", Obj.typeName(argTypes[i]), o);
 				}
 					//throw new RuntimeException("Invalid type in block argument. Expected (" + TypeUtils.getTypeNameFromID(argTypes[i]) + "). Recieved " + TypeUtils.debugString(o)+ " (" + TypeUtils.getTypeName(o) + ")");
 				
@@ -60,24 +62,24 @@ public class VariableSet {
 		}
 	}
 	
-	public void setVar(Variable v, Object o) {
+	public void setVar(Variable v, Obj o) {
 		vars.put(v.getID(),o);
 	}
 	
 	
-	public void setVar(long v, Object o) {
+	public void setVar(long v, Obj o) {
 		vars.put(v,o);
 	}
 	
-	public Object getObject(long id) {
+	public Obj getObject(long id) {
 		return vars.get(id);
 	}
 	
-	public Object getObject(Variable v) {
+	public Obj getObject(Variable v) {
 		return vars.get(v.getID());
 	}
 	
-	public HashMap<Long, Object> getMap() {
+	public HashMap<Long, Obj> getMap() {
 		return vars;
 	}
 	
@@ -92,23 +94,24 @@ public class VariableSet {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder("{");
-		for(Variable v : argNames) {
-			sb.append(v.toString() + " ");
-		}
-		sb.append("|");
-		Iterator<Entry<Long, Object>> it = vars.entrySet().iterator();
-		boolean addComma = false;
-	    while (it.hasNext()) {
-	    	if(addComma) {
-	    		sb.append(", ");
-	    	}
-	        Map.Entry<Long, Object> pair = (Map.Entry<Long, Object>)it.next();
-	        sb.append(Variable.decodeLong(pair.getKey()) + " = " + pair.getValue());
-	        addComma = true;
-	    }
-	    sb.append("}");
-		return sb.toString();
+//		StringBuilder sb = new StringBuilder("{");
+//		for(Variable v : argNames) {
+//			sb.append(v.toString() + " ");
+//		}
+//		sb.append("|");
+//		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+//		boolean addComma = false;
+//	    while (it.hasNext()) {
+//	    	if(addComma) {
+//	    		sb.append(", ");
+//	    	}
+//	        Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
+//	        sb.append(Variable.decodeLong(pair.getKey()) + " = " + pair.getValue());
+//	        addComma = true;
+//	    }
+//	    sb.append("}");
+//		return sb.toString();
+		return show();
 	}
 	
 	
@@ -122,9 +125,9 @@ public class VariableSet {
 		
 		if(vars != null && vars.size() > 0) {
 			sb.append(": ");
-			Iterator<Entry<Long, Object>> it = vars.entrySet().iterator();
+			Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Long, Object> pair = (Map.Entry<Long, Object>)it.next();
+				Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
 				sb.append(Variable.decodeLong(pair.getKey()) + " ");
 			}
 		}
@@ -134,14 +137,23 @@ public class VariableSet {
 	}
 	
 	/** Sets all vars in the VariableSet */
-	public void setAllVars(HashMap<Long, Object> map) {
+	public void setAllVars(HashMap<Long, Obj> map) {
 		this.vars = map;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override public VariableSet clone() {
 		VariableSet out = new VariableSet(argNames, argTypes);
-		out.setAllVars((HashMap<Long, Object>)vars.clone());
+		out.setAllVars((HashMap<Long, Obj>)vars.clone());
+		return out;
+	}
+	
+	/** Create a deep copy of the variable set */
+	public VariableSet deepcopy() {
+		VariableSet out = new VariableSet(argNames, argTypes);
+		for (Long l : vars.keySet()) {
+			out.setVar(l, vars.get(l).deepcopy());
+		}
 		return out;
 	}
 
@@ -151,22 +163,45 @@ public class VariableSet {
 	
 	/** Add all variables from `other` to this var set. Overwrite if needed */
 	public void merge(VariableSet other) {
-		Iterator<Entry<Long, Object>> it = other.vars.entrySet().iterator();
+		Iterator<Entry<Long, Obj>> it = other.vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Object> pair = (Map.Entry<Long, Object>)it.next();
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
 	    	this.setVar(pair.getKey(), pair.getValue());
 	    }
 	}
 
 	/** Return all variables as a list of pairs */
-	public ArrayList<Pair<Variable, Object>> getAllVars() {
-		ArrayList<Pair<Variable,Object>> out = new ArrayList<Pair<Variable, Object>>();
-		Iterator<Entry<Long, Object>> it = vars.entrySet().iterator();
+	public ArrayList<Pair<Variable, Obj>> getAllVars() {
+		ArrayList<Pair<Variable,Obj>> out = new ArrayList<Pair<Variable, Obj>>();
+		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Object> pair = (Map.Entry<Long, Object>)it.next();
-	    	out.add(new Pair<Variable, Object>(new Variable(pair.getKey()), pair.getValue()));
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	out.add(new Pair<Variable, Obj>(new Variable(pair.getKey()), pair.getValue()));
 	    }
 	    return out;
 	}
+
+	/** Return all variables */
+	public ArrayList<Long> keys() {
+		ArrayList<Long> out = new ArrayList<Long>();
+		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	out.add(pair.getKey());
+	    }
+	    return out;
+	}
+	
+	/** Return all Objs */
+	public ArrayList<Obj> values() {
+		ArrayList<Obj> out = new ArrayList<Obj>();
+		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	out.add(pair.getValue());
+	    }
+	    return out;
+	}
+	
 	
 }

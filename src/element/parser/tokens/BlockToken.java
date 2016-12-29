@@ -2,20 +2,20 @@ package element.parser.tokens;
 
 import java.util.ArrayList;
 
-import element.ElemTypes;
-import element.entities.Block;
 import element.entities.Flag;
-import element.entities.number.Num;
 import element.exceptions.SyntaxError;
+import element.obj.Obj;
+import element.obj.block.Block;
+import element.obj.dict.DictFactory;
+import element.obj.number.Num;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
-import element.variable.ModuleFactory;
 import element.variable.Variable;
 import element.variable.VariableSet;
 
 public class BlockToken extends CollectionToken {
 	
-	public static final Object DEFAULT_LOCAL_VAR = new Num(0);
+	public static final Obj DEFAULT_LOCAL_VAR = new Num(0);
 		
 	public BlockToken(String data, ArrayList<Token> col) {
 		super(Token.BLOCK, data, col);
@@ -31,14 +31,14 @@ public class BlockToken extends CollectionToken {
 			return new Block(Parser.generate(blockData.get(0)));
 		case 2:
 			TokenQueue header = blockData.get(0);
-			if (header.hasNext() && header.peek().isa(Token.OP) && header.peek().data.equals("@")) {
-				header.next();
-				if (header.size() > 1) { throw new SyntaxError("Must include only module name in header"); }
-				String modname = header.next().data;
+			//Empty header, dict literal
+			if (!header.hasNext()) {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				return new ModuleFactory(modname, b);
-			} else {
+				return new DictFactory(b);
+			}
+			//Non-empty header, args and local variables
+			else {
 				Block b = new Block();
 				b.add(Flag.getFlag(Flag.POPVAR)); //Pop the local variables when the block is finished
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
@@ -110,15 +110,15 @@ public class BlockToken extends CollectionToken {
 				if (tokens.get(i).getType() == Token.VAR) {
 					if (i+1 > tokens.size()-1) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(ElemTypes.ANY);
+						argTypes.add(Obj.ANY);
 					} else if (tokens.get(i+1).getType() == Token.OP) {
 						argNames.add(new Variable(tokens.get(i).getData()));
 						char c = tokens.get(i+1).getData().charAt(0);
-						argTypes.add(ElemTypes.abbrvToID(c));
+						argTypes.add(Obj.abbrvToID(c));
 						i++; //Skip the op on the next iteration
 					} else if (tokens.get(i).getType() == Token.VAR) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(ElemTypes.ANY);
+						argTypes.add(Obj.ANY);
 					} else {
 						//Should always be a VAR or an OP
 						throw new SyntaxError("All arguments must be names or type assertions");
@@ -134,7 +134,7 @@ public class BlockToken extends CollectionToken {
 			byte[] types = new byte[argTypes.size()];
 			for (int i = 0; i < types.length; i++) {
 				types[i] = argTypes.get(i).byteValue();
-				if(types[i] != ElemTypes.ANY) {
+				if(types[i] != Obj.ANY) {
 					allAny = false;
 				}
 			}

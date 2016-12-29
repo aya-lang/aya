@@ -17,31 +17,27 @@
 .{? docs: overloaded operators
   1 arg
     \$  dollar
-    E  len
     P  str
   2 args
-    %  percent
-    &  amp
-    *  star
-    +  plus
-    -  minus
-    /  fslash
+    %  mod
+    &  and
+    *  mul
+    +  add
+    -  sub
+    /  div
     ^  pow
-    |  bar
-    I  index (assumes second item is obj)
-    D  setindex (assumes second item is obj)
+    |  or
 .}
 
 .{? docs: argument type key
   D - num
   F - bignum
   N - number (D|F)
-  B - boolean
   E - expression/block
   C - character
   S - string
   A - any
-  M - module
+  R - dict
 .}
 
 .{? docs: ranges
@@ -72,6 +68,11 @@
   syntax:
     {<expr>}
     {<args>,<expr>}
+.}
+
+.{? docs: dictionaries
+  dicts are created using the following syntax
+  {, val1:key1 val2:key2 ... valN:keyN}
 .}
 
 .{? docs: special characters

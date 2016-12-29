@@ -1,27 +1,25 @@
 .{? type: turtle
     A turtle. Used for drawing patterns on a plot grid.
 .}
-{@turtle,
-  attr "x y r path"
-
-  {[0 0 pi2/ [[0 0]]] turtle MO}:new;
+{,
+  {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
   {self, "{turtle:$(self.x),$(self.y),$(self.r rad)\{deg}}"}:show;
 
   .#? N turtle.fwd\n  move the turtle forward N units
   {len self,
-    self.x self.r Mc len* + self.setx
-    self.y self.r Ms len* + self.sety
+    self.x self.r Mc len* + self.:x;
+    self.y self.r Ms len* + self.:y;
     [self.x self.y] self.path .V;
   }:fwd;
 
   .#? N turtle.left\n  turn the turtle left N radians
   {rads self,
-    self.r rads + self.setr
+    self.r rads + self.:r;
   }:left;
 
   .#? N turtle.right\n  turn the turtle right N radians
   {rads self,
-    self.r rads - self.setr
+    self.r rads - self.:r;
   }:right;
 
   .#? turtle.draw\n  draw the turtle's path
@@ -35,17 +33,17 @@
     [x min y min] min :small;
     big 0.1* :margin;
 
-    small margin- big margin+ p.setxaxis
-    small margin- big margin+ p.setyaxis
+    [small margin- big margin+] p.:xaxis
+    [small margin- big margin+] p.:yaxis
 
     p.view
 
   }:draw;
-}
+}:turtle;
 
 
 
-{@turtledemo,
+{,
 
   .#? turtledemo.ribbon\n  a ribbon
   {:frank,
@@ -85,4 +83,4 @@
     t.draw
   }:snowflake;
 
-}
+}:turtledemo;

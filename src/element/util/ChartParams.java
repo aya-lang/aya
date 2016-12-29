@@ -4,15 +4,21 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
-import element.ElemTypes;
-import element.entities.number.Numeric;
 import element.exceptions.ElementRuntimeException;
+import element.obj.Obj;
+import element.obj.dict.Dict;
+import element.obj.list.List;
+import element.obj.list.Str;
+import element.obj.number.Num;
+import element.obj.number.Number;
 
 public class ChartParams {
 	
 	public static final Random RAND = new Random();
 	public static final int DEFAULT_HEIGHT = 367;
 	public static final int DEFAULT_WIDTH = 560;
+	public static final String NONE = "";
+	public static final Str STRNONE = new Str(NONE);
 	
 	public static final int LINE = 0;
 	public static final int SCATTER = 1;
@@ -42,7 +48,7 @@ public class ChartParams {
 	private Axis yaxis;
 	private float stroke;
 	private ArrayList<Float> xvalues;
-	private ArrayList<ArrayList<Numeric>> yvalues;
+	private ArrayList<ArrayList<Number>> yvalues;
 	private String filename;
 	private boolean show;
 	private boolean legend;
@@ -64,7 +70,7 @@ public class ChartParams {
 		this.stroke = -1.0f;
 		this.xvalues = null;
 		this.yvalues = new ArrayList<>();
-		this.filename = null;
+		this.filename = NONE;
 		this.show = true;
 		this.legend = true;
 		this.horizontal = false;
@@ -76,8 +82,7 @@ public class ChartParams {
 	
 	
 	
-	@SuppressWarnings("unchecked")
-	public static ChartParams parseParams(ArrayList<Object> params) {
+	public static ChartParams parseParams(Dict params) {
 		
 		/*
 		 Sample Input
@@ -93,68 +98,78 @@ public class ChartParams {
 		
 		ChartParams cp = new ChartParams();
 		
-		cp.setType((Numeric)getParam("type", params));
-		cp.setWidth((Numeric)getParam("width", params));
-		cp.setHeight((Numeric)getParam("height", params));
-		cp.setStroke((Numeric)getParam("stroke", params));
-		cp.setTitle((String)getParam("title", params));
-		cp.setXlabel((String)getParam("xlabel", params));
-		cp.setYlabel((String)getParam("ylabel", params));
-		cp.setFilename((String)getParam("filename", params));
-		cp.setShow((Boolean)getParam("show", params));
-		cp.setLegend((Boolean)getParam("legend", params));
-		cp.setHorizontal((Boolean)getParam("horizontal", params));
+		cp.setType((Number)getNumber("type", params, null));
+		cp.setWidth((Number)getNumber("width", params, null));
+		cp.setHeight((Number)getNumber("height", params, null));
+		cp.setStroke((Number)getNumber("stroke", params, null));
+		cp.setTitle(getParam("title", params, STRNONE).str());
+		cp.setXlabel(getParam("xlabel", params, STRNONE).str());
+		cp.setYlabel(getParam("ylabel", params, STRNONE).str());
+		cp.setFilename(getParam("filename", params, STRNONE).str());
+		cp.setShow(getParam("show", params, Num.ONE).bool());
+		cp.setLegend(getParam("legend", params, Num.ZERO).bool());
+		cp.setHorizontal(getParam("horizontal", params, Num.ZERO).bool());
 		
-		ArrayList<Object> xaxisParam = (ArrayList<Object>)getParam("xaxis", params);
+		List xaxisParam = getList("xaxis", params, null);
 		if (xaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(xaxisParam);
 			cp.setXaxis(pair.first(), pair.second());
 		}
 		
-		ArrayList<Object> yaxisParam = (ArrayList<Object>)getParam("yaxis", params);
+		List yaxisParam = getList("yaxis", params, null);
 		if (yaxisParam != null) {
 			Pair<Double, Double> pair = parseAxis(yaxisParam);
 			cp.setYaxis(pair.first(), pair.second());
 		}
 		
-		cp.setXvalues((ArrayList<Numeric>)getParam("x", params));
+		List xValues = getList("x", params, null);
+		if (xValues == null) {
+			throw new ElementRuntimeException("MX: input dict does not contain key 'x'");
+		} else {
+			cp.setXvalues(parseData(xValues));
+		}
 		
+		List series = getList("y", params, null);
 		
-		ArrayList<Object> series = (ArrayList<Object>)getParam("y", params);
+		if (series == null) {
+			throw new ElementRuntimeException("MX: input dict does not contain key 'y'");
+		}
 		
 		//Parse the series (must be the last step)
-		for (Object o : series) {
+		for (int i = 0; i < series.length(); i++) {
 			//Every item in y must be a list of params
-			if (o instanceof ArrayList) {
-				ArrayList<Object> list = (ArrayList<Object>)o;
+			if (series.get(i).isa(Obj.DICT)) {
+				Dict dict = (Dict)(series.get(i));
 				//Each list must have a name, stroke, color and dataset
-				if (list.size() == 4) {
-					Object o_name = list.get(0);
-					Object o_stroke = list.get(1);
-					Object o_colorList = list.get(2);
-					Object o_data = list.get(3);
-					if (o_name instanceof String && o_stroke instanceof Numeric && o_colorList instanceof ArrayList && o_data instanceof ArrayList) {
-						String name = (String)o_name;
-						Numeric stroke = (Numeric)o_stroke;
-						Color color = parseColor((ArrayList<Object>)o_colorList);
-						ArrayList<Numeric> data = parseData((ArrayList<Object>)o_data);
-						
-						cp.addYvalues(name, stroke.toFloat(), color, data);
-						
-					} else {
-						throw new ElementRuntimeException("Plot expected name, RGB color list, and data list. Recieved:\n"
-								+ "\t" + str(o_name) + "\n"
-								+ "\t" + str(o_stroke) + "\n"
-								+ "\t" + str(o_colorList) + "\n"
-								+ "\t" + str(o_data));
-					}
+				Obj o_name = getParam("name", dict, Str.EMPTY);
+				String name = o_name.str();
+				
+				Obj o_stroke = getParam("stroke", dict, Num.ONE);
+				Number stroke = Num.ONE;
+				if (o_stroke.isa(Obj.NUMBER)) {
+					stroke = (Number)o_stroke;
 				} else {
-					throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items). "
-							+ "Recieved: " + str(o));
+					throw new ElementRuntimeException("Series key 'stroke' must be a number");
 				}
-			} else {
-				throw new ElementRuntimeException("Each series in y must have a name, color, and dataset (3 items in a list). "
-						+ "Recieved: " + str(o));
+				
+				Obj o_color = getParam("color", dict, Num.ZERO);  // Use '0' if not given
+				Color color = Color.BLUE;
+				if (o_color.isa(Obj.LIST)) {
+					color = parseColor((List)o_color);
+				} else {
+					throw new ElementRuntimeException("Series key 'color' must be a list of numbers [r g b]");
+				}
+				
+				Obj o_data = getParam("data", dict, Num.ZERO);  // Use '0' if not given
+				ArrayList<Number> data = null;
+				if (o_data.isa(Obj.LIST)) {
+					data = ((List)o_data).toNumberList().toArrayList();
+				} else {
+					throw new ElementRuntimeException("Series key 'data' must be a list of numbers");
+				}
+				
+				
+				cp.addYvalues(name, stroke.toFloat(), color, data);
 			}
 		}
 		
@@ -162,82 +177,87 @@ public class ChartParams {
 		return cp;
 	}
 	
-	private static Color parseColor(ArrayList<Object> o_color) {
-		if (o_color.size() == 0) {
+	private static Color parseColor(List o_color) {
+		if (o_color.length() == 0) {
 			return null;
-		} else if (o_color.size() == 3
-				&& o_color.get(0) instanceof Numeric
-				&& o_color.get(1) instanceof Numeric
-				&& o_color.get(2) instanceof Numeric) {
+		} else if (o_color.length() == 3
+				&& o_color.get(0).isa(Obj.NUMBER)
+				&& o_color.get(1).isa(Obj.NUMBER)
+				&& o_color.get(2).isa(Obj.NUMBER)) {
 			return new Color(
-					((Numeric)(o_color.get(0))).toInt(),
-					((Numeric)(o_color.get(1))).toInt(),
-					((Numeric)(o_color.get(2))).toInt()
+					((Number)(o_color.get(0))).toInt(),
+					((Number)(o_color.get(1))).toInt(),
+					((Number)(o_color.get(2))).toInt()
 					);
 		} else {
-			throw new ElementRuntimeException("Invalid color: " + str(o_color));
+			throw new ElementRuntimeException("Invalid color: " + o_color.repr());
 		}
 	}
 	
-	private static ArrayList<Numeric> parseData(ArrayList<Object> data) {
-		ArrayList<Numeric> nums = new ArrayList<Numeric>(data.size());
-		for (Object o : data) {
-			if (o instanceof Numeric) {
-				nums.add((Numeric)o);
-			} else {
-				throw new ElementRuntimeException("Invalid datapoint " + str(o) + " in " + str(data));
-			}
+	private static ArrayList<Number> parseData(List data) {
+		if (!data.isa(Obj.LIST)) {
+			throw new ElementRuntimeException("Invalid datapoints in " + data.repr());
+		} else {
+			return data.toNumberList().toArrayList();
 		}
-		return nums;
 	}
 	
-	private static Pair<Double, Double> parseAxis(ArrayList<Object> list) {
-		if (list.size() == 2) {
-			if (list.get(0) instanceof Numeric && list.get(1) instanceof Numeric) {
-				Numeric n_min = (Numeric) list.get(0);
-				Numeric n_max = (Numeric) list.get(1);
+	private static Pair<Double, Double> parseAxis(List list) {
+		if (list.length() == 2) {
+			if (list.get(0).isa(Obj.NUMBER) && list.get(1).isa(Obj.NUMBER)) {
+				Number n_min = (Number) list.get(0);
+				Number n_max = (Number) list.get(1);
 
 				
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
 			} else {
 				throw new ElementRuntimeException("Axis max/min must have 2 numbers\n"
-						+ "Recieved: " + str(list));
+						+ "Recieved: " + list.repr());
 			}
 		} else {
 			throw new ElementRuntimeException("Axis max/min must have both max and min values\n"
-					+ "Recieved: " + str(list));
+					+ "Recieved: " + list.repr());
 		}
 	}
 	
+	private static Number getNumber(String name, Dict params, Obj dflt) {
+		Obj o = getParam(name, params, dflt);
+		if (o instanceof Number) {
+			return (Number)o;
+		} else if (o != null) {
+			throw new ElementRuntimeException("MX: Param name '" + name + "' should be a number."
+					+ " Recieved " + o.repr());
+		} else {
+			return null;
+		}
+	}
 	
-	@SuppressWarnings("unchecked")
-	private static Object getParam(String name, ArrayList<Object> params) {
-		for (Object o : params) {
-			if (o instanceof ArrayList) {
-				ArrayList<Object> list = (ArrayList<Object>)o;
-				if (list.size() > 1 && list.get(0) instanceof String) {
-					String s = (String) list.get(0);
-					if (s.equals(name)) {
-						return list.get(1);
-					}
-				}
-			}
+	private static List getList(String name, Dict params, Obj dflt) {
+		Obj o = getParam(name, params, dflt);
+		if (o instanceof List) {
+			return (List)o;
+		} else if (o != null) {
+			throw new ElementRuntimeException("MX: Param name '" + name + "' should be a list."
+					+ " Recieved " + o.repr());
+		} else {
+			return null;
+		}
+	}
+	
+	private static Obj getParam(String name, Dict params, Obj dflt) {
+		if (params.containsKey(name)) {
+			return params.get(name);
+		} else {
+			return dflt;
 		}
 		
-		return null;
 	}
-	
-	private static String str(Object o) {
-		return ElemTypes.castString(o);
-	}
-	
-
 	
 	public int getType() {
 		return type;
 	}
 
-	private void setType(Numeric t) {
+	private void setType(Number t) {
 		//If input is null, leave it unchanged
 		this.type = t == null ? this.type : t.toInt();
 		
@@ -247,7 +267,7 @@ public class ChartParams {
 		}
 	}
 	
-	private void setStroke(Numeric t) {
+	private void setStroke(Number t) {
 		//If input is null, leave it unchanged
 		this.stroke = t == null ? this.stroke : t.toFloat();
 	}
@@ -313,7 +333,7 @@ public class ChartParams {
 
 
 	public void setFilename(String filename) {
-		this.filename = filename;
+		this.filename = filename.equals(NONE) ? null : filename;
 	}
 
 
@@ -361,7 +381,7 @@ public class ChartParams {
 		return out == null ? ("series " + i) : out;
 	}
 	
-	public void addYvalues(String name, float stroke, Color color, ArrayList<Numeric> vals) {
+	public void addYvalues(String name, float stroke, Color color, ArrayList<Number> vals) {
 		if (vals.size() == xvalues.size()) {
 			if (name.equals("")) {
 				this.legend = false;
@@ -398,7 +418,7 @@ public class ChartParams {
 		return width;
 	}
 
-	public void setWidth(Numeric w) {
+	public void setWidth(Number w) {
 		//If input is null, leave it unchanged
 		this.width = w == null ? this.width : w.toInt();
 
@@ -408,7 +428,7 @@ public class ChartParams {
 		return height;
 	}
 
-	public void setHeight(Numeric h) {
+	public void setHeight(Number h) {
 		//If input is null, leave it unchanged
 		this.height = h == null ? this.height : h.toInt();
 	}
@@ -418,7 +438,7 @@ public class ChartParams {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.equals(NONE) ? null : title;
 	}
 
 	public String getXlabel() {
@@ -426,7 +446,7 @@ public class ChartParams {
 	}
 
 	public void setXlabel(String xlabel) {
-		this.xlabel = xlabel;
+		this.xlabel = xlabel.equals(NONE) ? null : xlabel;
 	}
 
 	public String getYlabel() {
@@ -434,25 +454,25 @@ public class ChartParams {
 	}
 
 	public void setYlabel(String ylabel) {
-		this.ylabel = ylabel;
+		this.ylabel = ylabel.equals(NONE) ? null : ylabel;
 	}
 
 	public ArrayList<Float> getXvalues() {
 		return xvalues;
 	}
 
-	public void setXvalues(ArrayList<Numeric> x) {
+	public void setXvalues(ArrayList<Number> x) {
 		this.xvalues = new ArrayList<Float>(x.size());
-		for (Numeric n : x) {
+		for (Number n : x) {
 			xvalues.add(n.toFloat());
 		}
 	}
 
-	public ArrayList<ArrayList<Numeric>> getYvalues() {
+	public ArrayList<ArrayList<Number>> getYvalues() {
 		return yvalues;
 	}
 
-	public void setYvalues(ArrayList<ArrayList<Numeric>> yvalues) {
+	public void setYvalues(ArrayList<ArrayList<Number>> yvalues) {
 		this.yvalues = yvalues;
 	}
 	

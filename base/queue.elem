@@ -5,18 +5,19 @@
     [1 2 3] queue!
 .}
 
-{@queue,
-  attr "list"
+{,
 
   .#? L queue.new\n  convert a list into a queue
-  {l, [l] queue MO}:new;
+  {l, {,l:list} queue MO}:new;
 
   .#? (queue) queue.show\n  convert a queue to a string
   {self,
     {"queue: <-"self.listPB;V;"-<"++}
     {"queue: <- -<"}
     self.isempty ?
-  }:show;
+  }:repr;
+  
+  {.repr}:str;
 
   .#? (queue) queue.dollar\n(queue) queue.next\n  return the next item in the queue
   {self,
@@ -39,6 +40,5 @@
   {.listE0=}:isempty;
 
   .#? A (queue) queue.plus\nA (queue) queue.add\n  add an item to the queue
-  {self, self.list.B; self}:plus;
-  {queue.plus}:add;
-}
+  {self, self.list.B; self}:add;
+}:queue;

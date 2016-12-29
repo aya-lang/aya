@@ -1,64 +1,45 @@
-{@ plot,
+{, .# plot
 
-  {@axis, 
-    attr "min max"
+  {, .# axis
     {minN maxN,
-      [min max] plot.axis MO
+      {,min:min max:max} plot.axis MO
     }:new;
-    {F}:eq;
-  }
+    {0}:eq;
+  }:axis;
   
   .# Plot types
   0:tline;     .#? plot.tline\n  line plot type id
   1:tscatter;  .#? plot.tscatter\n  scatter plot type id
 
-  """
-    type
-    width
-    height
-    title
-    xlabel
-    ylabel
-    legend
-    xbounds
-    ybounds
-    xvals
-    series
-    stroke
-  """:fieldnames;
-
-  attr fieldnames
-
 
   .#? plot.new\n  create a new plot instance with default settings
   {:plt,
-    [plot.fieldnamesE,0] plot MO :plt;
-    
-    plot.tline  plt.settype
-    500         plt.setwidth
-    400         plt.setheight
-    ""          plt.settitle
-    ""          plt.setxlabel
-    ""          plt.setylabel
-    []          plt.setxvals
-    []          plt.setseries
-    T           plt.setlegend
-    0           plt.setxbounds
-    0           plt.setybounds
-    1!          plt.setstroke .# Use individual strokes
-    
-    plt
+    .# [plot.fieldnamesE,0] plot MO :plt;
+    {,
+      plot.tline  :type
+      500         :width
+      400         :height
+      ""          :title
+      ""          :xlabel
+      ""          :ylabel
+      []          :x
+      []          :y
+      1           :legend
+      (-1)        :stroke .# Use individual strokes
+    }
+    plot MO
   }:new;
 
   .#? (plot) plot.view\n  view the plot in a new window
   {self,
-    self.propertylist MX
+    .# self.propertylist MX
+    self MX
   }:view;
 
   .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
   {filenameS self,
     self.propertylist _ .# dup: don't change the propertylist
-    ["show" F] AK
+    ["show" 0] AK
     ["filename" filename] AK
     MX;
   }:save;
@@ -70,34 +51,24 @@
 
    .#? L<N> (plot) plot.domain\n  set the domain of the plot
   {dataL self,
-    data self.setxvals
+    data self.:x;
   }:domain;
   
   .#? nameS strokeN colorL dataL (plot) plot.addseries\n  add a series to a plot
   {nameS strokeN colorL dataL self,
     .# stroke 0 = then {self.stroke :stroke;}
-    self.series [name stroke color data] AK;
+    self.y {,name:name stroke:stroke color:color data:data} AK;
   }:addseries;
   
   .#? nameS strokeN colorL exprE (plot) plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
   {nameS strokeN colorL exprE self,
-    self.series [name stroke color [self.xvals, expr]] AK;
+    self.y {,name:name stroke:stroke color:color [self.x, expr]:data} AK;
   }:addexpr;
-  
-  .#? minN maxN (plot) plot.setxaxis\n  set the horizontal min and max values
-  {minN maxN self,
-    min max plot.axis! self.setxbounds 
-  }:setxaxis;
-  
-  .#? minN maxN (plot) plot.setyaxis\n  set the vertical min and max values
-  {minN maxN self,
-    min max plot.axis! self.setybounds 
-  }:setyaxis;
   
   .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
   {domainL rangeL : plt,
     plot!:plt;
-    plottype.scatter plt.settype
+    plottype.scatter plt.:type;
     domain plt.domain
     range plt.addline
     plt
@@ -138,59 +109,26 @@
   }:fns;
   
   
-  {"Plot Instance"}:show;
+  {"Plot Instance"}:str:repr;
 
-  
-  .###################
-  .# UTIL FUNCTIONS
-  .###################
+}:plot;
 
-  .# return a property list for this plot
-  {self,
-    [
-      ["width" self.width]
-      ["height" self.height]
-      ["title" self.title]
-      ["xlabel" self.xlabel]
-      ["ylabel" self.ylabel]
-      ["legend" self.legend] 
-      ["type" self.type]
-      
-      self.xbounds 0=! then {
-        ["xaxis" [self.xbounds.min self.xbounds.max]]
-      }
-        
-      self.ybounds 0=! then {
-        ["yaxis" [self.ybounds.min self.ybounds.max]]
-      }
-      
-      self.stroke 1!=! then {
-        ["stroke" self.stroke]
-      }
-
-      ["x" self.xvals]
-      ["y" self.series]
-    ]
-  }:propertylist;
-
-} .# END plot
-
-{@plottype,
+{,
   0:line;
   1:scatter;
-}
+}:plottype;
 
 
 
 
 .{? scatter plot example
-  [10,.Q] [10,.Q] plot.scatter :p;
-  "A Scatter plot" p.settitle
+  [10,;.Q] [10,;.Q] plot.scatter :p;
+  "A Scatter plot" p.:title
   p.view
 .}
 
 .{? line plot example
   10R _#Mq plot.line :p;
-  3 p.setstroke
+  3 p.:stroke
   p.view
 .}

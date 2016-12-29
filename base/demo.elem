@@ -2,9 +2,9 @@
 .# example functions
 
 .#? module: demo\n  contains various example functions
-{@ demo,
+{,
   .#? N demo.train\n  generates an ASCII train with N carts
-  {nD, [" ______  ""|      | "" ()--() ~"]#{nLSB;'\n'+}S.P}:train;
+  {nD, [" ______  ""|      | "" ()--() ~"]#{nLSV;'\n'+}S.P}:train;
 
 
   .#? demo.loc\n  input a C source file and return the number of lines of code
@@ -23,9 +23,9 @@
     for 'n (4R) {
       nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
     };
-    "Demo: Sine Series" plt.settitle
-    2 plt.setstroke
-    0 pi4* plt.setxaxis
+    "Demo: Sine Series" plt.:title
+    2 plt.:stroke
+    [0 pi4*] plt.:xaxis
 
     plt.view
    }:sinsrs;
@@ -34,7 +34,7 @@
   {:p mul s,
     plot!:p;
     0 0.9+ pi 0.9- 600.1 linspace p.domain
-    0.857 1.1 p.setyaxis
+    [0.857 1.1] p.:yaxis
 
     0.011:mul;
     16:s;
@@ -63,15 +63,15 @@
     "ln"  2 colors.orange.rgb {ln} p.addexpr
 
     .# Plot title
-    "A Sample Expression Plot" p.settitle
+    "A Sample Expression Plot" p.:title
 
     .# Other plot parameters
-    (-2) 2 p.setyaxis
-    0 2pi* p.setxaxis
-    true   p.setlegend
-    "f(x)" p.setylabel
-    400    p.setwidth
-    300    p.setheight
+    [(-2) 2] p.:yaxis
+    [0 2pi*] p.:xaxis
+    1        p.:legend
+    "f(x)"   p.:ylabel
+    400      p.:width
+    300      p.:height
 
     .# Open the plot window
     p.view
@@ -84,7 +84,7 @@
   .#? demo.scatter\n  a simple scatter plot
   {:p,
     100R:x [x,.Q70*+] plot.scatter:p
-    "A Scatter Plot" p.settitle
+    "A Scatter Plot" p.:title
 
     p.view
   }:scatter;
@@ -96,7 +96,7 @@
   .#? demo.colorsort\n  comparison of various color sorting methods
   {:c srtprt,
 
-    [{colors.randchoice}100%]:c;
+    [{colorsQ}100%]:c;
 
     {name clrs fn,
       "$name:\t".P clrs {fn} .$ #{'\block'\.print0};
@@ -130,15 +130,15 @@
   .#? demo.lakehuron\n  plot lake huron water levels over time with regression
   {:time level plt reg,
 
-    data.lakehuron [1! "time"] I :time;
-    data.lakehuron [1! "LakeHuron"] I :level;
+    [[] "time"] data.lakehuron .get :time;
+    [[] "LakeHuron"]  data.lakehuron .get :level;
 
     plot!:plt;
     time plt.domain
-    "Level of Lake Huron" plt.settitle
-    "Year" plt.setxlabel
-    "Level" plt.setylabel
-    level min 2- level max 5+ plt.setyaxis
+    "Level of Lake Huron" plt.:title
+    "Year" plt.:xlabel
+    "Level" plt.:ylabel
+    [level min 2- level max 5+] plt.:yaxis
 
     level plt.addline
 
@@ -159,36 +159,32 @@
   }:spiro;
 
   .#? demo.randomwalk\n  plot a random walk
-  {:vec step,
-    .# A simple 2d vector
-    struct "vec:x y"
+  {:vec step,    
     .# Move the x and y values by 0,-1, or +1
-    {v, v.x 3QV+ v.setx v.y 3QV+ v.sety}:step
+    {v, v.x 3QV+ v.:x; v.y 3QV+ v.:y;}:step;
 
     .# Start at (0,0)
-    0 0 vec!:v;
+    {,0:x 0:y}:v;
     .# Record each step in a list, step 20000 times
     [] {v step [v.x v.y]\.V} 20000 %
     .# Transpose the list and plot the line
     transpose~ plot.line.view
   }:randomwalk;
 
-}
+}:demo;
 
 {:demolist choice,
   [
-    ["Random Walk" "randomwalk"]
-    ["Sine Series" "sinsrs"]
-    ["Parametric Spiral" "spiro"]
-    ["Regression Plot" "lakehuron"]
-    ["Rainbow" "rainbow"]
-    ["Color Sort" "colorsort"]
-    ["Scatter Plot" "scatter"]
-    ["Expression Plot" "fnplot"]
-  ]dict! :demolist;
+  "randomwalk"
+  "sinsrs"
+  "spiro"
+  "lakehuron"
+  "rainbow"
+  "colorsort"
+  "scatter"
+  "fnlot"
+  ]  "Select a Demo" "Element Demo" 1 6 MV :choice;
 
-  demolist.keys "Select a Demo" "Element Demo" 1 6 MV :choice;
-
-  "demo." demolist choice I + ~
+  "demo." choice + ~
 
 }:demos;

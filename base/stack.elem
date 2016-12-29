@@ -5,18 +5,17 @@
     [1 2 3] stack!
 .}
 
-{@stack,
-  attr "list"
+{,
 
   .#? L stack.new\n  convert a list into a stack
-  {l, [l] stack MO}:new;
+  {l, {, l:list} stack MO}:new;
 
   .#? (stack) stack.show\n  convert a stack to a string
   {self,
     {"stack: <-"self.listPB;V;"-|"++}
     {"stack: <- -|"}
     self.isempty ?
-  }:show;
+  }:str:repr;
 
   .#? (stack) stack.dollar\n(stack) stack.next\n  return the next item in the stack
   {self,
@@ -39,6 +38,5 @@
   {.listE0=}:isempty;
 
   .#? A (stack) stack.plus\nA (stack) stack.add\n  add an item to the stack
-  {self, self.list.V; self}:plus;
-  {stack.plus}:add;
-}
+  {self, self.list.V; self}:add;
+}:stack;

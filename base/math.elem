@@ -11,10 +11,10 @@ import "base/constants"
 {MA}:abs;						.#? N abs\n  absolute value
 {_E\S\/}:avg;				.#? L avg\n  average of a list of numbers
 {1 3/^}:cbrt;    		.#? N cbrt\n  cube root
-{.]}:ceil;      		.#? N ceil\n  ceiling
+{.[}:ceil;      		.#? N ceil\n  ceiling
 {pi*180/}:deg;    	.#? N deg\n  convert deg to rad (180° => 3.14..)
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
-{mathe\^}:exp;    	.#? N exp\n  exp(x)
+{euler\^}:exp;    	.#? N exp\n  exp(x)
 {M!}:fact;      		.#? N fact\n  factorial
 {.]}:floor;      		.#? N floor\n  floor
 {_.]-}:frac;    		.#? N frac\n  fractional part
@@ -28,8 +28,6 @@ import "base/constants"
 {1-M!MAMl}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
 {2:_>?}:smaller;    .#? NN smaller\n  choose smaller
 {2:_<?}:bigger;     .#? NN bigger\n  choose bigger
-{{2:_<?}U}:max;     .#? L max\n  max value of a list
-{{2:_>?}U}:min;     .#? L min\n  min value of a list
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
@@ -100,8 +98,8 @@ import "base/constants"
   yS:ys;
 
   [x y,*]Sn* xs ys*-
-   x2#^Sn* xs2^ -
-   y2#^Sn* ys2^ -
+   x2^Sn* xs2^ -
+   y2^Sn* ys2^ -
    * Mq
   /
 }:pearson;
@@ -143,8 +141,8 @@ import "base/constants"
 {1\/MC}:asec;               .#? N asec \n  inverse secant
 {1\/MT}:acot;               .#? N acot \n  inverse cotangent
 
-{_exp\!exp-2/}:sinh;        .#? N sinh \n  hyperbolic sine
-{_exp\!exp+2/}:cosh;        .#? N cosh \n  hyperbolic cosine
+{_exp\Texp-2/}:sinh;        .#? N sinh \n  hyperbolic sine
+{_exp\Texp+2/}:cosh;        .#? N cosh \n  hyperbolic cosine
 {_sinh\cosh/}:tanh;         .#? N tanh \n  hyperbolic tangent
 {sinh1\/}:csch;             .#? N csch \n  hyperbolic cosecant
 {cosh1\/}:sech;             .#? N sech \n  hyperbolic secant
@@ -174,11 +172,11 @@ import "base/constants"
 .# Plotting
 
 {.X}:plot;
-[10!_0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
-{fE,[10!_.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
-{fE,[10!_.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
-{_2!E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
-{2!E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
+[(-10)_0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
+{fE,[(-10)_.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
+{fE,[(-10)_.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
+{_(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
+{(-2)E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
 
 .# Statistics
 {set : m, set avg:m; set#{m-2^}S setE /}:variance;
@@ -211,9 +209,9 @@ import "base/constants"
 
 .# Constants
 
-0_/:nan;    .#? nan \n  not a number double literal
-1 0/:inf;   .#? inf \n  infinity double literal
-1 0/!:minf; .#? minf \n  minus infinity double literal
+4M|:nan;    .#? nan \n  not a number double literal
+5M|:inf;   .#? inf \n  infinity double literal
+6M|:minf; .#? minf \n  minus infinity double literal
 
 .# Vector
 {[2|,*]S}:bullet:dot; .#? dot\n dot (scalar) product of two lists

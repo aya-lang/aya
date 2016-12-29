@@ -3,22 +3,22 @@ package element.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import element.ElemTypes;
 import element.Element;
-import element.entities.Block;
 import element.entities.InstructionStack;
+import element.entities.Operation;
 import element.entities.operations.ColonOps;
 import element.entities.operations.Ops;
 import element.exceptions.EndOfInputError;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
+import element.obj.dict.KeyVariable;
 import element.parser.token.TokenQueue;
 import element.parser.token.TokenStack;
 import element.parser.tokens.BlockToken;
-import element.parser.tokens.BoolToken;
 import element.parser.tokens.CharToken;
+import element.parser.tokens.KeyVarToken;
 import element.parser.tokens.LambdaToken;
 import element.parser.tokens.ListToken;
-import element.parser.tokens.MemVarToken;
 import element.parser.tokens.NumberToken;
 import element.parser.tokens.OperatorToken;
 import element.parser.tokens.SpecialToken;
@@ -161,18 +161,23 @@ public class Parser {
 						tokens.add(new NumberToken(num.toString()));
 					}
 					
-					//Member Variable
+					//Key Variable
 					else if ('a' <= in.peek() && in.peek() <= 'z') {
 						String varname = ""+in.next();
 						while(in.hasNext() && 'a' <= in.peek() && in.peek() <= 'z') {
 							varname += in.next();
 						}
-						tokens.add(new MemVarToken(varname));
+						tokens.add(new KeyVarToken(varname));
 					}
 					
-					//Special Character MeMVar
+					//Special Character Key Variable
 					else if (CharacterParser.isSpecialChar(in.peek())) {
-						tokens.add(new MemVarToken(CharacterParser.getName(in.next())));
+						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
+					}
+					
+					// Dot Colon
+					else if (in.peek() == ':') {
+						tokens.add(SpecialToken.DOT_COLON);
 					}
 					
 					//Dot operator
@@ -242,6 +247,15 @@ public class Parser {
 							break;
 						case 'n':
 							str.append('\n');
+							break;
+						case 'r':
+							str.append('\r');
+							break;
+						case 'b':
+							str.append('\b');
+							break;
+						case 'f':
+							str.append('\f');
 							break;
 						case 't':
 							str.append('\t');
@@ -401,11 +415,6 @@ public class Parser {
 				}
 				tokens.add(new VarToken(sb.toString()));
 			}
-
-			//Boolean Literals
-			else if(current == 'T' || current == 'F') {
-				tokens.add(new BoolToken(""+current));
-			}
 			
 			//Normal Operators
 			else if (Ops.isOpChar(current)) {
@@ -550,14 +559,14 @@ public class Parser {
 				}
 				Object next = is.pop();
 				//Variable Assignment
-				if (ElemTypes.isVar(next)) {
-					Variable v = ElemTypes.toVar(next);
+				if (next instanceof Variable) {
+					Variable v = ((Variable)next);
 					v.flagBind();
 					is.push(v);
 				}
 				
 				//Apply block to list
-				else if (ElemTypes.isBlock(next)) {
+				else if (next instanceof Block) {
 					is.push(Ops.APPLY_TO);
 					is.push(next);
 				}
@@ -569,12 +578,25 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(ElemTypes.isOp(o) || ElemTypes.isVar(o) || ElemTypes.isMemVar(o)) {
+						if(o instanceof Operation || o instanceof Variable) {
 							break;
 						}
 					}
 					is.push(Ops.APPLY_TO);
 					is.push(colonBlock);	
+				}
+			}
+			
+			else if (current.isa(Token.DOT_COLON)) {
+				if(is.isEmpty()) {
+					throw new SyntaxError("Expected token after '.:' in:\n\t" + tokens_in.toString());
+				}
+				Object next = is.pop();
+				//Key Variable Assignment
+				if (next instanceof Variable) {
+					KeyVariable kv = new KeyVariable(((Variable)next).getID());
+					kv.flagBind();
+					is.push(kv);
 				}
 			}
 			
@@ -585,7 +607,7 @@ public class Parser {
 				}
 				Object next = is.pop();	
 				//Apply a block to a list
-				if (ElemTypes.isBlock(next)) {
+				if (next instanceof Block) {
 					is.push(Ops.getOp('#'));
 					is.push(next);
 				}
@@ -597,7 +619,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(ElemTypes.isOp(o) || ElemTypes.isVar(o) || ElemTypes.isMemVar(o)) {
+						if(o instanceof Operation || o instanceof Variable) {
 							break;
 						}
 					}
@@ -640,6 +662,15 @@ public class Parser {
 					break;
 				case 't':
 					str.append('\t');
+					break;
+				case 'r':
+					str.append('\r');
+					break;
+				case 'b':
+					str.append('\b');
+					break;
+				case 'f':
+					str.append('\f');
 					break;
 				case '"':
 					str.append('"');
@@ -691,25 +722,6 @@ public class Parser {
 		}
 		return str.toString();
 	}
-
-//	/** Splits a list of tokens wherever a comma is */
-//	private static ArrayList<TokenList> splitCommas(ArrayList<Token> tokens) {
-//		ArrayList<TokenList> out = new ArrayList<TokenList>();
-//		int splits = 0;
-//		out.add(new TokenList()); 		//Instantiate the first list
-//		for(Token t : tokens) {
-//			if (t.getType() == Token.COMMA) {
-//				splits++;
-//				out.add(new TokenList());
-//			} else {
-//				out.get(splits).add(t);
-//			}
-//		}
-//		return out;
-//	}
-	
-
-	
 	
 	
 	
@@ -730,47 +742,5 @@ public class Parser {
 	public static InstructionStack compileIS(String s, Element elem) {
 		return generate(assemble(tokenize(elem, s)));
 	}
-	
-	
-//	public static void main(String[] args) {
-//		String inputs[] = {
-//				"2 `- 1",
-//				"1 {nI, n1+}~ I",
-//				"[1 2 3 4]S",
-//				"1.(1.1(.1)",
-//				"\"hello\\{pi}\"",
-//				"'\\'",
-//				"1 1 +.#test",
-//				"\"he\\nll\\\"o\"",
-//				"'c'h\t'a'r",
-//				"'\\0x00FF'",
-//				"'\\theta'",
-//				"'\\pi'",
-//				"θ1+",
-//				"[10,1+,3<]",
-//				".({n,n1+.)}",
-//				"[]3K",
-//				"{}",
-//				"()",
-//				"[[1][2 3]{n,{m,1}(2())}]",
-//				"3{n,1}~",
-//				".1.23.45.67.89"
-//				
-//		};
-//		
-//		for (String input : inputs) {
-//			Element element = new Element();
-//			
-//			TokenList tokenized = tokenize(input);
-//			TokenList assembled = assemble(tokenized);
-//			InstructionStack code = generate(assembled);
-//			element.run(input);
-//			
-//			System.out.println(input + " => " + tokenized + "\n"
-//					+ "\t-> " + assembled + "\n"
-//					+ "\t#> " + code + "\n"
-//					+ "\t=> " + element.getOut().dump());
-//		}
-//	}
 
 }

@@ -2,13 +2,13 @@
     Matrix manipulations and representations
 .}
 
-{@ matrix,
+{,
 
-  attr "rows"
+  .# attr "rows"
 
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
-  	false
+  	0
   	{											.# Both of the following must be true:
   		m#E{m0IE=}all 			.# All of the list lengths are the same
   	} m#.T{'L=}all ? 			.# The list is made up of only other lists
@@ -17,7 +17,7 @@
   .# matrix constructor: first test if it is a valid matrix
   {in,
     {P" is not a valid matrix"+.D}
-    {[in] matrix MO}
+    {{,in:rows} matrix MO}
     in matrix.is?
   }:new;
 
@@ -45,7 +45,7 @@
 
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
-    {[a.rows b.rows,=]{&}U} {F} a.dim b.dim =! ?
+    {[a.rows b.rows,=]{&}U} {0} a.dim b.dim =! ?
   }:eq;
 
 
@@ -127,61 +127,62 @@
 
 
   .#Scalar Arithmetic
-  {nN m, m.rows #{n#*} matrix!}:smul;     .#? N (matrix) matrix.smul\n  scalar multiplication
-  {nN m, m.rows #{n#+} matrix!}:sadd;     .#? N (matrix) matrix.sadd\n  scalar addition
-  {nN m, m.rows #{n#-} matrix!}:zsub;     .#? N (matrix) matrix.zsub\n  scalar subtraction (reversed)
-  {nN m, m.rows #{n#{\-}} matrix!}:ssub;  .#? N (matrix) matrix.ssub\n  scalar subtraction
-  {nN m, m.rows #{n#/} matrix!}:zdiv;     .#? N (matrix) matrix.zdiv\n  scalar division (reversed)
-  {nN m, m.rows #{n#{\/}} matrix!}:sdiv;  .#? N (matrix) matrix.sdiv\n  scalar division
+  {nN m, m.rows #{n*} matrix!}:smul;     .#? N (matrix) matrix.smul\n  scalar multiplication
+  {nN m, m.rows #{n+} matrix!}:sadd;     .#? N (matrix) matrix.sadd\n  scalar addition
+  {nN m, m.rows #{n-} matrix!}:zsub;     .#? N (matrix) matrix.zsub\n  scalar subtraction (reversed)
+  {nN m, m.rows #{n\-} matrix!}:ssub;  .#? N (matrix) matrix.ssub\n  scalar subtraction
+  {nN m, m.rows #{n/} matrix!}:zdiv;     .#? N (matrix) matrix.zdiv\n  scalar division (reversed)
+  {nN m, m.rows #{n\/} matrix!}:sdiv;  .#? N (matrix) matrix.sdiv\n  scalar division
 
   .# OVERLOADS
+
   {a b,
     [
-      {a b matrix.smul} a'Nisa b Mw ".matrix" = & .?
-      {b a matrix.smul} b'Nisa a Mw ".matrix" = & .?
-      {a b matrix.matmul} aMw".matrix"= bMw".matrix"= & .?
+      {a b matrix.smul} a'Nisa b .T'R = & .?
+      {b a matrix.smul} b'Nisa a .T'R = & .?
+      {a b matrix.matmul} aMw"DICT"= bMw"DICT"= & .?
       {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:star;
+  }:mul;
 
   {a b,
     [
-      {a b matrix.sadd} a'Nisa b Mw ".matrix" = & .?
-      {b a matrix.sadd} b'Nisa a Mw ".matrix" = & .?
-      {a b matrix.matadd} aMw".matrix"= bMw".matrix"= & .?
+      {a b matrix.sadd} a'Nisa b .T'R = & .?
+      {b a matrix.sadd} b'Nisa a .T'R = & .?
+      {a b matrix.matadd} aMw"DICT"= bMw"DICT"= & .?
       {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:plus;
+  }:add;
 
   {a b,
     [
-      {a b matrix.ssub} a'Nisa b Mw ".matrix" = & .?
-      {b a matrix.zsub} b'Nisa a Mw ".matrix" = & .?
-      {a b matrix.matsub} aMw".matrix"= bMw".matrix"= & .?
+      {a b matrix.ssub} a'Nisa b .T'R = & .?
+      {b a matrix.zsub} b'Nisa a .T'R = & .?
+      {a b matrix.matsub} aMw"DICT"= bMw"DICT"= & .?
       {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:minus;
+  }:sub;
 
 
   {a b,
     [
-      {a b matrix.sdiv} a'Nisa b Mw ".matrix" = & .?
-      {b a matrix.zdiv} b'Nisa a Mw ".matrix" = & .?
+      {a b matrix.sdiv} a'Nisa b .T'R = & .?
+      {b a matrix.zdiv} b'Nisa a .T'R = & .?
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
-  }:fslash;
-
+  }:div;
+  
   {mat expr,
-    mat.rows#{#expr} mat.setrows
+    mat.rows#{#expr} mat.:rows;
     mat
-  }:amp;
+  }:and;
 
   .#? (matrix) matrix.show\n  converts a matrix to a string
   {.rows matstr
-    "\n"" |\n|"@replace .# Inside bars
+    "\n"" |\n|"@.& .# Inside bars
     " |"K'|\K            .# Outside bars
     "\n"+
-  }:show;
+  }:repr;
 
   .#? N matrix.i\n  generate an Nd identity matrix
   {n,
@@ -217,17 +218,17 @@
   {1matrix.newfill}:ones;
 
   .#? NN matrix.rand\n  create a N1 by N2 matrix of random values [0,1]
-  {0matrix.newfill {.Q} matrix.map}:rand;
+  {0matrix.newfill {;.Q} matrix.map}:rand;
 
   .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
-  {:n,@:n; 0matrix.newfill {nQ} matrix.map}:randint;
+  {:n,@:n; 0matrix.newfill {;nQ} matrix.map}:randint;
 
   .#? (matrix) E matrix.map\n  map an expression to each element of the matrix
-  {mat exprE, mat.rows : {#expr} mat.setrows mat}:map;
+  {mat exprE, mat.rows : {#expr} mat.:rows; mat}:map;
 
   .#? N matrix.multiptable\n  generate n N by N multiplication table
   {[1|_R_@L\,#*] matrix!}:multiptable;
 
-}
+}:matrix;
 
 matrix:m;

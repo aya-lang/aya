@@ -19,7 +19,7 @@
 .#NOTE Variable inside control functions have a "zz" at the end to avoid name conflicts
 
 .#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
-{```({ifstmtcondzB ifstmtthenz ifstmtelsez,
+{```({ifstmtcondz ifstmtthenz ifstmtelsez,
   {ifstmtelsez} {ifstmtthenz} ifstmtcondz?
 })}:if;
 
@@ -41,9 +41,6 @@
   "forlooplistz#{:$forloopcz; forloopblkz}"~
 })}:for;
 
-.#? repeat N E\n  repeat statement:\n  repeat N {\n    expressions\n  }
-{``(\%)}:repeat;
-
 .#? A print\n  convert to string a print to console
 {.P}:print;
 
@@ -62,6 +59,7 @@
   creates setters for each variable in the form setvarname
   each variable must be whitespace separated
 .}
+.{
 .# {`([1|" "| _ER, {v n, "{1I$(nV)I}:$v;"}]#{_~};)}:attr;
 {`({:varnamesz fieldindexzz,
   "[a-z]+"&:varnameszz;
@@ -77,14 +75,7 @@
     fieldindexzzB:fieldindexzz;
   };
 })}:attr;
-
-
-
-.#? nil\n  represents nothing
-{@nilmodule,
-  {"<nil>"}:show;
-} [0] nilmodule MO:nil;
-{nil=}:isnil;
+.}
 
 .# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
 {`(10\^*)}:e;
@@ -101,6 +92,7 @@
 
 
 .#? struct "name: attr1 attr2 ..."\n  create a struct with the given parameters
+.{
 {`({str : l name paramstr accessstr,
   str":"|:l;
 
@@ -125,13 +117,13 @@
   "~
 
 })}:struct;
+.}
 
 .###################################
 .#		  STACK MANIPULATION         #
 .###################################
 
-{i:t,.Ai!.I:t;~t}:cp;    .#? N ix\n  copy the Nth element from the top of the stack to the top
-{.A{t,tV:t;~t}~}:back;   .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
+{.A{:t, V_@.V\:t;~t}~}:back;  .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
 {:t,.A_E:t;~t}:count;    .#? count\n  counts the number of items on the stack
 
 .###################################
@@ -149,7 +141,7 @@
 .#? AC isa\n  returns true if the item's type matches the input character
 {itemA typeC,
 	[
-	  T type'A=.? .# Any
+	  1 type'A=.? .# Any
 	  {"DFN"item.TN\;(-1)=!} type'N=.? .# Number is num or bignum
 	  {"SL"item.TN\;(-1)=!} type'L=.? .# Number is a string or list => list
 	  type item.T = .# Normal Check
@@ -188,7 +180,6 @@
 {"^\\s+|\\s+$" |S}:trim;                .#? S trim\n  remove whitespace from start and end of string
 {dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;  .#? SS readdlm\n  open a file, split into lines, split each line using dlm
 {"," readdlm}:opencsv;                  .#? S opencsv\n  opens and parses a csv file into a matrix
-{\_@|S=!}:strcontains;									.#? SS strcontains\n	tests if S1 contains S2
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
 {strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;
@@ -196,18 +187,13 @@
 .#? SCI strrightpad\n  right pad string S so it is at least length I using char C
 {strS padC lenN, str.E len\- {padK}\%}:strrightpad;
 
-.#? SSS replace\n  find and replace\n  <find> <replace> <str> replace
-{find replace strS,
-	str findP | # {replace+} S {B;}replacePE%
-}:replace;
-
 .#? S isnum\n  returns true if the string is a valid number
 {.!'N isa}:isnum;
 
 .#? S tocamel\n  convert a string with underscores to camel case
 {str,
   for 'c ['a'z,] {
-    "_$c" c!P str replace :str;
+    "_$c" c! str .& :str;
   };
   str
 }:tocamel;
@@ -219,16 +205,17 @@
 {\N\;(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
 {N\;(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
 {AKR}:range;					.#? NN range\n  generates a range from n1 to n2
-{lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
-{[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
+{R#{;.Q}}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
 {{K}U}:flatten;			  .#? L flatten\n  flattens the list by a single dimension
 {B\.V}:roll;      		.#? L roll\n  move the last element to the front
 {_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
 {[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
+{{2:_<?}U}:max;     .#? L max\n  max value of a list
+{{2:_>?}U}:min;     .#? L min\n  min value of a list
 
 .#? L rank\n  rank a list
-{_{>}pu#{#{0 1@?}SB}}:rank;
+{_{>}pu#S1+}:rank;
 
 .#? AEN iter\n  start at A and iterate E N times
 {start expr len,
@@ -239,10 +226,11 @@
 {[1|{_10%\10/.]_0=!}W;]!}:digits;
 
 .#? LN lottod\n  take L random distinct items from L
-{[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
+.# {[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
 
 .#? LI lotto\n  pick N random items from L
 {\.EV@L#QI}:lotto;
+
 
 
 .#? L<L> matstr\n  print a list of lists in matrix format
@@ -255,7 +243,7 @@
   ]'\n'join             .# Separate lines
 }:matstr;
 
-{aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
+.# {aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
 {lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
 
 .#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each
@@ -302,14 +290,7 @@
 .#		 BOOLEANS / COMPARISONS      #
 .###################################
 
-T:true;							.# true literal
-F:false;						.# false literal
-{`!}:not;						.#? not\n  logical NOT\n  (infix)
-{`&}:and;						.#? and\n  logical AND\n  (infix)
-{`|}:or;						.#? or\n  logical OR\n  (infix)
-{"unimplemented".P}:xor;							.#? xor\n  logical XOR\n  (infix)
-
-.# Operators
+.# Operators (for special characters)
 {.>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
 {.<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
 {=!}:ne;				.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
@@ -331,9 +312,6 @@ F:false;						.# false literal
 .#? N bits\n  takes a positive number and returns its bits as a list
 {10 2 H}:bits;
 
-.#? L<I> N bleftpad\n  append 0s to the left end of L until L is length N
-{>}:blpad;
-
 
 .###################################
 .#		   ADDITIONAL FILES          #
@@ -342,19 +320,13 @@ F:false;						.# false literal
 
 import "base/math"
 import "base/docs"
-
-
-.# Modules
 import "base/regex"
-import "base/dict"
 import "base/matrix"
-import "base/frac"
 import "base/date"
 import "base/demo"
 import "base/stack"
 import "base/colors"
 import "base/set"
-import "base/complex"
 import "base/queue"
 import "base/stack"
 import "base/plot"
@@ -363,8 +335,8 @@ import "base/dataframe"
 import "base/dialog"
 import "base/dataframe"
 import "base/golf"
-
 import "base/data"
+
 
 
 
@@ -390,7 +362,7 @@ import "base/data"
 .#m (matrix module)
 "\n"   :n;
 {VR0\K}:r; .#? N r\n  range from 0 to (1-n)
-data   :u;
+.# data   :u;
 1!		 :w;
 0			 :x;
 0			 :y;

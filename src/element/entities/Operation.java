@@ -1,5 +1,7 @@
 package element.entities;
 
+import element.obj.block.Block;
+
 /**
  * The Operation Class
  * Every operator has some basic information (name, desc, argtypes)

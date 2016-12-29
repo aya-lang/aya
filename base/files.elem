@@ -3,7 +3,7 @@
 
 .#? ls\n  print a list of files in the working dir
 {
-  (""4MZ$#{"  "\+println0}E0=) then {
+  (""4MZ.{$.}#{"  "\+println0}E0=) then {
     "  <no files>" println
   }
 }:ls;
@@ -64,25 +64,23 @@ if (defaultwd V '/ =\;) {
 :filesep;
 
 
-{@file,
-  attr "path contents writename synced"
+{,
 
   .#? S file.open\n  open a file and read its contents
   {pathS,
-    [workingdir path + "" path F] file MO
+    {,
+      workingdir path + :path
+      "" :contents
+      path :writename
+    } file MO
   }:open;
-
-  {self,
-    self.synced! then {self.sync}
-    self 2 M>
-  }:contents;
 
   {self, "file: $(self.name)"}:show;
 
   .#? (file) file.close\n  free up memory from an opened file
   {self,
-    "" self.setcontents
-    "" self.setpath
+    "" self.:contents;
+    "" self.:path;
   }:close;
 
   .#? (file) file.lines\n  return a list of lines of strings
@@ -98,14 +96,9 @@ if (defaultwd V '/ =\;) {
   .#? A (file) file.print\n  print the string representation of A to the file
   {a self,
     aP self.writename 1.G
-    F self.setsynced
+    self.contents aP + self.:contents;
   }:print;
 
   .#? A (file) file.println\n  print the string representation of A to the file followed by a \\n
   {a self, aP"\n"+ self.print}:println;
-
-  .#? (file) file.sync\n  sync the contents of the file
-  {self,
-    self.writename G self.setcontents
-  }:sync;
-}
+}:file;

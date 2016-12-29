@@ -1,7 +1,7 @@
 package element.exceptions;
 
-import element.ElemTypes;
 import element.entities.Operation;
+import element.obj.Obj;
 
 @SuppressWarnings("serial")
 public class TypeError extends RuntimeException {
@@ -11,20 +11,20 @@ public class TypeError extends RuntimeException {
 		return msg;
 	}
 	
-	public TypeError(String opname, String expected, Object... recieved) {
+	public TypeError(String opname, String expected, Obj... recieved) {
 		super("Type error at (" + opname + "):\n\tExpected (" + expected + ")\n\tRecieved (" + listStr(recieved));
 		msg = "Type error at (" + opname + "):\n\tExpected (" + expected + ")\n\tRecieved (" + listStr(recieved);
 	}
 	
-	public TypeError(Operation op, Object... recieved) {
+	public TypeError(Operation op, Obj... recieved) {
 		super("Type error at (" + op.name + "):\n\tExpected (" + op.argTypes + ")\n\tRecieved (" + listStr(recieved));
 		msg = "Type error at (" + op.name + "):\n\tExpected (" + op.argTypes + ")\n\tRecieved (" + listStr(recieved);
 	}
 	
-	public static String listStr(Object[] recieved) {
+	public static String listStr(Obj[] recieved) {
 		String msg = "";
 		for(int i = recieved.length-1; i>=0; i--) {
-			msg += ElemTypes.debugString(recieved[i]) + " ";
+			msg += recieved[i].repr() + " ";
 		}
 		return msg  + ")";
 	}

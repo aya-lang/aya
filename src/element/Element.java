@@ -1,14 +1,11 @@
 package element;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.regex.PatternSyntaxException;
 
-import element.entities.Block;
 import element.entities.operations.ColonOps;
 import element.entities.operations.DotOps;
 import element.entities.operations.MathOps;
@@ -17,13 +14,14 @@ import element.exceptions.ElementRuntimeException;
 import element.exceptions.ElementUserRuntimeException;
 import element.exceptions.SyntaxError;
 import element.exceptions.TypeError;
+import element.obj.block.Block;
 import element.parser.CharacterParser;
 import element.parser.Parser;
 import element.util.StringSearch;
 import element.variable.VariableData;
 
 public class Element {
-	public static final String VERSION_NAME = "Beta 0.0.9 (Nov 2016)";
+	public static final String VERSION_NAME = "Beta 0.1.0 (Dec 2016)";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_RED = "\u001B[31m";
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -112,9 +110,11 @@ public class Element {
 			instance.out.printEx(exToSimpleStr(iobe));
 		} catch (ElementUserRuntimeException eure) {
 			instance.out.printEx(eure.getSimpleMessage());
-		} catch (ClassCastException cce) {
-			instance.out.printEx(exToSimpleStr(cce));
-		} catch (Exception e2) {
+		} 
+//		catch (ClassCastException cce) {
+//			instance.out.printEx(exToSimpleStr(cce));
+//		} 
+		catch (Exception e2) {
 			System.out.println("EXCEPTION: Unhandled exception in Element.run(Block)");
 			if(PRINT_LARGE_ERRORS) {
 				StringWriter sw = new StringWriter();
@@ -142,27 +142,27 @@ public class Element {
 		return instance.out;
 	}
 	
-	public static void export(String name, String code, Element elem) {
-		//Create folder if needed
-		File dirFile = new File("exported_src\\");
-		if(!dirFile.exists()) {
-			dirFile.mkdir();
-		}
-
-		try {
-			
-			//Export the source code
-			SourceFile src = new SourceFile(new File("exported_src\\" + name + ".elem"), elem);
-			src.printOver(code);
-			
-			//Create the Runnable			
-			SourceFile runnable = new SourceFile(new File(name + ".bat"), elem);
-			runnable.printOver("@ECHO off\njava -jar element.jar -f \"exported_src\\" + name + ".elem\"\nPAUSE\nEXIT");
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void export(String name, String code, Element elem) {
+//		//Create folder if needed
+//		File dirFile = new File("exported_src\\");
+//		if(!dirFile.exists()) {
+//			dirFile.mkdir();
+//		}
+//
+//		try {
+//			
+//			//Export the source code
+//			SourceFile src = new SourceFile(new File("exported_src\\" + name + ".elem"), elem);
+//			src.printOver(code);
+//			
+//			//Create the Runnable			
+//			SourceFile runnable = new SourceFile(new File(name + ".bat"), elem);
+//			runnable.printOver("@ECHO off\njava -jar element.jar -f \"exported_src\\" + name + ".elem\"\nPAUSE\nEXIT");
+//			
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void println(Object o) {instance.out.println(o.toString());}
 	public void print(Object o) {instance.out.print(o.toString());}

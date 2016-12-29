@@ -2,11 +2,11 @@ package element.parser.tokens;
 
 import java.util.ArrayList;
 
-import element.ElemTypes;
-import element.entities.Block;
 import element.entities.ListBuilder;
 import element.entities.ListLiteral;
 import element.exceptions.SyntaxError;
+import element.obj.block.Block;
+import element.obj.number.Number;
 import element.parser.Parser;
 import element.parser.token.TokenQueue;
 
@@ -40,9 +40,9 @@ public class ListToken extends CollectionToken {
 			
 			//If the map clause only contains a single block (and it is not a list literal), dump its instructions into the map block
 			else if (map.getInstructions().size() == 1 
-					&& ElemTypes.isBlock(map.getInstructions().peek(0)) ){
+					&& map.getInstructions().peek(0) instanceof Block ){
 					//&& !ElemTypes.toBlock(map.getInstructions().peek(0)).isListLiteral()) {
-				map = new Block(ElemTypes.toBlock(map.getInstructions().peek(0)).getInstructions());
+				map = new Block(( (Block)(map.getInstructions().peek(0)) ).getInstructions() );
 			}
 			
 		return new ListBuilder(initialList, map, null, pops);
@@ -64,8 +64,8 @@ public class ListToken extends CollectionToken {
 				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
 				
 				//If the filter clause only contains a single block, dump its instructions into the filter block
-				if (tmpFilter.getInstructions().size() == 1 && ElemTypes.isBlock(tmpFilter.getInstructions().peek(0))) {
-					tmpFilter = new Block(ElemTypes.toBlock(tmpFilter.getInstructions().peek(0)).getInstructions());
+				if (tmpFilter.getInstructions().size() == 1 && tmpFilter.getInstructions().peek(0) instanceof Block) {
+					tmpFilter = new Block(((Block)(tmpFilter.getInstructions().peek(0))).getInstructions());
 				}
 				
 				filters[k-2] = tmpFilter;
@@ -82,7 +82,7 @@ public class ListToken extends CollectionToken {
 				&& arr.get(0).isa(Token.NUMERIC)
 				&& arr.get(1).isa(Token.OP)
 				&& arr.get(1).data.equals("|")) {
-			pops = ElemTypes.castInt(arr.get(0).getElementObj());
+			pops = ((Number)arr.get(0).getElementObj()).toInt();
 			arr.remove(0);
 			arr.remove(0);
 		}

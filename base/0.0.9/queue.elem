@@ -1,0 +1,44 @@
+.{? type: queue
+    A simple queue data structure
+
+    Create queues by entering a list followed by the queue constructor
+    [1 2 3] queue!
+.}
+
+{@queue,
+  attr "list"
+
+  .#? L queue.new\n  convert a list into a queue
+  {l, [l] queue MO}:new;
+
+  .#? (queue) queue.show\n  convert a queue to a string
+  {self,
+    {"queue: <-"self.listPB;V;"-<"++}
+    {"queue: <- -<"}
+    self.isempty ?
+  }:show;
+
+  .#? (queue) queue.dollar\n(queue) queue.next\n  return the next item in the queue
+  {self,
+    "queue obj is empty" self.listE0= conderr
+    self.listV\;
+  }:dollar;
+
+  {queue.dollar}:next;
+
+  .#? (queue) queue.peek\n  return the next item in the queue without removing it from the queue
+  {self,
+    "queue obj is empty" self.listE0= conderr
+    self.list0I
+  }:peek;
+
+  .#? (queue) queue.len\n  return the number of elements in the queue
+  {.listE}:len;
+
+  .#? (queue) queue.isempty\n  tests if the queue is empty
+  {.listE0=}:isempty;
+
+  .#? A (queue) queue.plus\nA (queue) queue.add\n  add an item to the queue
+  {self, self.list.B; self}:plus;
+  {queue.plus}:add;
+}

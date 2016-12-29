@@ -1,6 +1,6 @@
 package element.parser.tokens;
 
-import element.entities.number.Num;
+import element.obj.number.Num;
 
 public class NumberToken extends StdToken {
 	public NumberToken(String data) {
