@@ -180,7 +180,6 @@
 {"^\\s+|\\s+$" |S}:trim;                .#? S trim\n  remove whitespace from start and end of string
 {dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;  .#? SS readdlm\n  open a file, split into lines, split each line using dlm
 {"," readdlm}:opencsv;                  .#? S opencsv\n  opens and parses a csv file into a matrix
-{\_@|S=!}:strcontains;									.#? SS strcontains\n	tests if S1 contains S2
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
 {strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;

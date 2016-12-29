@@ -1252,14 +1252,16 @@ class OP_K extends Operation {
 class OP_N extends Operation {
 	public OP_N() {
 		this.name = "N";
-		this.info = "L<A> returns the index of the first occurance of A in L. returns -1 if not found\n<RS> contains key";
-		this.argTypes = "LA,RS";
+		this.info = "SS,LA returns the index of the first occurance of A in L. returns -1 if not found\n<RS> contains key";
+		this.argTypes = "SS,LA,RS";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop(); //Item
 		final Obj b = block.pop(); //List
 		
-		if(b.isa(Obj.LIST)) {
+		if (a.isa(STR) && b.isa(STR)) {
+			block.push(new Num(b.str().indexOf(a.str())));
+		} else if(b.isa(Obj.LIST)) {
 			
 			block.push(b);
 			

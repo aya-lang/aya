@@ -265,7 +265,7 @@ public class Str extends List implements Comparable<Str> {
 			i = List.index(i, _str.length());
 			// If 0, just append to front
 			if (i == 0) {
-				_str = ((Char)o) + _str;
+				_str = ((Char)o).charValue() + _str;
 			} else {
 				_str = new StringBuilder(_str).insert(i, ((Char)o).charValue()).toString();
 			}
