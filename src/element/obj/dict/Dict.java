@@ -77,17 +77,33 @@ public class Dict extends Obj {
 		return o;
 	}
 	
-	public boolean containsKey(KeyVariable var) {
+	/** Returns true if this dict contains the input key */
+	public boolean containsKey(long id) {
 		// First search object vars...
-		Obj o = _vars.getObject(var);
+		Obj o = _vars.getObject(id);
 		if (o == null) {
 			// ...then search meta vars if there are any
-			o = _meta == null ? null : _meta.getObject(var);
+			o = _meta == null ? null : _meta.getObject(id);
 			if (o == null) {
 				return false;
 			}
 		}
 		return true;
+	}
+	
+	/** Returns true if this dict contains the input key */
+	public boolean containsKey(String s) {
+		return containsKey(Variable.encodeString(s));
+	}
+	
+	/** Returns true if this dict contains the input key */
+	public boolean containsKey(KeyVariable k) {
+		return containsKey(k.getID());
+	}	
+	
+	/** Return the inner variable set object */
+	public VariableSet getVarSet() {
+		return _vars;
 	}
 	
 	/////////////
@@ -215,6 +231,7 @@ public class Dict extends Obj {
 	// HELPER METHODS //
 	////////////////////
 	
+	/** Return a string representation of the dict */
 	private String dictStr() {
 		StringBuilder sb = new StringBuilder("{, ");
 		for (Long l : _vars.getMap().keySet()) {
@@ -224,8 +241,6 @@ public class Dict extends Obj {
 		return sb.toString();
 	}
 
-	public VariableSet getVarSet() {
-		return _vars;
-	}
+
 
 }

@@ -1278,7 +1278,12 @@ class OP_N extends Operation {
 //				index++;
 //			}
 //			block.push(new Num(-1));
-		} else {
+		}
+		else if (b.isa(BLOCK) && a.isa(STR)) {
+			// TODO ByteNum
+			block.push( new Num(((Dict)b).containsKey(a.str())) );
+		}
+		else {
 			throw new TypeError(this, a, b);
 		}
 	}
