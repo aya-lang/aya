@@ -236,6 +236,7 @@ import "base/files"
 import "base/golf"
 import "base/queue"
 import "base/set"
+import "base/stack"
 
 .# import "base/demo"
 
