@@ -26,8 +26,6 @@ import javax.swing.JPanel;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.InteractiveAya;
-import aya.variable.Variable;
-import test.AyaTestCases;
 
 
 @SuppressWarnings("serial")
@@ -69,25 +67,9 @@ public class AyaIDE extends JFrame
 		    		  switch(e.getKeyCode()) {
 		    		  case KeyEvent.VK_ENTER:
 		    			  if(!_interpreter.getInputLine().getText().equals("") && _interpreter.getInputLine().inFocus()) {
-							  // TODO
-		    				  //_interpreter.eval(_interpreter.getInputLine().getText());
-							  //_interpreter.clrAndFocus();
 		    				  _aya.println(AyaPrefs.getPrompt() + " " + _interpreter.getInputLine().getText());
 						  } 
 		    			  break;
-		    		  case KeyEvent.VK_UP:
-		    			  if(_interpreter.getInputLine().inFocus()) {
-							  _interpreter.getInputLine().loadLastText();
-						  }
-		    			  break;
-		    		  case KeyEvent.VK_DOWN:
-						  if(_interpreter.getInputLine().inFocus()) {
-							  _interpreter.getInputLine().loadPrevText();
-						  }
-						  break;
-		    		  case KeyEvent.VK_TAB:
-						  _interpreter.getInputLine().tabPressed();
-						  break;
 		    		  case KeyEvent.VK_I:
 		    			  if(e.isControlDown()) {
 		    				  _interpreter.getInputLine().grabFocus();
@@ -144,11 +126,10 @@ public class AyaIDE extends JFrame
 		//Load
 		JMenuItem mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				//JOptionPane.showMessageDialog(interpreter, "Load not yet implemted", "ERROR", JOptionPane.ERROR_MESSAGE);
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					//Aya.getInstance().run("\"" + path + "\"G~");
+					Aya.getInstance().queueInput("\"" + path + "\"G~");
 					
 				}
 			}
@@ -187,7 +168,7 @@ public class AyaIDE extends JFrame
 		//Clear Console
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				//_interpreter.cw.clear();
+				_interpreter.clear();
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -197,19 +178,6 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Clear Console");
-		_menu.add(mi);
-		mi =new JMenuItem(new Action() {
-			public void actionPerformed(ActionEvent e) {
-				//_interpreter.eval("100 .B");
-			}
-			public void addPropertyChangeListener(PropertyChangeListener l) {}
-			public Object getValue(String k) {return null;}
-			public boolean isEnabled() {return true;}
-			public void putValue(String k, Object v) {}
-			public void removePropertyChangeListener(PropertyChangeListener l) {}
-			public void setEnabled(boolean b) {}
-		});
-		mi.setText("Primes below 100");
 		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
@@ -227,21 +195,8 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Open Editor   ctrl+E");
-		_menu.add(mi);
-		mi =new JMenuItem(new Action() {
-			public void actionPerformed(ActionEvent e) {
-				//_interpreter.cw.printWarn(AyaTestCases.runTests());
-				
-			}
-			public void addPropertyChangeListener(PropertyChangeListener l) {}
-			public Object getValue(String k) {return null;}
-			public boolean isEnabled() {return true;}
-			public void putValue(String k, Object v) {}
-			public void removePropertyChangeListener(PropertyChangeListener l) {}
-			public void setEnabled(boolean b) {}
-		});
-		mi.setText("Run Tests");
-		_menu.add(mi);
+		_menu.add(mi);		
+		
 		_menuBar.add(_menu);
 		
 		
@@ -399,6 +354,7 @@ public class AyaIDE extends JFrame
 			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setArgs(args);
 			iaya.setPromptText(false);
+			iaya.showBanner(false);
 			iaya.run();
 			
 			//Grab focus

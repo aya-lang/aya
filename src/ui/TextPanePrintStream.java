@@ -47,7 +47,13 @@ public class TextPanePrintStream extends OutputStream {
 	public void print(String string) {
 		//Print the text
 		try {
-			_doc.insertString(_doc.getLength(), string, _col);
+			if (string.equals("\b")) {
+				if (_doc.getLength() > 0) {
+                    _doc.remove(_doc.getLength() - 1, 1);
+                }
+			} else {
+				_doc.insertString(_doc.getLength(), string, _col);
+			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
