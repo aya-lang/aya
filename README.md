@@ -49,7 +49,7 @@ java -jar aya.jar -f file.aya
 ### Golfed Project Euler Problem 6
 
 ```
-hR_S2^\2#^S-
+hR_S2^\2^S-
 
 Explanation:
 hR            Generate a list [1,2..100]

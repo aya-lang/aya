@@ -253,15 +253,15 @@ public class InteractiveAya {
 //					System.out.println(aya.getOut().dumpAsString());
 //					return;
 //				}
-					
+
 				
+				System.out.println("       __ _ _   _  __ _    | A tiny, stack based programming language ");
+				System.out.println("      / _` | | | |/ _` |   |                                          ");
+				System.out.println("     | (_| | |_| | (_| |   | Version: " + Aya.VERSION_NAME);
+				System.out.println("      \\__,_|\\__, |\\__,_|   | Nicholas Paul                         ");
+				System.out.println("            |___/                                                     ");
+				System.out.println("");
 				
-				System.out.println("      _                           _     |  A stack based progrgramming language");
-				System.out.println("  ___| | ___ _ __ ___   ___ _ __ | |_   |  for code golf and other puzzles");
-				System.out.println(" / _ \\ |/ _ \\ '_ ` _ \\ / _ \\ '_ \\| __|  |  ");
-				System.out.println("|  __/ |  __/ | | | | |  __/ | | | |_   |  Version: " + Aya.VERSION_NAME);
-				System.out.println(" \\___|_|\\___|_| |_| |_|\\___|_| |_|\\__|  |  Nicholas Paul");
-				System.out.println("\n");
 				
 				System.out.println(aya.getOut().dumpAsString());
 				
