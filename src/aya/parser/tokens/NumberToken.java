@@ -8,7 +8,7 @@ public class NumberToken extends StdToken {
 	}
 
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		return new Num(Double.parseDouble(data));
 	
 	}

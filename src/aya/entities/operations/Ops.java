@@ -217,10 +217,6 @@ class OP_Bang extends Operation {
 			((List)o).reverse();
 			block.push(o);
 		}
-		// else if (isBool(o)) {
-		//	 block.push(!toBool(o));
-		//	 return;
-		// }
 		else if (o.isa(Obj.CHAR)) {
 			block.push(((Char)o).swapCase());
 		}
@@ -235,19 +231,6 @@ class OP_Bang extends Operation {
 			}
 
 		}
-//		else if (isModule(o)) {
-//			Module m = toModule(o);
-//			if(m.hasVar(Ops.MEMVAR_NEW)) {
-//				Object new_var = m.get(Ops.MEMVAR_NEW);
-//				if (isBlock(new_var)) {
-//					block.addAll(toBlock(new_var).getInstructions().getInstrucionList());
-//				} else {
-//					block.add(new_var);
-//				}
-//			} else {
-//				throw new ElementRuntimeException("(!) the variable 'new' is nod defined in module " + m.toString());
-//			}
-//		} 
 		else {
 			throw new TypeError(this,o);
 		}

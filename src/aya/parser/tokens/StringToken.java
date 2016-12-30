@@ -25,7 +25,7 @@ public class StringToken extends StdToken {
 	}
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		if (interpolate && data.contains("$"))
 			return parseInterpolateStr(data);
 		return new Str(data);

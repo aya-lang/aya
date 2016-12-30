@@ -6,7 +6,7 @@ import java.util.Collection;
 import aya.variable.VariableSet;
 
 /**
- *  Used by the element.Block class to hold and manage instructions
+ *  Used by the aya.Block class to hold and manage instructions
  */
 public class InstructionStack {
 	ArrayList<Object> instructions = new ArrayList<Object>();

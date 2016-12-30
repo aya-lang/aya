@@ -1,6 +1,6 @@
-# The Element Programming Language
+# The Aya Programming Language
 
-![Running element from the command line. ](images/qsearch.png)
+![Running Aya from the command line. ](images/qsearch.png)
 
 ## Features
 
@@ -18,30 +18,30 @@
 
 ## Overview
 
-Element is a stack based programming language originally intended for code golf and programming puzzles. However, the language is very different from most golfing languages. Its support for user-defined types and macro-like function definitions allow for complex programs and data structures. It excels in cases were programs need to be written quickly.
+Aya is a stack based programming language originally intended for code golf and programming puzzles. However, the language is very different from most golfing languages. Its support for user-defined types and macro-like function definitions allow for complex programs and data structures. It excels in cases were programs need to be written quickly.
 
-Element comes fully-loaded with a standard library written entirely in element code. The standard library features types such as fractions, dictionaries, matrices, stacks, and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O.
+Aya comes fully-loaded with a standard library written entirely in Aya code. The standard library features types such as fractions, dictionaries, matrices, stacks, and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O.
 
-Element also features a minimal GUI for easily writing code and working using the element language. The GUI features colored console printing, plotting, tab-completion for special characters, and most importantly, an interactive way to search QuickSearch help data.
+Aya also features a minimal GUI for easily writing code and working using the Aya language. The GUI features colored console printing, plotting, tab-completion for special characters, and most importantly, an interactive way to search QuickSearch help data.
 
 ## Usage
 
-Element requires Java 8. To run the GUI, run the command:
+Aya requires Java 8. To run the GUI, run the command:
 
 ```
-java -jar element.jar
+java -jar aya.jar
 ```
 
-To run element interactively from the command line use `-i`
+To run Aya interactively from the command line use `-i`
 
 ```
-java -jar element.jar -i
+java -jar aya.jar -i
 ```
 
 To run files from the command line, use `-f`
 
 ```
-java -jar element.jar -f file.elem
+java -jar aya.jar -f file.elem
 ```
 
 ## Examples
@@ -102,20 +102,20 @@ Type definition:
 Call constructor using `!` operator and print using `.show` definition:
 
 ```
-element> 1 2 vec!
+aya> 1 2 vec!
 <1,2>
 
 ```
 Perform operations on the type:
 
 ```
-element> 3 4 vec! :v
+aya> 3 4 vec! :v
 <3,4>
 
-element> v.length
+aya> v.length
 5.0
 
-element> 10 10 vec! v +
+aya> 10 10 vec! v +
 <13,14>
 ```
 
@@ -156,39 +156,39 @@ p.view
 
 Output:
 
-![Running element from the command line. ](images/sinsrs.png)
+![Running aya from the command line. ](images/sinsrs.png)
 
 ### Some Standard Library Types
-Below are some examples of **matrices**, **fractions**, and **complex numbers**. All of these types are defined in element in the standard library.
+Below are some examples of **matrices**, **fractions**, and **complex numbers**. All of these types are defined in Aya in the standard library.
 
 ```
-element> [[1 2 3][4 5 6][7 8 9]]  matrix! :mat
+aya> [ [1 2 3] \[4 5 6 ] \[7 8 9] ]  matrix! :mat
 |  1  2  3 |
 |  4  5  6 |
 |  7  8  9 |
 
 
-element> mat 3 matrix.eye +
+aya> mat 3 matrix.eye +
 |  2  2   3 |
 |  4  6   6 |
 |  7  8  10 |
 
-element> 3z7
+aya> 3z7
 3/7
 
-element> 3z4 1.25 +
+aya> 3z4 1.25 +
 2/1
 
-element> mat {z2} &
+aya> mat {z2} &
 |  1/2  1/1  3/2 |
 |  2/1  5/2  3/1 |
 |  7/2  4/1  9/2 |
 
 
-element> 3im4+ 2im +
+aya> 3im4+ 2im +
 4+5i
 
-element> 6im7+ 2^
+aya> 6im7+ 2^
 13+84i
 ```
 

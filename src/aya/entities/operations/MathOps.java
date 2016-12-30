@@ -200,72 +200,6 @@ class OP_SysTime extends Operation {
 	}
 }
 
-////< - 60 
-//class OP_ModSet extends Operation {
-//	public OP_ModSet() {
-//		this.name = "M<";
-//		this.info = "set a field from a user object";
-//		this.argTypes = "AUI";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		final Object index = block.pop();
-//		final Object list = block.pop();
-//		final Object o = block.pop();
-//		
-//		//Check if user object
-//		if (isUserObject(list) && isNumeric(index)) {
-//			final int ix = toNumeric(index).toInt();
-//			UserObject user_obj = toUserObject(list);
-//			if (ix <= user_obj.fieldCount() && ix>0) {
-//				user_obj.setField(ix-1, o);
-//				return;
-//			} else {
-//				throw new ElementRuntimeException("I: User object (" 
-//							+ user_obj.getModule().toString() + "): field " + ix 
-//							+ " cannot be set");
-//			}
-//		}
-//				
-//		throw new TypeError(this.name, this.argTypes, index, list, o);
-//	}
-//}
-
-
-////> - 62
-//class OP_ModGet extends Operation {
-//	public OP_ModGet() {
-//		this.name = "M>";
-//		this.info = "get a field from a user object";
-//		this.argTypes = "UI";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		final Object index = block.pop();
-//		final Object list = block.pop();
-//		
-//		//Check if user object
-//		if (isUserObject(list) && isNumeric(index)) {
-//			final int ix = toNumeric(index).toInt();
-//			if (ix == 0) {
-//				block.push(toUserObject(list).getModule());
-//				return;
-//			} else {
-//				UserObject user_obj = toUserObject(list);
-//				if (ix <= user_obj.fieldCount() && ix>0) {
-//					block.push(toUserObject(list).getField(ix-1));
-//					return;
-//				} else {
-//					throw new ElementRuntimeException("I: User object (" 
-//								+ user_obj.getModule().toString() + "): field " + ix 
-//								+ " does not exist.");
-//				}
-//			}
-//		}
-//				
-//		throw new TypeError(this.name, this.argTypes, index, list);
-//	}
-//}
 
 // A - 65
 class OP_Abs extends Operation {
@@ -857,27 +791,6 @@ class OP_MShow_Date extends Operation {
 	}
 }
 
-////i - 105
-//class OP_CastInt extends Operation {
-//	public OP_CastInt() {
-//		this.name = "Mi";
-//		this.info = "cast number to int. if input not number, return 0";
-//		this.argTypes = "N";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		final Obj a = block.pop();
-//		if(isString(a)) {
-//			try {
-//				block.push(Integer.parseInt(castString(a)));
-//			} catch (NumberFormatException e) {
-//				throw new ElementRuntimeException("Cannot cast string \""+ castString(a) + "\" to int.");
-//			}
-//		} else {
-//			block.push(castInt(a));
-//		}
-//	}
-//}  
 
 //k - 107
 class OP_AddParserChar extends Operation {

@@ -123,7 +123,7 @@ public class Block extends Obj {
 				}
 			}
 			
-			// Variable Set: Push it to Element's variable data
+			// Variable Set: Push it to Aya's variable data
 			else if (current instanceof VariableSet) {
 				VariableSet vars = ((VariableSet)current).clone();
 				vars.setArgs(this);

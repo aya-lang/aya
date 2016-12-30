@@ -2,7 +2,7 @@
 .# Defines both color and colors module
 
 .{? module: color
-    A module for manipulating and printing colors in element
+    A module for manipulating and printing colors in Aya
 .}
 {,
   .# attr "r g b"
@@ -93,8 +93,8 @@
   .# colors.randchoice\n  get a random color
   {;255Q 255Q 255Q color!}:rand;
 
-  72  72  68  color!:fg;    .# Element GUI foreground color
-  39  40  34  color!:bg;    .# Element GUI background color
+  72  72  68  color!:fg;    .# Aya GUI foreground color
+  39  40  34  color!:bg;    .# Aya GUI background color
   0   0   0   color!:black;
   255 255 255 color!:white;
   255 0   0   color!:red;

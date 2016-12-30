@@ -18,7 +18,7 @@ public class LambdaToken extends CollectionToken {
 
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		
 		//Is it a negative number?
 		if(col.size() == 2 && col.get(0).isa(Token.OP)){

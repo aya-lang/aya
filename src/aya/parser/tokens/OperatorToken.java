@@ -27,7 +27,7 @@ public class OperatorToken extends StdToken {
 	}
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		Operation op = null;
 		switch (op_type) {
 		case STD_OP:

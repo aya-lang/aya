@@ -183,7 +183,7 @@
   "colorsort"
   "scatter"
   "fnlot"
-  ]  "Select a Demo" "Element Demo" 1 6 MV :choice;
+  ]  "Select a Demo" "Aya Demo" 1 6 MV :choice;
 
   "demo." choice + ~
 

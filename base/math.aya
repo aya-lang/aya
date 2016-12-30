@@ -1,8 +1,5 @@
 .# math.elem
-.# Essential math functions for element
-
-.# NOTE: Most functions are not golfed. They
-.# are written for performance, not length.
+.# Essential math functions for Aya
 
 import "base/constants"
 

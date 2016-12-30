@@ -122,7 +122,7 @@ public class SpecialToken extends Token {
 	}
 
 	@Override
-	public Object getElementObj() {
-		throw new RuntimeException("Cannot generate element code for special token");
+	public Object getAyaObj() {
+		throw new RuntimeException("Cannot generate aya code for special token");
 	}
 }

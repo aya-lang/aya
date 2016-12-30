@@ -1,6 +1,6 @@
 .# When using eclise, copy this file into bin and rename it "load.elem"
 
-.# This file redirects element to /element-lang and
+.# This file redirects aya to /aya-lang and
 .# calls the load.elem file from there
 
 ""2MZ "/"|B;#"/"+S 3MZ

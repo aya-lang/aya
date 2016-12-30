@@ -1,4 +1,4 @@
-.# An introduction to the Element programming language
+.# An introduction to the Aya programming language
 .# Nicholas Paul
 
 
@@ -10,7 +10,7 @@
 .#		Essentials
 .###########################
 
-.# Element is a stack based programming language.
+.# Aya is a stack based programming language.
 .# The stack is evaluated from left to right
 
 	1 3 + 2 - 4 +
@@ -358,43 +358,43 @@ M[1 2,3 4] 'M isa		.# => true
 
 .# The GUI REPL can be launched by double clicking the jar
 .#		file or running the command
-.# java -jar path/to/element.jar
+.# java -jar path/to/aya.jar
 
 
 .# The REPL can be launched via the command line by running
 .#		the above command but with '-i' as an argument
-.# java -jar path/to/element.jar -i
+.# java -jar path/to/aya.jar -i
 
-.# Aside from running element code, the REPL has several useful features
+.# Aside from running aya code, the REPL has several useful features
 .# Enter '\h' to view the REPLs commands
-.# element> \h
+.# aya> \h
 .# Help:
-.#   \q						quit interactive element
+.#   \q						quit interactive Aya
 .#   \c [infix|stack]		change compiler type
 .#   \v <expr>				view compiler output of expression
 .#   \h						view this page
-.#   \? <help text>			search for help text in Element
+.#   \? <help text>			search for help text in Aya
 .#   \cls					clear the console window
-.#   \version				display element version name
+.#   \version				display Aya version name
 
 .# Many of these features can be explored on your own, but the
 .# 		most useful feature is help '\?'
 .# Using help, you can search for just about anything
 
 .# Operators 
-.# element> \? $
+.# aya> \? $
 .#	$ (L<N>|L<S>|S)
 .#  	sort least to greatest
 .#      (operator)
 
 .# Reverse search operators
-.# element> \? sort
+.# aya> \? sort
 .#  $ (L<N>|L<S>|S)
 .#     sort least to greatest
 .#    (operator)
 
 .# Topics
-.# element> \? type key
+.# aya> \? type key
 .#	argument type key
 .#     I - integer
 .#     D - double

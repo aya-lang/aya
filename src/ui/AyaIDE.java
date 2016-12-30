@@ -32,7 +32,7 @@ public class AyaIDE extends JFrame
 {	
 	public static final String VERSION_NAME = "2016 Nov 11";
 	
-	private Aya element;
+	private Aya aya;
 	
 	//Layout
 	private MyConsole interpreter;
@@ -43,13 +43,13 @@ public class AyaIDE extends JFrame
     
 
 	public AyaIDE(Aya elem) {
-		super("Element");
+		super("Aya");
 		
 		this.thiside = this;
 
 				
-		this.element = elem;
-		this.interpreter = new MyConsole(element);
+		this.aya = elem;
+		this.interpreter = new MyConsole(aya);
 		this.menu = new JMenu();
 		this.menuBar = new JMenuBar();
 		
@@ -283,7 +283,7 @@ public class AyaIDE extends JFrame
 		menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(interpreter, "Element IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nElement Version: " + Aya.VERSION_NAME);
+				JOptionPane.showMessageDialog(interpreter, "Aya IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -364,8 +364,8 @@ public class AyaIDE extends JFrame
         }
 	}
 	
-	public Aya getElement() {
-		return this.element;
+	public Aya getAya() {
+		return this.aya;
 	}
 	
 	public ConsoleWindow out() {
@@ -382,7 +382,7 @@ public class AyaIDE extends JFrame
 
 		//No args: use the GUI
 		if(args.length == 0) {
-			//Load and initialize element
+			//Load and initialize aya
 			Aya elem = Aya.getInstance();
 			boolean base_loaded_succ = InteractiveAya.loadBase(elem);
 			

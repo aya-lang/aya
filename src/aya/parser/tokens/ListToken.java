@@ -18,7 +18,7 @@ public class ListToken extends CollectionToken {
 
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> listData = splitCommas(col);
 		
@@ -82,7 +82,7 @@ public class ListToken extends CollectionToken {
 				&& arr.get(0).isa(Token.NUMERIC)
 				&& arr.get(1).isa(Token.OP)
 				&& arr.get(1).data.equals("|")) {
-			pops = ((Number)arr.get(0).getElementObj()).toInt();
+			pops = ((Number)arr.get(0).getAyaObj()).toInt();
 			arr.remove(0);
 			arr.remove(0);
 		}

@@ -23,7 +23,7 @@ public class BlockToken extends CollectionToken {
 
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		switch(blockData.size()) {
@@ -62,7 +62,7 @@ public class BlockToken extends CollectionToken {
 			//Set up arguments
 			Variable[] args = new Variable[tokens.size()];
 			for (int i = 0; i < args.length; i++) {
-				args[i] = (Variable) tokens.get(i).getElementObj();
+				args[i] = (Variable) tokens.get(i).getAyaObj();
 			}
 			return new VariableSet(args,  null);
 		} 

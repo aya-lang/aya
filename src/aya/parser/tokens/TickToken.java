@@ -10,7 +10,7 @@ public class TickToken extends StdToken {
 
 	
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		int ticks = Integer.parseInt(data);
 		return new Flag((byte) (-1*ticks));
 	}

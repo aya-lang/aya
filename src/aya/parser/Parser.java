@@ -39,7 +39,7 @@ import aya.variable.Variable;
  * 2. assemble: Assembles the tokens into token groups based on context
  * 				- Assembles list and block literals
  * 				- parses decimal numbers
- * 3. generate:	Generate element code based on the tokens
+ * 3. generate:	Generate Aya code based on the tokens
  * 
  * @author Nick
  *
@@ -634,7 +634,7 @@ public class Parser {
 			
 			//Std Token
 			else {
-				is.push(((StdToken)current).getElementObj());
+				is.push(((StdToken)current).getAyaObj());
 			}
 			
 		}

@@ -209,7 +209,7 @@ public class EditorWindow extends JPanel {
 		menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(activeFrame, "Element IDE\nNicholas Paul\nVersion: " + AyaIDE.VERSION_NAME + "\nElement Version: " + Aya.VERSION_NAME);
+				JOptionPane.showMessageDialog(activeFrame, "Aya IDE\nNicholas Paul\nVersion: " + AyaIDE.VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}

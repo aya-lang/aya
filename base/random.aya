@@ -1,0 +1,21 @@
+{@rand, 
+
+  .#? N rand.lipsum\n  generate N random words of lipsum text
+  {n :words outstr,
+    ["lorem" "ipsum" "dolor" "sit" "amet"
+      "consectetuer" "adipiscing" "elit"
+      "sed" "diam" "nonummy" "nibh" "euismod"
+      "tincidunt" "ut" "laoreet" "dolore"
+      "magna" "aliquam" "erat"]:words;
+
+    wordsQ:outstr;
+    {outstr " " wordsQ ++ :outstr;}nV%
+
+    outstr
+  }:lipsum;
+  
+  .# 
+  {"123456789JQKA""\{diamond}\{heart}\{club}\{spade}" {P+} pu flatten}:card;
+  
+  .#? rand.card\n  generate a random card
+}

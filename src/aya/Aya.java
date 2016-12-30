@@ -115,7 +115,7 @@ public class Aya {
 //			instance.out.printEx(exToSimpleStr(cce));
 //		} 
 		catch (Exception e2) {
-			System.out.println("EXCEPTION: Unhandled exception in Element.run(Block)");
+			System.out.println("EXCEPTION: Unhandled exception in Aya.run(Block)");
 			if(PRINT_LARGE_ERRORS) {
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);
@@ -142,7 +142,7 @@ public class Aya {
 		return instance.out;
 	}
 	
-//	public static void export(String name, String code, Element elem) {
+//	public static void export(String name, String code, Aya elem) {
 //		//Create folder if needed
 //		File dirFile = new File("exported_src\\");
 //		if(!dirFile.exists()) {
@@ -157,7 +157,7 @@ public class Aya {
 //			
 //			//Create the Runnable			
 //			SourceFile runnable = new SourceFile(new File(name + ".bat"), elem);
-//			runnable.printOver("@ECHO off\njava -jar element.jar -f \"exported_src\\" + name + ".elem\"\nPAUSE\nEXIT");
+//			runnable.printOver("@ECHO off\njava -jar aya.jar -f \"exported_src\\" + name + ".elem\"\nPAUSE\nEXIT");
 //			
 //		} catch (FileNotFoundException e) {
 //			e.printStackTrace();

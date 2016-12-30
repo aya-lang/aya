@@ -11,7 +11,7 @@ public class CharToken extends StdToken {
 
 	
 	@Override
-	public Obj getElementObj() {
+	public Obj getAyaObj() {
 		return Char.valueOf(data.charAt(0));
 	}
 

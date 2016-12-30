@@ -54,7 +54,7 @@ public abstract class Token {
 		return data;
 	}
 	
-	abstract public Object getElementObj();	
+	abstract public Object getAyaObj();	
 	abstract public String typeString();
 	
 	public String toString() {

@@ -19,11 +19,11 @@ public class InteractiveAya {
 
 	
 	public static final String HELP_TEXT = "Help:\n"
-			+ "  \\q\t\t\tquit interactive element\n"
+			+ "  \\q\t\t\tquit interactive Aya\n"
 			+ "  \\h\t\t\tview this page\n"
-			+ "  \\? <help text>\t\tsearch for help text in Element\n"
+			+ "  \\? <help text>\t\tsearch for help text in Aya\n"
 			+ "  \\cls\t\t\tclear the console window\n"
-			+ "  \\version\t\t\tdisplay element version name";
+			+ "  \\version\t\t\tdisplay Ara version name";
 	
 	public static int processInput(Aya elem, String input) {
 		//Empty Input
@@ -235,7 +235,7 @@ public class InteractiveAya {
 				
 			}
 			
-			//Run interactive element
+			//Run interactive aya
 			else if(args[0].equals("-i")) {
 				
 				//Attempt to load base
@@ -284,7 +284,7 @@ public class InteractiveAya {
 						System.out.println("Cannot clear console.");
 						break;
 					default:
-						throw new RuntimeException("Implement status in InteractiveElement.main()");
+						throw new RuntimeException("Implement status in InteractiveAya.main()");
 					}
 				}
 			}

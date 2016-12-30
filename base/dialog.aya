@@ -12,22 +12,22 @@
   {question, [] questionP "" 1 2 MV}:requestnum;
 
   .#? S dialog.alert\n  display a dialog box with a given message
-  {text, [] text "Element" 1 3 MV}:alert;
+  {text, [] text "Aya" 1 3 MV}:alert;
 
   .#? S dialog.warning\n  display a warning message with the given message
-  {text, [] text "Element" 3 3 MV}:warning;
+  {text, [] text "Aya" 3 3 MV}:warning;
 
   .#? S dialog.error\n  display an error message with the given message
-  {text, [] text "Element" 4 3 MV}:error;
+  {text, [] text "Aya" 4 3 MV}:error;
 
   .#? SSS dialog.yesno\n  display a dialog box with the question S1. S2 and S3 return true and false respectively
-  {question yes no, [yes no] question "Element" 2 4 MV}:yesno;
+  {question yes no, [yes no] question "Aya" 2 4 MV}:yesno;
 
   .#? SL<S> dialog.buttons\n  display a dialog box with buttons for each of the options in L
-  {question optionsL, options question "Element" 2 5 MV}:buttons;
+  {question optionsL, options question "Aya" 2 5 MV}:buttons;
 
   .#? SL<S> dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
-  {question optionsL, options question "Element" 2 6 MV}:dropdown;
+  {question optionsL, options question "Aya" 2 6 MV}:dropdown;
 
   .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
   {[] "" "" 1 7 MV}:choosefile;

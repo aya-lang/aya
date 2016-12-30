@@ -9,7 +9,7 @@ public class VarToken extends StdToken {
 	}
 
 	@Override
-	public Object getElementObj() {
+	public Object getAyaObj() {
 		return new Variable(data);
 	}
 

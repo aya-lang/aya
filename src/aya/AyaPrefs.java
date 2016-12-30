@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class AyaPrefs {
-	private static String prompt = "element> ";
+	private static String prompt = "aya> ";
 	private static String workingDir = null;
 	private static String defaultWorkingDir = null;
 
