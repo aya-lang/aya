@@ -98,7 +98,7 @@ public class MathOps {
 		/* 77 M  */ null,
 		/* 78 N  */ null,
 		/* 79 O  */ new OP_NewUserObject(),
-		/* 80 P  */ new OP_PrintColor(),
+		/* 80 P  */ null,//new OP_PrintColor(),
 		/* 81 Q  */ null,
 		/* 82 R  */ null,
 		/* 83 S  */ new OP_Asine(),
@@ -366,36 +366,36 @@ class OP_NewUserObject extends Operation {
 	}
 }
 
-//P - 80
-class OP_PrintColor extends Operation {
-	public OP_PrintColor() {
-		this.name = "MP";
-		this.info = "print a string to the console with the given color";
-		this.argTypes = "SIII";
-	}
-	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
-		final Obj c = block.pop();
-		final Obj d = block.pop();
-		
-		if(a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
-			int ai = ((Number)a).toInt();
-			int bi = ((Number)b).toInt();
-			int ci = ((Number)c).toInt();
-			
-			try {
-				Aya.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
-			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
-			}
-			return;
-		}
-		
-		throw new TypeError(this.name, this.argTypes, a,b,c,d);
-	}
-}
+////P - 80
+//class OP_PrintColor extends Operation {
+//	public OP_PrintColor() {
+//		this.name = "MP";
+//		this.info = "print a string to the console with the given color";
+//		this.argTypes = "SIII";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		final Obj a = block.pop();
+//		final Obj b = block.pop();
+//		final Obj c = block.pop();
+//		final Obj d = block.pop();
+//		
+//		if(a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
+//			int ai = ((Number)a).toInt();
+//			int bi = ((Number)b).toInt();
+//			int ci = ((Number)c).toInt();
+//			
+//			try {
+//				//Aya.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
+//			} catch (IllegalArgumentException e) {
+//				throw new AyaRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
+//			}
+//			return;
+//		}
+//		
+//		throw new TypeError(this.name, this.argTypes, a,b,c,d);
+//	}
+//}
 
 // S - 83
 class OP_Asine extends Operation {

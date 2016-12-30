@@ -66,10 +66,10 @@ public class MyConsole extends JPanel {
 	public void eval(String s, String input_name) {
 		cw.println(AyaPrefs.getPrompt() + input_name);
 		
-		int status = Aya.RETURN_ERROR;
+		//int status = Aya.RETURN_ERROR;
 		
 		try {
-			status = InteractiveAya.processInput(_aya, s);
+//			status = InteractiveAya.processInput(_aya, s);
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -77,54 +77,54 @@ public class MyConsole extends JPanel {
 			_aya.printEx(sw.toString());
 		}
 		
-		switch (status) {
-		case Aya.RETURN_SUCCESS:
-			if(!_aya.getOut().isEmpty()){
-				ArrayList<OutputString> output = _aya.getOut().dump();
-				
-				for(OutputString str : output) {
-					switch(str.getType()) {
-					case OutputString.PRINT:
-						cw.print(str.toString());
-						break;
-					case OutputString.NORMAL:
-						cw.print(str.toString());
-						break;
-					case OutputString.ERROR:
-						cw.printEx(str.toString());
-						cw.println("");
-						break;
-					case OutputString.WARN:
-						cw.printWarn(str.toString());
-						cw.println("");
-						break;
-					case OutputString.QUIET:
-						cw.printQuiet(str.toString());
-						cw.println("");
-						break;
-					case OutputString.COLOR:
-						cw.print(str.toString(), str.getColor());
-						break;
-					default:
-						cw.printEx("Set up OutoutString type in MyConsole.eval()");	
-					}
-				}
-				cw.println("\n"); //Two lines
-			}
-			break;
-		case Aya.CLEAR_CONSOLE:
-			cw.clear();
-			break;
-		case Aya.RETURN_EXIT:
-			AyaIDE.exit();
-			break;
-		case Aya.RETURN_ERROR:
-			cw.printEx(_aya.getOut().dumpAsString());
-			break;
-		default:
-			throw new RuntimeException("Implement status in MyConsole.eval()");
-		
-		}
+//		switch (status) {
+//		case Aya.RETURN_SUCCESS:
+//			if(!_aya.getOut().isEmpty()){
+//				ArrayList<OutputString> output = _aya.getOut().dump();
+//				
+//				for(OutputString str : output) {
+//					switch(str.getType()) {
+//					case OutputString.PRINT:
+//						cw.print(str.toString());
+//						break;
+//					case OutputString.NORMAL:
+//						cw.print(str.toString());
+//						break;
+//					case OutputString.ERROR:
+//						cw.printEx(str.toString());
+//						cw.println("");
+//						break;
+//					case OutputString.WARN:
+//						cw.printWarn(str.toString());
+//						cw.println("");
+//						break;
+//					case OutputString.QUIET:
+//						cw.printQuiet(str.toString());
+//						cw.println("");
+//						break;
+//					case OutputString.COLOR:
+//						cw.print(str.toString(), str.getColor());
+//						break;
+//					default:
+//						cw.printEx("Set up OutoutString type in MyConsole.eval()");	
+//					}
+//				}
+//				cw.println("\n"); //Two lines
+//			}
+//			break;
+//		case Aya.CLEAR_CONSOLE:
+//			cw.clear();
+//			break;
+//		case Aya.RETURN_EXIT:
+//			AyaIDE.exit();
+//			break;
+//		case Aya.RETURN_ERROR:
+//			//cw.printEx(_aya.getOut().dumpAsString());
+//			break;
+//		default:
+//			throw new RuntimeException("Implement status in MyConsole.eval()");
+//		
+//		}
 		
 		ConsoleWindow.goToEnd();
 	}

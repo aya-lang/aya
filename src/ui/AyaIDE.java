@@ -143,7 +143,7 @@ public class AyaIDE extends JFrame
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					Aya.getInstance().run("\"" + path + "\"G~");
+					//Aya.getInstance().run("\"" + path + "\"G~");
 					
 				}
 			}
@@ -225,7 +225,7 @@ public class AyaIDE extends JFrame
 		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				_interpreter.cw.printWarn(AyaTestCases.runTests());
+				//_interpreter.cw.printWarn(AyaTestCases.runTests());
 				
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -384,16 +384,16 @@ public class AyaIDE extends JFrame
 		if(args.length == 0) {
 			//Load and initialize aya
 			Aya aya = Aya.getInstance();
-			boolean base_loaded_succ = InteractiveAya.loadBase(aya);
+			boolean base_loaded_succ = false; //InteractiveAya.loadBase(aya);
 			
 			//Load the ide
 			AyaIDE ide = new AyaIDE(aya);
 
 			//Print messages to the console if base had errors
 			if(base_loaded_succ) {
-				ide._interpreter.cw.print(aya.getOut().dumpAsString());	
+				//ide._interpreter.cw.print(aya.getOut().dumpAsString());	
 			} else {
-				ide._interpreter.cw.print(aya.getOut().dumpAsString());
+				//ide._interpreter.cw.print(aya.getOut().dumpAsString());
 				ide._interpreter.cw.print("\n\n");
 			}
 			

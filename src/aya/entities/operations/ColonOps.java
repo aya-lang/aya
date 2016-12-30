@@ -6,6 +6,7 @@ import static aya.obj.Obj.NUMBER;
 
 import java.util.ArrayList;
 
+import aya.Aya;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
@@ -77,9 +78,9 @@ public class ColonOps {
 		/* 77 M  */ null,
 		/* 78 N  */ null,
 		/* 79 O  */ null,
-		/* 80 P  */ null,
+		/* 80 P  */ new OP_Colon_P(),
 		/* 81 Q  */ null,
-		/* 82 R  */ null,
+		/* 82 R  */ new OP_Colon_R(),
 		/* 83 S  */ null,
 		/* 84 T  */ null,
 		/* 85 U  */ null,
@@ -197,6 +198,30 @@ class OP_Colon_V extends Operation {
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+}
+
+//P - 80
+class OP_Colon_P extends Operation {
+	public OP_Colon_P() {
+		this.name = ":P";
+		this.info = "readline from console";
+		this.argTypes = "";
+	}
+	@Override public void execute (Block block) {		
+		Aya.getInstance().println(block.pop().str());
+	}
+}
+
+//R - 82
+class OP_Colon_R extends Operation {
+	public OP_Colon_R() {
+		this.name = ":R";
+		this.info = "readline from console";
+		this.argTypes = "";
+	}
+	@Override public void execute (Block block) {		
+		block.push(new Str(Aya.getInstance().nextLine()));
 	}
 }
 
