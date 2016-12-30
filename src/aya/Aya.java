@@ -29,10 +29,7 @@ public class Aya {
 	public static final int RETURN_EXIT = -2;
 	public static final int RETURN_ERROR = -1;
 	public static final int RETURN_SUCCESS = 0;
-	public static final int CHANGE_TO_INFIX = 1;
-	public static final int CHANGE_TO_STACK = 2;
 	public static final int CLEAR_CONSOLE = 3;
-	public static final int RUN_INFIX_TESTS = 4;
 	
 	public static boolean PRINT_LARGE_ERRORS = true;
 	

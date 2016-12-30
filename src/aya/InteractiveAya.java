@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import aya.exceptions.SyntaxError;
-import aya.infix.Compiler;
 import aya.obj.block.Block;
 import aya.parser.Parser;
 import aya.util.FileUtils;
@@ -15,7 +14,6 @@ public class InteractiveAya {
 		
 	private static final int SUCCESS = Aya.RETURN_SUCCESS;
 	private static final int EXIT = Aya.RETURN_EXIT;
-	private static boolean USE_INFIX = false;
 
 	
 	public static final String HELP_TEXT = "Help:\n"
@@ -105,51 +103,6 @@ public class InteractiveAya {
 				}
 			}
 			
-			//Invert
-			else if(settings[0].equals("\\i")) {
-				//Reassemble the code
-				String code = "";
-				for (int i = 1; i < settings.length; i++) {
-					code += settings[i] + " ";
-				}
-				code = code.trim();
-				
-				if(code.equals("")) {
-					aya.getOut().printEx("Nothing to eval");
-				} else {					
-					//Compile the code
-					Block b;
-					if(!USE_INFIX){
-						try {
-							b = Compiler.compile(code, false);
-						} catch (SyntaxError se) {
-							aya.getOut().printEx("Infix: Syntax error");
-							return Aya.RETURN_SUCCESS;
-						}
-					} else {
-						try {
-							b = Parser.compile(code, aya);
-						} catch (SyntaxError e) {
-							aya.getOut().printEx(e.getMessage());
-							return Aya.RETURN_SUCCESS;
-						}
-					}
-					aya.run(b);
-				}
-			}
-			
-			//Infix (Always on)
-			else if(settings[0].equals("\\i-on")) {
-				USE_INFIX = true;
-				Aya.PRINT_LARGE_ERRORS = false;
-			}
-			
-			//Infix (Always off)
-			else if(settings[0].equals("\\i-off")) {
-				USE_INFIX = false;
-				Aya.PRINT_LARGE_ERRORS = true;
-			}
-			
 			//Run Tests
 			else if(settings[0].equals("\\test")) {
 				aya.getOut().println(AyaTestCases.runTests());
@@ -163,16 +116,7 @@ public class InteractiveAya {
 		
 		//Normal Input
 		else {
-			if(USE_INFIX) {
-				try {
-					aya.run(Compiler.compile(input, false));
-				} catch (SyntaxError se) {
-					aya.getOut().printEx("Infix: Syntax error");
-					return Aya.RETURN_SUCCESS;
-				}
-			} else {
-				aya.run(input);
-			}
+			aya.run(input);
 		}
 		
 		return Aya.RETURN_SUCCESS;
