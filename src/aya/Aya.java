@@ -64,11 +64,12 @@ public class Aya extends Thread {
 		while (true) {
 			try {
 				String input = _input.take();
-				if (input.equals(QUIT)) {
-					break;
-				}
-				
 				synchronized(this) {
+					if (input.equals(QUIT)) {
+						notify();
+						break;
+					}
+					
 					_instance.run(input);
 					notify();
 				}

@@ -10,6 +10,7 @@ public class InteractiveAya {
 	
 	public static final int SUCCESS = 1;
 	public static final int EXIT = 0;
+	public static final int NONE = 2;
 	
 
 	private static final String BANNER = ""
@@ -30,7 +31,7 @@ public class InteractiveAya {
 	public static int processInput(Aya aya, String input) {
 		//Empty Input
 		if(input.equals("")) {
-			return SUCCESS;
+			return NONE;
 		}
 		
 		//Settings
@@ -151,13 +152,28 @@ public class InteractiveAya {
 		
 		Scanner scanner = new Scanner(System.in);
 		String input = "";
+		int status;
 		
 		while (true) {
 			
 			System.out.print(AyaPrefs.getPrompt());
 			input = scanner.nextLine();
-
-			int status = processInput(aya, input);
+			
+			if (input.equals("")) {
+				continue;
+			}
+			
+			//Wait for aya to finish
+			synchronized (aya) {
+				status = processInput(aya, input);
+				try {
+					aya.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			
 			if (status == EXIT) {
 				scanner.close();
@@ -168,16 +184,8 @@ public class InteractiveAya {
 					e.printStackTrace();
 				}
 				return;
-			}
-			
-			//Wait for aya to finish
-			synchronized (aya) {
-				try {
-					aya.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			} else if (status == NONE) {
+				continue;
 			}
 		}
 		
