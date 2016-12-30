@@ -10,7 +10,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -22,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import aya.Aya;
+import aya.AyaPrefs;
 import aya.InteractiveAya;
 import aya.variable.Variable;
 import test.AyaTestCases;
@@ -49,7 +52,7 @@ public class AyaIDE extends JFrame
 
 				
 		this._aya = aya;
-		this._interpreter = new MyConsole(_aya);
+		this._interpreter = new MyConsole();
 		this._menu = new JMenu();
 		this._menuBar = new JMenuBar();
 		
@@ -66,8 +69,10 @@ public class AyaIDE extends JFrame
 		    		  switch(e.getKeyCode()) {
 		    		  case KeyEvent.VK_ENTER:
 		    			  if(!_interpreter.getInputLine().getText().equals("") && _interpreter.getInputLine().inFocus()) {
-							  _interpreter.eval(_interpreter.getInputLine().getText());
-							  _interpreter.clrAndFocus();
+							  // TODO
+		    				  //_interpreter.eval(_interpreter.getInputLine().getText());
+							  //_interpreter.clrAndFocus();
+		    				  _aya.println(AyaPrefs.getPrompt() + " " + _interpreter.getInputLine().getText());
 						  } 
 		    			  break;
 		    		  case KeyEvent.VK_UP:
@@ -182,7 +187,7 @@ public class AyaIDE extends JFrame
 		//Clear Console
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				_interpreter.cw.clear();
+				//_interpreter.cw.clear();
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -195,7 +200,7 @@ public class AyaIDE extends JFrame
 		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				_interpreter.eval("100 .B");
+				//_interpreter.eval("100 .B");
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -368,37 +373,43 @@ public class AyaIDE extends JFrame
 		return this._aya;
 	}
 	
-	public ConsoleWindow out() {
-		return this._interpreter.out();
+	public OutputStream getOutputStream() {
+		return _interpreter.getOut();
 	}
 	
-	public void eval(String s, String input_name) {
-		_interpreter.eval(s, input_name);
+	public InputStream getInputStream() {
+		return _interpreter.getIn();
 	}
 	
 	public static void main(String[] args) {
-		Variable v = new Variable("uyiuyiutiyutcutc");
-		v.getID();
-
+		
 		//No args: use the GUI
 		if(args.length == 0) {
+			
 			//Load and initialize aya
 			Aya aya = Aya.getInstance();
-			boolean base_loaded_succ = false; //InteractiveAya.loadBase(aya);
-			
-			//Load the ide
 			AyaIDE ide = new AyaIDE(aya);
+			
+			PrintStream out = new PrintStream(ide.getOutputStream());
+			
+			aya.setOut(out);
+			aya.setErr(out);
+			aya.setIn(ide.getInputStream());
 
-			//Print messages to the console if base had errors
-			if(base_loaded_succ) {
-				//ide._interpreter.cw.print(aya.getOut().dumpAsString());	
-			} else {
-				//ide._interpreter.cw.print(aya.getOut().dumpAsString());
-				ide._interpreter.cw.print("\n\n");
-			}
+			InteractiveAya iaya = new InteractiveAya(aya);
+			iaya.setArgs(args);
+			iaya.setPromptText(false);
+			iaya.run();
 			
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
+			
+			try {
+				iaya.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		//Command line arguments: use the console

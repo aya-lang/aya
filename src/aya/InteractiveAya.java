@@ -1,17 +1,23 @@
 package aya;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import aya.exceptions.SyntaxError;
 import aya.obj.block.Block;
 import aya.parser.Parser;
 
-public class InteractiveAya {
+public class InteractiveAya extends Thread {
 	
 	public static final int SUCCESS = 1;
 	public static final int EXIT = 0;
 	public static final int NONE = 2;
 	
+	Aya _aya;
+	
+	public InteractiveAya(Aya aya) {
+		_aya = aya;
+	}
 
 	private static final String BANNER = ""
 			+ "       __ _ _   _  __ _    | A tiny, stack based programming language \n"
@@ -28,7 +34,7 @@ public class InteractiveAya {
 			+ "  \\cls\t\t\tclear the console window\n"
 			+ "  \\version\t\t\tdisplay Ara version name";
 	
-	public static int processInput(Aya aya, String input) {
+	public int processInput(String input) {
 		//Empty Input
 		if(input.equals("")) {
 			return NONE;
@@ -46,7 +52,7 @@ public class InteractiveAya {
 			
 			//Help
 			else if(settings[0].equals("\\h") || settings[0].equals("\\help")) {
-				aya.println(HELP_TEXT);
+				_aya.println(HELP_TEXT);
 			}
 			
 			//Search
@@ -57,13 +63,13 @@ public class InteractiveAya {
 				}
 				searchText = searchText.substring(0, searchText.length()-1);
 				
-				aya.getHelpData().clearFilter();
-				aya.getHelpData().applyNewFilter(searchText);
-				if(aya.getHelpData().getFilteredItems().size() == 0) {
-					aya.println("No help data matching \"" + searchText + "\"");
+				_aya.getHelpData().clearFilter();
+				_aya.getHelpData().applyNewFilter(searchText);
+				if(_aya.getHelpData().getFilteredItems().size() == 0) {
+					_aya.println("No help data matching \"" + searchText + "\"");
 				} else {
 					for(String s : Aya.getInstance().getHelpData().getFilteredItems()) {
-						aya.println(s.replace("\n", "\n   "));
+						_aya.println(s.replace("\n", "\n   "));
 					}
 				}
 			}
@@ -92,7 +98,7 @@ public class InteractiveAya {
 					//Compile the code
 					Block b;
 					try {
-						b = Parser.compile(code, aya);
+						b = Parser.compile(code, _aya);
 					} catch (SyntaxError e) {
 						//aya.getOut().printEx(e.getMessage());
 //						return Aya.RETURN_SUCCESS;
@@ -121,42 +127,43 @@ public class InteractiveAya {
 		
 		//Normal Input
 		else {
-			aya.queueInput(input);
+			_aya.queueInput(input);
 		}
 		
 		return SUCCESS;
 	}
-	
-	//Returns true if load was successful
-	public static boolean loadBase(Aya aya) {
-		//Load the standard library
-		try {
-			aya.queueInput("\"load.aya\"G~");
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
 
 	
+	String[] _args;
+	private boolean _showPromptText;
 	
-	public static void main(String[] args) {
-		Aya aya = Aya.getInstance();
-		aya.start();
+	public void setArgs(String[] args) {
+		_args = args;
+	}
+	
+	public void setPromptText(boolean b) {
+		_showPromptText = false;
+	}
+	
+	@Override
+	public void run() {
+		_aya.start();
+		_aya.loadAyarc();
 		
-		if (!loadBase(aya)) {
-			System.out.println("There was an error loading base/");
-		}
+		_aya.print(BANNER);
 		
-		System.out.print(BANNER);
+		PrintStream out = _aya.getOut();
+		PrintStream err = _aya.getErr();
 		
-		Scanner scanner = new Scanner(System.in);
+		Scanner scanner = new Scanner(_aya.getIn());
 		String input = "";
 		int status;
 		
 		while (true) {
 			
-			System.out.print(AyaPrefs.getPrompt());
+			if (_showPromptText) {
+				out.print(AyaPrefs.getPrompt());
+			}
 			input = scanner.nextLine();
 			
 			if (input.equals("")) {
@@ -164,24 +171,23 @@ public class InteractiveAya {
 			}
 			
 			//Wait for aya to finish
-			synchronized (aya) {
-				status = processInput(aya, input);
+			synchronized (_aya) {
+				status = processInput(input);
 				try {
-					aya.wait();
+					_aya.wait();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e.printStackTrace(err);
 				}
 			}
 			
 			
 			if (status == EXIT) {
 				scanner.close();
-				aya.queueInput(Aya.QUIT);
+				_aya.queueInput(Aya.QUIT);
 				try {
-					aya.join();
+					_aya.join();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					e.printStackTrace(err);
 				}
 				return;
 			} else if (status == NONE) {
@@ -189,6 +195,20 @@ public class InteractiveAya {
 			}
 		}
 		
+	}
+	
+	public static void main(String[] args) {
+		Aya aya = Aya.getInstance();
+		InteractiveAya iaya = new InteractiveAya(aya);
+		iaya.setArgs(args);
+		iaya.run();
+		
+		try {
+			iaya.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 		
 		

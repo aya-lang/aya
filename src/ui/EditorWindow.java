@@ -265,7 +265,7 @@ public class EditorWindow extends JPanel {
 	
 	public void run() {
 		String txt = editor.getText();
-		ide.eval(txt, "[Editor Window]");
+		//ide.eval(txt, "[Editor Window]");
 	}
 	
 	@Override
