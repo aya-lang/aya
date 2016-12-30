@@ -42,6 +42,7 @@ public class Aya extends Thread {
 	private StringSearch _helpData;
 	private VariableData _variables;
 	private static Aya _instance = getInstance();
+	private long _lastInputRunTime = 0;
 
 	protected Aya() {
 		//Exists only to defeat instantiation
@@ -71,7 +72,10 @@ public class Aya extends Thread {
 						break;
 					}
 					
+					long startTime = System.currentTimeMillis();
 					_instance.run(input);
+					_lastInputRunTime = System.currentTimeMillis() - startTime;
+					
 					notify();
 				}
 				
@@ -131,6 +135,10 @@ public class Aya extends Thread {
 		}
 		return true;
 	}
+	
+	public long getLastInputRunTime() {
+		return _lastInputRunTime;
+	}
 
 	
 
@@ -186,6 +194,7 @@ public class Aya extends Thread {
 	public void println(Object o) {_instance._out.println(o.toString());}
 	public void printDebug(Object o) {if (DEBUG) _instance._out.println(o.toString());}
 	public void printEx(Object o) {_instance._err.print(o.toString());}
+	
 	
 	/////////////////////
 	// PRIVATE METHODS //
