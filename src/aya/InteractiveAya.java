@@ -207,7 +207,7 @@ public class InteractiveAya {
 			//Run the arguments as code
 			if(args[0].equals("-c")) {
 				
-				//loadBase(aya);
+				loadBase(aya);
 				
 				StringBuilder input = new StringBuilder();
 				for (int i = 1; i < args.length; i++) {
