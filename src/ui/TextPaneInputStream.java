@@ -24,7 +24,7 @@ public class TextPaneInputStream extends InputStream {
                 if(e.getKeyChar()=='\n'){
                 	 String str = field.getText() + "\r\n";
                 	 q.add(str);
-                     field.setText("");
+                     field.clear();
                 }
             }
 

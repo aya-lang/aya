@@ -132,4 +132,9 @@ public class MyConsole extends JPanel {
 	public InputStream getIn() {
 		return _in;
 	}
+
+
+	public void clear() {
+		_out.clear();
+	}
 }

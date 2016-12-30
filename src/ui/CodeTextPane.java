@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -33,7 +34,7 @@ public class CodeTextPane extends JTextPane {
 	private boolean inFocus = false;
 	
 	final UndoManager undo = new UndoManager();
-	
+	 
 	
 	public CodeTextPane() {
 		
@@ -62,6 +63,30 @@ public class CodeTextPane extends JTextPane {
 		
 		//Border
 		setBorder(BorderFactory.createEmptyBorder());
+		
+		// Tab listener (autocomplete)
+		this.addKeyListener(new KeyListener() {
+            @Override 
+            public void keyReleased(KeyEvent e) {
+                switch (e.getKeyCode()) {
+            	case KeyEvent.VK_TAB:
+					tabPressed();
+					break;
+                }
+            }
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
 		
 		
 		//Add Focus Listeners

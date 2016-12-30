@@ -79,55 +79,13 @@ public class EditorWindow extends JPanel {
 		
 		//Layout
 		setLayout(new BorderLayout());
-	
-		
-		KeyListener keyListener = new KeyListener() {
-			public void keyPressed(KeyEvent arg0) {
-				if(arg0.getKeyChar()==KeyEvent.VK_TAB) {
-					editor.tabPressed();
-				}
-			}
-			//@Override
-			//public void keyTyped(KeyEvent e) {}
-			//@Override
-			//public void keyReleased(KeyEvent e) {}
 
-			public void keyReleased(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		editor.addKeyListener(keyListener);
 			
 		
 		//Menu Bar
 		menuBar = new JMenuBar();
 		menuBar.setPreferredSize(new Dimension(100, 20));
-		
-//		//File
-//		menu = new JMenu("File");
-//		menu.setMnemonic(KeyEvent.VK_A);
-//		menu.getAccessibleContext().setAccessibleDescription("");
-//		//Load
-//		JMenuItem mi =new JMenuItem(new Action() {
-//			public void actionPerformed(ActionEvent e) {
-//				JOptionPane.showMessageDialog(activeFrame, "Load not yet implemted", "ERROR", JOptionPane.ERROR_MESSAGE);
-//			}
-//			public void addPropertyChangeListener(PropertyChangeListener l) {}
-//			public Object getValue(String k) {return null;}
-//			public boolean isEnabled() {return true;}
-//			public void putValue(String k, Object v) {}
-//			public void removePropertyChangeListener(PropertyChangeListener l) {}
-//			public void setEnabled(boolean b) {}
-//		});
-//		mi.setText("Load");
-//		menu.add(mi);
-//		menuBar.add(menu);
+
 			
 		//Tools
 		menu = new JMenu("Tools");
@@ -265,7 +223,7 @@ public class EditorWindow extends JPanel {
 	
 	public void run() {
 		String txt = editor.getText();
-		//ide.eval(txt, "[Editor Window]");
+		Aya.getInstance().queueInput(txt);
 	}
 	
 	@Override

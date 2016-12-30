@@ -136,6 +136,7 @@ public class InteractiveAya extends Thread {
 	
 	String[] _args;
 	private boolean _showPromptText;
+	private boolean _showBanner;
 	
 	public void setArgs(String[] args) {
 		_args = args;
@@ -145,12 +146,16 @@ public class InteractiveAya extends Thread {
 		_showPromptText = false;
 	}
 	
+	public void showBanner(boolean b) {
+		_showBanner = b;
+	}
+	
 	@Override
 	public void run() {
 		_aya.start();
 		_aya.loadAyarc();
 		
-		_aya.print(BANNER);
+		if (_showBanner) _aya.print(BANNER);
 		
 		PrintStream out = _aya.getOut();
 		PrintStream err = _aya.getErr();

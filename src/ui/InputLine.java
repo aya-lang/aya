@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.InputMap;
@@ -22,8 +23,34 @@ public class InputLine extends CodeTextPane {
 	    InputMap inputMap = getInputMap();
 	    KeyStroke enterStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 	    inputMap.put(enterStroke, enterStroke.toString());
+	    
+	    this.addKeyListener(new KeyListener() {
+            @Override 
+            public void keyReleased(KeyEvent e) {
+                switch (e.getKeyCode()) {
+            	case KeyEvent.VK_UP:
+            		loadLastText();
+					break;
+            	case KeyEvent.VK_DOWN:
+					loadPrevText();
+					break;
+                }
+            }
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
 	}
-	
+
 	public void loadLastText() {
 		if(lastText.size() == 0)
 			return;
@@ -39,6 +66,7 @@ public class InputLine extends CodeTextPane {
 		setText(lastText.get(lastTextID));
 	}
 
+	/** Clear the input line and add the text to the input history */
 	public void clear() {
 		String text = getText();
 		
