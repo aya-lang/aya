@@ -1,4 +1,4 @@
-.# math.elem
+.# math.aya
 .# Essential math functions for Aya
 
 import "base/constants"

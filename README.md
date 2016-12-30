@@ -41,7 +41,7 @@ java -jar aya.jar -i
 To run files from the command line, use `-f`
 
 ```
-java -jar aya.jar -f file.elem
+java -jar aya.jar -f file.aya
 ```
 
 ## Examples

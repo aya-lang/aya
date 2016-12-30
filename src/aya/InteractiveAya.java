@@ -25,7 +25,7 @@ public class InteractiveAya {
 			+ "  \\cls\t\t\tclear the console window\n"
 			+ "  \\version\t\t\tdisplay Ara version name";
 	
-	public static int processInput(Aya elem, String input) {
+	public static int processInput(Aya aya, String input) {
 		//Empty Input
 		if(input.equals("")) {
 			return SUCCESS;
@@ -43,7 +43,7 @@ public class InteractiveAya {
 			
 			//Help
 			else if(settings[0].equals("\\h") || settings[0].equals("\\help")) {
-				elem.println(HELP_TEXT);
+				aya.println(HELP_TEXT);
 			}
 			
 			//Search
@@ -54,13 +54,13 @@ public class InteractiveAya {
 				}
 				searchText = searchText.substring(0, searchText.length()-1);
 				
-				elem.helpData.clearFilter();
-				elem.helpData.applyNewFilter(searchText);
-				if(elem.helpData.getFilteredItems().size() == 0) {
-					elem.println("No help data matching \"" + searchText + "\"");
+				aya.helpData.clearFilter();
+				aya.helpData.applyNewFilter(searchText);
+				if(aya.helpData.getFilteredItems().size() == 0) {
+					aya.println("No help data matching \"" + searchText + "\"");
 				} else {
 					for(String s : Aya.instance.helpData.getFilteredItems()) {
-						elem.println(s.replace("\n", "\n   "));
+						aya.println(s.replace("\n", "\n   "));
 					}
 				}
 			}
@@ -72,7 +72,7 @@ public class InteractiveAya {
 			
 			//Version
 			else if(settings[0].equals("\\version")) {
-				elem.getOut().print(Aya.VERSION_NAME);
+				aya.getOut().print(Aya.VERSION_NAME);
 			}
 			
 			//Time
@@ -84,24 +84,24 @@ public class InteractiveAya {
 				}
 				code = code.trim();
 				if(code.equals("")) {
-					elem.getOut().printEx("Nothing to time");
+					aya.getOut().printEx("Nothing to time");
 				} else {					
 					//Compile the code
 					Block b;
 					try {
-						b = Parser.compile(code, elem);
+						b = Parser.compile(code, aya);
 					} catch (SyntaxError e) {
-						elem.getOut().printEx(e.getMessage());
+						aya.getOut().printEx(e.getMessage());
 						return Aya.RETURN_SUCCESS;
 					}
 					
 					//Run the code
 					long startTime = System.nanoTime();
-					elem.run(b);
+					aya.run(b);
 					long endTime = System.nanoTime();
 	
 					long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-					elem.getOut().printQuiet("\nExecution took " +((double)duration/1000000000)+ " seconds");
+					aya.getOut().printQuiet("\nExecution took " +((double)duration/1000000000)+ " seconds");
 				}
 			}
 			
@@ -115,7 +115,7 @@ public class InteractiveAya {
 				code = code.trim();
 				
 				if(code.equals("")) {
-					elem.getOut().printEx("Nothing to eval");
+					aya.getOut().printEx("Nothing to eval");
 				} else {					
 					//Compile the code
 					Block b;
@@ -123,18 +123,18 @@ public class InteractiveAya {
 						try {
 							b = Compiler.compile(code, false);
 						} catch (SyntaxError se) {
-							elem.getOut().printEx("Infix: Syntax error");
+							aya.getOut().printEx("Infix: Syntax error");
 							return Aya.RETURN_SUCCESS;
 						}
 					} else {
 						try {
-							b = Parser.compile(code, elem);
+							b = Parser.compile(code, aya);
 						} catch (SyntaxError e) {
-							elem.getOut().printEx(e.getMessage());
+							aya.getOut().printEx(e.getMessage());
 							return Aya.RETURN_SUCCESS;
 						}
 					}
-					elem.run(b);
+					aya.run(b);
 				}
 			}
 			
@@ -152,11 +152,11 @@ public class InteractiveAya {
 			
 			//Run Tests
 			else if(settings[0].equals("\\test")) {
-				elem.getOut().println(AyaTestCases.runTests());
+				aya.getOut().println(AyaTestCases.runTests());
 			}
 						
 			else {
-				elem.getOut().printWarn("Invalid command. Please make sure there is a space bewteen command and its arguments.");
+				aya.getOut().printWarn("Invalid command. Please make sure there is a space bewteen command and its arguments.");
 			}
 			
 		}
@@ -165,13 +165,13 @@ public class InteractiveAya {
 		else {
 			if(USE_INFIX) {
 				try {
-					elem.run(Compiler.compile(input, false));
+					aya.run(Compiler.compile(input, false));
 				} catch (SyntaxError se) {
-					elem.getOut().printEx("Infix: Syntax error");
+					aya.getOut().printEx("Infix: Syntax error");
 					return Aya.RETURN_SUCCESS;
 				}
 			} else {
-				elem.run(input);
+				aya.run(input);
 			}
 		}
 		
@@ -179,15 +179,15 @@ public class InteractiveAya {
 	}
 	
 	//Returns true if load was successful
-	public static boolean loadBase(Aya elem) {
+	public static boolean loadBase(Aya aya) {
 		//Load the standard library
 		try {
-			elem.run("\"load.elem\"G~");
+			aya.run("\"load.aya\"G~");
 		} catch (Exception e) {
-			elem.getOut().clear();
+			aya.getOut().clear();
 			return false;
 		}
-		if(elem.getOut().hasError()) {
+		if(aya.getOut().hasError()) {
 			return false;
 		} else {
 			
@@ -198,7 +198,7 @@ public class InteractiveAya {
 	
 	
 	public static void main(String[] args) {
-		Aya elem = Aya.getInstance();
+		Aya aya = Aya.getInstance();
 		
 		
 		
@@ -207,16 +207,16 @@ public class InteractiveAya {
 			//Run the arguments as code
 			if(args[0].equals("-c")) {
 				
-				//loadBase(elem);
+				//loadBase(aya);
 				
 				StringBuilder input = new StringBuilder();
 				for (int i = 1; i < args.length; i++) {
 					input.append(args[i] + ' ');
 				}
 				
-				elem.run(input.toString());
+				aya.run(input.toString());
 			
-				System.out.println(elem.getOut().dumpAsString());		
+				System.out.println(aya.getOut().dumpAsString());		
 			} 
 			
 			
@@ -239,9 +239,9 @@ public class InteractiveAya {
 			else if(args[0].equals("-i")) {
 				
 				//Attempt to load base
-				//loadBase(elem);
+				loadBase(aya);
 				
-				elem.run("\"..\\\\test.elem\"G~");
+				//aya.run("\"..\\\\test.aya\"G~");
 
 				@SuppressWarnings("resource")
 				Scanner scanner = new Scanner(System.in);
@@ -249,8 +249,8 @@ public class InteractiveAya {
 				
 //				if (System.console() == null) {
 //					input = scanner.nextLine();
-//					processInput(elem, input);
-//					System.out.println(elem.getOut().dumpAsString());
+//					processInput(aya, input);
+//					System.out.println(aya.getOut().dumpAsString());
 //					return;
 //				}
 					
@@ -263,7 +263,7 @@ public class InteractiveAya {
 				System.out.println(" \\___|_|\\___|_| |_| |_|\\___|_| |_|\\__|  |  Nicholas Paul");
 				System.out.println("\n");
 				
-				System.out.println(elem.getOut().dumpAsString());
+				System.out.println(aya.getOut().dumpAsString());
 				
 			
 				while (true) {
@@ -271,12 +271,12 @@ public class InteractiveAya {
 					input = scanner.nextLine();
 					
 					
-					int status = processInput(elem, input);
+					int status = processInput(aya, input);
 					
 					
 					switch (status) {
 					case SUCCESS:
-						System.out.println(elem.getOut().dumpAsString());
+						System.out.println(aya.getOut().dumpAsString());
 						break;
 					case EXIT:
 						return;

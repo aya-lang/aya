@@ -32,26 +32,26 @@ public class AyaIDE extends JFrame
 {	
 	public static final String VERSION_NAME = "2016 Nov 11";
 	
-	private Aya aya;
+	private Aya _aya;
 	
 	//Layout
-	private MyConsole interpreter;
-	private JMenu menu;
-	private JMenuBar menuBar;
+	private MyConsole _interpreter;
+	private JMenu _menu;
+	private JMenuBar _menuBar;
 	
 	private AyaIDE thiside;
     
 
-	public AyaIDE(Aya elem) {
+	public AyaIDE(Aya aya) {
 		super("Aya");
 		
 		this.thiside = this;
 
 				
-		this.aya = elem;
-		this.interpreter = new MyConsole(aya);
-		this.menu = new JMenu();
-		this.menuBar = new JMenuBar();
+		this._aya = aya;
+		this._interpreter = new MyConsole(_aya);
+		this._menu = new JMenu();
+		this._menuBar = new JMenuBar();
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				
@@ -65,27 +65,27 @@ public class AyaIDE extends JFrame
 		    	  if(e.getID() == 401) {
 		    		  switch(e.getKeyCode()) {
 		    		  case KeyEvent.VK_ENTER:
-		    			  if(!interpreter.getInputLine().getText().equals("") && interpreter.getInputLine().inFocus()) {
-							  interpreter.eval(interpreter.getInputLine().getText());
-							  interpreter.clrAndFocus();
+		    			  if(!_interpreter.getInputLine().getText().equals("") && _interpreter.getInputLine().inFocus()) {
+							  _interpreter.eval(_interpreter.getInputLine().getText());
+							  _interpreter.clrAndFocus();
 						  } 
 		    			  break;
 		    		  case KeyEvent.VK_UP:
-		    			  if(interpreter.getInputLine().inFocus()) {
-							  interpreter.getInputLine().loadLastText();
+		    			  if(_interpreter.getInputLine().inFocus()) {
+							  _interpreter.getInputLine().loadLastText();
 						  }
 		    			  break;
 		    		  case KeyEvent.VK_DOWN:
-						  if(interpreter.getInputLine().inFocus()) {
-							  interpreter.getInputLine().loadPrevText();
+						  if(_interpreter.getInputLine().inFocus()) {
+							  _interpreter.getInputLine().loadPrevText();
 						  }
 						  break;
 		    		  case KeyEvent.VK_TAB:
-						  interpreter.getInputLine().tabPressed();
+						  _interpreter.getInputLine().tabPressed();
 						  break;
 		    		  case KeyEvent.VK_I:
 		    			  if(e.isControlDown()) {
-		    				  interpreter.getInputLine().grabFocus();
+		    				  _interpreter.getInputLine().grabFocus();
 		    			  }
 		    			  break;
 		    		  case KeyEvent.VK_Q:
@@ -110,7 +110,7 @@ public class AyaIDE extends JFrame
 		    		  case KeyEvent.VK_R:
 		    			  if(e.isControlDown()) {
 		    				  if (EditorWindow.activeEditor == null) {
-		    						JOptionPane.showMessageDialog(interpreter, "No editor window open", "ERROR", JOptionPane.ERROR_MESSAGE);
+		    						JOptionPane.showMessageDialog(_interpreter, "No editor window open", "ERROR", JOptionPane.ERROR_MESSAGE);
 		    				  }
 		    				  EditorWindow.activeEditor.run();
 		    			  }
@@ -130,12 +130,12 @@ public class AyaIDE extends JFrame
 		});
 		
 		//Menu Bar
-		menuBar.setPreferredSize(new Dimension(100, 20));
+		_menuBar.setPreferredSize(new Dimension(100, 20));
 		
 		//File
-		menu = new JMenu("File");
-		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription("");
+		_menu = new JMenu("File");
+		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.getAccessibleContext().setAccessibleDescription("");
 		//Load
 		JMenuItem mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
@@ -155,16 +155,16 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Load");
-		menu.add(mi);
+		_menu.add(mi);
 
 
 		
-		menuBar.add(menu);
+		_menuBar.add(_menu);
 			
 		//Tools
-		menu = new JMenu("Tools");
-		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription("");
+		_menu = new JMenu("Tools");
+		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.getAccessibleContext().setAccessibleDescription("");
 		//Insert Filename
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
@@ -178,11 +178,11 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Insert Filename..");
-		menu.add(mi);
+		_menu.add(mi);
 		//Clear Console
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				interpreter.cw.clear();
+				_interpreter.cw.clear();
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -192,10 +192,10 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Clear Console");
-		menu.add(mi);
+		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				interpreter.eval("100 .B");
+				_interpreter.eval("100 .B");
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -205,7 +205,7 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Primes below 100");
-		menu.add(mi);
+		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
 				if(EditorWindow.isFrameActive()) {
@@ -222,10 +222,10 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Open Editor   ctrl+E");
-		menu.add(mi);
+		_menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				interpreter.cw.printWarn(AyaTestCases.runTests());
+				_interpreter.cw.printWarn(AyaTestCases.runTests());
 				
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -236,15 +236,15 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Run Tests");
-		menu.add(mi);
-		menuBar.add(menu);
+		_menu.add(mi);
+		_menuBar.add(_menu);
 		
 		
 		//Help
 		//Quick Search
-		menu = new JMenu("Help");
-		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription("");
+		_menu = new JMenu("Help");
+		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.getAccessibleContext().setAccessibleDescription("");
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
 				if(QuickSearch.isFrameActive()) {
@@ -261,12 +261,12 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Quick Search");
-		menu.add(mi);
+		_menu.add(mi);
 		
 		//Key Bindings
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(interpreter, ""
+				JOptionPane.showMessageDialog(_interpreter, ""
 						+ "ctrl+Q		  Quick Search\n"
 						+ "ctrl+I		  Interpreter\n"
 						+ "ctrl+E         Editor\n"
@@ -280,10 +280,10 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Key Bindings");
-		menu.add(mi);
+		_menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(interpreter, "Aya IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
+				JOptionPane.showMessageDialog(_interpreter, "Aya IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -293,8 +293,8 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("About");
-		menu.add(mi);
-		menuBar.add(menu);
+		_menu.add(mi);
+		_menuBar.add(_menu);
 		
 		JPanel all = new JPanel();
 		all.setLayout(new BorderLayout());
@@ -303,17 +303,17 @@ public class AyaIDE extends JFrame
 		
 		JPanel smallConsole = new JPanel();
 		smallConsole.setLayout(new BorderLayout());
-		smallConsole.add(interpreter, BorderLayout.CENTER);
+		smallConsole.add(_interpreter, BorderLayout.CENTER);
 		all.add(smallConsole);
 		
 		add(all);
 		
-		setJMenuBar(menuBar);
+		setJMenuBar(_menuBar);
 		pack();
 		setVisible(true);
 	
 		
-		interpreter.getInputLine().grabFocus();
+		_interpreter.getInputLine().grabFocus();
 	}
 	
 	public static void exit() {
@@ -336,7 +336,7 @@ public class AyaIDE extends JFrame
 		if(file != null) {
 			String path = file.getPath();
 			path = path.replace("\\", "\\\\");
-            interpreter.getInputLine().insertAtCaret("\"" + path + "\"");
+            _interpreter.getInputLine().insertAtCaret("\"" + path + "\"");
 		}
 	}
 	
@@ -365,15 +365,15 @@ public class AyaIDE extends JFrame
 	}
 	
 	public Aya getAya() {
-		return this.aya;
+		return this._aya;
 	}
 	
 	public ConsoleWindow out() {
-		return this.interpreter.out();
+		return this._interpreter.out();
 	}
 	
 	public void eval(String s, String input_name) {
-		interpreter.eval(s, input_name);
+		_interpreter.eval(s, input_name);
 	}
 	
 	public static void main(String[] args) {
@@ -383,22 +383,22 @@ public class AyaIDE extends JFrame
 		//No args: use the GUI
 		if(args.length == 0) {
 			//Load and initialize aya
-			Aya elem = Aya.getInstance();
-			boolean base_loaded_succ = InteractiveAya.loadBase(elem);
+			Aya aya = Aya.getInstance();
+			boolean base_loaded_succ = InteractiveAya.loadBase(aya);
 			
 			//Load the ide
-			AyaIDE ide = new AyaIDE(elem);
+			AyaIDE ide = new AyaIDE(aya);
 
 			//Print messages to the console if base had errors
 			if(base_loaded_succ) {
-				ide.interpreter.cw.print(elem.getOut().dumpAsString());	
+				ide._interpreter.cw.print(aya.getOut().dumpAsString());	
 			} else {
-				ide.interpreter.cw.print(elem.getOut().dumpAsString());
-				ide.interpreter.cw.print("\n\n");
+				ide._interpreter.cw.print(aya.getOut().dumpAsString());
+				ide._interpreter.cw.print("\n\n");
 			}
 			
 			//Grab focus
-			ide.interpreter.getInputLine().grabFocus();
+			ide._interpreter.getInputLine().grabFocus();
 		}
 		
 		//Command line arguments: use the console

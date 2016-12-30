@@ -46,7 +46,7 @@ import aya.variable.Variable;
  */
 public class Parser {
 
-	public static TokenQueue tokenize(Aya elem, String s) {
+	public static TokenQueue tokenize(Aya aya, String s) {
 		TokenQueue tokens = new TokenQueue();
 		ParserString in = new ParserString(s);
 		
@@ -70,7 +70,7 @@ public class Parser {
 						sb.append(in.next());
 					}
 					String doc = formatString(sb.toString()).trim();
-					elem.addHelpText(doc);
+					aya.addHelpText(doc);
 				}
 				
 				else {
@@ -121,10 +121,10 @@ public class Parser {
 					while(in.hasNext()) {in.next();}
 				}
 				
-				//Add the documentation to element
+				//Add the documentation to Aya
 				if(isDocCode) {
 					String doc = formatString(docs.toString()).trim();
-					elem.addHelpText(doc);
+					aya.addHelpText(doc);
 				}
 			}
 			
@@ -734,13 +734,13 @@ public class Parser {
 
 	
 	/** Compiles a string into a code block using input => tokenize => assemble => generate */
-	public static Block compile(String s, Aya elem) {
-		return new Block(generate(assemble(tokenize(elem, s))));
+	public static Block compile(String s, Aya aya) {
+		return new Block(generate(assemble(tokenize(aya, s))));
 	}
 	
 	/** Compiles a string into instruction stack using input => tokenize => assemble => generate */
-	public static InstructionStack compileIS(String s, Aya elem) {
-		return generate(assemble(tokenize(elem, s)));
+	public static InstructionStack compileIS(String s, Aya aya) {
+		return generate(assemble(tokenize(aya, s)));
 	}
 
 }

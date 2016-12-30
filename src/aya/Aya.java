@@ -142,7 +142,7 @@ public class Aya {
 		return instance.out;
 	}
 	
-//	public static void export(String name, String code, Aya elem) {
+//	public static void export(String name, String code, Aya aya) {
 //		//Create folder if needed
 //		File dirFile = new File("exported_src\\");
 //		if(!dirFile.exists()) {
@@ -152,12 +152,12 @@ public class Aya {
 //		try {
 //			
 //			//Export the source code
-//			SourceFile src = new SourceFile(new File("exported_src\\" + name + ".elem"), elem);
+//			SourceFile src = new SourceFile(new File("exported_src\\" + name + ".aya"), aya);
 //			src.printOver(code);
 //			
 //			//Create the Runnable			
-//			SourceFile runnable = new SourceFile(new File(name + ".bat"), elem);
-//			runnable.printOver("@ECHO off\njava -jar aya.jar -f \"exported_src\\" + name + ".elem\"\nPAUSE\nEXIT");
+//			SourceFile runnable = new SourceFile(new File(name + ".bat"), aya);
+//			runnable.printOver("@ECHO off\njava -jar aya.jar -f \"exported_src\\" + name + ".aya\"\nPAUSE\nEXIT");
 //			
 //		} catch (FileNotFoundException e) {
 //			e.printStackTrace();

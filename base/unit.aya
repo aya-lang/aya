@@ -1,4 +1,4 @@
-.# conv.elem
+.# conv.aya
 .# **Easy unit conversions**
 
 {@ unit,
@@ -68,4 +68,4 @@
 .# Conversion operator
 '\U27f6' "to" Mk
 
-"conv.elem: Easy unit conversions for Aya".P
+"conv.aya: Easy unit conversions for Aya".P

@@ -1,5 +1,5 @@
-.# docs.elem
-.# Basic documentation for element that appears in the quicksearch
+.# docs.aya
+.# Basic documentation for Aya that appears in the quicksearch
 
 .{? docs: comments
    .# this is a line comment

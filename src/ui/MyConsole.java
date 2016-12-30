@@ -18,7 +18,7 @@ import aya.OutputString;
 @SuppressWarnings("serial")
 public class MyConsole extends JPanel {
 	
-	private Aya elem;
+	private Aya _aya;
 	
 	ConsoleWindow cw = new ConsoleWindow();
 	public static InputLine il = new InputLine();
@@ -26,8 +26,8 @@ public class MyConsole extends JPanel {
 	private int width = 500;
 	private int height = 250;
 	
-	public MyConsole(Aya elem) {
-		this.elem = elem;
+	public MyConsole(Aya aya) {
+		this._aya = aya;
 		init();
 	}
 
@@ -69,18 +69,18 @@ public class MyConsole extends JPanel {
 		int status = Aya.RETURN_ERROR;
 		
 		try {
-			status = InteractiveAya.processInput(elem, s);
+			status = InteractiveAya.processInput(_aya, s);
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			elem.printEx(sw.toString());
+			_aya.printEx(sw.toString());
 		}
 		
 		switch (status) {
 		case Aya.RETURN_SUCCESS:
-			if(!elem.getOut().isEmpty()){
-				ArrayList<OutputString> output = elem.getOut().dump();
+			if(!_aya.getOut().isEmpty()){
+				ArrayList<OutputString> output = _aya.getOut().dump();
 				
 				for(OutputString str : output) {
 					switch(str.getType()) {
@@ -119,7 +119,7 @@ public class MyConsole extends JPanel {
 			AyaIDE.exit();
 			break;
 		case Aya.RETURN_ERROR:
-			cw.printEx(elem.getOut().dumpAsString());
+			cw.printEx(_aya.getOut().dumpAsString());
 			break;
 		default:
 			throw new RuntimeException("Implement status in MyConsole.eval()");

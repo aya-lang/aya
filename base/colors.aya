@@ -1,4 +1,4 @@
-.# colors.elem
+.# colors.aya
 .# Defines both color and colors module
 
 .{? module: color
