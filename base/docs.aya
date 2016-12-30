@@ -1,0 +1,109 @@
+.# docs.aya
+.# Basic documentation for Aya that appears in the quicksearch
+
+.{? docs: comments
+   .# this is a line comment
+   .{
+     this is a block comment
+   .\}
+
+   .#? this line will be added to interactive help
+   .{?
+      these lines will be
+      added to interactive help
+   .\}
+.}
+
+.{? docs: overloaded operators
+  1 arg
+    \$  dollar
+    P  str
+  2 args
+    %  mod
+    &  and
+    *  mul
+    +  add
+    -  sub
+    /  div
+    ^  pow
+    |  or
+.}
+
+.{? docs: argument type key
+  D - num
+  F - bignum
+  N - number (D|F)
+  E - expression/block
+  C - character
+  S - string
+  A - any
+  R - dict
+.}
+
+.{? docs: ranges
+  ranges are used in list comprehension notation for creating quick lists
+  they can be built from all number types, characters, strings, and list literals
+  examples:
+   [2,] => [1 2]
+   [2 5,] => [2 3 4 5]
+   [0 2 6,] => [0 2 4 6]
+   ['a 'c,] => [a b c]
+   [\"hi\",] => [h i]
+   [[1 2],] => [1 2]
+.}
+
+.{? docs: list comprehension
+  a range is always required. map and filter blocks are not.
+
+  syntax:
+  [
+    <range>,
+    <map>,
+    <f1>,<f2>..<fN>
+  ]
+.}
+
+.{? docs: blocks
+  blocks are containers for a group of operations and a list of arguments.
+  syntax:
+    {<expr>}
+    {<args>,<expr>}
+.}
+
+.{? docs: dictionaries
+  dicts are created using the following syntax
+  {, val1:key1 val2:key2 ... valN:keyN}
+.}
+
+.{? docs: special characters
+  unicode: '\U263A' => \{U263A}
+  named:   '\in' => \{in}
+  strings: "I \\{heart} element" => "I \{heart} element"
+.}
+
+.{? docs: negative numbers
+  use (-<number literal>) for number literals only
+  (-<var name>) will throw an error
+  use the bang (!) operator to negate a variable
+.}
+
+
+.{? docs: for examples
+  .# double and print each element
+  for 'x [1 2 3] {
+    x2* _"\\n"+.P
+  }
+
+  .# use strings or chars for varnames
+  for "item" [1 2 3] {item2* _"\\n"+.P}
+
+  .# use irange for indexing
+  for 'i (list irange) {list i I "\\n"+.P}
+.}
+
+.{? docs: list grabbibng
+  List literals can grab items from the outer stack
+  Use the format `... [num| ...]` where `num` is an num literal
+  ex: 1 2 [1| 7 6] => 1 [2 7 6]
+  ex: 4 [1|10,] => [4 5 6 7 8 9 10]
+.}

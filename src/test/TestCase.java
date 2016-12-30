@@ -1,6 +1,6 @@
 package test;
 
-import element.entities.Operation;
+import aya.entities.Operation;
 
 public class TestCase {
 	String input;
