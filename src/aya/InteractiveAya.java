@@ -9,9 +9,11 @@ import aya.parser.Parser;
 
 public class InteractiveAya extends Thread {
 	
-	public static final int SUCCESS = 1;
 	public static final int EXIT = 0;
+	public static final int SUCCESS = 1;
 	public static final int NONE = 2;
+	public static final int TIME = 3;
+	public static final int CLS = 4;
 	
 	Aya _aya;
 	
@@ -33,6 +35,9 @@ public class InteractiveAya extends Thread {
 			+ "  \\? <help text>\t\tsearch for help text in Aya\n"
 			+ "  \\cls\t\t\tclear the console window\n"
 			+ "  \\version\t\t\tdisplay Ara version name";
+	
+	
+	
 	
 	public int processInput(String input) {
 		//Empty Input
@@ -74,14 +79,9 @@ public class InteractiveAya extends Thread {
 				}
 			}
 			
-			//Clear the console
-			else if (settings[0].equals("\\cls")) {
-//				return Aya.CLEAR_CONSOLE;
-			}
-			
 			//Version
 			else if(settings[0].equals("\\version")) {
-				//aya.getOut().print(Aya.VERSION_NAME);
+				_aya.println(Aya.VERSION_NAME);
 			}
 			
 			//Time
@@ -93,34 +93,15 @@ public class InteractiveAya extends Thread {
 				}
 				code = code.trim();
 				if(code.equals("")) {
-					//aya.getOut().printEx("Nothing to time");
+					_aya.getErr().println("Nothing to time");
 				} else {					
-					//Compile the code
-					Block b;
-					try {
-						b = Parser.compile(code, _aya);
-					} catch (SyntaxError e) {
-						//aya.getOut().printEx(e.getMessage());
-//						return Aya.RETURN_SUCCESS;
-					}
-					
-					//Run the code
-					long startTime = System.nanoTime();
-//					aya.run(b);
-					long endTime = System.nanoTime();
-	
-					long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-					//aya.getOut().printQuiet("\nExecution took " +((double)duration/1000000000)+ " seconds");
+					_aya.queueInput(code);
+					return TIME;
 				}
 			}
-			
-//			//Run Tests
-//			else if(settings[0].equals("\\test")) {
-//				aya.getOut().println(AyaTestCases.runTests());
-//			}
 						
 			else {
-				//aya.getOut().printWarn("Invalid command. Please make sure there is a space between command and its arguments.");
+				_aya.getErr().println("Invalid command. Please make sure there is a space between command and its arguments.");
 			}
 			
 		}
@@ -134,9 +115,9 @@ public class InteractiveAya extends Thread {
 	}
 
 	
-	String[] _args;
-	private boolean _showPromptText;
-	private boolean _showBanner;
+	String[] _args = new String[0];
+	private boolean _showPromptText = true;
+	private boolean _showBanner = true;
 	
 	public void setArgs(String[] args) {
 		_args = args;
@@ -152,7 +133,7 @@ public class InteractiveAya extends Thread {
 	
 	@Override
 	public void run() {
-		_aya.start();
+ 		_aya.start();
 		_aya.loadAyarc();
 		
 		if (_showBanner) _aya.print(BANNER);
@@ -178,6 +159,7 @@ public class InteractiveAya extends Thread {
 			//Wait for aya to finish
 			synchronized (_aya) {
 				status = processInput(input);
+								
 				try {
 					_aya.wait();
 				} catch (InterruptedException e) {
@@ -186,7 +168,8 @@ public class InteractiveAya extends Thread {
 			}
 			
 			
-			if (status == EXIT) {
+			switch (status) {
+			case EXIT:
 				scanner.close();
 				_aya.queueInput(Aya.QUIT);
 				try {
@@ -195,7 +178,9 @@ public class InteractiveAya extends Thread {
 					e.printStackTrace(err);
 				}
 				return;
-			} else if (status == NONE) {
+			case TIME:
+				out.println("Execution time: " + ((double)_aya.getLastInputRunTime())/1000 + "s");
+			case NONE:
 				continue;
 			}
 		}
@@ -211,8 +196,7 @@ public class InteractiveAya extends Thread {
 		try {
 			iaya.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace(aya.getErr());
 		}
 	}
 		

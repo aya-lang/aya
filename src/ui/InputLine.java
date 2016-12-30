@@ -69,6 +69,7 @@ public class InputLine extends CodeTextPane {
 	/** Clear the input line and add the text to the input history */
 	public void clear() {
 		String text = getText();
+		if (text.equals("")) return;
 		
 		//Only add the text to the history if it is not the most recent entry
 		//i.e. don't add multiple copies of the same text in a row
