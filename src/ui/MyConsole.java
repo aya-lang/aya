@@ -10,10 +10,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 
-import element.ElemPrefs;
-import element.Element;
-import element.InteractiveElement;
-import element.OutputString;
+import aya.ElemPrefs;
+import aya.Element;
+import aya.InteractiveElement;
+import aya.OutputString;
 
 @SuppressWarnings("serial")
 public class MyConsole extends JPanel {

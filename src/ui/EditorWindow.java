@@ -21,7 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
-import element.Element;
+import aya.Element;
 
 
 @SuppressWarnings("serial")

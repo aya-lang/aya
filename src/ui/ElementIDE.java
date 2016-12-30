@@ -21,9 +21,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import element.Element;
-import element.InteractiveElement;
-import element.variable.Variable;
+import aya.Element;
+import aya.InteractiveElement;
+import aya.variable.Variable;
 import test.ElementTestCases;
 
 

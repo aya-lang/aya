@@ -17,7 +17,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import element.util.StringSearch;
+import aya.util.StringSearch;
 
 
 @SuppressWarnings("serial")
