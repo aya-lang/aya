@@ -1,6 +1,6 @@
 package aya.entities;
 
-import aya.Element;
+import aya.Aya;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
 import aya.variable.Variable;
@@ -27,7 +27,7 @@ public class InterpolateString  {
 			if (current instanceof Str) {
 				sb.append(((Str)current).str());
 			} else if (current instanceof Variable) {
-				sb.append(Element.getInstance().getVars().getVar((Variable)current).str());
+				sb.append(Aya.getInstance().getVars().getVar((Variable)current).str());
 			} else if (current instanceof Block) {
 				Block b = ((Block)current).duplicate();
 				b.eval();

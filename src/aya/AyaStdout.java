@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 /** Handles output of the program */
-public class ElementStdout {	
+public class AyaStdout {	
 	private ArrayList<OutputString> output = new ArrayList<OutputString>();
 	
 	/** Prints a string to stdout */

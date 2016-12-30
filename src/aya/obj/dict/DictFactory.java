@@ -1,6 +1,6 @@
 package aya.obj.dict;
 
-import aya.Element;
+import aya.Aya;
 import aya.obj.block.Block;
 import aya.variable.VariableSet;
 
@@ -23,13 +23,13 @@ public class DictFactory {
 		VariableSet module = new VariableSet(true);
 		
 		//Ass the variable set to the stack
-		Element.getInstance().getVars().add(module);
+		Aya.getInstance().getVars().add(module);
 		
 		//Run the block
 		b.duplicate().eval();
 		
 		//Retrieve the variableSet
-		module = Element.getInstance().getVars().popGet();
+		module = Aya.getInstance().getVars().popGet();
 		
 		//Create a new dict using the assignments from the variable set
 		return new Dict(module);

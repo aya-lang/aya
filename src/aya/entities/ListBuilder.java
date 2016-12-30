@@ -5,7 +5,7 @@ import java.util.Stack;
 
 import org.apfloat.Apfloat;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -73,7 +73,7 @@ public class ListBuilder {
 				if(size == -1) {
 					size = listArgs.get(0).length();
 				} else if (size != listArgs.get(i).length()) {
-					throw new ElementRuntimeException("List Builder: All lists must be same length");
+					throw new AyaRuntimeException("List Builder: All lists must be same length");
 				}
 			}
 			
@@ -151,7 +151,7 @@ public class ListBuilder {
 				if (o.isa(Obj.LIST)) {
 					return ((List)o);
 				} else {
-					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
+					throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
 				}
 			}
 
@@ -177,7 +177,7 @@ public class ListBuilder {
 					}
 					return arrToAL(doubleRange(lo,hi,inc));
 				} else {
-					throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+					throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 				}
 			} else if (a.isa(Obj.CHAR) && b.isa(Obj.CHAR)) {
 				char lo = ((Char)a).charValue();
@@ -188,7 +188,7 @@ public class ListBuilder {
 				}
 				return arrToAL(charRange(lo,hi,inc));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 			}
 			
 		//List range has 3 arguments
@@ -205,12 +205,12 @@ public class ListBuilder {
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return arrToAL(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {
-				throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 			}
 		
 		//List range has 3 or more arguments
 		default:
-			throw new ElementRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+			throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
 		}
 	}
 	
@@ -225,15 +225,15 @@ public class ListBuilder {
 		
 		//Check for overflow
 		if(numOfItemsDouble > Integer.MAX_VALUE) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		}
 		
 		int numOfItems = (int)numOfItemsDouble;
 		
 		if(numOfItems > 10000000) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
-			throw new ElementRuntimeException("Cannot create range containing a negative number of elements in"
+			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
 					+ " ["+lower+" "+(lower+inc)+" "+upper+"]" );
 		}
 		
@@ -265,14 +265,14 @@ public class ListBuilder {
 		
 		//Check for overflow
 		if(numOfItemsBD.compareTo(AP_MAX_INT) >= 0) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		}
 		
 		int numOfItems = numOfItemsBD.intValue();
 		if(numOfItems > 10000000) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
-			throw new ElementRuntimeException("Cannot create range containing a negative number of elements in"
+			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
 					+ " ["+lower+" "+(lower.add(inc))+" "+upper+"]" );
 		}
 		Apfloat[] arr = new Apfloat[numOfItems];
@@ -300,9 +300,9 @@ public class ListBuilder {
 		int numOfItems = 1 + (int) Math.floor((upper-lower)/inc);
 		
 		if(numOfItems > 10000000) {
-			throw new ElementRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
-			throw new ElementRuntimeException("Cannot create range containing a negative number of elements in"
+			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
 					+ " ["+lower+" "+(lower+inc)+" "+upper+"]" );
 		}
 		

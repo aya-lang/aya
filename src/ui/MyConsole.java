@@ -10,15 +10,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 
-import aya.ElemPrefs;
-import aya.Element;
-import aya.InteractiveElement;
+import aya.AyaPrefs;
+import aya.Aya;
+import aya.InteractiveAya;
 import aya.OutputString;
 
 @SuppressWarnings("serial")
 public class MyConsole extends JPanel {
 	
-	private Element elem;
+	private Aya elem;
 	
 	ConsoleWindow cw = new ConsoleWindow();
 	public static InputLine il = new InputLine();
@@ -26,7 +26,7 @@ public class MyConsole extends JPanel {
 	private int width = 500;
 	private int height = 250;
 	
-	public MyConsole(Element elem) {
+	public MyConsole(Aya elem) {
 		this.elem = elem;
 		init();
 	}
@@ -64,12 +64,12 @@ public class MyConsole extends JPanel {
 	}
 	
 	public void eval(String s, String input_name) {
-		cw.println(ElemPrefs.getPrompt() + input_name);
+		cw.println(AyaPrefs.getPrompt() + input_name);
 		
-		int status = Element.RETURN_ERROR;
+		int status = Aya.RETURN_ERROR;
 		
 		try {
-			status = InteractiveElement.processInput(elem, s);
+			status = InteractiveAya.processInput(elem, s);
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -78,7 +78,7 @@ public class MyConsole extends JPanel {
 		}
 		
 		switch (status) {
-		case Element.RETURN_SUCCESS:
+		case Aya.RETURN_SUCCESS:
 			if(!elem.getOut().isEmpty()){
 				ArrayList<OutputString> output = elem.getOut().dump();
 				
@@ -112,13 +112,13 @@ public class MyConsole extends JPanel {
 				cw.println("\n"); //Two lines
 			}
 			break;
-		case Element.CLEAR_CONSOLE:
+		case Aya.CLEAR_CONSOLE:
 			cw.clear();
 			break;
-		case Element.RETURN_EXIT:
-			ElementIDE.exit();
+		case Aya.RETURN_EXIT:
+			AyaIDE.exit();
 			break;
-		case Element.RETURN_ERROR:
+		case Aya.RETURN_ERROR:
 			cw.printEx(elem.getOut().dumpAsString());
 			break;
 		default:

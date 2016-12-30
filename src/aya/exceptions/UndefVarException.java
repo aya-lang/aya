@@ -8,7 +8,7 @@ package aya.exceptions;
  *
  */
 @SuppressWarnings("serial")
-public class UndefVarException extends ElementRuntimeException {
+public class UndefVarException extends AyaRuntimeException {
 	
 	public UndefVarException(String msg) {
 		super(msg);

@@ -19,10 +19,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import aya.ElemPrefs;
-import aya.Element;
+import aya.AyaPrefs;
+import aya.Aya;
 import aya.entities.Operation;
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -163,7 +163,7 @@ public class MathOps {
 		if(op >= 33 && op <= 126) {
 			return MATH_OPS[op-FIRST_OP];
 		} else {
-			throw new ElementRuntimeException("Misc. operator 'M" + op + "' does not exist");
+			throw new AyaRuntimeException("Misc. operator 'M" + op + "' does not exist");
 		}
 	}
 	
@@ -369,14 +369,14 @@ class OP_MParse_Date extends Operation {
 			try {
 				df = new SimpleDateFormat(df_str, Locale.ENGLISH);
 			} catch (IllegalArgumentException e) {
-				throw new ElementRuntimeException("Invalid date format: '" + df_str + "'");
+				throw new AyaRuntimeException("Invalid date format: '" + df_str + "'");
 			}
 			
 			Date date;
 			try {
 				date = df.parse(date_str);
 			} catch (ParseException e) {
-				throw new ElementRuntimeException("Cannot parse date: '" + date_str + "' as '" + df_str + "'");
+				throw new AyaRuntimeException("Cannot parse date: '" + date_str + "' as '" + df_str + "'");
 			}
 			block.push(new Num(date.getTime()));
 		} else {
@@ -452,9 +452,9 @@ class OP_PrintColor extends Operation {
 			int ci = ((Number)c).toInt();
 			
 			try {
-				Element.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
+				Aya.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
 			} catch (IllegalArgumentException e) {
-				throw new ElementRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
+				throw new AyaRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
 			}
 			return;
 		}
@@ -555,17 +555,17 @@ class OP_Dialog extends Operation {
 		
 		//Error checking
 		if (dialogType < QuickDialog.MIN_OPT || dialogType > QuickDialog.MAX_OPT) {
-			throw new ElementRuntimeException("MV: invalid dialog type: " + dialogType);
+			throw new AyaRuntimeException("MV: invalid dialog type: " + dialogType);
 		}
 		if (msgType < 1 || msgType > 4) {
-			throw new ElementRuntimeException("MV: invalid message type: " + msgType);
+			throw new AyaRuntimeException("MV: invalid message type: " + msgType);
 		}
 		if ((dialogType == QuickDialog.OPTION_BUTTONS || dialogType == QuickDialog.OPTION_DROPDOWN)
 				&& options.length() <= 0) {
-			throw new ElementRuntimeException("MV: options list must not be empty");
+			throw new AyaRuntimeException("MV: options list must not be empty");
 		}
 		if (dialogType == QuickDialog.YES_OR_NO && options.length() != 2) {
-			throw new ElementRuntimeException("MV: yes or no dialog options list length must be 2");
+			throw new AyaRuntimeException("MV: yes or no dialog options list length must be 2");
 		}
 
 		//Convert arraylist to string array
@@ -648,15 +648,15 @@ class OP_SysConfig extends Operation {
 		//Change the prompt
 		case 1:
 			if(arg.isa(STR)) {
-				ElemPrefs.setPrompt(arg.str());
+				AyaPrefs.setPrompt(arg.str());
 			} else {
-				throw new ElementRuntimeException("arg 1 MZ: arg must be a string. Recieved:\n" + arg.repr());
+				throw new AyaRuntimeException("arg 1 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 		
 		//Return working directory
 		case 2:
-			b.push(new Str(ElemPrefs.getWorkingDir()));
+			b.push(new Str(AyaPrefs.getWorkingDir()));
 			break;
 			
 		//Set working directory
@@ -664,46 +664,46 @@ class OP_SysConfig extends Operation {
 			if (arg.isa(STR)) {
 				String dir = arg.str();
 				if(dir.equals("")) {
-					ElemPrefs.resetWorkingDir();
+					AyaPrefs.resetWorkingDir();
 				} else {
-					if (!ElemPrefs.setWorkingDir(arg.str())) {
-						throw new ElementRuntimeException("arg 3 MZ: arg is not a valid path."
+					if (!AyaPrefs.setWorkingDir(arg.str())) {
+						throw new AyaRuntimeException("arg 3 MZ: arg is not a valid path."
 								+ " Did you include a '/' or '\' at the end? Recieved:\n" + arg.repr());
 					}
 				}
 			}else {
-				throw new ElementRuntimeException("arg 3 MZ: arg must be a string. Recieved:\n" + arg.repr());
+				throw new AyaRuntimeException("arg 3 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 		
 		//List files in working directory
 		case 4:
 			if (arg.isa(STR)) {
-				String fstr = ElemPrefs.getWorkingDir() + arg.str();
+				String fstr = AyaPrefs.getWorkingDir() + arg.str();
 				try {
-					ArrayList<String> dirs = ElemPrefs.listFilesAndDirsForFolder(new File(fstr));
+					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
 					ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
 					for (String s : dirs) {
 						obj_dirs.add(new Str(s));
 					}
 					b.push(new GenericList(obj_dirs));
 				} catch (NullPointerException e) {
-					throw new ElementRuntimeException("arg 4 MZ: arg is not a valid location. Recieved:\n" + fstr);
+					throw new AyaRuntimeException("arg 4 MZ: arg is not a valid location. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 4 MZ: arg must be a string. Recieved:\n" + arg.repr());
+				throw new AyaRuntimeException("arg 4 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 			break;
 			
 		//Create dir
 		case 5:
 			if(arg.isa(STR)) {
-				String fstr = ElemPrefs.getWorkingDir() + arg.str();
-				if(!ElemPrefs.mkDir(fstr)) {
-					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
+				String fstr = AyaPrefs.getWorkingDir() + arg.str();
+				if(!AyaPrefs.mkDir(fstr)) {
+					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
+				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 
 		break;
@@ -713,20 +713,20 @@ class OP_SysConfig extends Operation {
 			if(arg.isa(STR)) {
 				String arg_str = arg.str();
 				if(arg_str.equals("")) {
-					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + arg_str);
+					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + arg_str);
 				}
-				String fstr = ElemPrefs.getWorkingDir() + arg.str();
-				if(!ElemPrefs.deleteFile(fstr)) {
-					throw new ElementRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
+				String fstr = AyaPrefs.getWorkingDir() + arg.str();
+				if(!AyaPrefs.deleteFile(fstr)) {
+					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Recieved:\n" + fstr);
 				}
 			} else {
-				throw new ElementRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
+				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Recieved:\n" + arg.repr());
 			}
 
 		break;
 		
 		default:
-			throw new ElementRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
+			throw new AyaRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
 
 		}
 	}
@@ -807,7 +807,7 @@ class OP_CastDouble extends Operation {
 			try {
 				block.push(new Num(Double.parseDouble(a.str())));
 			} catch (NumberFormatException e) {
-				throw new ElementRuntimeException("Cannot cast string \""+ a.repr() + "\" to a double.");
+				throw new AyaRuntimeException("Cannot cast string \""+ a.repr() + "\" to a double.");
 			}
 		} else if (a.isa(BIGNUM)){
 			block.push(new Num(((BigNum)a).toDouble()));
@@ -839,7 +839,7 @@ class OP_MShow_Date extends Operation {
 			try {
 				df = new SimpleDateFormat(df_str, Locale.ENGLISH);
 			} catch (IllegalArgumentException e) {
-				throw new ElementRuntimeException("Invalid date format: '" + df_str + "'");
+				throw new AyaRuntimeException("Invalid date format: '" + df_str + "'");
 			}
 			
 			Date date = new Date(time);
@@ -847,7 +847,7 @@ class OP_MShow_Date extends Operation {
 			try {
 				out = df.format(date);
 			} catch (Exception e) {
-				throw new ElementRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
+				throw new AyaRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
 			}
 			block.push(new Str(out));
 		} else {
@@ -896,7 +896,7 @@ class OP_AddParserChar extends Operation {
 			if (str.length() > 0 && CharacterParser.lalpha(str)) {
 				CharacterParser.add_char(str, ((Char)obj_char).charValue());
 			} else {
-				throw new ElementRuntimeException("Cannot create special character using " + str);
+				throw new AyaRuntimeException("Cannot create special character using " + str);
 			}
 		} else {
 			throw new TypeError(this, obj_char, obj_name);
@@ -941,7 +941,7 @@ class OP_Primes extends Operation {
 		if (a.isa(NUMBER)) {
 			int i = ((Number)a).toInt();
 			if (i < 0) {
-				throw new ElementRuntimeException("Mp: Input must be positive");
+				throw new AyaRuntimeException("Mp: Input must be positive");
 			}
 			block.push(NumberItemList.primes(i));
 		} else {
@@ -1082,7 +1082,7 @@ class OP_Constants extends Operation {
 			case 11: block.push(Char.MAX_VALUE); break;
 			case 12: block.push(SYS_LINE_SEPARATOR); break;
 			default:
-				throw new ElementRuntimeException("M|: (" + i + ") is not a valid constant id.");
+				throw new AyaRuntimeException("M|: (" + i + ") is not a valid constant id.");
 			}
 		} else {
 			throw new TypeError(this, a);

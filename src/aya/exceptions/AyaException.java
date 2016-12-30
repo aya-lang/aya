@@ -1,10 +1,10 @@
 package aya.exceptions;
 
 @SuppressWarnings("serial")
-public class ElementException extends Exception {
+public class AyaException extends Exception {
 	String msg;
 	
-	public ElementException(String msg) {
+	public AyaException(String msg) {
 		super(msg);
 		this.msg = msg;
 	}

@@ -9,12 +9,12 @@ import aya.infix.Compiler;
 import aya.obj.block.Block;
 import aya.parser.Parser;
 import aya.util.FileUtils;
-import test.ElementTestCases;
+import test.AyaTestCases;
 
-public class InteractiveElement {
+public class InteractiveAya {
 		
-	private static final int SUCCESS = Element.RETURN_SUCCESS;
-	private static final int EXIT = Element.RETURN_EXIT;
+	private static final int SUCCESS = Aya.RETURN_SUCCESS;
+	private static final int EXIT = Aya.RETURN_EXIT;
 	private static boolean USE_INFIX = false;
 
 	
@@ -25,7 +25,7 @@ public class InteractiveElement {
 			+ "  \\cls\t\t\tclear the console window\n"
 			+ "  \\version\t\t\tdisplay element version name";
 	
-	public static int processInput(Element elem, String input) {
+	public static int processInput(Aya elem, String input) {
 		//Empty Input
 		if(input.equals("")) {
 			return SUCCESS;
@@ -59,7 +59,7 @@ public class InteractiveElement {
 				if(elem.helpData.getFilteredItems().size() == 0) {
 					elem.println("No help data matching \"" + searchText + "\"");
 				} else {
-					for(String s : Element.instance.helpData.getFilteredItems()) {
+					for(String s : Aya.instance.helpData.getFilteredItems()) {
 						elem.println(s.replace("\n", "\n   "));
 					}
 				}
@@ -67,12 +67,12 @@ public class InteractiveElement {
 			
 			//Clear the console
 			else if (settings[0].equals("\\cls")) {
-				return Element.CLEAR_CONSOLE;
+				return Aya.CLEAR_CONSOLE;
 			}
 			
 			//Version
 			else if(settings[0].equals("\\version")) {
-				elem.getOut().print(Element.VERSION_NAME);
+				elem.getOut().print(Aya.VERSION_NAME);
 			}
 			
 			//Time
@@ -92,7 +92,7 @@ public class InteractiveElement {
 						b = Parser.compile(code, elem);
 					} catch (SyntaxError e) {
 						elem.getOut().printEx(e.getMessage());
-						return Element.RETURN_SUCCESS;
+						return Aya.RETURN_SUCCESS;
 					}
 					
 					//Run the code
@@ -124,14 +124,14 @@ public class InteractiveElement {
 							b = Compiler.compile(code, false);
 						} catch (SyntaxError se) {
 							elem.getOut().printEx("Infix: Syntax error");
-							return Element.RETURN_SUCCESS;
+							return Aya.RETURN_SUCCESS;
 						}
 					} else {
 						try {
 							b = Parser.compile(code, elem);
 						} catch (SyntaxError e) {
 							elem.getOut().printEx(e.getMessage());
-							return Element.RETURN_SUCCESS;
+							return Aya.RETURN_SUCCESS;
 						}
 					}
 					elem.run(b);
@@ -141,18 +141,18 @@ public class InteractiveElement {
 			//Infix (Always on)
 			else if(settings[0].equals("\\i-on")) {
 				USE_INFIX = true;
-				Element.PRINT_LARGE_ERRORS = false;
+				Aya.PRINT_LARGE_ERRORS = false;
 			}
 			
 			//Infix (Always off)
 			else if(settings[0].equals("\\i-off")) {
 				USE_INFIX = false;
-				Element.PRINT_LARGE_ERRORS = true;
+				Aya.PRINT_LARGE_ERRORS = true;
 			}
 			
 			//Run Tests
 			else if(settings[0].equals("\\test")) {
-				elem.getOut().println(ElementTestCases.runTests());
+				elem.getOut().println(AyaTestCases.runTests());
 			}
 						
 			else {
@@ -168,18 +168,18 @@ public class InteractiveElement {
 					elem.run(Compiler.compile(input, false));
 				} catch (SyntaxError se) {
 					elem.getOut().printEx("Infix: Syntax error");
-					return Element.RETURN_SUCCESS;
+					return Aya.RETURN_SUCCESS;
 				}
 			} else {
 				elem.run(input);
 			}
 		}
 		
-		return Element.RETURN_SUCCESS;
+		return Aya.RETURN_SUCCESS;
 	}
 	
 	//Returns true if load was successful
-	public static boolean loadBase(Element elem) {
+	public static boolean loadBase(Aya elem) {
 		//Load the standard library
 		try {
 			elem.run("\"load.elem\"G~");
@@ -198,7 +198,7 @@ public class InteractiveElement {
 	
 	
 	public static void main(String[] args) {
-		Element elem = Element.getInstance();
+		Aya elem = Aya.getInstance();
 		
 		
 		
@@ -225,11 +225,11 @@ public class InteractiveElement {
 				String filename = args[1];
 
 				try {
-					Element.instance.run(FileUtils.readAllText(filename));
+					Aya.instance.run(FileUtils.readAllText(filename));
 				} catch (FileNotFoundException e) {
-					Element.instance.getOut().printEx("Cannot open file: " + filename);
+					Aya.instance.getOut().printEx("Cannot open file: " + filename);
 				} catch (IOException e) {
-					Element.instance.getOut().printEx("File not found: " + filename);
+					Aya.instance.getOut().printEx("File not found: " + filename);
 
 				}
 				
@@ -259,7 +259,7 @@ public class InteractiveElement {
 				System.out.println("      _                           _     |  A stack based progrgramming language");
 				System.out.println("  ___| | ___ _ __ ___   ___ _ __ | |_   |  for code golf and other puzzles");
 				System.out.println(" / _ \\ |/ _ \\ '_ ` _ \\ / _ \\ '_ \\| __|  |  ");
-				System.out.println("|  __/ |  __/ | | | | |  __/ | | | |_   |  Version: " + Element.VERSION_NAME);
+				System.out.println("|  __/ |  __/ | | | | |  __/ | | | |_   |  Version: " + Aya.VERSION_NAME);
 				System.out.println(" \\___|_|\\___|_| |_| |_|\\___|_| |_|\\__|  |  Nicholas Paul");
 				System.out.println("\n");
 				
@@ -267,7 +267,7 @@ public class InteractiveElement {
 				
 			
 				while (true) {
-					System.out.print(ElemPrefs.getPrompt());
+					System.out.print(AyaPrefs.getPrompt());
 					input = scanner.nextLine();
 					
 					
@@ -280,7 +280,7 @@ public class InteractiveElement {
 						break;
 					case EXIT:
 						return;
-					case Element.CLEAR_CONSOLE:
+					case Aya.CLEAR_CONSOLE:
 						System.out.println("Cannot clear console.");
 						break;
 					default:
@@ -291,7 +291,7 @@ public class InteractiveElement {
 			
 			//Invalid input
 			else {
-				Element.instance.getOut().printEx("use -c for inline code, -f to run a file, or -i to enter the repl");
+				Aya.instance.getOut().printEx("use -c for inline code, -f to run a file, or -i to enter the repl");
 
 			}
 

@@ -8,10 +8,10 @@ package aya.exceptions;
  *
  */
 @SuppressWarnings("serial")
-public class ElementUserRuntimeException extends RuntimeException {
+public class AyaUserRuntimeException extends RuntimeException {
 	String msg;
 	
-	public ElementUserRuntimeException(String msg) {
+	public AyaUserRuntimeException(String msg) {
 		super(msg);
 		this.msg = msg;
 	}

@@ -9,7 +9,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class ElemPrefs {
+public class AyaPrefs {
 	private static String prompt = "element> ";
 	private static String workingDir = null;
 	private static String defaultWorkingDir = null;
@@ -22,7 +22,7 @@ public class ElemPrefs {
 	
 	private static void initWorkingDir() {
 		try {
-			workingDir = Element.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			workingDir = Aya.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 //			if(workingDir.length() > 0) {
 //				workingDir = workingDir.substring(1, workingDir.length()); //Remove the leading '/'
 //			}
@@ -32,7 +32,7 @@ public class ElemPrefs {
 			}
 		} catch (URISyntaxException e) {
 			workingDir = "";
-			Element.getInstance().getOut().printWarn("Cannot locate working dir");
+			Aya.getInstance().getOut().printWarn("Cannot locate working dir");
 		}
 		defaultWorkingDir = workingDir;
 	}
@@ -42,7 +42,7 @@ public class ElemPrefs {
 	}
 
 	public static void setPrompt(String prompt) {
-		ElemPrefs.prompt = prompt;
+		AyaPrefs.prompt = prompt;
 	}
 
 	public static String getWorkingDir() {
@@ -59,7 +59,7 @@ public class ElemPrefs {
 			//Create a path to test if it exists
 			Path path = new File(workingDir).toPath();
 			if (Files.exists(path)) {
-				ElemPrefs.workingDir = workingDir;
+				AyaPrefs.workingDir = workingDir;
 				return true;
 			} else {
 				return false;

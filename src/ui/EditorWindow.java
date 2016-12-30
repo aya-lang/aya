@@ -21,7 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
-import aya.Element;
+import aya.Aya;
 
 
 @SuppressWarnings("serial")
@@ -41,9 +41,9 @@ public class EditorWindow extends JPanel {
 	public static EditorWindow activeEditor;
 	private JMenu menu;
 	private JMenuBar menuBar;
-	private ElementIDE ide;
+	private AyaIDE ide;
 	
-	public static void newEditorFrame(ElementIDE ide) {
+	public static void newEditorFrame(AyaIDE ide) {
 		activeFrame = new JFrame("Editor");
 		activeEditor = new EditorWindow(ide);
 		activeFrame.add(activeEditor);
@@ -65,7 +65,7 @@ public class EditorWindow extends JPanel {
 	}
 
 	
-	public EditorWindow(ElementIDE ide) {	
+	public EditorWindow(AyaIDE ide) {	
 		this.ide = ide;
 		
 		//Size
@@ -176,7 +176,7 @@ public class EditorWindow extends JPanel {
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Element.getQuickSearchData());
+					QuickSearch.newQSFrame(Aya.getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -209,7 +209,7 @@ public class EditorWindow extends JPanel {
 		menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(activeFrame, "Element IDE\nNicholas Paul\nVersion: " + ElementIDE.VERSION_NAME + "\nElement Version: " + Element.VERSION_NAME);
+				JOptionPane.showMessageDialog(activeFrame, "Element IDE\nNicholas Paul\nVersion: " + AyaIDE.VERSION_NAME + "\nElement Version: " + Aya.VERSION_NAME);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -251,7 +251,7 @@ public class EditorWindow extends JPanel {
 	}
 	
 	public void insertFilenameAtCarat() {
-		File file = ElementIDE.chooseFile();
+		File file = AyaIDE.chooseFile();
 		if(file != null) {
 			String path = file.getPath();
 			path = path.replace("\\", "\\\\");

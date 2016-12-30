@@ -7,7 +7,7 @@ import static aya.obj.Obj.NUMBER;
 import java.util.ArrayList;
 
 import aya.entities.Operation;
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
@@ -240,7 +240,7 @@ class OP_Colon_Underscore extends Operation {
 			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
-				throw new ElementRuntimeException(i + " :_ stack index out of bounds");
+				throw new AyaRuntimeException(i + " :_ stack index out of bounds");
 			} else {
 				
 				while (i > 0) {

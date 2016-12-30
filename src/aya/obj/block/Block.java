@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.Flag;
 import aya.entities.InstructionStack;
 import aya.entities.InterpolateString;
@@ -15,7 +15,7 @@ import aya.entities.ListBuilder;
 import aya.entities.ListLiteral;
 import aya.entities.Operation;
 import aya.entities.Tuple;
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
@@ -119,7 +119,7 @@ public class Block extends Obj {
 				try {
 					((Operation)current).execute(this);  
 				} catch (EmptyStackException es) {
-					throw new ElementRuntimeException("Empty stack at operator '" + ((Operation)current).name + "'");
+					throw new AyaRuntimeException("Empty stack at operator '" + ((Operation)current).name + "'");
 				}
 			}
 			
@@ -127,7 +127,7 @@ public class Block extends Obj {
 			else if (current instanceof VariableSet) {
 				VariableSet vars = ((VariableSet)current).clone();
 				vars.setArgs(this);
-				Element.getInstance().getVars().add(vars);
+				Aya.getInstance().getVars().add(vars);
 			}
 			
 			// KeyVariable
@@ -138,7 +138,7 @@ public class Block extends Obj {
 				if (dict_obj.isa(Obj.DICT)) {
 					dict = (Dict)dict_obj;
 				} else {
-					throw new ElementRuntimeException("Expected dict before key " + var.toString()
+					throw new AyaRuntimeException("Expected dict before key " + var.toString()
 							+ ", recieved " + dict_obj.str()); 
 				}
 				
@@ -163,9 +163,9 @@ public class Block extends Obj {
 			else if (current instanceof Variable) {
 				Variable var = ((Variable)current);
 				if(var.shouldBind()) {
-					Element.getInstance().getVars().setVar(var, stack.peek());
+					Aya.getInstance().getVars().setVar(var, stack.peek());
 				} else {
-					Obj o = Element.getInstance().getVars().getVar(((Variable)current));
+					Obj o = Aya.getInstance().getVars().getVar(((Variable)current));
 					if (o.isa(Obj.BLOCK)) {
 						instructions.addAll(((Block)o).getInstructions().getInstrucionList());
 					} else {
@@ -186,7 +186,7 @@ public class Block extends Obj {
 				//Pop a variable set from the current variable data
 				//This happens when we exit the scope of a function, etc.
 				case Flag.POPVAR:
-					Element.getInstance().getVars().pop();
+					Aya.getInstance().getVars().pop();
 					break;
 				case Flag.EVAL_BLOCK:
 					if(this.peek().isa(Obj.BLOCK)) {
@@ -201,7 +201,7 @@ public class Block extends Obj {
 						try {
 							instructions.holdNext(-1*flagID);
 						} catch (IndexOutOfBoundsException e) {
-							throw new ElementRuntimeException("Tick Operator: Error attempting to move object back " + (-1*flagID) + " instructions");
+							throw new AyaRuntimeException("Tick Operator: Error attempting to move object back " + (-1*flagID) + " instructions");
 						}
 					} else {
 						System.out.println("Unknown flag");

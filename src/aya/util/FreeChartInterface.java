@@ -20,8 +20,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
-import aya.ElemPrefs;
-import aya.exceptions.ElementRuntimeException;
+import aya.AyaPrefs;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 
@@ -93,7 +93,7 @@ public class FreeChartInterface extends JFrame
       
 	   // Save chart
 	   if (cp.getFilename() != null) {
-		   String path = ElemPrefs.getWorkingDir() + cp.getFilename();
+		   String path = AyaPrefs.getWorkingDir() + cp.getFilename();
 		   File file;
 		   try {
 			   if (path.contains(".png")) {
@@ -103,11 +103,11 @@ public class FreeChartInterface extends JFrame
 				   file = new File(path); 
 				   ChartUtilities.saveChartAsJPEG(file, chart, cp.getWidth(), cp.getHeight());
 			   } else {
-				   throw new ElementRuntimeException("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
+				   throw new AyaRuntimeException("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
 						   + "Recieved: " + cp.getFilename());
 			   }
 		   } catch (IOException e) {
-			   throw new ElementRuntimeException("Unable to save plot to " + path);
+			   throw new AyaRuntimeException("Unable to save plot to " + path);
 		   }
 	   }
 	   
@@ -126,7 +126,7 @@ public class FreeChartInterface extends JFrame
 		   try {
 			   dataset.addSeries(series);
 		   } catch (IllegalArgumentException e) {
-			   throw new ElementRuntimeException("Plot: Each series must have a unique (or empty) name");
+			   throw new AyaRuntimeException("Plot: Each series must have a unique (or empty) name");
 		   }
 	   }
 	         

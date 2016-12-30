@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.number.Num;
@@ -453,7 +453,7 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberItemList slice(int i, int j) {
 		if (i >= j) {
-			throw new ElementRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
+			throw new AyaRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
 		}
 		ArrayList<Number> out = new ArrayList<Number>(j - i);
 		for (int x = i; x < j; x++) {
@@ -529,7 +529,7 @@ public class NumberItemList extends NumberList {
 		if (o.isa(Obj.NUMBER)) {
 			_list.set(List.index(i, _list.size()), (Number)o);
 		} else {
-			throw new ElementRuntimeException("Cannot set item " + o.repr() + " in numeric list " + this.repr() + ". Item must be a number.");
+			throw new AyaRuntimeException("Cannot set item " + o.repr() + " in numeric list " + this.repr() + ". Item must be a number.");
 		}
 	}
 	
@@ -572,7 +572,7 @@ public class NumberItemList extends NumberList {
 		if (o.isa(Obj.NUMBER)) {
 			_list.add((Number)o);
 		} else {
-			throw new ElementRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
+			throw new AyaRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
 					+ ". Use convert list to a generic list to add the item");
 		}
 	}
@@ -582,7 +582,7 @@ public class NumberItemList extends NumberList {
 		if (o.isa(Obj.NUMBER)) {
 			_list.add(List.index(i, _list.size()) , (Number)o);
 		} else {
-			throw new ElementRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
+			throw new AyaRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
 					+ ". Use convert list to a generic list to add the item");
 		}
 	}

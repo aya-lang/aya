@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import aya.Element;
-import aya.InteractiveElement;
+import aya.Aya;
+import aya.InteractiveAya;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.list.Str;
@@ -26,16 +26,16 @@ import aya.parser.Parser;
 public class VariableData {
 	private ArrayList<VariableSet> varSets = new ArrayList<VariableSet>();
 
-	public VariableData(Element elem) {
+	public VariableData(Aya elem) {
 		initGlobals(elem);
 	}
 	
-	public void initGlobals(Element elem) {
+	public void initGlobals(Aya elem) {
 		VariableSet globals = new VariableSet(null, null);
 		
 		globals.setVar(new Variable("import"), Parser.compile("`(\".elem\"+G~)", elem));
-		globals.setVar(new Variable("version"), new Str(Element.VERSION_NAME));
-		globals.setVar(new Variable("help"), new Str(InteractiveElement.HELP_TEXT));
+		globals.setVar(new Variable("version"), new Str(Aya.VERSION_NAME));
+		globals.setVar(new Variable("help"), new Str(InteractiveAya.HELP_TEXT));
 
 		globals.setVar(new Variable("e"), Num.E);				
 		globals.setVar(new Variable("pi"), Num.PI);
@@ -49,7 +49,7 @@ public class VariableData {
 	}
 	
 	/** Returns (varname) = (debugString(o)) ((default variable)) for each global variable */
-	public ArrayList<String> getDefaultVariableDiscs(Element elem) {
+	public ArrayList<String> getDefaultVariableDiscs(Aya elem) {
 		if(varSets.size() < 1) {
 			initGlobals(elem);
 		}

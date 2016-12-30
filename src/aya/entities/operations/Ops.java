@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
 
 import org.apfloat.Apfloat;
 
-import aya.ElemPrefs;
-import aya.Element;
+import aya.AyaPrefs;
+import aya.Aya;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -276,7 +276,7 @@ class OP_Pound extends Operation {
 				map.add(popped);
 				
 				if(block.stackEmpty()) {
-					throw new ElementRuntimeException("Could not find list to map to\n"
+					throw new AyaRuntimeException("Could not find list to map to\n"
 							+ "\t in " + block.toString() + "\n"
 							+ "\t map using " + map);
 				} else {
@@ -417,7 +417,7 @@ class OP_Percent extends Operation {
 				//b mod a
 				block.push(((Number)(b)).mod((Number)(a)));
 			} catch (ArithmeticException e) {
-				throw new ElementRuntimeException("%: Divide by 0");
+				throw new AyaRuntimeException("%: Divide by 0");
 			}
 		}
 		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
@@ -982,7 +982,7 @@ class OP_G extends Operation {
 					block.push(new Str(sb.toString()));
 				}
 				catch(IOException ex) {
-					throw new ElementRuntimeException("Cannot read URL: " + name);
+					throw new AyaRuntimeException("Cannot read URL: " + name);
 				} finally {
 					if(scnr != null)
 						scnr.close();
@@ -992,12 +992,12 @@ class OP_G extends Operation {
 				if (name.charAt(0) == '/' || name.contains(":\\")) {
 					path = name;
 				} else {
-					path = ElemPrefs.getWorkingDir() + name;
+					path = AyaPrefs.getWorkingDir() + name;
 				}
 				try {
 					block.push( new Str(FileUtils.readAllText(path)) );
 				} catch (IOException e) {
-					throw new ElementRuntimeException("Cannot open file: " + new File(path).getAbsolutePath());
+					throw new AyaRuntimeException("Cannot open file: " + new File(path).getAbsolutePath());
 				} 
 			}
 			return;
@@ -1031,7 +1031,7 @@ class OP_H extends Operation {
 						|| Character.MIN_RADIX > to_base
 						|| Character.MAX_RADIX < from_base
 						|| Character.MAX_RADIX < to_base) {
-					throw new ElementRuntimeException("H: base out of range (" + from_base + ", " + to_base + ")");
+					throw new AyaRuntimeException("H: base out of range (" + from_base + ", " + to_base + ")");
 				}
 				
 				//String
@@ -1056,7 +1056,7 @@ class OP_H extends Operation {
 							if (c == 1 || c == 0) {
 								sb.append(c);
 							} else {
-								throw new ElementRuntimeException("H: List must be base 2");
+								throw new AyaRuntimeException("H: List must be base 2");
 							}
 							
 						}
@@ -1096,7 +1096,7 @@ class OP_H extends Operation {
 			}
 		}
 		catch (NumberFormatException nfe) {
-			throw new ElementRuntimeException("H: invalid number format (" 
+			throw new AyaRuntimeException("H: invalid number format (" 
 					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
 		}
 		
@@ -1165,7 +1165,7 @@ class OP_L extends Operation {
 		if(n.isa(NUMBER)) {
 			int repeats = ((Number)n).toInt();
 			if(repeats < 0) {
-				throw new ElementRuntimeException("Cannot create list with negative number of elements");
+				throw new AyaRuntimeException("Cannot create list with negative number of elements");
 			}
 //			ArrayList<Object> list = new ArrayList<Object>(repeats);
 //			if(isList(item)) {
@@ -1521,7 +1521,7 @@ class OP_W extends Operation {
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
-			Element.getInstance().getVars().getGlobals().merge(d.getVarSet());
+			Aya.getInstance().getVars().getGlobals().merge(d.getVarSet());
 			return;
 		}
 		throw new TypeError(this, a);
@@ -1537,7 +1537,7 @@ class OP_X extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
-		Element.getInstance().getVars().setGlobalVar(new Variable("x"), block.pop());
+		Aya.getInstance().getVars().setGlobalVar(new Variable("x"), block.pop());
 	}
 }
 
@@ -1549,7 +1549,7 @@ class OP_Y extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
-		Element.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
+		Aya.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
 	}
 }
 
@@ -1569,7 +1569,7 @@ class OP_Z extends Operation {
 			try	{
 				block.push(new BigNum(new Apfloat(a.str())));
 			} catch (NumberFormatException e) {
-				throw new ElementRuntimeException("Cannot cast " + a.str() + " to bignum");
+				throw new AyaRuntimeException("Cannot cast " + a.str() + " to bignum");
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1725,13 +1725,13 @@ class OP_Tilde extends Operation {
 			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
 			return;
 		} else if (a.isa(STR)) {
-			block.addAll(Parser.compile(a.str(), Element.getInstance()).getInstructions().getInstrucionList());
+			block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
 			return;
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
 			final String varname = CharacterParser.getName(c);
 			if(varname == null) {
-				throw new ElementRuntimeException("Character '" + c + " is not a valid variable");
+				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
 			block.add(new Variable(varname));
 			return;

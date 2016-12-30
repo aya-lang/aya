@@ -2,7 +2,7 @@ package aya.obj.number;
 
 import org.apfloat.Apfloat;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 
 /** Represented by two long ints */
@@ -22,7 +22,7 @@ public class RationalNum extends Number {
 			_num = 0L;
 			_den = 1L;
 		} else if (den == 0L) {
-			throw new ElementRuntimeException("RationalNum: Division by zero");
+			throw new AyaRuntimeException("RationalNum: Division by zero");
 		} else {
 			long gcd = NumberMath.gcd(num, den);
 			_num = num / gcd;
@@ -35,7 +35,7 @@ public class RationalNum extends Number {
 			_num = 0;
 			_den = 1;
 		} else if (den == 0) {
-			throw new ElementRuntimeException("RationalNum: Division by zero");
+			throw new AyaRuntimeException("RationalNum: Division by zero");
 		} else {
 			int gcd = NumberMath.gcd(num, den);
 			_num = num / gcd;
@@ -55,7 +55,7 @@ public class RationalNum extends Number {
 		}
 		// NaN
 		else if (Double.isNaN(val)) {
-			throw new ElementRuntimeException("Cannont convert NaN to rational");
+			throw new AyaRuntimeException("Cannont convert NaN to rational");
 		}
 
 		else {

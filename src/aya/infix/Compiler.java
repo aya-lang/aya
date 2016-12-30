@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
 import aya.obj.block.Block;
@@ -164,7 +164,7 @@ public class Compiler {
 					sb.append(in.next());
 				}
 				if(sb.length() > 12) {
-					Element.instance.getOut().printWarn("Only the first 12 characters of a variable name are used. Ignoring '..."
+					Aya.instance.getOut().printWarn("Only the first 12 characters of a variable name are used. Ignoring '..."
 							+ sb.toString().substring(12, sb.length()) + "' in " + sb.toString());
 				}
 				tokens.add(new InfixVariable(sb.toString()));
@@ -521,8 +521,8 @@ public class Compiler {
 	
 	public static String run(String in, boolean debug) {
 		Block b = compile(in, debug);
-		Element.instance.run(b);
-		String res = Element.instance.getOut().dumpAsString();
+		Aya.instance.run(b);
+		String res = Aya.instance.getOut().dumpAsString();
 		
 		if(debug) println(res);
 		

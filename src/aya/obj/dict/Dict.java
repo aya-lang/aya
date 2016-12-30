@@ -2,7 +2,7 @@ package aya.obj.dict;
 
 import java.util.ArrayList;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -118,7 +118,7 @@ public class Dict extends Obj {
 	 */ 
 	public void set(KeyVariable v, Obj o) {
 		if (o.equals(this)) {
-			throw new ElementRuntimeException("Error assigning '" + v.toString() + "': "
+			throw new AyaRuntimeException("Error assigning '" + v.toString() + "': "
 					+ "Cannot assign dict as member of itself");
 		} else {
 			_vars.setVar(v, o);
@@ -131,7 +131,7 @@ public class Dict extends Obj {
 	 */ 
 	public void set(String s, Obj o) {
 		if (o.equals(this)) {
-			throw new ElementRuntimeException("Error assigning '" + s + "': "
+			throw new AyaRuntimeException("Error assigning '" + s + "': "
 					+ "Cannot assign dict as member of itself");
 		} else {
 			_vars.setVar(Variable.encodeString(s), o);

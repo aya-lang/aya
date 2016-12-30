@@ -10,8 +10,8 @@ import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
 import aya.entities.operations.MathOps;
 import aya.entities.operations.Ops;
-import aya.exceptions.ElementRuntimeException;
-import aya.exceptions.ElementUserRuntimeException;
+import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.block.Block;
@@ -20,7 +20,7 @@ import aya.parser.Parser;
 import aya.util.StringSearch;
 import aya.variable.VariableData;
 
-public class Element {
+public class Aya {
 	public static final String VERSION_NAME = "Beta 0.1.0 (Dec 2016)";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_RED = "\u001B[31m";
@@ -39,27 +39,27 @@ public class Element {
 	
 	
 	
-	private ElementStdout out;
+	private AyaStdout out;
 	StringSearch helpData;
 	private VariableData variables;
 	
-	protected Element() {
+	protected Aya() {
 		//Exists only to defeat instantiation
 	}
 	
-	public static Element instance = getInstance();
+	public static Aya instance = getInstance();
 	
-	public static Element getInstance() {
+	public static Aya getInstance() {
 		if(instance == null) {
-			instance = new Element();
+			instance = new Aya();
 			instance.helpData = new StringSearch(getQuickSearchData());
 			instance.variables = new VariableData(instance);
-			instance.out = new ElementStdout();
+			instance.out = new AyaStdout();
 			String charMapStatus = CharacterParser.initMap();
 			if (!charMapStatus.equals("SUCCESS")) {
 				instance.out.printEx("Error evaluating character map (base/charmap.txt):\n\t" + charMapStatus);
 			}
-			ElemPrefs.init();
+			AyaPrefs.init();
 		}
 		return instance;
 	}
@@ -100,7 +100,7 @@ public class Element {
 			instance.out.printEx("TYPE ERROR: " + te.getSimpleMessage());
 		} catch (SyntaxError se) {
 			instance.out.printEx("SYNTAX ERROR: " + se.getSimpleMessage());
-		} catch (ElementRuntimeException ere) {
+		} catch (AyaRuntimeException ere) {
 			instance.out.printEx("ERROR: " + ere.getSimpleMessage());
 		} catch (PatternSyntaxException pse) {
 			instance.out.printEx(exToSimpleStr(pse));
@@ -108,7 +108,7 @@ public class Element {
 			instance.out.print("Unexpected empty stack");
 		} catch (IndexOutOfBoundsException iobe) {
 			instance.out.printEx(exToSimpleStr(iobe));
-		} catch (ElementUserRuntimeException eure) {
+		} catch (AyaUserRuntimeException eure) {
 			instance.out.printEx(eure.getSimpleMessage());
 		} 
 //		catch (ClassCastException cce) {
@@ -138,7 +138,7 @@ public class Element {
 	}
 	
 	
-	public ElementStdout getOut() {
+	public AyaStdout getOut() {
 		return instance.out;
 	}
 	

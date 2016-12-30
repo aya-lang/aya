@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.operations.Ops;
 import aya.obj.block.Block;
@@ -14,7 +14,7 @@ import aya.variable.Variable;
 
 public class InfixTable {	
 	private static final InfixTable ifxt = new InfixTable();
-	private static Element e = Element.getInstance();
+	private static Aya e = Aya.getInstance();
 
 	
 	

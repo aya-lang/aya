@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import aya.Element;
+import aya.Aya;
 
 public class CompilerTestCases {
 	private HashMap<String, String> testCases;
@@ -51,8 +51,8 @@ public class CompilerTestCases {
 	    while (it.hasNext()) {
 	        Map.Entry<String, String> pair = (Map.Entry<String, String>)it.next();
 
-	        Element.instance.run(Compiler.compile(pair.getKey(), debug));
-	        String res = Element.instance.getOut().dumpAsString();
+	        Aya.instance.run(Compiler.compile(pair.getKey(), debug));
+	        String res = Aya.instance.getOut().dumpAsString();
 	        
 	        if(debug) System.out.println("\tOUT   : " + res);
 	        

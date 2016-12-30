@@ -21,11 +21,11 @@ import java.util.Stack;
 
 import org.apfloat.Apfloat;
 
-import aya.ElemPrefs;
-import aya.Element;
+import aya.AyaPrefs;
+import aya.Aya;
 import aya.entities.Operation;
-import aya.exceptions.ElementRuntimeException;
-import aya.exceptions.ElementUserRuntimeException;
+import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
@@ -228,7 +228,7 @@ class OP_Dot_SortUsing extends Operation {
 					items.add(new SUItem(objs.get(i), ((Number)(key_obj.get(i))).toDouble()));
 				}
 			} catch (ClassCastException e) {
-				throw new ElementRuntimeException(".$: sort block must evaluate to a number");
+				throw new AyaRuntimeException(".$: sort block must evaluate to a number");
 			}
 			
 			Collections.sort(items);
@@ -451,7 +451,7 @@ class OP_Dot_At extends Operation {
 			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
-				throw new ElementRuntimeException(i + " .@ stack index out of bounds");
+				throw new AyaRuntimeException(i + " .@ stack index out of bounds");
 			} else {
 				final Obj cp = block.getStack().get(size - i);
 				block.getStack().remove(size - i);
@@ -516,7 +516,7 @@ class OP_Dot_Error extends Operation {
 		Obj a = block.pop();
 		
 		if(a.isa(STR)) {
-			throw new ElementUserRuntimeException(a.str());
+			throw new AyaUserRuntimeException(a.str());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -588,16 +588,16 @@ class OP_Dot_Write extends Operation {
 			final int option = ((Number)n).toInt();
 			final String filename = s.str();
 			final String write = a.str();
-			final String fstr = ElemPrefs.getWorkingDir()+filename;
+			final String fstr = AyaPrefs.getWorkingDir()+filename;
 
 			
 			if(option == 0) {
 				try {
 				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				}catch (IOException e) {
-				    throw new ElementRuntimeException("Cannot open file '" + fstr + "'");
+				    throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
 				} catch (InvalidPathException ipe) {
-					throw new ElementRuntimeException("Cannot open file '" + fstr + "'");
+					throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
 				}
 			} 
 			
@@ -605,14 +605,14 @@ class OP_Dot_Write extends Operation {
 				try {
 				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 				}catch (IOException e) {
-				    throw new ElementRuntimeException("Cannot open file '" + fstr + "'");
+				    throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
 				}  catch (InvalidPathException ipe) {
-					throw new ElementRuntimeException("Cannot open file '" + fstr + "'");
+					throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
 				}
 			} 
 			
 			else {
-			    throw new ElementRuntimeException(".U: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
+			    throw new AyaRuntimeException(".U: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
 			}
 			return;
 		}
@@ -723,7 +723,7 @@ class OP_Dot_Print extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (Block block) {
-		Element.getInstance().getOut().printAsPrint(block.pop().str());
+		Aya.getInstance().getOut().printAsPrint(block.pop().str());
 	}
 }
 
@@ -754,7 +754,7 @@ class OP_Dot_Case extends Operation {
 		if(a.isa(LIST)) {
 			List l = (List)a;
 			if(l.length() == 0)
-				throw new ElementRuntimeException(this.name + ": list contains no elements");
+				throw new AyaRuntimeException(this.name + ": list contains no elements");
 			
 			Obj item = l.get(0);
 			if(item.isa(BLOCK)) {
@@ -878,10 +878,10 @@ class OP_Dot_Zed extends Operation {
 		if(s.isa(STR)) {
 			String str = s.str();
 			if(str.contains(".")) {
-				throw new ElementRuntimeException(".Z: Cannot look up module variables");
+				throw new AyaRuntimeException(".Z: Cannot look up module variables");
 			}
 			Variable v = new Variable(str);
-			block.push(Element.getInstance().getVars().getVar(v));
+			block.push(Aya.getInstance().getVars().getVar(v));
 			return;
 		}
 		throw new TypeError(this, s);
@@ -940,7 +940,7 @@ class OP_Dot_Underscore extends Operation {
 			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
-				throw new ElementRuntimeException(i + " ._ stack index out of bounds");
+				throw new AyaRuntimeException(i + " ._ stack index out of bounds");
 			} else {
 				final Obj cp = block.getStack().get(size - i);
 				
@@ -970,13 +970,13 @@ class OP_Dot_Tilde extends Operation {
 		final Obj a = block.pop();	
 		
 		if (a.isa(STR)) {
-			block.push( Parser.compile(a.str(), Element.getInstance()) );
+			block.push( Parser.compile(a.str(), Aya.getInstance()) );
 			return;
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
 			final String varname = CharacterParser.getName(c);
 			if(varname == null) {
-				throw new ElementRuntimeException("Character '" + c + " is not a valid variable");
+				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
 			Block b = new Block();
 			b.add(new Variable(varname));

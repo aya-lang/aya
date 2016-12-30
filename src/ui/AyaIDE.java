@@ -21,28 +21,28 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import aya.Element;
-import aya.InteractiveElement;
+import aya.Aya;
+import aya.InteractiveAya;
 import aya.variable.Variable;
-import test.ElementTestCases;
+import test.AyaTestCases;
 
 
 @SuppressWarnings("serial")
-public class ElementIDE extends JFrame
+public class AyaIDE extends JFrame
 {	
 	public static final String VERSION_NAME = "2016 Nov 11";
 	
-	private Element element;
+	private Aya element;
 	
 	//Layout
 	private MyConsole interpreter;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	
-	private ElementIDE thiside;
+	private AyaIDE thiside;
     
 
-	public ElementIDE(Element elem) {
+	public AyaIDE(Aya elem) {
 		super("Element");
 		
 		this.thiside = this;
@@ -91,10 +91,10 @@ public class ElementIDE extends JFrame
 		    		  case KeyEvent.VK_Q:
 		    			  if(e.isControlDown()) {
 		    				  if(QuickSearch.isFrameActive()) {
-			    				  QuickSearch.updateHelpTextInFrame(Element.getQuickSearchData());
+			    				  QuickSearch.updateHelpTextInFrame(Aya.getQuickSearchData());
 		    					  QuickSearch.frameFocus();
 		    				  } else {
-		    					  QuickSearch.newQSFrame(Element.getQuickSearchData());
+		    					  QuickSearch.newQSFrame(Aya.getQuickSearchData());
 		    				  }
 		    			  }
 		    			  break;
@@ -143,7 +143,7 @@ public class ElementIDE extends JFrame
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					Element.getInstance().run("\"" + path + "\"G~");
+					Aya.getInstance().run("\"" + path + "\"G~");
 					
 				}
 			}
@@ -225,7 +225,7 @@ public class ElementIDE extends JFrame
 		menu.add(mi);
 		mi =new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				interpreter.cw.printWarn(ElementTestCases.runTests());
+				interpreter.cw.printWarn(AyaTestCases.runTests());
 				
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -250,7 +250,7 @@ public class ElementIDE extends JFrame
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Element.getQuickSearchData());
+					QuickSearch.newQSFrame(Aya.getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -283,7 +283,7 @@ public class ElementIDE extends JFrame
 		menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(interpreter, "Element IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nElement Version: " + Element.VERSION_NAME);
+				JOptionPane.showMessageDialog(interpreter, "Element IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nElement Version: " + Aya.VERSION_NAME);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -364,7 +364,7 @@ public class ElementIDE extends JFrame
         }
 	}
 	
-	public Element getElement() {
+	public Aya getElement() {
 		return this.element;
 	}
 	
@@ -383,11 +383,11 @@ public class ElementIDE extends JFrame
 		//No args: use the GUI
 		if(args.length == 0) {
 			//Load and initialize element
-			Element elem = Element.getInstance();
-			boolean base_loaded_succ = InteractiveElement.loadBase(elem);
+			Aya elem = Aya.getInstance();
+			boolean base_loaded_succ = InteractiveAya.loadBase(elem);
 			
 			//Load the ide
-			ElementIDE ide = new ElementIDE(elem);
+			AyaIDE ide = new AyaIDE(elem);
 
 			//Print messages to the console if base had errors
 			if(base_loaded_succ) {
@@ -403,7 +403,7 @@ public class ElementIDE extends JFrame
 		
 		//Command line arguments: use the console
 		else {
-			InteractiveElement.main(args);
+			InteractiveAya.main(args);
 		}		
 	}
 }

@@ -1,6 +1,6 @@
 package aya.parser.tokens;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.InterpolateString;
 import aya.exceptions.SyntaxError;
@@ -109,7 +109,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the block
-					instrs.insert(0, new Block(Parser.compileIS(block.toString(), Element.getInstance())));
+					instrs.insert(0, new Block(Parser.compileIS(block.toString(), Aya.getInstance())));
 					
 				}
 				

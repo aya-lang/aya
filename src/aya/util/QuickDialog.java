@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 import org.apfloat.Apfloat;
 
-import aya.ElemPrefs;
+import aya.AyaPrefs;
 import aya.obj.Obj;
 import aya.obj.list.Str;
 import aya.obj.number.BigNum;
@@ -131,7 +131,7 @@ public class QuickDialog {
 	}
 	
 	public static String chooseFile() {
-		 JFileChooser chooser = new JFileChooser(ElemPrefs.getWorkingDir());
+		 JFileChooser chooser = new JFileChooser(AyaPrefs.getWorkingDir());
 		 int returVal = chooser.showOpenDialog(null);
 		 if (returVal == JFileChooser.APPROVE_OPTION) {
 			 return chooser.getSelectedFile().getAbsolutePath();

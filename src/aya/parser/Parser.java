@@ -3,7 +3,7 @@ package aya.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
@@ -46,7 +46,7 @@ import aya.variable.Variable;
  */
 public class Parser {
 
-	public static TokenQueue tokenize(Element elem, String s) {
+	public static TokenQueue tokenize(Aya elem, String s) {
 		TokenQueue tokens = new TokenQueue();
 		ParserString in = new ParserString(s);
 		
@@ -410,7 +410,7 @@ public class Parser {
 					sb.append(in.next());
 				}
 				if(sb.length() > 12) {
-					Element.instance.getOut().printWarn("Only the first 12 characters of a variable name are used. Ignoring '..."
+					Aya.instance.getOut().printWarn("Only the first 12 characters of a variable name are used. Ignoring '..."
 							+ sb.toString().substring(12, sb.length()) + "' in " + sb.toString());
 				}
 				tokens.add(new VarToken(sb.toString()));
@@ -734,12 +734,12 @@ public class Parser {
 
 	
 	/** Compiles a string into a code block using input => tokenize => assemble => generate */
-	public static Block compile(String s, Element elem) {
+	public static Block compile(String s, Aya elem) {
 		return new Block(generate(assemble(tokenize(elem, s))));
 	}
 	
 	/** Compiles a string into instruction stack using input => tokenize => assemble => generate */
-	public static InstructionStack compileIS(String s, Element elem) {
+	public static InstructionStack compileIS(String s, Aya elem) {
 		return generate(assemble(tokenize(elem, s)));
 	}
 

@@ -3,7 +3,7 @@ package aya.obj.list;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
@@ -71,7 +71,7 @@ public class GenericList extends List {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
 			if (!_list.get(i).isa(Obj.NUMBER)) {
-				throw new ElementRuntimeException("Cannot convert list " + repr() + " to a numeric list.");
+				throw new AyaRuntimeException("Cannot convert list " + repr() + " to a numeric list.");
 			} else {
 				out.add((Number)(_list.get(i)));
 			}
@@ -173,7 +173,7 @@ public class GenericList extends List {
 	@Override
 	public List slice(int i, int j) {
 		if (i >= j) {
-			throw new ElementRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
+			throw new AyaRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
 		}
 		ArrayList<Obj> out = new ArrayList<Obj>(j - i);
 		for (int x = i; x < j; x++) {
@@ -244,7 +244,7 @@ public class GenericList extends List {
 	@Override
 	public void sort() {
 		// TODO: Sort strings
-		throw new ElementRuntimeException("Cannot sort generic list: " + repr() + " Cast to numeric list or string first");
+		throw new AyaRuntimeException("Cannot sort generic list: " + repr() + " Cast to numeric list or string first");
 	}
 
 	@Override

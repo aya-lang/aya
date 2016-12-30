@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import aya.exceptions.ElementRuntimeException;
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
@@ -212,7 +212,7 @@ public class Str extends List implements Comparable<Str> {
 			chars[List.index(i, chars.length)] = ((Char)o).charValue();
 			_str = new String(chars);
 		} else {
-			throw new ElementRuntimeException("Cannot set item " + o.repr() + " in string " + this.repr() + ". Item must be a char.");
+			throw new AyaRuntimeException("Cannot set item " + o.repr() + " in string " + this.repr() + ". Item must be a char.");
 		}
 	}
 	
@@ -255,7 +255,7 @@ public class Str extends List implements Comparable<Str> {
 		if (o.isa(Obj.CHAR)) {
 			_str += ((Char)o).charValue();
 		} else {
-			throw new ElementRuntimeException("Cannot append " + o.repr() + " to string " + repr()
+			throw new AyaRuntimeException("Cannot append " + o.repr() + " to string " + repr()
 					+ ". Use + to convert to string and concat or convert string to a generic list");
 		}
 	}
@@ -271,7 +271,7 @@ public class Str extends List implements Comparable<Str> {
 				_str = new StringBuilder(_str).insert(i, ((Char)o).charValue()).toString();
 			}
 		} else {
-			throw new ElementRuntimeException("Cannot append " + o.repr() + " to string " + repr()
+			throw new AyaRuntimeException("Cannot append " + o.repr() + " to string " + repr()
 					+ ". Use + to convert to string and concat or convert string to a generic list");
 		}
 	}

@@ -2,10 +2,10 @@ package test;
 
 import java.util.ArrayList;
 
-import aya.Element;
+import aya.Aya;
 import aya.entities.Operation;
 
-public class ElementTestCases {
+public class AyaTestCases {
 	private static ArrayList<TestCase> testCases = new ArrayList<TestCase>();
 	private static boolean testsRan = false;
 	
@@ -33,8 +33,8 @@ public class ElementTestCases {
 		StringBuilder sb = new StringBuilder();
 		
 		for (TestCase tc : testCases) {
-	        Element.instance.run(tc.getInput());
-	        String res = Element.instance.getOut().dumpAsString();
+	        Aya.instance.run(tc.getInput());
+	        String res = Aya.instance.getOut().dumpAsString();
 	        	        
 	        if(!tc.getExpected().equals(res)) {
 	        	sb.append("\nTest case failure:\n"
