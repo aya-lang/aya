@@ -44,11 +44,11 @@
     };
   }:circprint;
   .#? A (color) color.print\n  print A using the color
-  {.rgb~ MP}:print;
+  {.rgb~ .P}:print;
   .#? A (color) color.println\n  print A using the color; append a newline
   {.print"\n".P}:println;
   .#? (color) color.show\n  print a square of color and return the rgb values of the color
-  {c, "\{U2588} " c.rgb~ MP "($(c.r), $(c.g), $(c.b))"}:repr;
+  {c, "\{U2588} " c.rgb~ .P "($(c.r), $(c.g), $(c.b))"}:repr;
   {c, "($(c.r), $(c.g), $(c.b))"}:str;
 
 
