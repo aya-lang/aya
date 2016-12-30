@@ -30,6 +30,7 @@ public class Aya extends Thread {
 	public static final String QUIT = "\\q";
 	
 	public static final String VERSION_NAME = "Beta 0.1.0 (Dec 2016)";
+	public static String ayarcPath = ".ayarc";
 	
 	public static boolean PRINT_LARGE_ERRORS = true;
 	
@@ -120,6 +121,46 @@ public class Aya extends Thread {
 	}
 	
 	
+	//Returns true if load was successful
+	public boolean loadAyarc() {
+		//Load the standard library
+		try {
+			getInstance().queueInput("\"" + ayarcPath + "\"G~");
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	
+
+	////////////////////////
+	// IO GETTERS/SETTERS //
+	////////////////////////
+	
+	public PrintStream getOut() {
+		return _out;
+	}
+	
+	public PrintStream getErr() {
+		return _err;
+	}
+	
+	public InputStream getIn() {
+		return _in;
+	}
+	
+	public void setOut(PrintStream ps) {
+		_out = ps;
+	}
+	
+	public void setErr(PrintStream ps) {
+		_err = ps;
+	}
+	
+	public void setIn(InputStream is) {
+		_in = is;
+	}
 	
 	
 	
