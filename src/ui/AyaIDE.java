@@ -363,8 +363,7 @@ public class AyaIDE extends JFrame
 			try {
 				iaya.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace(aya.getErr());
 			}
 		}
 		
