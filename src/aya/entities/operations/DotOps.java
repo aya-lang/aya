@@ -723,7 +723,8 @@ class OP_Dot_Print extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (Block block) {
-		Aya.getInstance().getOut().printAsPrint(block.pop().str());
+		//Aya.getInstance().getOut().printAsPrint(block.pop().str());
+		Aya.getInstance().print(block.pop().str());
 	}
 }
 

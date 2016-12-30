@@ -32,7 +32,7 @@ public class AyaPrefs {
 			}
 		} catch (URISyntaxException e) {
 			workingDir = "";
-			Aya.getInstance().getOut().printWarn("Cannot locate working dir");
+			Aya.getInstance().printDebug("Cannot locate working dir");
 		}
 		defaultWorkingDir = workingDir;
 	}

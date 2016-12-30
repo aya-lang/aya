@@ -410,7 +410,7 @@ public class Parser {
 					sb.append(in.next());
 				}
 				if(sb.length() > 12) {
-					Aya.instance.getOut().printWarn("Only the first 12 characters of a variable name are used. Ignoring '..."
+					Aya.getInstance().printDebug("Only the first 12 characters of a variable name are used. Ignoring '..."
 							+ sb.toString().substring(12, sb.length()) + "' in " + sb.toString());
 				}
 				tokens.add(new VarToken(sb.toString()));

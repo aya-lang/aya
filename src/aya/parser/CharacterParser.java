@@ -23,8 +23,8 @@ public class CharacterParser {
 	}
 	
 	/** return SUCCESS if successful, return error message if unsuccessful */
-	public static String initMap() {
-		if (mapExists) return "SUCCESS";
+	public static void initMap() {
+		if (mapExists) return ;
 		
 		
 		add_char("in","2208"); //âˆˆ
@@ -71,7 +71,7 @@ public class CharacterParser {
 		add_char("cap","2229"); //âˆ©
 		add_char("cup","222a"); //âˆª
 		add_char("sqcap","2293"); //âŠ“
-		add_char("sqcup","2294"); //âŠ�?
+		add_char("sqcup","2294"); //âŠ�?
 		add_char("wedge","2227"); //âˆ§
 		add_char("vee","2228"); //âˆ¨
 		add_char("trileft","25c3"); //â—ƒ
@@ -94,7 +94,7 @@ public class CharacterParser {
 		add_char("rhd","22b3"); //âŠ³
 		add_char("unlhd","22b4"); //âŠ´
 		add_char("unrhd","22b5"); //âŠµ
-		add_char("dotplus","2214"); //âˆ�?
+		add_char("dotplus","2214"); //âˆ�?
 		add_char("centerdot","22c5"); //â‹…
 		add_char("ltimes","22c9"); //â‹‰
 		add_char("rtimes","22ca"); //â‹Š
@@ -123,8 +123,8 @@ public class CharacterParser {
 		add_char("spade","2660"); //â™ 
 		add_char("dot","2022"); //â€¢
 		add_char("between","226c"); //â‰¬
-		add_char("pitchfork","22d4"); //â‹�?
-		add_char("backepsilon","3f6"); //�?¶
+		add_char("pitchfork","22d4"); //â‹�?
+		add_char("backepsilon","3f6"); //�?¶
 		add_char("blktrileft","25c2"); //â—‚
 		add_char("blktriright","25b8"); //â–¸
 		add_char("therefore","2234"); //âˆ´
@@ -132,36 +132,36 @@ public class CharacterParser {
 		add_char("ne","2260"); //â‰ 
 		add_char("alpha","3b1"); //Î±
 		add_char("kappa","3ba"); //Îº
-		add_char("psi","3c8"); //�?ˆ
+		add_char("psi","3c8"); //�?ˆ
 		add_char("ddelta","2206"); //âˆ†
 		add_char("ttheta","398"); //Î˜
 		add_char("beta","3b2"); //Î²
 		add_char("lambda","3bb"); //Î»
-		add_char("rho","3c1"); //�?�
+		add_char("rho","3c1"); //�?�
 		add_char("ggamma","393"); //Î“
 		add_char("uupsilon","3a5"); //Î¥
-		add_char("chi","3c7"); //�?‡
+		add_char("chi","3c7"); //�?‡
 		add_char("mu","3bc"); //Î¼
-		add_char("sigma","3c3"); //�?ƒ
+		add_char("sigma","3c3"); //�?ƒ
 		add_char("llambda","39b"); //Î›
 		add_char("xxi","39e"); //Îž
 		add_char("delta","3b4"); //Î´
 		add_char("nu","3bd"); //Î½
-		add_char("tau","3c4"); //�?„
+		add_char("tau","3c4"); //�?„
 		add_char("oomega","2126"); //â„¦
 		add_char("theta","3b8"); //Î¸
 		add_char("pphi","3a6"); //Î¦
 		add_char("aleph","5d0"); //×�
 		add_char("eta","3b7"); //Î·
-		add_char("omega","3c9"); //�?‰
-		add_char("upsilon","3c5"); //�?…
+		add_char("omega","3c9"); //�?‰
+		add_char("upsilon","3c5"); //�?…
 		add_char("ppi","3a0"); //Î 
 		add_char("gamma","3b3"); //Î³
-		add_char("phi","3c6"); //�?†
+		add_char("phi","3c6"); //�?†
 		add_char("xi","3be"); //Î¾
 		add_char("ppsi","3a8"); //Î¨
 		add_char("iota","3b9"); //Î¹
-		add_char("pi","3c0"); //�?€
+		add_char("pi","3c0"); //�?€
 		add_char("zeta","3b6"); //Î¶
 		add_char("ssigma","3a3"); //Î£
 		add_char("gimel","5d2"); //×’
@@ -204,7 +204,7 @@ public class CharacterParser {
 		add_char("todocheck","2611"); //â˜‘
 		add_char("todox","2612"); //â˜’
 		add_char("xx","2613"); //â˜“
-		add_char("wetumbrella","2614"); //â˜�?
+		add_char("wetumbrella","2614"); //â˜�?
 		add_char("java","2615"); //â˜•
 		add_char("homeplate","2616"); //â˜–
 		add_char("fhomeplate","2617"); //â˜—
@@ -268,7 +268,7 @@ public class CharacterParser {
 		add_char("capricorn","2651"); //â™‘
 		add_char("aquarius","2652"); //â™’
 		add_char("pisces","2653"); //â™“
-		add_char("chessking","2654"); //â™�?
+		add_char("chessking","2654"); //â™�?
 		add_char("chessqueen","2655"); //â™•
 		add_char("chessrook","2656"); //â™–
 		add_char("chessbishop","2657"); //â™—
@@ -298,7 +298,6 @@ public class CharacterParser {
 		add_char("musicsharp","266f"); //â™¯
 
 		mapExists = true;
-		return "SUCCESS";
 	}
 	
 	/** Test if a string contains al lowercase alphabetical letters */

@@ -27,34 +27,34 @@ public class AyaTestCases {
 
 	}
 	
-	public static String runTests() {
-		init();
-		
-		StringBuilder sb = new StringBuilder();
-		
-		for (TestCase tc : testCases) {
-	        Aya.instance.run(tc.getInput());
-	        String res = Aya.instance.getOut().dumpAsString();
-	        	        
-	        if(!tc.getExpected().equals(res)) {
-	        	sb.append("\nTest case failure:\n"
-	        			+ "INPUT: " + tc.getInput() + "\n"
-	        			+ "EXPEC: " + tc.getExpected() + "\n"
-	        			+ "RETUR: " + res + "\n"
-	        			+ (tc.getOp() == null ? "" : "OP: " + tc.getOp().name));
-	        	sb.append("\n");
-	        }	        
-	    }
-	    
-		testsRan = true;
-		
-		if (sb.length() == 0) {
-			sb.append("All tests passed! (" + caseCount() + " tests ran)");
-		}
-		
-	    //All tests passed
-	    return sb.toString();
-	}
+//	public static String runTests() {
+//		init();
+//		
+//		StringBuilder sb = new StringBuilder();
+//		
+//		for (TestCase tc : testCases) {
+//	        Aya.instance.run(tc.getInput());
+//	        String res = Aya.instance.getOut().dumpAsString();
+//	        	        
+//	        if(!tc.getExpected().equals(res)) {
+//	        	sb.append("\nTest case failure:\n"
+//	        			+ "INPUT: " + tc.getInput() + "\n"
+//	        			+ "EXPEC: " + tc.getExpected() + "\n"
+//	        			+ "RETUR: " + res + "\n"
+//	        			+ (tc.getOp() == null ? "" : "OP: " + tc.getOp().name));
+//	        	sb.append("\n");
+//	        }	        
+//	    }
+//	    
+//		testsRan = true;
+//		
+//		if (sb.length() == 0) {
+//			sb.append("All tests passed! (" + caseCount() + " tests ran)");
+//		}
+//		
+//	    //All tests passed
+//	    return sb.toString();
+//	}
 	
 	public static int caseCount() {
 		return testCases.size();
