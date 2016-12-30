@@ -9,7 +9,6 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 
-import java.awt.Color;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,7 +19,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import aya.AyaPrefs;
-import aya.Aya;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;

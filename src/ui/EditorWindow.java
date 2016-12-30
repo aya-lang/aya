@@ -3,7 +3,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
@@ -41,11 +40,10 @@ public class EditorWindow extends JPanel {
 	public static EditorWindow activeEditor;
 	private JMenu menu;
 	private JMenuBar menuBar;
-	private AyaIDE ide;
 	
 	public static void newEditorFrame(AyaIDE ide) {
 		activeFrame = new JFrame("Editor");
-		activeEditor = new EditorWindow(ide);
+		activeEditor = new EditorWindow();
 		activeFrame.add(activeEditor);
 		activeFrame.pack();
 		activeFrame.setVisible(true);
@@ -65,9 +63,7 @@ public class EditorWindow extends JPanel {
 	}
 
 	
-	public EditorWindow(AyaIDE ide) {	
-		this.ide = ide;
-		
+	public EditorWindow() {			
 		//Size
 		setMaximumSize(new Dimension(WIDTH, 500));
 		setMinimumSize(new Dimension(WIDTH, 500));

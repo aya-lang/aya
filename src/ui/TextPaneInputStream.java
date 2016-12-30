@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import aya.Aya;
+
 // Initial implementation from
 // http://stackoverflow.com/questions/33067009/make-java-textarea-as-inputstream-to-run-shell-command-in-interactive-mode-using
 public class TextPaneInputStream extends InputStream {
@@ -29,16 +31,10 @@ public class TextPaneInputStream extends InputStream {
             }
 
 			@Override
-			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyPressed(KeyEvent arg0) {}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyTyped(KeyEvent arg0) {}
         });
     }
 
@@ -52,7 +48,7 @@ public class TextPaneInputStream extends InputStream {
                 s = q.take();
                 pos = 0;
             } catch (InterruptedException ex) {
-                //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+               ex.printStackTrace(Aya.getInstance().getErr());
             }
         }
         int ret = (int) s.charAt(pos);
@@ -74,7 +70,7 @@ public class TextPaneInputStream extends InputStream {
                     s = q.take();
                     pos = 0;
                 } catch (InterruptedException ex) {
-                    //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace(Aya.getInstance().getErr());
                 }
             }
             int bytes_to_copy = len < s.length()-pos ? len : s.length()-pos;
@@ -87,7 +83,7 @@ public class TextPaneInputStream extends InputStream {
 
     @Override
     public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length); //To change body of generated methods, choose Tools | Templates.
+        return read(b, 0, b.length); 
     }
     
     public InputLine getInputLine() {
