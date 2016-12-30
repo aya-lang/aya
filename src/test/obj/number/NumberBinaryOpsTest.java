@@ -1,7 +1,7 @@
 package test.obj.number;
 
-import element.obj.number.Num;
-import element.obj.number.RationalNum;
+import aya.obj.number.Num;
+import aya.obj.number.RationalNum;
 import test.Test;
 
 public class NumberBinaryOpsTest extends Test {

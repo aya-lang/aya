@@ -10,15 +10,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 
-import element.ElemPrefs;
-import element.Element;
-import element.InteractiveElement;
-import element.OutputString;
+import aya.AyaPrefs;
+import aya.Aya;
+import aya.InteractiveAya;
+import aya.OutputString;
 
 @SuppressWarnings("serial")
 public class MyConsole extends JPanel {
 	
-	private Element elem;
+	private Aya _aya;
 	
 	ConsoleWindow cw = new ConsoleWindow();
 	public static InputLine il = new InputLine();
@@ -26,8 +26,8 @@ public class MyConsole extends JPanel {
 	private int width = 500;
 	private int height = 250;
 	
-	public MyConsole(Element elem) {
-		this.elem = elem;
+	public MyConsole(Aya aya) {
+		this._aya = aya;
 		init();
 	}
 
@@ -64,23 +64,23 @@ public class MyConsole extends JPanel {
 	}
 	
 	public void eval(String s, String input_name) {
-		cw.println(ElemPrefs.getPrompt() + input_name);
+		cw.println(AyaPrefs.getPrompt() + input_name);
 		
-		int status = Element.RETURN_ERROR;
+		int status = Aya.RETURN_ERROR;
 		
 		try {
-			status = InteractiveElement.processInput(elem, s);
+			status = InteractiveAya.processInput(_aya, s);
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			elem.printEx(sw.toString());
+			_aya.printEx(sw.toString());
 		}
 		
 		switch (status) {
-		case Element.RETURN_SUCCESS:
-			if(!elem.getOut().isEmpty()){
-				ArrayList<OutputString> output = elem.getOut().dump();
+		case Aya.RETURN_SUCCESS:
+			if(!_aya.getOut().isEmpty()){
+				ArrayList<OutputString> output = _aya.getOut().dump();
 				
 				for(OutputString str : output) {
 					switch(str.getType()) {
@@ -112,14 +112,14 @@ public class MyConsole extends JPanel {
 				cw.println("\n"); //Two lines
 			}
 			break;
-		case Element.CLEAR_CONSOLE:
+		case Aya.CLEAR_CONSOLE:
 			cw.clear();
 			break;
-		case Element.RETURN_EXIT:
-			ElementIDE.exit();
+		case Aya.RETURN_EXIT:
+			AyaIDE.exit();
 			break;
-		case Element.RETURN_ERROR:
-			cw.printEx(elem.getOut().dumpAsString());
+		case Aya.RETURN_ERROR:
+			cw.printEx(_aya.getOut().dumpAsString());
 			break;
 		default:
 			throw new RuntimeException("Implement status in MyConsole.eval()");

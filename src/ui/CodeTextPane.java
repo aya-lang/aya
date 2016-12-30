@@ -26,7 +26,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import element.parser.CharacterParser;
+import aya.parser.CharacterParser;
 
 @SuppressWarnings("serial")
 public class CodeTextPane extends JTextPane {

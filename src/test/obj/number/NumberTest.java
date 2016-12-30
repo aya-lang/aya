@@ -1,7 +1,7 @@
 package test.obj.number;
 
-import element.obj.number.BigNum;
-import element.obj.number.Num;
+import aya.obj.number.BigNum;
+import aya.obj.number.Num;
 import test.Test;
 
 public class NumberTest extends Test {
