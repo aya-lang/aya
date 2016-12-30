@@ -190,7 +190,7 @@ public class InteractiveAya {
 		if(aya.getOut().hasError()) {
 			return false;
 		} else {
-			
+		
 			return true;
 		}
 	}
