@@ -2,12 +2,11 @@ package test;
 
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.entities.Operation;
 
 public class AyaTestCases {
 	private static ArrayList<TestCase> testCases = new ArrayList<TestCase>();
-	private static boolean testsRan = false;
+//	private static boolean testsRan = false;
 	
 	public static void add(String in, String res) {
 		testCases.add(new TestCase(in, res, null));
@@ -18,14 +17,14 @@ public class AyaTestCases {
 	}
 	
 	
-	private static void init() {
-		if (testsRan) return;
-		
-		add("1 1 +", "2");
-		add("1 3 +", "4");
-		add("(-1) 3 +.T", "'D'");
-
-	}
+//	private static void init() {
+//		if (testsRan) return;
+//		
+//		add("1 1 +", "2");
+//		add("1 3 +", "4");
+//		add("(-1) 3 +.T", "'D'");
+//
+//	}
 	
 //	public static String runTests() {
 //		init();
