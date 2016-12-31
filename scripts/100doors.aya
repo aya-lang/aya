@@ -1,0 +1,17 @@
+.# The 100 Doors Problem
+
+.# initialize list
+0 100L:list;
+
+.# do 100 passes
+for "pass" [100,] {
+  for "door" [pass __+ 100,] {
+    .# Swap the state of the door
+    list doorV I! list doorV D
+  }
+};
+
+.# print the doors
+for "door" (list irange) {
+  {} {"door $(doorB) is open" :P} list door I ?
+};
