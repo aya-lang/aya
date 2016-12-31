@@ -104,15 +104,15 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Obj pop() {
-		Char out = Char.valueOf(_str.charAt(_str.length()-1));
-		_str = _str.substring(0, _str.length()-1);
+		Char out = Char.valueOf(_str.charAt(0));
+		_str = _str.substring(1, _str.length());
 		return out;
 	}
 
 	@Override
 	public Obj popBack() {
-		Char out = Char.valueOf(_str.charAt(0));
-		_str = _str.substring(1, _str.length());
+		Char out = Char.valueOf(_str.charAt(_str.length()-1));
+		_str = _str.substring(0, _str.length()-1);
 		return out;
 	}
 
