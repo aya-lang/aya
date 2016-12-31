@@ -30,7 +30,7 @@ public class Aya extends Thread {
 	public static final String QUIT = "\\q";
 	
 	public static final String VERSION_NAME = "Beta 0.1.0 (Dec 2016)";
-	public static String ayarcPath = ".ayarc";
+	public static String ayarcPath = "ayarc.aya";
 	
 	public static boolean PRINT_LARGE_ERRORS = true;
 	
@@ -204,7 +204,7 @@ public class Aya extends Thread {
 	private void run(Block b) {
 		try {
 			b.eval();
-			_instance._out.println(b.getPrintOutputState());
+			_instance._out.write(b.getPrintOutputState().getBytes("UTF-8"));
 		} catch (TypeError te) {
 			_instance._err.println("TYPE ERROR: " + te.getSimpleMessage());
 		} catch (SyntaxError se) {
@@ -251,21 +251,6 @@ public class Aya extends Thread {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString().split("\n")[0];
-	}
-
-
-	public static void main(String[] args) {
-		
-		Aya aya = Aya.getInstance();
-		
-		aya.start();
-		
-		//aya.addInput("{1 1 + .P 1000 :Z} 10 %");
-		//aya.addInput("1 2 +");
-		//aya.addInput(" {\"Type a number: \".P :Y  .P'\\n' .P} 10 %");
-		aya.queueInput(" {\"aya> \".P :R~.AP.P '\\n'.P} 10 % ");
-		aya.queueInput("{1 1 + .P 500 :Z} 10 %");
-
 	}
 
 }
