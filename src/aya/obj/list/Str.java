@@ -305,7 +305,11 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public String repr() {
-		return "\"" + _str + "\"";
+		if (_str.length() > 100) {
+			return "\"" + _str.substring(0, 30) + " ... " + _str.substring(_str.length()-30) + "\"";
+		} else {
+			return "\"" + _str + "\"";
+		}
 	}
 
 	@Override
