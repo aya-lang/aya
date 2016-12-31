@@ -3,7 +3,7 @@
 
 .#? ls\n  print a list of files in the working dir
 {
-  (""4MZ.{$.}#{"  "\+println0}E0=) then {
+  (""4MZ$#{"  "\+println0}E0=) then {
     "  <no files>" println
   }
 }:ls;

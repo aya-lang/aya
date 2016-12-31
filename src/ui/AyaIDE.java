@@ -24,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import aya.Aya;
-import aya.AyaPrefs;
 import aya.InteractiveAya;
 
 
