@@ -22,7 +22,7 @@ public class InteractiveAya extends Thread {
 
 	private static final String BANNER = ""
 			+ "       __ _ _   _  __ _\n"
-			+ "      / _` | | | |/ _` |   | A tiny, stack based programming language\n"
+			+ "      / _` | | | |/ _` |   | A tiny stack based programming language\n"
 			+ "     | (_| | |_| | (_| |   | Version: " + Aya.VERSION_NAME + "\n"
 			+ "      \\__,_|\\__, |\\__,_|   | Nicholas Paul\n"
 			+ "            |___/\n"
