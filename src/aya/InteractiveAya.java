@@ -255,7 +255,6 @@ public class InteractiveAya extends Thread {
 	        final String os = System.getProperty("os.name");
 
 	        if (os.contains("Windows")) {
-	        	//String[] cls = new String[] {"cmd.exe", "/c", "cls"};
 	        	Runtime.getRuntime().exec("cls"); 
 	        }
 	        else {

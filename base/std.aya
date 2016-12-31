@@ -6,7 +6,7 @@
 {:zworkingdirz,
   ""2MZ :workingdirzz;  .# Save the current working dir
   ""3MZ                 .# Reset the working dir
-  import "load"         .# Load load.aya
+  import "ayarc"        .# Load ayarc.aya
   workingdirzz 3 MZ     .# Change the working dir back
 }:reload;
 

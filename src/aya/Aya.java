@@ -204,7 +204,10 @@ public class Aya extends Thread {
 	private void run(Block b) {
 		try {
 			b.eval();
-			println(b.getPrintOutputState());
+			String s = b.getPrintOutputState();
+			if (!s.equals("")) {
+				println(s);
+			}
 		} catch (TypeError te) {
 			_instance._err.println("TYPE ERROR: " + te.getSimpleMessage());
 		} catch (SyntaxError se) {
