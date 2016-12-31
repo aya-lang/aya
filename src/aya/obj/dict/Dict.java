@@ -184,7 +184,7 @@ public class Dict extends Obj {
 				return obj_str.str();
 			}
 		} else {
-			return dictStr();
+			return dictRepr();
 		}
 	}
 
@@ -248,6 +248,16 @@ public class Dict extends Obj {
 		StringBuilder sb = new StringBuilder("{, ");
 		for (Long l : _vars.getMap().keySet()) {
 			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
+	/** Return a string representation of the dict */
+	private String dictRepr() {
+		StringBuilder sb = new StringBuilder("{,\n");
+		for (Long l : _vars.getMap().keySet()) {
+			sb.append("  " + _vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + ";\n");
 		}
 		sb.append("}");
 		return sb.toString();
