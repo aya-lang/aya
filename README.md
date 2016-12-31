@@ -79,23 +79,21 @@ The tick (\`) operator is used to convert postfix operators into infix ones.
 Type definition:
 
 ```
-{@ vec,
-
-  members "x y"
+{,
 
   .# Constructor
-  {x y, [x y] vec MO}:new;
+  {x y, {, x:x y:y}vec MO}:new;
 
   .# Print Override
-  {self, "<$(self.x),$(self.y)>"}:show;
+  {self, "<$(self.x),$(self.y)>"}:repr;
 
   .# Member Function
-  {self, self.x2^ self.y2^ + Mq}:length;
+  {self, self.x2^ self.y2^ + Mq}:len;
 
   .# Operator Overload
   {a b, [a.x b.x+ a.y b.y+] vec MO}:plus
 
-}
+}:vec;
 
 ```
 
@@ -112,7 +110,7 @@ Perform operations on the type:
 aya> 3 4 vec! :v
 <3,4>
 
-aya> v.length
+aya> v.len
 5.0
 
 aya> 10 10 vec! v +
@@ -122,75 +120,33 @@ aya> 10 10 vec! v +
 ### Plot a sine series from 0 to 4pi using the built in plotting tool.
 
 ```
-.# Series function
-{n : cs f,
-  .#Generate coefficients
-  nR:cs;
-
-  .#Series function
-  {x, [cs [nR,x*Ms],*]S}:f;
-
-  [0∆4π*,f]
-}:sinsrs;
-
 .# Create a plot instance
-plot!:p;
+plot!:plt;
 
-.# Optional parameters
-"Sine Series" p.settitle
-300 p.setheight
-600 p.setwidth
+.# Set the domain of the plot
+[0dy4pi*]R plt.domain
 
-.# Add the lines
-2 colors.red    (1 sinsrs) p.addcustomline
-2 colors.blue   (2 sinsrs) p.addcustomline
-2 colors.green  (3 sinsrs) p.addcustomline
-2 colors.orange (4 sinsrs) p.addcustomline
+.# Add a series to the plot
+for 'n (4R) {
+  nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
+};
 
-.# Open the plot in a new window
-p.view
+.# Set the title of the plot
+"Demo: Sine Series" plt.:title
 
-.# Save the plot to a file
-"plots/sinsrs" p.save
+.# Set the stroke
+2 plt.:stroke
+
+.# X axis range
+[0 pi4*] plt.:xaxis
+
+.# Open a plot window
+plt.view
 ```
 
 Output:
 
 ![Running aya from the command line. ](images/sinsrs.png)
-
-### Some Standard Library Types
-Below are some examples of **matrices**, **fractions**, and **complex numbers**. All of these types are defined in Aya in the standard library.
-
-```
-aya> [ [1 2 3] \[4 5 6 ] \[7 8 9] ]  matrix! :mat
-|  1  2  3 |
-|  4  5  6 |
-|  7  8  9 |
-
-
-aya> mat 3 matrix.eye +
-|  2  2   3 |
-|  4  6   6 |
-|  7  8  10 |
-
-aya> 3z7
-3/7
-
-aya> 3z4 1.25 +
-2/1
-
-aya> mat {z2} &
-|  1/2  1/1  3/2 |
-|  2/1  5/2  3/1 |
-|  7/2  4/1  9/2 |
-
-
-aya> 3im4+ 2im +
-4+5i
-
-aya> 6im7+ 2^
-13+84i
-```
 
 # TODO
 
