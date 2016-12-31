@@ -298,90 +298,7 @@ class OP_Dollar extends Operation {
 			block.callVariable((Dict)a, Ops.KEYVAR_DOLLAR);
 		} else {
 			throw new TypeError(this,a);
-		}
-			
-//			//Type validation
-//			boolean string = false;	//Will be true if there exists a string in the list
-//			boolean num = false;	//Will be true if there exists a number in the list
-//			
-//			//Numerical ranks
-//			//final byte i = 0; 		// Int
-//			final byte basic = 1; 		// Num
-//			final byte big = 2; 		// BigNum
-//			
-//			byte highestRank = 1;			//The highest ranking number type
-//			
-//			//The list to be sorted
-//			ArrayList<Object> list = toList(a);
-//			
-//			//Collect type data
-//			for (Object item : list) {
-//				if (isNumeric(item)) {
-//					num = true;
-//					//Are there any bigdecimals?
-//					if(highestRank < big && isBigNum(item)) {
-//						highestRank = big;
-//					}
-//				}
-//				else if (isString(item)) {
-//					string = true;
-//				}
-//				else {
-//					//Only strings and numbers can be sorted
-//					throw new TypeError(this,a);
-//				}
-//				if(string && num) {
-//					//Strings and numbers cannot be sorted together
-//					throw new TypeError(this,a);
-//				}
-//			} 
-//			
-//			
-//			//Based on the type, sort the list
-//			if(num) {
-//				switch(highestRank) {
-//				case basic:
-//					ArrayList<Num> nums = new ArrayList<Num>();
-//					for (Object item : list) {
-//						nums.add(Num.fromObj(item));
-//					}
-//					list.clear();
-//					Collections.sort(nums);
-//					for(Num item : nums) {
-//						list.add(item);
-//					}
-//					block.push(list);
-//					return;
-//				case big:
-//					ArrayList<BigNum> bigs = new ArrayList<BigNum>();
-//					for (Object item : list) {
-//						bigs.add(BigNum.fromObj(item));
-//					}
-//					list.clear();
-//					Collections.sort(bigs);
-//					for(BigNum item : bigs) {
-//						list.add(item);
-//					}
-//					block.push(list);
-//					return;
-//				}
-//			} else if(string) {
-//				ArrayList<String> strings = new ArrayList<String>();
-//				for (Object item : list) {
-//					strings.add(getString(item));
-//				}
-//				list.clear();
-//				Collections.sort(strings);
-//				for(String item : strings) {
-//					list.add(item);
-//				}
-//				block.push(list);
-//				return;
-//			}
-//		} 
-		
-		
-		
+		}		
 	}
 }
 
@@ -669,38 +586,7 @@ class OP_LessThan extends Operation {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( new Num(a.str().compareTo(b.str()) < 0) );
 		}
-//		else if (b.isa(NUMBER) && a.isa(STR)) {
-//			String str = getString(a);
-//			int n = ((Number)(b)).toIndex(str.length());
-//
-//			
-//			if (n <= str.length()) {
-//				block.push(str.substring(0, n));
-//			} else {
-//				int extra = n - str.length();
-//				char[] pad = new char[extra];
-//				Arrays.fill(pad, ' ');
-//				block.push(str + new String(pad));
-//			}
-//			
-//		} 
-		else if (b.isa(NUMBER) && a.isa(LIST)) {
-//			ArrayList<Object> list = toList(a);
-//			int n = ((Number)(b)).toIndex(list.size());
-//			ArrayList<Object> out = new ArrayList<Object>(n);
-//			
-//			if (n <= list.size()) {
-//				for (int i = 0; i < n; i++) {
-//					out.add(list.get(i));
-//				}
-//			} else {
-//				out.addAll(list);
-//				for (int i = list.size(); i < n; i++) {
-//					out.add(0); //Pad with 0s
-//				}
-//			}
-			
-			
+		else if (b.isa(NUMBER) && a.isa(LIST)) {	
 			block.push(((List)a).head(((Number)b).toInt()));
 
 		} else {
@@ -752,36 +638,7 @@ class OP_GreaterThan extends Operation {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( new Num(a.str().compareTo(b.str()) > 0) );
 		} 
-//		else if (b.isa(Obj.NUMBER) && a.isa(Obj.STR)) {
-//			String str = getString(a);
-//			int n = ((Number)(b)).toIndex(str.length());
-//
-//			
-//			if (n <= str.length()) {
-//				block.push(str.substring(str.length()-n, str.length()));
-//			} else {
-//				int extra = n - str.length();
-//				char[] pad = new char[extra];
-//				Arrays.fill(pad, ' ');
-//				block.push(new String(pad) + str);
-//			}
-//		}
 		else if (b.isa(NUMBER) && a.isa(LIST)) {
-//			ArrayList<Object> list = toList(a);
-//			int n = ((Number)(b)).toIndex(list.size());
-//			ArrayList<Object> out = new ArrayList<Object>(n);
-//			
-//			if (n <= list.size()) {
-//				for (int i = list.size()-n; i < list.size(); i++) {
-//					out.add(list.get(i));
-//				}
-//			} else {
-//				for (int i = 0; i < n-list.size(); i++) {
-//					out.add(0); //Pad with 0s
-//				}
-//				out.addAll(list);
-//			}
-			
 			block.push( ((List)a).tail(((Number)b).toInt()) );
 		}  else {
 			throw new TypeError(this, a,b);
@@ -901,9 +758,6 @@ class OP_D extends Operation {
 			((Dict)b).set(a.str(), o);
 			block.push(b);
 		}
-//		else if (isUserObject(b)) {
-//			toUserObject(b).callVariable(block, Ops.MV_SETINDEX, a);
-//		} 
 		else {		
 			throw new TypeError(this, a, b, o);
 		}
@@ -1101,14 +955,7 @@ class OP_I extends Operation {
 	@Override public void execute (final Block block) {
 		Obj index = block.pop();
 		final Obj list = block.pop();
-		
-//		if (isUserObject(list)) {
-//			toUserObject(list).callVariable(block, Ops.MV_INDEX, index);
-//			return;
-//		}
-		
-		//Normal list execution
-		
+				
 		if(list.isa(LIST)) {
 			if(index.isa(NUMBER)) {
 				block.push( ((List)list).get(((Number)index).toInt()) );
@@ -1152,21 +999,12 @@ class OP_L extends Operation {
 			if(repeats < 0) {
 				throw new AyaRuntimeException("Cannot create list with negative number of elements");
 			}
-//			ArrayList<Object> list = new ArrayList<Object>(repeats);
-//			if(isList(item)) {
-//				for(int i = 0; i < repeats; i++) {
-//					list.add(toList(item).clone());
-//				}				
-//			} else {
-//				for(int i = 0; i < repeats; i++) {
-//					list.add(item);
-//				}
-//			}
-			
 			if (item.isa(CHAR)) {
 				block.push( new Str( ((Char)item).charValue(), repeats) );
 			} else if (item.isa(NUMBER)) {
 				block.push( new NumberItemList((Number)item, repeats) );
+			} else if (item.isa(STR)) {
+				block.push( new StrList((Str)item, repeats) );
 			} else {
 				block.push( new GenericList(item, repeats) );
 			}
@@ -1187,43 +1025,22 @@ class OP_K extends Operation {
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
-		//int a_type = getTypeID(a);
-		//int b_type = getTypeID(b);
-		
-		// Zero length list is a string, we want it to behave as a list
-		//if(a.isa(STR) && ((Str)a).length() == 0 ) {a_type = LIST;}
-		//if(b.isa(STR) && ((Str)b).length() == 0 ) {b_type = LIST;}
+
 		
 		if (a.isa(LIST) && b.isa(LIST)) {
-			//final ArrayList<Object> bl = toList(b);
-			//bl.addAll(toList(a));
-			
 			((List)b).addAll((List)a);
 			block.push(b);
 			
-		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {
-			//final ArrayList<Object> al = toList(a);
-			//al.add(0,b);
-			//block.push(al);
-			
+		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {			
 			((List)a).addItem(0, b);
 			block.push(a);
 			
 		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
-//			final ArrayList<Object> bl = toList(b);
-//			bl.add(a);
-//			block.push(bl);
 			
 			((List)b).addItem(a);
 			block.push(b);
 			
 		} else {
-			
-//			final ArrayList<Object> list = new ArrayList<Object>(2);
-//			list.add(b);	//Stack - Add in reverse order
-//			list.add(a);
-//			block.push(list);
-//			return;
 			
 			final ArrayList<Obj> list = new ArrayList<Obj>();
 			list.add(b);  //Stack - Add in reverse order
@@ -1627,12 +1444,6 @@ class OP_Underscore extends Operation {
 		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
-//		final Object a = block.peek();
-//		if(a instanceof ArrayList) {
-//			block.push(toList(a).clone());
-//		} else {
-//			block.push(a);
-//		}
 		block.push(block.peek().deepcopy());
 	}
 }
@@ -1654,10 +1465,6 @@ class OP_Bar extends Operation {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).bor((Number)b) );
 		}
-		//Logical or
-//		else if(bothBool(a,b)) {
-//			block.push(toBool(a) || toBool(b));
-//		}
 		// find regex matches
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			String[] list = b.str().split(a.str());

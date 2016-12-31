@@ -2,6 +2,7 @@ package aya.entities.operations;
 
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
+import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.NUMBER;
 
 import java.util.ArrayList;
@@ -13,10 +14,12 @@ import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.variable.Variable;
 
@@ -37,7 +40,7 @@ public class ColonOps {
 		/* 36 $  */ null,
 		/* 37 %  */ null,
 		/* 38 &  */ null,
-		/* 39 '  */ null,
+		/* 39 '  */ new OP_Colon_Quote(),
 		/* 40 (  */ null, //List item assignment
 		/* 41 )  */ null,
 		/* 42 *  */ null,
@@ -155,6 +158,28 @@ public class ColonOps {
 	}
 	
 }
+
+//' - 39
+class OP_Colon_Quote extends Operation {
+	public OP_Colon_Quote() {
+		this.name = ":'";
+		this.info = "N|C cast to integer (floor function)";
+		this.argTypes = "N|C";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(NUMBER)) {
+			block.push( new Num(((Number)a).toInt()) );
+		} else if (a.isa(CHAR)) { 
+			block.push( new Num((int)(((Char)a).charValue())) );
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 //K - 75
 class OP_Colon_K extends Operation {
