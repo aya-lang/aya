@@ -9,6 +9,7 @@ import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
+import static aya.obj.Obj.STRLIST;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import aya.obj.dict.KeyVariable;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.BigNum;
@@ -1358,6 +1360,10 @@ class OP_S extends Operation {
 			}
 			else if(l.isa(NUMBERLIST)) {
 				block.push( ((NumberList)l).sum() );
+			} 
+			
+			else if(l.isa(STRLIST)) {
+				block.push( ((StrList)l).sum() );
 			} 
 			else {
 				

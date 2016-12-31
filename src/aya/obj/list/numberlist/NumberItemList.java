@@ -573,7 +573,7 @@ public class NumberItemList extends NumberList {
 			_list.add((Number)o);
 		} else {
 			throw new AyaRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
-					+ ". Use convert list to a generic list to add the item");
+					+ ". Convert the list to a generic list to add the item");
 		}
 	}
 	

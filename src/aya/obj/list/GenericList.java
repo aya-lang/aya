@@ -16,11 +16,13 @@ public class GenericList extends List {
 	private ArrayList<Obj> _list;
 	private int _chars;
 	private int _nums;
+	private int _strs;
 	
 	public GenericList(ArrayList<Obj> list) {
 		_list = list;
 		_chars = 0;
 		_nums = 0;
+		_strs = 0;
 		
 		for (Obj o : _list) {
 			incCharNumCounter(o);
@@ -52,10 +54,16 @@ public class GenericList extends List {
 		return _list.size() != 0 && _chars == _list.size();
 	}
 	
-	/** Return true if all elements ar of type Number */
+	/** Return true if all elements are of type Number */
 	private boolean isNumericList() {
 		return _list.size() != 0 && _nums == _list.size();
 	}
+	
+	/** Return true if all elements are of type String */
+	private boolean isStringList() {
+		return _list.size() != 0 && _strs == _list.size();
+	}
+	
 	
 	/** Convert to string assuming all items are Char */
 	private Str asStr() {
@@ -79,6 +87,14 @@ public class GenericList extends List {
 		return new NumberItemList(out);
 	}
 	
+	public StrList toStringList() {
+		ArrayList<Str> out = new ArrayList<Str>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add((Str)(_list.get(i)));
+		}
+		return new StrList(out);
+	}
+	
 	/** If all items in the list are a Number, convert this list to a
 	 * NumericItemList, if all items in the list are a Char, convert
 	 * to a Str, otherwise, return <code>this</code>.
@@ -90,9 +106,12 @@ public class GenericList extends List {
 			return asStr();
 		} else if (isNumericList()) {
 			return toNumberList();
+		} else if (isStringList()) {
+			return toStringList();
 		} else {
 			return this;
 		}
+		
 	}
 	
 	
@@ -243,8 +262,7 @@ public class GenericList extends List {
 
 	@Override
 	public void sort() {
-		// TODO: Sort strings
-		throw new AyaRuntimeException("Cannot sort generic list: " + repr() + " Cast to numeric list or string first");
+		throw new AyaRuntimeException("Cannot sort generic list: " + repr() + " Cast to more specific list first");
 	}
 
 	@Override
@@ -378,6 +396,8 @@ public class GenericList extends List {
 			_chars += 1;
 		} else if (o.isa(NUMBER)) {
 			_nums += 1;
+		} else if (o.isa(STR)) {
+			_strs += 1;
 		}
 	}
 	
