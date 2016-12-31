@@ -6,9 +6,8 @@
 .}
 
 {:counter rain,
-  0:rain;
   {
-    if (2Q 0=) {
+    if (2Q) {
       0:counter;
     } {
       counterB:counter;
@@ -27,6 +26,6 @@
   counter samples/
 }:rainprob;
 
-1000 rainprob 100*:' :result;
+2500 rainprob 100*:' :result;
 
-"There is a $result% chance of 3 consecutive days of rain."
+"There is a $result% chance of 3 consecutive days of rain.":P
