@@ -204,7 +204,7 @@ public class Aya extends Thread {
 	private void run(Block b) {
 		try {
 			b.eval();
-			_instance._out.write(b.getPrintOutputState().getBytes("UTF-8"));
+			println(b.getPrintOutputState());
 		} catch (TypeError te) {
 			_instance._err.println("TYPE ERROR: " + te.getSimpleMessage());
 		} catch (SyntaxError se) {
