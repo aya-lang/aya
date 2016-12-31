@@ -25,6 +25,7 @@ public abstract class Obj {
 	public static final byte NUMBERLIST = 22;
 	public static final byte NUMBERITEMLIST = 23;
 	public static final byte OBJLIST = 24;
+	public static final byte STRLIST = 25;
 
 	public static final byte CHAR = 3;
 	
@@ -60,6 +61,8 @@ public abstract class Obj {
 			return "BLOCK";
 		case OBJLIST:
 			return "OBJLIST";
+		case STRLIST:
+			return "STRLIST";
 		case CHAR:
 			return "CHAR";
 		case DICT:
@@ -84,6 +87,7 @@ public abstract class Obj {
 		case NUMBERLIST : return 'L';
 		case NUMBERITEMLIST : return 'L';
 		case OBJLIST : return 'L';
+		case STRLIST : return 'L';
 		
 		case STR : return 'S';
 		case NUMBER : return 'N';

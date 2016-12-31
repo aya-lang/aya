@@ -294,7 +294,7 @@ public class Str extends List implements Comparable<Str> {
 	///////////////////
 	
 	@Override
-	public Obj deepcopy() {
+	public Str deepcopy() {
 		return new Str(_str);
 	}
 
