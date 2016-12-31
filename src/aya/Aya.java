@@ -239,13 +239,6 @@ public class Aya extends Thread {
 	// HELPER METHODS //
 	////////////////////
 	
-	private static String exToStr(Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		e.printStackTrace(pw);
-		return sw.toString();
-	}
-	
 	private String exToSimpleStr(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
