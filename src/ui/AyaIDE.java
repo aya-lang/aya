@@ -67,7 +67,7 @@ public class AyaIDE extends JFrame
 		    		  switch(e.getKeyCode()) {
 		    		  case KeyEvent.VK_ENTER:
 		    			  if(!_interpreter.getInputLine().getText().equals("") && _interpreter.getInputLine().inFocus()) {
-		    				  _aya.println(AyaPrefs.getPrompt() + " " + _interpreter.getInputLine().getText());
+		    				 // _aya.println(AyaPrefs.getPrompt() + " " + _interpreter.getInputLine().getText());
 						  } 
 		    			  break;
 		    		  case KeyEvent.VK_I:
@@ -350,6 +350,7 @@ public class AyaIDE extends JFrame
 			aya.setOut(out);
 			aya.setErr(out);
 			aya.setIn(ide.getInputStream());
+			aya.setEchoInput(true);
 
 			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setArgs(args);

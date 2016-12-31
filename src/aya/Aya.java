@@ -43,6 +43,7 @@ public class Aya extends Thread {
 	private VariableData _variables;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
+	private boolean _echoInput = false;
 
 	protected Aya() {
 		//Exists only to defeat instantiation
@@ -66,6 +67,9 @@ public class Aya extends Thread {
 		while (true) {
 			try {
 				String input = _input.take();
+				
+				if (_echoInput) println(AyaPrefs.getPrompt() + input);
+				
 				synchronized(this) {
 					if (input.equals(QUIT)) {
 						notify();
@@ -139,6 +143,10 @@ public class Aya extends Thread {
 	public long getLastInputRunTime() {
 		return _lastInputRunTime;
 	}
+	
+	public void setEchoInput(boolean b) {
+		_echoInput = b;
+	}
 
 	
 
@@ -168,6 +176,7 @@ public class Aya extends Thread {
 	
 	public void setIn(InputStream is) {
 		_in = is;
+		_scanner = new Scanner(_in);
 	}
 	
 	
