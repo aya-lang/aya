@@ -26,9 +26,9 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.BigNum;
@@ -614,11 +614,11 @@ class OP_SysConfig extends Operation {
 				String fstr = AyaPrefs.getWorkingDir() + arg.str();
 				try {
 					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
-					ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
+					ArrayList<Str> obj_dirs = new ArrayList<Str>(dirs.size());
 					for (String s : dirs) {
 						obj_dirs.add(new Str(s));
 					}
-					b.push(new GenericList(obj_dirs));
+					b.push(new StrList(obj_dirs));
 				} catch (NullPointerException e) {
 					throw new AyaRuntimeException("arg 4 MZ: arg is not a valid location. Recieved:\n" + fstr);
 				}
@@ -664,42 +664,6 @@ class OP_SysConfig extends Operation {
 	}
 }
 
-//// { - 91
-//class OP_Ceiling extends Operation {
-//	public OP_Ceiling() {
-//		this.name = "M{";
-//		this.info = "numerical ceiling function";
-//		this.argTypes = "N";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Obj n = block.pop();
-//		
-//		if (n.isa(NUMBER)) {
-//			block.push(((Number)n).ceil());
-//		} else {
-//			throw new TypeError(this.name, this.argTypes, n);
-//		}
-//	}
-//}
-
-//// } - 93
-//class OP_Floor extends Operation {
-//	public OP_Floor() {
-//		this.name = "M}";
-//		this.info = "numerical floor function";
-//		this.argTypes = "N";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Obj n = block.pop();
-//		if(n.isa(NUMBER)) {
-//			block.push(((Number)n).floor());
-//		} else {
-//			throw new TypeError(this.name, this.argTypes, n);
-//		}
-//	}
-//}
 
 // c - 99
 class OP_Cosine extends Operation {

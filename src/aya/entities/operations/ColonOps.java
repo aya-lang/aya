@@ -19,6 +19,7 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.list.StrList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.variable.Variable;
@@ -194,11 +195,11 @@ class OP_Colon_K extends Operation {
 		
 		if (a.isa(DICT)) {
 			ArrayList<Long> keys = ((Dict)a).keys();
-			ArrayList<Obj> keyNames = new ArrayList<Obj>(keys.size());
+			ArrayList<Str> keyNames = new ArrayList<Str>(keys.size());
 			for (Long l : keys) {
 				keyNames.add(new Str(Variable.decodeLong(l)));
 			}
-			block.push(new GenericList(keyNames));
+			block.push(new StrList(keyNames));
 		} else {
 			throw new TypeError(this, a);
 		}
