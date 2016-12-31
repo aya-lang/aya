@@ -222,6 +222,7 @@ public class InteractiveAya extends Thread {
 					String script = code + "\n" + FileUtils.readAllText(filename);
 					
 					Aya aya = Aya.getInstance();
+					aya.loadAyarc();
 					aya.queueInput(script);
 					aya.queueInput(Aya.QUIT);
 					
