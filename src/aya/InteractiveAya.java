@@ -1,11 +1,10 @@
 package aya;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import aya.exceptions.SyntaxError;
-import aya.obj.block.Block;
-import aya.parser.Parser;
+import aya.util.FileUtils;
 
 public class InteractiveAya extends Thread {
 	
@@ -22,11 +21,11 @@ public class InteractiveAya extends Thread {
 	}
 
 	private static final String BANNER = ""
-			+ "       __ _ _   _  __ _    | A tiny, stack based programming language \n"
-			+ "      / _` | | | |/ _` |   |                                          \n"
+			+ "       __ _ _   _  __ _\n"
+			+ "      / _` | | | |/ _` |   | A tiny, stack based programming language\n"
 			+ "     | (_| | |_| | (_| |   | Version: " + Aya.VERSION_NAME + "\n"
-			+ "      \\__,_|\\__, |\\__,_|   | Nicholas Paul                         \n"
-			+ "            |___/                                                     \n"
+			+ "      \\__,_|\\__, |\\__,_|   | Nicholas Paul\n"
+			+ "            |___/\n"
 			+ "\n";
 	
 	public static final String HELP_TEXT = "Help:\n"
@@ -188,119 +187,68 @@ public class InteractiveAya extends Thread {
 	}
 	
 	public static void main(String[] args) {
-		Aya aya = Aya.getInstance();
-		InteractiveAya iaya = new InteractiveAya(aya);
-		iaya.setArgs(args);
-		iaya.run();
 		
-		try {
-			iaya.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace(aya.getErr());
+		if (args.length > 0) {
+			
+			// Interactive Terminal
+			if (args[0].equals("-i")) {
+		
+				Aya aya = Aya.getInstance();
+				
+				//Use default system io (interactive in the terminal)
+				InteractiveAya iaya = new InteractiveAya(aya);
+				iaya.setArgs(args);
+				iaya.run();
+				
+				try {
+					iaya.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace(aya.getErr());
+				}
+				
+			} 
+			
+			// Run a script 
+			else if (args[0].contains(".aya")) {
+				String filename = args[0];
+					
+				//Reassemble the code on the stack
+				String code = "";
+				for (int i = 1; i < args.length; i++) {
+					code += args[i] + " ";
+				}
+				
+				try {
+					String script = code + "\n" + FileUtils.readAllText(filename);
+					
+					Aya aya = Aya.getInstance();
+					aya.queueInput(script);
+					aya.queueInput(Aya.QUIT);
+					
+					aya.run();
+					
+					try {
+						aya.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+				} catch (IOException e) {
+					System.err.println("Cannot find file: " + filename);
+				} 
+
+			}
+			
+			else {
+				System.out.println("use `aya -i` to enter the repl or `aya script.aya [arg1 arg2 ...]` to run a file");
+			}
+		} else {
+			System.out.println("use `aya -i` to enter the repl or `aya script.aya [arg1 arg2 ...]` to run a file");
 		}
+		
 	}
 		
-		
-		
-//		if (args.length > 0) {
-//			
-////			//Run the arguments as code
-////			if(args[0].equals("-c")) {
-////				
-////				loadBase(aya);
-////				
-////				StringBuilder input = new StringBuilder();
-////				for (int i = 1; i < args.length; i++) {
-////					input.append(args[i] + ' ');
-////				}
-////				
-////				aya.run(input.toString());
-////			
-////				System.out.println(aya.getOut().dumpAsString());		
-////			} 
-//			
-//			
-////			//Open and run a file
-////			else if (args[0].equals("-f")) {
-////				String filename = args[1];
-////
-////				try {
-////					Aya.instance.run(FileUtils.readAllText(filename));
-////				} catch (FileNotFoundException e) {
-////					Aya.instance.getOut().printEx("Cannot open file: " + filename);
-////				} catch (IOException e) {
-////					Aya.instance.getOut().printEx("File not found: " + filename);
-////
-////				}
-////				
-//			}
-//			
-//			//Run interactive aya
-//			else if(args[0].equals("-i")) {
-//				
-//				//Attempt to load base
-//				//loadBase(aya);
-//				
-//				//aya.run("\"..\\\\test.aya\"G~");
-//
-//				@SuppressWarnings("resource")
-//				Scanner scanner = new Scanner(System.in);
-//				String input = "";
-//				
-////				if (System.console() == null) {
-////					input = scanner.nextLine();
-////					processInput(aya, input);
-////					System.out.println(aya.getOut().dumpAsString());
-////					return;
-////				}
-//
-//				
-//				System.out.println("       __ _ _   _  __ _    | A tiny, stack based programming language ");
-//				System.out.println("      / _` | | | |/ _` |   |                                          ");
-//				System.out.println("     | (_| | |_| | (_| |   | Version: " + Aya.VERSION_NAME);
-//				System.out.println("      \\__,_|\\__, |\\__,_|   | Nicholas Paul                         ");
-//				System.out.println("            |___/                                                     ");
-//				System.out.println("");
-//				
-//				
-//				//System.out.println(aya.getOut().dumpAsString());
-//				
-//			
-//				while (true) {
-//					System.out.print(AyaPrefs.getPrompt());
-//					input = scanner.nextLine();
-//					
-//					
-//					int status = processInput(aya, input);
-//					
-//					
-////					switch (status) {
-////					case SUCCESS:
-////						//System.out.println(aya.getOut().dumpAsString());
-////						break;
-////					case EXIT:
-////						return;
-//////					case Aya.CLEAR_CONSOLE:
-//////						System.out.println("Cannot clear console.");
-////						break;
-////					default:
-////						throw new RuntimeException("Implement status in InteractiveAya.main()");
-//					}
-//				}
-//			}
-			
-			//Invalid input
-//			else {
-//				//Aya.instance.getOut().printEx("use -c for inline code, -f to run a file, or -i to enter the repl");
-//
-//			}
-
-	//	} 
-	//else {
-	//		System.out.println("use -c for inline code, -f to run a file, or -i to enter the repl");
-	//	}
-		
-
+	
 	
 	public final static void clearConsole() {
 	    try {
