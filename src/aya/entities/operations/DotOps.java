@@ -3,6 +3,7 @@ package aya.entities.operations;
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.LIST;
+import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
@@ -893,17 +894,20 @@ class OP_Dot_Zed extends Operation {
 class OP_Dot_Ceiling extends Operation {
 	public OP_Dot_Ceiling() {
 		this.name = ".[";
-		this.info = "numerical ceiling function";
+		this.info = "promote a list to a more specific type if possible";
 		this.argTypes = "N";
 	}
 	@Override
 	public void execute(Block block) {
-		Obj n = block.pop();
+		Obj a = block.pop();
 		
-		if (n.isa(NUMBER)) {
-			block.push(((Number)n).ceil());
-		} else {
-			throw new TypeError(this.name, this.argTypes, n);
+		if (a.isa(OBJLIST)) {
+			block.push(((GenericList)a).promote());
+		} else if (a.isa(LIST)) {
+			block.push(a);
+		}
+		else {
+			throw new TypeError(this.name, this.argTypes, a);
 		}
 	}
 }
@@ -912,16 +916,21 @@ class OP_Dot_Ceiling extends Operation {
 class OP_Dot_Floor extends Operation {
 	public OP_Dot_Floor() {
 		this.name = ".]";
-		this.info = "numerical floor function";
-		this.argTypes = "N";
+		this.info = "copy a list as a generic list";
+		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
-		Obj n = block.pop();
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).floor());
+		Obj a = block.pop();
+		
+		if(a.isa(LIST)) {
+			if (a.isa(OBJLIST)) {
+				block.push(a.deepcopy());
+			} else {
+				block.push( new GenericList(((List)a).getObjAL()) );
+			}
 		} else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this.name, this.argTypes, a);
 		}
 	}
 }
