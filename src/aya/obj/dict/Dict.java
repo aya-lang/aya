@@ -25,7 +25,7 @@ public class Dict extends Obj {
 	/** Metatable for the dict */
 	protected VariableSet _meta;
 
-	/** Create a new empty dict, use the unput dict as the metatable */
+	/** Create a new empty dict, use the input dict as the metatable */
 	public Dict(Dict metatable) {
 		_vars = new VariableSet(false);
 		_meta = metatable._vars;

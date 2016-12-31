@@ -617,15 +617,37 @@ public class NumberItemList extends NumberList {
 	@Override
 	public String repr() {
 		StringBuilder sb = new StringBuilder("[ ");
-		for (Number n : _list) {
-			sb.append(n.repr() + " ");
+		
+		
+		if (_list.size() < 50) {
+			//Output the whole list
+			for (Obj o : _list) {
+				sb.append(o.repr() + " ");
+			}
+		} else {
+			// Output 10 front
+			for (int i = 0; i < 10; i++) {
+				sb.append(_list.get(i).repr() + " ");
+			}
+			
+			sb.append(" ... ");
+			
+			// Output 10 back
+			for (int i = _list.size() - 11; i < _list.size(); i++) {
+				sb.append(_list.get(i).repr() + " ");
+			}
 		}
+		
 		return sb.append(']').toString();
 	}
 
 	@Override
 	public String str() {
-		return repr();
+		StringBuilder sb = new StringBuilder("[ ");
+		for (Obj o : _list) {
+			sb.append(o.repr() + " ");
+		}
+		return sb.append(']').toString();
 	}
 
 	@Override
