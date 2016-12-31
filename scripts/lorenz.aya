@@ -1,0 +1,29 @@
+.# Plot a Lorenz attractor
+
+.# Starting parameters
+
+0.01 :x;
+0.1  :y;
+0.3  :z;
+10   :a;
+28   :b;
+8`/3 :c;
+0.01 :dt;
+
+.# List to keep track of state
+[]
+
+{
+  .# Update the point
+  [
+    y x - a * dt* x+:x
+    b z - x * y - dt* y+:y
+  ]
+  x y * c z * - dt* z+:z;
+
+  .# Append to state list
+  \.B
+} 5000 %
+
+.# Transpose to separate list of x and y values
+transpose ~ plot.line.view

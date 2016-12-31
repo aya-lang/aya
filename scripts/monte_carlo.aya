@@ -27,6 +27,6 @@
   counter samples/
 }:rainprob;
 
-1000 rainprob 100*:':result;
+1000 rainprob 100*:' :result;
 
 "There is a $result% chance of 3 consecutive days of rain."
