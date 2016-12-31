@@ -159,7 +159,7 @@
   }:spiro;
 
   .#? demo.randomwalk\n  plot a random walk
-  {:vec step,    
+  {:vec step,
     .# Move the x and y values by 0,-1, or +1
     {v, v.x 3QV+ v.:x; v.y 3QV+ v.:y;}:step;
 
@@ -170,6 +170,44 @@
     .# Transpose the list and plot the line
     transpose~ plot.line.view
   }:randomwalk;
+
+  .#? demo.lorenz\n  plot a Lorenz attractor
+  {: x y z a b c dt,
+
+    .# Starting parameters
+    0.01 :x;
+    0.1  :y;
+    0.3  :z;
+    10   :a;
+    28   :b;
+    8`/3 :c;
+    0.01 :dt;
+
+    .# List to keep track of state
+    []
+
+    {
+      .# Update the point
+      [
+        y x - a * dt* x+:x
+        b z - x * y - dt* y+:y
+      ]
+      x y * c z * - dt* z+:z;
+
+      .# Append to state list
+      \.B
+    } 5000 %
+
+    .# Transpose to separate list of x and y values
+    transpose ~ plot.line.view
+  }:lorenz;
+
+  .#? demo.loading\n  play a loading animation for a few seconds
+  {
+    "Loading..." .P
+    "-\|/" {roll 0.I .P 300:Z '\b'.P} 20 %;
+    "":P
+  }:loading;
 
 }:demo;
 
@@ -183,7 +221,9 @@
   "colorsort"
   "scatter"
   "fnlot"
-  ]  "Select a Demo" "Aya Demo" 1 6 MV :choice;
+  "lorenz"
+  "loading"
+  ]$  "Select a Demo" "Aya Demo" 1 6 MV :choice;
 
   "demo." choice + ~
 
