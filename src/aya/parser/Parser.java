@@ -346,55 +346,6 @@ public class Parser {
 					
 					tokens.add(new CharToken(""+specialChar));
 					
-				} 
-				
-				//Based Number
-				//Convert the number to base 10 NUM token so that the rest of the 
-				//parser sees it as a normal base 10 integer
-				else if (in.peek() == '#') {
-					in.next(); //Skip the #
-					
-					//Determine the base
-					char base;
-					if(in.hasNext()) {
-						base = in.next();
-						if(base == 'b') {
-							base = (char)2;
-						} else if (base == 'h') {
-							base = (char)16;
-						} else {
-							throw new SyntaxError("Base " + (int)base + "is not a valid base id");
-						}
-					} else {
-						throw new SyntaxError("Based number identifier '# must be followed by a number and a closing single quote");
-					}
-					
-					//Capture the number
-					StringBuilder sb = new StringBuilder();
-					boolean complete = false;
-					while(in.hasNext()) {
-						if (in.peek() == '\'') {
-							in.next(); //Skip the closing quote
-							complete = true;
-							break;
-						}
-						sb.append(""+in.next());
-					}
-					if(!complete) {
-						throw new SyntaxError("Expected closing quote after based number literal '#" + sb.toString());
-					}
-					String num = sb.toString().trim();
-					
-					BigDecimal n = null;
-					try {
-						//The token will be properly converted to an int 
-						//or a BigDecimal in the generate function
-						n = new BigDecimal(new BigInteger(num, base));
-					} catch (NumberFormatException e) {
-						throw new SyntaxError("Cannot parse " + num + " using base " + (int)base);
-					}
-
-					tokens.add(new NumberToken(""+n));
 				}
 				
 				//Normal Character
