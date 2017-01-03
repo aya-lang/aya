@@ -155,10 +155,21 @@ public class ColonOps {
 	
 	public static boolean isColonOpChar(char c) {
 		//A char is a colonOp if it is not a lowercase letter or a '('
-		return ((c >= '!' && c < 'a') || (c > 'z' && c <= '~')) && c != '(' && c != ' ';
+		return (c >= '!' && c <= '~') 	//Char bounds
+				&& !isLowercase(c) 		//Not lowercase alpha
+				&& !isDigit(c) 			//Not digit
+				&& c != '(' && c != ' ' && c != '-'; //Special cases
+	}
+
+	private static boolean isDigit(char c) {
+		return c >= '0' && c <= '9';
 	}
 	
+	private static boolean isLowercase(char c) {
+		return c >= 'a' && c <= 'z';
+	}
 }
+
 
 //' - 39
 class OP_Colon_Quote extends Operation {

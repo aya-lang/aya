@@ -428,6 +428,17 @@ public class Parser {
 				if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
 					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
 				} 
+				
+				// Special number
+				else if (in.hasNext() && (isDigit(in.peek()) || in.peek() == '-') ) {
+					//Collect the special number
+					StringBuilder specNum = new StringBuilder();
+					while (in.hasNext() && (isDigit(in.peek()) || isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.') ) {
+						specNum.append(in.next());
+					}
+					tokens.add(new NumberToken(specNum.toString(), true));
+				}
+				
 				// Normal Colon
 				else {
 					tokens.add(SpecialToken.COLON);
@@ -452,6 +463,8 @@ public class Parser {
 		return tokens;
 	}
 	
+
+
 	public static TokenQueue assemble(TokenQueue in) {
 		TokenQueue out = new TokenQueue();
 		
@@ -731,6 +744,9 @@ public class Parser {
 		return (c >= 'a' && c <= 'z');
 	}
 	
+	private static boolean isDigit(char c) {
+		return c >= '0' && c <= '9';
+	}
 
 	
 	/** Compiles a string into a code block using input => tokenize => assemble => generate */

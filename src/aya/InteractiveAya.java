@@ -35,9 +35,6 @@ public class InteractiveAya extends Thread {
 			+ "  \\cls\t\t\tclear the console window\n"
 			+ "  \\version\t\t\tdisplay Ara version name";
 	
-	
-	
-	
 	public int processInput(String input) {
 		//Empty Input
 		if(input.equals("")) {
