@@ -1,28 +1,30 @@
 # The Aya Programming Language
 
-![Running Aya from the command line. ](images/qsearch.png)
+![Running Aya from the command line.](images/aya-demo.png)
 
 ## Features
 
   - Terse, yet readable syntax
-  - Fully loaded with a complete standard library
-  - Modules with namespace like functionality
-  - Basic support for objects and data structures
+  - Fully loaded with a rapidly growing standard library
+  - Key-value pair dictionaries and objects
+  - Basic support for objects and data structures using metatables
   - Macro-like pre-evaluation stack manipulation
   - Functional feel: List comprehension etc.
   - String Interpolation, Unicode, and special characters
-  - Comes pre-packaged with a feature packed GUI
+  - Interactive GUI
   - Built in plotting
   - Interactive help and Documentation
-  - Colored printing and simple UI elements
+  - Simple UI elements
 
 ## Overview
 
-Aya is a stack based programming language originally intended for code golf and programming puzzles. However, the language is very different from most golfing languages. Its support for user-defined types and macro-like function definitions allow for complex programs and data structures. It excels in cases were programs need to be written quickly.
+Aya is a stack based programming language originally intended for code golf and programming puzzles. Unlike other stack-based programming languages, it supports user-defined types, macro-like function definitions, key-value pair dictionaries, and natural variable scoping rules allowing for more complex programs and data structures.
 
-Aya comes fully-loaded with a standard library written entirely in Aya code. The standard library features types such as fractions, dictionaries, matrices, stacks, and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O.
+Aya comes with a rapidly-growing standard library written entirely in Aya code. The standard library features types such as matrices, stacks, dates and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O. It even features a basic turtle library for creating drawings in the plot window.
 
-Aya also features a minimal GUI for easily writing code and working using the Aya language. The GUI features colored console printing, plotting, tab-completion for special characters, and most importantly, an interactive way to search QuickSearch help data.
+Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The GUI features, plotting, tab-completion for special characters, and an interactive way to search QuickSearch help data.
+
+![QuickSearch window](images/quicksearch_window.png)
 
 ## Usage
 
@@ -38,26 +40,30 @@ To run Aya interactively from the command line use `-i`
 java -jar aya.jar -i
 ```
 
-To run files from the command line, use `-f`
+To run scripts from the command line:
 
 ```
-java -jar aya.jar -f file.aya
+java -jar aya.jar filename.aya
 ```
 
 ## Examples
 
-### Golfed Project Euler Problem 6
+### Project Euler Problem 1
+
+*Find the sum of all the multiples of 3 or 5 below 1000.*
 
 ```
-hR_S2^\2^S-
+aya> kVR{15.+!}IS
+233168
+```
 
-Explanation:
-hR            Generate a list [1,2..100]
-  _           Duplicate the list
-   S2^        Evaluate the sum of the list and square it
-      \       Bring the other list to the top of the stack
-       2#^    Square each element in the list
-          S-  Subtract the sum of this list from the previous sum
+```
+aya> 0:sum;
+     for 'x (999R) {
+       x5%0= x3%0= | then {x sum +:sum}
+     };
+     sum
+233168
 ```
 
 ### Recursive factorial function written in the style of C.
@@ -82,7 +88,7 @@ Type definition:
 {,
 
   .# Constructor
-  {x y, {, x:x y:y}vec MO}:new;
+  {x y, {, x:x y:y} vec MO}:new;
 
   .# Print Override
   {self, "<$(self.x),$(self.y)>"}:repr;
@@ -91,13 +97,13 @@ Type definition:
   {self, self.x2^ self.y2^ + Mq}:len;
 
   .# Operator Overload
-  {a b, [a.x b.x+ a.y b.y+] vec MO}:plus
+  {a b, [a.x b.x+ a.y b.y+] vec MO}:add
 
 }:vec;
 
 ```
 
-Call constructor using `!` operator and print using `.show` definition:
+Call constructor using `!` operator and print using `.repr` definition:
 
 ```
 aya> 1 2 vec!
@@ -117,41 +123,108 @@ aya> 10 10 vec! v +
 <13,14>
 ```
 
-### Plot a sine series from 0 to 4pi using the built in plotting tool.
+### Plot some expressions
 
 ```
-.# Create a plot instance
-plot!:plt;
+plot!:p;
 
-.# Set the domain of the plot
-[0dy4pi*]R plt.domain
+.# The domain
+0 2pi* 600 linspace p.domain
 
-.# Add a series to the plot
-for 'n (4R) {
-  nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
-};
+.# Add each function
+"sin" 2 colors.red.rgb    {sin} p.addexpr
+"cos" 2 colors.blue.rgb   {cos} p.addexpr
+"ln"  2 colors.orange.rgb {ln} p.addexpr
 
-.# Set the title of the plot
-"Demo: Sine Series" plt.:title
+.# Plot title
+"A Sample Expression Plot" p.:title
 
-.# Set the stroke
-2 plt.:stroke
+.# Other plot parameters
+[(-2) 2] p.:yaxis;
+[0 2pi*] p.:xaxis;
+1        p.:legend;
+"f(x)"   p.:ylabel;
+400      p.:width;
+300      p.:height;
 
-.# X axis range
-[0 pi4*] plt.:xaxis
+.# Open the plot window
+p.view
 
-.# Open a plot window
-plt.view
+.# Uncomment to save the plot
+"sample_plot.png" p.save
 ```
 
 Output:
 
-![Running aya from the command line. ](images/sinsrs.png)
+![Sample Expression Plot](images/sample_plot.png)
+
+### Plot a Lorenz Attractor
+
+```
+.# Starting parameters
+0.01 :x;
+0.1  :y;
+0.3  :z;
+10   :a;
+28   :b;
+8`/3 :c;
+0.01 :dt;
+
+.# List to keep track of state
+[]
+
+{
+  .# Update the point
+  [
+    y x - a * dt* x+:x
+    b z - x * y - dt* y+:y
+  ]
+  x y * c z * - dt* z+:z;
+
+  .# Append to state list
+  \.B
+} 5000 %
+
+.# Transpose to separate list of x and y values
+transpose ~ plot.line:p
+
+"Lorenz Attractor" p.:title;
+
+p.view
+```
+
+Output:
+
+![Running aya from the command line. ](images/lorenz_attractor.png)
+
+### Interactive help
+
+Add a `?` to a line comment operator `.#` to add the comment to the interactive help.
+The interactive help can be searched from within the REPL or IDE and can be used
+to document source files.
+
+```
+aya> .#? A help comment!\n  This comment will be added to the interactive help
+aya> \? help comment
+A help comment!
+     This comment will be added to the interactive help
+```
+
+Sample documentation from `math.aya`
+
+```
+{Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
+{{*}U}:product;     .#? L product\n  product of a list
+{.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
+{Mq}:sqrt;          .#? N sqrt\n  square root
+```
+
 
 # TODO
 
+  - *See issues page for more detailed todos*
   - **Optimization**: Parts of the interpreter run fairly slow and can be optimized to run faster. Many operators also need to be optimized.
-  - **More Operators**: Most of the dot (`.<op>`) and misc (`M<op>`) operators have not yet been assigned.
+  - **More Operators**: Most of the dot (`.<op>`), misc (`M<op>`), and colon (`:<op>`) operators have not yet been assigned.
   - **Refine the Standard Library**: Debug, fix small errors, clean
   - **Better I/O Support**: Currently IO includes text files (input and output) and the ability to download files from the web. An official IOStream object should be implemented.
-  - **Improved Plotting**: More parameters and customization
+  - Rational and complex number types

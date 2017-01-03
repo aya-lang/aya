@@ -6,7 +6,7 @@
     }:new;
     {0}:eq;
   }:axis;
-  
+
   .# Plot types
   0:tline;     .#? plot.tline\n  line plot type id
   1:tscatter;  .#? plot.tscatter\n  scatter plot type id
@@ -32,16 +32,15 @@
 
   .#? (plot) plot.view\n  view the plot in a new window
   {self,
-    .# self.propertylist MX
     self MX
   }:view;
 
   .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
-  {filenameS self,
-    self.propertylist _ .# dup: don't change the propertylist
-    ["show" 0] AK
-    ["filename" filename] AK
-    MX;
+  {filenameS self : cpy,
+    self_ :cpy;; .# Create a copy
+    0 cpy.:show;
+    filename  cpy.:filename;
+    cpy MX
   }:save;
 
   .#? L<N> (plot) plot.addline\n  add a dataset to the plot using defaults
@@ -53,18 +52,18 @@
   {dataL self,
     data self.:x;
   }:domain;
-  
+
   .#? nameS strokeN colorL dataL (plot) plot.addseries\n  add a series to a plot
   {nameS strokeN colorL dataL self,
     .# stroke 0 = then {self.stroke :stroke;}
     self.y {,name:name stroke:stroke color:color data:data} AK;
   }:addseries;
-  
+
   .#? nameS strokeN colorL exprE (plot) plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
   {nameS strokeN colorL exprE self,
     self.y {,name:name stroke:stroke color:color [self.x, expr]:data} AK;
   }:addexpr;
-  
+
   .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
   {domainL rangeL : plt,
     plot!:plt;
@@ -73,7 +72,7 @@
     range plt.addline
     plt
   }:scatter;
-  
+
   .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
   {xL yL : reg,
     x y regression :reg;
@@ -81,7 +80,7 @@
     x [x,reg] plot.line.view
     "Regression: y= $(1reg0reg-)x + ($(0reg))".P
   }:scatterreg;
-  
+
   .# domainL rangeL plot.line\n  return a line plot with the given domain and range
   {domainL rangeL : plt,
     plot!:plt;
@@ -97,7 +96,7 @@
     "" 1 [] {ex} plt.addexpr
     plt
   }:fn;
-  
+
   .#? minN maxN exsL plot.fns\n  plot each function in exs on the domain (min, max). return a plot instance
   {minN maxN exsL : plt,
     plot!:plt;
@@ -107,8 +106,8 @@
     };
     plt
   }:fns;
-  
-  
+
+
   {"Plot Instance"}:str:repr;
 
 }:plot;
