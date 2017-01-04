@@ -55,6 +55,8 @@ public class SpecialNumberParser {
 	private final char IMAG = 'i';
 	private final char RAT = 'r';
 	private final char BIG = 'z';
+	private final char PI = 'p';
+	private final char ROOT = 'q';
 	
 	public SpecialNumberParser(String s) {
 		_sep = NEG;
@@ -80,7 +82,7 @@ public class SpecialNumberParser {
 	public boolean isSepValid(SpecialNumberParser np) {
 		char c = np._sep;
 		return c == NEG || c == HEX || c == BIN || c == IMAG
-				|| c == RAT || c == BIG;
+				|| c == RAT || c == BIG || c == PI;
 	}
 	
 	public String toString() {
@@ -104,8 +106,12 @@ public class SpecialNumberParser {
 				return toImagNumber();
 			case RAT:
 				return toRationalNumber();
+			case PI:
+				return toPiNumber();
 			case BIG:
 				return toBigNumber();
+			case ROOT:
+				return toRootNumber();
 			default:
 				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 			}
@@ -113,7 +119,27 @@ public class SpecialNumberParser {
 			throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 		}
 	}
+	
+	private Number toRootNumber() {
+		if (_snd.equals("")) {
+			return new Num(Math.sqrt(Double.parseDouble(_fst)));
+		} else {
+			double fst = Double.parseDouble(_fst);
+			double snd = Double.parseDouble(_snd);
+			return new Num(Math.pow(fst, 1/snd));
+		}
+	}
 
+	private Number toPiNumber() {
+		if (_snd.equals("")) {
+			return new Num(Math.PI * Double.parseDouble(_fst));
+		} else {
+			double fst = Double.parseDouble(_fst);
+			double snd = Double.parseDouble(_snd);
+			return new Num(Math.pow(Math.PI * fst, snd));
+		}
+	}
+	
 	private BigNum toBigNumber() {
 		return new BigNum(new Apfloat(_fst));
 	}
@@ -151,7 +177,12 @@ public class SpecialNumberParser {
 	}
 
 	private Num toNegativeNumber() {
-		return new Num(Double.parseDouble(_fst));
+		double d = Double.parseDouble(_fst);
+		if (d <= 0) {
+			return new Num(d);
+		} else {
+			return new Num(-d);
+		}
 	}
 }
 
