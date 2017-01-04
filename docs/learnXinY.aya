@@ -18,39 +18,57 @@
 .#		    2 4 +
 .#			    6
 
+
+.# Numbers
+
+.# There are a few number types in Aya
+
+.# By default, numbers are represented by doubles
+1
+1.5
+
+.# Special numbers begin with a colon (:)
+
+.# Negative numbers begin with a (:-) or just a colon (:)
+:-3      .# => -3
+:4.53    .# => -4.53
+
+.# Arbitrary precision float numbers end with a 'z'
+:1z
+:-2.0234z
+
+.# Rational numbers have a numerator and denominator separated by a 'r'
+:1r2   .# 1/2
+:3r    .# 3/1
+
+.# Binary and hexadecimal literals are created using
+.# :0xNNNN and :0bNNNN respectively
+:0b101001	.# => 41
+:0x0f05 	.# => 3845 (hex letters must be lowercase)
+
+
+
 .# Math
-3 4 + 	.# => 7
-5 6 - 	.# => -1
-2 0.5 * .# => 1.0
-3 2 ^ 	.# => 9
+:1r2 :4r5 + .# => :9r10
+5 6 - 	    .# => -1
+2 0.5 *     .# => 1.0
+3 2 ^ 	    .# => 9
+6 4 /				.# => 1.5
+6 2 / 			.# => 3
 
-.# Division promotes numbers
-6 4 /	.# => 1.5
-6 2 / 	.# => 3.0
-
-.# - is never a unary operator...
+.# - is never a unary operator (use :N for negative numbers)
 8 3 -1  .# is evaluated as (8 3-) 1 => 5 1
 -1	 	.# ERROR: Empty stack at operator '-'
 
-.# ...unless it is grouped alone with a number literal
-(-1)	.# => -1
-(-2.5)	.# => -2.5
-
-.# use '!' to negate numbers
-1.5!	.# => -1.5
-
-.# Boolean Literals
-T	.# => true
-F	.# => false
 
 .# Boolean operations
-T!		.# => false 
-F!		.# => true 
-1 1 =	.# => true
-1 1 =!	.# => false
-8 3 >	.# => true
-5 5 <	.# => false
-5 5 .<	.# => true
+1!		  .# => 0
+0!		  .# => 1
+1 1 =	  .# => 1
+1 1 =!	.# => 0
+8 3 >	  .# => 1
+5 5 <	  .# => 0
+5 5 .<	.# => 1
 
 
 .###########################
@@ -60,6 +78,10 @@ F!		.# => true
 .# Characters
 'a		.# basic characters do not need closing quotes
 'p'q	.# => 'p' 'q'
+
+.# Escaped characters need closing quotes
+'\n' '\t' '\f' '\b'
+
 
 .# Unicode character literals
 .# Unicode characters are written using a \U
@@ -73,11 +95,8 @@ F!		.# => true
 '\pi'		.# => 'π'
 '\because'	.# => '∵'
 
-.# Binary and hexadecimal int literals are created using '#B..'
-.# where B is the base (b => binary, h => hexadecimal)
-'#b 101001'	.# => 41
-.# The space is optional
-'#h0F05'	.# => 3845
+.# You can do math with characters
+'a 4 +  .# 'e
 
 
 .#Strings
@@ -85,37 +104,13 @@ F!		.# => true
 "I am a string"
 
 .# Strings can contain special characters using \{}
-"Jack \{heart}s Jill" 		.# => "Jack ♥s Jill" 
-"sin(\{theta}) = \{alpha}"	.# => "sin(θ) = α" 
+"Jack \{heart}s Jill" 		.# => "Jack ♥s Jill"
+"sin(\{theta}) = \{alpha}"	.# => "sin(θ) = α"
 
 .# Strings can be treated like lists of characters
 "Hello " "world!" K .# => "Hello world!"
 ['s't'r'i'n'g] .# => "string"
-"abcde" 2 & .# => 'c'
-
-
-
-.###########################
-.#		  Matrices
-.###########################
-
-
-.# Matrices are denoted by placing a 'M' before a list literal
-.# Rows are separated using commas
-.# Only number literals can be placed in matrices
-M[1 2, 3 4]	.# => [
-			.#		1.000 2.000
-            .# 		3.000 4.000
-			.# 	  ]
-			
-M[1 (-2) 4]	.# => [
-			.#		1.000 -2.000 4.000
-			.# 	  ]
-
-.# There are a few built in operators for working with matrices
-M'			.# => Transpose
-Md			.# -> Determinant
-+ - * ^		.# => Matrix arithmetic
+"abcde" 2 I .# => 'c'
 
 
 .###########################
@@ -124,28 +119,29 @@ Md			.# -> Determinant
 
 .# Most non-alpha characters are operators
 _ .# duplicate the item on the top of the stack
-; .# remove the item on the top of the stack 
+; .# remove the item on the top of the stack
 
 .# Many operators are overloaded
-? .# conditional / filter
-! .# negate / reverse / logical not / swap case
-1! .# => -1 
+I .# get nth item from list / filter
+! .# (1-N) / reverse / swap case
+1! .# => 0
 'a! .# => 'A'
 "hello"! .# => "olleh"
 
 .# Almost all uppercase letters are operators
 .#		(R => range, K => concatenate, Q => rand)
-.# 		T and F are not operators 
 10Q .# => an int between 0 and 10
+10R .# => [1 2 3 4 5 6 7 8 9 10]
+[1 2 3] [7 8 9] K .# => [1 2 3 7 8 9]
 
-.# Any character following a . (except numbers) are operators 
-.#		(.p => quickplot, .t => type, .< => less than or equal to)
-1.t	.# => 'I'
+
+.# Any character following a . (except numbers and lowercase letters) are operators
+.#		(.X => quickplot, .T => type, .< => less than or equal to)
+1.T	.# => 'D'
 
 .# Any character following a M is an operator
-.# and is usually math related
+.# and is usually math related or miscellaneous
 .#   	(Ms => sin, M! => factorial, Mq =>sqrt)
-.# 		M[ is not an operator (see Matrices)
 4 Mq .# => 2
 
 
@@ -160,11 +156,20 @@ _ .# duplicate the item on the top of the stack
 .# Lists are evaluated as a stack during creation
 [1 2 + 7 2 - 3!] .# => [3 5 -3]
 
-.# Joining 2 lists 
+.# List literals can reach outside the brackets and
+.#   take items off the stack
+.# Only numeric literals can be used
+1 2 [2| 3 4]     .# => [1 2 3 4]
+'a b [1| 'c 'd]  .# => 'a "bcd"
+
+.# Joining 2 lists
 [1 2 3] [4 5 6] K .# => [1 2 3 4 5 6]
 
-.# Getting an element of a list 
-[7 8 9] 1 & .# => 8
+.# Getting an element of a list
+[7 8 9] 1 I .# => 8
+
+.# Negative indices take from the back
+[1 2 3 4] :1 I .# => 4
 
 .# Range Operator
 
@@ -178,7 +183,7 @@ _ .# duplicate the item on the top of the stack
 
 .# List with three numbers: create a range from the first to
 .# the third used the second as a step
-[0 0.5 2] R .# => [0 0.5 1.0 1.5 2.0] 
+[0 0.5 2] R .# => [0 0.5 1.0 1.5 2.0]
 
 .# List comprehension
 .# Follows the format:
@@ -188,12 +193,14 @@ _ .# duplicate the item on the top of the stack
 
 .# Empty map = basic range
 [10,] .# => [1 2 3 4 5 6 7 8 9 10]
-['\U00A3' '\U00B0',] .# => "£¤¥¦§¨©ª«¬­®¯°" 
+3 [1|,] .# => [1 2 3]
+['\U00A3' '\U00B0',] .# => "£¤¥¦§¨©ª«¬­®¯°"
 [0 3 15,] .# => [0 3 6 9 12 15]
 
 [5, 2*] .# => [2 4 6 8 10]
 [10, 2*, 5<] .# => [2 4]
 [10, 2*, 5<, 4=!] .# => [2]
+
 
 
 .###########################
@@ -202,6 +209,7 @@ _ .# duplicate the item on the top of the stack
 
 .# Variables can only contain lower case letters
 .# They are assigned using :
+.# Assignment leaves the assigned value on the stack
 1 :a .# => 1
 
 .# There are many default variables
@@ -217,54 +225,54 @@ abcdefghijklwxyz .# => "hello"
 100 α * 	.# => 5.0
 
 .# The compiler translates the special character into its name
-.# This means that the name of the special character and the 
+.# This means that the name of the special character and the
 .#		special character itself are equivalent
 2:alpha;
 4:β;
 α beta *	.# => 8
 
-		
+
 .###########################
 .#		  Types
-.###########################		
+.###########################
 
-.# the .t operator returns an object's type as a character
-1 .t	.# => 'I'
-'1 .t 	.# => 'C'
-1.t.t 	.# => 'C'
+.# the .T operator returns an object's type as a character
+1 .T  	.# => 'D
+'1 .T 	.# => 'C
+1.T.T 	.# => 'C
 
-.# The library functinon `isa` takes a type and an item and
-.# 		returns true if the item matches the type 
-5 'I isa 				.# => true
-M[1 2,3 4] 'M isa		.# => true
+.# The library function `isa` takes a type and an item and
+.# 		returns true if the item matches the type
+5 'N isa 				    .# => 1
+[1 2 3 4] 'L isa		.# => 1
+"1234" 'L isa       .# => 1
 
-.# 'N' represents any number type (Int, Double, BigDecimal)
-[1 1.0 1.0Ms] #.t		.# => "IFD"
-[1 1.0 1.0Ms] 'N #isa	.# => [ true true true ] 
+.# 'N' represents any number type (Double, Rational, etc)
+[1 :1r :1z] #.T     .# "DNF"
+[1 :1r :1z] 'N #isa	.# => [ 1 1 1 ]
 
 .# 'A' represents any type
-['c "c" 1 []] 'A #isa	.# => [ true true true true ] 
+['c "c" 1 []] 'A #isa	.# => [ 1 1 1 1 ]
 
 .# Strings are lists
-"hello" 'L isa			.# => true
+"hello" 'L isa			.# => 1
 
 .# Lists are only strings if all items are characters
-[1 2 3] 'S isa			.# => false
-['a 'b 'c] 'S isa 		.# => true 
+[1 2 3] 'S isa			.# => 0
+['a 'b 'c] 'S isa 		.# => 1
 
 
 .# TYPE CHART
-.# =========================		
-.#		I - integer
-.#   	D - double
-.#		F - bigdecimal
-.#    	N - number (I|D|F)
-.#    	B - boolean
-.#    	E - expression/block
-.#    	C - character
+.# =========================
+.#   	D - Num (represented by a double)
+.#		F - BigNum (represented by an arbitrary precision float)
+.#    N - number (D|F)
+.#    E - expression/block
+.#    C - character
 .#		L - list
-.#    	S - string
-.#    	A - any
+.#    S - string
+.#    R - dict
+.#    A - any
 
 
 
@@ -275,12 +283,12 @@ M[1 2,3 4] 'M isa		.# => true
 .# blocks contain code
 {20 50 +}
 
-.# they can be evaluated using the ~ operator 
+.# they can be evaluated using the ~ operator
 {20 50 +}~ .# => 70
 
 .# when blocks are evaluated, their contents are dumped
 .# to the stack and the stack continues as normal
-.# 100 10+ {1 + 2 *}~ 
+.# 100 10+ {1 + 2 *}~
 .#     110 {1 + 2 *}~
 .#        110 1 + 2 *
 .#            111 2 *
@@ -292,25 +300,26 @@ M[1 2,3 4] 'M isa		.# => true
 4 {a, a2*}~ .# => 8
 
 .# arguments are local variables
-2:n 3{n, n2^}~ n .# => 2 9.0 2 
+2:n 3{n, n2^}~ n .# => 2 9.0 2
 
 .# arguments are popped in the order they are written
 8 4 {a b, [a b] R}~ .# => [8 7 6 5 4]
 
 .# arguments can have type assertions
-.# The type assertion is written as an uppercase letter  
+.# The type assertion is written as an uppercase letter
 .#    following the argument name
-{aI bI, a b +}:addint;
-1 2 addint		.# => 3
-1.0 2.0 addint 	.# TYPE ERROR: Type error at ({ARGS}):
-				.#		Expected (INT)
-				.#      Recieved (<BIG_DECIMAL:2.0> )
-				
-				
+{aD bD, a b +}:add;
+1 2 add		.# => 3
+:1z :2z add
+ 				.# TYPE ERROR: Type error at ({ARGS}):
+				.#		Expected (NUM)
+				.#    Received (2 )
+
+
 .# See the types section for more information on types
 {nN, n1+}:addone;
-1 addone		.# => 2
-1.0 addone 		.# => 2.0 
+1 addone		  .# => 2
+:1z addone 		.# => 2.0
 "1" addone 		.# Error
 
 
@@ -322,8 +331,8 @@ M[1 2,3 4] 'M isa		.# => true
 .#		it has been evaluated
 
 .# The tick (`) operator will move the item just after it
-.# 		back the unevaluated stack 1 place 
-1 `2 3 4	.# => 1 3 2 4 
+.# 		back the unevaluated stack 1 place
+1 `2 3 4	.# => 1 3 2 4
 
 .# The object will be moved back BEFORE being evaluated
 1 `+ 1
@@ -339,7 +348,7 @@ M[1 2,3 4] 'M isa		.# => true
 
 
 .# Objects on the stack can be grouped using parenthesis
-.# Items in parenthesis are dumped and evaluated at run time 
+.# Items in parenthesis are dumped and evaluated at run time
 (1 2 + 3) +		.# => 6
 
 .# Since grouped items are treated as one item by the compiler,
@@ -381,7 +390,7 @@ M[1 2,3 4] 'M isa		.# => true
 .# 		most useful feature is help '\?'
 .# Using help, you can search for just about anything
 
-.# Operators 
+.# Operators
 .# aya> \? $
 .#	$ (L<N>|L<S>|S)
 .#  	sort least to greatest
@@ -400,27 +409,3 @@ M[1 2,3 4] 'M isa		.# => true
 .#     D - double
 .#     ...
 .#     A - any
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

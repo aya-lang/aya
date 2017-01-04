@@ -363,7 +363,7 @@ import "base/data"
 "\n"   :n;
 {VR0\K}:r; .#? N r\n  range from 0 to (1-n)
 .# data   :u;
-1!		 :w;
+:-1		 :w;
 0			 :x;
 0			 :y;
 
