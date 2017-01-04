@@ -91,6 +91,7 @@ public abstract class Obj {
 		
 		case STR : return 'S';
 		case NUMBER : return 'N';
+		case RATIONAL_NUMBER : return 'N';
 		case DICT : return 'R';
 		case ANY : return 'A';
 
