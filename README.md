@@ -7,6 +7,7 @@
   - Terse, yet readable syntax
   - Fully loaded with a rapidly growing standard library
   - Key-value pair dictionaries and objects
+  - Number types: double, arbitrary precision float, rational, *complex (coming son)*
   - Basic support for objects and data structures using metatables
   - Macro-like pre-evaluation stack manipulation
   - Functional feel: List comprehension etc.
