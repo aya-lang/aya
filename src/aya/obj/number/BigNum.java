@@ -348,8 +348,7 @@ public class BigNum extends Number {
 
 	@Override
 	public int compareTo(Number n) {
-		//Ascending
-		return (_val.subtract(n.toApfloat())).intValue(); 
+		return _val.compareTo(n.toApfloat()); 
 	}
 	
 	/////////////////////

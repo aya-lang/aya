@@ -362,7 +362,7 @@ public class RationalNum extends Number {
 	@Override
 	public int compareTo(Number n) {
 		//Ascending
-		return (int)((this.toDouble() - n.toDouble())); 
+		return Double.compare(this.toDouble(), n.toDouble()); 
 	}
 	
 	//////////////////////////

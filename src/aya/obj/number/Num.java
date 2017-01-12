@@ -386,8 +386,7 @@ public class Num extends Number {
 
 	@Override
 	public int compareTo(Number n) {
-		//Ascending
-		return (int)((_val - n.toDouble())); 
+		return Double.compare(_val, n.toDouble()); 
 	}
 
 
