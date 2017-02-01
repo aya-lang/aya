@@ -66,6 +66,8 @@ if (defaultwd V '/ =\;) {
 
 {,
 
+  {file.open}:new;
+
   .#? S file.open\n  open a file and read its contents
   {pathS,
     {,
