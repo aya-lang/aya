@@ -214,6 +214,8 @@
 {{2:_<?}U}:max;     .#? L max\n  max value of a list
 {{2:_>?}U}:min;     .#? L min\n  min value of a list
 
+{.EV0\KR{A.B}zw}:enumerate; .#? L enumerate\n  return a list of index-value pairs for the list
+
 .#? L rank\n  rank a list
 {_{>}pu#S1+}:rank;
 
