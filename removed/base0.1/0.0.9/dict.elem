@@ -1,0 +1,77 @@
+.# dict.elem
+.# A module for using a list of key value pairs as a dict
+
+.{? module: dict
+    Dictionaries are a set of key-value pairs. Dicts can be indexed using the key.
+    Dictionary literals follow the format:
+    [
+      [key1 value1]
+      [key2 value2]
+      ...
+      [keyN valueN]
+    ]dict!:mydict;
+.}
+
+.#? module: dict\n  functions for using a list of key/value pairs as a dict
+{@dict,
+
+    .# Custom attr getter
+    {1M>}:data;
+
+    .# Constructor
+    {l, [l] dict MO}:new;
+
+    {.data#0I}:keys;   .#? (dict) dict.keys\n  returns a list of the dicts keys
+    {.data#1I}:vals;   .#? (dict) dict.vals\n  returns a list of the dicts values
+
+    .#? (key) (dict) dict.getindex\n  return value of index for the key/value pair
+    {.keys\N\;}:getindex;
+
+    .#? (key) (dict) dict.index\n  return value for key, return nil if not found
+    {d k, k d.getindex _(-1)= {d.vals\I} {;nil} @?}:index;
+
+    .#? (value)(dict)(key) dict.put\n  assign the value to the key in the dict. create a new entry if needed
+    {v d k, k d.getindex _(-1)= {d.data\ : [k v]} {;d.data[k v]AK} @?;d}:put;
+
+    .#? (key)(dict) dict.haskey\n  returns true if the dictionary contains the key
+    {.getindex(-1)=!}:haskey;
+
+    .#? (dict) dict.len\n  returns the size of the dictionary
+    {.dataE}:len;
+
+    .#? (dict) dict.csvstr\n  convert the dict into a csv string for file output
+    {d, [d.keys d.vals, {k v, "$k, $v"}] "\n" join}:csvstr;
+
+    .#? S dict.opencsv\n  open a csv file as a dict
+    {filenameS, filename opencsv dict!}:opencsv;
+
+    .#? (dict) dict.top\n  print the first 7 entries of the dict
+    {d,
+      "[dict\n":str;
+      0:i;
+      d.dataE 7 Kmin:len;
+      while {i len <} {
+        str "  $(d.data iI)\n"+:str;
+        iB:i;
+      }
+
+      if (d.dataE len >) {
+       str "  ...\n"+:str;
+      }{}
+
+      str "]"+
+      .P
+    }:top;
+
+    {d,
+      "[dict\n":str;
+      0:i;
+      d.dataE:len;
+      while {i len <} {
+        str "  $(d.data iI)\n"+:str;
+        iB:i;
+      }
+      str "]"+
+    }:show;
+
+} .# END dict

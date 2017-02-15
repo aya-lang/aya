@@ -1,0 +1,44 @@
+.{? type: stack
+    A simple stack data structure
+
+    Create stacks by entering a list followed by the stack constructor
+    [1 2 3] stack!
+.}
+
+{@stack,
+  attr "list"
+
+  .#? L stack.new\n  convert a list into a stack
+  {l, [l] stack MO}:new;
+
+  .#? (stack) stack.show\n  convert a stack to a string
+  {self,
+    {"stack: <-"self.listPB;V;"-|"++}
+    {"stack: <- -|"}
+    self.isempty ?
+  }:show;
+
+  .#? (stack) stack.dollar\n(stack) stack.next\n  return the next item in the stack
+  {self,
+    "stack obj is empty" self.listE0= conderr
+    self.listV\;
+  }:dollar;
+
+  {stack.dollar}:pop;
+
+  .#? (stack) stack.peek\n  return the next item in the stack without removing it from the stack
+  {self,
+    "stack obj is empty" self.listE0= conderr
+    self.list0I
+  }:peek;
+
+  .#? (stack) stack.len\n  return the number of elements in the stack
+  {.listE}:len;
+
+  .#? (stack) stack.isempty\n  tests if the stack is empty
+  {.listE0=}:isempty;
+
+  .#? A (stack) stack.plus\nA (stack) stack.add\n  add an item to the stack
+  {self, self.list.V; self}:plus;
+  {stack.plus}:add;
+}
