@@ -1,0 +1,200 @@
+.# colors.aya
+.# Defines both color and colors module
+
+.{? module: color
+    A module for manipulating and printing colors in Aya
+.}
+{,
+  .# attr "r g b"
+
+  .#Constructors
+
+  {rD gD bD, {, r:r g:g b:b} color MO}:new;
+
+  .#? S color.newhex\n  create a new color using a hex value represented as a string
+  {cS, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
+
+  .#Conversions
+
+  .#? (color) color.rgb\n  return a list containing red, green, and blue values respectively
+  {self, [self.r self.g self.b]}:rgb;
+  .#? (color) color.hex\n  return a hexadecimal string representation of the color
+  {.rgb#{10 16 H '0 2 strleftpad}S}:hex;
+  .#? (color) color.hsv\n  return a list containing hue, sat, and val respectively
+  {.rgb255/~ color.rgbtohsv}:hsv;
+
+  .#Gradients
+  .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
+  {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
+  .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
+  {a b, '\block' 38L a b color.printgrad}:quickgrad;
+  .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
+  {oL a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
+  .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
+  {3@@\.grad 1I~ color!}:mid;
+
+  .#Printing
+
+  .#? L L<(color)> color.circprint\n  print each element of L1 using a rotation of colors from L2
+  {lst cols,
+    for 'i (lst irange) {
+      lst iI                  .# The ith item of the list
+      cols i colsE%I          .# The next color in the cycle
+      .print
+    };
+  }:circprint;
+  .#? A (color) color.print\n  print A using the color
+  {.rgb~ .P}:print;
+  .#? A (color) color.println\n  print A using the color; append a newline
+  {.print"\n".P}:println;
+  .#? (color) color.show\n  print a square of color and return the rgb values of the color
+  {c, "\{U2588} " c.rgb~ .P "($(c.r), $(c.g), $(c.b))"}:repr;
+  {c, "($(c.r), $(c.g), $(c.b))"}:str;
+
+
+  .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
+  {r g b : h s v delta maxv minv,
+    [r g b]min:minv;
+    [r g b]max:maxv;
+    maxv:v;
+    maxv minv-:delta;
+
+    if (maxv 0 =!) {
+
+      if (r maxv =) {
+        g b- delta/
+      } {
+        if (g maxv =) {
+          b r- delta/ 2+
+        } {
+          r g- delta/ 4+
+        }
+      } 60* :h;
+
+      h 0< then {h 360+:h;}
+
+      delta maxv/:s;
+    } {
+      0:s;
+      (-1):h;
+    }
+    [h s v]
+  }:rgbtohsv;
+}:color;
+
+.{? module: colors
+    The colors module defines several color objects. Here are some examples:
+	  colors.red
+	  colors.aqua
+	  colors.raspberry
+.}
+{,
+
+  .# colors.randchoice\n  get a random color
+  {;255Q 255Q 255Q color!}:rand;
+
+  72  72  68  color!:fg;    .# Aya GUI foreground color
+  39  40  34  color!:bg;    .# Aya GUI background color
+  0   0   0   color!:black;
+  255 255 255 color!:white;
+  255 0   0   color!:red;
+  0   255 0   color!:green;
+  0   0   255 color!:blue;
+  255 255 0   color!:yellow;
+  255 215 0   color!:gold;
+  255 165 0   color!:orange;
+  50  205 50  color!:lime;
+  0   255 255 color!:aqua;
+  255 165 79  color!:tan;
+  255 114 86  color!:coral;
+  128 0   128 color!:purple;
+  220 20  60  color!:crimson;
+  255 182 193 color!:lightpink;
+  255 192 203 color!:pink;
+  255 105 180 color!:hotpink;
+  135 38  87  color!:raspberry;
+  208 32  144 color!:violetred;
+  218 112 214 color!:orchid;
+  216 191 216 color!:thistle;
+  221 160 221 color!:plum;
+  238 130 238 color!:violet;
+  186 85  211 color!:mediumorchid;
+  148 0   211 color!:darkviolet;
+  153 50  204 color!:darkorchid;
+  75  0   130 color!:indigo;
+  138 43  226 color!:blueviolet;
+  147 112 219 color!:mediumpurple;
+  106 90  205 color!:slateblue;
+  248 248 255 color!:ghostwhite;
+  230 230 250 color!:lavender;
+  25  25  112 color!:midnightblue;
+  61  89  171 color!:cobalt;
+  65  105 225 color!:royalblue;
+  112 128 144 color!:slategray;
+  240 248 255 color!:aliceblue;
+  70  130 180 color!:steelblue;
+  135 206 250 color!:lightskyblue;
+  135 206 235 color!:skyblue;
+  51  161 201 color!:peacock;
+  173 216 230 color!:lightblue;
+  176 224 230 color!:powderblue;
+  95  158 160 color!:cadetblue;
+  64  224 208 color!:turquoise;
+  128 138 135 color!:coldgrey;
+  245 255 250 color!:mintcream;
+  0   255 127 color!:springgreen;
+  0   201 87  color!:emeraldgreen;
+  189 252 201 color!:mint;
+  61  145 64  color!:cobaltgreen;
+  143 188 143 color!:darkseagreen;
+  152 251 152 color!:palegreen;
+  50  205 50  color!:limegreen;
+  34  139 34  color!:forestgreen;
+  0   100 0   color!:darkgreen;
+  48  128 20  color!:sapgreen;
+  124 252 0   color!:lawngreen;
+  173 255 47  color!:greenyellow;
+  107 142 35  color!:olivedrab;
+  245 245 220 color!:beige;
+  128 128 105 color!:warmgrey;
+  189 183 107 color!:darkkhaki;
+  240 230 140 color!:khaki;
+  227 207 87  color!:banana;
+  218 165 32  color!:goldenrod;
+  255 250 240 color!:floralwhite;
+  253 245 230 color!:oldlace;
+  245 222 179 color!:wheat;
+  255 228 181 color!:moccasin;
+  255 239 213 color!:papayawhip;
+  252 230 201 color!:eggshell;
+  210 180 140 color!:tan;
+  156 102 31  color!:brick;
+  250 235 215 color!:antiquewhite;
+  222 184 135 color!:burlywood;
+  227 168 105 color!:melon;
+  237 145 33  color!:carrot;
+  255 140 0   color!:darkorange;
+  255 128 0   color!:orange;
+  250 240 230 color!:linen;
+  244 164 96  color!:sandybrown;
+  199 97  20  color!:rawsienna;
+  210 105 30  color!:chocolate;
+  41  36  33  color!:ivoryblack;
+  255 125 64  color!:flesh;
+  138 54  15  color!:burntsienna;
+  160 82  45  color!:sienna;
+  255 127 80  color!:coral;
+  94  38  18  color!:sepia;
+  233 150 122 color!:darksalmon;
+  138 51  36  color!:burntumber;
+  250 128 114 color!:salmon;
+  188 143 143 color!:rosybrown;
+  240 128 128 color!:lightcoral;
+  205 92  92  color!:indianred;
+  165 42  42  color!:brown;
+  178 34  34  color!:firebrick;
+  220 220 220 color!:gainsboro;
+  211 211 211 color!:lightgrey;
+  169 169 169 color!:darkgray;
+
+}:colors;

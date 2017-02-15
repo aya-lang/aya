@@ -1,0 +1,33 @@
+.{? type: set
+    The set type is a simple list type where there exits no duplicate elements.
+    Create a set by entering a list followed by the set constructor
+.}
+
+{,
+
+  {lL, {,l :~ :list} set MO}:new;
+
+  .#? A (set) set.in\n  tests if an item is in a set
+  {item self, self.list item N\;(-1)=!}:in;
+
+  .#? A (set) set.add\n  add an item to a set\n  overloaded operator: +
+  {item self, {s.list [item] K;}{}item self.in?self}:add;
+
+  .#? A (set) set.rem\n  remove an item from a set\n  overloaded operator: -
+  {item self,
+    self.list [item] :|
+  }:rem;
+  {\set.rem}:sub;
+
+  .#? (set) set.len\n  returns the number of elements in the set
+  {.listE}:len;
+
+  .#? (set) set.get\n  get specified index
+  {index self, self.list index I}:get;
+
+
+  .#? (set) set.clear\n  clear the contents of a set
+  {self, [] self.:list}:clear;
+
+  {.listP"set: "\+}:str:repr;
+}:set;

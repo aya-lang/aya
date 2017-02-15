@@ -1,0 +1,16 @@
+1M|:euler;
+0M|:pi;
+
+.# sqrt(2)
+2ZMq:sqrttwo;
+
+.# sqrt(3)
+3ZMq:sqrtthree;
+
+.#? phi: golden ratio (constant)
+.# Compute phi using 2 adjacent fib numbers
+[1000 _B, 1\0{_@+}@%;]_1I\0I/
+:phi;
+
+1 4/:fourth;	.# ¼
+1 2/:half;		.# ½

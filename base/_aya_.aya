@@ -1,0 +1,112 @@
+.# Aya
+
+{,
+
+[]:imported;
+
+""2MZ "base/" K :basedir;
+""2MZ :homedir;
+
+{,}:private;
+
+
+
+{
+  .# Assign the incoming string in the private
+  .# namespace to avoid name conflicts during
+  .# import
+  aya.private.:importname;
+
+  { .# File already imported
+    .# do nothing
+  }
+  { .# File not already imported, load it
+
+    .# Load the file
+    aya.basedir aya.private.importname + ".aya" + G ~
+
+    .# Add the name to the list
+    aya.private.importname aya.imported .B;
+  }
+  aya.imported aya.private.importname N\; :-1 = ?
+
+}:importbase;
+
+.# importfile uses the home dir instead of the
+.# base dir
+{
+  .# Assign the incoming string in the private
+  .# namespace to avoid name conflicts during
+  .# import
+  aya.private.:importname;
+
+  { .# File already imported
+    .# do nothing
+  }
+  { .# File not already imported, load it
+
+    .# Load the file
+    aya.homedir aya.private.importname + ".aya" + G ~
+
+    .# Add the name to the list
+    aya.private.importname aya.imported .B;
+  }
+  aya.imported aya.private.importname N\; :-1 = ?
+
+}:importfile;
+
+{
+  [] aya.:imported;
+}:resetimports;
+
+}:aya;
+
+.#######################
+.# DEFINE AYA KEYWORDS #
+.#######################
+
+
+
+.# ------
+.# IMPORT
+.# ------
+
+.#? import library\n  import a aya file\n  files are only imported once
+{`(
+  aya.private.:importname;
+
+  { .# input contains a file sep
+    aya.private.importname aya.importfile
+  }
+  { .# No file sep, import from base
+    aya.private.importname aya.importbase
+  }
+  .# Does the name contain a file sep? (9M|)
+  aya.private.importname _ 9M| | S= ?
+
+)}:import;
+
+
+
+
+.# ------
+.# RELOAD
+.# ------
+
+{:workingdirzz,
+  ""2MZ :workingdirzz;  .# Save the current working dir
+  ""3MZ                 .# Reset the working dir
+  aya.resetimports      .# Reset imports cache (just in case)
+  "ayarc.aya" G ~       .# Load ayarc.aya
+  workingdirzz 3 MZ     .# Change the working dir back
+}:reload;
+
+
+
+
+.# ----
+.# LOAD
+.# ----
+
+.#? load S\n  Load a script
+{`(".aya"+G~)}:load

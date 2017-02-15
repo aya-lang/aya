@@ -1,18 +1,14 @@
 .# std.aya
 .# The Aya standard library
 
-"std reloaded!" :P
-
 {`W}:using; .# Import variables from a module into the global scope
 
-.{
 {:zworkingdirz,
   ""2MZ :workingdirzz;  .# Save the current working dir
   ""3MZ                 .# Reset the working dir
   import "ayarc"        .# Load ayarc.aya
   workingdirzz 3 MZ     .# Change the working dir back
 }:reload;
-.}
 
 .#? load S\n  Load a script (same as import)
 {`(".aya"+G~)}:load:import;

@@ -1,0 +1,167 @@
+{,
+
+  {this, this.columns [1|~,.A]}:rows;
+
+  {colnmL rownmL colsL : numofrows,
+    if (colsE0=) {
+      0:numofrows;
+    } {
+      cols 0IE :numofrows;
+    }
+    "col title lengths do not macth" colsE colnmE =! conderr
+    "row title lengths do not match numofrows: $numofrows, row headers: $(rownmE) " numofrows rownmE =! conderr
+    "dataframe.new: all row lengths must be equal" cols {Enumofrows=}all! conderr
+    {,
+      colnm:colnames
+      rownm:rownames
+      cols:columns
+      numofrows:numofrows
+    } dataframe MO
+  }:new;
+
+  {[]__dataframe.new}:newempty;
+
+  {self,
+	  [""]self.colnamesKA
+	  self.rownames #{P" \{U2502}"+}
+	  self.columns
+	  [2|~,.A]K
+	  matstr
+  }:repr;
+  
+  {self, self.repr}:str;
+
+  .# Row Indexing
+  {nameS this : ix,
+    this.rownames name N :ix;;
+    "dataframe.rowbyname: unknown row name: $name" ix (-1) = conderr
+    ix this.rowbyix
+  }:rowbyname;
+
+  {iD this,
+    "dataframe.rowbyix: invalid column number: $i" this.numofrowsV i < i0< | conderr
+    this.rows i I
+  }:rowbyix;
+
+  {id this,
+    [ {id this.rowbyname} id.T 'S= .?
+      {id this.rowbyix}   id.T 'I= .?
+      {"dataframe.row: id must be a string or int. recieved: $id".D}
+    ].S
+  }:row;
+
+  .# Column Indexing
+  {nameS this : ix,
+    this.colnames name N :ix;;
+    "dataframe.colbyname: unknown column name: $name" ix (-1) = conderr
+    ix this.colbyix
+  }:colbyname;
+
+  {iD this,
+    "dataframe.colbyix: invalid column number: $i" this.columnsEV i < i0< | conderr
+    this.columns i I
+  }:colbyix;
+
+  {id this,
+    [ {id this.colbyname} id.T 'S= .?
+      {id this.colbyix}   id.T 'I= .?
+      {"dataframe.col: id must be a string or int. recieved: $id".D}
+    ].S
+  }:col;
+
+  {colnameS initN self,
+    self.colnames colnameAK self.:colnames;
+    self.columns init self.numofrows LAK self.:columns;
+  }:addcol;
+
+  {rownameS init self,
+    self.rownames rownameAK self.:rownames;
+    self.columns #{initAK} self.:columns;
+    self.numofrowsB self.:numofrows;
+  }:addrow;
+
+  {name self : ix,
+    [
+      {
+        self.colnames name N :ix;;
+        "Invalid col name: $name" ix (-1) = conderr
+        ix
+      } name .T 'S = .?
+      {name} name 'N isa .?
+      {"Invalid colindex type. Received $name ($(name Mw))" .D}
+    ].S
+  }:colindex;
+
+  {name self : ix,
+    [
+      {
+        self.rownames name N :ix;;
+        "Invalid row name: $name" ix (-1) = conderr
+        ix
+      } name .T 'S = .?
+      {name} name 'N isa .?
+      {"Invalid rowindex type. Received $name ($(name Mw))" .D}
+    ].S
+  }:rowindex;
+
+  {indexL self: r c rix cix,
+    "Index must have two elements" indexE2=! conderr
+    index 0I:r;
+    index 1I:c;
+
+    .# Get row index
+    [
+      {r self.rowindex} r.T'S= .?
+      r _ 'N isa .?
+      (-1)
+    ].S:rix;
+
+    .# Get column index
+    [
+      {c self.colindex} c.T'S= .?
+      c _ 'N isa .?
+      (-1)
+    ].S:cix;
+
+    .# Get data
+    [
+      {self.columns cix I} rix(-1)= cix(-1)=! &.? .# Entire column
+      {self.columns#{rixI}} rix(-1)=! cix(-1)= &.? .# Entire row
+      {self.columns cix I rix I} rix(-1)=! cix(-1)=! &.? .# Specific cell
+      {"dataframe: invalid index. recieved $index"}
+    ].S
+  }:get;
+
+  .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
+  {pathS rowheaderN colheaderN : table rownames colnames rowcount colcount,
+    path opencsv : table;
+
+    .# If there are headers, subtract one from the count
+    .# so that we do not include the headers themselves
+    tableE {}{V} colheader? : rowcount;
+    table0IE {}{V} rowheader? : colcount;
+
+    .# Row names
+    {[rowcount,P]} .# No headers in file, use a range of numbers
+    {table#{V\;P} {}{V;}colheader? } .# if there are col headers, remove the first entry
+    rowheader ? :rownames;
+
+    .# Column names
+    {[colcount,P]} .# No names in file, use a range of numbers
+    {table 0 I  tableV;; } .# Cols are the first row of the table
+    colheader ? :colnames;
+
+    .# Generate dataframe object
+    colnames rownames [table~,.A] dataframe.new
+
+  }:opencsv;
+
+  {column self : i,
+    column self.colindex :i;
+    self.rows {iI} .$ [1|~,.A] self.:columns;
+    self
+  }:sort;
+
+}:dataframe;
+
+.# ["total" "percent"] ["a" "b"] [[10 15][40 60]] dataframe!:df

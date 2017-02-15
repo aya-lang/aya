@@ -1,0 +1,133 @@
+{, .# plot
+
+  {, .# axis
+    {minN maxN,
+      {,min:min max:max} plot.axis MO
+    }:new;
+    {0}:eq;
+  }:axis;
+
+  .# Plot types
+  0:tline;     .#? plot.tline\n  line plot type id
+  1:tscatter;  .#? plot.tscatter\n  scatter plot type id
+
+
+  .#? plot.new\n  create a new plot instance with default settings
+  {:plt,
+    .# [plot.fieldnamesE,0] plot MO :plt;
+    {,
+      plot.tline  :type
+      500         :width
+      400         :height
+      ""          :title
+      ""          :xlabel
+      ""          :ylabel
+      []          :x
+      []          :y
+      1           :legend
+      (-1)        :stroke .# Use individual strokes
+    }
+    plot MO
+  }:new;
+
+  .#? (plot) plot.view\n  view the plot in a new window
+  {self,
+    self MX
+  }:view;
+
+  .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
+  {filenameS self : cpy,
+    self_ :cpy;; .# Create a copy
+    0 cpy.:show;
+    filename  cpy.:filename;
+    cpy MX
+  }:save;
+
+  .#? L<N> (plot) plot.addline\n  add a dataset to the plot using defaults
+  {listL self,
+    "" 1 [] list self.addseries
+  }:addline;
+
+   .#? L<N> (plot) plot.domain\n  set the domain of the plot
+  {dataL self,
+    data self.:x;
+  }:domain;
+
+  .#? nameS strokeN colorL dataL (plot) plot.addseries\n  add a series to a plot
+  {nameS strokeN colorL dataL self,
+    .# stroke 0 = then {self.stroke :stroke;}
+    self.y {,name:name stroke:stroke color:color data:data} AK;
+  }:addseries;
+
+  .#? nameS strokeN colorL exprE (plot) plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
+  {nameS strokeN colorL exprE self,
+    self.y {,name:name stroke:stroke color:color [self.x, expr]:data} AK;
+  }:addexpr;
+
+  .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
+  {domainL rangeL : plt,
+    plot!:plt;
+    plottype.scatter plt.:type;
+    domain plt.domain
+    range plt.addline
+    plt
+  }:scatter;
+
+  .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
+  {xL yL : reg,
+    x y regression :reg;
+    x y plot.scatter.view
+    x [x,reg] plot.line.view
+    "Regression: y= $(1reg0reg-)x + ($(0reg))".P
+  }:scatterreg;
+
+  .# domainL rangeL plot.line\n  return a line plot with the given domain and range
+  {domainL rangeL : plt,
+    plot!:plt;
+    domain plt.domain
+    range plt.addline
+    plt
+  }:line;
+
+  .#? munN maxN eE plot.fn\n  plot the function e on the domain (min, max). return a plot instance
+  {minN maxN exE : plt,
+    plot!:plt;
+    minMd maxMd 600.1 linspace plt.domain
+    "" 1 [] {ex} plt.addexpr
+    plt
+  }:fn;
+
+  .#? minN maxN exsL plot.fns\n  plot each function in exs on the domain (min, max). return a plot instance
+  {minN maxN exsL : plt,
+    plot!:plt;
+    minMd maxMd 600.1 linspace plt.domain
+    for 'x exs {
+      "" 1 [] {x} plt.addexpr
+    };
+    plt
+  }:fns;
+
+
+  {"Plot Instance"}:str:repr;
+
+}:plot;
+
+{,
+  0:line;
+  1:scatter;
+}:plottype;
+
+
+
+
+.{? scatter plot example
+  [10,;.Q] [10,;.Q] plot.scatter :p;
+  "A Scatter plot" p.:title
+  p.view
+.}
+
+.{? line plot example
+  10R _#Mq plot.line :p;
+  3 p.:stroke
+  p.view
+.}
