@@ -1,0 +1,15 @@
+.# Aya knows what you
+.# mean, even if you
+.# want to do math on
+.# an entire Array
+[ "London"
+  "Oslo"
+  "Paris"
+  "Amsterdam"
+  "Berlin" ] :cities;
+
+["Berlin" "Oslo"] :visited;
+
+"I still need to visit the "
+"following cities: " +
+cities visited :| P + println

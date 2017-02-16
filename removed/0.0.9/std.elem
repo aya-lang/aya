@@ -1,0 +1,414 @@
+.# std.elem
+.# the element standard library
+
+{`W}:using; .# Import variables from a module into the global scope
+
+{:zworkingdirz,
+  ""2MZ :workingdirzz;  .# Save the current working dir
+  ""3MZ                 .# Reset the working dir
+  import "load"         .# Load load.elem
+  workingdirzz 3 MZ     .# Change the working dir back
+}:reload;
+
+.#? load S\n  Load a script (same as import)
+{`(".elem"+G~)}:load:import;
+
+.###################################
+.#		         CONTROL             #
+.###################################
+.#NOTE Variable inside control functions have a "zz" at the end to avoid name conflicts
+
+.#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
+{```({ifstmtcondzB ifstmtthenz ifstmtelsez,
+  {ifstmtelsez} {ifstmtthenz} ifstmtcondz?
+})}:if;
+
+.#? B then E\n  evaluates E if B is true
+{`({}@@\?)}:then;
+
+.#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
+{``({dowhilecondz dowhileloopz, {dowhileloopz dowhilecondz}W})}:dowhile;
+
+.#? while E E\n  evaluates E1 as long as E2 is true
+{``({whilecondz whileloopz,
+  {}
+  {{whileloopz whilecondz}W}
+  whilecondz?
+})}:while;
+
+.#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
+{```({forloopcz forlooplistz forloopblkz,
+  "forlooplistz#{:$forloopcz; forloopblkz}"~
+})}:for;
+
+.#? repeat N E\n  repeat statement:\n  repeat N {\n    expressions\n  }
+{``(\%)}:repeat;
+
+.#? A print\n  convert to string a print to console
+{.P}:print;
+
+.#? A println\n  convert to string and print to console on its own line
+{P'\n'+.P}:println;
+
+.#? try EE\n  evaluate the first block, if error, then evaluate the second block
+{``({.K})}:try;
+
+.#? SB conderr\n  throw error message if condition is true
+{conderrstrz conderrcondz, {} {conderrstrz.D} conderrcondz?}:conderr;
+
+.{? attr S
+  attr getter/setter macro
+  creates getters for each variable in the string S
+  creates setters for each variable in the form setvarname
+  each variable must be whitespace separated
+.}
+.# {`([1|" "| _ER, {v n, "{1I$(nV)I}:$v;"}]#{_~};)}:attr;
+{`({:varnamesz fieldindexzz,
+  "[a-z]+"&:varnameszz;
+  0:n;
+  1:fieldindexzz;
+
+  for "v" varnameszz {
+    .# getter
+    "{$fieldindexzzM>}:$v;"~
+
+    .# setter
+    "{$fieldindexzzM<}:set$v;"~
+    fieldindexzzB:fieldindexzz;
+  };
+})}:attr;
+
+
+
+.#? nil\n  represents nothing
+{@nilmodule,
+  {"<nil>"}:show;
+} [0] nilmodule MO:nil;
+{nil=}:isnil;
+
+.# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
+{`(10\^*)}:e;
+
+.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
+{`({blkE expectedL,
+  if ([blk] expected=) {
+	  .# Do nothing
+	} {
+    .# Throw an error message about the assertation
+	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
+	}
+})}:assert;
+
+
+.#? struct "name: attr1 attr2 ..."\n  create a struct with the given parameters
+{`({str : l name paramstr accessstr,
+  str":"|:l;
+
+  "struct must have name and parameters separated by a ':', recieved \"$str\"" {lE2=!} conderr
+
+  l0I trim :name;
+  l1I trim :paramstr;
+
+  "struct params must follow the ':' and be space-separated, recieved \"$paramstr\"" {paramstr "[a-z ]+"|""=!} conderr
+
+  .# build a string of the form
+  .# "$(name.attr1), $(name.attr2), ..."
+  name paramstr trim {n p, p" "|#{"\$(" n"."++\+"), "+}SB;B;}~ :accessstr;
+
+  .# Build the type definition for the struct
+  "
+  {@$name,
+    attr \"$paramstr\"
+    {$paramstr, [$paramstr] $name MO}:new;
+    {$name, [\"{$name: \" \"$accessstr\" \"}\"]S }:show
+  }
+  "~
+
+})}:struct;
+
+.###################################
+.#		  STACK MANIPULATION         #
+.###################################
+
+{i:t,.Ai!.I:t;~t}:cp;    .#? N ix\n  copy the Nth element from the top of the stack to the top
+{.A{t,tV:t;~t}~}:back;   .#? back\n  bring the item on the back of the stack to the top\n  see also: dup
+{:t,.A_E:t;~t}:count;    .#? count\n  counts the number of items on the stack
+
+.###################################
+.#		      	 TYPES               #
+.###################################
+
+{.]}:int;					  .#? A int\n  cast to an int
+{Md}:double;				.#? A double\n  cast to an double
+{Z}:bignum;		      .#? A bignum\n  cast to an bignum
+{P}:string;			    .#? A string\n  cast to an string
+{.'}:char;          .#? A char\n  cast to an char
+{.T}:typeof;				.#? A typeof\n  return the character representation of the type
+
+
+.#? AC isa\n  returns true if the item's type matches the input character
+{itemA typeC,
+	[
+	  T type'A=.? .# Any
+	  {"DFN"item.TN\;(-1)=!} type'N=.? .# Number is num or bignum
+	  {"SL"item.TN\;(-1)=!} type'L=.? .# Number is a string or list => list
+	  type item.T = .# Normal Check
+	].S
+}:isa;
+
+
+.###################################
+.#		       CHARACTER             #
+.###################################
+
+.#? C islower\n  tests if a character is lowercase
+{_'`>\'{<&}:islower;
+
+.#? C isupper\n  tests if a character is uppercase
+{_'@>\'[<&}:isupper;
+
+.#? C toupper\n  converts a character to uppercase
+{cC,c!c_isupper?}:toupper;
+
+.#? C tolower\n  converts a character to lowercase
+{cC,c!c_islower?}:tolower;
+
+.#? C isdigit\n  tests if a character is a digit
+{ _'0.>\'9.<&}:isdigit;
+
+.#? S spechar\n  converts the name of a special character into the corresponding special character
+{aS,"\"\\{$a}\""~.'}:spechar;
+
+.###################################
+.#		      	 STRING              #
+.###################################
+
+{l s, [l, s+]B;l(-1)IAKS}:join;         .#? L S|C join\n  join a list of strings with another string or char
+{_{isdigit}I=}:alldigits;               .#? S alldigits\n  tests if all chars in a string are digits
+{"^\\s+|\\s+$" |S}:trim;                .#? S trim\n  remove whitespace from start and end of string
+{dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;  .#? SS readdlm\n  open a file, split into lines, split each line using dlm
+{"," readdlm}:opencsv;                  .#? S opencsv\n  opens and parses a csv file into a matrix
+{\_@|S=!}:strcontains;									.#? SS strcontains\n	tests if S1 contains S2
+
+.#? SCI strleftpad\n  left pad string S so it is at least length I using char C
+{strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;
+
+.#? SCI strrightpad\n  right pad string S so it is at least length I using char C
+{strS padC lenN, str.E len\- {padK}\%}:strrightpad;
+
+.#? SSS replace\n  find and replace\n  <find> <replace> <str> replace
+{find replace strS,
+	str findP | # {replace+} S {B;}replacePE%
+}:replace;
+
+.#? S isnum\n  returns true if the string is a valid number
+{.!'N isa}:isnum;
+
+.#? S tocamel\n  convert a string with underscores to camel case
+{str,
+  for 'c ['a'z,] {
+    "_$c" c!P str replace :str;
+  };
+  str
+}:tocamel;
+
+.###################################
+.#		      	  LIST               #
+.###################################
+
+{\N\;(-1)=!}:in;				.#? AL in\n  tests whether or not item `a` is in list `l`
+{N\;(-1)=!}:ni; 				.#? LA ni\n  tests whether or not item `a` is in list `l`
+{AKR}:range;					.#? NN range\n  generates a range from n1 to n2
+{lLiNeA,l i:(e)}:put;	.#? LNA put\n  places the item `a` in the list `l` at index `n`
+{[]{.QK}@%}:randset;	.#? I randset\n  generate a set of random nums (0 to 1) of length i
+{{K}U}:flatten;			  .#? L flatten\n  flattens the list by a single dimension
+{B\.V}:roll;      		.#? L roll\n  move the last element to the front
+{_@K\K}:surround;     .#? LA surround\n  append A to the front and back of L
+{p q e, [p q, e]}:zw;	.#? LLE zw\n  zip with
+{[1|~,.A]}:transpose; .#? L<L> transpose\n  transpose a list of lists
+
+.#? L rank\n  rank a list
+{_{>}pu#{#{0 1@?}SB}}:rank;
+
+.#? AEN iter\n  start at A and iterate E N times
+{start expr len,
+  [start {_ expr} len %]
+}:iter;
+
+.#? N digits\n  convert a number into a list of digits
+{[1|{_10%\10/.]_0=!}W;]!}:digits;
+
+.#? LN lottod\n  take L random distinct items from L
+{[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
+
+.#? LI lotto\n  pick N random items from L
+{\.EV@L#QI}:lotto;
+
+
+.#? L<L> matstr\n  print a list of lists in matrix format
+{
+  [1|~,                 .# Transpose
+    .A_#{PE}maxBB	      .# Calculate the maximum print width
+    #{\P\>}             .# Pad each entry with spaces on the left
+  ][1|~,                .# Transpose
+    .AS                 .# Combine strings
+  ]'\n'join             .# Separate lines
+}:matstr;
+
+{aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
+{lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
+
+.#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each
+{la lb ex, [la lb laEL,\#{ex}]}:permusing:pu;
+
+.#? <LII> swapitems\n  swap two elements in a list given their indices
+{listL iD jD : tmp,
+	list i I : tmp;
+	list j I  list i D
+	tmp list j D
+  list
+}:swapitems;
+
+.#? <L> shuffle\n  shuffle a list
+{{;.Q}.$}:shuffle;
+
+.#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
+{a b nums,
+  {[a b a-numsV/a+ b,]}
+  a numsL .# a=b, return nums a's
+  a b=?
+
+  .# If the length is not equal to nums, add b to the end
+  _Enums={bK}{}@?
+}:linspace;
+
+.#? III intspace\n create a range from a to b consisting of c ints\n  (also see linspace)
+{a b l, [a b l linspace,.]]}:intspace;
+
+.#? L<N> digitstonum\n  convert a list of numbers into a number
+{lL : total multip,
+  1:multip;
+  l!#{
+    multip* total+:total;
+    multip 10 *:multip
+  };
+  total
+}:digitstonum;
+
+{e,{e!}.N|;}:takewhile:tw;
+{e,{e=}tw}:takewhileeq:twe;
+
+.###################################
+.#		 BOOLEANS / COMPARISONS      #
+.###################################
+
+T:true;							.# true literal
+F:false;						.# false literal
+{`!}:not;						.#? not\n  logical NOT\n  (infix)
+{`&}:and;						.#? and\n  logical AND\n  (infix)
+{`|}:or;						.#? or\n  logical OR\n  (infix)
+{"unimplemented".P}:xor;							.#? xor\n  logical XOR\n  (infix)
+
+.# Operators
+{.>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
+{.<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
+{=!}:ne;				.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
+
+.# List conditionals
+{{&}U}:allt;		.#? <L> allt\n  true if all elements in list are true
+{{|}U!}:allf;	.#? <L> allf\n  true if all elements in list are false
+{\_@IE\E=}:all; .#? <LE> all\n  tests if all elements of the list meet the condition
+{IE0>}:any; 		.#? <LE> any\n  returns true of any elements satisfy the predicate
+
+
+.###################################
+.#		   Bitwise Operators         #
+.###################################
+
+.#? N unbit\n  takes a list of bits and converts it to a decimal
+{2 10 H}:unbit;
+
+.#? N bits\n  takes a positive number and returns its bits as a list
+{10 2 H}:bits;
+
+.#? L<I> N bleftpad\n  append 0s to the left end of L until L is length N
+{>}:blpad;
+
+
+.###################################
+.#		   ADDITIONAL FILES          #
+.###################################
+
+
+import "base/math"
+import "base/docs"
+
+
+.# Modules
+import "base/regex"
+import "base/dict"
+import "base/matrix"
+import "base/frac"
+import "base/date"
+import "base/demo"
+import "base/stack"
+import "base/colors"
+import "base/set"
+import "base/complex"
+import "base/queue"
+import "base/stack"
+import "base/plot"
+import "base/files"
+import "base/dataframe"
+import "base/dialog"
+import "base/dataframe"
+import "base/golf"
+
+import "base/data"
+
+
+
+
+.###################################
+.#		    DEFAULT VARIABLES        #
+.###################################
+
+[]		:emptyset;
+{2^}	:square;
+{3^}	:cube;
+[256,V.']:ascii;
+
+1			 :a;
+2			 :b;
+3			 :c;
+10		 :d;
+.#e (scientific notation)
+100		 :h;
+{.]}	 :i; .#? A i\n  cast to int
+1000	 :k;
+[]		 :l;
+.#m (matrix module)
+"\n"   :n;
+{VR0\K}:r; .#? N r\n  range from 0 to (1-n)
+data   :u;
+1!		 :w;
+0			 :x;
+0			 :y;
+
+.#z (infix frac constructor)
+
+.# Stopwatch
+{M$:timeitstart;}:timeitstart;
+{["timeit: "M$timeitstart-3E/"s\n"]S.P {M$:timeitstart;}:timeitstart;}:timeitend;
+{{M$:timeitstart;}:timeitstart;}:timeitclear;
+
+
+" |":spacebar;
+
+{`({a b, a#tolower:a; b#tolower:b; a"jasmine"= a"nick"=| b"jasmine"= b"nick"=| &})}:heart;
+
+{:z,#{zB:z3%+}}:scramble;
+{:z,#{zB:z3%-}}:descramble;
+
+.# Overwrite bowtie default
+9999.' "bowtie" Mk

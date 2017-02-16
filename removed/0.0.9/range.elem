@@ -1,0 +1,71 @@
+{@range,
+
+  attr "low inc hi"
+
+  {lowN incN hiN,
+    [low inc hi_inc%-] range MO
+  }:new;
+
+  {valN : inc,
+    1:inc;
+    val.! (-1) = then {(-1):inc;}
+
+    inc inc val range.new
+  }:r;
+
+  {currentN range,
+    current range.inc +
+  }:next;
+
+  {range, range.low}:start;
+
+  {currentN range,
+    current range.hi {.>} {.<} range.inc.! (-1) = ?
+  }:done;
+
+  {range,
+    .# Faster to generate list than string
+    range.listP
+  }:show;
+
+
+  {range : out current,
+    [] :out;
+    range.start :current;
+    while {current range.done!} {
+      current out .B;
+      current range.next :current;
+    }
+    current out .B
+  }:list;
+
+
+  {x rng : t,
+    xMw".range"= then {x:t; rng:x; t:rng;}
+    rng.low x+ rng.inc rng.hi x+ range.new
+  }:plus;
+
+  {x rng : t,
+    xMw".range"= then {x:t; rng:x; t:rng;}
+    rng.low x* rng.inc x* rng.hi x* range.new
+  }:star;
+
+  {range : l i h shift,
+    range.low:l;
+    range.inc:i;
+    range.hi:h;
+
+    .# Normalize, make the increment 1
+    l 1 i /*:l;
+    h 1 i /*:h;
+
+    .# Calculate shift, begin the range at 1
+    1 l - : shift;
+    h shift + l shift + V -
+    range.listE
+  }:len;
+
+}
+
+
+1 1 10 range! :r
