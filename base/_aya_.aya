@@ -1,12 +1,15 @@
-.# Aya
+.# _aya_
+.# Defines the aya namespace and Aya keywords
 
-{,
+
+{, .# begin aya namespace
 
 []:imported;
 
 ""2MZ "base/" K :basedir;
 ""2MZ :homedir;
 
+.# define variables here to avoid name conflicts
 {,}:private;
 
 
@@ -15,6 +18,7 @@
   .# Assign the incoming string in the private
   .# namespace to avoid name conflicts during
   .# import
+  aya.private.:importdrnm;
   aya.private.:importname;
 
   { .# File already imported
@@ -22,44 +26,47 @@
   }
   { .# File not already imported, load it
 
-    .# Load the file
-    aya.basedir aya.private.importname + ".aya" + G ~
-
     .# Add the name to the list
     aya.private.importname aya.imported .B;
+
+    { .# try
+      .# Load the file
+      aya.private.importdrnm aya.private.importname + ".aya" + G ~
+    } { .# catch
+      .# Remove the file from imported list
+      aya.imported aya.private.importname N .- ;
+      "Error importing " aya.private.importname + .D
+    } .K
+
   }
   aya.imported aya.private.importname N\; :-1 = ?
 
+}:importfrmdir;
+
+
+.# importbase uses the home dir instead of the
+.# base dir
+{
+  aya.basedir aya.importfrmdir
 }:importbase;
+
 
 .# importfile uses the home dir instead of the
 .# base dir
 {
-  .# Assign the incoming string in the private
-  .# namespace to avoid name conflicts during
-  .# import
-  aya.private.:importname;
-
-  { .# File already imported
-    .# do nothing
-  }
-  { .# File not already imported, load it
-
-    .# Load the file
-    aya.homedir aya.private.importname + ".aya" + G ~
-
-    .# Add the name to the list
-    aya.private.importname aya.imported .B;
-  }
-  aya.imported aya.private.importname N\; :-1 = ?
-
+  aya.homedir aya.importfrmdir
 }:importfile;
+
 
 {
   [] aya.:imported;
 }:resetimports;
 
 }:aya;
+
+
+
+
 
 .#######################
 .# DEFINE AYA KEYWORDS #
