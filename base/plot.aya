@@ -1,3 +1,5 @@
+import "list"
+
 {, .# plot
 
   {, .# axis
@@ -117,6 +119,17 @@
   1:scatter;
 }:plottype;
 
+
+.# Basic Plotting
+
+.{
+{.X}:plot;
+[(-10)_0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
+{fE,[(-10)_.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
+{fE,[(-10)_.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
+{_(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
+{(-2)E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
+.}
 
 
 

@@ -1,7 +1,34 @@
 .# math.aya
 .# Essential math functions for Aya
 
-import "base/constants"
+import "types"
+import "list"
+
+.# Constants
+
+1M|:euler; .#? euler\n  euler's constant e
+0M|:pi;    .#? pi\n  constant \{pi}
+4M|:nan;   .#? nan\n  not a number double literal
+5M|:inf;   .#? inf\n  infinity double literal
+6M|:minf;  .#? minf\n  minus infinity double literal
+
+.# sqrt(2)
+2ZMq:sqrttwo;
+
+.# sqrt(3)
+3ZMq:sqrtthree;
+
+
+
+.#? phi: golden ratio (constant)
+.# Compute phi using 2 adjacent fib numbers
+[1000 _B, 1\0{_@+}@%;]_1I\0I/
+:phi;
+
+1 4/:fourth;	.# ¼
+1 2/:half;		.# ½
+
+
 
 .# Essential Functions
 
@@ -166,14 +193,6 @@ import "base/constants"
 
 
 
-.# Plotting
-
-{.X}:plot;
-[(-10)_0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
-{fE,[(-10)_.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
-{fE,[(-10)_.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
-{_(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
-{(-2)E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
 
 .# Statistics
 {set : m, set avg:m; set#{m-2^}S setE /}:variance;
@@ -204,11 +223,6 @@ import "base/constants"
   "{($b)*($a)+}"~
 }:regression;
 
-.# Constants
-
-4M|:nan;    .#? nan \n  not a number double literal
-5M|:inf;   .#? inf \n  infinity double literal
-6M|:minf; .#? minf \n  minus infinity double literal
 
 .# Vector
 {[2|,*]S}:bullet:dot; .#? dot\n dot (scalar) product of two lists

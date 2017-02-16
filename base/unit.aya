@@ -68,4 +68,4 @@
 .# Conversion operator
 '\U27f6' "to" Mk
 
-"conv.aya: Easy unit conversions for Aya".P
+"unit.aya: Easy unit conversions for Aya".P

@@ -1,3 +1,12 @@
+import "string"
+
+
+.#? SS readdlm\n  open a file, split into lines, split each line using dlm
+{dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
+
+.#? S opencsv\n  opens and parses a csv file into a matrix
+{"," readdlm}:opencsv;
+
 .#? S alterprompt\n  change the prompt
 {1MZ}:alterprompt;
 
@@ -48,7 +57,7 @@
 
 .#? more S\n  print a file to the console
 {`({filenameS,
-  filename G colors.coldgrey.println
+  filename G println
 })}:more;
 
 {
@@ -103,4 +112,5 @@ if (defaultwd V '/ =\;) {
 
   .#? A (file) file.println\n  print the string representation of A to the file followed by a \\n
   {a self, aP"\n"+ self.print}:println;
+
 }:file;
