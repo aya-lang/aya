@@ -57,7 +57,7 @@
 }.# END unit
 
 
-.# Conversionunctions (Uncomment to use)
+.# Conversion functions (Uncomment to use)
 
 .###Type saftey version
 {`({numN fromN toN, num from * to/})}:to;
