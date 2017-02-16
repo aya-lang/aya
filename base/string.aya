@@ -42,6 +42,15 @@ import "types"
 }:matstr;
 
 
+{str,
+  str ERB; # {i,
+    {}
+    {str i :(str i I toupper)}
+    str iV I iswhitespace ?
+  };
+  str 0:(str 0I toupper)
+}:titlecase;
+
 {:z,#{zB:z3%+}}:scramble;
 {:z,#{zB:z3%-}}:descramble;
 
