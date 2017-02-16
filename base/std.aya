@@ -1,127 +1,12 @@
 .# std.aya
 .# The Aya standard library
 
-"std reloaded!" :P
 
-{`W}:using; .# Import variables from a module into the global scope
 
-.{
-{:zworkingdirz,
-  ""2MZ :workingdirzz;  .# Save the current working dir
-  ""3MZ                 .# Reset the working dir
-  import "ayarc"        .# Load ayarc.aya
-  workingdirzz 3 MZ     .# Change the working dir back
-}:reload;
-.}
-
-.#? load S\n  Load a script (same as import)
-{`(".aya"+G~)}:load:import;
-
-.###################################
-.#		         CONTROL             #
-.###################################
-.#NOTE Variable inside control functions have a "zz" at the end to avoid name conflicts
-
-.#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
-{```({ifstmtcondz ifstmtthenz ifstmtelsez,
-  {ifstmtelsez} {ifstmtthenz} ifstmtcondz?
-})}:if;
-
-.#? B then E\n  evaluates E if B is true
-{`({}@@\?)}:then;
-
-.#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
-{``({dowhilecondz dowhileloopz, {dowhileloopz dowhilecondz}W})}:dowhile;
-
-.#? while E E\n  evaluates E1 as long as E2 is true
-{``({whilecondz whileloopz,
-  {}
-  {{whileloopz whilecondz}W}
-  whilecondz?
-})}:while;
-
-.#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
-{```({forloopcz forlooplistz forloopblkz,
-  "forlooplistz#{:$forloopcz; forloopblkz}"~
-})}:for;
-
-.#? A print\n  convert to string a print to console
-{.P}:print;
-
-.#? A println\n  convert to string and print to console on its own line
-{P'\n'+.P}:println;
-
-.#? try EE\n  evaluate the first block, if error, then evaluate the second block
-{``({.K})}:try;
-
-.#? SB conderr\n  throw error message if condition is true
-{conderrstrz conderrcondz, {} {conderrstrz.D} conderrcondz?}:conderr;
-
-.{? attr S
-  attr getter/setter macro
-  creates getters for each variable in the string S
-  creates setters for each variable in the form setvarname
-  each variable must be whitespace separated
-.}
-.{
-.# {`([1|" "| _ER, {v n, "{1I$(nV)I}:$v;"}]#{_~};)}:attr;
-{`({:varnamesz fieldindexzz,
-  "[a-z]+"&:varnameszz;
-  0:n;
-  1:fieldindexzz;
-
-  for "v" varnameszz {
-    .# getter
-    "{$fieldindexzzM>}:$v;"~
-
-    .# setter
-    "{$fieldindexzzM<}:set$v;"~
-    fieldindexzzB:fieldindexzz;
-  };
-})}:attr;
-.}
 
 .# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
 {`(10\^*)}:e;
 
-.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
-{`({blkE expectedL,
-  if ([blk] expected=) {
-	  .# Do nothing
-	} {
-    .# Throw an error message about the assertation
-	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
-	}
-})}:assert;
-
-
-.#? struct "name: attr1 attr2 ..."\n  create a struct with the given parameters
-.{
-{`({str : l name paramstr accessstr,
-  str":"|:l;
-
-  "struct must have name and parameters separated by a ':', recieved \"$str\"" {lE2=!} conderr
-
-  l0I trim :name;
-  l1I trim :paramstr;
-
-  "struct params must follow the ':' and be space-separated, recieved \"$paramstr\"" {paramstr "[a-z ]+"|""=!} conderr
-
-  .# build a string of the form
-  .# "$(name.attr1), $(name.attr2), ..."
-  name paramstr trim {n p, p" "|#{"\$(" n"."++\+"), "+}SB;B;}~ :accessstr;
-
-  .# Build the type definition for the struct
-  "
-  {@$name,
-    attr \"$paramstr\"
-    {$paramstr, [$paramstr] $name MO}:new;
-    {$name, [\"{$name: \" \"$accessstr\" \"}\"]S }:show
-  }
-  "~
-
-})}:struct;
-.}
 
 .###################################
 .#		  STACK MANIPULATION         #
@@ -152,28 +37,6 @@
 	].S
 }:isa;
 
-
-.###################################
-.#		       CHARACTER             #
-.###################################
-
-.#? C islower\n  tests if a character is lowercase
-{_'`>\'{<&}:islower;
-
-.#? C isupper\n  tests if a character is uppercase
-{_'@>\'[<&}:isupper;
-
-.#? C toupper\n  converts a character to uppercase
-{cC,c!c_isupper?}:toupper;
-
-.#? C tolower\n  converts a character to lowercase
-{cC,c!c_islower?}:tolower;
-
-.#? C isdigit\n  tests if a character is a digit
-{ _'0.>\'9.<&}:isdigit;
-
-.#? S spechar\n  converts the name of a special character into the corresponding special character
-{aS,"\"\\{$a}\""~.'}:spechar;
 
 .###################################
 .#		      	 STRING              #
