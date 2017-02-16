@@ -1,6 +1,10 @@
 .# _aya_
 .# Defines the aya namespace and Aya keywords
 
+.# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
+.#       standard library. Such variables are used below.
+
+
 
 {, .# begin aya namespace
 
@@ -100,6 +104,7 @@
 .# RELOAD
 .# ------
 
+.#? reload\n  reload the standard library
 {:workingdirzz,
   ""2MZ :workingdirzz;  .# Save the current working dir
   ""3MZ                 .# Reset the working dir
@@ -117,3 +122,75 @@
 
 .#? load S\n  Load a script
 {`(".aya"+G~)}:load
+
+
+
+.# -----
+.# USING
+.# -----
+
+.# using dict\n  import variables from a dict into the global scope
+{`W}:using;
+
+
+
+
+
+
+.###########
+.# CONTROL #
+.###########
+
+.#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
+{```({ifstmtcondzz ifstmtthenzz ifstmtelsezz,
+  {ifstmtelsezz} {ifstmtthenzz} ifstmtcondzz?
+})}:if;
+
+
+.#? B then E\n  evaluates E if B is true
+{`({}@@\?)}:then;
+
+
+.#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
+{``({dowhilecondz dowhileloopz, {dowhileloopz dowhilecondz}W})}:dowhile;
+
+
+.#? while E E\n  evaluates E1 as long as E2 is true
+{``({whilecondzzz whileloopzzz,
+  {}
+  {{whileloopzzz whilecondzzz}W}
+  whilecondzzz?
+})}:while;
+
+
+.#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
+{```({forloopczzzz forlooplistz forloopblkzz,
+  "forlooplistz#{:$forloopczzzz; forloopblkzz}"~
+})}:for;
+
+
+.#? A print\n  convert to string a print to console
+{.P}:print;
+
+
+.#? A println\n  convert to string and print to console on its own line
+{P'\n'+.P}:println;
+
+
+.#? try EE\n  evaluate the first block, if error, then evaluate the second block
+{``.K}:try;
+
+
+.#? SB conderr\n  throw error message if condition is true
+{conderrstrzz conderrcondz, {} {conderrstrzz.D} conderrcondz?}:conderr;
+
+
+.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
+{`({blkE expectedL,
+  if ([blk] expected=) {
+	  .# Do nothing
+	} {
+    .# Throw an error message about the assertation
+	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
+	}
+})}:assert;
