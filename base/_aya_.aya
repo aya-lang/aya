@@ -13,17 +13,8 @@
 ""2MZ "base/" K :basedir;
 ""2MZ :homedir;
 
-.# define variables here to avoid name conflicts
-{,}:private;
 
-
-
-{
-  .# Assign the incoming string in the private
-  .# namespace to avoid name conflicts during
-  .# import
-  aya.private.:importdrnm;
-  aya.private.:importname;
+{importnamezz importdirnmz,
 
   { .# File already imported
     .# do nothing
@@ -31,19 +22,19 @@
   { .# File not already imported, load it
 
     .# Add the name to the list
-    aya.private.importname aya.imported .B;
+    importnamezz aya.imported .B;
 
     { .# try
       .# Load the file
-      aya.private.importdrnm aya.private.importname + ".aya" + G ~
+      importdirnmz importnamezz + ".aya" + G ~
     } { .# catch
       .# Remove the file from imported list
-      aya.imported aya.private.importname N .- ;
-      "Error importing " aya.private.importname + .D
+      aya.imported importnamezz N .- ;
+      "Error importing " importnamezz + .D
     } .K
 
   }
-  aya.imported aya.private.importname N\; :-1 = ?
+  aya.imported importnamezz N\; :-1 = ?
 
 }:importfrmdir;
 
@@ -83,19 +74,18 @@
 .# ------
 
 .#? import library\n  import a aya file\n  files are only imported once
-{`(
-  aya.private.:importname;
+{`({importnamezz,
 
   { .# input contains a file sep
-    aya.private.importname aya.importfile
+    importnamezz aya.importfile
   }
   { .# No file sep, import from base
-    aya.private.importname aya.importbase
+    importnamezz aya.importbase
   }
   .# Does the name contain a file sep? (9M|)
-  aya.private.importname _ 9M| | S= ?
+  importnamezz _ 9M| | S= ?
 
-)}:import;
+})}:import;
 
 
 

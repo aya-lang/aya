@@ -1,0 +1,61 @@
+.# string.aya
+.# Defines functions for working with strings and regular expressions
+
+import "char"
+
+.#? L S|C join\n  join a list of strings with another string or char
+{l s, [l, s+]B;l(-1)IAKS}:join;
+
+.#? S alldigits\n  tests if all chars in a string are digits
+{_{isdigit}I=}:alldigits;
+
+.#? S trim\n  remove whitespace from start and end of string
+{"^\\s+|\\s+$" |S}:trim;
+
+.#? SS readdlm\n  open a file, split into lines, split each line using dlm
+{dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
+
+.#? S opencsv\n  opens and parses a csv file into a matrix
+{"," readdlm}:opencsv;
+
+.#? SCI strleftpad\n  left pad string S so it is at least length I using char C
+{strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;
+
+.#? SCI strrightpad\n  right pad string S so it is at least length I using char C
+{strS padC lenN, str.E len\- {padK}\%}:strrightpad;
+
+.#? S isnum\n  returns true if the string is a valid number
+{.!'N isa}:isnum;
+
+.#? S tocamel\n  convert a string with underscores to camel case
+{str,
+  for 'c ['a'z,] {
+    "_$c" c! str .& :str;
+  };
+  str
+}:tocamel;
+
+
+.# REGEX FUNCTIONS
+
+{, .# begin regex module
+
+.# Returns all URLs in a string
+{"http[|s]://[^ |>|<]+"&}:geturls;
+
+.# Return the first match of a regular expression
+{&0I}:firstmatch;
+
+.# Return the last match of a regular expression
+{&1!I}:lastmatch;
+
+.# Remove all matches of a regex in a string
+{|S}:removeall;
+
+.# Removes all spaces from a string
+{"\\s+"|S}:trimall;
+
+.# Returns true if the input string contains spaces or tabs
+{_E\ "[\\t|\\s]" &E=!}:iswhitespace;
+
+}:rgx;
