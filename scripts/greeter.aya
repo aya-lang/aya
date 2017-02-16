@@ -1,0 +1,19 @@
+.# Modeled after the greeter class from
+.# https://www.ruby-lang.org/en/
+
+.# The greeter type
+{,
+  {name,
+    {, name titlecase :name } greeter MO
+  }:new;
+
+  {self,
+    "Hello $(self.name)!" println
+  }:salute;
+}:greeter;
+
+.# Create a new object
+"world" greeter! :g;
+
+.# Output "Hello World!"
+g.salute

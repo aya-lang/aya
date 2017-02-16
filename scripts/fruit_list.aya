@@ -1,0 +1,8 @@
+aya> ["Banana" "Grape" "Apple" "Lime"] :fruits
+[ "Banana" "Grape" "Apple" "Lime" ]
+
+aya> [fruits, #toupper, E 5 =]
+[ "GRAPE" "APPLE" ]
+
+aya> fruits enumerate
+[ [ 0 "Banana" ] [ 1 "Grape" ] [ 2 "Apple" ] [ 3 "Lime" ] ]

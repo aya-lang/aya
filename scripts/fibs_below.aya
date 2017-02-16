@@ -1,0 +1,19 @@
+.# Generate fibs below n
+{n : a b,
+   0:a; 1:b;
+   while {a n <} {
+    a println
+    a _ b + :a; :b;
+   }
+}:fib;
+
+1000 fib
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+
+.# Generate fibs below n
+
+{n,0 1{\_:P\_@+_n<}W;}:fib;
+1000 fib
+
+{0 1{\_:P\_@+_4._<}W;\;}:fib;
+1000 fib

@@ -1,0 +1,194 @@
+.# demo.elem
+.# example functions
+
+.#? module: demo\n  contains various example functions
+{@ demo,
+  .#? N demo.train\n  generates an ASCII train with N carts
+  {nD, [" ______  ""|      | "" ()--() ~"]#{nLSB;'\n'+}S.P}:train;
+
+
+  .#? demo.loc\n  input a C source file and return the number of lines of code
+  {"".UG"/\\*[^/]+\\/|[\\n|\\t+|\\s+]//.+"|S".+"&{_E\"[\\t|\\s]"&E=!}IE}:loc;
+
+  .#? N demo.wall\n  print a wall
+  {[1|,;"\{pi}\{ppi}"Q].P}:wall;
+
+  .#? demo.sinsrs\n  plot a sin series with coefficients
+  {:d,
+
+    [0dy4pi*]R:d;
+
+    plot!:plt;
+    d plt.domain
+    for 'n (4R) {
+      nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
+    };
+    "Demo: Sine Series" plt.settitle
+    2 plt.setstroke
+    0 pi4* plt.setxaxis
+
+    plt.view
+   }:sinsrs;
+
+  .#? demo.rainbow\n  generate a rainbow
+  {:p mul s,
+    plot!:p;
+    0 0.9+ pi 0.9- 600.1 linspace p.domain
+    0.857 1.1 p.setyaxis
+
+    0.011:mul;
+    16:s;
+
+    "" s colors.violet.rgb {Ms 1 mul* +} p.addexpr
+    "" s colors.indigo.rgb {Ms 2 mul* +} p.addexpr
+    "" s colors.blue.rgb   {Ms 3 mul* +} p.addexpr
+    "" s colors.green.rgb  {Ms 4 mul* +} p.addexpr
+    "" s colors.yellow.rgb {Ms 5 mul* +} p.addexpr
+    "" s colors.orange.rgb {Ms 6 mul* +} p.addexpr
+    "" s colors.red.rgb    {Ms 7 mul* +} p.addexpr
+
+    p.view
+  }:rainbow;
+
+  .#? demo.fnplot\n  a sample function plot
+  {:p,
+    plot!:p;
+
+    .# The domain
+    0 2pi* 600 linspace p.domain
+
+    .# Add each function
+    "sin" 2 colors.red.rgb    {sin} p.addexpr
+    "cos" 2 colors.blue.rgb   {cos} p.addexpr
+    "ln"  2 colors.orange.rgb {ln} p.addexpr
+
+    .# Plot title
+    "A Sample Expression Plot" p.settitle
+
+    .# Other plot parameters
+    (-2) 2 p.setyaxis
+    0 2pi* p.setxaxis
+    true   p.setlegend
+    "f(x)" p.setylabel
+    400    p.setwidth
+    300    p.setheight
+
+    .# Open the plot window
+    p.view
+
+    .# Uncomment to save the plot
+    .# "sample_plot.png" p.save
+
+  }:fnplot;
+
+  .#? demo.scatter\n  a simple scatter plot
+  {:p,
+    100R:x [x,.Q70*+] plot.scatter:p
+    "A Scatter Plot" p.settitle
+
+    p.view
+  }:scatter;
+
+  .#? demo.sumprimes\n  generate a list of prime numbers where each number is also the sum of all the prime numbers below it
+  {1000 primes cumsum {isprime} I}:sumprimes;
+
+
+  .#? demo.colorsort\n  comparison of various color sorting methods
+  {:c srtprt,
+
+    [{colors.randchoice}100%]:c;
+
+    {name clrs fn,
+      "$name:\t".P clrs {fn} .$ #{'\block'\.print0};
+      ""println
+    }:srtprt;
+
+    .# mean
+    "mean" c {.rgb avg} srtprt
+
+    .# Geometric mean
+    "geomean" c {.rgb geomean} srtprt
+
+    .# Sum of the squares
+    "sum of sq" c {.rgb #2^S} srtprt
+
+    .# Sum of the values raised to the 5th power
+    "sum of ^5" c {.rgb #5^S} srtprt
+
+    .# Percieved luminosity
+    "lum" c {.rgb [1|[0.2126 0.7152 0.0722],*]S} srtprt
+
+    .# Most accurate representation for percieved luminosity
+    "lum2" c {.rgb [1|[0.299 0.587 0.114],*2^]SMq} srtprt
+
+    .# Quick estimation for percieved luminocity
+    .# (R+R+B+G+G+G)/6
+    "qlum" c {:r g b, .rgb~:b;:g;:r; [r r b g g g] S} srtprt
+
+  }:colorsort;
+
+  .#? demo.lakehuron\n  plot lake huron water levels over time with regression
+  {:time level plt reg,
+
+    data.lakehuron [1! "time"] I :time;
+    data.lakehuron [1! "LakeHuron"] I :level;
+
+    plot!:plt;
+    time plt.domain
+    "Level of Lake Huron" plt.settitle
+    "Year" plt.setxlabel
+    "Level" plt.setylabel
+    level min 2- level max 5+ plt.setyaxis
+
+    level plt.addline
+
+    time level regression:reg;
+    "" 1 [] {reg} plt.addexpr
+    plt.view
+  }:lakehuron;
+
+  .#? S demo.sc\n  returns the closet english word to the input
+  {w, data.words {w^} .$ V\;}:sc;
+
+  .#? demo.spiro\n  generate a parametric spiral
+  {
+    [0dy100,]:x;
+    x#{x,xMs xMs 1 2/*-}
+    x#{x,x17 8/*Mc xMc-}
+    plot.line.view
+  }:spiro;
+
+  .#? demo.randomwalk\n  plot a random walk
+  {:vec step,
+    .# A simple 2d vector
+    struct "vec:x y"
+    .# Move the x and y values by 0,-1, or +1
+    {v, v.x 3QV+ v.setx v.y 3QV+ v.sety}:step
+
+    .# Start at (0,0)
+    0 0 vec!:v;
+    .# Record each step in a list, step 20000 times
+    [] {v step [v.x v.y]\.V} 20000 %
+    .# Transpose the list and plot the line
+    transpose~ plot.line.view
+  }:randomwalk;
+
+}
+
+{:demolist choice,
+  [
+    ["Random Walk" "randomwalk"]
+    ["Sine Series" "sinsrs"]
+    ["Parametric Spiral" "spiro"]
+    ["Regression Plot" "lakehuron"]
+    ["Rainbow" "rainbow"]
+    ["Color Sort" "colorsort"]
+    ["Scatter Plot" "scatter"]
+    ["Expression Plot" "fnplot"]
+  ]dict! :demolist;
+
+  demolist.keys "Select a Demo" "Element Demo" 1 6 MV :choice;
+
+  "demo." demolist choice I + ~
+
+}:demos;

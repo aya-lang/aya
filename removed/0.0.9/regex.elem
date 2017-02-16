@@ -1,0 +1,22 @@
+.{ Functions for using regular expressions
+.
+.}
+
+
+.# Returns all URLs in a string
+{"http[|s]://[^ |>|<]+"&}:geturls;
+
+.# Return the first match of a regular expression
+{&0I}:firstmatch;
+
+.# Return the last match of a regular expression
+{&1!I}:lastmatch;
+
+.# Remove all matches of a regex in a string
+{|S}:removeall;
+
+.# Removes all spaces from a string
+{"\\s+"|S}:trimall;
+
+.# Returns true if the input string contains spaces or tabs
+{_E\ "[\\t|\\s]" &E=!}:iswhitespace;
