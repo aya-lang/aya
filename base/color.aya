@@ -1,11 +1,12 @@
 .# colors.aya
 .# Defines both color and colors module
 
+import "list"
+
 .{? module: color
     A module for manipulating and printing colors in Aya
 .}
 {,
-  .# attr "r g b"
 
   .#Constructors
 
@@ -24,6 +25,7 @@
   {.rgb255/~ color.rgbtohsv}:hsv;
 
   .#Gradients
+
   .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
   {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
   .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console

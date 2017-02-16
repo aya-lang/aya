@@ -1,3 +1,10 @@
+import "list"
+import "string"
+import "date"
+import "math"
+
+
+
 {`range}:to;
 
 '\U82' "to"         Mk .# 130
@@ -7,10 +14,8 @@
 '\Uac' "back"       Mk .# 172
 '\Ub6' "pu"         Mk .# 182
 '\Uc5' "ascii"      Mk .# 197
-'\Uc6' "attr"       Mk .# 198
 '\Ud0' "now"        Mk .# 208
 '\Ude' "lcm"        Mk .# 222
 '\Udf' "gcd"        Mk .# 223
 '\Ue6' "surround"   Mk .# 230
 '\Ueb' "euler"      Mk .# 235
-'\Ufe' "struct"     Mk .# 254

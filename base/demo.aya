@@ -1,6 +1,13 @@
 .# demo.aya
 .# example functions
 
+import "plot"
+import "color"
+import "list"
+import "math"
+import "data"
+import "dialog"
+
 .#? module: demo\n  contains various example functions
 {,
   .#? N demo.train\n  generates an ASCII train with N carts
@@ -208,6 +215,9 @@
     "-\|/" {roll 0.I .P 300:Z '\b'.P} 20 %;
     "":P
   }:loading;
+
+  .#? demo.sci\n  interactive spell check: request a word from the user and output the top 10 closest words
+  {:w, "Enter a word:" dialog.requeststr#tolower:w; data.words {w^}.$10< [1|.ER,\AK] matstr.P}:sci;
 
 }:demo;
 

@@ -1,0 +1,94 @@
+.# list.aya
+.# Defines functions for working with lists
+
+.# Basic functions
+
+{\N\;(-1)=!}:in;			 .#? AL in\n  tests whether or not item `a` is in list `l`
+{N\;(-1)=!}:ni; 			 .#? LA ni\n  tests whether or not item `a` is in list `l`
+{AKR}:range;					 .#? NN range\n  generates a range from n1 to n2
+{R#{;.Q}}:randset;	   .#? I randset\n  generate a set of random nums (0 to 1) of length i
+{{K}U}:flatten;			   .#? L flatten\n  flattens the list by a single dimension
+{B\.V}:roll;      		 .#? L roll\n  move the last element to the front
+{_@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
+{p q e, [p q, e]}:zw;	 .#? LLE zw\n  zip with
+{[1|~,.A]}:transpose;  .#? L<L> transpose\n  transpose a list of lists
+{{2:_<?}U}:max;        .#? L max\n  max value of a list
+{{2:_>?}U}:min;        .#? L min\n  min value of a list
+
+
+
+
+.# Testing / Conditions
+
+{{&}U}:allt;		.#? <L> allt\n  true if all elements in list are true
+{{|}U!}:allf;	  .#? <L> allf\n  true if all elements in list are false
+{\_@IE\E=}:all; .#? <LE> all\n  tests if all elements of the list meet the condition
+{IE0>}:any; 		.#? <LE> any\n  returns true of any elements satisfy the predicate
+
+
+
+
+.# Other Functions
+
+.#? L enumerate\n  return a list of index-value pairs for the list
+{.EV0\KR{A.B}zw}:enumerate;
+
+.#? L rank\n  rank a list
+{_{>}pu#S1+}:rank;
+
+.#? AEN iter\n  start at A and iterate E N times
+{start expr len,
+  [start {_ expr} len %]
+}:iter;
+
+.#? N digits\n  convert a number into a list of digits
+{[1|{_10%\10/.]_0=!}W;]!}:digits;
+
+.#? LN lottod\n  take L random distinct items from L
+.# {[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
+
+.#? LI lotto\n  pick N random items from L
+{\.EV@L#QI}:lotto;
+
+.# {aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
+{lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
+
+.#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each
+{la lb ex, [la lb laEL,\#{ex}]}:permusing:pu;
+
+.#? <LII> swapitems\n  swap two elements in a list given their indices
+{listL iD jD : tmp,
+	list i I : tmp;
+	list j I  list i D
+	tmp list j D
+  list
+}:swapitems;
+
+.#? <L> shuffle\n  shuffle a list
+{{;.Q}.$}:shuffle;
+
+.#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
+{a b nums,
+  {[a b a-numsV/a+ b,]}
+  a numsL .# a=b, return nums a's
+  a b=?
+
+  .# If the length is not equal to nums, add b to the end
+  _Enums={bK}{}@?
+}:linspace;
+
+.#? III intspace\n create a range from a to b consisting of c ints\n  (also see linspace)
+{a b l, [a b l linspace,.]]}:intspace;
+
+.#? L<N> digitstonum\n  convert a list of numbers into a number
+{lL : total multip,
+  1:multip;
+  l!#{
+    multip* total+:total;
+    multip 10 *:multip
+  };
+  total
+}:digitstonum;
+
+{e,{e!}.N|;}:takewhile:tw;
+{e,{e=}tw}:takewhileeq:twe;

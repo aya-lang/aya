@@ -2,6 +2,7 @@
 .# Defines functions for working with strings and regular expressions
 
 import "char"
+import "types"
 
 .#? L S|C join\n  join a list of strings with another string or char
 {l s, [l, s+]B;l(-1)IAKS}:join;
@@ -11,12 +12,6 @@ import "char"
 
 .#? S trim\n  remove whitespace from start and end of string
 {"^\\s+|\\s+$" |S}:trim;
-
-.#? SS readdlm\n  open a file, split into lines, split each line using dlm
-{dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
-
-.#? S opencsv\n  opens and parses a csv file into a matrix
-{"," readdlm}:opencsv;
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
 {strS padC lenN, str.E len\- {pad\K}\%}:strleftpad;
@@ -34,6 +29,25 @@ import "char"
   };
   str
 }:tocamel;
+
+
+.#? L<L> matstr\n  print a list of lists in matrix format
+{
+  [1|~,                 .# Transpose
+    .A_#{PE}maxBB	      .# Calculate the maximum print width
+    #{\P\>}             .# Pad each entry with spaces on the left
+  ][1|~,                .# Transpose
+    .AS                 .# Combine strings
+  ]'\n'join             .# Separate lines
+}:matstr;
+
+
+{:z,#{zB:z3%+}}:scramble;
+{:z,#{zB:z3%-}}:descramble;
+
+
+
+
 
 
 .# REGEX FUNCTIONS

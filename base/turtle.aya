@@ -1,3 +1,7 @@
+import "list"
+import "plot"
+import "math"
+
 .{? type: turtle
     A turtle. Used for drawing patterns on a plot grid.
 .}

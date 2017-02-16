@@ -1,3 +1,7 @@
+import "math"
+import "file"
+import "dataframe"
+
 {,
 	`:cardsabb		(['\heart''\diamnd''\club''\spade']"A23456789TJQK"{P+}permusing!{K}U);
 	`:monthsname	["January" "February" "March" "April" "May" "June" "July"
@@ -65,8 +69,8 @@
 	}:numword;
 
   "data/colors.csv" opencsv:colorlist;
-  
-  {name, 
+
+  {name,
     data.colorlist {0Iname^}.$0I1I6> color.newhex
   }:color;
 
@@ -82,4 +86,4 @@
 	"data/words.txt"G"\n"|:words;
 
 
-}:data; 
+}:data;

@@ -1,3 +1,6 @@
+import "list"
+import "file"
+
 {,
 
   {this, this.columns [1|~,.A]}:rows;
@@ -28,7 +31,7 @@
 	  [2|~,.A]K
 	  matstr
   }:repr;
-  
+
   {self, self.repr}:str;
 
   .# Row Indexing

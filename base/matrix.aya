@@ -1,3 +1,8 @@
+import "string"
+import "list"
+import "types"
+import "math"
+
 .{? type: matrix
     Matrix manipulations and representations
 .}
@@ -171,7 +176,7 @@
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:div;
-  
+
   {mat expr,
     mat.rows#{#expr} mat.:rows;
     mat
