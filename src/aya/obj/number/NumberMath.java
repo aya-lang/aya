@@ -2,8 +2,6 @@ package aya.obj.number;
 
 import org.apfloat.ApintMath;
 
-import aya.obj.number.Number;
-
 /** Various static functions for doing math on numbers */
 public class NumberMath {
 	

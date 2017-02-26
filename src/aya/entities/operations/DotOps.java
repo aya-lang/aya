@@ -3,9 +3,9 @@ package aya.entities.operations;
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.LIST;
-import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
+import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 
 import java.io.File;
@@ -22,8 +22,8 @@ import java.util.Stack;
 
 import org.apfloat.Apfloat;
 
-import aya.AyaPrefs;
 import aya.Aya;
+import aya.AyaPrefs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;

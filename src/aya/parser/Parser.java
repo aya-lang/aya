@@ -1,8 +1,5 @@
 package aya.parser;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.Operation;
