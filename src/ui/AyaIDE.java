@@ -346,14 +346,16 @@ public class AyaIDE extends JFrame
 			
 			PrintStream out = new PrintStream(ide.getOutputStream());
 			
+			// Aya Prefs
 			aya.setOut(out);
 			aya.setErr(out);
 			aya.setIn(ide.getInputStream());
-			aya.setEchoInput(true);
-
+			
+			// InteractiveAya Prefs
 			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setArgs(args);
 			iaya.setPromptText(false);
+			iaya.setEcho(true);
 			iaya.showBanner(false);
 			iaya.run();
 			
