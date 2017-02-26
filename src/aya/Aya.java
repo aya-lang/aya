@@ -68,7 +68,7 @@ public class Aya extends Thread {
 			try {
 				String input = _input.take();
 				
-				if (_echoInput) println(AyaPrefs.getPrompt() + input);
+				//if (_echoInput) println(AyaPrefs.getPrompt() + input);
 				
 				synchronized(this) {
 					if (input.equals(QUIT)) {

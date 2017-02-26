@@ -14,7 +14,15 @@ public class InteractiveAya extends Thread {
 	public static final int TIME = 3;
 	public static final int CLS = 4;
 	
-	Aya _aya;
+	private boolean _echo = false;
+	String[] _args = new String[0];
+	private boolean _showPromptText = true;
+	private boolean _showBanner = true;
+	
+	public void setShowPrompt(boolean b) {_showPromptText = b;};
+	public void setEcho(boolean b) {_echo = b;};
+	
+	private Aya _aya;
 	
 	public InteractiveAya(Aya aya) {
 		_aya = aya;
@@ -111,9 +119,6 @@ public class InteractiveAya extends Thread {
 	}
 
 	
-	String[] _args = new String[0];
-	private boolean _showPromptText = true;
-	private boolean _showBanner = true;
 	
 	public void setArgs(String[] args) {
 		_args = args;
@@ -131,6 +136,7 @@ public class InteractiveAya extends Thread {
 	public void run() {
  		_aya.start();
 		_aya.loadAyarc();
+
 		
 		if (_showBanner) _aya.print(BANNER);
 		
@@ -141,6 +147,8 @@ public class InteractiveAya extends Thread {
 		String input = "";
 		int status;
 		
+
+		
 		while (true) {
 			
 			if (_showPromptText) {
@@ -150,6 +158,10 @@ public class InteractiveAya extends Thread {
 			
 			if (input.equals("")) {
 				continue;
+			}
+			
+			if (_echo) {
+				out.println(AyaPrefs.getPrompt() + input);
 			}
 			
 			//Wait for aya to finish
@@ -219,7 +231,9 @@ public class InteractiveAya extends Thread {
 					String script = code + "\n" + FileUtils.readAllText(filename);
 					
 					Aya aya = Aya.getInstance();
+					aya.setEchoInput(false);
 					aya.loadAyarc();
+					aya.setEchoInput(true);
 					aya.queueInput(script);
 					aya.queueInput(Aya.QUIT);
 					

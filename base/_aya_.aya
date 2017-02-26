@@ -111,7 +111,7 @@
 .# ----
 
 .#? load S\n  Load a script
-{`(".aya"+G~)}:load
+{`(".aya"+G~)}:load;
 
 
 
