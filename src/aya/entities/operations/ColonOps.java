@@ -1,8 +1,8 @@
 package aya.entities.operations;
 
+import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
-import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.NUMBER;
 
 import java.util.ArrayList;

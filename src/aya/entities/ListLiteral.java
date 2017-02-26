@@ -1,13 +1,12 @@
 package aya.entities;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
-
-import java.util.ArrayList;
 
 public class ListLiteral extends Block {
 	//The number of items that should be popped from the stack and added to the front of this list
