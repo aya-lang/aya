@@ -1,8 +1,5 @@
 package aya.parser;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.Operation;
@@ -385,6 +382,8 @@ public class Parser {
 					//Collect the special number
 					StringBuilder specNum = new StringBuilder();
 					while (in.hasNext() && (isDigit(in.peek()) || isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.') ) {
+						if (in.peek() == '.' && in.hasNext() && !isDigit(in.peek(1)))
+							break;
 						specNum.append(in.next());
 					}
 					tokens.add(new NumberToken(specNum.toString(), true));
