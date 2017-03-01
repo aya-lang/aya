@@ -9,6 +9,5 @@ for 'n numbers {
 
 "The product is $product" print
 
-
 [2 4 6 8] {*} U :product;
 "The product is $product".P
