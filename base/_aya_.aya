@@ -8,7 +8,9 @@
 
 {, .# begin aya namespace
 
-[]:imported;
+[
+  "_aya_"  .# This file
+]:imported;
 
 ""2MZ "base/" K :basedir;
 ""2MZ :homedir;
@@ -164,7 +166,10 @@
 
 
 .#? A println\n  convert to string and print to console on its own line
-{P'\n'+.P}:println;
+{:P}:println;
+
+.#? getline\n  read input from stdin and return it as a string
+{:R}:getline;
 
 
 .#? try EE\n  evaluate the first block, if error, then evaluate the second block
