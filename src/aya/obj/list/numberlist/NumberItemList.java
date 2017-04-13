@@ -894,5 +894,112 @@ public class NumberItemList extends NumberList {
 		return new NumberItemList(out);
 	}
 
+	
+	
+	@Override
+	public NumberList lt(Number n) {
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(n) < 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList lt(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(ns.get(i)) < 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList leq(Number n) {
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(n) <= 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList leq(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(ns.get(i)) <= 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList gt(Number n) {
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(n) > 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList gt(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(ns.get(i)) > 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList geq(Number n) {
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(n) >= 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList geq(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(ns.get(i)) >= 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList eq(Number n) {
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(n) == 0));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList eq(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = _list.size();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(new Num(_list.get(i).compareTo(ns.get(i)) == 0));
+		}
+		return new NumberItemList(out);
+	}
+
 
 }

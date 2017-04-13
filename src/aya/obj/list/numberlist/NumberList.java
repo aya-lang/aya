@@ -154,6 +154,30 @@ public abstract class NumberList extends List {
 	/** Return the list as an arrayList of numbers */
 	public abstract ArrayList<Number> toArrayList();
 	
+	/////////////////
+	// COMPARISONS //
+	/////////////////
+	
+	/** Less than */
+	public abstract NumberList lt(Number n);
+	public abstract NumberList lt(NumberList ns);
+	
+	/** Less than or equal to */
+	public abstract NumberList leq(Number n);
+	public abstract NumberList leq(NumberList ns);
+	
+	/** Greater than */
+	public abstract NumberList gt(Number n);
+	public abstract NumberList gt(NumberList ns);
+	
+	/** Greater than or equal to */
+	public abstract NumberList geq(Number n);
+	public abstract NumberList geq(NumberList ns);
+	
+	/** Element-wise equal to */
+	public abstract NumberList eq(Number n);
+	public abstract NumberList eq(NumberList ns);
+	
 	///////////////
 	// OVERRIDES //
 	///////////////
