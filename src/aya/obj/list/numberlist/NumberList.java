@@ -40,51 +40,67 @@ public abstract class NumberList extends List {
 	
 	/** Addition */
 	public abstract NumberList add(Number n);
+	public abstract NumberList add(NumberList ns);
 	
 	/** Subtraction */
 	public abstract NumberList sub(Number n);
+	public abstract NumberList sub(NumberList ns);
 	
 	/** Reverse Subtraction */
 	public abstract NumberList subFrom(Number n);
+	public abstract NumberList subFrom(NumberList ns);
 	
 	/** Division */
 	public abstract NumberList div(Number n);
+	public abstract NumberList div(NumberList ns);
 	
 	/** Reverse Division */
 	public abstract NumberList divFrom(Number n);
+	public abstract NumberList divFrom(NumberList ns);
 	
 	/** Multiplication */
 	public abstract NumberList mul(Number n);
+	public abstract NumberList mul(NumberList ns);
 	
 	/** Modulus */
 	public abstract NumberList mod(Number n);
+	public abstract NumberList mod(NumberList ns);
 	
 	/** Reverse Modulus */
 	public abstract NumberList modFrom(Number n);
+	public abstract NumberList modFrom(NumberList ns);
 	
 	/** Integer division */
 	public abstract NumberList idiv(Number n);
+	public abstract NumberList idiv(NumberList ns);
 	
 	/** Reverse division */
 	public abstract NumberList idivFrom(Number n);
+	public abstract NumberList idivFrom(NumberList ns);
 	
 	/** Power */
 	public abstract NumberList pow(Number n);
+	public abstract NumberList pow(NumberList ns);
 	
 	/** Reverse Power */
 	public abstract NumberList powFrom(Number n);
+	public abstract NumberList powFrom(NumberList ns);
 	
 	/** Binary And */
 	public abstract NumberList band(Number n);
+	public abstract NumberList band(NumberList ns);
 	
 	/** Reverse Binary And */
 	public abstract NumberList bandFrom(Number n);
+	public abstract NumberList bandFrom(NumberList ns);
 	
 	/** Binary Or */
 	public abstract NumberList bor(Number n);
+	public abstract NumberList bor(NumberList ns);
 	
 	/** Reverse Binary Or */
 	public abstract NumberList borFrom(Number n);
+	public abstract NumberList borFrom(NumberList ns);
 	
 	
 	/** Negate */

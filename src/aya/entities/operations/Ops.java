@@ -329,6 +329,9 @@ class OP_Percent extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).mod((Number)a) );
 		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).mod((NumberList)a) );
+		}
 		else if (a.isa(NUMBER) && b.isa(BLOCK)) {
 			int repeats = ((Number)(a)).toInt();
 			Block blk = ((Block)b);
@@ -413,6 +416,9 @@ class OP_Times extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).mul((Number)a) );
 		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).mul((NumberList)b) );
+		}
 		else if (a.isa(DICT)) {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_MUL);
@@ -459,6 +465,9 @@ class OP_Plus extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).add((Number)a) );
 		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).add((NumberList)b) );
+		}
 		
 		
 		else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
@@ -502,6 +511,9 @@ class OP_Minus extends Operation {
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).subFrom((Number)a) );
 		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).sub((NumberList)b) );
+		}
 		else if (a.isa(DICT)) {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_SUB);
@@ -537,6 +549,9 @@ class OP_Divide extends Operation {
 		
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).div((Number)a) );
+		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).div((NumberList)a) );
 		}
 		else if (a.isa(DICT)) {
 			block.push(b);

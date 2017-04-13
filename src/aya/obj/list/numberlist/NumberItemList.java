@@ -713,17 +713,186 @@ public class NumberItemList extends NumberList {
 		return new NumberItemList(primeList);
 	}
 
-
-
-
-
-
-
+	private void boundsCheck(NumberList a, NumberList b) {
+		if (a.length() != b.length())
+			throw new IllegalArgumentException("List length mismatch");
+	}
 	
+	@Override
+	public NumberList add(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).add(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
 
-	
-	
-	
+	@Override
+	public NumberList sub(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).sub(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList subFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).sub(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList div(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).div(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList divFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).div(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList mul(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).mul(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList mod(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).mod(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList modFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).mod(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList idiv(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).idiv(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList idivFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).idiv(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList pow(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).pow(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList powFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).pow(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList band(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).band(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList bandFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).band(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList bor(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(this.get(i).bor(ns.get(i)));
+		}
+		return new NumberItemList(out);
+	}
+
+	@Override
+	public NumberList borFrom(NumberList ns) {
+		boundsCheck(this, ns);
+		int len = ns.length();
+		ArrayList<Number> out = new ArrayList<Number>(len);
+		for (int i = 0; i < len; i++) {
+			out.add(ns.get(i).bor(this.get(i)));
+		}
+		return new NumberItemList(out);
+	}
 
 
 }
