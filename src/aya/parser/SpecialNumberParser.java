@@ -57,6 +57,7 @@ public class SpecialNumberParser {
 	private final char BIG = 'z';
 	private final char PI = 'p';
 	private final char ROOT = 'q';
+	private final char SCI = 'e';
 	
 	public SpecialNumberParser(String s) {
 		_sep = NEG;
@@ -82,7 +83,7 @@ public class SpecialNumberParser {
 	public boolean isSepValid(SpecialNumberParser np) {
 		char c = np._sep;
 		return c == NEG || c == HEX || c == BIN || c == IMAG
-				|| c == RAT || c == BIG || c == PI;
+				|| c == RAT || c == BIG || c == PI || c == SCI;
 	}
 	
 	public String toString() {
@@ -112,6 +113,8 @@ public class SpecialNumberParser {
 				return toBigNumber();
 			case ROOT:
 				return toRootNumber();
+			case SCI:
+				return toSciNumber();
 			default:
 				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 			}
@@ -120,6 +123,12 @@ public class SpecialNumberParser {
 		}
 	}
 	
+	private Number toSciNumber() {
+		double fst = Double.parseDouble(_fst);
+		double snd = Double.parseDouble(_snd);
+		return new Num(fst * Math.pow(10, snd));
+	}
+
 	private Number toRootNumber() {
 		if (_snd.equals("")) {
 			return new Num(Math.sqrt(Double.parseDouble(_fst)));
