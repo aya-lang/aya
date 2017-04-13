@@ -2,6 +2,36 @@ import "list"
 import "string"
 import "date"
 import "math"
+import "matrix"
+
+.# Single letter variables
+1:a;
+2:b;
+3:c;
+10:d;
+1M|:e;
+.#:f;
+.#:g;
+.#:h;
+.#:i;
+.#:j;
+1000:k;
+.#:l;
+matrix:m;
+.#:n;
+.#:o;
+0M|:p;
+.#:q;
+.#:r;
+.#:s;
+.#:t;
+.#:u;
+.#:v;
+:-1 :w;
+0:x;
+0:y;
+0:z;
+
 
 
 
