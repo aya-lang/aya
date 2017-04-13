@@ -85,7 +85,8 @@
     importnamezz aya.importbase
   }
   .# Does the name contain a file sep? (9M|)
-  importnamezz _ 9M| | S= ?
+  .# 9M| _ "\\"= {}{;"\\\\"} @? returns an escaped "\" -> "\\" if windows
+  importnamezz _ (9M| _ "\\"= {}{;"\\\\"} @?) | S= ?
 
 })}:import;
 
