@@ -57,7 +57,7 @@ import "list"
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
 {M$3E.\}:ts;      .#? ts\n  return the system time in seconds as an int
-{/.\}:div;					.#? <NN> div\n  integer division
+{.%}:div;					.#? <NN> div\n  integer division
 {%}:rem;						.#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
