@@ -44,9 +44,9 @@ import "types"
 
 {str,
   str ERB; # {i,
-    {}
+    str iV I iswhitespace
     {str i :(str i I toupper)}
-    str iV I iswhitespace ?
+    ?
   };
   str 0:(str 0I toupper)
 }:titlecase;

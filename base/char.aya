@@ -8,10 +8,10 @@
 {_'@>\'[<&}:isupper;
 
 .#? C toupper\n  converts a character to uppercase
-{cC,c!c_isupper?}:toupper;
+{cC,c_ isupper! {!}? }:toupper;
 
 .#? C tolower\n  converts a character to lowercase
-{cC,c!c_islower?}:tolower;
+{cC,c_ islower! {!}? }:tolower;
 
 .#? C isdigit\n  tests if a character is a digit
 { _'0:>\'9:<&}:isdigit;

@@ -11,7 +11,7 @@
   {item self, self.list item N\;(-1)=!}:in;
 
   .#? A (set) set.add\n  add an item to a set\n  overloaded operator: +
-  {item self, {s.list [item] K;}{}item self.in?self}:add;
+  {item self, item self.in {} {s.list [item] K;} .?self}:add;
 
   .#? A (set) set.rem\n  remove an item from a set\n  overloaded operator: -
   {item self,

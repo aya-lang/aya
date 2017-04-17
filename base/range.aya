@@ -20,7 +20,8 @@
   {range, range.low}:start;
 
   {currentN range,
-    current range.hi {:>} {:<} range.inc.! (-1) = ?
+    current range.hi
+    range.inc.! (-1) = {:<} {:>}  .?
   }:done;
 
   {range,

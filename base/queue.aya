@@ -12,11 +12,12 @@
 
   .#? (queue) queue.show\n  convert a queue to a string
   {self,
-    {"queue: <-"self.listPB;V;"-<"++}
+    self.isempty
     {"queue: <- -<"}
-    self.isempty ?
+    {"queue: <-"self.listPB;V;"-<"++}
+    .?
   }:repr;
-  
+
   {.repr}:str;
 
   .#? (queue) queue.dollar\n(queue) queue.next\n  return the next item in the queue
