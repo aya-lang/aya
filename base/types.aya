@@ -5,7 +5,7 @@
 
 .# CONVERSION
 
-{.]}:int;					  .#? A int\n  cast to an int
+{:'}:int;					  .#? A int\n  cast to an int
 {Md}:double;				.#? A double\n  cast to an double
 {Z}:bignum;		      .#? A bignum\n  cast to an bignum
 {P}:string;			    .#? A string\n  cast to an string
@@ -21,9 +21,9 @@
 .#? AC isa\n  returns true if the item's type matches the input character
 {itemA typeC,
 	[
-	  1 type'A=.? .# Any
-	  {"DFN"item.TN\;(-1)=!} type'N=.? .# Number is num or bignum
-	  {"SL"item.TN\;(-1)=!} type'L=.? .# Number is a string or list => list
+	  type'A= 1? .# Any
+	  type'N= {"DFN"item.TN\;(-1)=!} ? .# Number is num or bignum
+	  type'L= {"SL"item.TN\;(-1)=!} ? .# Number is a string or list => list
 	  type item.T = .# Normal Check
 	].S
 }:isa;

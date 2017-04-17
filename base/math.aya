@@ -40,8 +40,8 @@ import "list"
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
 {euler\^}:exp;    	.#? N exp\n  exp(x)
 {M!}:fact;      		.#? N fact\n  factorial
-{.]}:floor;      		.#? N floor\n  floor
-{_.]-}:frac;    		.#? N frac\n  fractional part
+{:'}:floor;      		.#? N floor\n  floor
+{_:'-}:frac;    		.#? N frac\n  fractional part
 {1-M!}:gamma;				.#? N gamma\n  gamma function
 {2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
 {G}:isprime;        .#? N isprime \n  tests a number for primality
@@ -50,26 +50,24 @@ import "list"
 {ML}:log;      			.#? N log\n  base-10 log
 {ML\ML\/}:logn;			.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
 {1-M!MAMl}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
-{2:_>?}:smaller;    .#? NN smaller\n  choose smaller
-{2:_<?}:bigger;     .#? NN bigger\n  choose bigger
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
 {{*}U}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
-{M$3E/.]}:ts;      .#? ts\n  return the system time in seconds as an int
-{/.]}:div;					.#? <NN> div\n  integer division
+{M$3E/:'}:ts;      .#? ts\n  return the system time in seconds as an int
+{/:'}:div;					.#? <NN> div\n  integer division
 {%}:rem;						.#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
 .# Additional Math Functions
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{_{{.-}U}{.-}@'Nisa?}:lcm;
+{_'Nisa {.-}{{.-}U} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisior of 2 numbers or a list of numbers
-{_{{.+}U}{.+}@'Nisa?}:gcd;
+{_ 'Nisa {.+}{{.+}U} .?}:gcd;
 
 
 .#? N factors \n  returns a list of the numbers factors
@@ -81,8 +79,8 @@ import "list"
 
 .#? L median \n  median value of a list
 {l,
-  l$_E2/.]               .# Sort the list and get its middle index
-  {I} {_1-KIS2/} lE2%0=?  .# If the list has even length, average the middle two
+  l$_E2/:'               .# Sort the list and get its middle index
+  lE2%0= {_1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
                           .# The list has odd length, take the middle item
 }:median;
 
@@ -131,6 +129,12 @@ import "list"
 .#? N factors\n  compute a number's prime factors
 .# golf: {n,{2to(nV){n\%0=}.NI_n\/fK}{n}nGn2<|?}:f;
 {n,
+  .# is the number prime
+  nG n2< |
+
+  .# If the number is prime, return it
+  {n}
+
   .# If the number is not prime, find the
   .#   next factor
   {
@@ -144,8 +148,8 @@ import "list"
     .#   factors recursively
     I _n\/ factors K
   }
-  .# If the number is prime, return it
-  {n} nG n2< | ?
+
+  .?
 }:factors;
 
 

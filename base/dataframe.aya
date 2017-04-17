@@ -26,7 +26,7 @@ import "file"
 
   {self,
 	  [""]self.colnamesKA
-	  self.rownames #{P" \{U2502}"+}
+	  self.rownames #{P" |"K}
 	  self.columns
 	  [2|~,.A]K
 	  matstr
@@ -47,8 +47,8 @@ import "file"
   }:rowbyix;
 
   {id this,
-    [ {id this.rowbyname} id.T 'S= .?
-      {id this.rowbyix}   id.T 'I= .?
+    [ id.T 'S= {id this.rowbyname} ?
+      id.T 'I= {id this.rowbyix} ?
       {"dataframe.row: id must be a string or int. recieved: $id".D}
     ].S
   }:row;
@@ -66,8 +66,8 @@ import "file"
   }:colbyix;
 
   {id this,
-    [ {id this.colbyname} id.T 'S= .?
-      {id this.colbyix}   id.T 'I= .?
+    [ id.T 'S= {id this.colbyname} ?
+      id.T 'I= {id this.colbyix} ?
       {"dataframe.col: id must be a string or int. recieved: $id".D}
     ].S
   }:col;
@@ -85,24 +85,24 @@ import "file"
 
   {name self : ix,
     [
-      {
+      name .T 'S = {
         self.colnames name N :ix;;
         "Invalid col name: $name" ix (-1) = conderr
         ix
-      } name .T 'S = .?
-      {name} name 'N isa .?
+      } ?
+      name 'N isa {name} ?
       {"Invalid colindex type. Received $name ($(name Mw))" .D}
     ].S
   }:colindex;
 
   {name self : ix,
     [
-      {
+      name .T 'S = {
         self.rownames name N :ix;;
         "Invalid row name: $name" ix (-1) = conderr
         ix
-      } name .T 'S = .?
-      {name} name 'N isa .?
+      } ?
+      name 'N isa {name} ?
       {"Invalid rowindex type. Received $name ($(name Mw))" .D}
     ].S
   }:rowindex;
@@ -114,23 +114,23 @@ import "file"
 
     .# Get row index
     [
-      {r self.rowindex} r.T'S= .?
-      r _ 'N isa .?
+      r.T'S= {r self.rowindex} ?
+      r 'N isa r ?
       (-1)
     ].S:rix;
 
     .# Get column index
     [
-      {c self.colindex} c.T'S= .?
-      c _ 'N isa .?
+      c.T'S= {c self.colindex} ?
+      c 'N isa c ?
       (-1)
     ].S:cix;
 
     .# Get data
     [
-      {self.columns cix I} rix(-1)= cix(-1)=! &.? .# Entire column
-      {self.columns#{rixI}} rix(-1)=! cix(-1)= &.? .# Entire row
-      {self.columns cix I rix I} rix(-1)=! cix(-1)=! &.? .# Specific cell
+      rix(-1)= cix(-1)=! & {self.columns cix I} ? .# Entire column
+      rix(-1)=! cix(-1)= & {self.columns#{rixI}} ? .# Entire row
+      rix(-1)=! cix(-1)=! & {self.columns cix I rix I} ? .# Specific cell
       {"dataframe: invalid index. recieved $index"}
     ].S
   }:get;
@@ -141,18 +141,20 @@ import "file"
 
     .# If there are headers, subtract one from the count
     .# so that we do not include the headers themselves
-    tableE {}{V} colheader? : rowcount;
-    table0IE {}{V} rowheader? : colcount;
+    tableE colheader {V}{} .? : rowcount;
+    table0IE rowheader {V}{} .? : colcount;
 
     .# Row names
+    rowheader
+    {table#{V\;P} colheader {V;}{} .? } .# if there are col headers, remove the first entry
     {[rowcount,P]} .# No headers in file, use a range of numbers
-    {table#{V\;P} {}{V;}colheader? } .# if there are col headers, remove the first entry
-    rowheader ? :rownames;
+    .? :rownames;
 
     .# Column names
-    {[colcount,P]} .# No names in file, use a range of numbers
+    colheader
     {table 0 I  tableV;; } .# Cols are the first row of the table
-    colheader ? :colnames;
+    {[colcount,P]} .# No names in file, use a range of numbers
+    .? :colnames;
 
     .# Generate dataframe object
     colnames rownames [table~,.A] dataframe.new

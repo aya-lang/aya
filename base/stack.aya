@@ -12,9 +12,10 @@
 
   .#? (stack) stack.show\n  convert a stack to a string
   {self,
-    {"stack: <-"self.listPB;V;"-|"++}
+    self.isempty
     {"stack: <- -|"}
-    self.isempty ?
+    {"stack: <-"self.listPB;V;"-|"++}
+    .?
   }:str:repr;
 
   .#? (stack) stack.dollar\n(stack) stack.next\n  return the next item in the stack

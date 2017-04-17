@@ -13,17 +13,19 @@ import "math"
 
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
-  	0
-  	{											.# Both of the following must be true:
+  .# Both of the following must be true:
+  	m#.T{'L=}all .# The list is made up of only other lists
+  	{
   		m#E{m0IE=}all 			.# All of the list lengths are the same
-  	} m#.T{'L=}all ? 			.# The list is made up of only other lists
+  	} 0 .?
   }:is;
 
   .# matrix constructor: first test if it is a valid matrix
   {in,
-    {P" is not a valid matrix"+.D}
+    in matrix.is
     {{,in:rows} matrix MO}
-    in matrix.is?
+    {in P " is not a valid matrix" K .D}
+    .?
   }:new;
 
   {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
@@ -50,7 +52,7 @@ import "math"
 
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
-    {[a.rows b.rows,=]{&}U} {0} a.dim b.dim =! ?
+     a.dim b.dim =! 0 {[a.rows b.rows,=]{&}U} .?
   }:eq;
 
 
@@ -107,25 +109,33 @@ import "math"
     ix0I:r;
     ix1I:c;
 
-    { .# row is an int
-      {
-        .# col also int
-        mat.rows r I c I
-      } {
-        .# col empty, return entire row
-        mat.rows r I
-      } c[]=?
-    }
+    r[]=
 
     { .# row is empty []
+      c[]=
+      {
+       .# both empty, return entire mat
+       mat
+      }
       {
         .# return col c
         mat.cols c I
-      } {
-        .# both empty, return entire mat
-        mat
-      } c[]=?
-    } r[]=?
+      } .?
+    }
+
+    { .# row is an int
+      c[]=
+      {
+        .# col empty, return entire row
+        mat.rows r I
+      }
+      {
+        .# col also int
+        mat.rows r I c I
+      } .?
+    }
+
+    .?
 
   }:index;
 
@@ -143,27 +153,27 @@ import "math"
 
   {a b,
     [
-      {a b matrix.smul} a'Nisa b .T'R = & .?
-      {b a matrix.smul} b'Nisa a .T'R = & .?
-      {a b matrix.matmul} aMw"DICT"= bMw"DICT"= & .?
+      a'Nisa b .T'R = & {a b matrix.smul} ?
+      b'Nisa a .T'R = & {b a matrix.smul} ?
+      aMw"DICT"= bMw"DICT"= & {a b matrix.matmul} ?
       {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:mul;
 
   {a b,
     [
-      {a b matrix.sadd} a'Nisa b .T'R = & .?
-      {b a matrix.sadd} b'Nisa a .T'R = & .?
-      {a b matrix.matadd} aMw"DICT"= bMw"DICT"= & .?
+      a'Nisa b .T'R = & {a b matrix.sadd} ?
+      b'Nisa a .T'R = & {b a matrix.sadd} ?
+      aMw"DICT"= bMw"DICT"= & {a b matrix.matadd} ?
       {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:add;
 
   {a b,
     [
-      {a b matrix.ssub} a'Nisa b .T'R = & .?
-      {b a matrix.zsub} b'Nisa a .T'R = & .?
-      {a b matrix.matsub} aMw"DICT"= bMw"DICT"= & .?
+      a'Nisa b .T'R = & {a b matrix.ssub} ?
+      b'Nisa a .T'R = & {b a matrix.zsub} ?
+      aMw"DICT"= bMw"DICT"= & {a b matrix.matsub} ?
       {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:sub;
@@ -171,8 +181,8 @@ import "math"
 
   {a b,
     [
-      {a b matrix.sdiv} a'Nisa b .T'R = & .?
-      {b a matrix.zdiv} b'Nisa a .T'R = & .?
+      a'Nisa b .T'R = & {a b matrix.sdiv} ?
+      b'Nisa a .T'R = & {b a matrix.zdiv} ?
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:div;

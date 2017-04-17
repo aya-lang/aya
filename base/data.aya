@@ -41,19 +41,19 @@ import "dataframe"
 	{nN : x,
 
 	[
-	  {["zero""one""two""three""four"
+	  n `:< 19 {["zero""one""two""three""four"
 	    "five""six""seven""eight""nine"
 	    "ten""eleven""twelve""thirteen""fourteen"
 	    "fifteen""sixteen""seventeen""eighteen""nineteen"]n I
-	  } n `:< 19 .?
+	  } ?
 
-	  {["twenty""thirty""fourty""fifty""sixty""seventy""eighty""nintey"]
+	  n `:< 99 {["twenty""thirty""fourty""fifty""sixty""seventy""eighty""nintey"]
 	   (n 10 div 2 - I)  (n 10 % "-" data.numwordhelp) +
-	  } n `:< 99 .?
+	  } ?
 
 
-	  {(n 100 div data.numword " hundred" +) (n100% " and " data.numwordhelp) +
-	  } n `:< 999 .?
+	  n `:< 999 {(n 100 div data.numword " hundred" +) (n100% " and " data.numwordhelp) +
+	  } ?
 
 	  {n numofdigits 1 - 3 div 3 * 10 \^ : x;
 	   n x div data.numword " " +
