@@ -366,6 +366,10 @@ class OP_Dot_FwdSlash extends Operation {
 		
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).ceil());
+		} 
+		
+		else if (a.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).ceil() );
 		}
 		
 		else {
@@ -971,6 +975,10 @@ class OP_Dot_BackSlash extends Operation {
 		
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).floor());
+		}
+		
+		else if (a.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).floor() );
 		}
 		
 		else {

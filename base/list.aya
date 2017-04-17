@@ -12,8 +12,8 @@
 {_@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	 .#? LLE zw\n  zip with
 {[1|~,.A]}:transpose;  .#? L<L> transpose\n  transpose a list of lists
-{$:1I}:max;            .#? L max\n  max value of a list
-{$0I}:min;             .#? L min\n  min value of a list
+{{.<}U}:max;           .#? L max\n  max value of a list
+{{.>}U}:min;           .#? L min\n  min value of a list
 
 
 
