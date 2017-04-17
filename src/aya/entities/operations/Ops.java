@@ -111,7 +111,7 @@ public class Ops {
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ new OP_I(),
-		/* 74 J  */ null, //Repeat
+		/* 74 J  */ null,
 		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
@@ -1043,6 +1043,10 @@ class OP_I extends Operation {
 	}
 }
 
+
+
+
+
 // L - 76
 class OP_L extends Operation {
 	public OP_L() {
@@ -1068,7 +1072,22 @@ class OP_L extends Operation {
 				block.push( new GenericList(item, repeats) );
 			}
 
-		} else {
+		} 
+		
+		else if (n.isa(NUMBERLIST)) {
+			if (item.isa(LIST)) {
+				block.push( List.reshape((List)item, (NumberList)n) );
+			} else {
+				List l = new GenericList(item, 1).promote();
+				block.push( List.reshape(l, (NumberList)n) );
+			}
+		}
+		
+		else if (n.isa(NUMBERLIST) && item.isa(LIST)) {
+			block.push( List.reshape((List)item, (NumberList)n) );
+		}
+		
+		else {
 			throw new TypeError(this, n , item);
 		}
 	}
