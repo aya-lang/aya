@@ -1107,7 +1107,7 @@ class OP_P extends Operation {
 	}
 }
 
-//Q - 81
+// Q - 81
 class OP_Q extends Operation {
 	public OP_Q() {
 		this.name = "Q";
@@ -1140,7 +1140,7 @@ class OP_Q extends Operation {
 	}
 }
 
-//R - 82
+// R - 82
 class OP_R extends Operation {
 	public OP_R() {
 		this.name = "R";
@@ -1219,7 +1219,7 @@ class OP_S extends Operation {
 	}
 }
 
-//T - 84 
+// T - 84 
 class OP_T extends Operation {
 	public OP_T() {
 		this.name = "T";
@@ -1230,7 +1230,10 @@ class OP_T extends Operation {
 		Obj a = block.pop();
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).negate());
+		} else if (a.isa(NUMBERLIST)) {
+			block.push(((NumberList)a).negate());
 		} else {
+		
 			throw new TypeError(this, a);
 		}
 	}
