@@ -82,9 +82,8 @@
 .}
 
 .{? docs: negative numbers
-  use (-<number literal>) for number literals only
-  (-<var name>) will throw an error
-  use the bang (!) operator to negate a variable
+  use :<number> or :-<number> for number literals only
+  use the (T) operator to negate a variable
 .}
 
 

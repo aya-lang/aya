@@ -42,7 +42,7 @@
 }:iter;
 
 .#? N digits\n  convert a number into a list of digits
-{[1|{_10%\10/.]_0=!}W;]!}:digits;
+{[1|{_10%\10/:'_0=!}W;]!}:digits;
 
 .#? LN lottod\n  take L random distinct items from L
 .# {[2|\.E@T\L\>{;.Q}.$,.?]}:lottod;
@@ -83,7 +83,7 @@
 .#? L<N> digitstonum\n  convert a list of numbers into a number
 {lL : total multip,
   1:multip;
-  l!#{
+  lF#{
     multip* total+:total;
     multip 10 *:multip
   };
