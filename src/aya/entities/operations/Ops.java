@@ -586,7 +586,7 @@ class OP_SemiColon extends Operation {
 class OP_LessThan extends Operation {
 	public OP_LessThan() {
 		this.name = "<";
-		this.info = "less than comparison operator\nhead";
+		this.info = "less than comparison operator";
 		this.argTypes = "NN|CC|SS|LN";
 	}
 	@Override
@@ -602,11 +602,16 @@ class OP_LessThan extends Operation {
 			block.push( new Num(((Char)a).compareTo((Char)b) < 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( new Num(a.str().compareTo(b.str()) < 0) );
-		}
-		else if (b.isa(NUMBER) && a.isa(LIST)) {	
-			block.push(((List)a).head(((Number)b).toInt()));
-
-		} else {
+		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).gt((Number)a) ); // gt is opposite of lt
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
+			block.push( ((NumberList)a).lt((Number)b) ); 
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
+			block.push( ((NumberList)a).lt((NumberList)b) ); 
+		} 
+		
+		
+		else {
 			throw new TypeError(this, a,b);
 		}
 	}
@@ -654,10 +659,15 @@ class OP_GreaterThan extends Operation {
 			block.push( new Num(((Char)a).compareTo((Char)b) > 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( new Num(a.str().compareTo(b.str()) > 0) );
+		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).lt((Number)a) ); // lt is opposite of gt
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
+			block.push( ((NumberList)a).gt((Number)b) ); 
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
+			block.push( ((NumberList)a).gt((NumberList)b) ); 
 		} 
-		else if (b.isa(NUMBER) && a.isa(LIST)) {
-			block.push( ((List)a).tail(((Number)b).toInt()) );
-		}  else {
+		
+		else {
 			throw new TypeError(this, a,b);
 		}
 	}

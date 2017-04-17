@@ -370,21 +370,19 @@ class OP_Dot_ClearAll extends Operation {
 class OP_Dot_LessThan extends Operation {
 	public OP_Dot_LessThan() {
 		this.name = ".<";
-		this.info = "less than or equal to comparison operator";
-		this.argTypes = "NN|CC|SS";
+		this.info = "head";
+		this.argTypes = "NL";
 	}
 	@Override
 	public void execute(Block block) {
 		Obj b = block.pop();			// Popped in Reverse Order
 		Obj a = block.pop();
 		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) <= 0) ); 
-		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) <= 0) );
-		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) <= 0) );
-		} else {
+
+		if (b.isa(NUMBER) && a.isa(LIST)) {	
+			block.push(((List)a).head(((Number)b).toInt()));
+		}
+		else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -395,21 +393,18 @@ class OP_Dot_LessThan extends Operation {
 class OP_Dot_GreaterThan extends Operation {
 	public OP_Dot_GreaterThan() {
 		this.name = ".>";
-		this.info = "greater than or equal to comparison operator";
-		this.argTypes = "NN|CC|SS";
+		this.info = "tail";
+		this.argTypes = "NL";
 	}
 	@Override
 	public void execute(Block block) {
 		Obj b = block.pop();			// Popped in Reverse Order
 		Obj a = block.pop();
 		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) >= 0) ); 
-		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) >= 0) );
-		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) >= 0) );
-		} else {
+		if (b.isa(NUMBER) && a.isa(LIST)) {
+		block.push( ((List)a).tail(((Number)b).toInt()) );
+		}
+		else {
 			throw new TypeError(this, a, b);
 		}
 		

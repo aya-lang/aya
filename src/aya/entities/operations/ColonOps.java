@@ -4,6 +4,8 @@ import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
+import static aya.obj.Obj.NUMBERLIST;
+import static aya.obj.Obj.STR;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.variable.Variable;
@@ -62,9 +65,9 @@ public class ColonOps {
 		/* 57 9  */ null, //Number Literal
 		/* 58    */ null,
 		/* 59 ;  */ null,
-		/* 60 <  */ null,
+		/* 60 <  */ new OP_Colon_LessThan(),
 		/* 61 =  */ null,
-		/* 62 >  */ null,
+		/* 62 >  */ new OP_Colon_GreaterThan(),
 		/* 63 ?  */ null,
 		/* 64 @  */ null,
 		/* 65 A  */ null,
@@ -192,6 +195,72 @@ class OP_Colon_Quote extends Operation {
 	}
 }
 
+// :< - 60
+class OP_Colon_LessThan extends Operation {
+	public OP_Colon_LessThan() {
+		this.name = ":<";
+		this.info = "less than or equal to comparison operator";
+		this.argTypes = "NN|CC|SS|LN|NL|LL";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj a = block.pop();
+		
+		
+		
+		if(a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( new Num(((Number)a).compareTo((Number)b) <= 0) );
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
+			block.push( new Num(((Char)a).compareTo((Char)b) <= 0) );
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push( new Num(a.str().compareTo(b.str()) <= 0) );
+		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).geq((Number)a) ); // geq is opposite of leq
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
+			block.push( ((NumberList)a).leq((Number)b) ); 
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
+			block.push( ((NumberList)a).leq((NumberList)b) ); 
+		} 
+		else {
+			throw new TypeError(this, a,b);
+		}
+	}
+}
+
+
+// :> - 62
+class OP_Colon_GreaterThan extends Operation {
+	public OP_Colon_GreaterThan() {
+		this.name = ":>";
+		this.info = "greater than or equal to comparison operator";
+		this.argTypes = "NN|CC|SS|NL|LN|LL";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj a = block.pop();
+		
+		if(a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( new Num(((Number)a).compareTo((Number)b) >= 0) );
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
+			block.push( new Num(((Char)a).compareTo((Char)b) >= 0) );
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push( new Num(a.str().compareTo(b.str()) >= 0) );
+		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).leq((Number)a) ); // lt is opposite of gt
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
+			block.push( ((NumberList)a).geq((Number)b) ); 
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
+			block.push( ((NumberList)a).geq((NumberList)b) ); 
+		} 
+		
+		
+		else {
+			throw new TypeError(this, a,b);
+		}
+	}
+}
 
 //K - 75
 class OP_Colon_K extends Operation {
