@@ -391,8 +391,8 @@ class OP_Dot_ClearAll extends Operation {
 class OP_Dot_LessThan extends Operation {
 	public OP_Dot_LessThan() {
 		this.name = ".<";
-		this.info = "head";
-		this.argTypes = "NL";
+		this.info = "LN head, NN lesser of";
+		this.argTypes = "LN|NN";
 	}
 	@Override
 	public void execute(Block block) {
@@ -403,6 +403,15 @@ class OP_Dot_LessThan extends Operation {
 		if (b.isa(NUMBER) && a.isa(LIST)) {	
 			block.push(((List)a).head(((Number)b).toInt()));
 		}
+		
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			if ( ((Number)a).compareTo((Number)b) > 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
 		else {
 			throw new TypeError(this, a, b);
 		}
@@ -414,8 +423,8 @@ class OP_Dot_LessThan extends Operation {
 class OP_Dot_GreaterThan extends Operation {
 	public OP_Dot_GreaterThan() {
 		this.name = ".>";
-		this.info = "tail";
-		this.argTypes = "NL";
+		this.info = "LN tail, NN greater of";
+		this.argTypes = "LN|NN";
 	}
 	@Override
 	public void execute(Block block) {
@@ -425,6 +434,15 @@ class OP_Dot_GreaterThan extends Operation {
 		if (b.isa(NUMBER) && a.isa(LIST)) {
 		block.push( ((List)a).tail(((Number)b).toInt()) );
 		}
+		
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			if ( ((Number)a).compareTo((Number)b) < 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
 		else {
 			throw new TypeError(this, a, b);
 		}
