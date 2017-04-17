@@ -60,7 +60,7 @@ public class DotOps {
 		/* 34 "  */ null,
 		/* 35 #  */ null, //Comment
 		/* 36 $  */ new OP_Dot_SortUsing(),
-		/* 37 %  */ null,
+		/* 37 %  */ new OP_Dot_Percent(),
 		/* 38 &  */ new OP_Dot_And(),
 		/* 39 '  */ new OP_Dot_CastChar(),
 		/* 40 (  */ null,
@@ -262,6 +262,27 @@ class OP_Dot_SortUsing extends Operation {
 	
 	
 }
+
+// % - 37
+class OP_Dot_Percent extends Operation {
+	public OP_Dot_Percent() {
+		this.name = ".%";
+		this.info = "NN integer division";
+		this.argTypes = "NN";
+	}
+	@Override public void execute(final Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
+		
+		if ( a.isa(NUMBER) && b.isa(NUMBER) ) {
+			block.push( ((Number)b).idiv((Number)a) );
+		} else {
+			throw new TypeError(this,a,b);
+		}
+	}
+}
+
+
 
 //.& - 38
 class OP_Dot_And extends Operation {
