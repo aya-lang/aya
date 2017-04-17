@@ -70,7 +70,7 @@ public class DotOps {
 		/* 44 ,  */ null,
 		/* 45 -  */ new OP_Dot_Minus(),
 		/* 46 .  */ null,
-		/* 47 /  */ null,
+		/* 47 /  */ new OP_Dot_FwdSlash(),
 		/* 48 0  */ null, //Number Literal
 		/* 49 1  */ null, //Number Literal
 		/* 50 2  */ null, //Number Literal
@@ -115,7 +115,7 @@ public class DotOps {
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
 		/* 91 [  */ new OP_Dot_Ceiling(),
-		/* 92 \  */ null,
+		/* 92 \  */ new OP_Dot_BackSlash(),
 		/* 93 ]  */ new OP_Dot_Floor(),
 		/* 94 ^  */ null,
 		/* 95 _  */ new OP_Dot_Underscore(),
@@ -349,6 +349,27 @@ class OP_Dot_Minus extends Operation {
 			block.push(b);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// / - 47
+class OP_Dot_FwdSlash extends Operation {
+	public OP_Dot_FwdSlash() {
+		this.name = "./";
+		this.info = "ceiling";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(NUMBER)) {
+			block.push(((Number)a).ceil());
+		}
+		
+		else {
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -918,6 +939,28 @@ class OP_Dot_Ceiling extends Operation {
 		}
 	}
 }
+
+// \ - 92
+class OP_Dot_BackSlash extends Operation {
+	public OP_Dot_BackSlash() {
+		this.name = ".\\";
+		this.info = "floor";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(NUMBER)) {
+			block.push(((Number)a).floor());
+		}
+		
+		else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 // ] - 93
 class OP_Dot_Floor extends Operation {
