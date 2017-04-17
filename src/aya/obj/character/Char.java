@@ -71,13 +71,23 @@ public class Char extends Obj implements Comparable<Char> {
 	////////////////
 	
 	/** Returns true if this character is in the range ['A'..'Z'] */
+	public static boolean isUpper(char c) {
+		return c >= 'A' && c <= 'Z';
+	}
+	
+	/** Returns true if this character is in the range ['A'..'Z'] */
 	public boolean isUpper() {
-		return _c >= 'A' && _c <= 'Z';
+		return isUpper(_c);
 	}
 	
 	/** Returns true if this character is in the range ['a'..'z'] */
+	public static boolean isLower(char c) {
+		return c >= 'a' && c <= 'z';
+	}
+	
+	/** Returns true if this character is in the range ['A'..'Z'] */
 	public boolean isLower() {
-		return _c >= 'a' && _c <= 'z';
+		return isLower(_c);
 	}
 	
 	/** Returns true if this character is in the range ['0'..'9'] */
@@ -103,29 +113,47 @@ public class Char extends Obj implements Comparable<Char> {
 	/////////////////////
 	
 	/** If the char is in the range ['a'..'z'], convert it to uppercase */
-	public Char toUpper() {
-		if (isLower()) 
-			return Char.valueOf(_c - 32);
+	public static char toUpper(char c) {
+		if (isLower(c)) 
+			return (char)(c - 32);
 		else
-			return this;
+			return c;
+	}
+	
+	/** If the char is in the range ['a'..'z'], convert it to uppercase */
+	public Char toUpper() {
+		return Char.valueOf(toUpper(_c));
+	}
+	
+	/** If the char is in the range ['A'..'Z'], convert it to lowercase */
+	public static char toLower(char c) {
+		if (isUpper(c)) 
+			return (char)(c + 32);
+		else
+			return c;
 	}
 	
 	/** If the char is in the range ['A'..'Z'], convert it to lowercase */
 	public Char toLower() {
-		if (isUpper()) 
-			return Char.valueOf(_c + 32);
-		else
-			return this;
+		return Char.valueOf(toLower(_c));
+	}
+	
+	
+	/** If uppercase, make lowercase, if lowercase make uppercase, otherwise do nothing */
+	public static char swapCase(char c) {
+		if (isUpper(c)) {
+			return toLower(c);
+		} else {
+			return toUpper(c);
+		}
 	}
 	
 	/** If uppercase, make lowercase, if lowercase make uppercase, otherwise do nothing */
 	public Char swapCase() {
-		if (isUpper()) {
-			return this.toLower();
-		} else {
-			return this.toUpper();
-		}
+		return Char.valueOf(swapCase(_c));
 	}
+	
+	
 	
 	
 	

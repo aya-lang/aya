@@ -213,11 +213,13 @@ class OP_Bang extends Operation {
 		if (o.isa(Obj.NUMBER)) {
 			block.push(Num.ONE.sub((Number)o));
 		} else if (o.isa(Obj.STR)) {
-			((Str)o).reverse();
-			block.push(o);
-		} else if(o.isa(Obj.LIST)) {
-			((List)o).reverse();
-			block.push(o);
+			//((Str)o).reverse();
+			//block.push(o);
+			block.push( ((Str)o).swapCase() );
+		} else if(o.isa(Obj.NUMBERLIST)) {
+			//((List)o).reverse();
+			//block.push(o);
+			block.push( ((NumberList)o).subFrom(Num.ONE) );
 		}
 		else if (o.isa(Obj.CHAR)) {
 			block.push(((Char)o).swapCase());
