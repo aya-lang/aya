@@ -32,7 +32,7 @@ import "list"
 
 .# Essential Functions
 
-{MA}:abs;						.#? N abs\n  absolute value
+{.|}:abs;						.#? N abs\n  absolute value
 {_E\S\/}:avg;				.#? L avg\n  average of a list of numbers
 {1 3/^}:cbrt;    		.#? N cbrt\n  cube root
 {./}:ceil;      		.#? N ceil\n  ceiling
@@ -49,11 +49,11 @@ import "list"
 {Ml}:ln;      			.#? N ln\n  natural log
 {ML}:log;      			.#? N log\n  base-10 log
 {ML\ML\/}:logn;			.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
-{1-M!MAMl}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
+{1-M!.|Ml}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
-{{*}U}:product;     .#? L product\n  product of a list
+{{*}F}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
 {M$3E.\}:ts;      .#? ts\n  return the system time in seconds as an int
@@ -64,10 +64,10 @@ import "list"
 .# Additional Math Functions
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{_'Nisa {.-}{{.-}U} .?}:lcm;
+{_'Nisa {.-}{{.-}F} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisior of 2 numbers or a list of numbers
-{_ 'Nisa {.+}{{.+}U} .?}:gcd;
+{_ 'Nisa {.+}{{.+}F} .?}:gcd;
 
 
 .#? N factors \n  returns a list of the numbers factors
@@ -75,7 +75,7 @@ import "list"
 
 .#? L geomean \n  geometric mean
 .# the nth root of the product of n numbers
-{_E\{*}U1@/^}:geomean;
+{_E\{*}F1@/^}:geomean;
 
 .#? L median \n  median value of a list
 {l,

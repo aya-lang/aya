@@ -7,21 +7,21 @@
 {N\;(-1)=!}:ni; 			 .#? LA ni\n  tests whether or not item `a` is in list `l`
 {AKR}:range;					 .#? NN range\n  generates a range from n1 to n2
 {R#{;.Q}}:randset;	   .#? I randset\n  generate a set of random nums (0 to 1) of length i
-{{K}U}:flatten;			   .#? L flatten\n  flattens the list by a single dimension
+{{K}F}:flatten;			   .#? L flatten\n  flattens the list by a single dimension
 {B\.V}:roll;      		 .#? L roll\n  move the last element to the front
 {_@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
 {p q e, [p q, e]}:zw;	 .#? LLE zw\n  zip with
 {[1|~,.A]}:transpose;  .#? L<L> transpose\n  transpose a list of lists
-{{.<}U}:max;           .#? L max\n  max value of a list
-{{.>}U}:min;           .#? L min\n  min value of a list
+{{.<}F}:max;           .#? L max\n  max value of a list
+{{.>}F}:min;           .#? L min\n  min value of a list
 
 
 
 
 .# Testing / Conditions
 
-{{&}U}:allt;		.#? <L> allt\n  true if all elements in list are true
-{{|}U!}:allf;	  .#? <L> allf\n  true if all elements in list are false
+{{&}F}:allt;		.#? <L> allt\n  true if all elements in list are true
+{{|}F!}:allf;	  .#? <L> allf\n  true if all elements in list are false
 {\_@IE\E=}:all; .#? <LE> all\n  tests if all elements of the list meet the condition
 {IE0>}:any; 		.#? <LE> any\n  returns true of any elements satisfy the predicate
 
@@ -81,7 +81,7 @@
 .#? L<N> digitstonum\n  convert a list of numbers into a number
 {lL : total multip,
   1:multip;
-  lF#{
+  lU#{
     multip* total+:total;
     multip 10 *:multip
   };
