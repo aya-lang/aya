@@ -67,7 +67,7 @@ import "base/data"
 10		 :d;
 .#e (scientific notation)
 100		 :h;
-{:'}	 :i; .#? A i\n  cast to int
+{.\}	 :i; .#? A i\n  cast to int
 1000	 :k;
 []		 :l;
 .#m (matrix module)
