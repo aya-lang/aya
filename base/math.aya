@@ -139,7 +139,7 @@ import "list"
   .#   next factor
   {
     .# Range from 2..ceil(sqrt(n))
-    [2nVMq./R
+    [2nVMq./]R
 
     .# Find the next factor
     {n\%0=}.N
