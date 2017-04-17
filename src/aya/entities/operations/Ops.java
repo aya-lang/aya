@@ -815,17 +815,38 @@ class OP_E extends Operation {
 class OP_F extends Operation {
 	public OP_F() {
 		this.name = "F";
-		this.info = "reverse";
-		this.argTypes = "LS";
+		this.info = "fold from left to right";
+		this.argTypes = "LB";
 	}
-	@Override public void execute(final Block block) {
-		Obj o = block.pop();
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
 		
-		if (o.isa(LIST)) {
-			((List)o).reverse();
-			block.push(o);
+		
+		if(a.isa(BLOCK) && b.isa(LIST)) {
+			List blist = (List)b;
+			
+			int length = blist.length();
+			if(length == 0) {
+				block.push(Num.ZERO);
+				return;
+			}
+			
+			Block foldBlock = ((Block)(a));
+			
+			//Push all but the last item
+			//for(int i = 0; i < list.size()-1; i++) {
+			for(int i = length-1; i > 0; i--) {
+				block.addAll(foldBlock.getInstructions().getInstrucionList());
+				block.add(blist.get(i));
+			}
+			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+			//block.add(list.get(list.size()-1));
+			block.add(blist.get(0));
+			return;
 		} else {
-			throw new TypeError(this,o);
+			throw new TypeError(this, a, b);
 		}
 	}
 }
@@ -1262,45 +1283,27 @@ class OP_T extends Operation {
 	}
 }
 
+
 //U - 85
 class OP_U extends Operation {
 	public OP_U() {
 		this.name = "U";
-		this.info = "fold from left to right";
-		this.argTypes = "LB";
+		this.info = "reverse";
+		this.argTypes = "LS";
 	}
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
+	@Override public void execute(final Block block) {
+		Obj o = block.pop();
 		
-		
-		if(a.isa(BLOCK) && b.isa(LIST)) {
-			List blist = (List)b;
-			
-			int length = blist.length();
-			if(length == 0) {
-				block.push(Num.ZERO);
-				return;
-			}
-			
-			Block foldBlock = ((Block)(a));
-			
-			//Push all but the last item
-			//for(int i = 0; i < list.size()-1; i++) {
-			for(int i = length-1; i > 0; i--) {
-				block.addAll(foldBlock.getInstructions().getInstrucionList());
-				block.add(blist.get(i));
-			}
-			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-			//block.add(list.get(list.size()-1));
-			block.add(blist.get(0));
-			return;
+		if (o.isa(LIST)) {
+			((List)o).reverse();
+			block.push(o);
 		} else {
-			throw new TypeError(this, a, b);
+			throw new TypeError(this,o);
 		}
 	}
 }
+
+
 
 //V - 86
 class OP_V extends Operation {

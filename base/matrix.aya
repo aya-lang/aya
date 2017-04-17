@@ -29,7 +29,7 @@ import "math"
   }:new;
 
   {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
-  {m, m.rowsE m.rows#E\#= {|}U}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
+  {m, m.rowsE m.rows#E\#= {|}F}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
   {a b, [a.rows b.rows,[2|,+]] matrix!}:matadd;    .#? (matrix)(matrix) matrix.add\n  add two matrices
   {a b, [a.rows b.rows,[2|,-]] matrix!}:matsub;    .#? (matrix)(matrix) matrix.sub\n  subtract two matrices
   {m, [m.rows_ER,VI]}:tr;                       .#? (matrix) matrix.tr\n  trace of a matrix as a list
@@ -52,7 +52,7 @@ import "math"
 
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
-     a.dim b.dim =! 0 {[a.rows b.rows,=]{&}U} .?
+     a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
   }:eq;
 
 
