@@ -174,20 +174,18 @@ public class ColonOps {
 }
 
 
-//' - 39
+// ' - 39
 class OP_Colon_Quote extends Operation {
 	public OP_Colon_Quote() {
 		this.name = ":'";
-		this.info = "N|C cast to integer (floor function)";
-		this.argTypes = "N|C";
+		this.info = "ord";
+		this.argTypes = "C";
 	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
 		
-		if (a.isa(NUMBER)) {
-			block.push( new Num(((Number)a).toInt()) );
-		} else if (a.isa(CHAR)) { 
+		if (a.isa(CHAR)) { 
 			block.push( new Num((int)(((Char)a).charValue())) );
 		} else {
 			throw new TypeError(this, a);
@@ -195,7 +193,7 @@ class OP_Colon_Quote extends Operation {
 	}
 }
 
-// :< - 60
+// < - 60
 class OP_Colon_LessThan extends Operation {
 	public OP_Colon_LessThan() {
 		this.name = ":<";
@@ -229,7 +227,7 @@ class OP_Colon_LessThan extends Operation {
 }
 
 
-// :> - 62
+// > - 62
 class OP_Colon_GreaterThan extends Operation {
 	public OP_Colon_GreaterThan() {
 		this.name = ":>";
