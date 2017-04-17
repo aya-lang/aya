@@ -34,7 +34,7 @@ import "types"
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
   [1|~,                 .# Transpose
-    .A_#{PE} {.>}U BB    .# Calculate the maximum print width
+    .A_#{PE} {.>}F BB    .# Calculate the maximum print width
     #{\P\.>}            .# Pad each entry with spaces on the left
   ][1|~,                .# Transpose
     .AS                 .# Combine strings
