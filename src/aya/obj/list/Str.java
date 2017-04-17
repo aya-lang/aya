@@ -283,6 +283,15 @@ public class Str extends List implements Comparable<Str> {
 		}
 	}
 
+	/** Swap the case of each character in the string */
+	public Str swapCase() {
+		char[] swapped = new char[_str.length()];
+		char[] old = _str.toCharArray();
+		for (int i = 0; i < _str.length(); i++) {
+			swapped[i] = Char.swapCase(old[i]);
+		}
+		return new Str(new String(swapped));
+	}
 
 
 	
@@ -332,6 +341,7 @@ public class Str extends List implements Comparable<Str> {
 		return Obj.STR;
 	}
 	
+
 	
 	
 	////////////////
@@ -401,6 +411,8 @@ public class Str extends List implements Comparable<Str> {
 	    // the distance is the cost for transforming all letters in both strings        
 	    return cost[len0 - 1];                                                          
 	}
+
+	
 
 	
 
