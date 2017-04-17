@@ -5,7 +5,7 @@
 
 .# CONVERSION
 
-{:'}:int;					  .#? A int\n  cast to an int
+{.\}:int;					  .#? A int\n  cast to an int
 {Md}:double;				.#? A double\n  cast to an double
 {Z}:bignum;		      .#? A bignum\n  cast to an bignum
 {P}:string;			    .#? A string\n  cast to an string
