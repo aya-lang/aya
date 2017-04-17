@@ -404,7 +404,7 @@ class OP_Dot_LessThan extends Operation {
 			block.push(((List)a).head(((Number)b).toInt()));
 		}
 		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+		else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) > 0) {
 				block.push(a);
 			} else {
@@ -435,7 +435,7 @@ class OP_Dot_GreaterThan extends Operation {
 		block.push( ((List)a).tail(((Number)b).toInt()) );
 		}
 		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+		else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) < 0) {
 				block.push(a);
 			} else {
