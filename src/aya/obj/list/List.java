@@ -2,6 +2,7 @@ package aya.obj.list;
 
 import java.util.ArrayList;
 
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.list.numberlist.NumberList;
 
@@ -43,6 +44,76 @@ public abstract class List extends Obj {
 				}
 			} while (moreItems);
 		}
+	}
+	
+	//Yes I know this is gross, i'll fix it later...
+	public static List reshape(List l, NumberList dims) {
+		if (dims.length() == 0)
+			throw new AyaRuntimeException("reshape: must have non-empty dims");
+		
+		if (dims.length() > 5)
+			throw new AyaRuntimeException("reshape: maximum rank of 5, recieved rank " 
+					+ dims.length() + " resulting from " + dims.repr());
+		
+		NDListIterator<Obj> iter = new NDListIterator<Obj>(l);
+		iter.setLoop(true);
+		
+		Integer[] ds = dims.toIntegerArray();
+		
+		switch (dims.length()) {
+		case 1:
+			return reshape(iter, ds[0]);
+		case 2:
+			return reshape(iter, ds[0], ds[1]);
+		case 3:
+			return reshape(iter, ds[0], ds[1], ds[2]);
+		case 4:
+			return reshape(iter, ds[0], ds[1], ds[2], ds[3]);
+		case 5:
+			return reshape(iter, ds[0], ds[1], ds[2], ds[3], ds[4]);
+		}
+		
+		throw new AyaRuntimeException("reshape: invalid dimensions: " + dims.repr());
+	}
+	
+	public static List reshape(NDListIterator<Obj> iter, int count) {
+		ArrayList<Obj> out = new ArrayList<Obj>(count);
+		for (int i = 0; i < count; i++) {
+			out.add(iter.next());
+		}
+		return new GenericList(out).promote();
+	}
+	
+	public static List reshape(NDListIterator<Obj> iter, int r, int c) {
+		ArrayList<Obj> out = new ArrayList<Obj>(r);
+		for (int i = 0; i < r; i++) {
+			out.add(reshape(iter, c));
+		}
+		return new GenericList(out);
+	}
+	
+	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c) {
+		ArrayList<Obj> out = new ArrayList<Obj>(a);
+		for (int i = 0; i < a; i++) {
+			out.add(reshape(iter, b, c));
+		}
+		return new GenericList(out);
+	}
+
+	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d) {
+		ArrayList<Obj> out = new ArrayList<Obj>(a);
+		for (int i = 0; i < a; i++) {
+			out.add(reshape(iter, b, c, d));
+		}
+		return new GenericList(out);
+	}
+	
+	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d, int e) {
+		ArrayList<Obj> out = new ArrayList<Obj>(a);
+		for (int i = 0; i < a; i++) {
+			out.add(reshape(iter, b, c, d, e));
+		}
+		return new GenericList(out);
 	}
 	
 	/////////////////////
