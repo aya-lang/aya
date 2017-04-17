@@ -147,7 +147,7 @@ public class DotOps {
 		/* 121 y */ null, // Member Variable
 		/* 122 z */ null, // Member Variable
 		/* 123 { */ null, // block comments
-		/* 124 | */ null,
+		/* 124 | */ new OP_Dot_Bar(),
 		/* 125 } */ null, // block comments
 		/* 126 ~ */ new OP_Dot_Tilde(),
 	};
@@ -284,7 +284,7 @@ class OP_Dot_Percent extends Operation {
 
 
 
-//.& - 38
+// & - 38
 class OP_Dot_And extends Operation {
 	public OP_Dot_And() {
 		this.name = ".&";
@@ -1062,6 +1062,28 @@ class OP_Dot_Underscore extends Operation {
 		}
 	}
 }
+
+// | - 124
+class OP_Dot_Bar extends Operation {
+	public OP_Dot_Bar() {
+		this.name = ".|";
+		this.info = "absolute value";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Obj a = block.pop();	
+		
+		if (a.isa(NUMBER)) {
+			block.push( ((Number)a).abs() );
+		} else if (a.isa(NUMBERLIST)) {
+			block.push( ((NumberList)a).abs() );
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 
 

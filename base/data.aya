@@ -3,7 +3,7 @@ import "file"
 import "dataframe"
 
 {,
-	`:cardsabb		(['\heart''\diamnd''\club''\spade']"A23456789TJQK"{P+}permusingF{K}U);
+	`:cardsabb		(['\heart''\diamnd''\club''\spade']"A23456789TJQK"{P+}permusingU{K}F);
 	`:monthsname	["January" "February" "March" "April" "May" "June" "July"
 				 "August" "September" "October" "November" "December"];
 	`:monthsabb		["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"];

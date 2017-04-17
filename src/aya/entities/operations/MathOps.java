@@ -81,7 +81,7 @@ public class MathOps {
 		/* 62 >  */ null, //new OP_ModGet(),
 		/* 63 ?  */ null,
 		/* 64 @  */ null,
-		/* 65 A  */ new OP_Abs(),
+		/* 65 A  */ null, //new OP_Abs(),
 		/* 66 B  */ null,
 		/* 67 C  */ new OP_Acosine(),
 		/* 68 D  */ new OP_MDate(),
@@ -179,7 +179,12 @@ class OP_Fact extends Operation {
 		Obj n = block.pop();
 		if(n.isa(NUMBER)){
 			block.push(((Number)n).factorial());
-		} else {
+		}
+		
+		else if (n.isa(NUMBERLIST)) {
+			block.push( ((NumberList)n).factorial() );
+		}
+		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
@@ -199,28 +204,28 @@ class OP_SysTime extends Operation {
 }
 
 
-// A - 65
-class OP_Abs extends Operation {
-	public OP_Abs() {
-		this.name = "MA";
-		this.info = "absolute value";
-		this.argTypes = "N";
-	}
-	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).abs());
-		}
-		else if (n.isa(NUMBERLIST)) {
-			block.push(((NumberList)n).abs());
-		}
-		else {
-			throw new TypeError(this.name, this.argTypes, n);
-		}
-	}
-}
+//// A - 65
+//class OP_Abs extends Operation {
+//	public OP_Abs() {
+//		this.name = "MA";
+//		this.info = "absolute value";
+//		this.argTypes = "N";
+//	}
+//	@Override
+//	public void execute(Block block) {
+//		Obj n = block.pop();
+//		
+//		if(n.isa(NUMBER)) {
+//			block.push(((Number)n).abs());
+//		}
+//		else if (n.isa(NUMBERLIST)) {
+//			block.push(((NumberList)n).abs());
+//		}
+//		else {
+//			throw new TypeError(this.name, this.argTypes, n);
+//		}
+//	}
+//}
 
 // C - 67
 class OP_Acosine extends Operation {
