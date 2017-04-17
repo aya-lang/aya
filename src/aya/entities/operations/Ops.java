@@ -677,29 +677,22 @@ class OP_GreaterThan extends Operation {
 class OP_Conditional extends Operation {
 	public OP_Conditional() {
 		this.name = "?";
-		this.info = "<AAB> conditional operator. if the first argument if true pop the second, if false, pop the third";
-		this.argTypes = "AAB";
+		this.info = "<BA> conditional operator. if B then A. If A is a block, execute it.";
+		this.argTypes = "BA";
 	}
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
-		final Obj c = block.pop();
-		//   c      b     a
-		//{false} {true} cond
+		//  b     a
+		// cond {true}
 		
 		
-		if(a.bool()) {			
-			if(b.isa(BLOCK)) {
-				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
+		if(b.bool()) {			
+			if(a.isa(BLOCK)) {
+				block.addAll(((Block)a).duplicate().getInstructions().getInstrucionList());
 			} else {
-				block.push(b);
-			}
-		} else {
-			if(c.isa(BLOCK)) {
-				block.addAll(((Block)c).duplicate().getInstructions().getInstrucionList());
-			} else {
-				block.push(c);
+				block.push(a);
 			}
 		}
 		

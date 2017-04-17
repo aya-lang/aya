@@ -415,18 +415,30 @@ class OP_Dot_GreaterThan extends Operation {
 class OP_Dot_Conditional extends Operation {
 	public OP_Dot_Conditional() {
 		this.name = ".?";
-		this.info = "AA conditional operator. if the first argument if true, do nothing. if false, pop the second";
-		this.argTypes = "AA";
+		this.info = "BAA conditional operator. if B, then A1 else A2. If A is a block, execute it.";
+		this.argTypes = "BAA";
 	}
 	
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
-		if(a.bool()) {
-			//If true, dont pop
+		final Obj b = block.pop();
+		final Obj c = block.pop();
+		//  c     b      a
+		// cond {then} {else}
+		
+		if(c.bool()) {
+			if(b.isa(BLOCK)) {
+				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
+			} else {
+				block.push(b);
+			}
 		} else {
-			//If anything else, pop
-			block.pop();
+			if(a.isa(BLOCK)) {
+				block.addAll(((Block)a).duplicate().getInstructions().getInstrucionList());
+			} else {
+				block.push(a);
+			}
 		}
 	}
 
