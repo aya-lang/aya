@@ -19,8 +19,8 @@
 .###################################
 
 .# Operators (for special characters)
-{.>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
-{.<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
+{:>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
+{:<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
 {=!}:ne;				.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
 
 
