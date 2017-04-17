@@ -107,7 +107,7 @@ public class Ops {
 		/* 67 C  */ null,
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ null,
+		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ new OP_I(),
@@ -809,6 +809,24 @@ class OP_E extends Operation {
 }
 
 // F - 70
+class OP_F extends Operation {
+	public OP_F() {
+		this.name = "F";
+		this.info = "reverse";
+		this.argTypes = "LS";
+	}
+	@Override public void execute(final Block block) {
+		Obj o = block.pop();
+		
+		if (o.isa(LIST)) {
+			((List)o).reverse();
+			block.push(o);
+		} else {
+			throw new TypeError(this,o);
+		}
+	}
+}
+
 
 // G - 71
 class OP_G extends Operation {

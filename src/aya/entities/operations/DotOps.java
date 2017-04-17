@@ -147,7 +147,7 @@ public class DotOps {
 		/* 121 y */ null, // Member Variable
 		/* 122 z */ null, // Member Variable
 		/* 123 { */ null, // block comments
-		/* 124 | */ new OP_Dot_Bar(),
+		/* 124 | */ null,
 		/* 125 } */ null, // block comments
 		/* 126 ~ */ new OP_Dot_Tilde(),
 	};
@@ -966,24 +966,7 @@ class OP_Dot_Underscore extends Operation {
 	}
 }
 
-// | - 124
-class OP_Dot_Bar extends Operation {
-	public OP_Dot_Bar() {
-		this.name = ".|";
-		this.info = "reverse";
-		this.argTypes = "LS";
-	}
-	@Override public void execute(final Block block) {
-		Obj o = block.pop();
-		
-		if (o.isa(LIST)) {
-			((List)o).reverse();
-			block.push(o);
-		} else {
-			throw new TypeError(this,o);
-		}
-	}
-}
+
 
 //~ - 126
 class OP_Dot_Tilde extends Operation {
