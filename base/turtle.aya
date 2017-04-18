@@ -67,9 +67,9 @@ import "math"
     for 'i (12R) {
       for 'j (12R) {
         1 t.fwd
-        30° t.right
+        30 deg t.right
       };
-      30° t.right
+      30 deg t.right
     };
     t.draw
   }:flower;
@@ -80,11 +80,19 @@ import "math"
     for 'i (24R) {
       for 'j (36R) {
         1 t.fwd
-        170° t.right
+        170 deg t.right
       };
-      20° t.right
+      20 deg t.right
     };
     t.draw
   }:snowflake;
 
 }:turtledemo;
+
+{:choice,
+  turtledemo :K $
+  "Select a Demo" "Turtle Demo" 1 6 MV :choice;
+
+  "turtledemo." choice + ~
+
+}:turtledemos;

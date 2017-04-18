@@ -60,6 +60,22 @@
   aya.homedir aya.importfrmdir
 }:importfile;
 
+{importnamezz,
+  .# Does the name contain a file sep? (9M|)
+  .# 9M| _ "\\"= {}{;"\\\\"} .? returns an escaped "\" -> "\\" if windows
+  importnamezz _ (9M| _ "\\"= {;"\\\\"} {} .?) | S=
+
+  { .# No file sep, import from base
+    importnamezz aya.importbase
+  }
+
+  { .# input contains a file sep
+    importnamezz aya.importfile
+  }
+
+  .?
+}:import;
+
 
 {
   [] aya.:imported;
@@ -82,23 +98,10 @@
 .# ------
 
 .#? import library\n  import a aya file\n  files are only imported once
-{`({importnamezz,
-
-  .# Does the name contain a file sep? (9M|)
-  .# 9M| _ "\\"= {}{;"\\\\"} .? returns an escaped "\" -> "\\" if windows
-  importnamezz _ (9M| _ "\\"= {;"\\\\"} {} .?) | S=
-
-  { .# No file sep, import from base
-    importnamezz aya.importbase
-  }
-
-  { .# input contains a file sep
-    importnamezz aya.importfile
-  }
-
-  .?
-
-})}:import;
+{`(
+    .# Split whitespace separated names
+    "\W+" | [""] :| #{aya.import};
+)}:import;
 
 
 
