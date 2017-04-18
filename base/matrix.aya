@@ -9,8 +9,6 @@ import "math"
 
 {,
 
-  .# attr "rows"
-
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
   .# Both of the following must be true:
@@ -200,9 +198,8 @@ import "math"
   }:repr;
 
   .#? N matrix.i\n  generate an Nd identity matrix
-  {n,
-    nV:n;
-    1 0 n LK{_roll}n% A {\A\K}n% matrix!
+  {
+    _0\L1\K\_KL {,}.:rows matrix MO
   }:eye;
 
 

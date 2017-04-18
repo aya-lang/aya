@@ -230,7 +230,7 @@ import "dialog"
   "rainbow"
   "colorsort"
   "scatter"
-  "fnlot"
+  "fnplot"
   "lorenz"
   "loading"
   ]$  "Select a Demo" "Aya Demo" 1 6 MV :choice;
