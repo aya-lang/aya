@@ -65,6 +65,38 @@ public class NDListIterator <O extends Obj> {
 		}
 	}
 	
+	public void setNext(O item) {
+		if (_loop && _ix >= _list.length()) {
+			_ix = 0;
+		}
+		
+		if (_sub != null) {
+			_sub.setNext(item);
+			if (_sub.done()) {
+				_sub = null;
+				_ix++;
+			}
+			return;
+		}
+		
+		else if (_list.get(_ix).isa(Obj.LIST)) {
+			_sub = new NDListIterator<O>((List)(_list.get(_ix)));
+			if (_sub.done()) {
+				// list was empty
+				_ix++;
+				setNext(item);
+				return;
+			} else {
+				_sub.setNext(item);
+				return;
+			}
+		}
+		
+		else {
+			_list.set(_ix++, item);
+		}
+	}
+	
 	public static void test() {
 		
 		ArrayList<Number> ns = new ArrayList<Number>();
@@ -119,6 +151,8 @@ public class NDListIterator <O extends Obj> {
 		test();
 		System.out.println("done!");
 	}
+
+	
 
 }
 

@@ -84,7 +84,7 @@ public class DotOps {
 		/* 58    */ null,
 		/* 59 ;  */ new OP_Dot_ClearAll(),
 		/* 60 <  */ new OP_Dot_LessThan(),
-		/* 61 =  */ null,
+		/* 61 =  */ new OP_Dot_Equals(),
 		/* 62 >  */ new OP_Dot_GreaterThan(),
 		/* 63 ?  */ new OP_Dot_Conditional(),
 		/* 64 @  */ new OP_Dot_At(),
@@ -474,6 +474,39 @@ class OP_Dot_GreaterThan extends Operation {
 		
 	}
 }
+
+// = 61 new OP_Dot_Equals(),
+class OP_Dot_Equals extends Operation {
+	public OP_Dot_Equals() {
+		this.name = ".=";
+		this.info = "LL element-wise equals";
+		this.argTypes = "LL|LA|AL";
+	}
+	
+	@Override
+	public void execute(final Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		if (a.isa(LIST) && b.isa(LIST)) {
+			block.push( List.equalsElementwise((List)a, (List)b) );
+		}
+		
+		else if ( a.isa(LIST) ) {
+			block.push( List.equalsElementwise((List)a, b) );
+		}
+		
+		else if ( b.isa(LIST) ) {
+			block.push( List.equalsElementwise((List)b, a) );
+		}
+		
+		else {
+			throw new TypeError(this, a, b);
+		}
+	}
+
+}
+
 
 // ? - 63
 class OP_Dot_Conditional extends Operation {
