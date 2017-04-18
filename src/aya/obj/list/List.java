@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.list.numberlist.NumberList;
+import aya.obj.number.Num;
 
 /** List supertype */
 public abstract class List extends Obj {
@@ -76,7 +77,7 @@ public abstract class List extends Obj {
 		throw new AyaRuntimeException("reshape: invalid dimensions: " + dims.repr());
 	}
 	
-	public static List reshape(NDListIterator<Obj> iter, int count) {
+	private static List reshape(NDListIterator<Obj> iter, int count) {
 		ArrayList<Obj> out = new ArrayList<Obj>(count);
 		for (int i = 0; i < count; i++) {
 			out.add(iter.next());
@@ -84,7 +85,7 @@ public abstract class List extends Obj {
 		return new GenericList(out).promote();
 	}
 	
-	public static List reshape(NDListIterator<Obj> iter, int r, int c) {
+	private static List reshape(NDListIterator<Obj> iter, int r, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(r);
 		for (int i = 0; i < r; i++) {
 			out.add(reshape(iter, c));
@@ -92,7 +93,7 @@ public abstract class List extends Obj {
 		return new GenericList(out);
 	}
 	
-	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c) {
+	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c));
@@ -100,7 +101,7 @@ public abstract class List extends Obj {
 		return new GenericList(out);
 	}
 
-	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d) {
+	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d));
@@ -108,13 +109,63 @@ public abstract class List extends Obj {
 		return new GenericList(out);
 	}
 	
-	public static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d, int e) {
+	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d, int e) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d, e));
 		}
 		return new GenericList(out);
 	}
+	
+	
+	/** Return a list of shape l1 whose values are 1 if l1[i,j,..] == l2[i,j,..] and 0 otherwise */
+	public static List equalsElementwise(List l1, List l2) {
+		List out;
+		if (l1.isa(Obj.STR)) {
+			out = ((Str)l1).toNumberList();
+		} else {
+			out = (List)l1.deepcopy();
+		}
+		NDListIterator<Obj> iterOut = new NDListIterator<>(out);
+		NDListIterator<Obj> iter1 = new NDListIterator<>(l1);
+		NDListIterator<Obj> iter2 = new NDListIterator<>(l2);
+		
+		while (true) {
+			if (iter1.done() && iter2.done()) {
+				break;
+			}
+			
+			else if (iter1.done() || iter2.done()) {
+				throw new AyaRuntimeException("element-wise equals, dimension mismatch:\n\tlist1:\n"
+						+ l1.repr() + "\n\tlist2:\n" + l2.repr());
+			}
+			
+			else {
+				iterOut.setNext( iter1.next().equiv(iter2.next()) ? Num.ONE : Num.ZERO );
+			}
+		}
+		
+		return out;
+	}
+	
+	/** Return a list of shape l whose values are 1 if l[i,j,...] == o, and 0 otherwise */
+	public static List equalsElementwise(List l, Obj o) {
+		List out;
+		if (l.isa(Obj.STR)) {
+			out = ((Str)l).toNumberList();
+		} else {
+			out = (List)l.deepcopy();
+		}
+		NDListIterator<Obj> iterOut = new NDListIterator<>(out);
+		NDListIterator<Obj> iter = new NDListIterator<>(l);
+		
+		while (!iter.done()) {			
+			iterOut.setNext( iter.next().equiv(o) ? Num.ONE : Num.ZERO );
+		}
+		
+		return out;
+	}
+	
 	
 	/////////////////////
 	// LIST OPERATIONS //
