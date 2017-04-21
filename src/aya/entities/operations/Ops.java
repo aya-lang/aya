@@ -88,7 +88,7 @@ public class Ops {
 	public static final KeyVariable KEYVAR_LT = new KeyVariable("lt");
 	public static final KeyVariable KEYVAR_GT = new KeyVariable("gt");
 	public static final KeyVariable KEYVAR_LEQ = new KeyVariable("leq");
-	public static final KeyVariable KEYVAR_QEQ = new KeyVariable("geq");
+	public static final KeyVariable KEYVAR_GEQ = new KeyVariable("geq");
 	public static final KeyVariable KEYVAR_EQ	= new KeyVariable("eq");
 	
 	// Numeric - Monads
@@ -122,7 +122,6 @@ public class Ops {
 	public static final KeyVariable KEYVAR_LEN = new KeyVariable("len");
 	public static final KeyVariable KEYVAR_REVERSE = new KeyVariable("reverse");
 	public static final KeyVariable KEYVAR_SORT = new KeyVariable("sort");
-	public static final KeyVariable KEYVAR_SORTUSING = new KeyVariable("sortusing");
 
 	
 	// Misc.
@@ -133,7 +132,6 @@ public class Ops {
 	public static final KeyVariable KEYVAR_RANDOM 	= new KeyVariable("random");
 	public static final KeyVariable KEYVAR_RANGE 	= new KeyVariable("range");
 	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("new");
-	public static final KeyVariable KEYVAR_INTEGER	= new KeyVariable("integer");
 	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("float");
 
 	

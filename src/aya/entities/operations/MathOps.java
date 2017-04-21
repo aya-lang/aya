@@ -167,7 +167,7 @@ public class MathOps {
 	
 }
 
-//! - 33
+// ! - 33
 class OP_Fact extends Operation {
 	public OP_Fact() {
 		this.name = "M!";
