@@ -587,10 +587,10 @@ class OP_Minus extends Operation {
 			block.push( ((NumberList)a).sub((NumberList)b) );
 		}
 		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_SUB);
+			block.callVariable((Dict)a, Ops.KEYVAR_RSUB, b);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_RSUB, a);
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_SUB);
 		}
 		else {
 			throw new TypeError(this, a,b);
@@ -1596,6 +1596,8 @@ class OP_Caret extends Operation {
 		
 		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).pow((Number)a) );
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).pow((NumberList)a) );
 		}
 		else if (a.isa(DICT)) {
 			block.push(b);
