@@ -173,6 +173,7 @@ class OP_Fact extends Operation {
 		this.name = "M!";
 		this.info = "factorial";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_FACT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -184,13 +185,18 @@ class OP_Fact extends Operation {
 		else if (n.isa(NUMBERLIST)) {
 			block.push( ((NumberList)n).factorial() );
 		}
+		
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_FACT);
+		}
+		
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
 	}
 }
 
-//! - 33
+// ! - 33
 class OP_SysTime extends Operation {
 	public OP_SysTime() {
 		this.name = "M$";
@@ -203,36 +209,13 @@ class OP_SysTime extends Operation {
 	}
 }
 
-
-//// A - 65
-//class OP_Abs extends Operation {
-//	public OP_Abs() {
-//		this.name = "MA";
-//		this.info = "absolute value";
-//		this.argTypes = "N";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		Obj n = block.pop();
-//		
-//		if(n.isa(NUMBER)) {
-//			block.push(((Number)n).abs());
-//		}
-//		else if (n.isa(NUMBERLIST)) {
-//			block.push(((NumberList)n).abs());
-//		}
-//		else {
-//			throw new TypeError(this.name, this.argTypes, n);
-//		}
-//	}
-//}
-
 // C - 67
 class OP_Acosine extends Operation {
 	public OP_Acosine() {
 		this.name = "MC";
 		this.info = "trigonometric inverse cosine";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_ACOS.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -243,6 +226,11 @@ class OP_Acosine extends Operation {
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).acos());
 		}
+		
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_ACOS);
+		}
+		
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
 		}
@@ -331,6 +319,7 @@ class OP_Log extends Operation {
 		this.name = "ML";
 		this.info = "base-10 logarithm";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_LOG.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -340,6 +329,9 @@ class OP_Log extends Operation {
 		}
 		else if (a.isa(NUMBERLIST)) {
 			block.push(((NumberList)a).log());
+		}
+		else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_LOG);
 		}
 		else {
 			throw new TypeError(this, a);
@@ -406,6 +398,7 @@ class OP_Asine extends Operation {
 		this.name = "MS";
 		this.info = "trigonometric inverse sine";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_ASIN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -415,6 +408,9 @@ class OP_Asine extends Operation {
 		}		
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).asin());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_ASIN);
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -428,6 +424,7 @@ class OP_Atangent extends Operation {
 		this.name = "MT";
 		this.info = "trigonometric inverse tangent";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_ATAN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -437,6 +434,9 @@ class OP_Atangent extends Operation {
 		}
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).atan());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_ATAN);
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -536,7 +536,7 @@ class OP_AdvPlot extends Operation {
 				+ "    xaxis [minD maxD]\n"
 				+ "    yaxis [minD maxD]\n"
 				+ "    x L<N>\n"
-				+ "    y [[nameS strokeD color[r g b] dataL], ..]"
+				+ "    y [[nameS strokeD color[r g b] dataL], ..]\n"
 				+ "    show B\n"
 				+ "    legend B\n"
 				+ "    horizontal B\n"
@@ -676,6 +676,7 @@ class OP_Cosine extends Operation {
 		this.name = "Mc";
 		this.info = "trigonometric cosine";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_COS.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -686,6 +687,9 @@ class OP_Cosine extends Operation {
 		}
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).cos());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_COS);
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -699,6 +703,7 @@ class OP_CastDouble extends Operation {
 		this.name = "Md";
 		this.info = "cast number to double. if input not number, return 0.0";
 		this.argTypes = "SN";
+		this.overload = Ops.KEYVAR_FLOAT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -714,13 +719,41 @@ class OP_CastDouble extends Operation {
 			block.push(new Num(((BigNum)a).toDouble()));
 		} else if (a.isa(NUM)) {
 			block.push(a); //Already a double
-		} else {
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_FLOAT);
+		}
+		else {
 			throw new TypeError(this, a);
 		}
 	}
 }
 
-//h - 104
+// e - 100
+class OP_Me extends Operation {
+	public OP_Me() {
+		this.name = "Me";
+		this.info = "exponential";
+		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_EXP.name();
+	}
+	@Override
+	public void execute(Block block) {
+		Obj n = block.pop();
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).exp());
+			return;
+		}
+		
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_EXP);
+		}
+		else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
+	}
+}
+
+// h - 104
 class OP_MShow_Date extends Operation {
 
 	public OP_MShow_Date() {
@@ -759,7 +792,7 @@ class OP_MShow_Date extends Operation {
 }
 
 
-//k - 107
+// k - 107
 class OP_AddParserChar extends Operation {
 	public OP_AddParserChar() {
 		this.name = "Mk";
@@ -785,12 +818,13 @@ class OP_AddParserChar extends Operation {
 }
 
 
-//l - 108
+// l - 108
 class OP_Ln extends Operation {
 	public OP_Ln() {
 		this.name = "Ml";
 		this.info = "natural logarithm";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_LN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -800,6 +834,9 @@ class OP_Ln extends Operation {
 		} 
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).ln());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_LN);
 		}
 		else {
 			throw new TypeError(this, n);
@@ -837,6 +874,7 @@ class OP_SquareRoot extends Operation {
 		this.name = "Mq";
 		this.info = "square root function";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_SQRT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -846,6 +884,9 @@ class OP_SquareRoot extends Operation {
 		}
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).sqrt());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_SQRT);
 		}
 		else {
 			throw new TypeError(this, n);
@@ -859,6 +900,7 @@ class OP_Sine extends Operation {
 		this.name = "Ms";
 		this.info = "trigonometric sine";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_SIN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -869,6 +911,9 @@ class OP_Sine extends Operation {
 		}
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).sin());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_SIN);
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -885,6 +930,7 @@ class OP_Tangent extends Operation {
 		this.name = "Mt";
 		this.info = "trigonometric tangent";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_TAN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -895,6 +941,9 @@ class OP_Tangent extends Operation {
 		}
 		else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).tan());
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_TAN);
 		}
 		else {
 			throw new TypeError(this.name, this.argTypes, n);
@@ -917,7 +966,7 @@ class OP_TypeStr extends Operation {
 
 
 
-//l - 108
+// L - 108
 class OP_Constants extends Operation {
 	public OP_Constants() {
 		this.name = "M|";
