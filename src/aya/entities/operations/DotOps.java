@@ -2,6 +2,7 @@ package aya.entities.operations;
 
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
+import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
@@ -32,6 +33,7 @@ import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
+import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
@@ -182,6 +184,7 @@ class OP_Dot_Bang extends Operation {
 		this.name = ".!";
 		this.info = "N signnum\nS parse if number";
 		this.argTypes = "NS";
+		this.overload = Ops.KEYVAR_SIGNUM.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -199,7 +202,11 @@ class OP_Dot_Bang extends Operation {
 					block.push(o);
 				}
 			}
-		} else {
+		} 
+		else if (o.isa(DICT)) {
+			block.callVariable((Dict)o, Ops.KEYVAR_SIGNUM);
+		}
+		else {
 			throw new TypeError(this,o);
 		}
 	}
@@ -241,7 +248,8 @@ class OP_Dot_SortUsing extends Operation {
 			
 			block.push(new GenericList(out).promote());
 			
-		} else {
+		} 
+		else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -269,15 +277,39 @@ class OP_Dot_Percent extends Operation {
 		this.name = ".%";
 		this.info = "NN integer division";
 		this.argTypes = "NN";
+		this.overload = Ops.KEYVAR_IDIV.name() + "/" + Ops.KEYVAR_RIDIV.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj a = block.pop();
 		Obj b = block.pop();
 		
-		if ( a.isa(NUMBER) && b.isa(NUMBER) ) {
-			block.push( ((Number)b).idiv((Number)a) );
-		} else {
-			throw new TypeError(this,a,b);
+		if(a.isa(NUMBER) && b.isa(NUMBER)) {
+			try {
+				//b idiv a
+				block.push(((Number)(b)).idiv((Number)(a)));
+			} catch (ArithmeticException e) {
+				throw new AyaRuntimeException("%: Divide by 0");
+			}
+		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+			block.push( ((NumberList)a).idivFrom((Number)b) );
+		}
+		
+		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).idiv((Number)a) );
+		}
+		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			block.push( ((NumberList)b).idiv((NumberList)a) );
+		}
+
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_IDIV);
+		} else if (b.isa(DICT)) {
+			block.callVariable((Dict)b, Ops.KEYVAR_RIDIV, a);
+		}
+		else {
+			throw new TypeError(this, a,b);
 		}
 	}
 }
@@ -380,6 +412,7 @@ class OP_Dot_FwdSlash extends Operation {
 		this.name = "./";
 		this.info = "ceiling";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_CEIL.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -391,6 +424,10 @@ class OP_Dot_FwdSlash extends Operation {
 		
 		else if (a.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).ceil() );
+		}
+		
+		else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_CEIL);
 		}
 		
 		else {
@@ -418,6 +455,7 @@ class OP_Dot_LessThan extends Operation {
 		this.name = ".<";
 		this.info = "LN head, NN lesser of";
 		this.argTypes = "LN|NN";
+		this.overload = Ops.KEYVAR_HEAD.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -437,6 +475,11 @@ class OP_Dot_LessThan extends Operation {
 			}
 		}
 		
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_HEAD);
+		}
+		
 		else {
 			throw new TypeError(this, a, b);
 		}
@@ -450,6 +493,7 @@ class OP_Dot_GreaterThan extends Operation {
 		this.name = ".>";
 		this.info = "LN tail, NN greater of";
 		this.argTypes = "LN|NN";
+		this.overload = Ops.KEYVAR_TAIL.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -466,6 +510,11 @@ class OP_Dot_GreaterThan extends Operation {
 			} else {
 				block.push(b);
 			}
+		}
+		
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_TAIL);
 		}
 		
 		else {
@@ -634,6 +683,7 @@ class OP_Dot_Len extends Operation {
 		this.name = ".E";
 		this.info = "return length and keep item on the stack";
 		this.argTypes = "A";
+		this.overload = Ops.KEYVAR_LEN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -642,7 +692,12 @@ class OP_Dot_Len extends Operation {
 		if (n.isa(LIST)) {
 			block.push(n);
 			block.push( new Num(((List)n).length()) );
-		} else {
+		}
+		else if (n.isa(DICT)) {
+			block.push(n);
+			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
+		}
+		else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -788,7 +843,7 @@ class OP_Dot_TryCatch extends Operation {
 class OP_Dot_N extends Operation {
 	public OP_Dot_N() {
 		this.name = ".N";
-		this.info = "return thee index of the first element of L that satifies E";
+		this.info = "return the index of the first element of L that satifies E";
 		this.argTypes = "LA";
 	}
 	@Override public void execute (final Block block) {
@@ -984,7 +1039,7 @@ class OP_Dot_Zed extends Operation {
 		if(s.isa(STR)) {
 			String str = s.str();
 			if(str.contains(".")) {
-				throw new AyaRuntimeException(".Z: Cannot look up module variables");
+				throw new AyaRuntimeException(".Z: Cannot look up dictionary variables");
 			}
 			Variable v = new Variable(str);
 			block.push(Aya.getInstance().getVars().getVar(v));
@@ -999,7 +1054,7 @@ class OP_Dot_Ceiling extends Operation {
 	public OP_Dot_Ceiling() {
 		this.name = ".[";
 		this.info = "promote a list to a more specific type if possible";
-		this.argTypes = "N";
+		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1022,6 +1077,7 @@ class OP_Dot_BackSlash extends Operation {
 		this.name = ".\\";
 		this.info = "floor";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_FLOOR.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1102,6 +1158,7 @@ class OP_Dot_Bar extends Operation {
 		this.name = ".|";
 		this.info = "absolute value";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_ABS.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1111,6 +1168,8 @@ class OP_Dot_Bar extends Operation {
 			block.push( ((Number)a).abs() );
 		} else if (a.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).abs() );
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_ABS);
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1120,7 +1179,7 @@ class OP_Dot_Bar extends Operation {
 
 
 
-//~ - 126
+// ~ - 126
 class OP_Dot_Tilde extends Operation {
 	public OP_Dot_Tilde() {
 		this.name = ".~";
