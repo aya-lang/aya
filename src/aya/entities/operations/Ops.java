@@ -241,12 +241,12 @@ public class Ops {
 		ArrayList<String> out = new ArrayList<String>();
 		for (char i = 0; i <= 96-FIRST_OP; i++) {
 			if(OPS[i] != null) {
-				out.add(OPS[i].name + " (" + OPS[i].argTypes + ")\n" + OPS[i].info + "\n(operator)");
+				out.add(OPS[i].getDocStr() + "\n(operator)");
 			}
 		}
-		out.add(TILDE.name + " (" + TILDE.argTypes + ")\n" + TILDE.info + "\n(operator)" );
-		out.add(BAR.name + " (" + BAR.argTypes + ")\n" + BAR.info + "\n(operator)" );
-		out.add(APPLY_TO.name + " (" + APPLY_TO.argTypes + ")\n" + APPLY_TO.info + "\n(operator)" );
+		out.add(TILDE.getDocStr() + "\n(operator)" );
+		out.add(BAR.getDocStr() + "\n(operator)" );
+		out.add(APPLY_TO.getDocStr() + "\n(operator)" );
 
 		return out;
 	}
@@ -350,7 +350,7 @@ class OP_Pound extends Operation {
 class OP_Dollar extends Operation {
 	public OP_Dollar() {
 		this.name = "$";
-		this.info = "sort least to greatest\nbitwise not\n(overloadable: dollar)";
+		this.info = "sort least to greatest\nbitwise not";
 		this.argTypes = "L<N>|L<S>|S|I";
 		this.overload = Ops.KEYVAR_SORT.name();
 	}
@@ -376,7 +376,7 @@ class OP_Dollar extends Operation {
 class OP_Percent extends Operation {
 	public OP_Percent() {
 		this.name = "%";
-		this.info = "<NN>mod\n<EN>repeat the block N times\n(overloadable: percent)";
+		this.info = "<NN>mod\n<EN>repeat the block N times";
 		this.argTypes = "NN|EN";
 		this.overload = Ops.KEYVAR_MOD.name() + "/" + Ops.KEYVAR_RMOD.name();
 	}
@@ -602,7 +602,7 @@ class OP_Minus extends Operation {
 class OP_Divide extends Operation {
 	public OP_Divide() {
 		this.name = "/";
-		this.info = "divide\n(overloadable: fslash)";
+		this.info = "divide";
 		this.argTypes = "NN";
 		this.overload = Ops.KEYVAR_DIV.name() + "/" + Ops.KEYVAR_RDIV.name();
 	}
@@ -700,7 +700,7 @@ class OP_LessThan extends Operation {
 class OP_Equal extends Operation {
 	public OP_Equal() {
 		this.name = "=";
-		this.info = "equality comparison operator\n(overloadable: eq )";
+		this.info = "equality comparison operator";
 		this.argTypes = "AA";
 		this.overload = Ops.KEYVAR_EQ.name();
 
@@ -857,7 +857,7 @@ class OP_B extends Operation {
 class OP_D extends Operation {
 	public OP_D() {
 		this.name = "D";
-		this.info = "ALI set index\n(overloadable: setindex)";
+		this.info = "ALI set index";
 		this.argTypes = "ALI|AUI";
 	}
 	@Override public void execute (final Block block) {
@@ -883,7 +883,7 @@ class OP_D extends Operation {
 class OP_E extends Operation {
 	public OP_E() {
 		this.name = "E";
-		this.info = "<N> scientific notation operator. return 10^N\n<L|S> length\n(overloadable: len)";
+		this.info = "<N> scientific notation operator. return 10^N\n<L|S> length";
 		this.argTypes = "I|L|S";
 		this.overload = Ops.KEYVAR_LEN.name();
 	}
@@ -1102,7 +1102,7 @@ class OP_H extends Operation {
 class OP_I extends Operation {
 	public OP_I() {
 		this.name = "I";
-		this.info = "<LL>|<LI> index\n<LE> filter\n<RS> gey key\n(overloadable: index, must be <UA>)";
+		this.info = "<LL>|<LI> index\n<LE> filter\n<RS> gey key";
 		this.argTypes = "LL|LI|LE";
 	}
 	@Override public void execute (final Block block) {
@@ -1256,8 +1256,9 @@ class OP_N extends Operation {
 class OP_P extends Operation {
 	public OP_P() {
 		this.name = "P";
-		this.info = "returns the value as a string\n(overloadable: str)";
+		this.info = "returns the value as a string";
 		this.argTypes = "A";
+		this.overload = "str";
 	}
 	@Override public void execute (final Block block) {
 		block.push(new Str(block.pop().str()));
@@ -1268,7 +1269,7 @@ class OP_P extends Operation {
 class OP_Q extends Operation {
 	public OP_Q() {
 		this.name = "Q";
-		this.info = "positive N: random number 0-N\nnegative N: random number N-0\nN=0: any int\n(overloadable: randchoice)";
+		this.info = "positive N: random number 0-N\nnegative N: random number N-0\nN=0: any int";
 		this.argTypes = "NU";
 		this.overload = Ops.KEYVAR_RANDOM.name();
 	}
@@ -1626,7 +1627,7 @@ class OP_Underscore extends Operation {
 class OP_Bar extends Operation {
 	public OP_Bar() {
 		this.name = "|";
-		this.info = "<BB|SS> logical or\n<SS> split S1 using regex S2\n(overloadable: bar)";
+		this.info = "<BB|SS> logical or\n<SS> split S1 using regex S2";
 		this.argTypes = "BB|SS";
 		this.overload = Ops.KEYVAR_OR.name() + "/" + Ops.KEYVAR_ROR.name();
 	}

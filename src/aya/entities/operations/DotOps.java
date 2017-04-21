@@ -160,7 +160,7 @@ public class DotOps {
 		ArrayList<String> out = new ArrayList<String>();
 		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
 			if(DOT_OPS[i] != null) {
-				out.add(DOT_OPS[i].name + " (" + DOT_OPS[i].argTypes + ")\n" + DOT_OPS[i].info + "\n(extended operator)");
+				out.add(DOT_OPS[i].getDocStr() + "\n(extended operator)");
 			}
 		}
 		return out;
