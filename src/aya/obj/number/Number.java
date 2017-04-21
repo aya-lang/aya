@@ -96,6 +96,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	/** Absolute value */
 	public abstract Number abs();
 	
+	/** Exponential */
+	public abstract Number exp();
+	
 	/** Trigonometric Sine */
 	public abstract Number sin();
 	
