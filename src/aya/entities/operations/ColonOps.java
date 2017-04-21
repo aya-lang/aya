@@ -221,9 +221,9 @@ class OP_Colon_LessThan extends Operation {
 			block.push( ((NumberList)a).leq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).leq((NumberList)b) ); 
-		} else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_LEQ);
+		} else if (b.isa(DICT)) {
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_LEQ);
 		} 
 		else {
 			throw new TypeError(this, a,b);
@@ -258,9 +258,9 @@ class OP_Colon_GreaterThan extends Operation {
 			block.push( ((NumberList)a).geq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).geq((NumberList)b) ); 
-		} else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_GEQ);
+		} else if (b.isa(DICT)) {
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_GEQ);
 		} 
 		
 		
