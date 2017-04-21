@@ -683,9 +683,9 @@ class OP_LessThan extends Operation {
 			block.push( ((NumberList)a).lt((NumberList)b) ); 
 		} 
 		
-		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_LT);
+		else if (b.isa(DICT)) {
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_LT);
 		} 
 		
 		
@@ -749,9 +749,9 @@ class OP_GreaterThan extends Operation {
 			block.push( ((NumberList)a).gt((NumberList)b) ); 
 		} 
 		
-		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_GT);
+		else if (b.isa(DICT)) {
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_GT);
 		} 
 		
 		else {
