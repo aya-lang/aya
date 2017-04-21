@@ -117,7 +117,7 @@ public class MathOps {
 		/* 98 b  */ null,
 		/* 99 c  */ new OP_Cosine(),
 		/* 100 d */ new OP_CastDouble(),
-		/* 101 e */ null,
+		/* 101 e */ new OP_Me(),
 		/* 102 f */ null,
 		/* 103 g */ null,
 		/* 104 h */ new OP_MShow_Date(),
