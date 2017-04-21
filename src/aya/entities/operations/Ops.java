@@ -55,20 +55,88 @@ public class Ops {
 	
 	public static final Random RAND = new Random((new Date()).getTime());
 	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
-	
-	public static final KeyVariable KEYVAR_NEW = new KeyVariable("new");
-	public static final KeyVariable KEYVAR_DOLLAR = new KeyVariable("dollar");
 
+	
+	////////////////////////
+	// OPERATOR OVERLOADS //
+	////////////////////////
+	
+	// NUMERIC - Binary
+	// mod
 	public static final KeyVariable KEYVAR_MOD	= new KeyVariable("mod");
-	public static final KeyVariable KEYVAR_AND	= new KeyVariable("and");
+	public static final KeyVariable KEYVAR_RMOD	= new KeyVariable("rmod");
+	// mul
 	public static final KeyVariable KEYVAR_MUL	= new KeyVariable("mul");
+	public static final KeyVariable KEYVAR_RMUL	= new KeyVariable("rmul");
+	// add
 	public static final KeyVariable KEYVAR_ADD	= new KeyVariable("add");
+	public static final KeyVariable KEYVAR_RADD	= new KeyVariable("radd");
+	// sub
 	public static final KeyVariable KEYVAR_SUB	= new KeyVariable("sub");
+	public static final KeyVariable KEYVAR_RSUB	= new KeyVariable("rsub");
+	// div 
 	public static final KeyVariable KEYVAR_DIV	= new KeyVariable("div");
-	public static final KeyVariable KEYVAR_OR	= new KeyVariable("or");
+	public static final KeyVariable KEYVAR_RDIV	= new KeyVariable("rdiv");
+	// idiv
+	public static final KeyVariable KEYVAR_IDIV	= new KeyVariable("idiv");
+	public static final KeyVariable KEYVAR_RIDIV= new KeyVariable("ridiv");
+	// pow
 	public static final KeyVariable KEYVAR_POW	= new KeyVariable("pow");
-	public static final KeyVariable KEYVAR_RAND	= new KeyVariable("rand");
+	public static final KeyVariable KEYVAR_RPOW	= new KeyVariable("rpow");
+	
+	// NUMERIC - Comparison
+	public static final KeyVariable KEYVAR_LT = new KeyVariable("lt");
+	public static final KeyVariable KEYVAR_GT = new KeyVariable("gt");
+	public static final KeyVariable KEYVAR_LEQ = new KeyVariable("leq");
+	public static final KeyVariable KEYVAR_QEQ = new KeyVariable("geq");
 	public static final KeyVariable KEYVAR_EQ	= new KeyVariable("eq");
+	
+	// Numeric - Monads
+	public static final KeyVariable KEYVAR_NEGATE = new KeyVariable("negate");
+	public static final KeyVariable KEYVAR_CEIL = new KeyVariable("ceil");
+	public static final KeyVariable KEYVAR_FLOOR = new KeyVariable("floor");
+	public static final KeyVariable KEYVAR_ABS = new KeyVariable("abs");
+	public static final KeyVariable KEYVAR_SIGNUM = new KeyVariable("signum");
+	public static final KeyVariable KEYVAR_INC = new KeyVariable("inc");
+	public static final KeyVariable KEYVAR_DEC = new KeyVariable("dec");
+	
+	// Numeric - Math
+	public static final KeyVariable KEYVAR_SIN = new KeyVariable("sin");
+	public static final KeyVariable KEYVAR_ASIN = new KeyVariable("asin");
+	public static final KeyVariable KEYVAR_COS = new KeyVariable("cos");
+	public static final KeyVariable KEYVAR_ACOS = new KeyVariable("acos");
+	public static final KeyVariable KEYVAR_TAN = new KeyVariable("tan");
+	public static final KeyVariable KEYVAR_ATAN = new KeyVariable("atan");
+	public static final KeyVariable KEYVAR_LN = new KeyVariable("ln");
+	public static final KeyVariable KEYVAR_LOG = new KeyVariable("log");
+	public static final KeyVariable KEYVAR_EXP = new KeyVariable("exp");
+	public static final KeyVariable KEYVAR_FACT = new KeyVariable("fact");
+	public static final KeyVariable KEYVAR_SQRT = new KeyVariable("sqrt");
+	
+	// List
+	public static final KeyVariable KEYVAR_GETINDEX = new KeyVariable("getindex");
+	public static final KeyVariable KEYVAR_SETINDEX = new KeyVariable("setindex");
+	public static final KeyVariable KEYVAR_HEAD = new KeyVariable("head");
+	public static final KeyVariable KEYVAR_TAIL = new KeyVariable("tail");
+	public static final KeyVariable KEYVAR_MAP = new KeyVariable("map");
+	public static final KeyVariable KEYVAR_LEN = new KeyVariable("len");
+	public static final KeyVariable KEYVAR_REVERSE = new KeyVariable("reverse");
+	public static final KeyVariable KEYVAR_SORT = new KeyVariable("sort");
+	public static final KeyVariable KEYVAR_SORTUSING = new KeyVariable("sortusing");
+
+	
+	// Misc.
+	public static final KeyVariable KEYVAR_AND		= new KeyVariable("and");
+	public static final KeyVariable KEYVAR_RAND		= new KeyVariable("rand");
+	public static final KeyVariable KEYVAR_OR		= new KeyVariable("or");
+	public static final KeyVariable KEYVAR_ROR		= new KeyVariable("ror");
+	public static final KeyVariable KEYVAR_RANDOM 	= new KeyVariable("random");
+	public static final KeyVariable KEYVAR_RANGE 	= new KeyVariable("range");
+	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("new");
+	public static final KeyVariable KEYVAR_INTEGER	= new KeyVariable("integer");
+	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("float");
+
+	
 
 
 
@@ -206,6 +274,7 @@ class OP_Bang extends Operation {
 		this.name = "!";
 		this.info = "<N> negate\n<S|L> reverse\n<N> 1-N (loginal not, complementary probability)\n<C> swap case";
 		this.argTypes = "S|N|L|B|C";
+		this.overload = Ops.KEYVAR_NEW.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -285,6 +354,7 @@ class OP_Dollar extends Operation {
 		this.name = "$";
 		this.info = "sort least to greatest\nbitwise not\n(overloadable: dollar)";
 		this.argTypes = "L<N>|L<S>|S|I";
+		this.overload = Ops.KEYVAR_SORT.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -297,7 +367,7 @@ class OP_Dollar extends Operation {
 			((List)a).sort();
 			block.push(a);
 		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_DOLLAR);
+			block.callVariable((Dict)a, Ops.KEYVAR_SORT);
 		} else {
 			throw new TypeError(this,a);
 		}		
@@ -310,6 +380,7 @@ class OP_Percent extends Operation {
 		this.name = "%";
 		this.info = "<NN>mod\n<EN>repeat the block N times\n(overloadable: percent)";
 		this.argTypes = "NN|EN";
+		this.overload = Ops.KEYVAR_MOD.name() + "/" + Ops.KEYVAR_RMOD.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -346,7 +417,7 @@ class OP_Percent extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_MOD);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_MOD, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RMOD, a);
 		}
 		else {
 			throw new TypeError(this, a,b);
@@ -360,17 +431,15 @@ class OP_Percent extends Operation {
 class OP_And extends Operation {
 	public OP_And() {
 		this.name = "&";
-		this.info = "<BB> logical and\n  <SS>match all expressions matching the regex\n<II> bitwise or\n(overloadable: amp)";
+		this.info = "<BB> logical and\n  <SS>match all expressions matching the regex\n<II> bitwise and";
 		this.argTypes = "BB|SS|II";
+		this.overload = Ops.KEYVAR_AND.name() + "/" + Ops.KEYVAR_RAND.name();
 	}
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		
-//		if(bothBool(a,b)) {
-//			block.push(toBool(a) && toBool(b));
-//		} else 
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).band((Number)b) );
 		} 
@@ -400,8 +469,9 @@ class OP_And extends Operation {
 class OP_Times extends Operation {
 	public OP_Times() {
 		this.name = "*";
-		this.info = "multiply\n(overloadable: star)";
+		this.info = "multiply";
 		this.argTypes = "NN";
+		this.overload = Ops.KEYVAR_MUL.name() + "/" + Ops.KEYVAR_RMUL.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -425,7 +495,7 @@ class OP_Times extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_MUL);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_MUL, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RMUL, a);
 		}
 		else {	
 			throw new TypeError(this, a,b);
@@ -438,8 +508,9 @@ class OP_Times extends Operation {
 class OP_Plus extends Operation {
 	public OP_Plus() {
 		this.name = "+";
-		this.info = "<NN|CC|NC|CN> add\n<SA|AS> concat\n(overloadable: plus)";
+		this.info = "<NN|CC|NC|CN> add\n<SA|AS> concat";
 		this.argTypes = "NN|CC|NC|CN|SA|AS";
+		this.overload = Ops.KEYVAR_ADD.name() + "/" + Ops.KEYVAR_RADD.name();
 	}
 	@Override public void execute(final Block block) {
 		final Obj a = block.pop();
@@ -452,7 +523,7 @@ class OP_Plus extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_ADD);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_ADD, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RADD, a);
 		}
 		
 		else if (a.isa(STR) || b.isa(STR)) {
@@ -488,8 +559,9 @@ class OP_Plus extends Operation {
 class OP_Minus extends Operation {
 	public OP_Minus() {
 		this.name = "-";
-		this.info = "<NN|CC|NC|CN> subtract\n(overloadable: minus)";
+		this.info = "<NN|CC|NC|CN> subtract";
 		this.argTypes = "NN|CC|NC|CN";
+		this.overload = Ops.KEYVAR_SUB.name() + "/" + Ops.KEYVAR_RSUB.name();
 	}
 	@Override public void execute(final Block block) {
 		final Obj b = block.pop();	//Pop in reverse order
@@ -520,7 +592,7 @@ class OP_Minus extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_SUB);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_SUB, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RSUB, a);
 		}
 		else {
 			throw new TypeError(this, a,b);
@@ -534,6 +606,7 @@ class OP_Divide extends Operation {
 		this.name = "/";
 		this.info = "divide\n(overloadable: fslash)";
 		this.argTypes = "NN";
+		this.overload = Ops.KEYVAR_DIV.name() + "/" + Ops.KEYVAR_RDIV.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -559,7 +632,7 @@ class OP_Divide extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_DIV);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_DIV, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RDIV, a);
 		}
 	
 		else {
@@ -588,6 +661,8 @@ class OP_LessThan extends Operation {
 		this.name = "<";
 		this.info = "less than comparison operator";
 		this.argTypes = "NN|CC|SS|LN";
+		this.overload = Ops.KEYVAR_LT.name();
+
 	}
 	@Override
 	public void execute(final Block block) {
@@ -610,6 +685,11 @@ class OP_LessThan extends Operation {
 			block.push( ((NumberList)a).lt((NumberList)b) ); 
 		} 
 		
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_LT);
+		} 
+		
 		
 		else {
 			throw new TypeError(this, a,b);
@@ -624,6 +704,8 @@ class OP_Equal extends Operation {
 		this.name = "=";
 		this.info = "equality comparison operator\n(overloadable: eq )";
 		this.argTypes = "AA";
+		this.overload = Ops.KEYVAR_EQ.name();
+
 	}
 	@Override
 	public void execute(final Block block) {
@@ -647,6 +729,8 @@ class OP_GreaterThan extends Operation {
 		this.name = ">";
 		this.info = "greater than comparison operator";
 		this.argTypes = "NN|CC|SS";
+		this.overload = Ops.KEYVAR_GT.name();
+
 	}
 	@Override
 	public void execute(final Block block) {
@@ -665,6 +749,11 @@ class OP_GreaterThan extends Operation {
 			block.push( ((NumberList)a).gt((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).gt((NumberList)b) ); 
+		} 
+		
+		else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_GT);
 		} 
 		
 		else {
@@ -739,6 +828,7 @@ class OP_B extends Operation {
 		this.name = "B";
 		this.info = "<N|C> increment\n<L> uncons from front";
 		this.argTypes = "N|C|L";
+		this.overload = Ops.KEYVAR_INC.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -753,8 +843,13 @@ class OP_B extends Operation {
 			Obj popped = l.popBack();
 			block.push(l);
 			block.push(popped);
-			
-		} else {
+		} 
+		
+		else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_INC);
+		} 
+		
+		else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -792,6 +887,7 @@ class OP_E extends Operation {
 		this.name = "E";
 		this.info = "<N> scientific notation operator. return 10^N\n<L|S> length\n(overloadable: len)";
 		this.argTypes = "I|L|S";
+		this.overload = Ops.KEYVAR_LEN.name();
 	}
 	@Override public void execute (final Block block) {
 		Obj n = block.pop();
@@ -802,9 +898,9 @@ class OP_E extends Operation {
 		} else if (n.isa(DICT)) {
 			block.push( new Num(((Dict)n).size()) );
 		}
-//		else if (isUserObject(n)) {
-//			toUserObject(n).callVariable(block, Ops.MV_LEN);
-//		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
+		} 
 		else {
 			throw new TypeError(this, n);
 		}
@@ -1176,6 +1272,7 @@ class OP_Q extends Operation {
 		this.name = "Q";
 		this.info = "positive N: random number 0-N\nnegative N: random number N-0\nN=0: any int\n(overloadable: randchoice)";
 		this.argTypes = "NU";
+		this.overload = Ops.KEYVAR_RANDOM.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1191,7 +1288,7 @@ class OP_Q extends Operation {
 			}
 		}
 		else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_RAND);
+			block.callVariable((Dict)a, Ops.KEYVAR_RANDOM);
 		} else if (a.isa(LIST)) {
 			List l = (List)a;
 			int ix = Ops.RAND.nextInt(l.length());
@@ -1209,6 +1306,7 @@ class OP_R extends Operation {
 		this.name = "R";
 		this.info = "creates a range from 0 to N using the format from list comprehension";
 		this.argTypes = "N|C|L";
+		this.overload = Ops.KEYVAR_RANGE.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1220,6 +1318,8 @@ class OP_R extends Operation {
 			block.push(ListBuilder.buildRange((BigNum)a));
 		} else if (a.isa(CHAR)) {
 			block.push(ListBuilder.buildRange(((Char)a).charValue()));
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_RANGE);
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1288,6 +1388,7 @@ class OP_T extends Operation {
 		this.name = "T";
 		this.info = "N negate";
 		this.argTypes = "N";
+		this.overload = Ops.KEYVAR_NEGATE.name();
 	}
 	@Override public void execute (final Block block) {
 		Obj a = block.pop();
@@ -1295,7 +1396,10 @@ class OP_T extends Operation {
 			block.push(((Number)a).negate());
 		} else if (a.isa(NUMBERLIST)) {
 			block.push(((NumberList)a).negate());
-		} else {
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_NEGATE);
+		}
+		else {
 		
 			throw new TypeError(this, a);
 		}
@@ -1309,6 +1413,7 @@ class OP_U extends Operation {
 		this.name = "U";
 		this.info = "reverse";
 		this.argTypes = "LS";
+		this.overload = Ops.KEYVAR_REVERSE.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -1316,7 +1421,10 @@ class OP_U extends Operation {
 		if (o.isa(LIST)) {
 			((List)o).reverse();
 			block.push(o);
-		} else {
+		} else if (o.isa(DICT)) {
+			block.callVariable((Dict)o, Ops.KEYVAR_REVERSE);
+		}
+		else {
 			throw new TypeError(this,o);
 		}
 	}
@@ -1330,6 +1438,7 @@ class OP_V extends Operation {
 		this.name = "V";
 		this.info = "<N|C> decrement\n<L> uncons from back";
 		this.argTypes = "N|C|L";
+		this.overload = Ops.KEYVAR_DEC.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1344,6 +1453,8 @@ class OP_V extends Operation {
 			Obj popped = l.pop();
 			block.push(l);
 			block.push(popped);
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_DEC);
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1410,7 +1521,7 @@ class OP_X extends Operation {
 	}
 }
 
-//Y - 89
+// Y - 89
 class OP_Y extends Operation {
 	public OP_Y() {
 		this.name = "Y";
@@ -1422,7 +1533,7 @@ class OP_Y extends Operation {
 	}
 }
 
-//Y - 89
+// Z - 90
 class OP_Z extends Operation {
 	public OP_Z() {
 		this.name = "Z";
@@ -1467,6 +1578,7 @@ class OP_Caret extends Operation {
 		this.name = "^";
 		this.info = "NN Raises n1 to the n2th power\nSS the levenshtein distance of two strings";
 		this.argTypes = "NN";
+		this.overload = Ops.KEYVAR_POW.name() + "/" + Ops.KEYVAR_RPOW.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1490,7 +1602,7 @@ class OP_Caret extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_POW);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_POW, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_RPOW, a);
 		}
 		else {
 			throw new TypeError(this, a, b);
@@ -1518,6 +1630,7 @@ class OP_Bar extends Operation {
 		this.name = "|";
 		this.info = "<BB|SS> logical or\n<SS> split S1 using regex S2\n(overloadable: bar)";
 		this.argTypes = "BB|SS";
+		this.overload = Ops.KEYVAR_OR.name() + "/" + Ops.KEYVAR_ROR.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1559,7 +1672,7 @@ class OP_Bar extends Operation {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_OR);
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_OR, a);
+			block.callVariable((Dict)b, Ops.KEYVAR_ROR, a);
 		}
 		else {
 			throw new TypeError(this, a, b);

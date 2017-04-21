@@ -13,6 +13,10 @@ public class KeyVariable extends Variable {
 		super(s);
 	}
 
+	public String name() {
+		return decodeLong(id);
+	}
+	
 	@Override
 	public String toString() {
 		String name = decodeLong(id);
