@@ -140,7 +140,7 @@ public class ColonOps {
 		ArrayList<String> out = new ArrayList<String>();
 		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
 			if(COLON_OPS[i] != null) {
-				out.add(COLON_OPS[i].name + " (" + COLON_OPS[i].argTypes + ")\n" + COLON_OPS[i].info + "\n(colon operator)");
+				out.add(COLON_OPS[i].getDocStr() + "\n(colon operator)");
 			}
 		}
 		return out;

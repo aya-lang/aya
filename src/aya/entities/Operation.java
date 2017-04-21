@@ -18,4 +18,10 @@ public abstract class Operation {
 	public String argTypes = "A";
 	public void execute(Block b){};	
 	@Override public String toString() {return name;}
+	
+	public String getDocStr() {
+		return name + " (" + argTypes + ")"
+				+ "\n" + info
+				+ (overload == null ? "" : ("\noverloadable: " + overload));
+	}
 }

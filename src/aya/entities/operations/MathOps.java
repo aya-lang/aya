@@ -150,7 +150,7 @@ public class MathOps {
 		ArrayList<String> out = new ArrayList<String>();
 		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
 			if(MATH_OPS[i] != null) {
-				out.add(MATH_OPS[i].name + " (" + MATH_OPS[i].argTypes + ")\n" + MATH_OPS[i].info + "\n(misc. operator)");
+				out.add(MATH_OPS[i].getDocStr() + "\n(misc. operator)");
 			}
 		}
 		return out;
