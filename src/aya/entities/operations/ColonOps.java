@@ -200,6 +200,7 @@ class OP_Colon_LessThan extends Operation {
 		this.name = ":<";
 		this.info = "less than or equal to comparison operator";
 		this.argTypes = "NN|CC|SS|LN|NL|LL";
+		this.overload = Ops.KEYVAR_LEQ.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -220,6 +221,9 @@ class OP_Colon_LessThan extends Operation {
 			block.push( ((NumberList)a).leq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).leq((NumberList)b) ); 
+		} else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_LEQ);
 		} 
 		else {
 			throw new TypeError(this, a,b);
@@ -234,6 +238,8 @@ class OP_Colon_GreaterThan extends Operation {
 		this.name = ":>";
 		this.info = "greater than or equal to comparison operator";
 		this.argTypes = "NN|CC|SS|NL|LN|LL";
+		this.overload = Ops.KEYVAR_LEQ.name();
+
 	}
 	@Override
 	public void execute(final Block block) {
@@ -252,6 +258,9 @@ class OP_Colon_GreaterThan extends Operation {
 			block.push( ((NumberList)a).geq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).geq((NumberList)b) ); 
+		} else if (a.isa(DICT)) {
+			block.push(b);
+			block.callVariable((Dict)a, Ops.KEYVAR_GEQ);
 		} 
 		
 		
@@ -287,7 +296,7 @@ class OP_Colon_K extends Operation {
 
 
 
-//K - 86
+// V - 86
 class OP_Colon_V extends Operation {
 	public OP_Colon_V() {
 		this.name = ":V";
@@ -306,7 +315,7 @@ class OP_Colon_V extends Operation {
 	}
 }
 
-//P - 80
+// P - 80
 class OP_Colon_P extends Operation {
 	public OP_Colon_P() {
 		this.name = ":P";
@@ -392,7 +401,7 @@ class OP_Colon_Underscore extends Operation {
 	}
 }
 
-//| - 124
+// | - 124
 class OP_SetMinus extends Operation {
 	public OP_SetMinus() {
 		this.name = ":|";
@@ -413,7 +422,7 @@ class OP_SetMinus extends Operation {
 	}
 }
 
-//~ - 126
+// ~ - 126
 class OP_Colon_Tilde extends Operation {
 	public OP_Colon_Tilde() {
 		this.name = ":~";
