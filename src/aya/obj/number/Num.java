@@ -272,6 +272,11 @@ public class Num extends Number {
 	public Number abs() {
 		return new Num(Math.abs(_val));
 	}
+	
+	@Override
+	public Num exp() {
+		return new Num(Math.exp(_val));
+	}
 
 	@Override
 	public Number sin() {
@@ -388,6 +393,8 @@ public class Num extends Number {
 	public int compareTo(Number n) {
 		return Double.compare(_val, n.toDouble()); 
 	}
+
+
 
 
 

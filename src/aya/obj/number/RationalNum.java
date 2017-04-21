@@ -248,6 +248,11 @@ public class RationalNum extends Number {
 	}
 
 	@Override
+	public Number exp() {
+		return new Num(Math.exp(this.toDouble()));
+	}
+	
+	@Override
 	public Number sin() {
 		return new Num(Math.sin(this.toDouble()));
 	}

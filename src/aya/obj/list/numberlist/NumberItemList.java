@@ -276,6 +276,15 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
+	
+	@Override
+	public NumberList exp() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		for (int i = 0; i < _list.size(); i++) {
+			out.add(_list.get(i).exp());
+		}
+		return new NumberItemList(out);
+	}
 
 	@Override
 	public NumberList sin() {	

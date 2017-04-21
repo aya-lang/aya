@@ -248,6 +248,11 @@ public class BigNum extends Number {
 	public Number abs() {
 		return new BigNum(ApfloatMath.abs(_val));
 	}
+	
+	@Override
+	public Number exp() {
+		return new BigNum(ApfloatMath.exp(_val));
+	}
 
 	@Override
 	public Number sin() {

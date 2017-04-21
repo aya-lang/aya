@@ -118,6 +118,9 @@ public abstract class NumberList extends List {
 	/** Absolute value */
 	public abstract NumberList abs();
 	
+	/** Exponential */
+	public abstract NumberList exp();
+	
 	/** Trigonometric Sine */
 	public abstract NumberList sin();
 	
