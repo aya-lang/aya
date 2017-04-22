@@ -74,7 +74,7 @@ public class ColonOps {
 		/* 66 B  */ null,
 		/* 67 C  */ null,
 		/* 68 D  */ null,
-		/* 69 E  */ null,
+		/* 69 E  */ new OP_Colon_E(),
 		/* 70 F  */ null,
 		/* 71 G  */ null,
 		/* 72 H  */ null,
@@ -269,6 +269,26 @@ class OP_Colon_GreaterThan extends Operation {
 		}
 	}
 }
+
+// E - 69
+class OP_Colon_E extends Operation {
+	public OP_Colon_E() {
+		this.name = ":E";
+		this.info = "number of items in a dict";
+		this.argTypes = "R";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			block.push(new Num(((Dict)a).size()));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 //K - 75
 class OP_Colon_K extends Operation {
