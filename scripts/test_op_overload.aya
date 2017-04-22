@@ -1,0 +1,282 @@
+{,
+
+  {l, {, l:l} vec MO}:new;
+  {self, "<" self.lPB;V; ">" ++}:str:repr;
+
+  {o self, o.T'R= {o.l} {o} .? self.l + vec!}:add;
+  {self o, self.l o + vec!}:radd;
+  
+  {o self, o.T'R= {o.l} {o} .? self.l * vec!}:mul;
+  {self o, self.l o * vec!}:rmul;
+
+  {o self, o.T'R= {o.l} {o} .? self.l - vec!}:sub;
+  {self o, self.l o.T'R= {o.l} {o} .? - vec!}:rsub;
+
+  {o self, o.T'R= {o.l} {o} .? self.l / vec!}:div;
+  {self o, self.l o.T'R= {o.l} {o} .? / vec!}:rdiv;
+
+  {o self, o.T'R= {o.l} {o} .? self.l ^ vec!}:pow;
+  {self o, self.l o.T'R= {o.l} {o} .? ^ vec!}:rpow;
+
+  {o self, o.T'R= {o.l} {o} .? self.l % vec!}:mod;
+  {self o, self.l o.T'R= {o.l} {o} .? % vec!}:rmod;
+
+  {o self, o.T'R= {o.l} {o} .? self.l .% vec!}:idiv;
+  {self o, self.l o.T'R= {o.l} {o} .? .% vec!}:ridiv;
+
+  {o self, o self.l < vec!}:lt;
+  {o self, o self.l > vec!}:gt;
+  {o self, o self.l :< vec!}:leq;
+  {o self, o self.l :> vec!}:geq;
+  {o self, o.T'R= {o.l self.l =} 0 .? vec!}:eq;
+
+  {self, self.l U self.:l }:reverse;
+  {self, self.l T vec!} :negate;
+  {self, self.l $ self.:l }:sort;
+
+  {self, self.l #B self.:l}:inc;
+  {self, self.l #V self.:l}:dec;
+  {self, self.lE }:len;
+
+  {v self, vR self.:l }:range;
+
+  {n self, [n,;.Q] self.:l}:random;
+
+  {self, self.l M! vec!}:fact;
+  {self, self.l Ms vec!}:sin;
+  {self, self.l Mc vec!}:cos;
+  {self, self.l Mt vec!}:tan;
+  {self, self.l MS vec!}:asin;
+  {self, self.l MC vec!}:acos;
+  {self, self.l MT vec!}:atan;
+  {self, self.l Ml vec!}:ln;
+  {self, self.l ML vec!}:log;
+  {self, self.l Me vec!}:exp;
+  {self, self.l Mq vec!}:sqrt;
+
+  {self, self.l #Md vec!}:float;
+  {self, self.l #.! vec!}:signum;
+  {self, self.l .| vec!}:abs;
+
+  {self n, self.l n .< vec!}:head;
+  {self n, self.l n .> vec!}:tail; 
+
+
+}:vec;
+
+{.E\S= "Passed" "FAILED" .?:P} :test;
+
+"----[ Running Operator Overload Tests ]----":P
+
+"add/radd: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 v + P "< 4 5 6 >" =
+v 3 + P "< 4 5 6 >" =
+[10 10 10] v + P "< 11 12 13 >" =
+v v + P "< 2 4 6 >" =
+]
+test
+
+"sub/rsub: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v P "< 1 2 3 >" =
+3 v - P "< 2 1 0 >" =
+v 3 - P "< -2 -1 0 >" =
+v v - P "< 0 0 0 >" =
+[10__] v - P "< 9 8 7 >" =
+v [10__] - P "< -9 -8 -7 >" =
+]
+test
+
+"mul/rmul: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 v * P "< 3 6 9 >" =
+v 3 * P "< 3 6 9 >" =
+[10__] v * P "< 10 20 30 >" =
+v [10__] * P "< 10 20 30 >" =
+v v * P "< 1 4 9 >" =
+]
+test
+
+"div/rdiv: " .P
+[
+[2 4 6] vec! :v P "< 2 4 6 >" =
+24 v / P "< 12 6 4 >" =
+v 2 / P "< 1 2 3 >" =
+[24__] v / P "< 12 6 4 >" =
+v [2__] / P "< 1 2 3 >" =
+v v / P "< 1 1 1 >" =
+]
+test
+
+
+
+"mod/rmod: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+2 v % P "< 0 0 2 >" =
+v 2 % P "< 1 0 1 >" =
+[2__] v % P "< 0 0 2 >" =
+v [2__] % P "< 1 0 1 >" =
+v v % P "< 0 0 0 >" =
+]
+test
+
+
+"idiv/rdiv: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+2 v .% P "< 2 1 0 >" =
+v 2 .% P "< 0 1 1 >" =
+[2__] v .% P "< 2 1 0 >" =
+v [2__] .% P "< 0 1 1 >" =
+v v .% P "< 1 1 1 >" =
+]
+test
+
+"idiv/rdiv: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+2 v .% P "< 2 1 0 >" =
+v 2 .% P "< 0 1 1 >" =
+[2__] v .% P "< 2 1 0 >" =
+v [2__] .% P "< 0 1 1 >" =
+v v .% P "< 1 1 1 >" =
+]
+test
+
+"lt: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 `< v P "< 0 0 0 >" =
+[3__] `< v P "< 0 0 0 >" =
+]
+test
+
+"gt: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 `> v P "< 1 1 0 >" =
+[3__] `> v P "< 1 1 0 >" =
+]
+test
+
+"leq: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 `:< v P "< 0 0 1 >" =
+[3__] `:< v P "< 0 0 1 >" =
+]
+test
+
+"geq: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+3 `:> v P "< 1 1 1 >" =
+[3__] `:> v P "< 1 1 1 >" =
+]
+test
+
+"eq: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v v =
+v v1+ =!
+1 v = !
+]
+test
+
+
+"reverse: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v U P "< 3 2 1 >" =
+]
+test
+
+"negate: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v T P "< -1 -2 -3 >" =
+]
+test
+
+"sort: " .P
+[
+[6 7 4 5 3] vec! :v P "< 6 7 4 5 3 >" =
+v $ P "< 3 4 5 6 7 >" =
+]
+test
+
+"inc: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v BB P "< 3 4 5 >" =
+]
+test
+
+"dec: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v VV P "< -1 0 1 >" =
+]
+test
+
+"len: " .P
+[
+[1 2 3] vec! :v P "< 1 2 3 >" =
+v E 3 =
+]
+test
+
+"range: " .P
+[
+[] vec! :v;
+3 v R P "< 1 2 3 >" =
+[3 6] v R P "< 3 4 5 6 >" =
+]
+test
+
+"random: " .P
+[
+[] vec! :v;
+3 v Q .len 3 =
+]
+test
+
+
+"math: " .P
+[
+[0 1] vec! :v;
+v M! P "< 1 1 >" =
+v Ms P "< 0 .84147098 >" =
+v Mc P "< 1 .54030231 >" =
+v Mt P "< 0 1.55740772 >" =
+v MS P "< 0 1.57079633 >" =
+v MC P "< 1.57079633 0 >" =
+v MT P "< 0 .78539816 >" =
+
+[1 2] vec! :v;
+v Ml P "< 0 .69314718 >" =
+v ML P "< 0 .30103 >" =
+v Me P "< 2.71828183 7.3890561 >" =
+v Mq P "< 1 1.41421356 >" =
+
+[:2 1 0 :3.4] vec! :v;
+v .| P "< 2 1 0 3.4 >" =
+v .! P "< -1 1 0 -1 >" =
+
+[:2r3 :2z 2] vec! :v;
+v Md .l #.T "DDD" =
+] test
+
+"head/tail: " .P
+[
+[1 2 3 4 5] vec! :v;
+v 3 .> P "< 3 4 5 >" =
+v 3 .< P "< 1 2 3 >" =
+]
+test

@@ -476,8 +476,7 @@ class OP_Dot_LessThan extends Operation {
 		}
 		
 		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_HEAD);
+			block.callVariable((Dict)a, Ops.KEYVAR_HEAD, b);
 		}
 		
 		else {
@@ -513,8 +512,7 @@ class OP_Dot_GreaterThan extends Operation {
 		}
 		
 		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_TAIL);
+			block.callVariable((Dict)a, Ops.KEYVAR_TAIL, b);
 		}
 		
 		else {

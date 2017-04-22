@@ -715,10 +715,10 @@ class OP_CastDouble extends Operation {
 			} catch (NumberFormatException e) {
 				throw new AyaRuntimeException("Cannot cast string \""+ a.repr() + "\" to a double.");
 			}
-		} else if (a.isa(BIGNUM)){
-			block.push(new Num(((BigNum)a).toDouble()));
 		} else if (a.isa(NUM)) {
 			block.push(a); //Already a double
+		} else if (a.isa(NUMBER)){
+			block.push(new Num(((Number)a).toDouble()));
 		} else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_FLOAT);
 		}
@@ -742,6 +742,10 @@ class OP_Me extends Operation {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).exp());
 			return;
+		}
+		
+		else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).exp());
 		}
 		
 		else if (n.isa(DICT)) {

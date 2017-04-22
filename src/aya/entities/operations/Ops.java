@@ -893,9 +893,7 @@ class OP_E extends Operation {
 			block.push( new Num(10).pow((Number)n) );
 		} else if (n.isa(LIST)) {
 			block.push( new Num(((List)n).length()) );
-		} else if (n.isa(DICT)) {
-			block.push( new Num(((Dict)n).size()) );
-		}
+		} 
 		else if (n.isa(DICT)) {
 			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
 		} 
