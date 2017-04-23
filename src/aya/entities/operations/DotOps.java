@@ -936,7 +936,7 @@ class OP_TypeOf extends Operation {
 	}
 	@Override
 	public void execute(Block block) {
-		block.push(new Char(Obj.IDToAbbrv(block.pop().type())));
+		block.push(Obj.IDToSym(block.pop().type()));
 	}
 }
 
