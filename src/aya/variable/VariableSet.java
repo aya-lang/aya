@@ -9,18 +9,19 @@ import java.util.Map.Entry;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.symbol.Symbol;
 import aya.util.Pair;
 
 public class VariableSet {
 	private Variable[] argNames;
-	private byte[] argTypes;
+	private long[] argTypes;
 	private HashMap<Long, Obj> vars;
 	// Setting this to true will tell VariableData to assign new variables here
 	// It emulates every variable being declared local
 	private boolean captureAllAssignments;
 
 	
-	public VariableSet(Variable[] argNames, byte[] argTypes) {
+	public VariableSet(Variable[] argNames, long[] argTypes) {
 		this.argTypes = argTypes;
 		this.argNames = argNames;
 		this.vars = new HashMap<Long, Obj>();
@@ -52,8 +53,8 @@ public class VariableSet {
 		} else {
 			for(int i = argNames.length-1; i >= 0; i--){
 				Obj o = b.pop();
-				if(argTypes[i] != Obj.ANY && !o.isa(argTypes[i]) ) {
-					throw new TypeError("{ARGS}", Obj.typeName(argTypes[i]), o);
+				if(argTypes[i] != Obj.SYM_ANY.id() && !o.isa(Obj.symToID(argTypes[i])) ) {
+					throw new TypeError("{ARGS}", Symbol.fromID(argTypes[i]).repr(), o);
 				}
 					//throw new RuntimeException("Invalid type in block argument. Expected (" + TypeUtils.getTypeNameFromID(argTypes[i]) + "). Recieved " + TypeUtils.debugString(o)+ " (" + TypeUtils.getTypeName(o) + ")");
 				

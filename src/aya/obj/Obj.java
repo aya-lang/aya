@@ -78,50 +78,50 @@ public abstract class Obj {
 		}
 	}
 	
-	/** Converts an ID to a char abbreviation */
-	public static char IDToAbbrv(byte b) {
-		switch(b) {
-		//case BOOL : return 'B';
-		case CHAR : return 'C' ;
-		case NUM : return 'D';
-		case BLOCK : return 'E';
-		case BIGNUM : return 'F';
-		
-		case LIST : return 'L';
-		case NUMBERLIST : return 'L';
-		case NUMBERITEMLIST : return 'L';
-		case OBJLIST : return 'L';
-		case STRLIST : return 'L';
-		
-		case STR : return 'S';
-		case NUMBER : return 'N';
-		case RATIONAL_NUMBER : return 'N';
-		case DICT : return 'R';
-		case ANY : return 'A';
-
-		default: return '?';
-		}
-	}
+//	/** Converts an ID to a char abbreviation */
+//	public static char IDToAbbrv(byte b) {
+//		switch(b) {
+//		//case BOOL : return 'B';
+//		case CHAR : return 'C' ;
+//		case NUM : return 'D';
+//		case BLOCK : return 'E';
+//		case BIGNUM : return 'F';
+//		
+//		case LIST : return 'L';
+//		case NUMBERLIST : return 'L';
+//		case NUMBERITEMLIST : return 'L';
+//		case OBJLIST : return 'L';
+//		case STRLIST : return 'L';
+//		
+//		case STR : return 'S';
+//		case NUMBER : return 'N';
+//		case RATIONAL_NUMBER : return 'N';
+//		case DICT : return 'R';
+//		case ANY : return 'A';
+//
+//		default: return '?';
+//		}
+//	}
 	
-	/** Converts a character abbreviation to its ID */
-	public static byte abbrvToID(char c) {
-		switch(c) {
-			//case 'B': return BOOL;
-			//case 'C': return CHARACTER;
-			case 'D': return NUM;
-			case 'E': return BLOCK;
-			case 'F': return BIGNUM;
-			case 'L': return LIST;
-			case 'S': return STR;
-			case 'N': return NUMBER;
-			case 'C': return CHAR;
-			case 'A': return ANY;
-			case 'R': return DICT;
-			//case 'M': return MODULE;
-			//case 'U': return USER_OBJ;
-			default: return UNKNOWN;
-		}
-	}
+//	/** Converts a character abbreviation to its ID */
+//	public static byte abbrvToID(char c) {
+//		switch(c) {
+//			//case 'B': return BOOL;
+//			//case 'C': return CHARACTER;
+//			case 'D': return NUM;
+//			case 'E': return BLOCK;
+//			case 'F': return BIGNUM;
+//			case 'L': return LIST;
+//			case 'S': return STR;
+//			case 'N': return NUMBER;
+//			case 'C': return CHAR;
+//			case 'A': return ANY;
+//			case 'R': return DICT;
+//			//case 'M': return MODULE;
+//			//case 'U': return USER_OBJ;
+//			default: return UNKNOWN;
+//		}
+//	}
 	
 	public static final Symbol SYM_CHAR 	= Symbol.fromStr("char");
 	public static final Symbol SYM_NUM 		= Symbol.fromStr("num");
@@ -159,24 +159,29 @@ public abstract class Obj {
 	}
 	
 	/** Converts a character abbreviation to its ID */
-	public static byte symToID(Symbol s) {
-		if (s.equiv(SYM_NUM)) {
+	public static byte symToID(long s) {
+		if (s == SYM_NUM.id()) {
 			return NUM;
-		} else if (s.equiv(SYM_BLOCK)) {
+		} else if (s == SYM_BLOCK.id()) {
 			return BLOCK;
-		} else if (s.equiv(SYM_LIST)) {
+		} else if (s == SYM_LIST.id()) {
 			return LIST;
-		} else if (s.equiv(SYM_STR)) {
+		} else if (s == SYM_STR.id()) {
 			return STR;
-		} else if (s.equiv(SYM_CHAR)) {
+		} else if (s == SYM_CHAR.id()) {
 			return CHAR;
-		} else if (s.equiv(SYM_ANY)) {
+		} else if (s == SYM_ANY.id()) {
 			return ANY;
-		} else if (s.equiv(SYM_DICT)) {
+		} else if (s == SYM_DICT.id()) {
 			return DICT;
 		} else {
 			return UNKNOWN;
 		}
+	}
+	
+	/** Converts a character abbreviation to its ID */
+	public static byte symToID(Symbol s) {
+		return symToID(s.id());
 	}
 	
 	

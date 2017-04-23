@@ -21,6 +21,10 @@ public class Symbol extends Obj {
 		_id = id;
 	}
 	
+	public long id() {
+		return _id;
+	}
+	
 	/** Converts any string to a symbol string by ignoring non alpha chars */
 	public static Symbol convToSymbol(String str) {
 		String sym = "";
@@ -48,7 +52,12 @@ public class Symbol extends Obj {
 	/** Convert a symbol string to a symbol */
 	public static Symbol fromStr(String data) {
 		long id = Variable.encodeString(data);
+		return fromID(id);
 		
+	}	
+	
+	
+	public static Symbol fromID(long id) {
 		// Check if it is in the cache
 		Symbol s = cache.get(id);
 		if (s == null) {
@@ -57,7 +66,8 @@ public class Symbol extends Obj {
 			cache.put(id, s);
 		}
 		return s;
-	}	
+	}
+
 	
 	@Override
 	public Obj deepcopy() {
@@ -93,6 +103,7 @@ public class Symbol extends Obj {
 	public byte type() {
 		return Obj.SYMBOL;
 	}
+
 
 
 
