@@ -8,8 +8,8 @@
   {{,M$:ms} date MO}:now;
 
   {in, [
-    in.T'D= {{,in:ms} date MO} ?
-    in.T'S= {{,in "yyyy-MM-dd" MH:ms} date MO} ?
+    in.T ::num = {{,in:ms} date MO} ?
+    in.T ::str = {{,in "yyyy-MM-dd" MH:ms} date MO} ?
     {"Expected S|D, recieved: $in".D}
   ].S }:new;
 

@@ -9,10 +9,12 @@ import "math"
 
 {,
 
+  ::matrix:type;
+
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
   .# Both of the following must be true:
-  	m#.T{'L=}all .# The list is made up of only other lists
+  	m#.T{::list=}all .# The list is made up of only other lists
   	{
   		m#E{m0IE=}all 			.# All of the list lengths are the same
   	} 0 .?
@@ -28,11 +30,11 @@ import "math"
 
   {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
   {m, m.rowsE m.rows#E\#= {|}F}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
-  {a b, [a.rows b.rows,[2|,+]] matrix!}:matadd;    .#? (matrix)(matrix) matrix.add\n  add two matrices
-  {a b, [a.rows b.rows,[2|,-]] matrix!}:matsub;    .#? (matrix)(matrix) matrix.sub\n  subtract two matrices
+  {a b, [a.rows b.rows,+] matrix!}:matadd;    .#? (matrix)(matrix) matrix.add\n  add two matrices
+  {a b, [a.rows b.rows,-] matrix!}:matsub;    .#? (matrix)(matrix) matrix.sub\n  subtract two matrices
   {m, [m.rows_ER,VI]}:tr;                       .#? (matrix) matrix.tr\n  trace of a matrix as a list
   {m, [m.rows~,.A] matrix!}:transpose;          .#? (matrix) matrix.transpose\n  transpose a matrix
-  {[2|,*]S}:dot;                                .# dot product of two lists
+  {*S}:dot;                                .# dot product of two lists
 
   .#? N (matrix) matrix.pow\n  raise matrix to the Nth power
   {mat exp::num,
@@ -151,8 +153,8 @@ import "math"
 
   {a b,
     [
-      a .T ::num = b .T'R = & {a b matrix.smul} ?
-      b .T ::num = a .T'R = & {b a matrix.smul} ?
+      a .T ::num = b .T ::matrix = & {a b matrix.smul} ?
+      b .T ::num = a .T ::matrix = & {b a matrix.smul} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matmul} ?
       {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -160,8 +162,8 @@ import "math"
 
   {a b,
     [
-      a .T ::num = b .T'R = & {a b matrix.sadd} ?
-      b .T ::num = a .T'R = & {b a matrix.sadd} ?
+      a .T ::num = b .T ::matrix = & {a b matrix.sadd} ?
+      b .T ::num = a .T ::matrix = & {b a matrix.sadd} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matadd} ?
       {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -169,8 +171,8 @@ import "math"
 
   {a b,
     [
-      a .T ::num = b .T'R = & {a b matrix.ssub} ?
-      b .T ::num = a .T'R = & {b a matrix.zsub} ?
+      a .T ::num = b .T ::matrix = & {a b matrix.ssub} ?
+      b .T ::num = a .T ::matrix = & {b a matrix.zsub} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matsub} ?
       {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -179,8 +181,8 @@ import "math"
 
   {a b,
     [
-      a .T ::num = b .T'R = & {a b matrix.sdiv} ?
-      b .T ::num = a .T'R = & {b a matrix.zdiv} ?
+      a .T ::num = b .T ::matrix = & {a b matrix.sdiv} ?
+      b .T ::num = a .T ::matrix = & {b a matrix.zdiv} ?
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:div;
