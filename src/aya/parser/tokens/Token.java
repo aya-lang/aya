@@ -14,6 +14,8 @@ public abstract class Token {
 	public static final int NUM	        = Obj.NUM;
 	public static final int CHAR 		= Obj.CHAR;
 	public static final int NUMERIC		= Obj.NUMBER;
+	public static final int SYMBOL 		= Obj.SYMBOL;
+
 	
 	public static final int VAR 		= TypeIDs.VAR;
 	public static final int EXTENDED 	= TypeIDs.T_EXTENDED;

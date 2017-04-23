@@ -21,6 +21,7 @@ import aya.parser.tokens.OperatorToken;
 import aya.parser.tokens.SpecialToken;
 import aya.parser.tokens.StdToken;
 import aya.parser.tokens.StringToken;
+import aya.parser.tokens.SymbolToken;
 import aya.parser.tokens.TickToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
@@ -372,8 +373,24 @@ public class Parser {
 			
 			//Colon
 			else if (current == ':') {
+				
+				// Symbol
+				if (in.hasNext() && in.peek() == ':') {
+					in.next(); // Move to the next colon
+					String sym = "";
+					while(in.hasNext() && isLowerAlpha(in.peek())) {
+						sym += in.next();
+					}
+					
+					if (sym.equals("")) {
+						throw new SyntaxError("Expected symbol name");
+					}
+					
+					tokens.add(new SymbolToken(sym));
+				}
+				
 				//Colon Operator 
-				if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
+				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
 					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
 				} 
 				
