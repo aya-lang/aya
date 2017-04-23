@@ -2,7 +2,7 @@ import "string"
 
 
 .#? SS readdlm\n  open a file, split into lines, split each line using dlm
-{dlmS, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
+{dlm::str, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
 
 .#? S opencsv\n  opens and parses a csv file into a matrix
 {"," readdlm}:opencsv;
@@ -24,7 +24,7 @@ import "string"
 {""2MZ}:workingdir;
 
 .#? cd S\n  change directory
-{`({dirS,
+{`({dir::str,
   if (dir "" =) {
     ""3MZ
   } {
@@ -41,7 +41,7 @@ import "string"
 {""3MZ}:resetwd;
 
 .#? mkdir S\n  create a new directory
-{`({dirS,
+{`({dir::str,
   dir 5MZ
 })}:mkdir;
 
@@ -56,7 +56,7 @@ import "string"
 
 
 .#? more S\n  print a file to the console
-{`({filenameS,
+{`({filename::str,
   filename G println
 })}:more;
 
@@ -78,7 +78,7 @@ if (defaultwd V '/ =\;) {
   {file.open}:new;
 
   .#? S file.open\n  open a file and read its contents
-  {pathS,
+  {path::str,
     {,
       workingdir path + :path
       "" :contents

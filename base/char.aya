@@ -8,10 +8,10 @@
 {_'@>\'[<&}:isupper;
 
 .#? C toupper\n  converts a character to uppercase
-{cC,c_ isupper! {!}? }:toupper;
+{c::char,c_ isupper! {!}? }:toupper;
 
 .#? C tolower\n  converts a character to lowercase
-{cC,c_ islower! {!}? }:tolower;
+{c::char,c_ islower! {!}? }:tolower;
 
 .#? C isdigit\n  tests if a character is a digit
 { _'0:>\'9:<&}:isdigit;
@@ -20,4 +20,4 @@
 {P"\W+"&E1=}:iswhitespace;
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
-{aS,"\"\\{$a}\""~.'}:spechar;
+{a::str,"\"\\{$a}\""~.'}:spechar;

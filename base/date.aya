@@ -67,7 +67,7 @@
     u1I:conv;
     "
     {,
-      {nD, {,n:n} dateunit.$name MO}:new;
+      {n::num, {,n:n} dateunit.$name MO}:new;
       {.n\" dates.$name\"+}:show;
       {.n $conv*}:ms;
       {\+}:add;

@@ -5,7 +5,7 @@ import "file"
 
   {this, this.columns [1|~,.A]}:rows;
 
-  {colnmL rownmL colsL : numofrows,
+  {colnm::list rownm::list cols::list : numofrows,
     if (colsE0=) {
       0:numofrows;
     } {
@@ -35,13 +35,13 @@ import "file"
   {self, self.repr}:str;
 
   .# Row Indexing
-  {nameS this : ix,
+  {name::str this : ix,
     this.rownames name N :ix;;
     "dataframe.rowbyname: unknown row name: $name" ix (-1) = conderr
     ix this.rowbyix
   }:rowbyname;
 
-  {iD this,
+  {i:num this,
     "dataframe.rowbyix: invalid column number: $i" this.numofrowsV i < i0< | conderr
     this.rows i I
   }:rowbyix;
@@ -54,13 +54,13 @@ import "file"
   }:row;
 
   .# Column Indexing
-  {nameS this : ix,
+  {name::str this : ix,
     this.colnames name N :ix;;
     "dataframe.colbyname: unknown column name: $name" ix (-1) = conderr
     ix this.colbyix
   }:colbyname;
 
-  {iD this,
+  {i::num this,
     "dataframe.colbyix: invalid column number: $i" this.columnsEV i < i0< | conderr
     this.columns i I
   }:colbyix;
@@ -72,12 +72,12 @@ import "file"
     ].S
   }:col;
 
-  {colnameS initN self,
+  {colname::str init::num self,
     self.colnames colnameAK self.:colnames;
     self.columns init self.numofrows LAK self.:columns;
   }:addcol;
 
-  {rownameS init self,
+  {rowname::str init self,
     self.rownames rownameAK self.:rownames;
     self.columns #{initAK} self.:columns;
     self.numofrowsB self.:numofrows;
@@ -90,7 +90,7 @@ import "file"
         "Invalid col name: $name" ix (-1) = conderr
         ix
       } ?
-      name 'N isa {name} ?
+      name .T ::num = {name} ?
       {"Invalid colindex type. Received $name ($(name Mw))" .D}
     ].S
   }:colindex;
@@ -102,12 +102,12 @@ import "file"
         "Invalid row name: $name" ix (-1) = conderr
         ix
       } ?
-      name 'N isa {name} ?
+      name .T ::num = {name} ?
       {"Invalid rowindex type. Received $name ($(name Mw))" .D}
     ].S
   }:rowindex;
 
-  {indexL self: r c rix cix,
+  {index::list self: r c rix cix,
     "Index must have two elements" indexE2=! conderr
     index 0I:r;
     index 1I:c;
@@ -115,14 +115,14 @@ import "file"
     .# Get row index
     [
       r.T'S= {r self.rowindex} ?
-      r 'N isa r ?
+      r .T ::num = r ?
       (-1)
     ].S:rix;
 
     .# Get column index
     [
       c.T'S= {c self.colindex} ?
-      c 'N isa c ?
+      c .T ::num = c ?
       (-1)
     ].S:cix;
 
@@ -136,7 +136,7 @@ import "file"
   }:get;
 
   .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
-  {pathS rowheaderN colheaderN : table rownames colnames rowcount colcount,
+  {path::str rowheader::num colheader::num : table rownames colnames rowcount colcount,
     path opencsv : table;
 
     .# If there are headers, subtract one from the count

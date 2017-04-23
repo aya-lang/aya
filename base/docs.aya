@@ -30,14 +30,13 @@
 .}
 
 .{? docs: argument type key
-  D - num
-  F - bignum
-  N - number (D|F)
-  E - expression/block
-  C - character
-  S - string
-  A - any
-  R - dict
+  ::num - num
+  ::block - block
+  ::char - character
+  ::str - string
+  ::any - any
+  ::dict - dict
+  ::sym - symbol
 .}
 
 .{? docs: ranges
