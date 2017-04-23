@@ -47,8 +47,8 @@ import "file"
   }:rowbyix;
 
   {id this,
-    [ id.T 'S= {id this.rowbyname} ?
-      id.T 'I= {id this.rowbyix} ?
+    [ id.T ::str = {id this.rowbyname} ?
+      id.T ::num = {id this.rowbyix} ?
       {"dataframe.row: id must be a string or int. recieved: $id".D}
     ].S
   }:row;
@@ -66,8 +66,8 @@ import "file"
   }:colbyix;
 
   {id this,
-    [ id.T 'S= {id this.colbyname} ?
-      id.T 'I= {id this.colbyix} ?
+    [ id.T ::str = {id this.colbyname} ?
+      id.T ::num = {id this.colbyix} ?
       {"dataframe.col: id must be a string or int. recieved: $id".D}
     ].S
   }:col;
@@ -85,7 +85,7 @@ import "file"
 
   {name self : ix,
     [
-      name .T 'S = {
+      name .T ::str = {
         self.colnames name N :ix;;
         "Invalid col name: $name" ix (-1) = conderr
         ix
@@ -97,7 +97,7 @@ import "file"
 
   {name self : ix,
     [
-      name .T 'S = {
+      name .T ::str = {
         self.rownames name N :ix;;
         "Invalid row name: $name" ix (-1) = conderr
         ix
@@ -114,14 +114,14 @@ import "file"
 
     .# Get row index
     [
-      r.T'S= {r self.rowindex} ?
+      r.T ::str = {r self.rowindex} ?
       r .T ::num = r ?
       (-1)
     ].S:rix;
 
     .# Get column index
     [
-      c.T'S= {c self.colindex} ?
+      c.T ::str = {c self.colindex} ?
       c .T ::num = c ?
       (-1)
     ].S:cix;

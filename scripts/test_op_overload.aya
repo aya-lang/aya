@@ -1,34 +1,36 @@
 {,
 
+  ::vec :type;
+
   {l, {, l:l} vec MO}:new;
   {self, "<" self.lPB;V; ">" ++}:str:repr;
 
-  {o self, o.T'R= {o.l} {o} .? self.l + vec!}:add;
+  {o self, o.T ::vec = {o.l} {o} .? self.l + vec!}:add;
   {self o, self.l o + vec!}:radd;
-  
-  {o self, o.T'R= {o.l} {o} .? self.l * vec!}:mul;
+
+  {o self, o.T ::vec = {o.l} {o} .? self.l * vec!}:mul;
   {self o, self.l o * vec!}:rmul;
 
-  {o self, o.T'R= {o.l} {o} .? self.l - vec!}:sub;
-  {self o, self.l o.T'R= {o.l} {o} .? - vec!}:rsub;
+  {o self, o.T ::vec = {o.l} {o} .? self.l - vec!}:sub;
+  {self o, self.l o.T ::vec = {o.l} {o} .? - vec!}:rsub;
 
-  {o self, o.T'R= {o.l} {o} .? self.l / vec!}:div;
-  {self o, self.l o.T'R= {o.l} {o} .? / vec!}:rdiv;
+  {o self, o.T ::vec = {o.l} {o} .? self.l / vec!}:div;
+  {self o, self.l o.T ::vec = {o.l} {o} .? / vec!}:rdiv;
 
-  {o self, o.T'R= {o.l} {o} .? self.l ^ vec!}:pow;
-  {self o, self.l o.T'R= {o.l} {o} .? ^ vec!}:rpow;
+  {o self, o.T ::vec = {o.l} {o} .? self.l ^ vec!}:pow;
+  {self o, self.l o.T ::vec = {o.l} {o} .? ^ vec!}:rpow;
 
-  {o self, o.T'R= {o.l} {o} .? self.l % vec!}:mod;
-  {self o, self.l o.T'R= {o.l} {o} .? % vec!}:rmod;
+  {o self, o.T ::vec = {o.l} {o} .? self.l % vec!}:mod;
+  {self o, self.l o.T ::vec = {o.l} {o} .? % vec!}:rmod;
 
-  {o self, o.T'R= {o.l} {o} .? self.l .% vec!}:idiv;
-  {self o, self.l o.T'R= {o.l} {o} .? .% vec!}:ridiv;
+  {o self, o.T ::vec = {o.l} {o} .? self.l .% vec!}:idiv;
+  {self o, self.l o.T ::vec = {o.l} {o} .? .% vec!}:ridiv;
 
   {o self, o self.l < vec!}:lt;
   {o self, o self.l > vec!}:gt;
   {o self, o self.l :< vec!}:leq;
   {o self, o self.l :> vec!}:geq;
-  {o self, o.T'R= {o.l self.l =} 0 .? vec!}:eq;
+  {o self, o.T ::vec = {o.l self.l =} 0 .? vec!}:eq;
 
   {self, self.l U self.:l }:reverse;
   {self, self.l T vec!} :negate;
@@ -59,7 +61,7 @@
   {self, self.l .| vec!}:abs;
 
   {self n, self.l n .< vec!}:head;
-  {self n, self.l n .> vec!}:tail; 
+  {self n, self.l n .> vec!}:tail;
 
 
 }:vec;
