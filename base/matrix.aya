@@ -35,7 +35,7 @@ import "math"
   {[2|,*]S}:dot;                                .# dot product of two lists
 
   .#? N (matrix) matrix.pow\n  raise matrix to the Nth power
-  {mat expN,
+  {mat exp::num,
     "matrix.pow: exponent must be positive" exp1< conderr
     mat {_}expV%
     {.matmul}expV%
@@ -95,7 +95,7 @@ import "math"
   .# det
 
   .# Indexing
-  {nN iD jD m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
+  {n::num i::num j::num m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
   {.rowsE}:r;                                   .#? (matrix) matrix.r\n  return the number of rows in the matrix
   {.rows0IE}:c;                                 .#? (matrix) matrix.r\n  return the number of cols in the matrix
   {.rows[1|~,.A]}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
@@ -140,19 +140,19 @@ import "math"
 
 
   .#Scalar Arithmetic
-  {nN m, m.rows #{n*} matrix!}:smul;     .#? N (matrix) matrix.smul\n  scalar multiplication
-  {nN m, m.rows #{n+} matrix!}:sadd;     .#? N (matrix) matrix.sadd\n  scalar addition
-  {nN m, m.rows #{n-} matrix!}:zsub;     .#? N (matrix) matrix.zsub\n  scalar subtraction (reversed)
-  {nN m, m.rows #{n\-} matrix!}:ssub;  .#? N (matrix) matrix.ssub\n  scalar subtraction
-  {nN m, m.rows #{n/} matrix!}:zdiv;     .#? N (matrix) matrix.zdiv\n  scalar division (reversed)
-  {nN m, m.rows #{n\/} matrix!}:sdiv;  .#? N (matrix) matrix.sdiv\n  scalar division
+  {n::num m, m.rows #{n*} matrix!}:smul;     .#? N (matrix) matrix.smul\n  scalar multiplication
+  {n::num m, m.rows #{n+} matrix!}:sadd;     .#? N (matrix) matrix.sadd\n  scalar addition
+  {n::num m, m.rows #{n-} matrix!}:zsub;     .#? N (matrix) matrix.zsub\n  scalar subtraction (reversed)
+  {n::num m, m.rows #{n\-} matrix!}:ssub;  .#? N (matrix) matrix.ssub\n  scalar subtraction
+  {n::num m, m.rows #{n/} matrix!}:zdiv;     .#? N (matrix) matrix.zdiv\n  scalar division (reversed)
+  {n::num m, m.rows #{n\/} matrix!}:sdiv;  .#? N (matrix) matrix.sdiv\n  scalar division
 
   .# OVERLOADS
 
   {a b,
     [
-      a'Nisa b .T'R = & {a b matrix.smul} ?
-      b'Nisa a .T'R = & {b a matrix.smul} ?
+      a .T ::num = b .T'R = & {a b matrix.smul} ?
+      b .T ::num = a .T'R = & {b a matrix.smul} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matmul} ?
       {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -160,8 +160,8 @@ import "math"
 
   {a b,
     [
-      a'Nisa b .T'R = & {a b matrix.sadd} ?
-      b'Nisa a .T'R = & {b a matrix.sadd} ?
+      a .T ::num = b .T'R = & {a b matrix.sadd} ?
+      b .T ::num = a .T'R = & {b a matrix.sadd} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matadd} ?
       {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -169,8 +169,8 @@ import "math"
 
   {a b,
     [
-      a'Nisa b .T'R = & {a b matrix.ssub} ?
-      b'Nisa a .T'R = & {b a matrix.zsub} ?
+      a .T ::num = b .T'R = & {a b matrix.ssub} ?
+      b .T ::num = a .T'R = & {b a matrix.zsub} ?
       aMw"DICT"= bMw"DICT"= & {a b matrix.matsub} ?
       {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
     ].S
@@ -179,8 +179,8 @@ import "math"
 
   {a b,
     [
-      a'Nisa b .T'R = & {a b matrix.sdiv} ?
-      b'Nisa a .T'R = & {b a matrix.zdiv} ?
+      a .T ::num = b .T'R = & {a b matrix.sdiv} ?
+      b .T ::num = a .T'R = & {b a matrix.zdiv} ?
       {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
     ].S
   }:div;
@@ -207,7 +207,7 @@ import "math"
   {G"\n"|#{" "|#~}matrix!}:fopen;
 
   .# generates the next row of a pascal matrix
-  {prevL: new len ix,
+  {prev::list : new len ix,
     prevE:len;
     1 0 lenVLK:new;
     1:ix;
@@ -215,13 +215,13 @@ import "math"
   }:nextpascalr;
 
   .#? I matrix.pascal\n  generate an I by I matrix representation of pascal's triangle
-  {nD, [1nL{_matrix.nextpascalr}nV%] matrix!}:pascal;
+  {n::num, [1nL{_matrix.nextpascalr}nV%] matrix!}:pascal;
 
   .#? IIN matrix.newfill\n  create a I1 by I2 matrix filled with N3
   {\L\Lmatrix!}:newfill;
 
   .#? N (matrix) matrix.fill\n  fill matrix with N everywhere
-  {nN m, n m.cL m.rLmatrix!}:fill;
+  {n::num m, n m.cL m.rLmatrix!}:fill;
 
   .#? NN matrix.zeros\n  create a N1 by N2 matrix of zeros
   {0matrix.newfill}:zeros;
@@ -236,7 +236,7 @@ import "math"
   {:n,@:n; 0matrix.newfill {;nQ} matrix.map}:randint;
 
   .#? (matrix) E matrix.map\n  map an expression to each element of the matrix
-  {mat exprE, mat.rows : {#expr} mat.:rows; mat}:map;
+  {mat expr::block, mat.rows : {#expr} mat.:rows; mat}:map;
 
   .#? N matrix.multiptable\n  generate n N by N multiplication table
   {[1|_R_@L\,#*] matrix!}:multiptable;

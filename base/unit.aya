@@ -1,7 +1,7 @@
 .# conv.aya
 .# **Easy unit conversions**
 
-{@ unit,
+{,
 
 .# Length
 
@@ -54,13 +54,13 @@
 1000gigabyte*:terabyte:tb;
 
 
-}.# END unit
+}:unit;
 
 
 .# Conversion functions (Uncomment to use)
 
 .###Type saftey version
-{`({numN fromN toN, num from * to/})}:to;
+{`({num::num from::num to::num, num from * to/})}:to;
 
 .###Regular Version
 .#	{`(\@*\/)}:to;

@@ -10,10 +10,10 @@ import "list"
 
   .#Constructors
 
-  {rD gD bD, {, r:r g:g b:b} color MO}:new;
+  {r::num g::num b::num, {, r:r g:g b:b} color MO}:new;
 
   .#? S color.newhex\n  create a new color using a hex value represented as a string
-  {cS, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
+  {c:str, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
 
   .#Conversions
 
@@ -31,7 +31,7 @@ import "list"
   .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
   {a b, '\block' 38L a b color.printgrad}:quickgrad;
   .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
-  {oL a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
+  {o::list a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
   .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
   {3@@\.grad 1I~ color!}:mid;
 

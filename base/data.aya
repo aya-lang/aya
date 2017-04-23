@@ -9,7 +9,7 @@ import "dataframe"
 	`:monthsabb		["Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"];
 
    .#? N data.lipsum\n  generate N random words of lipsum text
-  {n :words outstr,
+  {n : words outstr,
     ["lorem" "ipsum" "dolor" "sit" "amet"
       "consectetuer" "adipiscing" "elit"
       "sed" "diam" "nonummy" "nibh" "euismod"
@@ -30,7 +30,7 @@ import "dataframe"
     7490 739 696 7611
   ]#.':tinyletters;
 
-	{nN spacerS,
+	{n::num spacer::str,
 	  if (n 0=) {
 	    ""
 	  } {
@@ -38,7 +38,7 @@ import "dataframe"
 	  }
 	}:numwordhelp;
 
-	{nN : x,
+	{n::num : x,
 
 	[
 	  n `:< 19 {["zero""one""two""three""four"

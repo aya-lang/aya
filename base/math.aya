@@ -64,10 +64,10 @@ import "list"
 .# Additional Math Functions
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{_'Nisa {.-}{{.-}F} .?}:lcm;
+{_ .T ::num = {.-}{{.-}F} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisior of 2 numbers or a list of numbers
-{_ 'Nisa {.+}{{.+}F} .?}:gcd;
+{_ .T ::num = {.+}{{.+}F} .?}:gcd;
 
 
 .#? N factors \n  returns a list of the numbers factors

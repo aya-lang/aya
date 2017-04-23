@@ -11,7 +11,7 @@ import "dialog"
 .#? module: demo\n  contains various example functions
 {,
   .#? N demo.train\n  generates an ASCII train with N carts
-  {nD, [" ______  ""|      | "" ()--() ~"]#{nLSV;'\n'+}S.P}:train;
+  {n::num, [" ______  ""|      | "" ()--() ~"]#{nLSV;'\n'+}S.P}:train;
 
 
   .#? demo.loc\n  input a C source file and return the number of lines of code
@@ -179,7 +179,7 @@ import "dialog"
   }:randomwalk;
 
   .#? demo.lorenz\n  plot a Lorenz attractor
-  {: x y z a b c dt,
+  {:x y z a b c dt,
 
     .# Starting parameters
     0.01 :x;

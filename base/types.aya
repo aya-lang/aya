@@ -19,11 +19,10 @@
 {.T}:typeof;				.#? A typeof\n  return the character representation of the type
 
 .#? AC isa\n  returns true if the item's type matches the input character
-{itemA typeC,
+{item::any type::sym,
 	[
-	  type'A= 1? .# Any
-	  type'N= {"DFN"item.TN\;(-1)=!} ? .# Number is num or bignum
-	  type'L= {"SL"item.TN\;(-1)=!} ? .# Number is a string or list => list
+	  type ::any = 1 ? .# Any
+	  type ::list = {item.T ::list = item.T ::str = |} ? .# Number is a string or list => list
 	  type item.T = .# Normal Check
 	].S
 }:isa;

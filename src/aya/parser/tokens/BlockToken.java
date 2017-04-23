@@ -122,11 +122,11 @@ public class BlockToken extends CollectionToken {
 						argTypes.add(Obj.SYM_ANY.id());
 					} else {
 						//Should always be a VAR or an SYMBOL
-						throw new SyntaxError("All arguments must be names or type assertions");
+						throw new SyntaxError("All arguments must be names or type assertions. Recieved " + tokens.get(i).data);
 					}
 				} else {
 					//Should always be a VAR or an SYMBOL
-					throw new SyntaxError("All arguments must be names or type assertions");
+					throw new SyntaxError("All arguments must be names or type assertions. Recieved " + tokens.get(i).data );
 				}
 			}
 			

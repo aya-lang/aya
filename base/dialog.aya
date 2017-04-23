@@ -26,10 +26,10 @@
   {question yes no, [yes no] question "Aya" 2 4 MV}:yesno;
 
   .#? SL<S> dialog.buttons\n  display a dialog box with buttons for each of the options in L
-  {question optionsL, options question "Aya" 2 5 MV}:buttons;
+  {question options::list, options question "Aya" 2 5 MV}:buttons;
 
   .#? SL<S> dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
-  {question optionsL, options question "Aya" 2 6 MV}:dropdown;
+  {question options::list, options question "Aya" 2 6 MV}:dropdown;
 
   .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
   {[] "" "" 1 7 MV}:choosefile;

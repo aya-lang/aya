@@ -48,13 +48,13 @@
 {\.EV@L#QI}:lotto;
 
 .# {aL bL,[a,,b\N\;(-1)=!]}:intersect; .#? LL intersect\n creates a new list from the intersection of the input lists
-{lL,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
+{l::list,[0]lERB;K}:irange;	          .#? L irange\n generates a range of indices for the list (use with for loop)
 
 .#? <LLE> permusing\n  permutes elements of two lists and applies an expression to each
 {la lb ex, [la lb laEL,\#{ex}]}:permusing:pu;
 
 .#? <LII> swapitems\n  swap two elements in a list given their indices
-{listL iD jD : tmp,
+{list::list i::num j::num : tmp,
 	list i I : tmp;
 	list j I  list i D
 	tmp list j D
@@ -79,7 +79,7 @@
 {a b l, [a b l linspace,.\]}:intspace;
 
 .#? L<N> digitstonum\n  convert a list of numbers into a number
-{lL : total multip,
+{l::list : total multip,
   1:multip;
   lU#{
     multip* total+:total;

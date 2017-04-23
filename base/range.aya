@@ -2,24 +2,24 @@
 
   attr "low inc hi"
 
-  {lowN incN hiN,
+  {low::num inc::num hi::num,
     [low inc hi_inc%-] range MO
   }:new;
 
-  {valN : inc,
+  {val::num : inc,
     1:inc;
     val.! (-1) = then {(-1):inc;}
 
     inc inc val range.new
   }:r;
 
-  {currentN range,
+  {current::num range,
     current range.inc +
   }:next;
 
   {range, range.low}:start;
 
-  {currentN range,
+  {current::num range,
     current range.hi
     range.inc.! (-1) = {:<} {:>}  .?
   }:done;

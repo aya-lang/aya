@@ -1,6 +1,5 @@
 package aya.entities.operations;
 
-import static aya.obj.Obj.BIGNUM;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
@@ -31,7 +30,6 @@ import aya.obj.list.Str;
 import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
-import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.parser.CharacterParser;

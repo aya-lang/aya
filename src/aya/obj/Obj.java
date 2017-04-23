@@ -129,6 +129,7 @@ public abstract class Obj {
 	public static final Symbol SYM_LIST 	= Symbol.fromStr("list");
 	public static final Symbol SYM_STR 		= Symbol.fromStr("str");
 	public static final Symbol SYM_DICT 	= Symbol.fromStr("dict");
+	public static final Symbol SYM_SYM	 	= Symbol.fromStr("sym");
 	public static final Symbol SYM_ANY 		= Symbol.fromStr("any");
 	public static final Symbol SYM_UNKNOWN 	= Symbol.fromStr("unknown");
 	public static final Symbol SYM_TYPE 	= Symbol.fromStr("type");
@@ -149,6 +150,7 @@ public abstract class Obj {
 		case OBJLIST : return SYM_LIST;
 		case STRLIST : return SYM_LIST;
 		
+		case SYMBOL : return SYM_SYM;
 		case STR : return SYM_STR;
 		case NUMBER : return SYM_NUM;
 		case RATIONAL_NUMBER : return SYM_NUM;
@@ -175,6 +177,8 @@ public abstract class Obj {
 			return ANY;
 		} else if (s == SYM_DICT.id()) {
 			return DICT;
+		} else if (s == SYM_SYM.id()) {
+			return SYMBOL;
 		} else {
 			return UNKNOWN;
 		}
