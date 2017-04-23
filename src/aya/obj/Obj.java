@@ -35,6 +35,8 @@ public abstract class Obj {
 
 	public static final byte USEROBJ = 6;
 	
+	public static final byte SYMBOL = 7;
+	
 	
 	
 	
