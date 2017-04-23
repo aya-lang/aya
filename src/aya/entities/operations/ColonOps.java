@@ -6,6 +6,7 @@ import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
+import static aya.obj.Obj.SYMBOL;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
 
@@ -88,8 +90,8 @@ public class ColonOps {
 		/* 80 P  */ new OP_Colon_P(),
 		/* 81 Q  */ null,
 		/* 82 R  */ new OP_Colon_R(),
-		/* 83 S  */ null,
-		/* 84 T  */ null,
+		/* 83 S  */ new OP_Colon_S(),
+		/* 84 T  */ new OP_Colon_T(),
 		/* 85 U  */ null,
 		/* 86 V  */ new OP_Colon_V(),
 		/* 87 W  */ null,
@@ -356,6 +358,47 @@ class OP_Colon_R extends Operation {
 	}
 	@Override public void execute (Block block) {		
 		block.push(new Str(Aya.getInstance().nextLine()));
+	}
+}
+
+
+// S - 83
+class OP_Colon_S extends Operation {
+	public OP_Colon_S() {
+		this.name = ":S";
+		this.info = "convert string/char to symbol";
+		this.argTypes = "SC";
+	}
+	@Override public void execute (Block block) {		
+		final Obj a = block.pop();
+		
+		if (a.isa(STR) || a.isa(CHAR)) {
+			block.push(Symbol.convToSymbol(a.str()));
+		}
+		
+		else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+// T - 84
+class OP_Colon_T extends Operation {
+	public OP_Colon_T() {
+		this.name = ":T";
+		this.info = "convert symbol to string name";
+		this.argTypes = "J";
+	}
+	@Override public void execute (Block block) {		
+		final Obj a = block.pop();
+		
+		if (a.isa(SYMBOL)) {
+			block.push( new Str(((Symbol)a).name()) );
+		}
+		
+		else {
+			throw new TypeError(this, a);
+		}
 	}
 }
 

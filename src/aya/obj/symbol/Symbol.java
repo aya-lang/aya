@@ -33,7 +33,7 @@ public class Symbol extends Obj {
 			if (c >= 'a' && c <= 'z') {
 				sym += c;
 			} else if (c >= 'A' && c <= 'Z') {
-				sym += c + 32; // Make lowercase
+				sym += Character.toLowerCase(c); // Make lowercase
 			}
 			
 			// Symbols can only be 12 chars
@@ -43,10 +43,10 @@ public class Symbol extends Obj {
 		}
 		
 		if (sym.equals("")) {
-			throw new AyaRuntimeException("Can't create symbol from string \"" + sym + "\"");
+			throw new AyaRuntimeException("Can't create symbol from string \"" + str + "\"");
 		}
 		
-		return Symbol.fromStr(str);
+		return Symbol.fromStr(sym);
 	}
 	
 	/** Convert a symbol string to a symbol */
@@ -55,6 +55,10 @@ public class Symbol extends Obj {
 		return fromID(id);
 		
 	}	
+	
+	public String name() {
+		return Variable.decodeLong(_id);
+	}
 	
 	
 	public static Symbol fromID(long id) {
