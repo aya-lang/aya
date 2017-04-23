@@ -10,6 +10,7 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.STRLIST;
+import static aya.obj.Obj.SYMBOL;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,7 @@ import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.FileUtils;
@@ -1694,10 +1696,8 @@ class OP_Tilde extends Operation {
 		
 		if(a.isa(BLOCK)) {
 			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
-			return;
 		} else if (a.isa(STR)) {
 			block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
-			return;
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
 			final String varname = CharacterParser.getName(c);
@@ -1705,17 +1705,17 @@ class OP_Tilde extends Operation {
 				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
 			block.add(new Variable(varname));
-			return;
 		} else if (a.isa(LIST)) {
 			List list = (List)a;
 			//Collections.reverse(list);
 			for (int i = list.length()-1; i >= 0; i--) {
 				block.add(list.get(i));
 			}
-			return;
+		} else if (a.isa(SYMBOL)) {
+			block.push(Aya.getInstance().getVars().getVar( ((Symbol)a).id() ));
+		} else {
+			throw new TypeError(this, a);
 		}
-		
-		throw new TypeError(this, a);
 	}
 }
 

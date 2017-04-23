@@ -108,14 +108,18 @@ public class VariableData {
 	}
 	
 	public Obj getVar(Variable v) {
+		return getVar(v.getID());
+	}
+	
+	public Obj getVar(long id) {
 		Obj res = null;
 		for(int i = varSets.size()-1; i >= 0; i--) {
-			res = varSets.get(i).getObject(v);
+			res = varSets.get(i).getObject(id);
 			if(res != null) {
 				return res;
 			}
 		}
-		throw new SyntaxError("Variable " + v.toString() + " not found");
+		throw new SyntaxError("Variable " + Variable.decodeLong(id) + " not found");
 	}
 	
 	public void add(VariableSet vs) {
