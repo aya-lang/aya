@@ -79,6 +79,16 @@ public class Dict extends Obj {
 		return o;
 	}
 	
+	/** Get from metatable. If no such key, return null */
+	public Obj getFromMetaTableOrNull(long id) {
+		if (_meta == null) {
+			return null;
+		} else {
+			return _meta.getObject(id);
+
+		}
+	}
+	
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(long id) {
 		// First search object vars...
