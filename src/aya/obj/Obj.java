@@ -1,5 +1,7 @@
 package aya.obj;
 
+import aya.obj.symbol.Symbol;
+
 /**
  * Superclass for all runtime objects existing on the stack
  * @author Nick
@@ -118,6 +120,62 @@ public abstract class Obj {
 			//case 'M': return MODULE;
 			//case 'U': return USER_OBJ;
 			default: return UNKNOWN;
+		}
+	}
+	
+	public static final Symbol SYM_CHAR 	= Symbol.fromStr("char");
+	public static final Symbol SYM_NUM 		= Symbol.fromStr("num");
+	public static final Symbol SYM_BLOCK 	= Symbol.fromStr("block");
+	public static final Symbol SYM_LIST 	= Symbol.fromStr("list");
+	public static final Symbol SYM_STR 		= Symbol.fromStr("str");
+	public static final Symbol SYM_DICT 	= Symbol.fromStr("dict");
+	public static final Symbol SYM_ANY 		= Symbol.fromStr("any");
+	public static final Symbol SYM_UNKNOWN 	= Symbol.fromStr("unknown");
+
+	
+	/** Converts an ID to a symbol */
+	public static Symbol IDToSym(byte b) {
+		switch(b) {
+		//case BOOL : return 'B';
+		case CHAR : return SYM_CHAR;
+		case NUM : return SYM_NUM;
+		case BLOCK : return SYM_BLOCK;
+		case BIGNUM : return SYM_NUM;
+		
+		case LIST : return SYM_LIST;
+		case NUMBERLIST : return SYM_LIST;
+		case NUMBERITEMLIST : return SYM_LIST;
+		case OBJLIST : return SYM_LIST;
+		case STRLIST : return SYM_LIST;
+		
+		case STR : return SYM_STR;
+		case NUMBER : return SYM_NUM;
+		case RATIONAL_NUMBER : return SYM_NUM;
+		case DICT : return SYM_DICT;
+		case ANY : return SYM_ANY;
+
+		default: return SYM_UNKNOWN;
+		}
+	}
+	
+	/** Converts a character abbreviation to its ID */
+	public static byte symToID(Symbol s) {
+		if (s.equiv(SYM_NUM)) {
+			return NUM;
+		} else if (s.equiv(SYM_BLOCK)) {
+			return BLOCK;
+		} else if (s.equiv(SYM_LIST)) {
+			return LIST;
+		} else if (s.equiv(SYM_STR)) {
+			return STR;
+		} else if (s.equiv(SYM_CHAR)) {
+			return CHAR;
+		} else if (s.equiv(SYM_ANY)) {
+			return ANY;
+		} else if (s.equiv(SYM_DICT)) {
+			return DICT;
+		} else {
+			return UNKNOWN;
 		}
 	}
 	
