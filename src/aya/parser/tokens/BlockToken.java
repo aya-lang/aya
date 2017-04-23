@@ -8,6 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.DictFactory;
 import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.variable.Variable;
@@ -105,36 +106,36 @@ public class BlockToken extends CollectionToken {
 		//Things other than vars exist, check if they are type assertions
 		else {
 			ArrayList<Variable> argNames = new ArrayList<Variable>();
-			ArrayList<Byte> argTypes = new ArrayList<Byte>();
+			ArrayList<Long> argTypes = new ArrayList<Long>();
 			for (int i = 0; i < tokens.size(); i++) {
 				if (tokens.get(i).getType() == Token.VAR) {
 					if (i+1 > tokens.size()-1) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(Obj.ANY);
-					} else if (tokens.get(i+1).getType() == Token.OP) {
+						argTypes.add(Obj.SYM_ANY.id());
+					} else if (tokens.get(i+1).getType() == Token.SYMBOL) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						char c = tokens.get(i+1).getData().charAt(0);
-						argTypes.add(Obj.abbrvToID(c));
-						i++; //Skip the op on the next iteration
+						Symbol s = Symbol.fromStr(tokens.get(i+1).getData());
+						argTypes.add(s.id());
+						i++; //Skip the symbol on the next iteration
 					} else if (tokens.get(i).getType() == Token.VAR) {
 						argNames.add(new Variable(tokens.get(i).getData()));
-						argTypes.add(Obj.ANY);
+						argTypes.add(Obj.SYM_ANY.id());
 					} else {
-						//Should always be a VAR or an OP
+						//Should always be a VAR or an SYMBOL
 						throw new SyntaxError("All arguments must be names or type assertions");
 					}
 				} else {
-					//Should always be a VAR or an OP
+					//Should always be a VAR or an SYMBOL
 					throw new SyntaxError("All arguments must be names or type assertions");
 				}
 			}
 			
 			//Convert to primitive byte array
 			boolean allAny = true;
-			byte[] types = new byte[argTypes.size()];
+			long[] types = new long[argTypes.size()];
 			for (int i = 0; i < types.length; i++) {
-				types[i] = argTypes.get(i).byteValue();
-				if(types[i] != Obj.ANY) {
+				types[i] = argTypes.get(i);
+				if(types[i] != Obj.SYM_ANY.id()) {
 					allAny = false;
 				}
 			}
