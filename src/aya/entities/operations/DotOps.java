@@ -42,6 +42,7 @@ import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.QuickDialog;
@@ -934,9 +935,24 @@ class OP_TypeOf extends Operation {
 		this.info = "pushes a character ID of the argument to the stack";
 		this.argTypes = "A";
 	}
+	
+	private static final long TYPE_ID = Symbol.fromStr("type").id();
+	
 	@Override
 	public void execute(Block block) {
-		block.push(Obj.IDToSym(block.pop().type()));
+		final Obj a = block.pop();
+		Obj type = null;
+		
+		if (a.isa(DICT)) {
+			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
+			if (type == null || !type.isa(Obj.SYMBOL)) {
+				type = Obj.SYM_DICT;
+			}
+		} else {
+			type = Obj.IDToSym(a.type());
+		}
+		
+		block.push(type);
 	}
 }
 

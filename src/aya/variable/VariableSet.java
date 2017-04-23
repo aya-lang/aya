@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.util.Pair;
 
@@ -53,10 +54,29 @@ public class VariableSet {
 		} else {
 			for(int i = argNames.length-1; i >= 0; i--){
 				Obj o = b.pop();
-				if(argTypes[i] != Obj.SYM_ANY.id() && !o.isa(Obj.symToID(argTypes[i])) ) {
+				boolean typematch = false; // The type matches the assertion
+				
+				// Check user defined type 
+				if (o.isa(Obj.DICT)) {
+					long otype = -1;
+
+					Obj dtype = ((Dict)o).getFromMetaTableOrNull(Obj.SYM_TYPE.id());
+					if (dtype != null && dtype.isa(Obj.SYMBOL)) {
+						otype = ((Symbol)dtype).id(); 
+					} else {
+						otype = Obj.SYM_DICT.id();
+					}
+					
+					if (otype == argTypes[i]) {
+						typematch = true;
+					}
+				} else if (argTypes[i] == Obj.SYM_ANY.id() || o.isa(Obj.symToID(argTypes[i]))) {
+					typematch = true;
+				}
+				
+				if( !typematch ) {
 					throw new TypeError("{ARGS}", Symbol.fromID(argTypes[i]).repr(), o);
 				}
-					//throw new RuntimeException("Invalid type in block argument. Expected (" + TypeUtils.getTypeNameFromID(argTypes[i]) + "). Recieved " + TypeUtils.debugString(o)+ " (" + TypeUtils.getTypeName(o) + ")");
 				
 				vars.put(argNames[i].getID(), o);
 			}
