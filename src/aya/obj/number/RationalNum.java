@@ -186,7 +186,13 @@ public class RationalNum extends Number {
 
 	@Override
 	public Number pow(Number other) {
-		return new RationalNum(Math.pow(this.toDouble(), other.toDouble()));
+		double exp = other.toDouble();
+		if (exp > 0) {
+			return new RationalNum((long)Math.pow(_num, exp), (long)Math.pow(_den, exp));
+		}
+		else {
+			return new RationalNum(Math.pow(this.toDouble(), other.toDouble()));
+		}
 	}
 	
 	@Override
