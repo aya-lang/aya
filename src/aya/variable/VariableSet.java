@@ -70,11 +70,11 @@ public class VariableSet {
 					if (otype == argTypes[i]) {
 						typematch = true;
 					}
-				} else if (argTypes[i] == Obj.SYM_ANY.id() || o.isa(Obj.symToID(argTypes[i]))) {
+				} else if (o.isa(Obj.symToID(argTypes[i]))) {
 					typematch = true;
 				}
 				
-				if( !typematch ) {
+				if( !typematch && argTypes[i] != Obj.SYM_ANY.id() ) {
 					throw new TypeError("{ARGS}", Symbol.fromID(argTypes[i]).repr(), o);
 				}
 				
