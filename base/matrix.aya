@@ -14,7 +14,7 @@ import "math"
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
   .# Both of the following must be true:
-  	m#.T{::list=}all .# The list is made up of only other lists
+  	m#:T{::list=}all .# The list is made up of only other lists
   	{
   		m#E{m0IE=}all 			.# All of the list lengths are the same
   	} 0 .?
@@ -134,7 +134,7 @@ import "math"
 
 
   {o self,
-    o.T ::matrix = {
+    o:T ::matrix = {
       [o.rows self.rows, +] matrix!
     } {
       self.rows # {o+} matrix!
@@ -148,7 +148,7 @@ import "math"
 
 
   {o self,
-    o.T ::matrix = {
+    o:T ::matrix = {
       [o.rows self.rows, \-] matrix!
     } {
       self.rows # {o\-} matrix!
@@ -162,7 +162,7 @@ import "math"
 
 
   {o self,
-    o.T ::matrix = {
+    o:T ::matrix = {
       [o.rows self.rows, \/] matrix!
     } {
       self.rows # {o\/} matrix!
@@ -176,7 +176,7 @@ import "math"
 
 
   {o self,
-    o.T ::matrix = {
+    o:T ::matrix = {
       o self.matmul
     } {
       self.rows # {o\*} matrix!

@@ -47,8 +47,8 @@ import "file"
   }:rowbyix;
 
   {id this,
-    [ id.T ::str = {id this.rowbyname} ?
-      id.T ::num = {id this.rowbyix} ?
+    [ id:T ::str = {id this.rowbyname} ?
+      id:T ::num = {id this.rowbyix} ?
       {"dataframe.row: id must be a string or int. recieved: $id".D}
     ].S
   }:row;
@@ -66,8 +66,8 @@ import "file"
   }:colbyix;
 
   {id this,
-    [ id.T ::str = {id this.colbyname} ?
-      id.T ::num = {id this.colbyix} ?
+    [ id:T ::str = {id this.colbyname} ?
+      id:T ::num = {id this.colbyix} ?
       {"dataframe.col: id must be a string or int. recieved: $id".D}
     ].S
   }:col;
@@ -85,24 +85,24 @@ import "file"
 
   {name self : ix,
     [
-      name .T ::str = {
+      name :T ::str = {
         self.colnames name N :ix;;
         "Invalid col name: $name" ix (-1) = conderr
         ix
       } ?
-      name .T ::num = {name} ?
+      name :T ::num = {name} ?
       {"Invalid colindex type. Received $name ($(name Mw))" .D}
     ].S
   }:colindex;
 
   {name self : ix,
     [
-      name .T ::str = {
+      name :T ::str = {
         self.rownames name N :ix;;
         "Invalid row name: $name" ix (-1) = conderr
         ix
       } ?
-      name .T ::num = {name} ?
+      name :T ::num = {name} ?
       {"Invalid rowindex type. Received $name ($(name Mw))" .D}
     ].S
   }:rowindex;
@@ -114,15 +114,15 @@ import "file"
 
     .# Get row index
     [
-      r.T ::str = {r self.rowindex} ?
-      r .T ::num = r ?
+      r:T ::str = {r self.rowindex} ?
+      r :T ::num = r ?
       (-1)
     ].S:rix;
 
     .# Get column index
     [
-      c.T ::str = {c self.colindex} ?
-      c .T ::num = c ?
+      c:T ::str = {c self.colindex} ?
+      c :T ::num = c ?
       (-1)
     ].S:cix;
 

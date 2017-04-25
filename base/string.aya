@@ -24,7 +24,7 @@ import "types"
 }:strrightpad;
 
 .#? S isnum\n  returns true if the string is a valid number
-{.! .T ::num =}:isnum;
+{.! :T ::num =}:isnum;
 
 .#? S tocamel\n  convert a string with underscores to camel case
 {str,
@@ -48,7 +48,7 @@ import "types"
 .#? str sep csvstr\n  convert a csv string into a 2d list
 {str sep,
   str "\n" |
-  # {sep | # {.! _.T ::str = {trim} ?} }
+  # {sep | # {.! _:T ::str = {trim} ?} }
   makesquare
 }:fromcsvstr;
 
