@@ -88,5 +88,11 @@
   total
 }:digitstonum;
 
+.#? list makesquare\n  make all lists in the given 2d lists the same length
+{list,
+  list_ #E {.<}F
+  #.<
+}:makesquare;
+
 {e,{e!}.N|;}:takewhile:tw;
 {e,{e=}tw}:takewhileeq:twe;

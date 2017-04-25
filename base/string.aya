@@ -5,19 +5,23 @@ import "char"
 import "types"
 
 .#? L S|C join\n  join a list of strings with another string or char
-{l s, [l, s+]B;l(-1)IAKS}:join;
+{l s, l#s B; S}:join;
 
 .#? S alldigits\n  tests if all chars in a string are digits
-{_{isdigit}I=}:alldigits;
+{.E \ #isdigit S =}:alldigits;
 
 .#? S trim\n  remove whitespace from start and end of string
 {"^\\s+|\\s+$" |S}:trim;
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
-{str::str pad::char len::num, str.E len\- {pad\K}\%}:strleftpad;
+{str::str pad::char len::num,
+  str.E len\- {pad\K}\%
+}:strleftpad;
 
 .#? SCI strrightpad\n  right pad string S so it is at least length I using char C
-{str::str pad::char len::num, str.E len\- {padK}\%}:strrightpad;
+{str::str pad::char len::num,
+  str.E len\- {padK}\%
+}:strrightpad;
 
 .#? S isnum\n  returns true if the string is a valid number
 {.! .T ::num =}:isnum;
@@ -33,13 +37,30 @@ import "types"
 
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
-  [1|~,                 .# Transpose
-    .A_#{PE} {.>}F BB    .# Calculate the maximum print width
-    #{\P\.>}            .# Pad each entry with spaces on the left
-  ][1|~,                .# Transpose
-    .AS                 .# Combine strings
-  ]'\n'join             .# Separate lines
+  _ [1|,~.A#{PE}] .# Calculate the length of each
+                  .#   entry mapped as a string
+  .F{.<}F 2+      .# Find the maximum and add two
+  #{#{\P\.>}S}    .# Pad each entry in the original
+                  .#   by the max and sum each row
+  '\n' join       .# Join the rows with a newline
 }:matstr;
+
+.#? str sep csvstr\n  convert a csv string into a 2d list
+{str sep,
+  str "\n" |
+  # {sep | # {.! _.T ::str = {trim} ?} }
+  makesquare
+}:fromcsvstr;
+
+{list sep na,
+  list #{
+    .# If it is na, make it emptystr
+    #{_ na = {;""} ?}
+    sep join
+  } "\n" join
+}:tocsvstr;
+
+
 
 
 {str,

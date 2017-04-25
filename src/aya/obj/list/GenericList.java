@@ -425,9 +425,11 @@ public class GenericList extends List {
 	
 	private void decCharNumCounter(Obj o) {
 		if (o.isa(Obj.CHAR)) {
-			_chars += 1;
+			_chars -= 1;
 		} else if (o.isa(NUMBER)) {
-			_nums += 1;
+			_nums -= 1;
+		} else if (o.isa(STR)) {
+			_strs -= 1;
 		}
 	}
 
