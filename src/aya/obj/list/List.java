@@ -47,6 +47,61 @@ public abstract class List extends Obj {
 		}
 	}
 	
+	/** Is the list a rectangular 2d list? */
+	public static boolean isRect(List list) {
+		if (list.length() == 0) {
+			return false;
+		}
+		
+		if (!list.get(0).isa(LIST)) {
+			return false;
+		}
+		
+		// Get col width
+		int cols = ((List)(list.get(0))).length();
+		
+		for (int i = 1; i < list.length(); i++) {
+			final Obj o = list.get(i);
+			if (!o.isa(LIST)) {
+				return false;
+			} else {
+				if ( ((List)o).length() != cols ) {
+					return false;
+				}
+			}
+		}
+		
+		return true;	
+	}
+	
+	/** Transpose a 2d list of lists */
+	public static List transpose(List list) {
+		
+		if (!isRect(list)) {
+			throw new AyaRuntimeException("Cannot transpose list, must be rectangular: " + list.repr());
+		}
+		
+		// Convert to list of lists
+		ArrayList<List> lists = new ArrayList<List>(list.length());
+		for (int i = 0; i < list.length(); i++) {
+			lists.add((List)list.get(i));
+		}
+		
+		int cols = lists.get(0).length();
+		
+		ArrayList<Obj> out = new ArrayList<Obj>(cols);
+		for (int i = 0; i < cols; i++) {
+			ArrayList<Obj> os = new ArrayList<Obj>();
+			for (int j = 0; j < lists.size(); j++) {
+				os.add(lists.get(j).get(i));
+			}
+			out.add(new GenericList(os).promote());
+		}
+		
+		return new GenericList(out);
+	}
+	
+	
 	//Yes I know this is gross, i'll fix it later...
 	public static List reshape(List l, NumberList dims) {
 		if (dims.length() == 0)
@@ -116,6 +171,8 @@ public abstract class List extends Obj {
 		}
 		return new GenericList(out);
 	}
+	
+	
 	
 	
 	/** Return a list of shape l1 whose values are 1 if l1[i,j,..] == l2[i,j,..] and 0 otherwise */

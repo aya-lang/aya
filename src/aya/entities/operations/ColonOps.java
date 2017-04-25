@@ -74,7 +74,7 @@ public class ColonOps {
 		/* 64 @  */ null,
 		/* 65 A  */ null,
 		/* 66 B  */ null,
-		/* 67 C  */ null,
+		/* 67 C  */ new OP_Colon_C(),
 		/* 68 D  */ null,
 		/* 69 E  */ new OP_Colon_E(),
 		/* 70 F  */ null,
@@ -272,6 +272,27 @@ class OP_Colon_GreaterThan extends Operation {
 	}
 }
 
+// C - 67
+class OP_Colon_C extends Operation {
+	public OP_Colon_C() {
+		this.name = ":C";
+		this.info = "convert symbol to string name";
+		this.argTypes = "J";
+	}
+	@Override public void execute (Block block) {		
+		final Obj a = block.pop();
+		
+		if (a.isa(SYMBOL)) {
+			block.push( new Str(((Symbol)a).name()) );
+		}
+		
+		else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 // E - 69
 class OP_Colon_E extends Operation {
 	public OP_Colon_E() {
@@ -318,24 +339,7 @@ class OP_Colon_K extends Operation {
 
 
 
-// V - 86
-class OP_Colon_V extends Operation {
-	public OP_Colon_V() {
-		this.name = ":V";
-		this.info = "R return a list of values as strings";
-		this.argTypes = "R";
-	}
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if (a.isa(DICT)) {
-			block.push( new GenericList(((Dict)a).values()) );
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
+
 
 // P - 80
 class OP_Colon_P extends Operation {
@@ -386,14 +390,14 @@ class OP_Colon_S extends Operation {
 class OP_Colon_T extends Operation {
 	public OP_Colon_T() {
 		this.name = ":T";
-		this.info = "convert symbol to string name";
-		this.argTypes = "J";
+		this.info = "transpose a 2d list";
+		this.argTypes = "L";
 	}
 	@Override public void execute (Block block) {		
 		final Obj a = block.pop();
 		
-		if (a.isa(SYMBOL)) {
-			block.push( new Str(((Symbol)a).name()) );
+		if (a.isa(LIST)) {
+			block.push( List.transpose((List)a) );
 		}
 		
 		else {
@@ -402,6 +406,24 @@ class OP_Colon_T extends Operation {
 	}
 }
 
+//V - 86
+class OP_Colon_V extends Operation {
+	public OP_Colon_V() {
+		this.name = ":V";
+		this.info = "R return a list of values as strings";
+		this.argTypes = "R";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			block.push( new GenericList(((Dict)a).values()) );
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
 
 //Z - 90
