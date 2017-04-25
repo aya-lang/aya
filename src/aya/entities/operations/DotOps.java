@@ -42,7 +42,6 @@ import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
-import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.QuickDialog;
@@ -110,7 +109,7 @@ public class DotOps {
 		/* 81 Q  */ new OP_Dot_Rand(),
 		/* 82 R  */ null,
 		/* 83 S  */ new OP_Dot_Case(),
-		/* 84 T  */ new OP_TypeOf(),
+		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
 		/* 87 W  */ null,
@@ -928,31 +927,23 @@ class OP_Dot_Case extends Operation {
 	}
 }
 
-// T - 84
-class OP_TypeOf extends Operation {
-	public OP_TypeOf() {
+//T - 84
+class OP_Dot_T extends Operation {
+	public OP_Dot_T() {
 		this.name = ".T";
-		this.info = "pushes a character ID of the argument to the stack";
-		this.argTypes = "A";
+		this.info = "transpose a 2d list";
+		this.argTypes = "L";
 	}
-	
-	private static final long TYPE_ID = Symbol.fromStr("type").id();
-	
-	@Override
-	public void execute(Block block) {
+	@Override public void execute (Block block) {		
 		final Obj a = block.pop();
-		Obj type = null;
 		
-		if (a.isa(DICT)) {
-			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
-			if (type == null || !type.isa(Obj.SYMBOL)) {
-				type = Obj.SYM_DICT;
-			}
-		} else {
-			type = Obj.IDToSym(a.type());
+		if (a.isa(LIST)) {
+			block.push( List.transpose((List)a) );
 		}
 		
-		block.push(type);
+		else {
+			throw new TypeError(this, a);
+		}
 	}
 }
 

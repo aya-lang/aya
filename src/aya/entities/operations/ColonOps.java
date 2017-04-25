@@ -386,25 +386,37 @@ class OP_Colon_S extends Operation {
 	}
 }
 
-// T - 84
+
+
+//T - 84
 class OP_Colon_T extends Operation {
 	public OP_Colon_T() {
 		this.name = ":T";
-		this.info = "transpose a 2d list";
-		this.argTypes = "L";
+		this.info = "return the type as a symbol";
+		this.argTypes = "A";
 	}
-	@Override public void execute (Block block) {		
+	
+	private static final long TYPE_ID = Symbol.fromStr("type").id();
+	
+	@Override
+	public void execute(Block block) {
 		final Obj a = block.pop();
+		Obj type = null;
 		
-		if (a.isa(LIST)) {
-			block.push( List.transpose((List)a) );
+		if (a.isa(DICT)) {
+			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
+			if (type == null || !type.isa(Obj.SYMBOL)) {
+				type = Obj.SYM_DICT;
+			}
+		} else {
+			type = Obj.IDToSym(a.type());
 		}
 		
-		else {
-			throw new TypeError(this, a);
-		}
+		block.push(type);
 	}
 }
+
+
 
 //V - 86
 class OP_Colon_V extends Operation {
