@@ -9,7 +9,7 @@ import "math"
 
 {,
 
-  ::matrix:type;
+  ::matrix :type;
 
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
@@ -30,25 +30,11 @@ import "math"
 
   {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
   {m, m.rowsE m.rows#E\#= {|}F}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
-  {a b, [a.rows b.rows,+] matrix!}:matadd;    .#? (matrix)(matrix) matrix.add\n  add two matrices
-  {a b, [a.rows b.rows,-] matrix!}:matsub;    .#? (matrix)(matrix) matrix.sub\n  subtract two matrices
   {m, [m.rows_ER,VI]}:tr;                       .#? (matrix) matrix.tr\n  trace of a matrix as a list
-  {m, [m.rows~,.A] matrix!}:transpose;          .#? (matrix) matrix.transpose\n  transpose a matrix
+  {m, [m.rows~, .A .[ ] matrix!}:transpose;          .#? (matrix) matrix.transpose\n  transpose a matrix
   {*S}:dot;                                .# dot product of two lists
 
-  .#? N (matrix) matrix.pow\n  raise matrix to the Nth power
-  {mat exp::num,
-    "matrix.pow: exponent must be positive" exp1< conderr
-    mat {_}expV%
-    {.matmul}expV%
-  }:pow;
 
-  .#? (matrix) (matrix) matrix.matmul\n  multiply two matrices
-  {a b,
-    "matrix.mul: dimension mismatch $(a.c) != $(b.r)" a.c b.r =! conderr
-    a.rows#{r, b.transpose.rows#{r matrix.dot}}
-    matrix!
-  }:matmul;
 
   .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
   {a b,
@@ -141,51 +127,94 @@ import "math"
 
 
 
-  .#Scalar Arithmetic
-  {n::num m, m.rows #{n*} matrix!}:smul;     .#? N (matrix) matrix.smul\n  scalar multiplication
-  {n::num m, m.rows #{n+} matrix!}:sadd;     .#? N (matrix) matrix.sadd\n  scalar addition
-  {n::num m, m.rows #{n-} matrix!}:zsub;     .#? N (matrix) matrix.zsub\n  scalar subtraction (reversed)
-  {n::num m, m.rows #{n\-} matrix!}:ssub;  .#? N (matrix) matrix.ssub\n  scalar subtraction
-  {n::num m, m.rows #{n/} matrix!}:zdiv;     .#? N (matrix) matrix.zdiv\n  scalar division (reversed)
-  {n::num m, m.rows #{n\/} matrix!}:sdiv;  .#? N (matrix) matrix.sdiv\n  scalar division
 
-  .# OVERLOADS
+  .########################
+  .# ARITHMETIC OVERLOADS #
+  .########################
 
-  {a b,
-    [
-      a .T ::num = b .T ::matrix = & {a b matrix.smul} ?
-      b .T ::num = a .T ::matrix = & {b a matrix.smul} ?
-      aMw"DICT"= bMw"DICT"= & {a b matrix.matmul} ?
-      {"matrix.star: invalid argument type. recieved: \n $a\n $b".D}
-    ].S
-  }:mul;
 
-  {a b,
-    [
-      a .T ::num = b .T ::matrix = & {a b matrix.sadd} ?
-      b .T ::num = a .T ::matrix = & {b a matrix.sadd} ?
-      aMw"DICT"= bMw"DICT"= & {a b matrix.matadd} ?
-      {"matrix.plus: invalid argument type. recieved: \n $a\n $b".D}
-    ].S
+  {o self,
+    o.T ::matrix = {
+      [o.rows self.rows, +] matrix!
+    } {
+      self.rows # {o+} matrix!
+    }.?
   }:add;
 
-  {a b,
-    [
-      a .T ::num = b .T ::matrix = & {a b matrix.ssub} ?
-      b .T ::num = a .T ::matrix = & {b a matrix.zsub} ?
-      aMw"DICT"= bMw"DICT"= & {a b matrix.matsub} ?
-      {"matrix.minus: invalid argument type. recieved: \n $a\n $b".D}
-    ].S
+  {self o,
+    self.rows # {o+} matrix!
+  }:radd;
+
+
+
+  {o self,
+    o.T ::matrix = {
+      [o.rows self.rows, \-] matrix!
+    } {
+      self.rows # {o\-} matrix!
+    }.?
   }:sub;
 
+  {self o,
+    self.rows # {o-} matrix!
+  }:rsub;
 
-  {a b,
-    [
-      a .T ::num = b .T ::matrix = & {a b matrix.sdiv} ?
-      b .T ::num = a .T ::matrix = & {b a matrix.zdiv} ?
-      {"matrix.fslash: invalid argument type. recieved: \n $a\n $b".D}
-    ].S
+
+
+  {o self,
+    o.T ::matrix = {
+      [o.rows self.rows, \/] matrix!
+    } {
+      self.rows # {o\/} matrix!
+    }.?
   }:div;
+
+  {self o,
+      self.rows # {o/} matrix!
+  }:rdiv;
+
+
+
+  {o self,
+    o.T ::matrix = {
+      o self.matmul
+    } {
+      self.rows # {o\*} matrix!
+    }.?
+  }:mul;
+
+  {o self,
+    o.c self.r =! {"matrix.mul: dim mismatch ($o.c) != $(self.r)".D} ?
+    .# (*S) is the dot product
+    o.rows  # {r, self.transpose.rows#{r *S}}
+    matrix!
+  }:matmul;
+
+  {self o,
+      self.rows # {o*} matrix!
+  }:rmul;
+
+
+
+  .#? N (matrix) matrix.pow\n  raise matrix to the Nth power
+  {mat exp::num,
+    "matrix.pow: exponent must be positive" exp 1 < conderr
+    mat {_} exp V %
+    {.matmul} exp V %
+  }:rpow;
+
+  .#############
+  .# ITERATION #
+  .#############
+
+  .#? (matrix) E matrix.map\n  map an expression to each element of the matrix
+  {mat expr::block, mat.rows : {#expr} mat.:rows; mat}:map;
+
+
+
+  .###################
+  .# OTHER OVERLOADS #
+  .###################
 
   {mat expr,
     mat.rows#{#expr} mat.:rows;
@@ -193,20 +222,21 @@ import "math"
   }:and;
 
   .#? (matrix) matrix.show\n  converts a matrix to a string
-  {.rows matstr
-    "\n"" |\n|"@.& .# Inside bars
+  {
+    .rows matstr
+    "\n"" |\n|"@.&       .# Inside bars
     " |"K'|\K            .# Outside bars
     "\n"+
   }:repr;
+
+  .#######################
+  .# GENERATOR FUNCTIONS #
+  .#######################
 
   .#? N matrix.i\n  generate an Nd identity matrix
   {
     _0\L1\K\_KL {,}.:rows matrix MO
   }:eye;
-
-
-  .#? S matrix.fopen\n  open a space-delimited file containing a matrix as a matrix object
-  {G"\n"|#{" "|#~}matrix!}:fopen;
 
   .# generates the next row of a pascal matrix
   {prev::list : new len ix,
@@ -232,16 +262,21 @@ import "math"
   {1matrix.newfill}:ones;
 
   .#? NN matrix.rand\n  create a N1 by N2 matrix of random values [0,1]
-  {0matrix.newfill {;.Q} matrix.map}:rand;
+  {K0\L #{#{;.Q}} matrix!}:rand;
 
   .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
-  {:n,@:n; 0matrix.newfill {;nQ} matrix.map}:randint;
-
-  .#? (matrix) E matrix.map\n  map an expression to each element of the matrix
-  {mat expr::block, mat.rows : {#expr} mat.:rows; mat}:map;
+  {@@K L #{#Q} matrix!}:randint;
 
   .#? N matrix.multiptable\n  generate n N by N multiplication table
   {[1|_R_@L\,#*] matrix!}:multiptable;
+
+  .##################
+  .# INPUT / OUTPUT #
+  .##################
+
+  .#? S matrix.fopen\n  open a space-delimited file containing a matrix as a matrix object
+  {G"\n"|#{" "|#~}matrix!}:fopen;
+
 
 }:matrix;
 
