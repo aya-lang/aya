@@ -5,32 +5,32 @@
   {l, {, l:l} vec MO}:new;
   {self, "<" self.lPB;V; ">" ++}:str:repr;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l + vec!}:add;
+  {o self, o:T ::vec = {o.l} {o} .? self.l + vec!}:add;
   {self o, self.l o + vec!}:radd;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l * vec!}:mul;
+  {o self, o:T ::vec = {o.l} {o} .? self.l * vec!}:mul;
   {self o, self.l o * vec!}:rmul;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l - vec!}:sub;
-  {self o, self.l o.T ::vec = {o.l} {o} .? - vec!}:rsub;
+  {o self, o:T ::vec = {o.l} {o} .? self.l - vec!}:sub;
+  {self o, self.l o:T ::vec = {o.l} {o} .? - vec!}:rsub;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l / vec!}:div;
-  {self o, self.l o.T ::vec = {o.l} {o} .? / vec!}:rdiv;
+  {o self, o:T ::vec = {o.l} {o} .? self.l / vec!}:div;
+  {self o, self.l o:T ::vec = {o.l} {o} .? / vec!}:rdiv;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l ^ vec!}:pow;
-  {self o, self.l o.T ::vec = {o.l} {o} .? ^ vec!}:rpow;
+  {o self, o:T ::vec = {o.l} {o} .? self.l ^ vec!}:pow;
+  {self o, self.l o:T ::vec = {o.l} {o} .? ^ vec!}:rpow;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l % vec!}:mod;
-  {self o, self.l o.T ::vec = {o.l} {o} .? % vec!}:rmod;
+  {o self, o:T ::vec = {o.l} {o} .? self.l % vec!}:mod;
+  {self o, self.l o:T ::vec = {o.l} {o} .? % vec!}:rmod;
 
-  {o self, o.T ::vec = {o.l} {o} .? self.l .% vec!}:idiv;
-  {self o, self.l o.T ::vec = {o.l} {o} .? .% vec!}:ridiv;
+  {o self, o:T ::vec = {o.l} {o} .? self.l .% vec!}:idiv;
+  {self o, self.l o:T ::vec = {o.l} {o} .? .% vec!}:ridiv;
 
   {o self, o self.l < vec!}:lt;
   {o self, o self.l > vec!}:gt;
   {o self, o self.l :< vec!}:leq;
   {o self, o self.l :> vec!}:geq;
-  {o self, o.T ::vec = {o.l self.l =} 0 .? vec!}:eq;
+  {o self, o:T ::vec = {o.l self.l =} 0 .? vec!}:eq;
 
   {self, self.l U self.:l }:reverse;
   {self, self.l T vec!} :negate;
@@ -272,7 +272,7 @@ v .| P "< 2 1 0 3.4 >" =
 v .! P "< -1 1 0 -1 >" =
 
 [:2r3 :2z 2] vec! :v;
-v Md .l #.T "DDD" =
+v Md .l #:T "DDD" =
 ] test
 
 "head/tail: " .P

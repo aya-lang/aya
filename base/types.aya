@@ -16,13 +16,13 @@
 
 .# TYPE CHECKING
 
-{.T}:typeof;				.#? A typeof\n  return the character representation of the type
+{:T}:typeof;				.#? A typeof\n  return the character representation of the type
 
 .#? AC isa\n  returns true if the item's type matches the input character
 {item::any type::sym,
 	[
 	  type ::any = 1 ? .# Any
-	  type ::list = {item.T ::list = item.T ::str = |} ? .# Number is a string or list => list
-	  type item.T = .# Normal Check
+	  type ::list = {item:T ::list = item:T ::str = |} ? .# Number is a string or list => list
+	  type item:T = .# Normal Check
 	].S
 }:isa;
