@@ -114,6 +114,7 @@
 
 .#? import library\n  import a aya file\n  files are only imported once
 {`(
+  _ :T ::sym = {:C} ?
   .# Split whitespace separated names
   "\W+" | [""] :| #{aya.import};
 )}:import;
