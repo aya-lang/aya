@@ -21,7 +21,7 @@ import "math"
   }:is;
 
   .# matrix constructor: first test if it is a valid matrix
-  {in,
+  {in::list,
     in matrix.is
     {{,in:rows} matrix MO}
     {in P " is not a valid matrix" K .D}
@@ -31,15 +31,11 @@ import "math"
   {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
   {m, m.rowsE m.rows#E\#= {|}F}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
   {m, [m.rows_ER,VI]}:tr;                       .#? (matrix) matrix.tr\n  trace of a matrix as a list
-  {m, [m.rows~, .A .[ ] matrix!}:transpose;          .#? (matrix) matrix.transpose\n  transpose a matrix
+  {m, m.rows .T matrix!}:t;          .#? (matrix) matrix.t\n  transpose a matrix
   {*S}:dot;                                .# dot product of two lists
 
 
 
-  .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
-  {a b,
-     a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
-  }:eq;
 
 
   .# Elementary row operations
@@ -86,46 +82,55 @@ import "math"
   {n::num i::num j::num m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
   {.rowsE}:r;                                   .#? (matrix) matrix.r\n  return the number of rows in the matrix
   {.rows0IE}:c;                                 .#? (matrix) matrix.r\n  return the number of cols in the matrix
-  {.rows[1|~,.A]}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
+  {.rows .T}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
+
 
   .{? (matrix) [row col] matrix.index\n  return the element at (r,c)
   if r is [], return the cth col
   if c is [], return the rth row .}
-  {mat ix : r c,
+  {ix mat : r c out,
     ix0I:r;
     ix1I:c;
 
-    r[]=
-
-    { .# row is empty []
-      c[]=
-      {
-       .# both empty, return entire mat
-       mat
-      }
-      {
-        .# return col c
-        mat.cols c I
+    .# all rows
+    r [] = {
+      .# all columns
+      c [] = {
+       .# all rows, all cols: return entire mat
+       mat.rows
+      } {
+        .# return col(s) c
+        mat.cols c I .T
       } .?
-    }
-
-    { .# row is an int
-      c[]=
-      {
+    } { .# specific rows
+      .# all columns
+      c [] = {
         .# col empty, return entire row
         mat.rows r I
-      }
-      {
-        .# col also int
-        mat.rows r I c I
-      } .?
-    }
+      } {
+        .# specific rows and columns
+        mat.rows r I
 
-    .?
+        .# if r is a list, take c from each row
+        r :T ::list = {
+          #{c I}
+          c :T ::num = {A.T} ?
+        } {
+          c I
+        } .?
+
+      } .?
+    } .?
+
+    :out
+
+    .# If out is a 1d list, wrap it before constructing the new matrix
+    out :T ::list = {
+      out 0 I :T ::list =! {A} ?
+      matrix!
+    } ?
 
   }:index;
-
-
 
 
   .########################
@@ -186,7 +191,7 @@ import "math"
   {o self,
     o.c self.r =! {"matrix.mul: dim mismatch ($o.c) != $(self.r)".D} ?
     .# (*S) is the dot product
-    o.rows  # {r, self.transpose.rows#{r *S}}
+    o.rows  # {r, self.t.rows#{r *S}}
     matrix!
   }:matmul;
 
@@ -216,10 +221,18 @@ import "math"
   .# OTHER OVERLOADS #
   .###################
 
-  {mat expr,
-    mat.rows#{#expr} mat.:rows;
-    mat
-  }:and;
+  .# Math overloads
+  [aya.mathoverload _ :K\:V, {k v,
+    "{.rows #{# $v } matrix!} :$k;" .~
+  }] #~
+
+
+  .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
+  {a b,
+     a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
+  }:eq;
+
+  {.rows #{#.!} matrix!}:signum;
 
   .#? (matrix) matrix.show\n  converts a matrix to a string
   {
@@ -276,6 +289,21 @@ import "math"
 
   .#? S matrix.fopen\n  open a space-delimited file containing a matrix as a matrix object
   {G"\n"|#{" "|#~}matrix!}:fopen;
+
+  .###################
+  .# TRANSFORMATIONS #
+  .###################
+
+  .# [::matrix] matrix.vstack\n  stack a list of matrices vertically
+  {
+    #{.rows~}matrix!
+  }:vstack;
+
+  .# [::matrix] matrix.hstack\n  concat a list of matrices horizontally
+  {
+    [1|#.rows~,.A.F] matrix!
+  }:hstack;
+
 
 
 }:matrix;
