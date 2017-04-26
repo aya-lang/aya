@@ -6,6 +6,9 @@ import "math"
     A turtle. Used for drawing patterns on a plot grid.
 .}
 {,
+
+  ::turtle :type;
+
   {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
   {self, "{turtle:$(self.x),$(self.y),$(self.r rad)\{deg}}"}:show;
 

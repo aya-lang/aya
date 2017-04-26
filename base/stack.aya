@@ -7,6 +7,8 @@
 
 {,
 
+  ::stack :type;
+
   .#? L stack.new\n  convert a list into a stack
   {l, {, l:list} stack MO}:new;
 

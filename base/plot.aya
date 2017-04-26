@@ -2,6 +2,8 @@ import "list"
 
 {, .# plot
 
+  ::plot :plot;
+
   {, .# axis
     {min::num max::num,
       {,min:min max:max} plot.axis MO

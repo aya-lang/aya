@@ -5,6 +5,8 @@
 
 {,
 
+  ::set :type;
+
   {l::list, {,l :~ :list} set MO}:new;
 
   .#? A (set) set.in\n  tests if an item is in a set

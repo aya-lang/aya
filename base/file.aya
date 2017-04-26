@@ -75,6 +75,8 @@ if (defaultwd V '/ =\;) {
 
 {,
 
+  ::file :type;
+
   {file.open}:new;
 
   .#? S file.open\n  open a file and read its contents

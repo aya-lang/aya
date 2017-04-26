@@ -7,6 +7,8 @@
 
 {,
 
+  ::queue :type;
+
   .#? L queue.new\n  convert a list into a queue
   {l, {,l:list} queue MO}:new;
 
