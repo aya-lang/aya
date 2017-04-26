@@ -81,6 +81,21 @@
   [] aya.:imported;
 }:resetimports;
 
+{,
+  "M!" :fact
+  "Ms" :sin
+  "Mc" :cos
+  "Mt" :tan
+  "MS" :asin
+  "MC" :acos
+  "MT" :atan
+  "ML" :log
+  "Ml" :ln
+  "Me" :exp
+  "Md" :float
+  "Mq" :sqrt
+}:mathoverload
+
 }:aya;
 
 
