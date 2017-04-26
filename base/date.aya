@@ -5,6 +5,8 @@
 .}
 {,
 
+  ::date :type;
+
   {{,M$:ms} date MO}:now;
 
   {in, [

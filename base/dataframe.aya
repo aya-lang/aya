@@ -3,7 +3,9 @@ import "file"
 
 {,
 
-  {this, this.columns [1|~,.A]}:rows;
+  ::dataframe :type;
+
+  {self, self.columns [1|~,.A]}:rows;
 
   {colnm::list rownm::list cols::list : numofrows,
     if (colsE0=) {
@@ -35,39 +37,39 @@ import "file"
   {self, self.repr}:str;
 
   .# Row Indexing
-  {name::str this : ix,
-    this.rownames name N :ix;;
+  {name::str self : ix,
+    self.rownames name N :ix;;
     "dataframe.rowbyname: unknown row name: $name" ix (-1) = conderr
-    ix this.rowbyix
+    ix self.rowbyix
   }:rowbyname;
 
-  {i:num this,
-    "dataframe.rowbyix: invalid column number: $i" this.numofrowsV i < i0< | conderr
-    this.rows i I
+  {i:num self,
+    "dataframe.rowbyix: invalid column number: $i" self.numofrowsV i < i0< | conderr
+    self.rows i I
   }:rowbyix;
 
-  {id this,
-    [ id:T ::str = {id this.rowbyname} ?
-      id:T ::num = {id this.rowbyix} ?
+  {id self,
+    [ id:T ::str = {id self.rowbyname} ?
+      id:T ::num = {id self.rowbyix} ?
       {"dataframe.row: id must be a string or int. recieved: $id".D}
     ].S
   }:row;
 
   .# Column Indexing
-  {name::str this : ix,
-    this.colnames name N :ix;;
+  {name::str self : ix,
+    self.colnames name N :ix;;
     "dataframe.colbyname: unknown column name: $name" ix (-1) = conderr
-    ix this.colbyix
+    ix self.colbyix
   }:colbyname;
 
-  {i::num this,
-    "dataframe.colbyix: invalid column number: $i" this.columnsEV i < i0< | conderr
-    this.columns i I
+  {i::num self,
+    "dataframe.colbyix: invalid column number: $i" self.columnsEV i < i0< | conderr
+    self.columns i I
   }:colbyix;
 
-  {id this,
-    [ id:T ::str = {id this.colbyname} ?
-      id:T ::num = {id this.colbyix} ?
+  {id self,
+    [ id:T ::str = {id self.colbyname} ?
+      id:T ::num = {id self.colbyix} ?
       {"dataframe.col: id must be a string or int. recieved: $id".D}
     ].S
   }:col;
