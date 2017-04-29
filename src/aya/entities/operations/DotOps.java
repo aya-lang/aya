@@ -791,22 +791,23 @@ class OP_Dot_I extends Operation {
 		final Obj list = block.pop();
 		block.push(list); //.I keeps the list on the stack
 		
-		if(!list.isa(LIST)) {
-			throw new TypeError(this, index, list);
-		}
-		
-		if(index.isa(NUMBER)) {
-			block.push( ((List)list).get(((Number)index).toInt()) );
-		} else if (index.isa(NUMBERLIST)) {
-			NumberList indexList = ((List)index).toNumberList();
-			List refList = (List)list;
-			for(int i = 0; i < indexList.length(); i++) {
-				indexList.set( i, refList.get(indexList.get(i).toInt()) );
+		if(list.isa(LIST)) {		
+			if(index.isa(NUMBER)) {
+				block.push( ((List)list).get(((Number)index).toInt()) );
+			} else if (index.isa(NUMBERLIST)) {
+				NumberList indexList = ((List)index).toNumberList();
+				List refList = (List)list;
+				for(int i = 0; i < indexList.length(); i++) {
+					indexList.set( i, refList.get(indexList.get(i).toInt()) );
+				}
+				block.push(indexList);
+			} else if (index.isa(BLOCK)) {
+				block.push( ((Block)index).filter((List)list) );
 			}
-			block.push(indexList);
-		} else if (index.isa(BLOCK)) {
-			block.push( ((Block)index).filter((List)list) );
-		} else {
+		}else if (list.isa(DICT)) {
+			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+		}
+		else {
 			throw new TypeError(this, index, list);
 		}
 	}
