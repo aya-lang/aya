@@ -112,7 +112,7 @@ public class DotOps {
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
-		/* 87 W  */ null,
+		/* 87 W  */ new OP_Dot_W(),
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
@@ -791,22 +791,23 @@ class OP_Dot_I extends Operation {
 		final Obj list = block.pop();
 		block.push(list); //.I keeps the list on the stack
 		
-		if(!list.isa(LIST)) {
-			throw new TypeError(this, index, list);
-		}
-		
-		if(index.isa(NUMBER)) {
-			block.push( ((List)list).get(((Number)index).toInt()) );
-		} else if (index.isa(NUMBERLIST)) {
-			NumberList indexList = ((List)index).toNumberList();
-			List refList = (List)list;
-			for(int i = 0; i < indexList.length(); i++) {
-				indexList.set( i, refList.get(indexList.get(i).toInt()) );
+		if(list.isa(LIST)) {		
+			if(index.isa(NUMBER)) {
+				block.push( ((List)list).get(((Number)index).toInt()) );
+			} else if (index.isa(NUMBERLIST)) {
+				NumberList indexList = ((List)index).toNumberList();
+				List refList = (List)list;
+				for(int i = 0; i < indexList.length(); i++) {
+					indexList.set( i, refList.get(indexList.get(i).toInt()) );
+				}
+				block.push(indexList);
+			} else if (index.isa(BLOCK)) {
+				block.push( ((Block)index).filter((List)list) );
 			}
-			block.push(indexList);
-		} else if (index.isa(BLOCK)) {
-			block.push( ((Block)index).filter((List)list) );
-		} else {
+		}else if (list.isa(DICT)) {
+			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+		}
+		else {
 			throw new TypeError(this, index, list);
 		}
 	}
@@ -979,6 +980,26 @@ class OP_Dot_AppendBack extends Operation {
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// W - 87
+class OP_Dot_W extends Operation {
+	public OP_Dot_W() {
+		this.name = ".W";
+		this.info = "R export variables only if they exist in the local scope";
+		this.argTypes = "AL";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			final Dict d = (Dict)a;
+			Aya.getInstance().getVars().peek().mergeDefined(d.getVarSet());
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }

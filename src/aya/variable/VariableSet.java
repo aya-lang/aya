@@ -223,6 +223,16 @@ public class VariableSet {
 	    }
 	    return out;
 	}
+
+	/** Merge variables fromt he given variable set only if they are defined in this one */
+	public void mergeDefined(VariableSet varSet) {
+		for (Entry<Long, Obj> e : varSet.getMap().entrySet()) {
+			if (vars.containsKey(e.getKey())) {
+				vars.put(e.getKey(), e.getValue());
+			}
+		}
+		
+	}
 	
 	
 }

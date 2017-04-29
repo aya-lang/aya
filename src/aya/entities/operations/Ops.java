@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
@@ -855,7 +856,7 @@ class OP_B extends Operation {
 	}
 }
 
-//D - 68
+// D - 68
 class OP_D extends Operation {
 	public OP_D() {
 		this.name = "D";
@@ -863,16 +864,22 @@ class OP_D extends Operation {
 		this.argTypes = "ALI|AUI";
 	}
 	@Override public void execute (final Block block) {
-		final Obj a = block.pop();   //Index
-		final Obj b = block.pop();			//List
-		final Obj o = block.pop();	//Item
+		final Obj a = block.pop();  	//Index
+		final Obj b = block.pop();		//List
+		final Obj o = block.pop();		//Item
 		
 		if(a.isa(NUMBER) && b.isa(LIST)) {
 			((List)b).set( ((Number)a).toInt(), o);
-		} else if (a.isa(STR) && b.isa(DICT)) {
-			((Dict)b).set(a.str(), o);
 			block.push(b);
+		} 
+		else if (b.isa(DICT)) {
+			block.push(o);
+			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
 		}
+//		else if (a.isa(STR) && b.isa(DICT)) {
+//			((Dict)b).set(a.str(), o);
+//			block.push(b);
+//		}
 		else {		
 			throw new TypeError(this, a, b, o);
 		}
@@ -1125,14 +1132,11 @@ class OP_I extends Operation {
 			} else {
 				throw new TypeError(this, index, list);
 			}
-		} else if (list.isa(DICT) && index.isa(STR)) {
-			Obj out = ((Dict)list).get(index.str());
-			if (out.isa(BLOCK)) {
-				block.addAll( ((Block)out).getInstructions().getInstrucionList() );
-			} else {
-				block.push(out);
-			}
-		} else {
+		} 
+		else if (list.isa(DICT)) {
+			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+		}
+		else {
 			throw new TypeError(this, index, list);
 		}
 	}
@@ -1461,11 +1465,11 @@ class OP_V extends Operation {
 	}
 }
 
-//W - 87
+// W - 87
 class OP_W extends Operation {
 	public OP_W() {
 		this.name = "W";
-		this.info = "E while loop\nM import all vars to global";
+		this.info = "E while loop\nR export all variables from the dict";
 		this.argTypes = "E|M";
 	}
 	@SuppressWarnings("unchecked")
@@ -1501,7 +1505,10 @@ class OP_W extends Operation {
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
-			Aya.getInstance().getVars().getGlobals().merge(d.getVarSet());
+			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
+			for (Entry<Long, Obj> e : d.getVarSet().getMap().entrySet()) {
+				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
+			}
 			return;
 		}
 		throw new TypeError(this, a);
