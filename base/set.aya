@@ -9,27 +9,76 @@
 
   {l::list, {,l :~ :list} set MO}:new;
 
-  .#? A (set) set.in\n  tests if an item is in a set
+
+  .# ADDING / REMOVING ELEMENTS
+  .############################
+
+  .#? A ::set set.add\n  add an item to a set\n  overloaded operator: +
+  {item self,
+    item self.in ! {self.list [item] K;} ? self
+  }:add;
+
+  .#? A ::set set.rem\n  remove an item from a set\n  overloaded operator: -
+  {item self,
+    self.list [item] :| self.:list
+  }:sub;
+
+
+
+  .# SET OPERATIONS
+  .################
+
+  .#? ::set ::set set.or\n  set union
+  {sa::set sb::set,
+    sa.list _ \; sb.list K :~ set!
+  }:or;
+
+  .#? ::set ::set set.and\n  set intersection
+  {sa::set sb::set : l,
+    sb.list :l;
+    sa.list # {l \N_ 0:> {I} {;;} .?} set!
+  }:and;
+
+  .#? ::set ::set set.div\n  set difference
+  {sa::set sb::set,
+    sa.list _\; sb.list :| set!
+  }:div;
+
+  .#? ::set ::set set.eq\n test if two sets are the same
+  {sa::set sb::set,
+    sa.list sb.list =
+  }:eq;
+
+  .#? ::set ::set set.lt/gt\n proper subset
+  {sa::set sb::set : l,
+    sa sb.leq            .# subset
+    sa.list sb.list = !  .# proper subset
+    &
+  }:lt;
+  {\.lt}:gt;
+
+  .#? ::set ::set set.leq\n subset
+  {sa::set sb::set : l,
+    sa.list :l;
+    sb.list # { l \ N \; 0 :>} {*}F
+  }:leq;
+  {\.leq}:geq;
+
+
+  .# OTHER FUNCTIONS
+  .#################
+
+  .#? A ::set set.in\n  tests if an item is in a set
   {item self, self.list item N\; :1 =!}:in;
 
-  .#? A (set) set.add\n  add an item to a set\n  overloaded operator: +
-  {item self, item self.in {} {s.list [item] K;} .?self}:add;
-
-  .#? A (set) set.rem\n  remove an item from a set\n  overloaded operator: -
-  {item self,
-    self.list [item] :|
-  }:rem;
-  {\set.rem}:sub;
-
-  .#? (set) set.len\n  returns the number of elements in the set
+  .#? ::set set.len\n  returns the number of elements in the set
   {.listE}:len;
 
-  .#? (set) set.get\n  get specified index
-  {index self, self.list index I}:get;
+  .#? ::set set.clear\n  clear the contents of a set
+  {[]\ .:list}:clear;
 
-
-  .#? (set) set.clear\n  clear the contents of a set
-  {self, [] self.:list}:clear;
-
-  {.listP"set: "\+}:str:repr;
+  {.listP"s"\+}:str:repr;
+  
 }:set;
+
+{`(set!)}:s;
