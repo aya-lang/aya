@@ -1132,13 +1132,7 @@ class OP_I extends Operation {
 			} else {
 				throw new TypeError(this, index, list);
 			}
-		} /* else if (list.isa(DICT) && index.isa(STR)) {
-			Obj out = ((Dict)list).get(index.str());
-			if (out.isa(BLOCK)) {
-				block.addAll( ((Block)out).getInstructions().getInstrucionList() );
-			} else {
-				block.push(out);
-			} */
+		} 
 		else if (list.isa(DICT)) {
 			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
 		}
