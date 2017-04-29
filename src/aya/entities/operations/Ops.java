@@ -856,7 +856,7 @@ class OP_B extends Operation {
 	}
 }
 
-//D - 68
+// D - 68
 class OP_D extends Operation {
 	public OP_D() {
 		this.name = "D";
@@ -864,16 +864,22 @@ class OP_D extends Operation {
 		this.argTypes = "ALI|AUI";
 	}
 	@Override public void execute (final Block block) {
-		final Obj a = block.pop();   //Index
-		final Obj b = block.pop();			//List
-		final Obj o = block.pop();	//Item
+		final Obj a = block.pop();  	//Index
+		final Obj b = block.pop();		//List
+		final Obj o = block.pop();		//Item
 		
 		if(a.isa(NUMBER) && b.isa(LIST)) {
 			((List)b).set( ((Number)a).toInt(), o);
-		} else if (a.isa(STR) && b.isa(DICT)) {
-			((Dict)b).set(a.str(), o);
 			block.push(b);
+		} 
+		else if (b.isa(DICT)) {
+			block.push(o);
+			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
 		}
+//		else if (a.isa(STR) && b.isa(DICT)) {
+//			((Dict)b).set(a.str(), o);
+//			block.push(b);
+//		}
 		else {		
 			throw new TypeError(this, a, b, o);
 		}
@@ -1126,14 +1132,17 @@ class OP_I extends Operation {
 			} else {
 				throw new TypeError(this, index, list);
 			}
-		} else if (list.isa(DICT) && index.isa(STR)) {
+		} /* else if (list.isa(DICT) && index.isa(STR)) {
 			Obj out = ((Dict)list).get(index.str());
 			if (out.isa(BLOCK)) {
 				block.addAll( ((Block)out).getInstructions().getInstrucionList() );
 			} else {
 				block.push(out);
-			}
-		} else {
+			} */
+		else if (list.isa(DICT)) {
+			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+		}
+		else {
 			throw new TypeError(this, index, list);
 		}
 	}
