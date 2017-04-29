@@ -82,6 +82,10 @@ public class VariableData {
 		varSets.remove(varSets.size()-1).clear();
 	}
 	
+	public VariableSet peek() {
+		return varSets.get(varSets.size()-1);
+	}
+	
 	public VariableSet popGet() {
 		return varSets.remove(varSets.size()-1);
 	}

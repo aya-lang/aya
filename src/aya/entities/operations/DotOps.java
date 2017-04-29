@@ -112,7 +112,7 @@ public class DotOps {
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
-		/* 87 W  */ null,
+		/* 87 W  */ new OP_Dot_W(),
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
@@ -979,6 +979,26 @@ class OP_Dot_AppendBack extends Operation {
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// W - 87
+class OP_Dot_W extends Operation {
+	public OP_Dot_W() {
+		this.name = ".W";
+		this.info = "R export variables only if they exist in the local scope";
+		this.argTypes = "AL";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(DICT)) {
+			final Dict d = (Dict)a;
+			Aya.getInstance().getVars().peek().mergeDefined(d.getVarSet());
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }

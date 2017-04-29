@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
@@ -1461,11 +1462,11 @@ class OP_V extends Operation {
 	}
 }
 
-//W - 87
+// W - 87
 class OP_W extends Operation {
 	public OP_W() {
 		this.name = "W";
-		this.info = "E while loop\nM import all vars to global";
+		this.info = "E while loop\nR export all variables from the dict";
 		this.argTypes = "E|M";
 	}
 	@SuppressWarnings("unchecked")
@@ -1501,7 +1502,10 @@ class OP_W extends Operation {
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
-			Aya.getInstance().getVars().getGlobals().merge(d.getVarSet());
+			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
+			for (Entry<Long, Obj> e : d.getVarSet().getMap().entrySet()) {
+				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
+			}
 			return;
 		}
 		throw new TypeError(this, a);
