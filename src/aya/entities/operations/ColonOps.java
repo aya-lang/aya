@@ -357,7 +357,7 @@ class OP_Colon_I extends Operation {
 class OP_Colon_K extends Operation {
 	public OP_Colon_K() {
 		this.name = ":K";
-		this.info = "R return a list of keys as strings";
+		this.info = "R return a list of keys as symbols";
 		this.argTypes = "R";
 	}
 	@Override
@@ -366,11 +366,11 @@ class OP_Colon_K extends Operation {
 		
 		if (a.isa(DICT)) {
 			ArrayList<Long> keys = ((Dict)a).keys();
-			ArrayList<Str> keyNames = new ArrayList<Str>(keys.size());
+			ArrayList<Obj> keyNames = new ArrayList<Obj>(keys.size());
 			for (Long l : keys) {
-				keyNames.add(new Str(Variable.decodeLong(l)));
+				keyNames.add(Symbol.fromID(l));
 			}
-			block.push(new StrList(keyNames));
+			block.push(new GenericList(keyNames));
 		} else {
 			throw new TypeError(this, a);
 		}
