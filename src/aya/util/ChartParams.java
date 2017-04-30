@@ -11,6 +11,7 @@ import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.symbol.Symbol;
 
 public class ChartParams {
 	
@@ -20,8 +21,8 @@ public class ChartParams {
 	public static final String NONE = "";
 	public static final Str STRNONE = new Str(NONE);
 	
-	public static final int LINE = 0;
-	public static final int SCATTER = 1;
+	public static final Symbol PLOTTYPE_LINE = Symbol.fromStr("line");
+	public static final Symbol PLOTTYPE_SCATTER = Symbol.fromStr("scatter");
 	
 	public static Color[] DEFAULT_COLORS = {
 			Color.BLUE,
@@ -36,9 +37,7 @@ public class ChartParams {
 	
 	private int seriesCount;
 
-	private int type;
-
-
+	private long plottype;
 	private int width;
 	private int height;
 	private String title;
@@ -58,7 +57,7 @@ public class ChartParams {
 	private ArrayList<String> seriesNames;
 
 	public ChartParams() {
-		this.type = LINE;
+		this.plottype = PLOTTYPE_LINE.id();
 		this.seriesCount = 0;
 		this.width = DEFAULT_WIDTH;
 		this.height = DEFAULT_HEIGHT;
@@ -98,10 +97,10 @@ public class ChartParams {
 		
 		ChartParams cp = new ChartParams();
 		
-		cp.setType((Number)getNumber("type", params, null));
-		cp.setWidth((Number)getNumber("width", params, null));
-		cp.setHeight((Number)getNumber("height", params, null));
-		cp.setStroke((Number)getNumber("stroke", params, null));
+		cp.setType(getSymbol("plottype", params, PLOTTYPE_LINE));
+		cp.setWidth(getNumber("width", params, null));
+		cp.setHeight(getNumber("height", params, null));
+		cp.setStroke(getNumber("stroke", params, null));
 		cp.setTitle(getParam("title", params, STRNONE).str());
 		cp.setXlabel(getParam("xlabel", params, STRNONE).str());
 		cp.setYlabel(getParam("ylabel", params, STRNONE).str());
@@ -232,6 +231,18 @@ public class ChartParams {
 		}
 	}
 	
+	private static Symbol getSymbol(String name, Dict params, Obj dflt) {
+		Obj o = getParam(name, params, dflt);
+		if (o instanceof Symbol) {
+			return (Symbol)o;
+		} else if (o != null) {
+			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a symbol."
+					+ " Recieved " + o.repr());
+		} else {
+			return (Symbol)dflt;
+		}
+	}
+	
 	private static List getList(String name, Dict params, Obj dflt) {
 		Obj o = getParam(name, params, dflt);
 		if (o instanceof List) {
@@ -253,17 +264,17 @@ public class ChartParams {
 		
 	}
 	
-	public int getType() {
-		return type;
+	public long getPlotType() {
+		return plottype;
 	}
 
-	private void setType(Number t) {
+	private void setType(Symbol t) {
 		//If input is null, leave it unchanged
-		this.type = t == null ? this.type : t.toInt();
+		this.plottype = t == null ? this.plottype : t.id();
 		
-		if (this.type != SCATTER
-				&& this.type != LINE) {
-			this.type = LINE;
+		if (this.plottype != PLOTTYPE_SCATTER.id()
+				&& this.plottype != PLOTTYPE_LINE.id()) {
+			this.plottype = PLOTTYPE_LINE.id();
 		}
 	}
 	
