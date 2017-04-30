@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import aya.entities.InstructionStack;
 import aya.entities.Lambda;
+import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -52,7 +53,9 @@ public class LambdaToken extends CollectionToken {
 			Lambda outLambda;
 			
 			//If contains only block, dump instructions
-			if(lambdaIL.size() == 1 && lambdaIL.peek(0) instanceof Block /* && !ElemTypes.toBlock(lambdaIL.peek(0)).isListLiteral() */) {
+			if(lambdaIL.size() == 1
+					&& lambdaIL.peek(0) instanceof Block
+					&& ! (lambdaIL.peek(0) instanceof ListLiteral) ) {
 				outLambda = new Lambda(((Block)(lambdaIL.peek(0))).getInstructions());
 			} else {
 				outLambda = new Lambda(lambdaIL);
@@ -91,6 +94,15 @@ public class LambdaToken extends CollectionToken {
 	public Obj getConstObj() {
 		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		InstructionStack is = Parser.generate(lambdaData.get(0));
-		return (Obj)is.pop();
+		Obj o = (Obj)is.pop();
+		
+		// If list literal, wrap it in a block so that it will be evaluated at run time 
+		if (o instanceof ListLiteral) {
+			Block b = new Block();
+			b.add(o);
+			return b;
+		} else {
+			return o;
+		}
 	}
 }
