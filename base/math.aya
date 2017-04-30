@@ -1,10 +1,14 @@
 .# math.aya
 .# Essential math functions for Aya
 
-import "types"
-import "list"
+import ::types
+import ::list
 
-.# Constants
+
+.#############
+.# Constants #
+.#############
+
 
 1M|:euler; .#? euler\n  euler's constant e
 0M|:pi;    .#? pi\n  constant \{pi}
@@ -29,26 +33,28 @@ import "list"
 1 2/:half;		.# ½
 
 
+.#######################
+.# Essential Functions #
+.#######################
 
-.# Essential Functions
 
-{.|}:abs;						.#? N abs\n  absolute value
-{_E\S\/}:avg;				.#? L avg\n  average of a list of numbers
-{1 3/^}:cbrt;    		.#? N cbrt\n  cube root
-{./}:ceil;      		.#? N ceil\n  ceiling
+{.|}:abs;			.#? N abs\n  absolute value
+{_E\S\/}:avg;		.#? L avg\n  average of a list of numbers
+{1 3/^}:cbrt;    	.#? N cbrt\n  cube root
+{./}:ceil;      	.#? N ceil\n  ceiling
 {pi*180/}:deg;    	.#? N deg\n  convert deg to rad (180° => 3.14..)
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
 {euler\^}:exp;    	.#? N exp\n  exp(x)
-{M!}:fact;      		.#? N fact\n  factorial
-{.\}:floor;      		.#? N floor\n  floor
-{_.\-}:frac;    		.#? N frac\n  fractional part
-{1-M!}:gamma;				.#? N gamma\n  gamma function
+{M!}:fact;      	.#? N fact\n  factorial
+{.\}:floor;      	.#? N floor\n  floor
+{_.\-}:frac;    	.#? N frac\n  fractional part
+{1-M!}:gamma;		.#? N gamma\n  gamma function
 {2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
 {G}:isprime;        .#? N isprime \n  tests a number for primality
-{ML2ML/}:lg;				.#? N lg\n  base-2 log
-{Ml}:ln;      			.#? N ln\n  natural log
-{ML}:log;      			.#? N log\n  base-10 log
-{ML\ML\/}:logn;			.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
+{ML2ML/}:lg;		.#? N lg\n  base-2 log
+{Ml}:ln;      		.#? N ln\n  natural log
+{ML}:log;      		.#? N log\n  base-10 log
+{ML\ML\/}:logn;		.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
 {1-M!.|Ml}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
 {%}:mod;            .#? N mod\n  modulo
 {_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
@@ -56,12 +62,15 @@ import "list"
 {{*}F}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
-{M$3E.\}:ts;      .#? ts\n  return the system time in seconds as an int
-{.%}:div;					.#? <NN> div\n  integer division
-{%}:rem;						.#? <NN> rem\n  remainder after division
+{M$3E.\}:ts;        .#? ts\n  return the system time in seconds as an int
+{.%}:div;			.#? <NN> div\n  integer division
+{%}:rem;			.#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
-.# Additional Math Functions
+
+.#############################
+.# Additional Math Functions #
+.#############################
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
 {_ :T ::num = {.-}{{.-}F} .?}:lcm;
@@ -69,8 +78,7 @@ import "list"
 .#? NN gcd \n  greatest common divisior of 2 numbers or a list of numbers
 {_ :T ::num = {.+}{{.+}F} .?}:gcd;
 
-
-.#? N factors \n  returns a list of the numbers factors
+.#? N divisors \n  returns a list of the numbers factors
 {n, [1 n,, n\%0=]}:divisors;
 
 .#? L geomean \n  geometric mean
@@ -153,11 +161,14 @@ import "list"
 }:factors;
 
 
-.# Trigonometry
+
+.################
+.# Trigonometry #
+.################
 
 {Ms}:sin;                   .#? N sin \n  sine
 {Mc}:cos;                   .#? N cos \n  cosine
-{Mt}:tan;       			      .#? N tan \n  tangent
+{Mt}:tan;                   .#? N tan \n  tangent
 {Ms1\/}:csc;                .#? N csc \n  cosecant
 {Mc1\/}:sec;                .#? N sec \n  secant
 {Mt1\/}:cot;                .#? N cot \n  cotangent
@@ -184,10 +195,6 @@ import "list"
 {1\/_1\-Ml\1+Ml\-0.5*}:acoth;  	.#? N acoth \n  inverse hyperbolic cotangent
 
 
-.# Combinatorics
-
-{`({n r, nM! n r-M!/})}:npr;        .# Permutations (nPr) (infix operator)
-{`({n r, nM! n r- M!/ rM!/})}:ncr;  .# Combinations (nCr) (infix operator)
 
 .# Bits
 {2 10 H}:unbit;   .#? L unbit \n  convert a list of bits to a number
@@ -224,8 +231,14 @@ import "list"
   n sumxsq * sumx2^-
   /:b;
 
-  "{($b)*($a)+}"~
+  "($b)*($a)+" .~
 }:regression;
+
+.# Combinatorics
+
+{`({n r, nM! n r-M!/})}:npr;        .# Permutations (nPr) (infix operator)
+{`({n r, nM! n r- M!/ rM!/})}:ncr;  .# Combinations (nCr) (infix operator)
+
 
 
 .# Vector

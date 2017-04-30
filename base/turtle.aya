@@ -64,7 +64,7 @@ import "math"
     frank.draw
   }:ribbon;
 
-  .#? turtledemo.flowe\n  a simple flower
+  .#? turtledemo.flower\n  a simple flower
   {:t,
     turtle!:t;
     for 'i (12R) {

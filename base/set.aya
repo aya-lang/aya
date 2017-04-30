@@ -10,8 +10,10 @@
   {l::list, {,l :~ :list} set MO}:new;
 
 
-  .# ADDING / REMOVING ELEMENTS
-  .############################
+
+  .##############################
+  .# ADDING / REMOVING ELEMENTS #
+  .##############################
 
   .#? A ::set set.add\n  add an item to a set\n  overloaded operator: +
   {item self,
@@ -25,8 +27,9 @@
 
 
 
-  .# SET OPERATIONS
-  .################
+  .##################
+  .# SET OPERATIONS #
+  .##################
 
   .#? ::set ::set set.or\n  set union
   {sa::set sb::set,
@@ -65,8 +68,10 @@
   {\.leq}:geq;
 
 
-  .# OTHER FUNCTIONS
-  .#################
+
+  .###################
+  .# OTHER FUNCTIONS #
+  .###################
 
   .#? A ::set set.in\n  tests if an item is in a set
   {item self, self.list item N\; :1 =!}:in;
@@ -78,7 +83,7 @@
   {[]\ .:list}:clear;
 
   {.listP"s"\+}:str:repr;
-  
+
 }:set;
 
 {`(set!)}:s;

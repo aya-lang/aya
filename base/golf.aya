@@ -1,8 +1,10 @@
-import "list"
-import "string"
-import "date"
-import "math"
-import "matrix"
+import """
+  list
+  string
+  date
+  math
+  matrix
+"""
 
 .# Single letter variables
 1:a;
@@ -16,13 +18,13 @@ import "matrix"
 .#:i;
 .#:j;
 1000:k;
-.#:l;
+[]:l;
 matrix:m;
-.#:n;
+'\n':n;
 .#:o;
 0M|:p;
 .#:q;
-.#:r;
+{VR0\K}:r;
 .#:s;
 .#:t;
 .#:u;
@@ -33,7 +35,17 @@ matrix:m;
 0:z;
 
 
+.# Common functions
+[]		:emptyset;
+{2^}	:square;
+{3^}	:cube;
+[256,V.']:ascii;
 
+
+.# Additional operators
+
+.# Overwrite bowtie default
+9999.' "bowtie" Mk
 
 {`range}:to;
 

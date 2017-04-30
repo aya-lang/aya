@@ -17,7 +17,7 @@
   {text, [] text "Aya" 1 3 MV}:alert;
 
   .#? S dialog.warning\n  display a warning message with the given message
-  {text, [] text "Aya" 3 3 MV}:warning;
+  {text, [] text "Aya" 3 3 MV}:warn;
 
   .#? S dialog.error\n  display an error message with the given message
   {text, [] text "Aya" 4 3 MV}:error;
@@ -33,5 +33,8 @@
 
   .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
   {[] "" "" 1 7 MV}:choosefile;
+
+  .#? ::str dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
+  {["Ok" "Cancel"] "Confirm" _ 1 4 MV}:confirm;
 
 }:dialog;

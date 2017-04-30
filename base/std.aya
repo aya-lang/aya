@@ -2,10 +2,6 @@
 .# Defines standard functions and operators
 
 
-.# N e N\n  creates a number using scientific notation\n  5e3 => 5000\n  1.24e4 => 12400.0
-{`(10\^*)}:e;
-
-
 .###################################
 .#		  STACK MANIPULATION         #
 .###################################
@@ -19,82 +15,14 @@
 .###################################
 
 .# Operators (for special characters)
-{:>}:geq; 			.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
-{:<}:leq; 			.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
-{=!}:ne;				.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
-
-
-.###################################
-.#		   ADDITIONAL FILES          #
-.###################################
-
-.{
-import "base/math"
-import "base/docs"
-import "base/regex"
-import "base/matrix"
-import "base/date"
-import "base/demo"
-import "base/stack"
-import "base/colors"
-import "base/set"
-import "base/queue"
-import "base/stack"
-import "base/plot"
-import "base/files"
-import "base/dataframe"
-import "base/dialog"
-import "base/dataframe"
-import "base/golf"
-import "base/data"
-.}
-
-
-
-
-.###################################
-.#		    DEFAULT VARIABLES        #
-.###################################
-
-[]		:emptyset;
-{2^}	:square;
-{3^}	:cube;
-[256,V.']:ascii;
-
-1			 :a;
-2			 :b;
-3			 :c;
-10		 :d;
-.#e (scientific notation)
-100		 :h;
-{.\}	 :i; .#? A i\n  cast to int
-1000	 :k;
-[]		 :l;
-.#m (matrix module)
-"\n"   :n;
-{VR0\K}:r; .#? N r\n  range from 0 to (1-n)
-.# data   :u;
-:-1		 :w;
-0			 :x;
-0			 :y;
-
-
+{:>}:geq; 		.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
+{:<}:leq; 		.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
+{=!}:ne;		.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
 
 
 .# Misc stuff
-
 
 .# Stopwatch
 {M$:timeitstart;}:timeitstart;
 {["timeit: "M$timeitstart-3E/"s\n"]S.P {M$:timeitstart;}:timeitstart;}:timeitend;
 {{M$:timeitstart;}:timeitstart;}:timeitclear;
-
-
-" |":spacebar;
-
-.# {`({a b, a#tolower:a; b#tolower:b; a"jasmine"= a"nick"=| b"jasmine"= b"nick"=| &})}:heart;
-
-
-
-.# Overwrite bowtie default
-9999.' "bowtie" Mk
