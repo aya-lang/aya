@@ -3,6 +3,7 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.entities.Flag;
+import aya.entities.Lambda;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -93,11 +94,23 @@ public class BlockToken extends CollectionToken {
 			}
 			
 			//Initialize local variables in the set
+			Variable last = null;
 			for (Token t : tokens) {
-				if(!t.isa(Token.VAR)) {
-					throw new SyntaxError("Block header: Local Variables: Must contain only variable names");
+				
+				if (t.isa(Token.LAMBDA) && last != null) {
+					LambdaToken lt = (LambdaToken)t;
+					if (!lt.containsConst()) {
+						throw new SyntaxError("Block header: Local Variables Initializer: Must contain only const values");
+					}
+					Obj item = lt.getConstObj();
+					args.setVar(last, item);
+					last = null;
+				} else if(!t.isa(VAR)) {
+					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
+							+ " initializers. Recieved:\n" + t.data);
 				} else {
-					args.setVar(new Variable(t.getData()), DEFAULT_LOCAL_VAR);
+					last = new Variable(t.getData());
+					args.setVar(last, DEFAULT_LOCAL_VAR);
 				}
 			}
 			return args;
