@@ -5,17 +5,26 @@ import java.util.ArrayList;
 import aya.entities.InstructionStack;
 import aya.entities.Lambda;
 import aya.entities.Tuple;
+import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 
 public class LambdaToken extends CollectionToken {
-		
+	
+	ArrayList<TokenQueue> _lambdaData;
+	
 	public LambdaToken(String data, ArrayList<Token> col) {
 		super(Token.LAMBDA, data, col);
 	}
 
+	private ArrayList<TokenQueue> getLambdaData() {
+		if (_lambdaData == null) {
+			_lambdaData = splitCommas(col);
+		}
+		return _lambdaData;
+	}
 	
 	@Override
 	public Object getAyaObj() {
@@ -36,7 +45,7 @@ public class LambdaToken extends CollectionToken {
 		
 		
 		//Split Tokens where there are commas
-		ArrayList<TokenQueue> lambdaData = splitCommas(col);
+		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		if(lambdaData.size() == 1) {
 			InstructionStack lambdaIL = Parser.generate(lambdaData.get(0));
 			
@@ -57,9 +66,31 @@ public class LambdaToken extends CollectionToken {
 			return new Tuple(elements);
 		}
 	}
+	
+	
 
 	@Override
 	public String typeString() {
 		return "block";
+	}
+
+
+	public boolean containsConst() {
+		ArrayList<TokenQueue> lambdaData = getLambdaData();
+		if (lambdaData.size() == 1) {
+			InstructionStack is = Parser.generate(lambdaData.get(0));
+			if (is.size() == 1 && is.peek(0) instanceof Obj) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
+	/** Use containsConst() first */
+	public Obj getConstObj() {
+		ArrayList<TokenQueue> lambdaData = getLambdaData();
+		InstructionStack is = Parser.generate(lambdaData.get(0));
+		return (Obj)is.pop();
 	}
 }
