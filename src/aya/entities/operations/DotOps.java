@@ -232,14 +232,17 @@ class OP_Dot_SortUsing extends Operation {
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
 			try {
+				
 				for (int i = 0; i < objs.length(); i++) {
-					items.add(new SUItem(objs.get(i), ((Number)(key_obj.get(i))).toDouble()));
+					items.add(new SUItem(objs.get(i), (Comparable) key_obj.get(i)));
 				}
+				Collections.sort(items);
+				
 			} catch (ClassCastException e) {
-				throw new AyaRuntimeException(".$: sort block must evaluate to a number");
+				throw new AyaRuntimeException(".$: all objects must be comparable to each other");
 			}
 			
-			Collections.sort(items);
+			
 						
 			ArrayList<Obj> out = new ArrayList<Obj>(items.size());
 			for (SUItem i : items) {
@@ -254,16 +257,17 @@ class OP_Dot_SortUsing extends Operation {
 		}
 	}
 	
-	class SUItem implements Comparable<SUItem>{
+	class SUItem<T extends Comparable> implements Comparable<SUItem<T>>{
 		public Obj o;
-		public double d;
-		public SUItem(Obj o, double d) {
+		public T d;
+		public SUItem(Obj o, T d) {
 			this.o = o;
 			this.d = d;
 		}
-		public int compareTo(SUItem i) {
+		public int compareTo(SUItem<T> i) {
 			//Ascending
-			return (int)((this.d - i.d)*10000); 
+			//return (int)((this.d - i.d)*10000); 
+			return d.compareTo(i.d);
 		}
 	}
 
