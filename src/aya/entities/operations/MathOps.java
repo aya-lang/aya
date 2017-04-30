@@ -525,7 +525,7 @@ class OP_AdvPlot extends Operation {
 		this.name = "MX";
 		this.info = "plot\n"
 				+ "  parameters:\n"
-				+ "    type 0=line, 0=scatter\n"
+				+ "    plottype (::line ::scatter)\n"
 				+ "    title S\n"
 				+ "    xlabel S\n"
 				+ "    ylabel S\n"

@@ -35,7 +35,7 @@ public class FreeChartInterface extends JFrame
       
       JFreeChart chart;
       
-      if (cp.getType() == ChartParams.LINE) {
+      if (cp.getPlotType() == ChartParams.PLOTTYPE_LINE.id()) {
 	      chart = ChartFactory.createXYLineChart(
 	         cp.getTitle(),
 	         cp.getXlabel(),
@@ -80,7 +80,7 @@ public class FreeChartInterface extends JFrame
       }
       
       
-      if (cp.getType() == ChartParams.SCATTER) {
+      if (cp.getPlotType() == ChartParams.PLOTTYPE_SCATTER.id()) {
     	  renderer.setShapesVisible(true); 
     	  renderer.setLinesVisible(false);
       } else {
