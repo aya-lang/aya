@@ -475,6 +475,22 @@ class OP_Dot_LessThan extends Operation {
 			}
 		}
 		
+		else if (a.isa(STR) && b.isa(STR)) {
+			if ( ((Str)a).compareTo((Str)b) > 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
+		else if (a.isa(CHAR) && b.isa(CHAR)) {
+			if ( ((Char)a).compareTo((Char)b) > 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
 		else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_HEAD, b);
 		}
@@ -486,7 +502,7 @@ class OP_Dot_LessThan extends Operation {
 }
 
 
-// < - 62
+// > - 62
 class OP_Dot_GreaterThan extends Operation {
 	public OP_Dot_GreaterThan() {
 		this.name = ".>";
@@ -505,6 +521,22 @@ class OP_Dot_GreaterThan extends Operation {
 		
 		else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) < 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
+		else if (a.isa(STR) && b.isa(STR)) {
+			if ( ((Str)a).compareTo((Str)b) < 0) {
+				block.push(a);
+			} else {
+				block.push(b);
+			}
+		}
+		
+		else if (a.isa(CHAR) && b.isa(CHAR)) {
+			if ( ((Char)a).compareTo((Char)b) < 0) {
 				block.push(a);
 			} else {
 				block.push(b);
