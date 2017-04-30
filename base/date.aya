@@ -52,7 +52,7 @@
   {d, "$(d.h):$(d.m)"}:timestr;
 }:date;
 
-.#? module: dateunit\n  static namespace defining units related to dates
+.#? dateunit\n  static namespace defining units related to dates
 {,
   [
     ["year" 31536000000]
@@ -79,7 +79,7 @@
   };
 }:dateunit;
 
-.#? module: dates\n  static namespace for date related variables
+.#? dates\n  static namespace for date related variables
 {,
   .# Units
   for 'u (dateunit.units) {:name,

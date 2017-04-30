@@ -66,7 +66,9 @@
   blocks are containers for a group of operations and a list of arguments.
   syntax:
     {<expr>}
-    {<args>,<expr>}
+    {<args> , <expr>}
+    {<args> : <locals> , <expr>}
+    {: <locals> , <expr>}
 .}
 
 .{? docs: dictionaries

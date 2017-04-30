@@ -2,25 +2,20 @@ import "list"
 
 {, .# plot
 
-  ::plot :plot;
+    ::plot :type;
 
   {, .# axis
     {min::num max::num,
       {,min:min max:max} plot.axis MO
     }:new;
-    {0}:eq;
   }:axis;
-
-  .# Plot types
-  0:tline;     .#? plot.tline\n  line plot type id
-  1:tscatter;  .#? plot.tscatter\n  scatter plot type id
 
 
   .#? plot.new\n  create a new plot instance with default settings
   {:plt,
     .# [plot.fieldnamesE,0] plot MO :plt;
     {,
-      plot.tline  :type
+      ::line      :plottype
       500         :width
       400         :height
       ""          :title
@@ -29,17 +24,17 @@ import "list"
       []          :x
       []          :y
       1           :legend
-      (-1)        :stroke .# Use individual strokes
+      :-1         :stroke .# Use individual strokes
     }
     plot MO
   }:new;
 
-  .#? (plot) plot.view\n  view the plot in a new window
-  {self,
+  .#? ::plot plot.view\n  view the plot in a new window
+  {self::plot,
     self MX
   }:view;
 
-  .#? S (plot) plot.save\n  save the plot as a PNG in the working directory with the name S
+  .#? S ::plot plot.save\n  save the plot as a PNG in the working directory with the name S
   {filename::str self : cpy,
     self_ :cpy;; .# Create a copy
     0 cpy.:show;
@@ -47,23 +42,23 @@ import "list"
     cpy MX
   }:save;
 
-  .#? L<N> (plot) plot.addline\n  add a dataset to the plot using defaults
+  .#? L<N> ::plot plot.addline\n  add a dataset to the plot using defaults
   {list::list self,
     "" 1 [] list self.addseries
   }:addline;
 
-   .#? L<N> (plot) plot.domain\n  set the domain of the plot
+   .#? L<N> ::plot plot.domain\n  set the domain of the plot
   {data::list self,
     data self.:x;
   }:domain;
 
-  .#? nameS strokeN colorL dataL (plot) plot.addseries\n  add a series to a plot
+  .#? nameS strokeN colorL dataL ::plot plot.addseries\n  add a series to a plot
   {name::str stroke::num color::list data::list self,
     .# stroke 0 = then {self.stroke :stroke;}
     self.y {,name:name stroke:stroke color:color data:data} AK;
   }:addseries;
 
-  .#? nameS strokeN colorL exprE (plot) plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
+  .#? nameS strokeN colorL exprE ::plot plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
   {name::str stroke::num color::list expr::block self,
     self.y {,name:name stroke:stroke color:color [self.x, expr]:data} AK;
   }:addexpr;
@@ -71,7 +66,7 @@ import "list"
   .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
   {domain::list range::list : plt,
     plot!:plt;
-    plottype.scatter plt.:type;
+    ::scatter plt.:plottype;
     domain plt.domain
     range plt.addline
     plt
@@ -115,11 +110,6 @@ import "list"
   {"Plot Instance"}:str:repr;
 
 }:plot;
-
-{,
-  0:line;
-  1:scatter;
-}:plottype;
 
 
 .# Basic Plotting

@@ -78,17 +78,21 @@ import "math"
   .# rank
   .# det
 
-  .# Indexing
+
+  .############
+  .# INDEXING #
+  .############
+
   {n::num i::num j::num m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
   {.rowsE}:r;                                   .#? (matrix) matrix.r\n  return the number of rows in the matrix
   {.rows0IE}:c;                                 .#? (matrix) matrix.r\n  return the number of cols in the matrix
   {.rows .T}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
 
 
-  .{? (matrix) [row col] matrix.index\n  return the element at (r,c)
+  .{? (matrix) [row col] matrix.getindex\n  return the element at (r,c)
   if r is [], return the cth col
   if c is [], return the rth row .}
-  {ix mat : r c out,
+  {mat ix : r c out,
     ix0I:r;
     ix1I:c;
 
@@ -130,7 +134,8 @@ import "math"
       matrix!
     } ?
 
-  }:index;
+  }:getindex;
+
 
 
   .########################
@@ -212,8 +217,22 @@ import "math"
   .# ITERATION #
   .#############
 
-  .#? (matrix) E matrix.map\n  map an expression to each element of the matrix
-  {mat expr::block, mat.rows : {#expr} mat.:rows; mat}:map;
+
+  .#? ::block ::matrix matrix.apply\n  apply an expression to each element of the matrix in place
+  {expr::block mat::matrix,
+    mat.rows : {#expr} mat.:rows; mat
+  }:apply;
+
+  .#? ::block ::matrix matrix.map\n  make a copy of the matrix and apply an expression to each element
+  {expr::block mat::matrix,
+    mat.rows #{#expr} matrix!
+  }:map;
+
+  .#? ::block ::matrix matrix.each\n  apply an expression to each element of a matrix, return nothing
+  {expr::block mat::matrix,
+    mat.rows #{#expr};
+  }:each;
+
 
 
 
@@ -223,7 +242,7 @@ import "math"
 
   .# Math overloads
   [aya.mathoverload _ :K\:V, {k v,
-    "{.rows #{# $v } matrix!} :$k;" .~
+    "{.rows #{# $v } matrix!} :$(k:C);" .~
   }] #~
 
 
