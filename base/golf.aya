@@ -34,6 +34,13 @@ matrix:m;
 0:y;
 0:z;
 
+.# Commpn boxed operators
+{{+}} :badd;
+{{-}} :bsub;
+{{*}} :bmul;
+{{/}} :bdiv;
+{{%}} :bmod;
+
 
 .# Common functions
 []		:emptyset;
@@ -44,13 +51,14 @@ matrix:m;
 
 .# Additional operators
 
-.# Overwrite bowtie default
+.# Overwrite defaults
 9999.' "bowtie" Mk
+9998.' "para"   Mk
 
 {`range}:to;
 
 '\U82' "to"         Mk .# 130
-'\U9b' "println"    Mk .# 155
+'\Ua5' "println"    Mk .# 165
 '\Ua6' "matstr"     Mk .# 166
 '\Ua7' "zw"         Mk .# 167
 '\Uac' "back"       Mk .# 172
@@ -61,3 +69,12 @@ matrix:m;
 '\Udf' "gcd"        Mk .# 223
 '\Ue6' "surround"   Mk .# 230
 '\Ueb' "euler"      Mk .# 235
+'\Uec' "badd"       Mk .# 236
+'\Ued' "bsub"       Mk .# 237
+'\Uee' "bmul"       Mk .# 238
+'\Uef' "bdiv"       Mk .# 239
+'\Uf0' "bmod"       Mk .# 240
+
+
+.# Simple example: addition table
+.# 6r_ì¶¦Ŗ
