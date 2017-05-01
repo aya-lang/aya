@@ -7,12 +7,15 @@ import "list"
 import "math"
 import "data"
 import "dialog"
+import "golf"
 
 .#? module: demo\n  contains various example functions
 {,
   .#? N demo.train\n  generates an ASCII train with N carts
   {n::num, [" ______  ""|      | "" ()--() ~"]#{nLSV;'\n'+}S.P}:train;
 
+  .#? demo.additiontbl\n  generate and print an addition table
+  {6r_ì¶¦¥}:additiontbl
 
   .#? demo.loc\n  input a C source file and return the number of lines of code
   {"".UG"/\\*[^/]+\\/|[\\n|\\t+|\\s+]//.+"|S".+"&{_E\"[\\t|\\s]"&E=!}IE}:loc;
