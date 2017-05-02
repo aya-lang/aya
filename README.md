@@ -7,7 +7,7 @@
   - Terse, yet readable syntax
   - Fully loaded with a rapidly growing standard library
   - Key-value pair dictionaries and objects
-  - Number types: double, arbitrary precision float, rational, *complex (coming son)*
+  - Number types: double, arbitrary precision float, rational, *complex (coming soon)*
   - Basic support for objects and data structures using metatables
   - Macro-like pre-evaluation stack manipulation
   - Functional feel: List comprehension etc.
@@ -98,7 +98,7 @@ Type definition:
   {self, self.x2^ self.y2^ + Mq}:len;
 
   .# Operator Overload
-  {a b, [a.x b.x+ a.y b.y+] vec MO}:add
+  {a b, a.x b.x+ a.y b.y+ vec!}:add
 
 }:vec;
 

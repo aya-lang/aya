@@ -158,9 +158,7 @@ public class InteractiveAya extends Thread {
 		Scanner scanner = new Scanner(_aya.getIn());
 		String input = "";
 		int status;
-		
-
-		
+				
 		while (true) {
 			
 			if (_showPromptText) {
@@ -197,6 +195,9 @@ public class InteractiveAya extends Thread {
 			case TIME:
 				out.println("Execution time: " + ((double)_aya.getLastInputRunTime())/1000 + "s");
 			}
+
+			_aya.getOut().flush();
+
 		}
 		
 	}
