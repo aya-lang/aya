@@ -1,8 +1,0 @@
-{,
-  {x y, {,x:x y:y} vec MO}:new;
-  {self, "<$(self.x),$(self.y)>"}:repr;
-  {self, self.repr}:str;
-  {a b, a.x b.x + a.y b.y + vec!}:add;
-  {a b, a.x b.x * a.y b.y * vec!}:mul;
-  {self, self.x 2^ self.y 2^ + Mq}:len;
-}:vec;

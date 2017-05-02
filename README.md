@@ -5,12 +5,12 @@
 ## Features
 
   - Terse, yet readable syntax
-  - Fully loaded with a rapidly growing standard library
+  - Basic standard library
   - Key-value pair dictionaries and objects
   - Number types: double, arbitrary precision float, rational, *complex (coming soon)*
   - Basic support for objects and data structures using metatables
   - Macro-like pre-evaluation stack manipulation
-  - Functional feel: List comprehension etc.
+  - List comprehension
   - String Interpolation, Unicode, and special characters
   - Interactive GUI
   - Built in plotting
@@ -228,4 +228,8 @@ Sample documentation from `math.aya`
   - **More Operators**: Most of the dot (`.<op>`), misc (`M<op>`), and colon (`:<op>`) operators have not yet been assigned.
   - **Refine the Standard Library**: Debug, fix small errors, clean
   - **Better I/O Support**: Currently IO includes text files (input and output) and the ability to download files from the web. An official IOStream object should be implemented.
-  - Rational and complex number types
+  - Complex number types
+
+# Limitations
+ 
+Aya was not originally intended for computational or memory intensive tasks. It was intended to be used as an advanced desktop "calcuator" for programming puzzles and simple or tedious computational tasks. It's compact syntax and extensibility make it great for both of these. As the language grows it will become better for larger and larger tasks. 

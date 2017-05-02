@@ -1,7 +1,0 @@
-{@ rdatasets,
-
-  [defaultwd "data" 9M| "rdatasets" 9M|]S:path;
-
-  {rdatasets.path`+"HairEyeColor.csv" TT dataframe.opencsv}:haireyecolor;
-
-}.#END rdatasets
