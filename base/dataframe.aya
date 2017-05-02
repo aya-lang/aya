@@ -7,72 +7,167 @@ import "file"
 
   {self, self.columns [1|~,.A]}:rows;
 
-  {colnm::list rownm::list cols::list : numofrows,
-    if (colsE0=) {
+  {self,
+	  [""] (self.columns_\;) K A
+	  self.index #{P" |"K}
+	  self.values
+	  [2|~,.A]K
+	  matstr
+  }:repr:str;
+
+
+
+  .#######################
+  .# Creating Dataframes #
+  .#######################
+
+  {kwargs::dict : columns(::na) index(::na) data(::na) filename header(1) numofrows,
+    kwargs .W
+
+    filename :T ::str = {
+      {, filename :filename
+         header :header
+         index ::na =! {index:index} ?
+         columns ::na =! {columns:columns} ?
+      } dataframe.opencsv
+    } {
+      {, data ::na =! {data :data} ?
+         index ::na =! {index:index} ?
+         columns ::na =! {columns:columns} ?
+      } dataframe.fromdata
+    } .?
+
+  }:new;
+
+
+  .# {colnm::list rownm::list cols::list : numofrows,
+
+  .# Data is a list of lists (columns)
+  {kwargs::dict : index(::na) columns(::na) data(::na) numofrows,
+    kwargs .W
+
+    data ::na = {
+      0 [
+        columns ::na = {1} {columns E} .? :c
+        index ::na = {1} {index E} .?
+        ] L :data :P
+    } ?
+
+    columns ::na = {
+      data E dataframe.gencolnames :columns;
+    } ?
+
+    data E 0 = {
+      .# no data -> empty dataframe
       0:numofrows;
     } {
-      cols 0IE :numofrows;
-    }
-    "col title lengths do not macth" colsE colnmE =! conderr
-    "row title lengths do not match numofrows: $numofrows, row headers: $(rownmE) " numofrows rownmE =! conderr
-    "dataframe.new: all row lengths must be equal" cols {Enumofrows=}all! conderr
+      .# num of rows is first column length
+      data 0 I E :numofrows;
+    } .?
+
+    .# if no index is given, generate one
+    index ::na = {
+      numofrows .R :index;
+    } ?
+
+
+    .# Additional checks
+
+    data E columns E =! {
+      "column names and given data lengths do not match" .D
+    } ?
+
+    numofrows index E =! {
+      "row title lengths do not match numofrows: $numofrows, index length: $(index E)" .D
+    } ?
+
+    data #{E numofrows =} {&}F ! {
+      "dataframe.fromdata: all row lengths must be equal" .D
+    } ?
+
+
     {,
-      colnm:colnames
-      rownm:rownames
-      cols:columns
-      numofrows:numofrows
+      columns :columns
+      index :index
+      data :values
+      numofrows :numofrows
     } dataframe MO
-  }:new;
+
+  }:fromdata;
+
+
+  .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
+  {kwargs::dict : filename(::na) index(::na) columns(::na) header data,
+    kwargs.W
+
+    filename ::na = {
+      "dataframe.opencsv: filename not provided" .D
+    } ?
+
+    filename opencsv :data;
+
+    header {
+      data E 0 = {"dataframe.opencsv: no header found in file" .D} ?
+      data V :columns; ;
+    } ?
+
+    {,
+      .# define only if they exist
+      index ::na =! {index:index} ?
+      columns ::na =! {columns:columns} ?
+
+      .# opencsv returns a list of rows
+      data .T :data
+    }
+    dataframe.fromdata
+  }:opencsv;
+
 
   {[]__dataframe.new}:newempty;
 
-  {self,
-	  [""]self.colnamesKA
-	  self.rownames #{P" |"K}
-	  self.columns
-	  [2|~,.A]K
-	  matstr
-  }:repr;
 
-  {self, self.repr}:str;
 
-  .# Row Indexing
-  {name::str self : ix,
-    self.rownames name N :ix;;
-    "dataframe.rowbyname: unknown row name: $name" ix (-1) = conderr
-    ix self.rowbyix
-  }:rowbyname;
 
-  {i:num self,
-    "dataframe.rowbyix: invalid column number: $i" self.numofrowsV i < i0< | conderr
-    self.rows i I
-  }:rowbyix;
+  .############
+  .# Indexing #
+  .############
 
-  {id self,
-    [ id:T ::str = {id self.rowbyname} ?
-      id:T ::num = {id self.rowbyix} ?
-      {"dataframe.row: id must be a string or int. recieved: $id".D}
-    ].S
-  }:row;
+  .#? ::list ::dataframe dataframe.iloc\n  index a dataframe using row and col indices
+  {i::list self : r c cols,
+    i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
-  .# Column Indexing
-  {name::str self : ix,
-    self.colnames name N :ix;;
-    "dataframe.colbyname: unknown column name: $name" ix (-1) = conderr
-    ix self.colbyix
-  }:colbyname;
+    i 0 I :r;
+    i 1 I :c;
 
-  {i::num self,
-    "dataframe.colbyix: invalid column number: $i" self.columnsEV i < i0< | conderr
-    self.columns i I
-  }:colbyix;
+    r :T ::num =
+    c :T ::num = & {
+      .# r and c are both numbers, return a value
+      df.values c I r I
 
-  {id self,
-    [ id:T ::str = {id self.colbyname} ?
-      id:T ::num = {id self.colbyix} ?
-      {"dataframe.col: id must be a string or int. recieved: $id".D}
-    ].S
-  }:col;
+    } {
+
+      .# r or c is a list, return a new dataframe
+
+      df.values c I
+      .# if c is a number, wrap in array
+      c :T ::num = {A} ?
+      .# if r is a number, wrap each in an array
+      #{rI r :T ::num = {A} ?}
+      :cols;
+
+      {, cols :data;
+         df.index r I r:T ::num = {A} ? :index;
+         df.columns c I  c:T ::num = {A} ? :columns;
+      } _:P dataframe!
+
+    } .?
+
+  }:iloc;
+
+  
+
+
+
 
   {colname::str init::num self,
     self.colnames colnameAK self.:colnames;
@@ -85,31 +180,7 @@ import "file"
     self.numofrowsB self.:numofrows;
   }:addrow;
 
-  {name self : ix,
-    [
-      name :T ::str = {
-        self.colnames name N :ix;;
-        "Invalid col name: $name" ix (-1) = conderr
-        ix
-      } ?
-      name :T ::num = {name} ?
-      {"Invalid colindex type. Received $name ($(name Mw))" .D}
-    ].S
-  }:colindex;
-
-  {name self : ix,
-    [
-      name :T ::str = {
-        self.rownames name N :ix;;
-        "Invalid row name: $name" ix (-1) = conderr
-        ix
-      } ?
-      name :T ::num = {name} ?
-      {"Invalid rowindex type. Received $name ($(name Mw))" .D}
-    ].S
-  }:rowindex;
-
-  {index::list self: r c rix cix,
+  {self index::list: r c rix cix,
     "Index must have two elements" indexE2=! conderr
     index 0I:r;
     index 1I:c;
@@ -135,33 +206,17 @@ import "file"
       rix(-1)=! cix(-1)=! & {self.columns cix I rix I} ? .# Specific cell
       {"dataframe: invalid index. recieved $index"}
     ].S
-  }:get;
+  }:getindex;
 
-  .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
-  {path::str rowheader::num colheader::num : table rownames colnames rowcount colcount,
-    path opencsv : table;
-
-    .# If there are headers, subtract one from the count
-    .# so that we do not include the headers themselves
-    tableE colheader {V}{} .? : rowcount;
-    table0IE rowheader {V}{} .? : colcount;
-
-    .# Row names
-    rowheader
-    {table#{V\;P} colheader {V;}{} .? } .# if there are col headers, remove the first entry
-    {[rowcount,P]} .# No headers in file, use a range of numbers
-    .? :rownames;
-
-    .# Column names
-    colheader
-    {table 0 I  tableV;; } .# Cols are the first row of the table
-    {[colcount,P]} .# No names in file, use a range of numbers
-    .? :colnames;
-
-    .# Generate dataframe object
-    colnames rownames [table~,.A] dataframe.new
-
-  }:opencsv;
+  {n,
+    n 26 :< {
+      ['a _nV+] R#P
+    } {
+      n 26- :n;
+      "az"R#P
+      n 26 .% 'a_@+K R "az"R {\P+} pu #~ n .< K
+    } .?
+  }:gencolnames;
 
   {column self : i,
     column self.colindex :i;
