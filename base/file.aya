@@ -1,8 +1,8 @@
-import "string"
-
+import ::string
+import ::list
 
 .#? SS readdlm\n  open a file, split into lines, split each line using dlm
-{dlm::str, G "\n"| {""=!}I #{dlm|} #{#.!}}:readdlm;
+{dlm::str, G dlm fromcsvstr}:readdlm;
 
 .#? S opencsv\n  opens and parses a csv file into a matrix
 {"," readdlm}:opencsv;
