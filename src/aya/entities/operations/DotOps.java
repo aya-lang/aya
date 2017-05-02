@@ -1,9 +1,11 @@
 package aya.entities.operations;
 
 import static aya.obj.Obj.BLOCK;
+import static aya.obj.Obj.BIGNUM;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
+import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.OBJLIST;
@@ -25,6 +27,7 @@ import org.apfloat.Apfloat;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.entities.ListBuilder;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
@@ -107,7 +110,7 @@ public class DotOps {
 		/* 79 O  */ null,
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
-		/* 82 R  */ null,
+		/* 82 R  */ new OP_Dot_R(),
 		/* 83 S  */ new OP_Dot_Case(),
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
@@ -934,6 +937,29 @@ class OP_Dot_Rand extends Operation {
 		block.push(new Num(Ops.RAND.nextDouble()));
 	}
 }
+
+// R - 82
+class OP_Dot_R extends Operation {
+	public OP_Dot_R() {
+		this.name = ".R";
+		this.info = "Returns a numeric list from 0 to N-1";
+		this.argTypes = "N";
+	}
+	@Override public void execute (Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(NUM)) {
+			final Num n = (Num)a;
+			block.push(ListBuilder.buildRange(Num.ZERO, (Num)(n.add(n.signnum().negate())) ));
+		} else if (a.isa(BIGNUM)) {
+			final BigNum n = (BigNum)a;
+			block.push(ListBuilder.buildRange(BigNum.ZERO, (BigNum)(n.add(n.signnum().negate())) ));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 // S - 83
 class OP_Dot_Case extends Operation {
