@@ -1,6 +1,12 @@
 import "list"
 import "file"
 
+.{ TODO
+   filter
+   setvalue
+   writecsv
+.}
+
 {,
 
   ::dataframe :type;
@@ -132,7 +138,7 @@ import "file"
   .# Indexing #
   .############
 
-  .#? ::list ::dataframe dataframe.iloc\n  index a dataframe using row and col indices
+  .#? i::list self::dataframe dataframe.iloc\n  index a dataframe using row and col indices
   {i::list self : r c cols,
     i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
@@ -158,55 +164,59 @@ import "file"
       {, cols :data;
          df.index r I r:T ::num = {A} ? :index;
          df.columns c I  c:T ::num = {A} ? :columns;
-      } _:P dataframe!
+      } dataframe!
 
     } .?
 
   }:iloc;
 
-  
+  .#? i::list self::dataframe dataframe.loc\n  index a dataframe using row and col indices or names
+  {i::list self : r c,
+        i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
+
+    i 0 I :r;
+    i 1 I :c;
+
+    r self.index   dataframe.toindex :r;
+    c self.columns dataframe.toindex :c;
+
+    [r c] self.iloc
+  }:loc;
+
+  .#? i::any hdr::list dataframe.toindex\n  convert i to a list of numeric indices for the items in hdr
+  {i hdr,
+
+    i :T ::num = {
+      i
+    } { i :T ::str = {
+      hdr i N \;
+      _ :-1 = {"dataframe.toindex: index $i not found in $hdr" .D} ?
+    } {
+      i #{hdr dataframe.toindex}
+    }.?}.?
+
+  }:toindex;
+
+  .#? i::any self::dataframe dataframe.row\n  get the rows at indices i
+  {i self,
+    self.values .T i self.index dataframe.toindex I
+  }:row;
+
+  .#? i::any self::dataframe dataframe.row\n  get the cols at indices i
+  {i self,
+    self.values i self.columns dataframe.toindex I
+  }:col;
 
 
-
-
-  {colname::str init::num self,
-    self.colnames colnameAK self.:colnames;
-    self.columns init self.numofrows LAK self.:columns;
-  }:addcol;
-
-  {rowname::str init self,
-    self.rownames rownameAK self.:rownames;
-    self.columns #{initAK} self.:columns;
-    self.numofrowsB self.:numofrows;
-  }:addrow;
-
-  {self index::list: r c rix cix,
-    "Index must have two elements" indexE2=! conderr
-    index 0I:r;
-    index 1I:c;
-
-    .# Get row index
-    [
-      r:T ::str = {r self.rowindex} ?
-      r :T ::num = r ?
-      (-1)
-    ].S:rix;
-
-    .# Get column index
-    [
-      c:T ::str = {c self.colindex} ?
-      c :T ::num = c ?
-      (-1)
-    ].S:cix;
-
-    .# Get data
-    [
-      rix(-1)= cix(-1)=! & {self.columns cix I} ? .# Entire column
-      rix(-1)=! cix(-1)= & {self.columns#{rixI}} ? .# Entire row
-      rix(-1)=! cix(-1)=! & {self.columns cix I rix I} ? .# Specific cell
-      {"dataframe: invalid index. recieved $index"}
-    ].S
+  {self index::list,
+    index self.loc
   }:getindex;
+
+
+
+  .#####################
+  .# Utility Functions #
+  .#####################
 
   {n,
     n 26 :< {
