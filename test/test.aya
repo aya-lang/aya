@@ -1,0 +1,139 @@
+"Test file loaded!\n" .P
+
+.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
+{`({blk::block expected::list,
+  [blk] expected= {
+	  .# Do nothing
+	} {
+    .# Throw an error message about the assertation
+	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
+	} .?
+})}:assert;
+
+
+
+
+
+.# Parsing and Literals
+
+{1} assert [1]
+{[1]} assert [[1]]
+{['h'i]} assert ["hi"]
+
+.# Basic Binary Math
+{1 1 +} assert [2]
+{5 4 *} assert [20]
+{3 4 /} assert [0.75]
+{1 1 -} assert [0]
+{37 2%} assert [1]
+
+.# Math Functions
+{0.5 Mc} assert [(0.8775825618903728)]
+{0.5 Ms} assert [(0.479425538604203)]
+{0.5 Mt} assert [(0.5463024898437905)]
+{0.5 MC} assert [(1.0471975511965979)]
+{0.5 MS} assert [(0.5235987755982989)]
+{0.5 MT} assert [(0.4636476090008061)]
+{0.5 ML} assert [(-0.3010299956639812)]
+{0.5 Ml} assert [(-0.6931471805599453)]
+{0.5 Mq} assert [(0.7071067811865476)]
+
+.# List
+
+{6R} assert [[1 2 3 4 5 6]]
+{3R#1+} assert [[2 3 4]]
+
+
+.# Vectorized functions
+
+{3R1+} assert [[2 3 4]]
+{3R1-} assert [[0 1 2]]
+{3R2*} assert [[2 4 6]]
+{3R2/} assert [[0.5 1 1.5]]
+{3R2^} assert [[1 4 9]]
+{3R2%} assert [[1 0 1]]
+{1 3R+} assert [[2 3 4]]
+{1 3R-} assert [[0 (-1) (-2)]]
+{2 3R*} assert [[2 4 6]]
+{2 3R/} assert [[2 1 (2 3/)]]
+{2 3R^} assert [[2 4 8]]
+{2 3R%} assert [[0 0 2]]
+{[0.5] Mc} assert [[(0.8775825618903728) ]]
+{[0.5] Ms} assert [[(0.479425538604203)  ]]
+{[0.5] Mt} assert [[(0.5463024898437905) ]]
+{[0.5] MC} assert [[(1.0471975511965979) ]]
+{[0.5] MS} assert [[(0.5235987755982989) ]]
+{[0.5] MT} assert [[(0.4636476090008061) ]]
+{[0.5] ML} assert [[(-0.3010299956639812)]]
+{[0.5] Ml} assert [[(-0.6931471805599453)]]
+{[0.5] Mq} assert [[(0.7071067811865476) ]]  
+
+.# List Builder
+
+{[3,]} assert [[1 2 3]]
+{[3,1+]} assert [[2 3 4]]
+{[4 6,]} assert [[4 5 6]]
+{[0 0.5 2,]} assert [[0 0.5 1 1.5 2]]
+{[10,,2%0=]} assert [[2 4 6 8 10]]
+{[[1 2] [3 4], *]} assert [[3 8]]
+
+.# Character
+
+{'c!} assert ['C] 
+{'C!} assert ['c]
+{'?!} assert ['?]
+{'A 1 +} assert ['B]
+{'B 1 -} assert ['A]
+{1 'A +} assert ['B]
+{100 'A -} assert ['\#']
+
+.# String
+
+{"abcde"!} assert ["ABCDE"]
+{"abcde"U} assert ["edcba"]
+
+.# InterpolateString
+
+{:a, 0:a; "$a"} assert ["0"]
+
+.# Argument Types
+
+{1  {s::num ,s} ~} assert [1]
+{[] {s::list,s} ~} assert [[]]
+{"" {s::list,s} ~} assert [""]
+{"" {s::str ,s} ~} assert [""]
+{"hi" {s::str,s} ~} assert ["hi"]
+{"hi" {s::list,s} ~} assert ["hi"]
+{'C {s::char,s} ~} assert ['C]
+{1 'C "C" {a::any b::any c::any, a b c} ~} assert [1 'C "C"]
+{ {,} {d::dict,d}~} assert [{,}]
+
+.# Dictionaries
+
+{{,}}  assert [{,}]
+{{,5 "hi" 'C}}  assert [{,}]
+{{, 5:x}.x} assert [5]
+{5 {,}.:x.x} assert [5]
+{ {,{,5:x}:x;}.x.x} assert [5]
+{ {,5:x} "x" N} assert [1]
+{ {,5:x} "y" N} assert [0]
+
+
+.# Objects 
+{{, {self, self.x 2* self.:x}:double}:d; d!:p; 3p.:x; p.double.x}
+assert
+[6]
+
+{{, {x y, {, x:x; y:y;} {, 3:z} MO }:new }:t; 3 4 t!:ta; ta.x ta.y ta.z}
+assert
+[3 4 3]
+
+
+import "test/test_op_overload"
+
+"All tests passed!" :P
+
+
+
+
+

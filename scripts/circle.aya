@@ -1,1 +1,4 @@
+.# This script imports itself and can be used
+.#   to test the `import` operator
+
 import "scripts/circle"

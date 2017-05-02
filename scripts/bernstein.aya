@@ -22,5 +22,6 @@ coeff B R # {x,
 "t" plt.:xlabel
 plt.view
 
-"bernstein.png" plt.save
+.# Uncomment to save
+.# "bernstein.png" plt.save
 

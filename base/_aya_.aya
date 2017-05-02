@@ -62,14 +62,16 @@
 
 {importnamezz,
   .# Does the name contain a file sep? (9M|)
-  .# 9M| _ "\\"= {}{;"\\\\"} .? returns an escaped "\" -> "\\" if windows
-  importnamezz _ (9M| _ "\\"= {;"\\\\"} {} .?) | S=
+  .# 9M| _ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
+  importnamezz _ (9M| _ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
   { .# No file sep, import from base
+    "importing from base: $importnamezz" :P
     importnamezz aya.importbase
   }
 
   { .# input contains a file sep
+    "importing from file: $importnamezz" :P
     importnamezz aya.importfile
   }
 
@@ -116,7 +118,7 @@
 {`(
   _ :T ::sym = {:C} ?
   .# Split whitespace separated names
-  "\W+" | [""] :| #{aya.import};
+  "\s+" | [""] :| #{aya.import};
 )}:import;
 
 

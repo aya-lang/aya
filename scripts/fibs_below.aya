@@ -1,14 +1,15 @@
 .# Generate fibs below n
-{n : a b,
-   0:a; 1:b;
+{n : a(0) b(1),
    while {a n <} {
     a println
     a _ b + :a; :b;
    }
 }:fib;
 
-1000 fib
+.{
+aya> 1000 fib
 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+.}
 
 .# Generate fibs below n
 
