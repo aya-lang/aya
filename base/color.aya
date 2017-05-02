@@ -1,7 +1,8 @@
 .# colors.aya
 .# Defines both color and colors module
 
-import "list"
+import ::list
+import ::string
 
 .{? module: color
     A module for manipulating and printing colors in Aya
@@ -15,9 +16,15 @@ import "list"
   {r::num g::num b::num, {, r:r g:g b:b} color MO}:new;
 
   .#? S color.newhex\n  create a new color using a hex value represented as a string
-  {c:str, [c 16 10 H bits.E24\-{0\K}\%8|8|]#unbit ~color!}:newhex;
+  {c:str, [c 16 2 H .E24\-{0\K}\%8|8|]#{2 10 H} ~color!}:newhex;
 
-  .#Conversions
+  {c, "($(c.r), $(c.g), $(c.b))"}:repr;
+  {c, "($(c.r), $(c.g), $(c.b))"}:str;
+
+
+  .###############
+  .# Conversions #
+  .###############
 
   .#? (color) color.rgb\n  return a list containing red, green, and blue values respectively
   {self, [self.r self.g self.b]}:rgb;
@@ -26,7 +33,39 @@ import "list"
   .#? (color) color.hsv\n  return a list containing hue, sat, and val respectively
   {.rgb255/~ color.rgbtohsv}:hsv;
 
-  .#Gradients
+  .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
+  {r g b : h s v delta maxv minv,
+    [r g b]min:minv;
+    [r g b]max:maxv;
+    maxv:v;
+    maxv minv-:delta;
+
+    maxv 0 =! {
+
+      r maxv = {
+        g b- delta/
+      } {
+        g maxv = {
+          b r- delta/ 2+
+        } {
+          r g- delta/ 4+
+        } .?
+      } .? 60* :h;
+
+      h 0< {h 360+:h;} ?
+
+      delta maxv/:s;
+    } {
+      0:s;
+      (-1):h;
+    } .?
+    [h s v]
+  }:rgbtohsv;
+
+
+  .#############
+  .# Gradients #
+  .#############
 
   .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
   {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
@@ -37,53 +76,28 @@ import "list"
   .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
   {3@@\.grad 1I~ color!}:mid;
 
-  .#Printing
 
-  .#? L L<(color)> color.circprint\n  print each element of L1 using a rotation of colors from L2
-  {lst cols,
-    for 'i (lst irange) {
-      lst iI                  .# The ith item of the list
-      cols i colsE%I          .# The next color in the cycle
-      .print
-    };
-  }:circprint;
-  .#? A (color) color.print\n  print A using the color
-  {.rgb~ .P}:print;
-  .#? A (color) color.println\n  print A using the color; append a newline
-  {.print"\n".P}:println;
-  .#? (color) color.show\n  print a square of color and return the rgb values of the color
-  {c, "\{U2588} " c.rgb~ .P "($(c.r), $(c.g), $(c.b))"}:repr;
-  {c, "($(c.r), $(c.g), $(c.b))"}:str;
+  .##################
+  .# Printing       #
+  .# (depreciated)  #
+  .##################
+
+  .# .#? L L<(color)> color.circprint\n  print each element of L1 using a rotation of colors from L2
+  .# {lst cols,
+  .#   for 'i (lst irange) {
+  .#     lst iI                  .# The ith item of the list
+  .#     cols i colsE%I          .# The next color in the cycle
+  .#     .print
+  .#   };
+  .# }:circprint;
+  .# .#? A (color) color.print\n  print A using the color
+  .# {.rgb~ .P}:print;
+  .# .#? A (color) color.println\n  print A using the color; append a newline
+  .# {.print"\n".P}:println;
+  .# .#? (color) color.show\n  print a square of color and return the rgb values of the color
 
 
-  .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
-  {r g b : h s v delta maxv minv,
-    [r g b]min:minv;
-    [r g b]max:maxv;
-    maxv:v;
-    maxv minv-:delta;
 
-    if (maxv 0 =!) {
-
-      if (r maxv =) {
-        g b- delta/
-      } {
-        if (g maxv =) {
-          b r- delta/ 2+
-        } {
-          r g- delta/ 4+
-        }
-      } 60* :h;
-
-      h 0< then {h 360+:h;}
-
-      delta maxv/:s;
-    } {
-      0:s;
-      (-1):h;
-    }
-    [h s v]
-  }:rgbtohsv;
 }:color;
 
 .{? module: colors
