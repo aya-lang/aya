@@ -155,8 +155,35 @@ import "file"
            df.columns c I  c:T ::num = {A} ? :columns;
         } _:P dataframe!
     } .?
-
   }:iloc;
+
+
+  {i::list self : r c,
+        i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
+
+    i 0 I :r;
+    i 1 I :c;
+
+    r self.index   dataframe.toindex :r;
+    c self.columns dataframe.toindex :c;
+
+    [r c] self.iloc
+  }:loc;
+
+
+
+  {i hdr,
+
+    i :T ::num = {
+      i
+    } { i :T ::str = {
+      hdr i N \;
+      _ :-1 = {"dataframe.toindex: index $i not found" .D} ?
+    } {
+      i #{hdr dataframe.toindex}
+    }.?}.?
+
+  }:toindex;
 
   .# Get a row given its name
   {name::str self : ix,

@@ -1,6 +1,6 @@
-import "list"
-import "plot"
-import "math"
+import ::list
+import ::plot
+import ::math
 
 .{? type: turtle
     A turtle. Used for drawing patterns on a plot grid.
@@ -10,8 +10,12 @@ import "math"
   ::turtle :type;
 
   {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
-  {self, "{turtle:$(self.x),$(self.y),$(self.r rad)\{deg}}"}:show;
 
+  .{
+  {self,
+    "turtle: pos=($(self.x), $(self.y)) dir=$(self.r)"
+  }:repr:str;
+  .}
   .#? N turtle.fwd\n  move the turtle forward N units
   {len self,
     self.x self.r Mc len* + self.:x;
@@ -53,47 +57,47 @@ import "math"
 {,
 
   .#? turtledemo.ribbon\n  a ribbon
-  {:frank,
-    turtle! :frank;
+  {:t,
+    turtle! :t;
     0 :count;
     {
-      1 frank.fwd
-      count Ms frank.right
+      1 t.fwd
+      count Ms t.right
       0.01 count +: count;
     } 1200 %
-    frank.draw
+    t.draw
   }:ribbon;
 
   .#? turtledemo.flower\n  a simple flower
   {:t,
     turtle!:t;
-    for 'i (12R) {
-      for 'j (12R) {
+    {
+      {
         1 t.fwd
         30 deg t.right
-      };
-      30 deg t.right
-    };
+      } 12 %
+        30 deg t.right
+    } 12 %
     t.draw
   }:flower;
 
   .#? turtledemo.snowflake\n  a snowflake
   {:t,
     turtle!:t;
-    for 'i (24R) {
-      for 'j (36R) {
+    {
+      {
         1 t.fwd
         170 deg t.right
-      };
+      } 36 %
       20 deg t.right
-    };
+    } 24 %
     t.draw
   }:snowflake;
 
 }:turtledemo;
 
 {:choice,
-  turtledemo :K $
+  turtledemo :K #:C $
   "Select a Demo" "Turtle Demo" 1 6 MV :choice;
 
   "turtledemo." choice + ~

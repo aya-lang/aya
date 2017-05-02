@@ -127,7 +127,7 @@
 .# ------
 
 .#? reload\n  reload the standard library
-{:workingdirzz,
+{,
   ""2MZ            .# Save the current working dir
   ""3MZ            .# Reset the working dir
   aya.imported_\;  .# Copy currently imported files
