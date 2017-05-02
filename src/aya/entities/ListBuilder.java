@@ -118,6 +118,14 @@ public class ListBuilder {
 		return arrToAL(doubleRange(1, d, inc));
 	}
 	
+	public static NumberItemList buildRange(Num n1, Num n2) {
+		double d1 = n1.toDouble();
+		double d2 = n2.toDouble();
+		int inc = 1;
+		if(d1 > d2) inc = -1;
+		return arrToAL(doubleRange(d1, d2, inc));
+	}
+	
 	public static Str buildRange(char c) {
 		int inc = 1;
 		if(c < 0) inc = -1;
@@ -132,6 +140,17 @@ public class ListBuilder {
 			return arrToAL(apfloatRange(Apfloat.ONE, af, Apfloat.ONE));
 		}
 	}
+	
+	public static NumberItemList buildRange(BigNum n1, BigNum n2) {
+		Apfloat af1 = n1.toApfloat();
+		Apfloat af2 = n2.toApfloat();
+		Apfloat inc = Apfloat.ONE;
+		
+		if(af1.compareTo(af2) > 0) inc = AP_NEG_ONE;
+		
+		return arrToAL(apfloatRange(af1, af2, inc));
+	}
+	
 	
 	public static List buildRange(List args) {
 		

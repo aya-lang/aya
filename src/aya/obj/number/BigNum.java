@@ -9,7 +9,10 @@ import aya.obj.Obj;
 /** Contains an ApFloat */
 public class BigNum extends Number {
 	
-	private static Apfloat ZERO = new Apfloat(0);
+	private static Apfloat ZERO_AP = new Apfloat(0);
+	
+	public static BigNum ZERO = new BigNum(0);
+	public static BigNum ONE = new BigNum(1);
 	
 	private Apfloat _val;
 	
@@ -316,12 +319,12 @@ public class BigNum extends Number {
 
 	@Override
 	public BigNum deepcopy() {
-		return new BigNum(_val.add(ZERO));
+		return new BigNum(_val.add(ZERO_AP));
 	}
 
 	@Override
 	public boolean bool() {
-		return !(_val.compareTo(ZERO) == 0);
+		return !(_val.compareTo(ZERO_AP) == 0);
 	}
 
 	@Override
