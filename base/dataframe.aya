@@ -1,5 +1,5 @@
-import "list"
-import "file"
+import ::list
+import ::file
 
 .{ TODO
    filter
@@ -170,6 +170,7 @@ import "file"
 
   }:iloc;
 
+
   .#? i::list self::dataframe dataframe.loc\n  index a dataframe using row and col indices or names
   {i::list self : r c,
         i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
@@ -182,6 +183,7 @@ import "file"
 
     [r c] self.iloc
   }:loc;
+
 
   .#? i::any hdr::list dataframe.toindex\n  convert i to a list of numeric indices for the items in hdr
   {i hdr,
@@ -197,10 +199,12 @@ import "file"
 
   }:toindex;
 
+
   .#? i::any self::dataframe dataframe.row\n  get the rows at indices i
   {i self,
     self.values .T i self.index dataframe.toindex I
   }:row;
+
 
   .#? i::any self::dataframe dataframe.row\n  get the cols at indices i
   {i self,
@@ -228,6 +232,7 @@ import "file"
     } .?
   }:gencolnames;
 
+
   {column self : i,
     column self.colindex :i;
     self.rows {iI} .$ [1|~,.A] self.:columns;
@@ -236,4 +241,9 @@ import "file"
 
 }:dataframe;
 
-.# ["total" "percent"] ["a" "b"] [[10 15][40 60]] dataframe!:df
+.{
+{, ["total" "percent"]:columns
+   ["a" "b"]:index
+   [[10 15][40 60]]:data
+} dataframe!:df;
+.}
