@@ -1,3 +1,19 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# Note: This file is currently deprecated.
+.#       It will be reintroduced at a later time.
+
+.{ Todo:
+   Make all units objects
+   Overload operators
+     "1ft 12in +"~ => 2ft
+     "1mile 1hour /" => 1mph
+     "3hour 1mph *" => 3mile
+.}
+
+
+
+
 .# conv.aya
 .# **Easy unit conversions**
 
@@ -59,10 +75,10 @@
 
 .# Conversion functions (Uncomment to use)
 
-.###Type saftey version
+.# Type saftey version
 {`({num::num from::num to::num, num from * to/})}:to;
 
-.###Regular Version
+.# Regular Version
 .#	{`(\@*\/)}:to;
 
 .# Conversion operator
