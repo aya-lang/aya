@@ -31,15 +31,13 @@
   {.msMD6I}:sec:s;
   {.ms"a"Mh}:ampm;
 
-  {unit self,
-    self.ms unit.ms + self.:ms;
-    self
-  }:add;
+  {self unit,
+    self.ms unit.ms + date!
+  }:radd;
 
-  {unit self,
-    self.ms unit.ms - self.:ms;
-    self
-  }:sub;
+  {self unit,
+    self.ms unit.ms - date!
+  }:rsub;
 
   {.ms}:dollar;
 
@@ -49,7 +47,8 @@
   .# String functions
   {.ms"MM/dd/yy"Mh}:mmddyy;
   {.ms"MM/dd/yyyy"Mh}:mmddyyyy;
-  {d, "$(d.h):$(d.m)"}:timestr;
+  {.ms"hh:mm aa"Mh}:timestr;
+
 }:date;
 
 .#? dateunit\n  static namespace defining units related to dates
@@ -64,7 +63,7 @@
     ["second" 1000]
   ]:units;
 
-  for 'u units {:name conv,
+  units # {u : name conv,
     u0I:name;
     u1I:conv;
     "
@@ -72,8 +71,8 @@
       {n::num, {,n:n} dateunit.$name MO}:new;
       {.n\" dates.$name\"+}:show;
       {.n $conv*}:ms;
-      {\+}:add;
-      {\-}:sub;
+      {date.radd}:add;
+      {date.rsub}:sub;
     }:$name;
     "~
   };
@@ -82,7 +81,7 @@
 .#? dates\n  static namespace for date related variables
 {,
   .# Units
-  for 'u (dateunit.units) {:name,
+  dateunit.units # {u : name,
     u0I:name;
     "{dateunit.$name!}:$name"~
   };
@@ -105,3 +104,29 @@
 }:dates;
 
 {date.now}:now;
+
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "date" testset! :ts;
+
+  {"1707-04-15" date! .mmddyy} ["04/15/07"] ts+
+  {"1707-04-15" date! .mmddyyyy} ["04/15/1707"] ts+
+  {"1707-04-15" date! .timestr} ["12:00 AM"] ts+
+  {"1707-04-15" date! 2 dates.month + .month} ["June"] ts+
+  {"1707-04-15" date! 1 dates.day - .dayofmonth} [14] ts+
+  {"1707-04-15" date! 100 dates.year + .year} [1807] ts+
+  {"1707-04-15" date! 2 dates.hour + .hour} [2] ts+
+  {"1707-04-15" date! 2 dates.minute + .min} [2] ts+
+
+
+  ts aya.addtest
+
+}
