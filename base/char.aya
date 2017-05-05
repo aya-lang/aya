@@ -1,5 +1,7 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# character.aya
-.# defines functions for working with character
+.# defines functions for working with characters
 
 .#? C islower\n  tests if a character is lowercase
 {_'`>\'{<&}:islower;
@@ -21,3 +23,26 @@
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
 {a::str,"\"\\{$a}\""~.'}:spechar;
+
+
+
+.#########
+.# TESTS #
+.#########
+
+aya.runtests `? {:ts,
+  import ::test
+
+  "char" testset! :ts;
+
+  {"cC*" #islower} [[1 0 0]] ts+
+  {"cC*" #isupper} [[0 1 0]] ts+
+  {"HelLo!" #toupper} ["HELLO!"] ts+
+  {"HelLo!" #tolower} ["hello!"] ts+
+  {"Cr4zy1!" #isdigit} [[0 0 1 0 0 1 0]] ts+
+  {"\n\t s" #iswhitespace} [[1 1 1 0]] ts+
+  {"alpha" spechar '\alpha' =} [1] ts+
+
+  ts.run
+
+}
