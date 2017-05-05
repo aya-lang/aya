@@ -1,8 +1,11 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# string.aya
 .# Defines functions for working with strings and regular expressions
 
-import "char"
-import "types"
+import ::char
+import ::types
+
 
 .#? L S|C join\n  join a list of strings with another string or char
 {l s, l#s B; S}:join;
@@ -11,7 +14,7 @@ import "types"
 {.E \ #isdigit S =}:alldigits;
 
 .#? S trim\n  remove whitespace from start and end of string
-{"^\\s+|\\s+$" |S}:trim;
+{"^\\s+|\\s+$" |S _0={;""}?}:trim;
 
 .#? SCI strleftpad\n  left pad string S so it is at least length I using char C
 {str::str pad::char len::num,
@@ -26,12 +29,14 @@ import "types"
 .#? S isnum\n  returns true if the string is a valid number
 {.! :T ::num =}:isnum;
 
+
 .#? S tocamel\n  convert a string with underscores to camel case
 {str,
-  for 'c ['a'z,] {
-    "_$c" c! str .& :str;
+  ['a'z,] # {c,
+    "_+$c" c! str .& :str;
   };
-  str
+  .# remove extra (trailing) '_'
+  str "_" :|
 }:tocamel;
 
 
@@ -45,6 +50,7 @@ import "types"
   '\n' join       .# Join the rows with a newline
 }:matstr;
 
+
 .#? str sep csvstr\n  convert a csv string into a 2d list
 {str sep,
   str "\n" |
@@ -52,6 +58,8 @@ import "types"
   makesquare
 }:fromcsvstr;
 
+
+.#? list sep na tocsvstr\n  convert a 2d list to a csv string
 {list sep na,
   list #{
     .# If it is na, make it emptystr
@@ -61,8 +69,7 @@ import "types"
 }:tocsvstr;
 
 
-
-
+.#? str titlecase\n  convert a string to titlecase
 {str,
   str ERB; # {i,
     str iV I iswhitespace
@@ -71,12 +78,6 @@ import "types"
   };
   str 0:(str 0I toupper)
 }:titlecase;
-
-{:z,#{zB:z3%+}}:scramble;
-{:z,#{zB:z3%-}}:descramble;
-
-
-
 
 
 
@@ -91,7 +92,7 @@ import "types"
 {&0I}:firstmatch;
 
 .# Return the last match of a regular expression
-{&1!I}:lastmatch;
+{&:1I}:lastmatch;
 
 .# Remove all matches of a regex in a string
 {|S}:removeall;
@@ -99,7 +100,45 @@ import "types"
 .# Removes all spaces from a string
 {"\\s+"|S}:trimall;
 
-.# Returns true if the input string contains spaces or tabs
-{_E\ "[\\t|\\s]" &E=!}:iswhitespace;
-
 }:rgx;
+
+
+.#########
+.# TESTS #
+.#########
+
+aya.runtests `? {:ts,
+  import ::test
+
+  "string" testset! :ts;
+
+  {["a""b""c"] '~ join} ["a~b~c"] ts+
+  {["a"] '~ join} ["a"] ts+
+  {"123" alldigits} [1] ts+
+  {"_12" alldigits} [0] ts+
+  {"abc" alldigits} [0] ts+
+  {"\n\t abc \t \n" trim} ["abc"] ts+
+  {"\n\t " trim} [""] ts+
+  {"abc" '- 5 strleftpad} ["--abc"] ts+
+  {"abc" '- 3 strleftpad} ["abc"] ts+
+  {"abc" '- 0 strleftpad} ["abc"] ts+
+  {"abc" '- 5 strrightpad} ["abc--"] ts+
+  {"abc" '- 3 strrightpad} ["abc"] ts+
+  {"abc" '- 0 strrightpad} ["abc"] ts+
+  {"12.34" isnum} [1] ts+
+  {"12..123" isnum} [0] ts+
+  {"" isnum} [0] ts+
+  {"__abc__def_ghi__" tocamel} ["AbcDefGhi"] ts+
+  {[[7 8][9 10]] matstr} ["   7   8\n   9  10"] ts+
+  {"A,B\n1,2\n3,4" "," fromcsvstr} [[[ "A" "B" ] [ 1 2 ] [ 3 4 ]]] ts+
+  {[[1 2][3 4]] "," 0 tocsvstr} ["1,2\n3,4"] ts+
+  {[[1 2][::na 0][4 5]] "," ::na tocsvstr} ["1,2\n,0\n4,5"] ts+
+  {"to be or not to be" titlecase} ["To Be Or Not To Be"] ts+
+  {"abc def ghi" "\w+" rgx.firstmatch} ["abc"] ts+
+  {"abc def ghi" "\w+" rgx.lastmatch} ["ghi"] ts+
+  {"dn783d908d0m30" "\d+" rgx.removeall} ["dnddm"] ts+
+  {"\t\tAB \n C" rgx.trimall} ["ABC"] ts+
+
+  ts.run
+
+}
