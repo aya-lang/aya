@@ -1,3 +1,5 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# math.aya
 .# Essential math functions for Aya
 
@@ -10,94 +12,75 @@ import ::list
 .#############
 
 
-1M|:euler; .#? euler\n  euler's constant e
-0M|:pi;    .#? pi\n  constant \{pi}
-4M|:nan;   .#? nan\n  not a number double literal
-5M|:inf;   .#? inf\n  infinity double literal
-6M|:minf;  .#? minf\n  minus infinity double literal
-
-.# sqrt(2)
-2ZMq:sqrttwo;
-
-.# sqrt(3)
-3ZMq:sqrtthree;
-
-
+1M|:euler;    .#? euler: euler's constant e
+0M|:pi;       .#? pi:  constant \{pi}
+4M|:nan;      .#? nan:  not a number double literal
+5M|:inf;      .#? inf:  infinity double literal
+6M|:minf;     .#? minf:  minus infinity double literal
+:1r4:fourth;  .# ¼
+:1r2:half;	  .# ½
 
 .#? phi: golden ratio (constant)
 .# Compute phi using 2 adjacent fib numbers
 [1000 _B, 1\0{_@+}@%;]_1I\0I/
 :phi;
 
-1 4/:fourth;	.# ¼
-1 2/:half;		.# ½
 
 
-.#######################
-.# Essential Functions #
-.#######################
+
+.########################
+.# Vectorized Functions #
+.########################
 
 
 {.|}:abs;			.#? N abs\n  absolute value
-{_E\S\/}:avg;		.#? L avg\n  average of a list of numbers
 {1 3/^}:cbrt;    	.#? N cbrt\n  cube root
 {./}:ceil;      	.#? N ceil\n  ceiling
 {pi*180/}:deg;    	.#? N deg\n  convert deg to rad (180° => 3.14..)
 {180*pi/}:rad;      .#? N rad\n  convert rad to deg (pi rad => 180)
-{euler\^}:exp;    	.#? N exp\n  exp(x)
+{Me}:exp;    	    .#? N exp\n  exp(x)
 {M!}:fact;      	.#? N fact\n  factorial
 {.\}:floor;      	.#? N floor\n  floor
 {_.\-}:frac;    	.#? N frac\n  fractional part
-{1-M!}:gamma;		.#? N gamma\n  gamma function
-{2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
-{G}:isprime;        .#? N isprime \n  tests a number for primality
 {ML2ML/}:lg;		.#? N lg\n  base-2 log
 {Ml}:ln;      		.#? N ln\n  natural log
 {ML}:log;      		.#? N log\n  base-10 log
-{ML\ML\/}:logn;		.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
-{1-M!.|Ml}:lngamma;	.#? N lngamma\n  ln(abs(gamma(x)))
 {%}:mod;            .#? N mod\n  modulo
-{_#2^SMq#/}:normal; .#? L<N> normal\n  compute the normal vector of the given list
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
-{{*}F}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {Mq}:sqrt;          .#? N sqrt\n  square root
-{M$3E.\}:ts;        .#? ts\n  return the system time in seconds as an int
 {.%}:div;			.#? <NN> div\n  integer division
 {%}:rem;			.#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
+.# Binary vectorized functions
+{2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
+{ML\ML\/}:logn;		.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
 
-.#############################
-.# Additional Math Functions #
-.#############################
+
+
+
+.###################
+.# List Operations #
+.###################
+
+{_2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{{*}F}:product;     .#? L product\n  product of a list
+{*S}:dot;           .#? LL dot\n  dot product of a list
+
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
 {_ :T ::num = {.-}{{.-}F} .?}:lcm;
 
-.#? NN gcd \n  greatest common divisior of 2 numbers or a list of numbers
+.#? NN gcd \n  greatest common divisor of 2 numbers or a list of numbers
 {_ :T ::num = {.+}{{.+}F} .?}:gcd;
-
-.#? N divisors \n  returns a list of the numbers factors
-{n, [1 n,, n\%0=]}:divisors;
-
-.#? L geomean \n  geometric mean
-.# the nth root of the product of n numbers
-{_E\{*}F1@/^}:geomean;
-
-.#? L median \n  median value of a list
-{l,
-  l$_E2/.\               .# Sort the list and get its middle index
-  lE2%0= {_1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
-                          .# The list has odd length, take the middle item
-}:median;
 
 .#? L<N> cumsum\n  cumulative summation of a list
 {list : sum outlist,
   .# Allocate output list
   0 listE L :outlist;
 
-  for 'i (list irange) {
+  list irange # {i,
     list iI sum + : sum;
     sum outlist i D
   };
@@ -113,7 +96,7 @@ import ::list
   .# Allocate output list
   0 listE L :outlist;
 
-  for 'i (list irange) {
+  list irange # {i,
     list iI prod * : prod;
     prod outlist i D
   };
@@ -121,44 +104,8 @@ import ::list
   outlist
 }:cumprod;
 
-.#? LL pearson\n  pearson correlation coefficient between 2 datasets
-{x y : n xs ys,
-  xE:n;
-  xS:xs;
-  yS:ys;
 
-  [x y,*]Sn* xs ys*-
-   x2^Sn* xs2^ -
-   y2^Sn* ys2^ -
-   * Mq
-  /
-}:pearson;
 
-.#? N factors\n  compute a number's prime factors
-.# golf: {n,{2to(nV){n\%0=}.NI_n\/fK}{n}nGn2<|?}:f;
-{n,
-  .# is the number prime
-  nG n2< |
-
-  .# If the number is prime, return it
-  {n}
-
-  .# If the number is not prime, find the
-  .#   next factor
-  {
-    .# Range from 2..ceil(sqrt(n))
-    [2nVMq./]R
-
-    .# Find the next factor
-    {n\%0=}.N
-
-    .# Append this factor to the list of
-    .#   factors recursively
-    I _n\/ factors K
-  }
-
-  .?
-}:factors;
 
 
 
@@ -196,18 +143,24 @@ import ::list
 
 
 
-.# Bits
-{2 10 H}:unbit;   .#? L unbit \n  convert a list of bits to a number
-{10 2 H}:bits;    .#? N bits \n  convert a positive number to a list of bits
-{10 16 H}:hex;    .#? N hex\n  convert an int into a hex string
-{16 10 H}:unhex;  .#? S unhex\n  convert a hex string to an int
+.##############
+.# Statistics #
+.##############
 
+{_E\S\/}:mean;		.#? L mean\n  average of a list of numbers
+{set : m, set mean:m; set#{m-2^}S setE /}:variance; .#? L variance\n  population variance
+{variance Mq}:stdev; .#? L stdev\n  standard deviation
 
+.#? L geomean \n  geometric mean
+.# the nth root of the product of n numbers
+{_E\{*}F1@/^}:geomean;
 
-
-.# Statistics
-{set : m, set avg:m; set#{m-2^}S setE /}:variance;
-{variance Mq}:stdev;
+.#? L median \n  median value of a list
+{l,
+  l$_E2/.\               .# Sort the list and get its middle index
+  lE2%0= {_1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
+                          .# The list has odd length, take the middle item
+}:median;
 
 .#? xL xL regression\n  return a block that evaluates to the regression of the sets
 {x y :
@@ -234,12 +187,125 @@ import ::list
   "($b)*($a)+" .~
 }:regression;
 
-.# Combinatorics
 
-{`({n r, nM! n r-M!/})}:npr;        .# Permutations (nPr) (infix operator)
-{`({n r, nM! n r- M!/ rM!/})}:ncr;  .# Combinations (nCr) (infix operator)
+.#? LL pearson\n  pearson correlation coefficient between 2 datasets
+{x y : n xs ys,
+  xE:n;
+  xS:xs;
+  yS:ys;
+
+  [x y,*]Sn* xs ys*-
+   x2^Sn* xs2^ -
+   y2^Sn* ys2^ -
+   * Mq
+  /
+}:pearson;
 
 
 
-.# Vector
-{[2|,*]S}:bullet:dot; .#? dot\n dot (scalar) product of two lists
+.#############################
+.# Additional Math Functions #
+.#############################
+
+.# Numerics
+{E_@@*.\\/}:round; .#? NN round\n  round N1 to N2 decimal digits
+
+.# BASE
+
+{2 10 H}:unbit;   .#? L unbit \n  convert a list of bits to a number
+{10 2 H}:bits;    .#? N bits \n  convert a positive number to a list of bits
+{10 16 H}:hex;    .#? N hex\n  convert an int into a hex string
+{16 10 H}:unhex;  .#? S unhex\n  convert a hex string to an int
+
+
+
+.# COMBINATORICS
+
+{G}:isprime;                   .#? N isprime \n  tests a number for primality
+{n r, nM! n r-M!/}:npr;        .#? NN npr\n  permutations
+{n r, nM! n r- M!/ rM!/}:bin;  .#? NN bin\n binomial (combinations)
+
+.#? N divisors \n  returns a list of the numbers factors
+{n, [1 n,, n\%0=]}:divisors;
+
+.#? N factors\n  compute a number's prime factors
+.# golf: {n,{2to(nV){n\%0=}.NI_n\/fK}{n}nGn2<|?}:f;
+{n,
+  .# is the number prime
+  nG n2< |
+
+  .# If the number is prime, return it
+  {n}
+
+  .# If the number is not prime, find the
+  .#   next factor
+  {
+    .# Range from 2..ceil(sqrt(n))
+    [2nVMq./]R
+
+    .# Find the next factor
+    {n\%0=}.N
+
+    .# Append this factor to the list of
+    .#   factors recursively
+    I _n\/ factors K
+  }
+
+  .?
+}:factors;
+
+
+
+
+
+.#########
+.# TESTS #
+.#########
+
+aya.runtests `? {:ts,
+  import ::test
+
+  "math" testset! :ts;
+
+  {:1p1 4 round} [3.1415] ts+
+  {0.00012345 5 round} [0.00012] ts+
+  {9218731923.0012387087 4 round} [9218731923.0012 ] ts+
+  {3.141 0 round} [3] ts+
+  {[3 5][4 12] hypot} [[5 13]] ts+
+
+  .# List operations
+  {10R normal _S/S .\} [1] ts+
+  {5R product} [120] ts+
+  {[] product} [0] ts+
+  {[1 2 3][4 5 6] dot} [32] ts+
+  {12 4 lcm} [12] ts+
+  {[120 45 3 5] lcm} [360] ts+
+  {12 4 gcd} [4] ts+
+  {[120 45 10 5] gcd} [5] ts+
+  {[1 2 3 4] cumsum} [[1 3 6 10]] ts+
+  {[1 2 3 4] cumprod} [[1 2 6 24]] ts+
+
+  .# Statistics
+  {10R mean} [5.5] ts+
+  {10R variance} [8.25] ts+
+  {[:5 5]R stdev 2 round} [3.16] ts+
+  {10R geomean 2 round} [4.52] ts+
+  {[1 6 3 4 7 8 3 2 2] median} [3] ts+
+  {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] regression 10\~ 3 round} [8.902]
+  {10R _ pearson} [1] ts+
+  {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] pearson 3 round} [.902] ts+
+
+  .# Other
+  {12 bits} [[1 1 0 0]] ts+
+  {[1 1 0 0] unbit} [12] ts+
+  {98476 hex} ["180ac"] ts+
+  {"180ac" unhex} [98476] ts+
+  {100R #isprime S} [25] ts+
+  {9 4 npr} [3024] ts+
+  {9 4 bin} [126] ts+
+  {5R _ bin S} [5] ts+
+  {12 divisors} [[1 2 3 4 6 12]] ts+
+  {12 factors} [[2 2 3]] ts+
+
+  ts.run
+}
