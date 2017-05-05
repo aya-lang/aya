@@ -1,3 +1,5 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# _aya_
 .# Defines the aya namespace and Aya keywords
 
@@ -7,6 +9,8 @@
 
 
 {, .# begin aya namespace
+
+1:runtests;
 
 [
   "_aya_"  .# This file
@@ -66,12 +70,10 @@
   importnamezz _ (9M| _ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
   { .# No file sep, import from base
-    "importing from base: $importnamezz" :P
     importnamezz aya.importbase
   }
 
   { .# input contains a file sep
-    "importing from file: $importnamezz" :P
     importnamezz aya.importfile
   }
 
@@ -187,12 +189,12 @@
   .?
 })}:while;
 
-
+.{ Depreciated
 .#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
 {```({forloopczzzz forlooplistz forloopblkzz,
   "forlooplistz#{:$forloopczzzz; forloopblkzz}"~
 })}:for;
-
+.}
 
 .#? A print\n  convert to string a print to console
 {.P}:print;
