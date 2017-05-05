@@ -1,8 +1,11 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# colors.aya
 .# Defines both color and colors module
 
 import ::list
 import ::string
+
 
 .{? module: color
     A module for manipulating and printing colors in Aya
@@ -11,7 +14,7 @@ import ::string
 
   ::color :type;
 
-  .#Constructors
+  .# Constructors
 
   {r::num g::num b::num, {, r:r g:g b:b} color MO}:new;
 
@@ -69,10 +72,7 @@ import ::string
 
   .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
   {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
-  .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
-  {a b, '\block' 38L a b color.printgrad}:quickgrad;
-  .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
-  {o::list a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
+
   .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
   {3@@\.grad 1I~ color!}:mid;
 
@@ -95,6 +95,10 @@ import ::string
   .# .#? A (color) color.println\n  print A using the color; append a newline
   .# {.print"\n".P}:println;
   .# .#? (color) color.show\n  print a square of color and return the rgb values of the color
+  .# .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
+  .# {a b, '\block' 38L a b color.printgrad}:quickgrad;
+  .# .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
+  .# {o::list a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
 
 
 
@@ -108,8 +112,8 @@ import ::string
 .}
 {,
 
-  .# colors.randchoice\n  get a random color
-  {;255Q 255Q 255Q color!}:rand;
+  .#? colors.random\n  get a random color
+  {;255Q 255Q 255Q color!}:random;
 
   72  72  68  color!:fg;    .# Aya GUI foreground color
   39  40  34  color!:bg;    .# Aya GUI background color
@@ -216,3 +220,22 @@ import ::string
   169 169 169 color!:darkgray;
 
 }:colors;
+
+
+.#########
+.# TESTS #
+.#########
+
+aya.runtests `? {:ts,
+  import ::test
+
+  "color" testset! :ts;
+
+  {0 0 0 color! :T} [::color] ts+
+  {"35C62A" color.newhex.rgb} [[53 198 42]] ts+
+  {"35C62A" color.newhex.hsv 100*./} [[11577 79 78]] ts+
+  {colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
+  {3 colors.blue colors.yellow.grad .FS} [1146] ts+
+
+  ts.run
+}
