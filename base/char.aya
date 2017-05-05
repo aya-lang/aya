@@ -30,8 +30,9 @@
 .# TESTS #
 .#########
 
-aya.runtests `? {:ts,
-  import ::test
+import ::test
+
+`~ {:ts,
 
   "char" testset! :ts;
 
@@ -43,6 +44,6 @@ aya.runtests `? {:ts,
   {"\n\t s" #iswhitespace} [[1 1 1 0]] ts+
   {"alpha" spechar '\alpha' =} [1] ts+
 
-  ts.run
+  ts aya.addtest
 
 }

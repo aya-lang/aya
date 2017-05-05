@@ -17,7 +17,7 @@
   {self : res blk expected,
     self.W
 
-    [blk] :res;
+    [blk _\;] :res;
     res expected = ! {
       ["Test failed: $blk\n"
        "\tExpected: $expected\n"
@@ -56,3 +56,19 @@
     } .?
   }:run;
 }:testset;
+
+
+
+.# Add functions to the aya namespace
+
+[] aya.:tests
+
+{ts::testset,
+  aya.tests ts K ;
+} aya.:addtest;
+
+{
+  aya.tests # {ts,
+    ts.run
+  };
+} aya.:doruntests;

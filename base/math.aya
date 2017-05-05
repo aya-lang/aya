@@ -262,8 +262,9 @@ import ::list
 .# TESTS #
 .#########
 
-aya.runtests `? {:ts,
-  import ::test
+import ::test
+
+`~ {:ts,
 
   "math" testset! :ts;
 
@@ -307,5 +308,5 @@ aya.runtests `? {:ts,
   {12 divisors} [[1 2 3 4 6 12]] ts+
   {12 factors} [[2 2 3]] ts+
 
-  ts.run
+  ts aya.addtest
 }
