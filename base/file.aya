@@ -1,3 +1,6 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+
 import ::string
 import ::list
 
@@ -64,14 +67,11 @@ import ::list
   workingdir filesep | B; filesep join filesep + 3MZ
 }:updir;
 
-.#? filesep\n  default directory separator (/ for unix, \\ for windows, etc)
-if (defaultwd V '/ =\;) {
-  "/" .# Unix
-} {
-  "\\" .# Windows
-}
-:filesep;
 
+
+.# TYPE: FILE
+.# Deprecated
+.# The `file` type will be rewritten when streams are introduced
 
 {,
 
@@ -103,7 +103,7 @@ if (defaultwd V '/ =\;) {
 
   .#? (file) file.name\n  the name of the file
   {self,
-    self.path filesep |B\;
+    self.path 9M| |B\;
   }:name;
 
   .#? A (file) file.print\n  print the string representation of A to the file
