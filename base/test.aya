@@ -17,7 +17,11 @@
   {self : res blk expected,
     self.W
 
-    [blk _\;] :res;
+    {[blk _\;] :res;} {e,
+      "Exception in test $blk:\n\t$e" .D
+    } .K
+
+
     res expected = ! {
       ["Test failed: $blk\n"
        "\tExpected: $expected\n"

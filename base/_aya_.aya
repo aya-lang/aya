@@ -10,8 +10,6 @@
 
 {, .# begin aya namespace
 
-1:runtests;
-
 [
   "_aya_"  .# This file
 ]:imported;
@@ -34,10 +32,10 @@
     { .# try
       .# Load the file
       importdirnmz importnamezz + ".aya" + G ~
-    } { .# catch
+    } {e, .# catch
       .# Remove the file from imported list
       aya.imported importnamezz N .- ;
-      "Error importing " importnamezz + .D
+      "Error importing '$importnamezz':\n\t$e" .D
     } .K
 
   }
@@ -206,10 +204,6 @@
 
 .#? getline\n  read input from stdin and return it as a string
 {:R}:getline;
-
-
-.#? try EE\n  evaluate the first block, if error, then evaluate the second block
-{``.K}:try;
 
 
 .#? SB conderr\n  throw error message if condition is true
