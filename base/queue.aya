@@ -1,9 +1,12 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .{? type: queue
     A simple queue data structure
 
     Create queues by entering a list followed by the queue constructor
     [1 2 3] queue!
 .}
+
 
 {,
 
@@ -12,36 +15,63 @@
   .#? L queue.new\n  convert a list into a queue
   {l, {,l:list} queue MO}:new;
 
-  .#? (queue) queue.show\n  convert a queue to a string
+  .# str and repr overloads
   {self,
     self.isempty
     {"queue: <- -<"}
     {"queue: <-"self.listPB;V;"-<"++}
     .?
-  }:repr;
+  }:repr:str;
 
-  {.repr}:str;
-
-  .#? (queue) queue.dollar\n(queue) queue.next\n  return the next item in the queue
+  .#? ::queue queue.next\n  return the next item in the queue
   {self,
     "queue obj is empty" self.listE0= conderr
     self.listV\;
-  }:dollar;
+  }:next;
 
-  {queue.dollar}:next;
-
-  .#? (queue) queue.peek\n  return the next item in the queue without removing it from the queue
+  .#? ::queue queue.peek\n  return the next item in the queue without removing it from the queue
   {self,
     "queue obj is empty" self.listE0= conderr
     self.list0I
   }:peek;
 
-  .#? (queue) queue.len\n  return the number of elements in the queue
+  .#? ::queue queue.len\n  return the number of elements in the queue
   {.listE}:len;
 
   .#? (queue) queue.isempty\n  tests if the queue is empty
   {.listE0=}:isempty;
 
-  .#? A (queue) queue.plus\nA (queue) queue.add\n  add an item to the queue
+  .#? A ::queue queue.add\n  add an item to the queue
   {self, self.list.B; self}:add;
+
+  .#? ::queue queue.clear\n  clear the queue
+  {self, [] self.:list}:clear;
+
 }:queue;
+
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "queue" testset! :ts;
+
+  {[1 2 3] queue! :T} [::queue] ts+
+  {[1 2 3] queue! .next} [1] ts+
+  {:q, [1 2] queue!:q .next; q.next} [2] ts+
+  {:q, [1 2] queue!:q .peek; q.next} [1] ts+
+  {[1 2] queue! .clear .list} [[]] ts+
+  {3 [1 2] queue! + .next} [1] ts+
+  {[1 2 3] queue! E} [3] ts+
+  {:q, [1] queue!:q .next; q.isempty} [1] ts+
+  {[1] queue! .isempty} [0] ts+
+  {[] queue! .isempty} [1] ts+
+
+
+  ts aya.addtest
+}
