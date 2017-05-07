@@ -1,3 +1,5 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 import ::string
 import ::list
 import ::math
@@ -104,7 +106,7 @@ import ::math
        mat.rows
       } {
         .# return col(s) c
-        mat.cols c I .T
+        mat.cols c I  c :T ::num = {A} ? .T
       } .?
     } { .# specific rows
       .# all columns
@@ -255,7 +257,7 @@ import ::math
     .rows matstr
     "\n"" |\n|"@.&       .# Inside bars
     " |"K'|\K            .# Outside bars
-    "\n"+
+    "\n"+ "\n"\+
   }:repr;
 
   .#######################
@@ -341,22 +343,22 @@ import ::test
   {[[1 2][3 4]] m! :T} [::matrix] ts+
   {[[1 2][3 4]] m.is} [1] ts+
   {[[1][3 4]] m.is} [0] ts+
-  {[[1][2][3]] m.dim} [[3 1]] ts+
-  {[[1 2 3]] m.dim} [[1 3]] ts+
+  {[[1][2][3]] m! .dim} [[3 1]] ts+
+  {[[1 2 3]] m! .dim} [[1 3]] ts+
   {[[1 2][3 4]]m! .issq} [1] ts+
   {[[1 2]]m! .issq} [0] ts+
   {[[1 2][3 4]]m! .tr} [[1 4]] ts+
-  {[[1 2][3 4]]m! .t .rows} [[[1 3][2 4]]] ts+
-  {2 0 [[1 1][2 2]]m! .rowmul .rows} [[[2 2][2 2]]] ts+
-  {0 2 [[1 1][2 2][3 3]]m! .rowswap .rows} [[[3 3][2 2][1 1]]] ts+
-  {3 0 1 [[1 1][2 2]]m! .rowadd .rows} [[[1 1][5 5]]] ts+
-  {10 0 0 [[1 2][3 4]]m! .set .rows} [[[10 2][3 4]]] ts+
+  {[[1 2][3 4]]m! .t .rows} [ [[1 3][2 4]] ] ts+
+  {2 0 [[1 1][2 2]]m! .rowmul .rows} [ [[2 2][2 2]] ] ts+
+  {0 2 [[1 1][2 2][3 3]]m! .rowswap .rows} [ [[3 3][2 2][1 1]] ] ts+
+  {3 0 1 [[1 1][2 2]]m! .rowadd .rows} [ [[1 1][5 5]] ] ts+
+  {10 0 0 [[1 2][3 4]]m! .set .rows} [ [[10 2][3 4]] ] ts+
   {[[1 2][3 4][5 6]]m! .r} [3] ts+
   {[[1 2][3 4][5 6]]m! .c} [2] ts+
-  {[[1 2][3 4][5 6]]m! .cols} [[[1 3 5][2 4 6]]] ts+
+  {[[1 2][3 4][5 6]]m! .cols} [ [[1 3 5][2 4 6]] ] ts+
 
   .# Indexing
-  {3 m.pascal .rows} [[[1 1 1][1 2 3][1 3 6]]] ts+
+  {3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
   {3 m.pascal [2 2] I} [6] ts+
   {3 m.pascal [[] 2] I .rows} [ [[1][3][6]] ] ts+
   {3 m.pascal [2 []] I .rows} [ [[1 3 6]] ] ts+
@@ -367,7 +369,46 @@ import ::test
   {3 m.pascal [[] [0 1]] I .rows} [ [[1 1][1 2][1 3]] ] ts+
   {3 m.pascal [[0 1][0 1]] I .rows} [ [[1 1][1 2]] ] ts+
 
+  .# Arithmetic
+  {[[1 2][3 4]]m! _ + .rows} [ [[2 4][6 8]] ] ts+
+  {[[1 2][3 4]]m! 10 + .rows} [ [[11 12][13 14]] ] ts+
+  {10 [[1 2][3 4]]m! + .rows} [ [[11 12][13 14]] ] ts+
+  {[[1 2][3 4]]m! _ - .rows} [ [[0 0][0 0]] ] ts+
+  {[[1 2][3 4]]m! 10 - .rows} [ [[:9 :8][:7 :6]] ] ts+
+  {10 [[1 2][3 4]]m! - .rows} [ [[9 8][7 6]] ] ts+
+  {[[1 2][3 4]]m! _ * .rows} [ [[7 10][15 22]] ] ts+
+  {[[1 2][3 4]]m! 10 * .rows} [ [[10 20][30 40]] ] ts+
+  {10 [[1 2][3 4]]m! * .rows} [ [[10 20][30 40]] ] ts+
+  {[[1 2][3 4]]m! 10 / .rows} [ [[.1 .2][.3 .4]] ] ts+
+  {12 [[1 2][3 4]]m! / .rows} [ [[12 6][4 3]] ] ts+
+  {[[1 2][3 4]]m! 2 ^ .rows} [ [[7 10][15 22]] ] ts+
 
+  .# Iteration
+  {:a, [[1 2][3 4]]m!:a; {2*} a.apply.rows} [ [[2 4][6 8]] ] ts+
+  {:a, [[1 2][3 4]]m!:a; {2*} a.apply; a.rows} [ [[2 4][6 8]] ] ts+
+  {:a, [[1 2][3 4]]m!:a; {2*} a.map.rows} [ [[2 4][6 8]] ] ts+
+  {:a, [[1 2][3 4]]m!:a; {2*} a.map; a.rows} [ [[1 2][3 4]] ] ts+
+  {:a, [[1 2][3 4]]m!:a; {2*} a.each a.rows} [ [[1 2][3 4]] ] ts+
+
+  .# Other Overloads
+  .# No need to check them all, just check to see if they are loaded
+  {[[1 2][3 4]] m! M! .rows} [ [[1 2][6 24]] ] ts+
+  {[[1 2][3 4]] m! _ =} [1] ts+
+  {[[1 2][3 4]] m! 2 m.pascal =} [0] ts+
+  {[[:4 5][6 0]] m! .! .rows} [ [[:1 1][1 0]] ] ts+
+
+  .# Generators
+  {3 m.eye.rows} [ [[1 0 0][0 1 0][0 0 1]] ] ts+
+  {3 m.pascal.rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
+  {2 2 10 m.newfill.rows} [ [[10 10][10 10]] ] ts+
+  {10 [[1 1][3 3]]m! .fill.rows} [ [[10 10][10 10]] ] ts+
+  {3 2 m.zeros.rows} [ [[0 0][0 0][0 0]] ] ts+
+  {2 3 m.ones.rows} [ [[1 1 1][1 1 1]] ] ts+
+  {3 m.multiptable.rows} [ [[1 2 3][2 4 6][3 6 9]] ] ts+
+
+  .# Transformations
+  {[2 m.eye _] m.hstack.rows} [ [[1 0 1 0][0 1 0 1]] ] ts+
+  {[2 m.eye _] m.vstack.rows} [ [[1 0][0 1][1 0][0 1]] ] ts+
 
 
 
