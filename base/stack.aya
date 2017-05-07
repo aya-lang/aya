@@ -5,6 +5,8 @@
     [1 2 3] stack!
 .}
 
+
+
 {,
 
   ::stack :type;
@@ -12,7 +14,7 @@
   .#? L stack.new\n  convert a list into a stack
   {l, {, l:list} stack MO}:new;
 
-  .#? (stack) stack.show\n  convert a stack to a string
+  .#? ::stack stack.show\n  convert a stack to a string
   {self,
     self.isempty
     {"stack: <- -|"}
@@ -20,26 +22,56 @@
     .?
   }:str:repr;
 
-  .#? (stack) stack.dollar\n(stack) stack.next\n  return the next item in the stack
+  .#? ::stack stack.dollar\n::stack stack.next\n  return the next item in the stack
   {self,
-    "stack obj is empty" self.listE0= conderr
+    self.listE0= {"stack obj is empty" .D} ?
     self.listV\;
   }:dollar;
 
   {stack.dollar}:pop;
 
-  .#? (stack) stack.peek\n  return the next item in the stack without removing it from the stack
+  .#? ::stack stack.peek\n  return the next item in the stack without removing it from the stack
   {self,
-    "stack obj is empty" self.listE0= conderr
+     self.listE0= {"stack obj is empty" .D} ?
     self.list0I
   }:peek;
 
-  .#? (stack) stack.len\n  return the number of elements in the stack
+  .#? ::stack stack.len\n  return the number of elements in the stack
   {.listE}:len;
 
-  .#? (stack) stack.isempty\n  tests if the stack is empty
+  .#? ::stack stack.isempty\n  tests if the stack is empty
   {.listE0=}:isempty;
 
-  .#? A (stack) stack.plus\nA (stack) stack.add\n  add an item to the stack
+  .#? A ::stack stack.add\n  add an item to the stack
   {self, self.list.V; self}:add;
+
+  .#? ::stack stack.clear\n  clear the queue
+  {self, [] self.:list}:clear;
+
 }:stack;
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "stack" testset! :ts;
+
+  {[1 2 3] stack! :T} [::stack] ts+
+  {[1 2 3] stack! .pop} [1] ts+
+  {:s, [1 2] stack!:s .pop; s.pop} [2] ts+
+  {:s, [1 2] stack!:s .peek; s.pop} [1] ts+
+  {[1 2] stack! .clear .list} [[]] ts+
+  {3 [1 2] stack! + .pop} [3] ts+
+  {[1 2 3] stack! E} [3] ts+
+  {:s, [1] stack!:s .pop; s.isempty} [1] ts+
+  {[1] stack! .isempty} [0] ts+
+  {[] stack! .isempty} [1] ts+
+
+
+  ts aya.addtest
+}
