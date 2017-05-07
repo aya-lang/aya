@@ -589,11 +589,12 @@ class OP_Minus extends Operation {
 		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).sub((NumberList)b) );
 		}
-		else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_RSUB, b);
-		} else if (b.isa(DICT)) {
+		else if (b.isa(DICT)) {
 			block.push(a);
 			block.callVariable((Dict)b, Ops.KEYVAR_SUB);
+		}
+		else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_RSUB, b);
 		}
 		else {
 			throw new TypeError(this, a,b);
