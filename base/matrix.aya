@@ -1,7 +1,6 @@
-import "string"
-import "list"
-import "types"
-import "math"
+import ::string
+import ::list
+import ::math
 
 .{? type: matrix
     Matrix manipulations and representations
@@ -28,27 +27,31 @@ import "math"
     .?
   }:new;
 
-  {.rows.E\0IEK}:dim; .#? (matrix) matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
-  {m, m.rowsE m.rows#E\#= {|}F}:issq;          .#? (matrix) matrix.issq\n  returns true if the list is a square matrix
-  {m, [m.rows_ER,VI]}:tr;                       .#? (matrix) matrix.tr\n  trace of a matrix as a list
-  {m, m.rows .T matrix!}:t;          .#? (matrix) matrix.t\n  transpose a matrix
-  {*S}:dot;                                .# dot product of two lists
+  .#? ::matrix matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
+  {.rows.E\0IEK}:dim;
 
+  .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
+  {m, m.rowsE m.rows#E\#= {|}F}:issq;
 
+  .#? ::matrix matrix.tr\n  trace of a matrix as a list
+  {m, [m.rows_ER,VI]}:tr;
+
+  .#? ::matrix matrix.t\n  transpose a matrix
+  {m, m.rows .T matrix!}:t;
 
 
 
   .# Elementary row operations
 
-  .#? NN(matrix) rowmul\n  multiply row N2 by a scalar N1
+  .#? NN::matrix rowmul\n  multiply row N2 by a scalar N1
   {n rn mat,
     (mat.rows rn :           .# Assign the rnth row of mat...
-	  (mat.rows rn I #{n*})  .# ..to the rnth row times n
+	  (mat.rows rn I n*)  .# ..to the rnth row times n
 	  );
     mat
   }:rowmul;
 
-  .# NN(matrix) rowswap\n swap rows N1 and N2 of the matrix
+  .#? NN ::matrix matrix.rowswap\n swap rows N1 and N2 of the matrix
   {ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows ra I :tmp;            .# Store row N1 in a tmp var
@@ -58,7 +61,7 @@ import "math"
   }:rowswap;
 
 
-  .# NNN (matrix) rowadd\n  add a N1*(N2nd row) to the N3rd row
+  .#? NNN ::matrix matrix.rowadd\n  add a N1*(N2nd row) to the N3rd row
   {add ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows ra I add #*:tmp;              .# Multiply the N2 row by N1
@@ -66,32 +69,29 @@ import "math"
 	mat
   }:rowadd;
 
-  .# Augment
-  {mata matb,
-    "matrix.augment: both must have same number of rows" mata.r matb.r =! conderr
-    [mata.rows matb.rows,K]matrix!
-  }:augment;
-
-
-  .# from rref
-  .# invert
-  .# rank
-  .# det
 
 
   .############
   .# INDEXING #
   .############
 
-  {n::num i::num j::num m, (m.rows iI j : (n));m}:set;      .#? NII (matrix) matrix.set\n  set the item at index I1, I2 to N
-  {.rowsE}:r;                                   .#? (matrix) matrix.r\n  return the number of rows in the matrix
-  {.rows0IE}:c;                                 .#? (matrix) matrix.r\n  return the number of cols in the matrix
-  {.rows .T}:cols;                         .#? (matrix) matrix.cols\n  return the columns as a list of lists
+  .#? NII ::matrix matrix.set\n  set the item at index I1, I2 to N
+  {n::num i::num j::num m, (m.rows iI j : (n));m}:set;
+
+   .#? ::matrix matrix.r\n  return the number of rows in the matrix
+  {.rowsE}:r;
+
+  .#? ::matrix matrix.r\n  return the number of cols in the matrix
+  {.rows0IE}:c;
+
+  .#? ::matrix matrix.cols\n  return the columns as a list of lists
+  {.rows .T}:cols;
 
 
-  .{? (matrix) [row col] matrix.getindex\n  return the element at (r,c)
-  if r is [], return the cth col
-  if c is [], return the rth row .}
+  .{? ::matrix [row col] matrix.getindex\n  return the element at (r,c)
+  r and c may be lists
+  if r is [], use all rows
+  if c is [], use all cols .}
   {mat ix : r c out,
     ix0I:r;
     ix1I:c;
@@ -128,7 +128,7 @@ import "math"
 
     :out
 
-    .# If out is a 1d list, wrap it before constructing the new matrix
+    .# If out is a 1s list, wrap it before constructing the new matrix
     out :T ::list = {
       out 0 I :T ::list =! {A} ?
       matrix!
@@ -142,7 +142,7 @@ import "math"
   .# ARITHMETIC OVERLOADS #
   .########################
 
-
+  .#? N ::matrix (\) matrix.add\n  add a number or another matrix
   {o self,
     o:T ::matrix = {
       [o.rows self.rows, +] matrix!
@@ -156,7 +156,7 @@ import "math"
   }:radd;
 
 
-
+  .#? N ::matrix (\) matrix.sub\n  subtract a number or another matrix
   {o self,
     o:T ::matrix = {
       [o.rows self.rows, \-] matrix!
@@ -170,21 +170,17 @@ import "math"
   }:rsub;
 
 
-
+  .#? ::matrix N (\) matrix.div\n  divide matrix by a number
   {o self,
-    o:T ::matrix = {
-      [o.rows self.rows, \/] matrix!
-    } {
-      self.rows # {o\/} matrix!
-    }.?
+    self.rows # {o\/} matrix!
   }:div;
 
   {self o,
-      self.rows # {o/} matrix!
+    self.rows # {o/} matrix!
   }:rdiv;
 
 
-
+  .#? N ::matrix (\) matrix.mul\n  multiply a number or another matrix
   {o self,
     o:T ::matrix = {
       o self.matmul
@@ -206,7 +202,7 @@ import "math"
 
 
 
-  .#? N (matrix) matrix.pow\n  raise matrix to the Nth power
+  .#? ::matrix N matrix.rpow\n  raise matrix to the Nth power
   {mat exp::num,
     "matrix.pow: exponent must be positive" exp 1 < conderr
     mat {_} exp V %
@@ -246,14 +242,15 @@ import "math"
   }] #~
 
 
-  .#? (matrix) (matrix) matrix.eq\n  test if two matrices are equal
+  .#? ::matrix ::matrix matrix.eq\n  test if two matrices are equal
   {a b,
      a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
   }:eq;
 
+  .#? ::matrix matrix.signnum\n  apply signnum to each element of the matrix
   {.rows #{#.!} matrix!}:signum;
 
-  .#? (matrix) matrix.show\n  converts a matrix to a string
+  .#? ::matrix matrix.repr\n  converts a matrix to a string
   {
     .rows matstr
     "\n"" |\n|"@.&       .# Inside bars
@@ -284,7 +281,7 @@ import "math"
   .#? IIN matrix.newfill\n  create a I1 by I2 matrix filled with N3
   {\L\Lmatrix!}:newfill;
 
-  .#? N (matrix) matrix.fill\n  fill matrix with N everywhere
+  .#? N ::matrix matrix.fill\n  fill matrix with N everywhere
   {n::num m, n m.cL m.rLmatrix!}:fill;
 
   .#? NN matrix.zeros\n  create a N1 by N2 matrix of zeros
@@ -328,3 +325,51 @@ import "math"
 }:matrix;
 
 matrix:m;
+
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "matrix" testset! :ts;
+
+  {[[1 2][3 4]] m! :T} [::matrix] ts+
+  {[[1 2][3 4]] m.is} [1] ts+
+  {[[1][3 4]] m.is} [0] ts+
+  {[[1][2][3]] m.dim} [[3 1]] ts+
+  {[[1 2 3]] m.dim} [[1 3]] ts+
+  {[[1 2][3 4]]m! .issq} [1] ts+
+  {[[1 2]]m! .issq} [0] ts+
+  {[[1 2][3 4]]m! .tr} [[1 4]] ts+
+  {[[1 2][3 4]]m! .t .rows} [[[1 3][2 4]]] ts+
+  {2 0 [[1 1][2 2]]m! .rowmul .rows} [[[2 2][2 2]]] ts+
+  {0 2 [[1 1][2 2][3 3]]m! .rowswap .rows} [[[3 3][2 2][1 1]]] ts+
+  {3 0 1 [[1 1][2 2]]m! .rowadd .rows} [[[1 1][5 5]]] ts+
+  {10 0 0 [[1 2][3 4]]m! .set .rows} [[[10 2][3 4]]] ts+
+  {[[1 2][3 4][5 6]]m! .r} [3] ts+
+  {[[1 2][3 4][5 6]]m! .c} [2] ts+
+  {[[1 2][3 4][5 6]]m! .cols} [[[1 3 5][2 4 6]]] ts+
+
+  .# Indexing
+  {3 m.pascal .rows} [[[1 1 1][1 2 3][1 3 6]]] ts+
+  {3 m.pascal [2 2] I} [6] ts+
+  {3 m.pascal [[] 2] I .rows} [ [[1][3][6]] ] ts+
+  {3 m.pascal [2 []] I .rows} [ [[1 3 6]] ] ts+
+  {3 m.pascal [[] []] I .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
+  {3 m.pascal [0 [0 1]] I .rows} [ [[1 1]] ] ts+
+  {3 m.pascal [[0 1] 0] I .rows} [ [[1][1]] ] ts+
+  {3 m.pascal [[0 1] []] I .rows} [ [[1 1 1][1 2 3]] ] ts+
+  {3 m.pascal [[] [0 1]] I .rows} [ [[1 1][1 2][1 3]] ] ts+
+  {3 m.pascal [[0 1][0 1]] I .rows} [ [[1 1][1 2]] ] ts+
+
+
+
+
+
+  ts aya.addtest
+}
