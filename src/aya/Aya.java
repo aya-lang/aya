@@ -212,31 +212,8 @@ public class Aya extends Thread {
 			if (!s.equals("")) {
 				println(s);
 			}
-		} catch (TypeError te) {
-			_instance._err.println("TYPE ERROR: " + te.getSimpleMessage());
-		} catch (SyntaxError se) {
-			_instance._err.println("SYNTAX ERROR: " + se.getSimpleMessage());
-		} catch (AyaRuntimeException ere) {
-			_instance._err.println("ERROR: " + ere.getSimpleMessage());
-		} catch (PatternSyntaxException pse) {
-			_instance._err.println(exToSimpleStr(pse));
-		} catch (EmptyStackException ese) {
-			_instance._err.println("Unexpected empty stack");
-		} catch (IndexOutOfBoundsException iobe) {
-			_instance._err.println(exToSimpleStr(iobe));
-		} catch (AyaUserRuntimeException eure) {
-			_instance._err.println(eure.getSimpleMessage());
-		} 
-		catch (Exception e2) {
-			System.out.println("EXCEPTION: Unhandled exception in Aya.run(Block)");
-			if(PRINT_LARGE_ERRORS) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e2.printStackTrace(pw);
-				_instance._err.println(sw.toString());
-			} else {
-				_instance._err.println("Error");
-			}
+		} catch (Exception e) {
+			_instance._err.print(exToString(e));
 		} finally {
 			_instance._variables.reset();
 		}
@@ -246,7 +223,35 @@ public class Aya extends Thread {
 	// HELPER METHODS //
 	////////////////////
 	
-	private String exToSimpleStr(Exception e) {
+	public static String exToString(Exception e) {
+		if (e instanceof TypeError) {
+			return "TYPE ERROR: " + ((TypeError)e).getSimpleMessage();
+		} else if (e instanceof SyntaxError) {
+			return "SYNTAX ERROR: " + ((SyntaxError)e).getSimpleMessage();
+		} else if (e instanceof AyaRuntimeException) {
+			return "ERROR: " + ((AyaRuntimeException)e).getSimpleMessage();
+		} else if (e instanceof PatternSyntaxException) {
+			return exToSimpleStr(e);
+		} else if (e instanceof EmptyStackException) {
+			return "Unexpected empty stack";
+		} else if (e instanceof IndexOutOfBoundsException) {
+			return exToSimpleStr(e);
+		} else if (e instanceof AyaUserRuntimeException ) {
+			return ((AyaUserRuntimeException)e).getSimpleMessage();
+		} 
+		else {
+			if(PRINT_LARGE_ERRORS) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				return sw.toString();
+			} else {
+				return "Error";
+			}
+		}
+	}
+	
+	private static String exToSimpleStr(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);

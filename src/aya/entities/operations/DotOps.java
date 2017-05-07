@@ -870,7 +870,8 @@ class OP_Dot_TryCatch extends Operation {
 				block.appendToStack(b.getStack());
 			} catch (Exception e) {
 				Block b = ((Block)catchBlock).duplicate();
-				b.eval();
+				b.push(new Str(Aya.exToString(e)));
+				b.eval();				
 				block.appendToStack(b.getStack());
 			}
 		}
