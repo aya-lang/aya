@@ -1,5 +1,9 @@
 #Aya Code Examples
 
+## !!NOTE!! These examples are outdated, for up-to-date examples, see the examples folder
+
+
+
 ##Print "2014" using no numbers in source  
 ```
 cEb*d{B}cB%+
