@@ -75,6 +75,15 @@ public class NumberItemList extends NumberList {
 		}
 		return ints;
 	}
+			
+	@Override
+	public int[] toIntArray() {
+		int[] ints = new int[_list.size()];
+		for (int i = 0; i < _list.size(); i++) {
+			ints[i] = _list.get(i).toInt();
+		}
+		return ints;
+	}
 	
 	@Override
 	public double[] todoubleArray() {
@@ -474,6 +483,15 @@ public class NumberItemList extends NumberList {
 	@Override
 	public Number get(int i) {
 		return _list.get(List.index(i, _list.size()));
+	}
+	
+	@Override
+	public NumberItemList get(int[] is) {
+		ArrayList<Number> out = new ArrayList<Number>(is.length);
+		for (int i : is) {
+			out.add( _list.get(List.index(i, _list.size())) );
+		}
+		return new NumberItemList(out);
 	}
 	
 	@Override

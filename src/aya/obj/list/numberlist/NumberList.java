@@ -31,6 +31,9 @@ public abstract class NumberList extends List {
 	/** Convert to Integer[] */
 	public abstract Integer[] toIntegerArray();
 	
+	/** Convert to int[] */
+	public abstract int[] toIntArray();
+	
 	/** Convert to double[] */
 	public abstract double[] todoubleArray();
 	
