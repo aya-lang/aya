@@ -1,7 +1,13 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# dataframe.aya
+.# provides easy ways for representing and manipulating tabular data
+
+
 import ::list
 import ::file
 
-.{ TODO
+.{ TODO:
    filter
    setvalue
    writecsv
@@ -11,14 +17,12 @@ import ::file
 
   ::dataframe :type;
 
-  {self, self.columns [1|~,.A]}:rows;
-
   {self,
 	  [""] (self.columns_\;) K A
 	  self.index #{P" |"K}
 	  self.values
 	  [2|~,.A]K
-	  matstr
+	  matstr "\n"\+
   }:repr:str;
 
 
@@ -27,7 +31,7 @@ import ::file
   .# Creating Dataframes #
   .#######################
 
-  {kwargs::dict : columns(::na) index(::na) data(::na) filename header(1) numofrows,
+  {kwargs::dict : columns(::na) index(::na) data(::na) csvindex(::na) filename header(1) numofrows,
     kwargs .W
 
     filename :T ::str = {
@@ -35,6 +39,7 @@ import ::file
          header :header
          index ::na =! {index:index} ?
          columns ::na =! {columns:columns} ?
+         csvindex ::na =! {csvindex:csvindex} ?
       } dataframe.opencsv
     } {
       {, data ::na =! {data :data} ?
@@ -61,7 +66,9 @@ import ::file
 
     columns ::na = {
       data E dataframe.gencolnames :columns;
-    } ?
+    } {
+      columns #P :columns;
+    } .?
 
     data E 0 = {
       .# no data -> empty dataframe
@@ -103,7 +110,7 @@ import ::file
 
 
   .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
-  {kwargs::dict : filename(::na) index(::na) columns(::na) header data,
+  {kwargs::dict : filename(::na) index(::na) columns(::na) csvindex(0) header data,
     kwargs.W
 
     filename ::na = {
@@ -117,13 +124,24 @@ import ::file
       data V :columns; ;
     } ?
 
+    .# Given data is list of rows, transform to list of cols
+    data .T :data;
+
+    .# Use the first col of the csv as the index?
+    csvindex {
+      data V :index; ;
+      columns V ;;
+    } ?
+
+
+
     {,
       .# define only if they exist
       index ::na =! {index:index} ?
       columns ::na =! {columns:columns} ?
 
       .# opencsv returns a list of rows
-      data .T :data
+      data :data
     }
     dataframe.fromdata
   }:opencsv;
@@ -148,13 +166,13 @@ import ::file
     r :T ::num =
     c :T ::num = & {
       .# r and c are both numbers, return a value
-      df.values c I r I
+      self.values c I r I
 
     } {
 
       .# r or c is a list, return a new dataframe
 
-      df.values c I
+      self.values c I
       .# if c is a number, wrap in array
       c :T ::num = {A} ?
       .# if r is a number, wrap each in an array
@@ -162,8 +180,8 @@ import ::file
       :cols;
 
       {, cols :data;
-         df.index r I r:T ::num = {A} ? :index;
-         df.columns c I  c:T ::num = {A} ? :columns;
+         self.index r I r:T ::num = {A} ? :index;
+         self.columns c I  c:T ::num = {A} ? :columns;
       } dataframe!
 
     } .?
@@ -173,7 +191,7 @@ import ::file
 
   .#? i::list self::dataframe dataframe.loc\n  index a dataframe using row and col indices or names
   {i::list self : r c,
-        i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
+    i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
     i 0 I :r;
     i 1 I :c;
@@ -187,7 +205,6 @@ import ::file
 
   .#? i::any hdr::list dataframe.toindex\n  convert i to a list of numeric indices for the items in hdr
   {i hdr,
-
     i :T ::num = {
       i
     } { i :T ::str = {
@@ -234,16 +251,70 @@ import ::file
 
 
   {column self : i,
-    column self.colindex :i;
-    self.rows {iI} .$ [1|~,.A] self.:columns;
-    self
+    column self.columns dataframe.toindex :i;
+    self.values .T {iI} .$ .T self.:values
   }:sort;
 
 }:dataframe;
 
-.{
-{, ["total" "percent"]:columns
-   ["a" "b"]:index
-   [[10 15][40 60]]:data
-} dataframe!:df;
+.# Shortcut variable
+dataframe:f;
+
+
+.{ Sample dataframe
+    {, ["total" "percent"]:columns
+       ["a" "b"]:index
+       [[10 15][40 60]]:data
+    } dataframe!:df;
 .}
+
+
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "dataframe" testset! :ts;
+
+  .# Indexing
+
+  .# Basics
+  {0 {,3R:index"ac"R:columns9R[3_]L:data}f!.col} [ [1 2 3] ] ts+
+  {[0 :1] {,3R:index"ac"R:columns9R[3_]L:data}f!.col} [ [[1 2 3][7 8 9]] ] ts+
+  {0 {,3R:index"ac"R:columns9R[3_]L:data}f!.row} [ [1 4 7] ] ts+
+  {[0 :1] {,3R:index"ac"R:columns9R[3_]L:data}f!.row} [ [[1 4 7][3 6 9]] ] ts+
+
+  .# iloc
+  {[2 2] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc} [9] ts+
+  {[[] 2] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[7 8 9]] ] ts+
+  {[2 []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[3][6][9]] ] ts+
+  {[[] []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+  {[0 [0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1][4]] ] ts+
+  {[[0 1] 0] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2]] ] ts+
+  {[[0 1] []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2][4 5][7 8]] ] ts+
+  {[[] [0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2 3][4 5 6]] ] ts+
+  {[[0 1][0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2][4 5]] ] ts+
+
+  .# loc
+  {["z" "c"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc} [9] ts+
+  {[[] "c"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[7 8 9]] ] ts+
+  {["z" []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[3][6][9]] ] ts+
+  {[[] []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+  {["x" ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1][4]] ] ts+
+  {[["x" "y"] "a"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2]] ] ts+
+  {[["x" "y"] []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2][4 5][7 8]] ] ts+
+  {[[] ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2 3][4 5 6]] ] ts+
+  {[["x" "y"]["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2][4 5]] ] ts+
+
+  .# Other
+  {100 dataframe.gencolnames [0 25 26 :1] I} [ ["a" "z" "aa" "cv"] ] ts+
+  {"b" {,"xz"R#P:index"ac"R#P:columns[3R [5 2 8] 3R]:data}f!.sort.values} [ [[2 1 3][2 5 8][2 1 3]] ] ts+
+
+  ts aya.addtest
+
+}
