@@ -213,7 +213,7 @@ public class Aya extends Thread {
 				println(s);
 			}
 		} catch (Exception e) {
-			_instance._err.print(exToString(e));
+			_instance._err.println(exToString(e));
 		} finally {
 			_instance._variables.reset();
 		}
