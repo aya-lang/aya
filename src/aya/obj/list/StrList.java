@@ -116,6 +116,15 @@ public class StrList extends List {
 	}
 	
 	@Override
+	public StrList get(int[] is) {
+		ArrayList<Str> out = new ArrayList<Str>(is.length);
+		for (int i : is) {
+			out.add( _list.get(List.index(i, _list.size())) );
+		}
+		return new StrList(out);
+	}
+	
+	@Override
 	public Str remove(int i) {
 		return _list.remove(List.index(i, _list.size()));
 	}

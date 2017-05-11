@@ -142,6 +142,15 @@ public class Str extends List implements Comparable<Str> {
 	}
 	
 	@Override
+	public Str get(int[] is) {
+		char[] chars = new char[is.length];
+		for (int i = 0; i < is.length; i++) {
+			chars[i] = _str.charAt(List.index(is[i], _str.length()));
+		}
+		return new Str(new String(chars));
+	}
+	
+	@Override
 	public Char remove(int i) {
 		int index = List.index(i, _str.length());
 		Char c = Char.valueOf(_str.charAt(index));

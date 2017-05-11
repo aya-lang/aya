@@ -1117,24 +1117,25 @@ class OP_I extends Operation {
 		Obj index = block.pop();
 		final Obj list = block.pop();
 				
-		if(list.isa(LIST)) {
+		if(list.isa(LIST)) {		
 			if(index.isa(NUMBER)) {
 				block.push( ((List)list).get(((Number)index).toInt()) );
 			} else if (index.isa(NUMBERLIST)) {
-				NumberList indexList = ((List)index).toNumberList();
-				ArrayList<Obj> out = new ArrayList<Obj>(indexList.length());
-				List refList = (List)list;
-				for(int i = 0; i < indexList.length(); i++) {
-					out.add(refList.get(indexList.get(i).toInt()) );
+				int[] is = ((NumberList)index).toIntArray();
+				block.push(((List)list).get(is));
+			} else if (index.isa(LIST)) {
+				List ix = (List)index;
+				if (ix.length() == 0) {
+					block.push(list.deepcopy());
+				} else {
+					throw new AyaRuntimeException("Operator .I expected a numeric list, recieved:\n\t"
+							+ list.repr());
 				}
-				block.push((new GenericList(out)).promote());
-			} else if (index.isa(BLOCK)) {
-				block.push( ((Block)index).filter((List)list) );
-			} else {
-				throw new TypeError(this, index, list);
 			}
-		} 
-		else if (list.isa(DICT)) {
+			else if (index.isa(BLOCK)) {
+				block.push( ((Block)index).filter((List)list) );
+			}
+		}else if (list.isa(DICT)) {
 			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
 		}
 		else {

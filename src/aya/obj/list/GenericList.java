@@ -207,6 +207,15 @@ public class GenericList extends List {
 	}
 	
 	@Override
+	public List get(int[] is) {
+		ArrayList<Obj> out = new ArrayList<Obj>(is.length);
+		for (int i : is) {
+			out.add( _list.get(List.index(i, _list.size())) );
+		}
+		return new GenericList(out).promote();
+	}
+	
+	@Override
 	public Obj remove(int i) {
 		return _list.remove(List.index(i, _list.size()));
 	}

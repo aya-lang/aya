@@ -272,6 +272,9 @@ public abstract class List extends Obj {
 	/** Get the 0-indexed item from the list */
 	public abstract Obj get(int i);
 	
+	/** Get the 0-indexed items from the list */
+	public abstract List get(int[] is);
+	
 	/** Remove the 0-indexed item from the list */
 	public abstract Obj remove(int i);
 	
