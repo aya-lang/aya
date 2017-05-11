@@ -1,3 +1,6 @@
+.# This file tests the core language features. For testing modules or
+.#   other aya code, see base/test.aya
+
 "Test file loaded!\n" .P
 
 .#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
@@ -66,7 +69,7 @@
 {[0.5] MT} assert [[(0.4636476090008061) ]]
 {[0.5] ML} assert [[(-0.3010299956639812)]]
 {[0.5] Ml} assert [[(-0.6931471805599453)]]
-{[0.5] Mq} assert [[(0.7071067811865476) ]]  
+{[0.5] Mq} assert [[(0.7071067811865476) ]]
 
 .# List Builder
 
@@ -79,7 +82,7 @@
 
 .# Character
 
-{'c!} assert ['C] 
+{'c!} assert ['C]
 {'C!} assert ['c]
 {'?!} assert ['?]
 {'A 1 +} assert ['B]
@@ -119,7 +122,7 @@
 { {,5:x} "y" N} assert [0]
 
 
-.# Objects 
+.# Objects
 {{, {self, self.x 2* self.:x}:double}:d; d!:p; 3p.:x; p.double.x}
 assert
 [6]
@@ -132,8 +135,3 @@ assert
 import "test/test_op_overload"
 
 "All tests passed!" :P
-
-
-
-
-

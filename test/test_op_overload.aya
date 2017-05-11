@@ -1,3 +1,6 @@
+.# This file tests operator overloading features
+.# For testing modules or other aya code, see base/test.aya
+
 {,
 
   ::vec :type;
