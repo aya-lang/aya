@@ -835,11 +835,12 @@ class OP_Dot_I extends Operation {
 				block.push( ((List)list).get(((Number)index).toInt()) );
 			} else if (index.isa(NUMBERLIST)) {
 				NumberList indexList = ((List)index).toNumberList();
+				ArrayList<Obj> out = new ArrayList<Obj>(indexList.length());
 				List refList = (List)list;
 				for(int i = 0; i < indexList.length(); i++) {
-					indexList.set( i, refList.get(indexList.get(i).toInt()) );
+					out.add(refList.get(indexList.get(i).toInt()) );
 				}
-				block.push(indexList);
+				block.push((new GenericList(out)).promote());
 			} else if (index.isa(BLOCK)) {
 				block.push( ((Block)index).filter((List)list) );
 			}
