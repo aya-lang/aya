@@ -1,10 +1,12 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+
 .{? type: stack
     A simple stack data structure
 
     Create stacks by entering a list followed by the stack constructor
     [1 2 3] stack!
 .}
-
 
 
 {,

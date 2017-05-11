@@ -1,3 +1,5 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# types.aya
 .# Defines functions for converting and checking types
 
@@ -5,18 +7,14 @@
 
 .# CONVERSION
 
-{.\}:int;					  .#? A int\n  cast to an int
-{Md}:double;				.#? A double\n  cast to an double
-{Z}:bignum;		      .#? A bignum\n  cast to an bignum
-{P}:string;			    .#? A string\n  cast to an string
-{.'}:char;          .#? A char\n  cast to an char
-
-
+{.\}:int;      .#? A int\n  cast to an int
+{Md}:double;   .#? A double\n  cast to an double
+{Z}:bignum;    .#? A bignum\n  cast to an bignum
+{P}:string;    .#? A string\n  cast to an string
+{.'}:char;     .#? A char\n  cast to an char
 
 
 .# TYPE CHECKING
-
-{:T}:typeof;				.#? A typeof\n  return the character representation of the type
 
 .#? AC isa\n  returns true if the item's type matches the input character
 {item::any type::sym,

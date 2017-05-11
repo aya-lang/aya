@@ -1,4 +1,4 @@
-
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .{? type: date
     The date type provides operations for accessing date and time variables.
