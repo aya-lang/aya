@@ -238,6 +238,9 @@ public class Parser {
 				while(in.hasNext()) {
 					char c = in.next();
 					if (c == '\\') {
+						if (!in.hasNext()) {
+							throw new SyntaxError("Expected escape character: " + in);
+						}
 						char escape = in.next();
 						switch(escape) {
 						case '}':
