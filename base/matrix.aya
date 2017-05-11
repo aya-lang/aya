@@ -94,48 +94,29 @@ import ::math
   r and c may be lists
   if r is [], use all rows
   if c is [], use all cols .}
-  {mat ix : r c out,
-    ix0I:r;
-    ix1I:c;
+  {mat ix : r c,
+    ix0I :r;
+    ix1I :c;
 
-    .# all rows
-    r [] = {
-      .# all columns
-      c [] = {
-       .# all rows, all cols: return entire mat
-       mat.rows
+    .# Get the data
+    mat.rows r I
+    r :T ::num = {A} ?
+    #{cI}
+
+    .# Transform the data based on input type
+    .# Return a new matrix if possible
+    c :T ::num = {
+      r :T ::num = {
+        .# `r` and `c` both nums, return a single item
+        0I
       } {
-        .# return col(s) c
-        mat.cols c I  c :T ::num = {A} ? .T
+        .# Only columns returned, wrap each in a list
+        #A matrix!
       } .?
-    } { .# specific rows
-      .# all columns
-      c [] = {
-        .# col empty, return entire row
-        mat.rows r I
-      } {
-        .# specific rows and columns
-        mat.rows r I
-
-        .# if r is a list, take c from each row
-        r :T ::list = {
-          #{c I}
-          c :T ::num = {A.T} ?
-        } {
-          c I
-        } .?
-
-      } .?
-    } .?
-
-    :out
-
-    .# If out is a 1s list, wrap it before constructing the new matrix
-    out :T ::list = {
-      out 0 I :T ::list =! {A} ?
+    } {
+      .# Only rows returned, convert to matrix
       matrix!
-    } ?
-
+    } .?
   }:getindex;
 
 
