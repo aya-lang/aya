@@ -5,6 +5,7 @@
 
 import ::char
 import ::types
+import ::list
 
 
 .#? L S|C join\n  join a list of strings with another string or char
@@ -51,10 +52,18 @@ import ::types
 }:matstr;
 
 
+{
+  .!
+  _:T ::str = {
+    .# If it is a string, test if it has quotes and remove them
+    trim _ [0 :1]I "\"\"" = {B;V;} ?
+  } ?
+}:parsecsvitem;
+
 .#? str sep csvstr\n  convert a csv string into a 2d list
 {str sep,
   str "\n" |
-  # {sep | # {.! _:T ::str = {trim} ?} }
+  # {sep | # parsecsvitem }
   makesquare
 }:fromcsvstr;
 
