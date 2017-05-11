@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import aya.Aya;
 import aya.AyaPrefs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
@@ -77,7 +78,7 @@ public class MathOps {
 		/* 60 <  */ null, //new OP_ModSet(),
 		/* 61 =  */ null,
 		/* 62 >  */ null, //new OP_ModGet(),
-		/* 63 ?  */ null,
+		/* 63 ?  */ new OP_Help(),
 		/* 64 @  */ null,
 		/* 65 A  */ null, //new OP_Abs(),
 		/* 66 B  */ null,
@@ -207,6 +208,44 @@ class OP_SysTime extends Operation {
 	}
 }
 
+// ? - 63
+class OP_Help extends Operation {
+	public OP_Help() {
+		this.name = "M?";
+		this.info = "search help text";
+		this.argTypes = "S";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj s = block.pop();
+		
+		if(s.isa(STR)) {
+			String str = s.str();
+			ArrayList<Str> items;
+			
+			if (str.length() == 0) {
+				String[] ss = Aya.getInstance().getHelpData().getAllItems();
+				items = new ArrayList<Str>(ss.length);
+				for (String a : ss) {
+					items.add(new Str(a));
+				}
+			} else {
+				ArrayList<String> ss = Aya.getInstance().getHelpData().staticSearch(s.str());
+				items = new ArrayList<Str>(ss.size());
+				for (String a : ss) {
+					items.add(new Str(a));
+				}
+			}
+			
+			block.push(new StrList(items));
+			
+		}
+		else {
+			throw new TypeError(this, s);
+		}
+	}
+}
+
 // C - 67
 class OP_Acosine extends Operation {
 	public OP_Acosine() {
@@ -230,12 +269,12 @@ class OP_Acosine extends Operation {
 		}
 		
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
-//D - 68
+// D - 68
 class OP_MDate extends Operation {
 	private Calendar cal = Calendar.getInstance();
 
@@ -270,7 +309,7 @@ class OP_MDate extends Operation {
 }
 
 
-//H - 68
+// H - 68
 class OP_MParse_Date extends Operation {
 
 	public OP_MParse_Date() {
@@ -310,7 +349,7 @@ class OP_MParse_Date extends Operation {
 }
 
 
-//l - 76
+// l - 76
 class OP_Log extends Operation {
 
 	public OP_Log() {
@@ -337,7 +376,7 @@ class OP_Log extends Operation {
 	}
 }
 
-//O - 79
+// O - 79
 class OP_NewUserObject extends Operation {
 	public OP_NewUserObject() {
 		this.name = "MO";
