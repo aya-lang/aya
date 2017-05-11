@@ -143,4 +143,15 @@ public class StringSearch {
 			return filteredItems.toString();
 		return allItems.toString();
 	}
+
+	/** Apply a search and return an arraylist but do not modify the object in any way */
+	public ArrayList<String> staticSearch(String str) {
+		ArrayList<String> out = new ArrayList<String>();
+		for (String item : allItems) {
+			if(item.contains(str)) {
+				out.add(item);
+			}
+		}
+		return out;
+	}
 }
