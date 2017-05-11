@@ -13,7 +13,7 @@ import java.util.regex.PatternSyntaxException;
 
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
-import aya.entities.operations.MathOps;
+import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
@@ -114,7 +114,7 @@ public class Aya extends Thread {
 			ArrayList<String> searchList = new ArrayList<String>();
 			
 			searchList.addAll(Ops.getAllOpDescriptions());
-			searchList.addAll(MathOps.getAllOpDescriptions());
+			searchList.addAll(MiscOps.getAllOpDescriptions());
 			searchList.addAll(DotOps.getAllOpDescriptions());
 			searchList.addAll(ColonOps.getAllOpDescriptions());
 			//searchList.addAll(this.variables.getDefaultVariableDiscs(this));

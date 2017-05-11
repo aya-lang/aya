@@ -38,7 +38,7 @@ import aya.util.ChartParams;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
 
-public class MathOps {	
+public class MiscOps {	
 
 	
 	public static char FIRST_OP = '!';

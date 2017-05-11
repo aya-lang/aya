@@ -3,7 +3,7 @@ package aya.parser.tokens;
 import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
-import aya.entities.operations.MathOps;
+import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.SyntaxError;
 
@@ -37,7 +37,7 @@ public class OperatorToken extends StdToken {
 			op = DotOps.getOp(data.charAt(0));
 			break;
 		case MATH_OP:
-			op = MathOps.getOp(data.charAt(0));
+			op = MiscOps.getOp(data.charAt(0));
 			break;
 		case COLON_OP:
 			op = ColonOps.getOp(data.charAt(0));
