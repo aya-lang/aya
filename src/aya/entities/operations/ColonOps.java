@@ -76,7 +76,7 @@ public class ColonOps {
 		/* 65 A  */ null,
 		/* 66 B  */ null,
 		/* 67 C  */ new OP_Colon_C(),
-		/* 68 D  */ null,
+		/* 68 D  */ new OP_Colon_D(),
 		/* 69 E  */ new OP_Colon_E(),
 		/* 70 F  */ null,
 		/* 71 G  */ null,
@@ -293,6 +293,32 @@ class OP_Colon_C extends Operation {
 	}
 }
 
+// D - 68
+class OP_Colon_D extends Operation {
+	public OP_Colon_D() {
+		this.name = ":D";
+		this.info = "set dict item using symbol or string";
+		this.argTypes = "ASR|AJR";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj dict = block.pop();
+		final Obj index = block.pop();
+		final Obj item = block.pop();
+
+
+		
+		if (dict.isa(DICT) && index.isa(SYMBOL)) {
+			((Dict)dict).set(((Symbol)index).id(), item);
+			block.push(dict);
+		} else if (dict.isa(DICT) && index.isa(STR)) {
+			((Dict)dict).set(Symbol.convToSymbol(index.str()).id(), item);
+			block.push(dict);
+		} else {
+			throw new TypeError(this, item, index, dict);
+		}
+	}
+}
 
 // E - 69
 class OP_Colon_E extends Operation {
