@@ -241,7 +241,8 @@ public class Dict extends Obj {
 			Dict other = (Dict)o;
 			if (other.size() == this.size()) {
 				for (Long l : this._vars.getMap().keySet()) {
-					if (!other._vars.getMap().get(l).equiv(this._vars.getMap().get(l))) {
+					Obj elem = other._vars.getMap().get(l);
+					if (elem == null || !elem.equiv(this._vars.getMap().get(l))) {
 						return false;
 					}
 				}
