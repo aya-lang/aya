@@ -145,6 +145,19 @@ public class Dict extends Obj {
 	 * If a pair exists, overwrite
 	 * if not, create a new pair
 	 */ 
+	public void set(Long id, Obj o) {
+		if (o.equals(this)) {
+			throw new AyaRuntimeException("Error assigning '" + (new Variable(id)).toString() + "': "
+					+ "Cannot assign dict as member of itself");
+		} else {
+			_vars.setVar(id, o);
+		}
+	}
+	
+	/** Set a key-value pair.
+	 * If a pair exists, overwrite
+	 * if not, create a new pair
+	 */ 
 	public void set(String s, Obj o) {
 		if (o.equals(this)) {
 			throw new AyaRuntimeException("Error assigning '" + s + "': "
@@ -277,6 +290,10 @@ public class Dict extends Obj {
 		}
 		sb.append("}");
 		return sb.toString();
+	}
+
+	public Obj getMetaDict() {
+		return new Dict(_meta);
 	}
 
 	
