@@ -1,0 +1,55 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# Defines the `enum` keyword which allows for
+.#  easy creation of enum classes and symbol groups
+
+{``({class::sym enums::list : dict meta,
+
+  .# The metatable for each enum member
+  {,
+    class :type;
+    {self, "$(self.type:C).$(self.name:C)"}:str:repr;
+    {other self,
+      other.type self.type =
+      other.name self.name = &
+    }:eq;
+  }:meta;
+
+  .# The enum dict
+  {, class:name }:dict;
+
+  .# Add each element to the enum dict
+  enums # {e,
+    {,e:name} meta MO e dict :D ;
+  };
+
+  .# Create and add the metatable for the enum
+  dict {,
+    ::enum :type;
+    {.name:C}:repr:str;
+  } MO
+
+  .# Assign the name of the enum to the enum class
+  class :C':\.V~;
+})}:enum;
+
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "enum" testset! :ts;
+
+  {:e, enum ::e [::a ::b ::c] e P} ["e"] ts+
+  {:e, enum ::e [::a ::b ::c] e.a P} ["e.a"] ts+
+  {:e, enum ::e [::a ::b ::c] e.a e.b =} [0] ts+
+  {:e, enum ::e [::a ::b ::c] e.a e.a =} [1] ts+
+
+  ts aya.addtest
+
+}
