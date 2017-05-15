@@ -26,6 +26,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
+import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
@@ -37,6 +38,7 @@ import aya.parser.CharacterParser;
 import aya.util.ChartParams;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
+import aya.variable.VariableSet;
 
 public class MiscOps {	
 
@@ -212,8 +214,13 @@ class OP_SysTime extends Operation {
 class OP_Help extends Operation {
 	public OP_Help() {
 		this.name = "M?";
-		this.info = "search help text";
-		this.argTypes = "S";
+		this.info = "search help\n"
+				+ "  \"string\"M? search all help text\n"
+				+ "  0M? list all 1 char ops\n"
+				+ "  1M? list all dot ops\n"
+				+ "  2M? list all colon ops\n"
+				+ "  3M? list all misc. ops\n";
+		this.argTypes = "S|N";
 	}
 	@Override
 	public void execute(Block block) {
@@ -239,10 +246,54 @@ class OP_Help extends Operation {
 			
 			block.push(new StrList(items));
 			
+		} else if (s.isa(NUMBER)) {
+			int n = ((Number)s).toInt();
+			switch (n) {
+			case 0:
+				block.push(convOpData(Ops.OPS));
+				break;
+			case 1:
+				block.push(convOpData(DotOps.DOT_OPS));
+				break;
+			case 2:
+				block.push(convOpData(ColonOps.COLON_OPS));
+				break;
+			case 3:
+				block.push(convOpData(MiscOps.MATH_OPS));
+				break;
+
+			default:
+				throw new AyaRuntimeException("M?: Invalid index: " + n);
+			}
 		}
 		else {
 			throw new TypeError(this, s);
 		}
+	}
+	
+	private List convOpData(Operation[] ops) {
+		ArrayList<Obj> opData = new ArrayList<Obj>(ops.length);
+		for (Operation o : ops) {
+			if (o != null) {
+				opData.add(opInfoToDict(o));
+			}
+		}
+		return new GenericList(opData);
+	}
+	
+	private Dict opInfoToDict(Operation op) {
+		Dict d = new Dict();
+		d.set("name", new Str(op.name));
+		d.set("types", new Str(op.argTypes));
+		d.set("desc", new Str(op.info));
+		 
+		if (op.overload != null) {
+			d.set("overload", new Str(op.overload));
+		} else {
+			d.set("overload", Str.EMPTY);
+		}
+		
+		return d;
 	}
 }
 
