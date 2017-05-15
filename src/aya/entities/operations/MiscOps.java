@@ -128,7 +128,7 @@ public class MiscOps {
 		/* 108 l */ new OP_Ln(),
 		/* 109 m */ null,
 		/* 110 n */ null,
-		/* 111 o */ null,
+		/* 111 o */ new OP_GetMeta(),
 		/* 112 p */ new OP_Primes(),
 		/* 113 q */ new OP_SquareRoot(),
 		/* 114 r */ null,
@@ -934,6 +934,26 @@ class OP_Ln extends Operation {
 			throw new TypeError(this, n);
 		}
 	}
+}
+
+// o - 111
+class OP_GetMeta extends Operation {
+	public OP_GetMeta() {
+		this.name = "Mo";
+		this.info = "get a dict's metatable";
+		this.argTypes = "R";
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		if (a.isa(DICT)) {
+			block.push(((Dict)a).getMetaDict());
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+
 }
 
 // p - 112

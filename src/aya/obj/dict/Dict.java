@@ -279,6 +279,10 @@ public class Dict extends Obj {
 		return sb.toString();
 	}
 
+	public Obj getMetaDict() {
+		return new Dict(_meta);
+	}
+
 	
 
 
