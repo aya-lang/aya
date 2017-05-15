@@ -1238,20 +1238,19 @@ class OP_N extends Operation {
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop(); //Item
-		final Obj b = block.pop(); //List
+		final Obj b = block.peek(); //List
 		
 		if (a.isa(STR) && b.isa(STR)) {
 			block.push(new Num(b.str().indexOf(a.str())));
-		} else if(b.isa(Obj.LIST)) {
-			
-			block.push(b);
-			
+		} else if(b.isa(Obj.LIST)) {			
 			List l = (List)b;
 			block.push(new Num(l.find(a)));
 		}
 		else if (b.isa(DICT) && a.isa(STR)) {
-			// TODO ByteNum
 			block.push( new Num(((Dict)b).containsKey(a.str())) );
+		}
+		else if (b.isa(DICT) && a.isa(SYMBOL)) {
+			block.push( new Num(((Dict)b).containsKey(((Symbol)a).id())) );
 		}
 		else {
 			throw new TypeError(this, a, b);
