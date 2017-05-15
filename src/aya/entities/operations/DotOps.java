@@ -574,7 +574,11 @@ class OP_Dot_Equals extends Operation {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		
-		if (a.isa(LIST) && b.isa(LIST)) {
+		if (a.isa(DICT) && b.isa(DICT)) {
+			block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
+		}
+		
+		else if (a.isa(LIST) && b.isa(LIST)) {
 			block.push( List.equalsElementwise((List)a, (List)b) );
 		}
 		
