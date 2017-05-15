@@ -37,6 +37,12 @@ public class Dict extends Obj {
 		_meta = null;
 	}
 	
+	/** Create a new empty dict */
+	public Dict() {
+		_vars = new VariableSet(false);
+		_meta = null;
+	}
+
 	/** Set the metatable to the input dict */
 	public void setMetaTable(Dict d) {
 		_meta = d._vars;
