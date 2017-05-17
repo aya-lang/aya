@@ -60,7 +60,10 @@ public class RationalNum extends Number {
 		else if (Double.isNaN(number)) {
 			throw new AyaRuntimeException("Cannont convert NaN to rational");
 		}
-
+		else if (Math.floor(number) == number) {
+			_num = (long)number;
+			_den = 1L;
+		}
 		else {
 			//Algorithm from:
 			// http://stackoverflow.com/questions/14014158/double-to-fraction-in-java
@@ -100,8 +103,21 @@ public class RationalNum extends Number {
 				_den = firstMultiplier - secondMultiplier;
 			}
 		}
+		
+		//this.simplify();
 	}
 
+	public void simplify() {
+		if (_num == _den) {
+			_num = 1L;
+			_den = 1L;
+		} else {
+			long gcd = NumberMath.gcd(_num, _den);
+			_num = _num / gcd;
+			_den = _den / gcd;
+		}
+	}
+	
 	/////////////////
 	// CONVERSIONS //
 	/////////////////
@@ -410,8 +426,8 @@ public class RationalNum extends Number {
 		if(_den == n._den) {
             return new RationalNum(_num - n._num, _den);
         } else {
-          long den = _den / n._den;
-          long num = _num / n._num;
+          long den = _den * n._den;
+          long num = _num * n._num;
           num -= n._num * _den;
           return new RationalNum(num, den);
         }
