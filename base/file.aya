@@ -103,7 +103,7 @@ import ::list
 
   .#? (file) file.name\n  the name of the file
   {self,
-    self.path 9M| |B\;
+    self.path :9c |B\;
   }:name;
 
   .#? A (file) file.print\n  print the string representation of A to the file

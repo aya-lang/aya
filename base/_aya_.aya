@@ -63,9 +63,9 @@
 }:importfile;
 
 {importnamezz,
-  .# Does the name contain a file sep? (9M|)
-  .# 9M| _ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
-  importnamezz _ (9M| _ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
+  .# Does the name contain a file sep? (:9c)
+  .# :9c _ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
+  importnamezz _ (:9c _ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
   { .# No file sep, import from base
     importnamezz aya.importbase

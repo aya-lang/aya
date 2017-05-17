@@ -12,11 +12,11 @@ import ::list
 .#############
 
 
-1M|:euler;    .#? euler: euler's constant e
-0M|:pi;       .#? pi:  constant \{pi}
-4M|:nan;      .#? nan:  not a number double literal
-5M|:inf;      .#? inf:  infinity double literal
-6M|:minf;     .#? minf:  minus infinity double literal
+:1c :euler;    .#? euler: euler's constant e
+:0c :pi;       .#? pi:  constant \{pi}
+:4c :nan;      .#? nan:  not a number double literal
+:5c :inf;      .#? inf:  infinity double literal
+:6c :minf;     .#? minf:  minus infinity double literal
 :1r4:fourth;  .# ¼
 :1r2:half;	  .# ½
 

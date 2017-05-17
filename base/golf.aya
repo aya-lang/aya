@@ -4,6 +4,7 @@ import """
   date
   math
   matrix
+  dataframe
 """
 
 .# Single letter variables
@@ -11,8 +12,8 @@ import """
 2:b;
 3:c;
 10:d;
-1M|:e;
-.#:f;
+:1c:e;
+dataframe:f;
 .#:g;
 .#:h;
 .#:i;
@@ -22,7 +23,7 @@ import """
 matrix:m;
 '\n':n;
 .#:o;
-0M|:p;
+:0c :p;
 .#:q;
 {VR0\K}:r;
 .#:s;
@@ -34,13 +35,17 @@ matrix:m;
 0:y;
 0:z;
 
-.# Commpn boxed operators
+.# Common boxed operators
 {{+}} :badd;
 {{-}} :bsub;
 {{*}} :bmul;
 {{/}} :bdiv;
 {{%}} :bmod;
 
+.# Operators (for special characters)
+{:>}:geq; 		.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
+{:<}:leq; 		.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
+{=!}:ne;		.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
 
 .# Common functions
 []		:emptyset;
