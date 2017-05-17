@@ -958,12 +958,18 @@ class OP_Dot_R extends Operation {
 	@Override public void execute (Block block) {
 		final Obj a = block.pop();
 		
-		if (a.isa(NUM)) {
-			final Num n = (Num)a;
-			block.push(ListBuilder.buildRange(Num.ZERO, (Num)(n.add(n.signnum().negate())) ));
-		} else if (a.isa(BIGNUM)) {
-			final BigNum n = (BigNum)a;
-			block.push(ListBuilder.buildRange(BigNum.ZERO, (BigNum)(n.add(n.signnum().negate())) ));
+		if (a.isa(NUMBER)) {
+			final Number n = (Number)a;
+			if (n.compareTo(Num.ZERO) == 0) {
+				// 0 .R => [ ]
+				block.push(new GenericList(new ArrayList<Obj>()));
+			} else if (n.compareTo(Num.ZERO) > 0) {
+				// +N .R => [0 1 2 ... N-1]
+				block.push( ListBuilder.buildRange(Num.ZERO, n.dec()) );
+			} else {
+				// -N .R => [N+1 ... -1 0]
+				block.push( ListBuilder.buildRange(n.inc(), Num.ZERO) );
+			}
 		} else {
 			throw new TypeError(this, a);
 		}

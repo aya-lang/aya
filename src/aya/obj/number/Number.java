@@ -138,4 +138,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	@Override
 	public abstract Number deepcopy();
 
+
+	// Slight performance improvement for list builders
+	public abstract Number subEq(Number v);
+	public abstract Number addEq(Number v);
+
 }

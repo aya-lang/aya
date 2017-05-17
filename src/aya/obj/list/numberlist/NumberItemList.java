@@ -26,6 +26,33 @@ public class NumberItemList extends NumberList {
 			_list.add(item);
 		}
 	}
+	
+	public NumberItemList(Number lo, Number hi, Number inc) {
+		//Calculate the number of items, this will return a negative value if array creation is impossible
+ 		int numOfItems = hi.sub(lo).div(inc).floor().toInt() + 1;
+	
+		if(numOfItems > 10000000) {
+			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
+		} else if (numOfItems < 0) {
+			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
+					+ " ["+ lo.repr() +" "+ lo.add(inc).repr() +" "+ hi.repr() +"]" );
+		}
+		
+		_list = new ArrayList<Number>(numOfItems);
+		
+		
+		
+		//Increment up or down?
+		if((lo.compareTo(hi) > 0 && inc.compareTo(Num.ZERO) > 0) || (lo.compareTo(hi) < 0 && inc.compareTo(Num.ZERO) < 0)) {
+			for(int i = 0; i < numOfItems; i++, lo.sub(inc)) {
+				_list.add(lo);
+			}
+		} else {
+			for(int i = 0; i < numOfItems; i++, lo = lo.add(inc)) {
+				_list.add(lo);
+			}
+		}
+	}
 
 	//////////////////////////
 	// NUMBERLIST OVERRIDES //
