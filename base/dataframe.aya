@@ -9,8 +9,12 @@ import ::file
 
 .{ TODO:
    filter
-   setvalue
-   writecsv
+   set
+   write
+     csv
+     html
+     markdown
+   addrow
 .}
 
 {,
@@ -59,8 +63,8 @@ import ::file
 
     data ::na = {
       0 [
-        columns ::na = {1} {columns E} .? :c
-        index ::na = {1} {index E} .?
+        columns ::na = {0} {columns E} .? :c
+        index ::na = {0} {index E} .?
         ] L :data :P
     } ?
 
@@ -80,9 +84,12 @@ import ::file
 
     .# if no index is given, generate one
     index ::na = {
-      numofrows .R :index;
+      numofrows 0 = {
+        []:index;
+      } {
+        numofrows .R :index;
+      } .?
     } ?
-
 
     .# Additional checks
 
@@ -232,6 +239,40 @@ import ::file
   {self index::list,
     index self.loc
   }:getindex;
+
+  .################
+  .# Transforming #
+  .################
+
+  {index rowdata::list self : ix,
+    rowdataE self.columnsE =!
+      {"addrow: row and col lengths to not match:\n\t$rowdata\n\t$(self.columns)" .D} ?
+
+    .# Does the index exist?
+    self.index index N :ix :1 = {
+      .# The index does not exist
+      .# Add a row to the cols
+      index self.index .B ;
+      self.values # {0\.B} ;
+      self.values 0I E V :ix;
+    } ?
+
+    .# pop the result of `N`
+    ;
+
+    .# Append each data to the columns
+    {
+      rowdata E.R # {col,
+        self.values col I ix : (rowdata col I)
+      };
+    } {
+      .# There was an error, return the dataframe
+      .#   to its original state
+      self.index B;
+      self.values # {B;}
+    } .K
+
+  }:setrow;
 
 
 
