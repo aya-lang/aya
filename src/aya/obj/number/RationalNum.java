@@ -106,18 +106,13 @@ public class RationalNum extends Number {
 			}
 		}
 		
-		//this.simplify();
+		this.simplify();
 	}
 
 	public void simplify() {
-		if (_num == _den) {
-			_num = 1L;
-			_den = 1L;
-		} else {
-			long gcd = NumberMath.gcd(_num, _den);
-			_num = _num / gcd;
-			_den = _den / gcd;
-		}
+		long gcd = NumberMath.gcd(_num, _den);
+		_num = _num / gcd;
+		_den = _den / gcd;
 	}
 	
 	/////////////////
