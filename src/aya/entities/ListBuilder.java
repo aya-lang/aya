@@ -3,8 +3,6 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import org.apfloat.Apfloat;
-
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -13,14 +11,9 @@ import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
-import aya.obj.number.BigNum;
-import aya.obj.number.Num;
 import aya.obj.number.Number;
 
 public class ListBuilder {
-	
-	private static final Apfloat AP_NEG_ONE = Apfloat.ONE.multiply(new Apfloat(-1));
-	private static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);
 
 	
 	private Block initialList;
@@ -112,18 +105,18 @@ public class ListBuilder {
 	}
 	
 	public static NumberItemList buildRange(Number n) {
-		if(n.compareTo(Num.ZERO) < 0) {
+		if(n.compareTo(n.zero()) < 0) {
 			// :4 R => [-4 -3 -2 -1]
-			return new NumberItemList(n, Num.NEG_ONE, Num.ONE);
+			return new NumberItemList(n, n.negOne(), n.one());
 		} else {
 			// r R => [1 2 3 4]
-			return new NumberItemList(Num.ONE, n, Num.ONE);
+			return new NumberItemList(n.one(), n, n.one());
 		}
 	}
 	
 	public static NumberItemList buildRange(Number lo, Number hi) {
-		Num inc = Num.ONE;
-		if(lo.compareTo(hi) > 0) inc = Num.NEG_ONE;
+		Number inc = lo.one();
+		if(lo.compareTo(hi) > 0) inc = lo.negOne();
 		return new NumberItemList(lo, hi, inc);
 	}
 	
@@ -142,7 +135,7 @@ public class ListBuilder {
 		case 1:
 			Obj o = args.get(0);
 			if (o.isa(Obj.NUMBER)) {
-				return buildRange((Num)o);
+				return buildRange((Number)o);
 			}
 			else if (o.isa(Obj.CHAR)) {
 				return arrToAL(charRange('a', ((Char)o).charValue(), 1));
