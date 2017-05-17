@@ -142,5 +142,11 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	// Slight performance improvement for list builders
 	public abstract Number subEq(Number v);
 	public abstract Number addEq(Number v);
+	
+	//Common constants, return the same type
+	public abstract Number one();
+	public abstract Number zero();
+	public abstract Number negOne();
+	
 
 }

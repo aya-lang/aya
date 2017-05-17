@@ -9,6 +9,8 @@ import aya.obj.Obj;
 public class RationalNum extends Number {
 	
 	public static final RationalNum ONE = new RationalNum(1L, 1L);
+	public static final RationalNum ZERO = new RationalNum(0L, 1L);
+	public static final RationalNum NEG_ONE = new RationalNum(-1L, 1L);
 	
 	private final int LARGEST_RIGHT_OF_DECIMAL = 8;
 	private final long SECOND_MULTIPLIER_MAX = (long)Math.pow(10, LARGEST_RIGHT_OF_DECIMAL - 1);
@@ -346,11 +348,50 @@ public class RationalNum extends Number {
 	public boolean isPrime() {
 		return _den == 1 && NumberMath.isPrime(_num);
 	}
+	
+	//////////////////
+	// TRANSFORMERS //
+	//////////////////
+	
+	@Override
+	public RationalNum subEq(Number v) {
+		RationalNum n = this.sub(v);
+		this._den = n._den;
+		this._num = n._num;
+		return this;
+	}
 
+	@Override
+	public RationalNum addEq(Number v) {
+		RationalNum n = this.add(v);
+		this._den = n._den;
+		this._num = n._num;
+		return this;
+	}
+
+
+
+		
+	///////////////
+	// CONSTANTS //
+	///////////////
 	
+	@Override
+	public RationalNum one() {
+		return ONE;
+	}
 	
+	@Override
+	public RationalNum zero() {
+		return ZERO;
+	}
 	
-	
+	@Override
+	public RationalNum negOne() {
+		return NEG_ONE;
+	}
+		
+		
 	
 	
 	///////////////////
@@ -441,22 +482,6 @@ public class RationalNum extends Number {
 	/** Divide two rational numbers */
 	RationalNum r_div(RationalNum n) {
 		return new RationalNum(_num * n._den, _den * n._num);
-	}
-
-	@Override
-	public RationalNum subEq(Number v) {
-		RationalNum n = this.sub(v);
-		this._den = n._den;
-		this._num = n._num;
-		return this;
-	}
-
-	@Override
-	public RationalNum addEq(Number v) {
-		RationalNum n = this.add(v);
-		this._den = n._den;
-		this._num = n._num;
-		return this;
 	}
 
 

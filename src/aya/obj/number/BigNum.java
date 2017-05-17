@@ -13,6 +13,7 @@ public class BigNum extends Number {
 	
 	public static BigNum ZERO = new BigNum(0);
 	public static BigNum ONE = new BigNum(1);
+	public static BigNum NEG_ONE = new BigNum(1);
 	
 	private Apfloat _val;
 	
@@ -359,6 +360,46 @@ public class BigNum extends Number {
 		return _val.compareTo(n.toApfloat()); 
 	}
 	
+	//////////////////
+	// TRANSFORMERS //
+	//////////////////
+	
+	@Override
+	public BigNum subEq(Number v) {
+		_val = _val.subtract(v.toApfloat());
+		return this;
+	}
+
+	@Override
+	public BigNum addEq(Number v) {
+		_val = _val.add(v.toApfloat());
+		return this;
+	}
+
+	
+	///////////////
+	// CONSTANTS //
+	///////////////
+	
+	@Override
+	public BigNum one() {
+		return ONE;
+	}
+
+	@Override
+	public BigNum zero() {
+		return ZERO;
+	}
+
+	@Override
+	public BigNum negOne() {
+		return NEG_ONE;
+	}
+
+	
+
+
+	
 	/////////////////////
 	// PRIVATE METHODS //
 	/////////////////////
@@ -375,18 +416,6 @@ public class BigNum extends Number {
 			dsi++;
 		}
 		return s.substring(0, dsi+1);
-	}
-
-	@Override
-	public BigNum subEq(Number v) {
-		_val = _val.subtract(v.toApfloat());
-		return this;
-	}
-
-	@Override
-	public BigNum addEq(Number v) {
-		_val = _val.add(v.toApfloat());
-		return this;
 	}
 
 

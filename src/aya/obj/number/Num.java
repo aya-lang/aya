@@ -339,6 +339,47 @@ public class Num extends Number {
 		return NumberMath.isPrime((long)_val);
 	}
 	
+	//////////////////
+	// TRANSFORMERS //
+	//////////////////
+	
+	
+	@Override
+	public Num subEq(Number v) {
+		_val -= v.toDouble();
+		return this;
+	}
+
+
+	@Override
+	public Num addEq(Number v) {
+		_val += v.toDouble();
+		return this;
+	}
+
+	
+	
+	
+	///////////////
+	// CONSTANTS //
+	///////////////
+	
+	@Override
+	public Num one() {
+		return ONE;
+	}
+	
+	@Override
+	public Num zero() {
+		return ZERO;
+	}
+	
+	@Override
+	public Num negOne() {
+		return NEG_ONE;
+	}
+	
+	
 	///////////////////
 	// OBJ OVERRIDES //
 	///////////////////
@@ -395,18 +436,6 @@ public class Num extends Number {
 		return Double.compare(_val, n.toDouble()); 
 	}
 
-	@Override
-	public Num subEq(Number v) {
-		_val -= v.toDouble();
-		return this;
-	}
-
-
-	@Override
-	public Num addEq(Number v) {
-		_val += v.toDouble();
-		return this;
-	}
 
 
 
