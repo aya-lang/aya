@@ -129,7 +129,7 @@ public class RationalNum extends Number {
 	///////////////////////
 	
 	@Override
-	public Number add(Number other) {
+	public RationalNum add(Number other) {
 		byte type = other.type();
 		switch (type) {
 		case Obj.RATIONAL_NUMBER:
@@ -142,7 +142,7 @@ public class RationalNum extends Number {
 	
 
 	@Override
-	public Number sub(Number other) {
+	public RationalNum sub(Number other) {
 		byte type = other.type();
 		switch (type) {
 		case Obj.RATIONAL_NUMBER:
@@ -153,7 +153,7 @@ public class RationalNum extends Number {
 	}
 
 	@Override
-	public Number mul(Number other) {
+	public RationalNum mul(Number other) {
 		byte type = other.type();
 		switch (type) {
 		case Obj.RATIONAL_NUMBER:
@@ -164,7 +164,7 @@ public class RationalNum extends Number {
 	}
 
 	@Override
-	public Number div(Number other) {
+	public RationalNum div(Number other) {
 		byte type = other.type();
 		switch (type) {
 		case Obj.RATIONAL_NUMBER:
@@ -175,17 +175,17 @@ public class RationalNum extends Number {
 	}
 
 	@Override
-	public Number idiv(Number other) {
+	public RationalNum idiv(Number other) {
 		return new RationalNum(this.toLong() / other.toLong(), 1L);
 	}
 
 	@Override
-	public Number mod(Number other) {
+	public RationalNum mod(Number other) {
 		return new RationalNum(this.toDouble() % other.toDouble());
 	}
 
 	@Override
-	public Number pow(Number other) {
+	public RationalNum pow(Number other) {
 		double exp = other.toDouble();
 		if (exp > 0) {
 			return new RationalNum((long)Math.pow(_num, exp), (long)Math.pow(_den, exp));
@@ -196,12 +196,12 @@ public class RationalNum extends Number {
 	}
 	
 	@Override
-	public Number band(Number other) {
+	public RationalNum band(Number other) {
 		return new RationalNum(this.toLong() & other.toLong());
 	}
 	
 	@Override
-	public Number bor(Number other) {
+	public RationalNum bor(Number other) {
 		return new RationalNum(this.toLong() | other.toLong());
 	}
 	
@@ -414,6 +414,22 @@ public class RationalNum extends Number {
 		return new RationalNum(_num * n._den, _den * n._num);
 	}
 
+	@Override
+	public RationalNum subEq(Number v) {
+		RationalNum n = this.sub(v);
+		this._den = n._den;
+		this._num = n._num;
+		return this;
+	}
+
+	@Override
+	public RationalNum addEq(Number v) {
+		RationalNum n = this.add(v);
+		this._den = n._den;
+		this._num = n._num;
+		return this;
+	}
 
 
+	
 }

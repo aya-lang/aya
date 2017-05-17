@@ -377,7 +377,17 @@ public class BigNum extends Number {
 		return s.substring(0, dsi+1);
 	}
 
+	@Override
+	public BigNum subEq(Number v) {
+		_val = _val.subtract(v.toApfloat());
+		return this;
+	}
 
+	@Override
+	public BigNum addEq(Number v) {
+		_val = _val.add(v.toApfloat());
+		return this;
+	}
 
 
 

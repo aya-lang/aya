@@ -1317,10 +1317,8 @@ class OP_R extends Operation {
 		final Obj a = block.pop();
 		if(a.isa(LIST)) {
 			block.push( ListBuilder.buildRange((List)a) );
-		} else if (a.isa(NUM)) {
+		} else if (a.isa(NUMBER)) {
 			block.push(ListBuilder.buildRange((Num)a));
-		} else if (a.isa(BIGNUM)) {
-			block.push(ListBuilder.buildRange((BigNum)a));
 		} else if (a.isa(CHAR)) {
 			block.push(ListBuilder.buildRange(((Char)a).charValue()));
 		} else if (a.isa(DICT)) {

@@ -111,47 +111,26 @@ public class ListBuilder {
 		return outList;
 	}
 	
-	public static NumberItemList buildRange(Num n) {
-		double d = n.toDouble();
-		int inc = 1;
-		if(d < 0) {
-			return arrToAL(doubleRange(d, -1.0, 1.0));
+	public static NumberItemList buildRange(Number n) {
+		if(n.compareTo(Num.ZERO) < 0) {
+			// :4 R => [-4 -3 -2 -1]
+			return new NumberItemList(n, Num.NEG_ONE, Num.ONE);
 		} else {
-			return arrToAL(doubleRange(1, d, inc));
+			// r R => [1 2 3 4]
+			return new NumberItemList(Num.ONE, n, Num.ONE);
 		}
 	}
 	
-	public static NumberItemList buildRange(Num n1, Num n2) {
-		double d1 = n1.toDouble();
-		double d2 = n2.toDouble();
-		int inc = 1;
-		if(d1 > d2) inc = -1;
-		return arrToAL(doubleRange(d1, d2, inc));
+	public static NumberItemList buildRange(Number lo, Number hi) {
+		Num inc = Num.ONE;
+		if(lo.compareTo(hi) > 0) inc = Num.NEG_ONE;
+		return new NumberItemList(lo, hi, inc);
 	}
 	
 	public static Str buildRange(char c) {
 		int inc = 1;
 		if(c < 0) inc = -1;
 		return arrToAL(charRange((char)1, (char)(c), inc));
-	}
-	
-	public static NumberItemList buildRange(BigNum n) {
-		Apfloat af = n.toApfloat();
-		if(af.compareTo(Apfloat.ZERO) < 0) {
-			return arrToAL(apfloatRange(af, AP_NEG_ONE, Apfloat.ONE));
-		} else {
-			return arrToAL(apfloatRange(Apfloat.ONE, af, Apfloat.ONE));
-		}
-	}
-	
-	public static NumberItemList buildRange(BigNum n1, BigNum n2) {
-		Apfloat af1 = n1.toApfloat();
-		Apfloat af2 = n2.toApfloat();
-		Apfloat inc = Apfloat.ONE;
-		
-		if(af1.compareTo(af2) > 0) inc = AP_NEG_ONE;
-		
-		return arrToAL(apfloatRange(af1, af2, inc));
 	}
 	
 	
@@ -162,19 +141,16 @@ public class ListBuilder {
 		//List range has one argument
 		case 1:
 			Obj o = args.get(0);
-			switch (o.type()) {
-			case Obj.NUM:
+			if (o.isa(Obj.NUMBER)) {
 				return buildRange((Num)o);
-			case Obj.BIGNUM:
-				return buildRange((BigNum)o);
-			case Obj.CHAR:
+			}
+			else if (o.isa(Obj.CHAR)) {
 				return arrToAL(charRange('a', ((Char)o).charValue(), 1));
-			default:
-				if (o.isa(Obj.LIST)) {
-					return ((List)o);
-				} else {
-					throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
-				}
+			}
+			else if (o.isa(Obj.LIST)) {
+				return ((List)o);
+			} else {
+				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
 			}
 
 		//List range has 2 arguments
@@ -182,25 +158,26 @@ public class ListBuilder {
 			Obj a = args.get(0);
 			Obj b = args.get(1);
 			if(a.isa(Obj.NUMBER) && b.isa(Obj.NUMBER)) {
-				if (a.isa(Obj.BIGNUM) || b.isa(Obj.BIGNUM)) {
-					Apfloat lo = ((Number)a).toApfloat();
-					Apfloat hi = ((Number)b).toApfloat();
-					Apfloat inc = Apfloat.ONE;
-					if(lo.compareTo(hi) > 0) {
-						inc = AP_NEG_ONE;
-					}
-					return arrToAL(apfloatRange(lo,hi,inc));
-				} else if (a.isa(Obj.NUM) || b.isa(Obj.NUM)) {
-					double lo = ((Number)a).toDouble();
-					double hi = ((Number)b).toDouble();
-					double inc = 1.0;
-					if(lo > hi) {
-						inc = -1.0;
-					}
-					return arrToAL(doubleRange(lo,hi,inc));
-				} else {
-					throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
-				}
+//				if (a.isa(Obj.BIGNUM) || b.isa(Obj.BIGNUM)) {
+//					Apfloat lo = ((Number)a).toApfloat();
+//					Apfloat hi = ((Number)b).toApfloat();
+//					Apfloat inc = Apfloat.ONE;
+//					if(lo.compareTo(hi) > 0) {
+//						inc = AP_NEG_ONE;
+//					}
+//					return arrToAL(apfloatRange(lo,hi,inc));
+//				} else if (a.isa(Obj.NUM) || b.isa(Obj.NUM)) {
+//					double lo = ((Number)a).toDouble();
+//					double hi = ((Number)b).toDouble();
+//					double inc = 1.0;
+//					if(lo > hi) {
+//						inc = -1.0;
+//					}
+//					return arrToAL(doubleRange(lo,hi,inc));
+//				} else {
+//					throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+//				}
+				return buildRange((Number)a, (Number)b);
 			} else if (a.isa(Obj.CHAR) && b.isa(Obj.CHAR)) {
 				char lo = ((Char)a).charValue();
 				char hi = ((Char)b).charValue();
@@ -219,11 +196,16 @@ public class ListBuilder {
 			Obj y = args.get(1);
 			Obj z = args.get(2);
 			if(x.isa(Obj.NUMBER) && y.isa(Obj.NUMBER) && z.isa(Obj.NUMBER)) {
-				if(x.isa(Obj.BIGNUM) || y.isa(Obj.BIGNUM) || z.isa(Obj.BIGNUM)) {
-					return arrToAL(apfloatRange(((Number)x).toApfloat(), ((Number)z).toApfloat(), ((Number)y).toApfloat().subtract(((Number)x).toApfloat())));
-				} else {
-					return arrToAL(doubleRange(((Number)x).toDouble(), ((Number)z).toDouble(), ((Number)y).toDouble()-((Number)x).toDouble()));
-				} 
+				Number lo = (Number)x;
+				Number hi = (Number)z;
+				Number inc = ((Number)y).sub(lo);
+				
+//				if(x.isa(Obj.BIGNUM) || y.isa(Obj.BIGNUM) || z.isa(Obj.BIGNUM)) {
+//					return arrToAL(apfloatRange(((Number)x).toApfloat(), ((Number)z).toApfloat(), ((Number)y).toApfloat().subtract(((Number)x).toApfloat())));
+//				} else {
+//					return arrToAL(doubleRange(((Number)x).toDouble(), ((Number)z).toDouble(), ((Number)y).toDouble()-((Number)x).toDouble()));
+//				} 
+				return new NumberItemList(lo, hi, inc);
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return arrToAL(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {
@@ -241,6 +223,7 @@ public class ListBuilder {
 	 * Creates an array of doubles from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
+	/*
 	private static double[] doubleRange(double lower, double upper, double inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
 		double numOfItemsDouble = 1 + Math.floor((upper-lower)/inc);
@@ -276,11 +259,13 @@ public class ListBuilder {
 		
 		return arr;
 	}
+	*/
 	
 	/**
 	 * Creates an array of Apfloats from lower to upper using the increment
 	 * @throws NegativeArraySizeException if an array cannot be created. EX: Lower: -19, Upper: 4, Inc: -3
 	 */
+	/*
 	private static Apfloat[] apfloatRange(Apfloat lower, Apfloat upper, Apfloat inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
 		Apfloat numOfItemsBD = upper.subtract(lower).divide(inc).floor().add(Apfloat.ONE);
@@ -312,6 +297,7 @@ public class ListBuilder {
 		
 		return arr;
 	}
+	*/
 	
 	/**
 	 * Creates an array of chars from lower to upper using the increment
@@ -344,6 +330,7 @@ public class ListBuilder {
 		return arr;
 	}
 	
+	/*
 	public static List arrToAL(Obj[] os) {
 		ArrayList<Obj> list = new ArrayList<Obj>(os.length);
 		for(int i = 0; i < os.length; i++) {
@@ -375,6 +362,7 @@ public class ListBuilder {
 		}
 		return new NumberItemList(list);
 	}
+	*/
 	
 	
 	
