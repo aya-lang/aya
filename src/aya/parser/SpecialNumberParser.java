@@ -4,7 +4,10 @@ import java.math.BigInteger;
 
 import org.apfloat.Apfloat;
 
+import aya.Aya;
+import aya.AyaPrefs;
 import aya.exceptions.SyntaxError;
+import aya.obj.Obj;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -58,6 +61,7 @@ public class SpecialNumberParser {
 	private final char PI = 'p';
 	private final char ROOT = 'q';
 	private final char SCI = 'e';
+	private final char CONST = 'c';
 	
 	public SpecialNumberParser(String s) {
 		_sep = NEG;
@@ -94,7 +98,7 @@ public class SpecialNumberParser {
 		return c >= 'a' && c <= 'z';
 	}
 	
-	public Number toNumber() {
+	public Obj toNumber() {
 		try {
 			switch (_sep) {
 			case NEG:
@@ -115,6 +119,8 @@ public class SpecialNumberParser {
 				return toRootNumber();
 			case SCI:
 				return toSciNumber();
+			case CONST:
+				return toConstVal();
 			default:
 				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 			}
@@ -196,6 +202,15 @@ public class SpecialNumberParser {
 		} else {
 			return new Num(-d);
 		}
+	}
+	
+	private Obj toConstVal() {
+		int i = Integer.parseInt(_fst);
+		if (i < 0 || i > AyaPrefs.CONSTS.length) {
+			throw new SyntaxError(":" + _fst + 
+					"c is out of range. Max val =" + AyaPrefs.CONSTS.length);
+		}
+		return AyaPrefs.CONSTS[i];
 	}
 }
 
