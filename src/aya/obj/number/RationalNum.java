@@ -454,10 +454,14 @@ public class RationalNum extends Number {
 	RationalNum r_add(RationalNum n) {
 		if(_den == n._den) {
             return new RationalNum(n._num + _num, _den);
+        } if (n._num == 0) {
+        	return new RationalNum(_num, _den);
+        } else if (_num == 0) {
+        	return new RationalNum(n._num, n._den);
         } else {
           long den = _den * n._den;
           long num = _num * n._num;
-          num += n._num * _den;
+          num = num * n._den + n._num * _den;
           return new RationalNum(num, den);
         }
 	}
@@ -466,10 +470,14 @@ public class RationalNum extends Number {
 	RationalNum r_sub(RationalNum n) {
 		if(_den == n._den) {
             return new RationalNum(_num - n._num, _den);
+		} if (n._num == 0) {
+        	return new RationalNum(_num, _den);
+        } else if (_num == 0) {
+        	return new RationalNum(n._num, n._den);
         } else {
           long den = _den * n._den;
           long num = _num * n._num;
-          num -= n._num * _den;
+          num = num * n._den - n._num * _den;
           return new RationalNum(num, den);
         }
 	}
