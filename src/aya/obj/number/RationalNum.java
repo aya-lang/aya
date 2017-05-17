@@ -10,6 +10,11 @@ public class RationalNum extends Number {
 	
 	public static final RationalNum ONE = new RationalNum(1L, 1L);
 	
+	private final int LARGEST_RIGHT_OF_DECIMAL = 8;
+	private final long SECOND_MULTIPLIER_MAX = (long)Math.pow(10, LARGEST_RIGHT_OF_DECIMAL - 1);
+	private final long FIRST_MULTIPLIER_MAX = SECOND_MULTIPLIER_MAX * 10L;
+	private final double ERROR = Math.pow(10, -LARGEST_RIGHT_OF_DECIMAL - 1);
+	
 	long _num;
 	long _den;
 	
@@ -43,51 +48,59 @@ public class RationalNum extends Number {
 		}
 	}
 	
-	//Algorithm from:
-	// http://stackoverflow.com/questions/13222664/convert-floating-point-number-into-a-rational-number-in-java
 	/** Create a new rational num by approximating the value of the double */
-	public RationalNum(double val) {
+	public RationalNum(double number) {
 		
 		// 0/1
-		if (val == 0.0) {
+		if (number == 0.0) {
 			_num = 0L;
 			_den = 1L;
-		}
+		} 
 		// NaN
-		else if (Double.isNaN(val)) {
+		else if (Double.isNaN(number)) {
 			throw new AyaRuntimeException("Cannont convert NaN to rational");
 		}
 
 		else {
 			//Algorithm from:
-			// http://stackoverflow.com/questions/13222664/convert-floating-point-number-into-a-rational-number-in-java
-
-			long bits = Double.doubleToLongBits(val);
-	
-			long sign = bits >>> 63;
-			long exponent = ((bits >>> 52) ^ (sign << 11)) - 1023;
-			long fraction = bits << 12; // bits are "reversed" but that's not a problem
-	
-			_num = 1L;
-			_den = 1L;
-	
-			for (int i = 63; i >= 12; i--) {
-			    _num = _num * 2 + ((fraction >>> i) & 1);
-			    _den *= 2;
+			// http://stackoverflow.com/questions/14014158/double-to-fraction-in-java
+			
+			long sign = 1;
+			if(number < 0){
+			    number = -number;
+			    sign = -1;
 			}
-	
-			if (exponent > 0)
-			    _num *= 1 << exponent;
-			else
-			    _den *= 1 << -exponent;
-	
-			if (sign == 1)
-			    _num *= -1;
-		}
 
+			
+			long firstMultiplier = 1;
+			long secondMultiplier = 1;
+			boolean notIntOrIrrational = false;
+			long truncatedNumber = (long)number;
+			_num = (long)(sign * number * FIRST_MULTIPLIER_MAX);
+			_den = FIRST_MULTIPLIER_MAX;
+			
+			double error = number - truncatedNumber;
+			while( (error >= ERROR) && (firstMultiplier <= FIRST_MULTIPLIER_MAX)){
+			    secondMultiplier = 1;
+			    firstMultiplier *= 10;
+			    while( (secondMultiplier <= SECOND_MULTIPLIER_MAX) && (secondMultiplier < firstMultiplier) ){
+			        double difference = (number * firstMultiplier) - (number * secondMultiplier);
+			        truncatedNumber = (long)difference;
+			        error = difference - truncatedNumber;
+			        if(error < ERROR){
+			            notIntOrIrrational = true;
+			            break;
+			        }
+			        secondMultiplier *= 10;
+			    }
+			}
+
+			if(notIntOrIrrational){
+				_num = sign * truncatedNumber;
+				_den = firstMultiplier - secondMultiplier;
+			}
+		}
 	}
-	
-	
 
 	/////////////////
 	// CONVERSIONS //
