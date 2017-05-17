@@ -9,6 +9,11 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import aya.obj.Obj;
+import aya.obj.character.Char;
+import aya.obj.list.Str;
+import aya.obj.number.Num;
+
 public class AyaPrefs {
 	private static String prompt = "aya> ";
 	private static String workingDir = null;
@@ -132,5 +137,25 @@ public class AyaPrefs {
 		workingDir = defaultWorkingDir;
 	}
 	
+	public static final Str FILE_SEPARATOR = new Str(File.separator);
+	public static final Str FILE_PATH_SEPARATOR = new Str(File.pathSeparator);
+	public static final Str SYS_LINE_SEPARATOR = new Str(System.lineSeparator());
+	
+	
+	public static final Obj[] CONSTS = {
+			/* 00 */ Num.PI,
+			/* 01 */ Num.E,
+			/* 02 */ Num.DOUBLE_MAX,
+			/* 03 */ Num.DOUBLE_MIN,
+			/* 04 */ Num.DOUBLE_NAN ,
+			/* 05 */ Num.DOUBLE_INF,
+			/* 06 */ Num.DOUBLE_NINF,
+			/* 07 */ Num.INT_MAX,
+			/* 08 */ Num.INT_MIN,
+			/* 09 */ FILE_SEPARATOR,
+			/* 10 */ FILE_PATH_SEPARATOR,
+			/* 11 */ Char.MAX_VALUE,
+			/* 12 */ SYS_LINE_SEPARATOR
+	};
 	
 }

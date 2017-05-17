@@ -142,7 +142,7 @@ public class MiscOps {
 		/* 121 y */ null,
 		/* 122 z */ null,
 		/* 123 { */ null,
-		/* 124 | */ new OP_Constants(),
+		/* 124 | */ null,
 		/* 125 } */ null,
 		/* 126 ~ */ null,
 	};
@@ -1118,60 +1118,6 @@ class OP_TypeStr extends Operation {
 	}
 }
 
-
-
-// L - 108
-class OP_Constants extends Operation {
-	public OP_Constants() {
-		this.name = "M|";
-		this.info = "constants:\n"
-				+ "  0: pi\n"
-				+ "  1: e\n"
-				+ "  2: double max\n"
-				+ "  3: double min\n"
-				+ "  4: NaN\n"
-				+ "  5: +inf\n"
-				+ "  6: -inf\n"
-				+ "  7: int max\n"
-				+ "  8: int min\n"
-				+ "  9: system file separator\n"
-				+ "  10: system path separator\n"
-				+ "  11: char max value\n"
-				+ "  12: system line separator";
-		this.argTypes = "N";
-	}
-	
-	public static final Str FILE_SEPARATOR = new Str(File.separator);
-	public static final Str FILE_PATH_SEPARATOR = new Str(File.pathSeparator);
-	public static final Str SYS_LINE_SEPARATOR = new Str(System.lineSeparator());
-	
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		if(a.isa(NUMBER)) {
-			final int i = ((Number)a).toInt();
-			switch (i) {
-			case 0: block.push(Num.PI); break;
-			case 1: block.push(Num.E); break;
-			case 2: block.push(Num.DOUBLE_MAX); break;
-			case 3: block.push(Num.DOUBLE_MIN); break;
-			case 4: block.push(Num.DOUBLE_NAN); break; 
-			case 5: block.push(Num.DOUBLE_INF); break;
-			case 6: block.push(Num.DOUBLE_NINF); break;
-			case 7: block.push(Num.INT_MAX); break;
-			case 8: block.push(Num.INT_MIN); break;
-			case 9: block.push(FILE_SEPARATOR); break;
-			case 10: block.push(FILE_PATH_SEPARATOR); break;
-			case 11: block.push(Char.MAX_VALUE); break;
-			case 12: block.push(SYS_LINE_SEPARATOR); break;
-			default:
-				throw new AyaRuntimeException("M|: (" + i + ") is not a valid constant id.");
-			}
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
 
 
 
