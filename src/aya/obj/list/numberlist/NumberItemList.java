@@ -43,7 +43,7 @@ public class NumberItemList extends NumberList {
 		
 		
 		//Increment up or down?
-		if((lo.compareTo(hi) > 0 && inc.compareTo(Num.ZERO) > 0) || (lo.compareTo(hi) < 0 && inc.compareTo(Num.ZERO) < 0)) {
+		if((lo.compareTo(hi) > 0 && inc.compareTo(inc.zero()) > 0) || (lo.compareTo(hi) < 0 && inc.compareTo(inc.zero()) < 0)) {
 			for(int i = 0; i < numOfItems; i++, lo.sub(inc)) {
 				_list.add(lo);
 			}
