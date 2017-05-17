@@ -155,7 +155,11 @@ public class SpecialNumberParser {
 
 	private RationalNum toRationalNumber() {
 		if (_snd.equals("")) {
-			return new RationalNum(Long.parseLong(_fst),1);
+			if (_fst.contains(".")) {
+				return new RationalNum(Double.parseDouble(_fst));
+			} else {
+				return new RationalNum(Long.parseLong(_fst),1);
+			}
 		} else {
 			long n = Long.parseLong(_fst);
 			long d = Long.parseLong(_snd);
