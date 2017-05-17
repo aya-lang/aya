@@ -240,10 +240,12 @@ import ::file
     index self.loc
   }:getindex;
 
+
   .################
   .# Transforming #
   .################
 
+  .#? index rowdata self dataframe.setrow\n  set a row of a dataframe given its index
   {index rowdata::list self : ix,
     rowdataE self.columnsE =!
       {"addrow: row and col lengths to not match:\n\t$rowdata\n\t$(self.columns)" .D} ?
@@ -265,11 +267,14 @@ import ::file
       rowdata E.R # {col,
         self.values col I ix : (rowdata col I)
       };
-    } {
+    } {e,
       .# There was an error, return the dataframe
       .#   to its original state
       self.index B;
       self.values # {B;}
+
+      .# Throw the error message
+      e .D
     } .K
 
   }:setrow;
