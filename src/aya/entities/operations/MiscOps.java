@@ -34,6 +34,7 @@ import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
 import aya.util.ChartParams;
 import aya.util.FreeChartInterface;
@@ -131,7 +132,7 @@ public class MiscOps {
 		/* 111 o */ new OP_GetMeta(),
 		/* 112 p */ new OP_Primes(),
 		/* 113 q */ new OP_SquareRoot(),
-		/* 114 r */ null,
+		/* 114 r */ new OP_To_Rat(),
 		/* 115 s */ new OP_Sine(),
 		/* 116 t */ new OP_Tangent(),
 		/* 117 u */ null,
@@ -1005,6 +1006,47 @@ class OP_SquareRoot extends Operation {
 		}
 	}
 }
+
+
+// r - 114
+class OP_To_Rat extends Operation {
+	public OP_To_Rat() {
+		this.name = "Mr";
+		this.info = "convert to rational number";
+		this.argTypes = "N";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj n = block.pop();
+		
+		if(n.isa(NUMBER)) {
+			if (n.isa(Obj.RATIONAL_NUMBER)) {
+				block.push(n);
+			} else {
+				block.push( new RationalNum(((Number)n).toDouble()) );
+			}
+		}
+		else if (n.isa(NUMBERLIST)) {
+			ArrayList<Number> nl = ((NumberList)n).toArrayList();
+			ArrayList<Number> ns = new ArrayList<Number>(nl.size());
+			for (Number j : nl) {
+				if (j.isa(Obj.RATIONAL_NUMBER)) {
+					ns.add(j);
+				} else {
+					ns.add( new RationalNum(((Number)j).toDouble()) );
+				}
+			}
+			block.push(new NumberItemList(ns));
+		}
+		else if (n.isa(DICT)) {
+			block.callVariable((Dict)n, Ops.KEYVAR_SIN);
+		}
+		else {
+			throw new TypeError(this.name, this.argTypes, n);
+		}
+	}
+}
+
 
 // s - 115
 class OP_Sine extends Operation {
