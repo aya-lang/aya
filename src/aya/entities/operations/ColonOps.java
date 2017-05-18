@@ -462,7 +462,7 @@ class OP_Colon_T extends Operation {
 		this.argTypes = "A";
 	}
 	
-	private static final long TYPE_ID = Symbol.fromStr("type").id();
+	private static final long TYPE_ID = Variable.encodeString("type");
 	
 	@Override
 	public void execute(Block block) {
