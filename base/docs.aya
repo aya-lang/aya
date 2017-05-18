@@ -14,21 +14,6 @@
    .\}
 .}
 
-.{? docs: overloaded operators
-  1 arg
-    \$  dollar
-    P  str
-  2 args
-    %  mod
-    &  and
-    *  mul
-    +  add
-    -  sub
-    /  div
-    ^  pow
-    |  or
-.}
-
 .{? docs: argument type key
   ::num - num
   ::block - block
@@ -58,7 +43,7 @@
   [
     <range>,
     <map>,
-    <f1>,<f2>..<fN>
+    <filter1>,<filter2>,..<filterN>
   ]
 .}
 
@@ -87,23 +72,51 @@
   use the (T) operator to negate a variable
 .}
 
-
-.{? docs: for examples
-  .# double and print each element
-  for 'x [1 2 3] {
-    x2* _"\\n"+.P
-  }
-
-  .# use strings or chars for varnames
-  for "item" [1 2 3] {item2* _"\\n"+.P}
-
-  .# use irange for indexing
-  for 'i (list irange) {list i I "\\n"+.P}
-.}
-
-.{? docs: list grabbibng
+.{? docs: list grabbing
   List literals can grab items from the outer stack
   Use the format `... [num| ...]` where `num` is an num literal
   ex: 1 2 [1| 7 6] => 1 [2 7 6]
   ex: 4 [1|10,] => [4 5 6 7 8 9 10]
+.}
+
+.{? constants
+  use ``:Nc` where N is:
+  0: pi
+  1: e
+  2: double max
+  3: double min
+  4: NaN
+  5: +inf
+  6: -inf
+  7: int max
+  8: int min
+  9: system file separator
+  10: system path separator
+  11: char max value
+  12: system line separator
+.}
+
+
+.{
+
+o
+
+{o : op,
+  {,}:op;
+  o"\n"|B;:o;
+
+  o V\; " "|
+    V op.:name;
+    S op.:argtypes;
+
+  o "overloadable" N 0 =! {
+    1 op.:overloadable
+    o B;
+  }?
+
+  o "\n" join op.:desc
+
+  op
+}~
+
 .}
