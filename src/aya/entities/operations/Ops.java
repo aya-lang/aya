@@ -1,11 +1,9 @@
 package aya.entities.operations;
 
-import static aya.obj.Obj.BIGNUM;
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
-import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
@@ -30,6 +28,7 @@ import org.apfloat.Apfloat;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.OperationDocs;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
@@ -239,20 +238,20 @@ public class Ops {
 				|| c == '~';
 	}
 	
-	/** Returns a list of all the op descriptions **/
-	public static ArrayList<String> getAllOpDescriptions() {
-		ArrayList<String> out = new ArrayList<String>();
-		for (char i = 0; i <= 96-FIRST_OP; i++) {
-			if(OPS[i] != null) {
-				out.add(OPS[i].getDocStr() + "\n(operator)");
-			}
-		}
-		out.add(TILDE.getDocStr() + "\n(operator)" );
-		out.add(BAR.getDocStr() + "\n(operator)" );
-		out.add(APPLY_TO.getDocStr() + "\n(operator)" );
-
-		return out;
-	}
+//	/** Returns a list of all the op descriptions **/
+//	public static ArrayList<String> getAllOpDescriptions() {
+//		ArrayList<String> out = new ArrayList<String>();
+//		for (char i = 0; i <= 96-FIRST_OP; i++) {
+//			if(OPS[i] != null) {
+//				out.add(OPS[i].getDocStr() + "\n(operator)");
+//			}
+//		}
+//		out.add(TILDE.getDocStr() + "\n(operator)" );
+//		out.add(BAR.getDocStr() + "\n(operator)" );
+//		out.add(APPLY_TO.getDocStr() + "\n(operator)" );
+//
+//		return out;
+//	}
 
 	
 	public static Operation getOp(char op) {
@@ -271,11 +270,18 @@ public class Ops {
 
 // ! - 33
 class OP_Bang extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "!");
+		doc.desc("N", "1-N (logical not, complementary probability)");
+		doc.desc("C", "swap case");
+		doc.ovrld("new");
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Bang() {
 		this.name = "!";
-		this.info = "<N> negate\n<S|L> reverse\n<N> 1-N (loginal not, complementary probability)\n<C> swap case";
-		this.argTypes = "S|N|L|B|C";
-		this.overload = Ops.KEYVAR_NEW.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -314,11 +320,17 @@ class OP_Bang extends Operation {
 
 //# - 35
 class OP_Pound extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "#");
+		doc.desc("LA#A", "map");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Pound() {
 		this.name = "#";
-		this.info = "<LA#A> map";
-		this.argTypes = "LE|LN";
 	}
+	
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
@@ -351,11 +363,18 @@ class OP_Pound extends Operation {
 
 // $ - 36
 class OP_Dollar extends Operation {
+	
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "$");
+		doc.desc("S|L", "sort least to greatest");
+		doc.desc("N", "bitwise not");
+		doc.ovrld(Ops.KEYVAR_SORT.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dollar() {
 		this.name = "$";
-		this.info = "sort least to greatest\nbitwise not";
-		this.argTypes = "L<N>|L<S>|S|I";
-		this.overload = Ops.KEYVAR_SORT.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -377,11 +396,17 @@ class OP_Dollar extends Operation {
 
 // % - 37
 class OP_Percent extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "%");
+		doc.desc("NN", "mod");
+		doc.desc("BN", "repeat B N times");
+		doc.ovrld(Ops.KEYVAR_MOD.name(), Ops.KEYVAR_RMOD.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Percent() {
 		this.name = "%";
-		this.info = "<NN>mod\n<EN>repeat the block N times";
-		this.argTypes = "NN|EN";
-		this.overload = Ops.KEYVAR_MOD.name() + "/" + Ops.KEYVAR_RMOD.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -430,11 +455,17 @@ class OP_Percent extends Operation {
 
 // & - 38
 class OP_And extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "&");
+		doc.desc("NN", "bitwise and");
+		doc.desc("SS", "list all expressions matching the regex");
+		doc.ovrld(Ops.KEYVAR_AND.name(),  Ops.KEYVAR_RAND.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_And() {
 		this.name = "&";
-		this.info = "<BB> logical and\n  <SS>match all expressions matching the regex\n<II> bitwise and";
-		this.argTypes = "BB|SS|II";
-		this.overload = Ops.KEYVAR_AND.name() + "/" + Ops.KEYVAR_RAND.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -468,11 +499,17 @@ class OP_And extends Operation {
 
 // * - 42
 class OP_Times extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "*");
+		doc.desc("NN", "multiply");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_MUL.name(), Ops.KEYVAR_RMUL.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Times() {
 		this.name = "*";
-		this.info = "multiply";
-		this.argTypes = "NN";
-		this.overload = Ops.KEYVAR_MUL.name() + "/" + Ops.KEYVAR_RMUL.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -507,11 +544,18 @@ class OP_Times extends Operation {
 
 // + - 43
 class OP_Plus extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "+");
+		doc.desc("NN|CC", "add");
+		doc.desc("SA|AS", "append string");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_ADD.name(), Ops.KEYVAR_RADD.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Plus() {
 		this.name = "+";
-		this.info = "<NN|CC|NC|CN> add\n<SA|AS> concat";
-		this.argTypes = "NN|CC|NC|CN|SA|AS";
-		this.overload = Ops.KEYVAR_ADD.name() + "/" + Ops.KEYVAR_RADD.name();
 	}
 	@Override public void execute(final Block block) {
 		final Obj a = block.pop();
@@ -558,11 +602,17 @@ class OP_Plus extends Operation {
 
 // - - 44
 class OP_Minus extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "-");
+		doc.desc("NN|CC", "subtract");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_SUB.name(), Ops.KEYVAR_RSUB.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Minus() {
 		this.name = "-";
-		this.info = "<NN|CC|NC|CN> subtract";
-		this.argTypes = "NN|CC|NC|CN";
-		this.overload = Ops.KEYVAR_SUB.name() + "/" + Ops.KEYVAR_RSUB.name();
 	}
 	@Override public void execute(final Block block) {
 		final Obj b = block.pop();	//Pop in reverse order
@@ -604,11 +654,17 @@ class OP_Minus extends Operation {
 
 // / - 47
 class OP_Divide extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "/");
+		doc.desc("NN", "divide");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_DIV.name(), Ops.KEYVAR_RDIV.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Divide() {
 		this.name = "/";
-		this.info = "divide";
-		this.argTypes = "NN";
-		this.overload = Ops.KEYVAR_DIV.name() + "/" + Ops.KEYVAR_RDIV.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -646,10 +702,15 @@ class OP_Divide extends Operation {
 
 // ; - 59
 class OP_SemiColon extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', ";");
+		doc.desc("A", "pop and discard");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_SemiColon() {
 		this.name = ";";
-		this.info = "pop and discard the top of the stack";
-		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
 		block.pop();
@@ -659,12 +720,16 @@ class OP_SemiColon extends Operation {
 
 // < - 60
 class OP_LessThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "<");
+		doc.desc("NN|CC|SS", "less than");
+		doc.ovrld(Ops.KEYVAR_LT.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_LessThan() {
 		this.name = "<";
-		this.info = "less than comparison operator";
-		this.argTypes = "NN|CC|SS|LN";
-		this.overload = Ops.KEYVAR_LT.name();
-
 	}
 	@Override
 	public void execute(final Block block) {
@@ -702,12 +767,16 @@ class OP_LessThan extends Operation {
 
 // = - 61
 class OP_Equal extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "=");
+		doc.desc("AA", "equality");
+		doc.ovrld(Ops.KEYVAR_EQ.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Equal() {
 		this.name = "=";
-		this.info = "equality comparison operator";
-		this.argTypes = "AA";
-		this.overload = Ops.KEYVAR_EQ.name();
-
 	}
 	@Override
 	public void execute(final Block block) {
@@ -727,12 +796,17 @@ class OP_Equal extends Operation {
 
 // > - 62
 class OP_GreaterThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', ">");
+		doc.desc("NN|CC|SS", "greater than");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_GT.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_GreaterThan() {
 		this.name = ">";
-		this.info = "greater than comparison operator";
-		this.argTypes = "NN|CC|SS";
-		this.overload = Ops.KEYVAR_GT.name();
-
 	}
 	@Override
 	public void execute(final Block block) {
@@ -766,10 +840,15 @@ class OP_GreaterThan extends Operation {
 
 // ? - 63
 class OP_Conditional extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "?");
+		doc.desc("AA", "if A1, then A2. If A2 is block, execute it");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Conditional() {
 		this.name = "?";
-		this.info = "<BA> conditional operator. if B then A. If A is a block, execute it.";
-		this.argTypes = "BA";
 	}
 	@Override
 	public void execute(final Block block) {
@@ -794,10 +873,15 @@ class OP_Conditional extends Operation {
 
 // @ - 64
 class OP_At extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "@");
+		doc.desc("AAA", "rotates the top three elements on the stack [abc->bca]");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_At() {
 		this.name = "@";
-		this.info = "rotates the top three elements on the stack [abc->bca]";
-		this.argTypes = "AAA";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -810,12 +894,17 @@ class OP_At extends Operation {
 	}
 }
 
-//A - 65
+// A - 65
 class OP_A extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "A");
+		doc.desc("A", "wrap in list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_A() {
 		this.name = "A";
-		this.info = "wrap item in stack in an array";
-		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
 		final ArrayList<Obj> al = new ArrayList<Obj>();
@@ -826,11 +915,17 @@ class OP_A extends Operation {
 
 //B - 66
 class OP_B extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "B");
+		doc.desc("N|C", "increment");
+		doc.desc("L", "uncons from front");
+		doc.ovrld(Ops.KEYVAR_INC.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_B() {
 		this.name = "B";
-		this.info = "<N|C> increment\n<L> uncons from front";
-		this.argTypes = "N|C|L";
-		this.overload = Ops.KEYVAR_INC.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -859,10 +954,16 @@ class OP_B extends Operation {
 
 // D - 68
 class OP_D extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "D");
+		doc.desc("ALN", "set index");
+		doc.ovrld(Ops.KEYVAR_SETINDEX.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_D() {
 		this.name = "D";
-		this.info = "ALI set index";
-		this.argTypes = "ALI|AUI";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();  	//Index
@@ -877,10 +978,6 @@ class OP_D extends Operation {
 			block.push(o);
 			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
 		}
-//		else if (a.isa(STR) && b.isa(DICT)) {
-//			((Dict)b).set(a.str(), o);
-//			block.push(b);
-//		}
 		else {		
 			throw new TypeError(this, a, b, o);
 		}
@@ -891,11 +988,17 @@ class OP_D extends Operation {
 
 // E - 69
 class OP_E extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "E");
+		doc.desc("N", "10^N");
+		doc.desc("L|S", "length");
+		doc.ovrld(Ops.KEYVAR_LEN.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_E() {
 		this.name = "E";
-		this.info = "<N> scientific notation operator. return 10^N\n<L|S> length";
-		this.argTypes = "I|L|S";
-		this.overload = Ops.KEYVAR_LEN.name();
 	}
 	@Override public void execute (final Block block) {
 		Obj n = block.pop();
@@ -915,10 +1018,15 @@ class OP_E extends Operation {
 
 // F - 70
 class OP_F extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "F");
+		doc.desc("LB", "fold from right to left");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_F() {
 		this.name = "F";
-		this.info = "fold from left to right";
-		this.argTypes = "LB";
 	}
 	@Override
 	public void execute(Block block) {
@@ -956,11 +1064,16 @@ class OP_F extends Operation {
 
 // G - 71
 class OP_G extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "G");
+		doc.desc("S", "read a string from a filename or URL");
+		doc.desc("N", "isprime");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_G() {
 		this.name = "G";
-		this.info = "S reads a string from a filename string\nS downloads text file located at a URL as a string"
-				+ "\nN isprime";
-		this.argTypes = "SI";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1010,10 +1123,15 @@ class OP_G extends Operation {
 }
 
 class OP_H extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "H");
+		doc.desc("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_H() {
 		this.name = "H";
-		this.info = "convert base of S|N from I1 to I2";
-		this.argTypes = "SII|NII";
 	}
 	@Override public void execute (final Block block) {
 		final Obj to_b = block.pop();
@@ -1108,10 +1226,17 @@ class OP_H extends Operation {
 // I - 73
 //NOTE: If updating this operator, also update .I
 class OP_I extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "I");
+		doc.desc("LL|LN", "get index");
+		doc.desc("LB", "filter");
+		doc.ovrld(Ops.KEYVAR_GETINDEX.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_I() {
 		this.name = "I";
-		this.info = "<LL>|<LI> index\n<LE> filter\n<RS> gey key";
-		this.argTypes = "LL|LI|LE";
 	}
 	@Override public void execute (final Block block) {
 		Obj index = block.pop();
@@ -1150,10 +1275,16 @@ class OP_I extends Operation {
 
 // L - 76
 class OP_L extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "L");
+		doc.desc("AN", "create list by repeating A N times");
+		doc.desc("NL|LL", "reshape");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_L() {
 		this.name = "L";
-		this.info = "create a list by repeating A N times";
-		this.argTypes = "AN";
 	}
 	@Override public void execute (final Block block) {
 		Obj n = block.pop();
@@ -1196,10 +1327,17 @@ class OP_L extends Operation {
 
 // K - 76
 class OP_K extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "K");
+		doc.desc("LL", "concatenate lists (modify list 1)");
+		doc.desc("LA|AL", "add to list (modify list)");
+		doc.desc("AA", "create list [ A A ]");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_K() {
 		this.name = "K";
-		this.info = "<LL> concatenate lists\n<LA|AL> add a to front/back of list L\n<AA> create a list containing both args";
-		this.argTypes = "LL|LA|AL|AA";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1231,10 +1369,16 @@ class OP_K extends Operation {
 
 // N - 78
 class OP_N extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "N");
+		doc.desc("SS|LA", "return index of first occurance, -1 if not found");
+		doc.desc("DJ|DS", "contains key");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_N() {
 		this.name = "N";
-		this.info = "SS,LA returns the index of the first occurance of A in L. returns -1 if not found\n<RS> contains key";
-		this.argTypes = "SS,LA,RS";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop(); //Item
@@ -1260,11 +1404,16 @@ class OP_N extends Operation {
 
 // P - 80
 class OP_P extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "P");
+		doc.desc("A", "to string");
+		doc.ovrld("str");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_P() {
 		this.name = "P";
-		this.info = "returns the value as a string";
-		this.argTypes = "A";
-		this.overload = "str";
 	}
 	@Override public void execute (final Block block) {
 		block.push(new Str(block.pop().str()));
@@ -1273,11 +1422,17 @@ class OP_P extends Operation {
 
 // Q - 81
 class OP_Q extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "Q");
+		doc.desc("N", "N>0: random number 0-N, N<0: random number N-0, N=0: any int");
+		doc.desc("L", "random choice");
+		doc.ovrld(Ops.KEYVAR_RANDOM.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Q() {
 		this.name = "Q";
-		this.info = "positive N: random number 0-N\nnegative N: random number N-0\nN=0: any int";
-		this.argTypes = "NU";
-		this.overload = Ops.KEYVAR_RANDOM.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1307,11 +1462,17 @@ class OP_Q extends Operation {
 
 // R - 82
 class OP_R extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "R");
+		doc.desc("N|C", "range [1, 2 .. N]");
+		doc.desc("L", "len L = 2: range [N1, N1+1, ..., N2], len l = 3: range [N1, N2, ..., N3]");
+		doc.ovrld(Ops.KEYVAR_RANGE.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_R() {
 		this.name = "R";
-		this.info = "creates a range from 0 to N using the format from list comprehension";
-		this.argTypes = "N|C|L";
-		this.overload = Ops.KEYVAR_RANGE.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1331,10 +1492,15 @@ class OP_R extends Operation {
 
 // S - 83
 class OP_S extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "S");
+		doc.desc("L", "sum (fold using +)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_S() {
 		this.name = "S";
-		this.info = "sum (fold using +)";
-		this.argTypes = "L";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1387,11 +1553,17 @@ class OP_S extends Operation {
 
 // T - 84 
 class OP_T extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "T");
+		doc.desc("N", "negate");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_NEGATE.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_T() {
 		this.name = "T";
-		this.info = "N negate";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_NEGATE.name();
 	}
 	@Override public void execute (final Block block) {
 		Obj a = block.pop();
@@ -1412,11 +1584,16 @@ class OP_T extends Operation {
 
 //U - 85
 class OP_U extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "U");
+		doc.desc("L", "reverse");
+		doc.ovrld(Ops.KEYVAR_REVERSE.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_U() {
 		this.name = "U";
-		this.info = "reverse";
-		this.argTypes = "LS";
-		this.overload = Ops.KEYVAR_REVERSE.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -1437,11 +1614,17 @@ class OP_U extends Operation {
 
 //V - 86
 class OP_V extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "V");
+		doc.desc("N|C", "increment");
+		doc.desc("L", "uncons from back");
+		doc.ovrld(Ops.KEYVAR_DEC.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_V () {
 		this.name = "V";
-		this.info = "<N|C> decrement\n<L> uncons from back";
-		this.argTypes = "N|C|L";
-		this.overload = Ops.KEYVAR_DEC.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1466,10 +1649,16 @@ class OP_V extends Operation {
 
 // W - 87
 class OP_W extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "W");
+		doc.desc("B", "while loop (repeat as long as block returns true)");
+		doc.desc("D", "export all variables");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_W() {
 		this.name = "W";
-		this.info = "E while loop\nR export all variables from the dict";
-		this.argTypes = "E|M";
 	}
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1492,7 +1681,7 @@ class OP_W extends Operation {
 				if (cond.isa(NUMBER)) {
 					condition = cond.bool();
 				} else {
-					throw new TypeError("While","condition must be a boolean or a number",cond);
+					throw new TypeError(this, new Str("While condition must be a boolean or a number"), cond);
 				}
 			
 			} while (condition);
@@ -1517,10 +1706,15 @@ class OP_W extends Operation {
 
 // X - 88
 class OP_X extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "X");
+		doc.desc("A", "assign to global variable x and pop from stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_X() {
 		this.name = "X";
-		this.info = "assigns the value to the global variable x and removes it from the stack";
-		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
 		Aya.getInstance().getVars().setGlobalVar(new Variable("x"), block.pop());
@@ -1529,10 +1723,15 @@ class OP_X extends Operation {
 
 // Y - 89
 class OP_Y extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "Y");
+		doc.desc("A", "assign to global variable y and leave on stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Y() {
 		this.name = "Y";
-		this.info = "assigns the value to the global variable x and leaves it on the stack";
-		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
 		Aya.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
@@ -1541,10 +1740,16 @@ class OP_Y extends Operation {
 
 // Z - 90
 class OP_Z extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "Z");
+		doc.desc("N", "cast to bignum");
+		doc.desc("S", "parse to bignum");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Z() {
 		this.name = "Z";
-		this.info = "SN cast to bignum";
-		this.argTypes = "SN";
 	}
 	@Override public void execute (final Block block) {
 		Obj a = block.pop();
@@ -1565,10 +1770,15 @@ class OP_Z extends Operation {
 
 // \ - 92
 class OP_Backslash extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "\\");
+		doc.desc("AA", "swap top two elements on the stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Backslash() {
 		this.name = "\\";
-		this.info = "swaps the top two elements on the stack";
-		this.argTypes = "AA";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1580,11 +1790,17 @@ class OP_Backslash extends Operation {
 
 // ^ - 94
 class OP_Caret extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "^");
+		doc.desc("NN", "power");
+		doc.desc("SS", "levenshtein distance");
+		doc.ovrld(Ops.KEYVAR_POW.name(), Ops.KEYVAR_RPOW.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Caret() {
 		this.name = "^";
-		this.info = "NN Raises n1 to the n2th power\nSS the levenshtein distance of two strings";
-		this.argTypes = "NN";
-		this.overload = Ops.KEYVAR_POW.name() + "/" + Ops.KEYVAR_RPOW.name();
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1621,10 +1837,15 @@ class OP_Caret extends Operation {
 
 // _ - 95
 class OP_Underscore extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "_");
+		doc.desc("A", "deepcopy (duplicate)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Underscore() {
 		this.name = "_";
-		this.info = "duplicates the top item on the stack using deepcopy";
-		this.argTypes = "A";
 	}
 	@Override public void execute (final Block block) {
 		block.push(block.peek().deepcopy());
@@ -1634,11 +1855,17 @@ class OP_Underscore extends Operation {
 
 // | - 124
 class OP_Bar extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "|");
+		doc.desc("NN", "logical or");
+		doc.desc("SS", "split S1 using regex S2");
+		doc.ovrld(Ops.KEYVAR_OR.name(), Ops.KEYVAR_ROR.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Bar() {
 		this.name = "|";
-		this.info = "<BB|SS> logical or\n<SS> split S1 using regex S2";
-		this.argTypes = "BB|SS";
-		this.overload = Ops.KEYVAR_OR.name() + "/" + Ops.KEYVAR_ROR.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1692,10 +1919,16 @@ class OP_Bar extends Operation {
 
 // ~ - 126
 class OP_Tilde extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "~");
+		doc.desc("B|S|C", "evaluate");
+		doc.desc("L", "dump to stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Tilde() {
 		this.name = "~";
-		this.info = "evaluate a block, string, or char. dump a list to the stack";
-		this.argTypes = "E|S|L|C";
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1730,10 +1963,17 @@ class OP_Tilde extends Operation {
 
 // : - special
 class OP_ApplyTo extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', ":");
+		doc.desc("L:B", "map");
+		doc.desc("LN:E", "apply block to item at index N");
+		doc.desc("LN:A", "set index");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_ApplyTo() {
 		this.name = ":";
-		this.info = "<LN:E> (infix) apply block to the item at index N in the list\n<L:E> (infix) map E to L";
-		this.argTypes = "LN:E|L:E";
 	}
 	@Override
 	public void execute(final Block block) {

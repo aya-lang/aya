@@ -293,8 +293,12 @@ public class Dict extends Obj {
 		return sb.toString();
 	}
 
+	private Dict _metadict = null;
+	
 	public Obj getMetaDict() {
-		return new Dict(_meta);
+		if (_meta == null) _meta = new VariableSet(false);
+		if (_metadict == null) _metadict = new Dict(_meta);
+		return _metadict;
 	}
 
 	

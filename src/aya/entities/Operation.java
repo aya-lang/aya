@@ -12,16 +12,7 @@ import aya.obj.block.Block;
  *
  */
 public abstract class Operation {
-	public String info = "No info provided";
-	public String name = "No name provided";
-	public String overload = null;
-	public String argTypes = "A";
+	public String name;
 	public void execute(Block b){};	
 	@Override public String toString() {return name;}
-	
-	public String getDocStr() {
-		return name + " (" + argTypes + ")"
-				+ "\n" + info
-				+ (overload == null ? "" : ("\noverloadable: " + overload));
-	}
 }

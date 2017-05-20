@@ -12,6 +12,7 @@ import static aya.obj.Obj.SYMBOL;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.OperationDocs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
@@ -23,7 +24,6 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
-import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -138,17 +138,17 @@ public class ColonOps {
 	};
 	
 	
-	/** Returns a list of all the op descriptions **/
-	public static ArrayList<String> getAllOpDescriptions() {
-		ArrayList<String> out = new ArrayList<String>();
-		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-			if(COLON_OPS[i] != null) {
-				out.add(COLON_OPS[i].getDocStr() + "\n(colon operator)");
-			}
-		}
-		return out;
-		
-	}
+//	/** Returns a list of all the op descriptions **/
+//	public static ArrayList<String> getAllOpDescriptions() {
+//		ArrayList<String> out = new ArrayList<String>();
+//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
+//			if(COLON_OPS[i] != null) {
+//				out.add(COLON_OPS[i].getDocStr() + "\n(colon operator)");
+//			}
+//		}
+//		return out;
+//		
+//	}
 	
 	
 	/** Returns the operation bound to the character */
@@ -180,10 +180,15 @@ public class ColonOps {
 
 // ' - 39
 class OP_Colon_Quote extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":'");
+		doc.desc("C", "ord (cast to int)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_Quote() {
 		this.name = ":'";
-		this.info = "ord";
-		this.argTypes = "C";
 	}
 	@Override
 	public void execute(Block block) {
@@ -199,11 +204,17 @@ class OP_Colon_Quote extends Operation {
 
 // < - 60
 class OP_Colon_LessThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":<");
+		doc.desc("NN|CC|SS", "less then or equal to");
+		doc.ovrld(Ops.KEYVAR_LEQ.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_LessThan() {
 		this.name = ":<";
-		this.info = "less than or equal to comparison operator";
-		this.argTypes = "NN|CC|SS|LN|NL|LL";
-		this.overload = Ops.KEYVAR_LEQ.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -237,11 +248,17 @@ class OP_Colon_LessThan extends Operation {
 
 // > - 62
 class OP_Colon_GreaterThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":>");
+		doc.desc("NN|CC|SS", "greater than or equal to");
+		doc.vect();
+		doc.ovrld(Ops.KEYVAR_GEQ.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_GreaterThan() {
 		this.name = ":>";
-		this.info = "greater than or equal to comparison operator";
-		this.argTypes = "NN|CC|SS|NL|LN|LL";
-		this.overload = Ops.KEYVAR_LEQ.name();
 
 	}
 	@Override
@@ -275,10 +292,15 @@ class OP_Colon_GreaterThan extends Operation {
 
 // C - 67
 class OP_Colon_C extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":C");
+		doc.desc("J", "convert symbol to string name");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_C() {
 		this.name = ":C";
-		this.info = "convert symbol to string name";
-		this.argTypes = "J";
 	}
 	@Override public void execute (Block block) {		
 		final Obj a = block.pop();
@@ -295,10 +317,15 @@ class OP_Colon_C extends Operation {
 
 // D - 68
 class OP_Colon_D extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":D");
+		doc.desc("ASD|AJD", "set dict index");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_D() {
 		this.name = ":D";
-		this.info = "set dict item using symbol or string";
-		this.argTypes = "ASR|AJR";
 	}
 	@Override
 	public void execute(Block block) {
@@ -322,10 +349,15 @@ class OP_Colon_D extends Operation {
 
 // E - 69
 class OP_Colon_E extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":E");
+		doc.desc("D", "number or items in a dict");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_E() {
 		this.name = ":E";
-		this.info = "number of items in a dict";
-		this.argTypes = "R";
 	}
 	@Override
 	public void execute(Block block) {
@@ -341,10 +373,15 @@ class OP_Colon_E extends Operation {
 
 // I - 73  
 class OP_Colon_I extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":I");
+		doc.desc("DS|DJ", "get dict item from key");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_I() {
 		this.name = ":I";
-		this.info = "R get dict variable from key";
-		this.argTypes = "RS|RJ";
 	}
 	@Override
 	public void execute(Block block) {
@@ -381,10 +418,15 @@ class OP_Colon_I extends Operation {
 
 // K - 75
 class OP_Colon_K extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":K");
+		doc.desc("D", "return a list of keys as symbols");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_K() {
 		this.name = ":K";
-		this.info = "R return a list of keys as symbols";
-		this.argTypes = "R";
 	}
 	@Override
 	public void execute(Block block) {
@@ -409,10 +451,15 @@ class OP_Colon_K extends Operation {
 
 // P - 80
 class OP_Colon_P extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":P");
+		doc.desc("A", "println to stdout");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_P() {
 		this.name = ":P";
-		this.info = "readline from console";
-		this.argTypes = "";
 	}
 	@Override public void execute (Block block) {		
 		Aya.getInstance().println(block.pop().str());
@@ -421,10 +468,15 @@ class OP_Colon_P extends Operation {
 
 //R - 82
 class OP_Colon_R extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":R");
+		doc.desc("-", "readline from stdin");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_R() {
 		this.name = ":R";
-		this.info = "readline from console";
-		this.argTypes = "";
 	}
 	@Override public void execute (Block block) {		
 		block.push(new Str(Aya.getInstance().nextLine()));
@@ -434,10 +486,15 @@ class OP_Colon_R extends Operation {
 
 // S - 83
 class OP_Colon_S extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":S");
+		doc.desc("SC", "convert to symbol");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_S() {
 		this.name = ":S";
-		this.info = "convert string/char to symbol";
-		this.argTypes = "SC";
 	}
 	@Override public void execute (Block block) {		
 		final Obj a = block.pop();
@@ -456,10 +513,15 @@ class OP_Colon_S extends Operation {
 
 //T - 84
 class OP_Colon_T extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":T");
+		doc.desc("A", "type of (returns a symbol)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_T() {
 		this.name = ":T";
-		this.info = "return the type as a symbol";
-		this.argTypes = "A";
 	}
 	
 	private static final long TYPE_ID = Variable.encodeString("type");
@@ -486,10 +548,15 @@ class OP_Colon_T extends Operation {
 
 //V - 86
 class OP_Colon_V extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":V");
+		doc.desc("D", "return a list of values");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_V() {
 		this.name = ":V";
-		this.info = "R return a list of values as strings";
-		this.argTypes = "R";
 	}
 	@Override
 	public void execute(Block block) {
@@ -506,10 +573,15 @@ class OP_Colon_V extends Operation {
 
 //Z - 90
 class OP_Colon_Zed extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":Z");
+		doc.desc("N", "sleep (milliseconds)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_Zed() {
 		this.name = ":Z";
-		this.info = "sleep milliseconds";
-		this.argTypes = "N";
 	}
 	@Override public void execute (Block block) {
 		Obj a = block.pop();
@@ -529,10 +601,15 @@ class OP_Colon_Zed extends Operation {
 
 //_ - 95
 class OP_Colon_Underscore extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":_");
+		doc.desc("..AN", "copies the first N items on the stack (not including N)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_Underscore() {
 		this.name = ":_";
-		this.info = "copies the first N items on the stack (not including N)";
-		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -566,10 +643,15 @@ class OP_Colon_Underscore extends Operation {
 
 // | - 124
 class OP_SetMinus extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":|");
+		doc.desc("LL", "remove all elements in L2 from L1");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_SetMinus() {
 		this.name = ":|";
-		this.info = "LL remove all elements in L2 from L1";
-		this.argTypes = "LL";
 	}
 	@Override
 	public void execute(Block block) {
@@ -587,10 +669,15 @@ class OP_SetMinus extends Operation {
 
 // ~ - 126
 class OP_Colon_Tilde extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":~");
+		doc.desc("L", "remove duplicates");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Colon_Tilde() {
 		this.name = ":~";
-		this.info = "remove duplicate items from a list";
-		this.argTypes = "L";
 	}
 	@Override
 	public void execute(final Block block) {
