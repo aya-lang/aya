@@ -1,0 +1,17 @@
+
+{,
+  ["name" "types" "desc" "overload"]:columns;
+} dataframe! :opdf;
+
+0:count
+
+0M? # {op,
+  count
+  [op.name op.types op.desc op.overload]
+  opdf.setrow
+  count B :count;
+};
+
+{, 1:noindex} opdf.tohtml
+
+"ophtml.html" 0 .G

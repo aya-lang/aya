@@ -88,6 +88,12 @@ import ::list
   str 0:(str 0I toupper)
 }:titlecase;
 
+{
+  "<" "&lt;" @ .&
+  ">" "&gt;" @ .&
+  "\n" "<br />" @ .&
+}:tohtml;
+
 
 
 .# REGEX FUNCTIONS
