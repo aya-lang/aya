@@ -1,0 +1,32 @@
+.# This file generates the tables on the aya wiki
+
+import ::dataframe
+
+{title ops : opdf count(0),
+
+  {,
+    ["name" "types" "info" "overload"]:columns;
+  } dataframe! :opdf;
+
+  ops # {op,
+    count
+    [op.name op.typesB;V; op.info
+      op ::overload N\; {op.overload} {""} .?]
+    opdf.setrow
+    count B :count;
+  };
+
+  "\n<h2>$title</h2><br/>\n"
+  {, 1:noindex 1:border} opdf.tohtml +
+}:gentable;
+
+[
+  "Basic Operators"
+  "Dot Operators"
+  "Colon Operators"
+  "Misc Operators"
+]:names;
+
+3.R # {i,
+  names i I i M? gentable
+} S "ophtml.html" 0 .G
