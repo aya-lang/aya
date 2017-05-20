@@ -1,5 +1,6 @@
 package aya.exceptions;
 
+import aya.OperationDocs;
 import aya.entities.Operation;
 import aya.obj.Obj;
 
@@ -11,14 +12,19 @@ public class TypeError extends RuntimeException {
 		return msg;
 	}
 	
-	public TypeError(String opname, String expected, Obj... recieved) {
-		super("Type error at (" + opname + "):\n\tExpected (" + expected + ")\n\tRecieved (" + listStr(recieved));
-		msg = "Type error at (" + opname + "):\n\tExpected (" + expected + ")\n\tRecieved (" + listStr(recieved);
+	public TypeError(Operation op, Obj... recieved) {
+		super("Type error at (" + op.name + "):\n\tExpected (" 
+				+ OperationDocs.get(op.name).typeString() 
+				+ ")\n\tRecieved (" + listStr(recieved));
+		
+		msg = "Type error at (" + op.name + "):\n\tExpected (" 
+				+ OperationDocs.get(op.name).typeString() 
+				+ ")\n\tRecieved (" + listStr(recieved);
 	}
 	
-	public TypeError(Operation op, Obj... recieved) {
-		super("Type error at (" + op.name + "):\n\tExpected (" + op.argTypes + ")\n\tRecieved (" + listStr(recieved));
-		msg = "Type error at (" + op.name + "):\n\tExpected (" + op.argTypes + ")\n\tRecieved (" + listStr(recieved);
+	public TypeError(String s) {
+		super(s);
+		msg = s;
 	}
 	
 	public static String listStr(Obj[] recieved) {

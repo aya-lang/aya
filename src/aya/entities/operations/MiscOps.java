@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.OperationDocs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
@@ -26,7 +27,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
@@ -39,7 +39,6 @@ import aya.parser.CharacterParser;
 import aya.util.ChartParams;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
-import aya.variable.VariableSet;
 
 public class MiscOps {	
 
@@ -137,7 +136,7 @@ public class MiscOps {
 		/* 116 t */ new OP_Tangent(),
 		/* 117 u */ null,
 		/* 118 v */ null,
-		/* 119 w */ new OP_TypeStr(),
+		/* 119 w */ null,
 		/* 120 x */ null,
 		/* 121 y */ null,
 		/* 122 z */ null,
@@ -147,16 +146,16 @@ public class MiscOps {
 		/* 126 ~ */ null,
 	};
 	
-	/** Returns a list of all the op descriptions **/
-	public static ArrayList<String> getAllOpDescriptions() {
-		ArrayList<String> out = new ArrayList<String>();
-		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-			if(MATH_OPS[i] != null) {
-				out.add(MATH_OPS[i].getDocStr() + "\n(misc. operator)");
-			}
-		}
-		return out;
-	}
+//	/** Returns a list of all the op descriptions **/
+//	public static ArrayList<String> getAllOpDescriptions() {
+//		ArrayList<String> out = new ArrayList<String>();
+//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
+//			if(MATH_OPS[i] != null) {
+//				out.add(MATH_OPS[i].getDocStr() + "\n(misc. operator)");
+//			}
+//		}
+//		return out;
+//	}
 	
 	/** Returns the operation bound to the character */
 	public static Operation getOp(char op) {
@@ -171,11 +170,17 @@ public class MiscOps {
 
 // ! - 33
 class OP_Fact extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "M!");
+		doc.desc("N", "factorial");
+		doc.ovrld(Ops.KEYVAR_FACT.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Fact() {
 		this.name = "M!";
-		this.info = "factorial";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_FACT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -193,17 +198,22 @@ class OP_Fact extends Operation {
 		}
 		
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
-// ! - 33
+// $ - 33
 class OP_SysTime extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "M$");
+		doc.desc("-", "system time in milliseconds");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_SysTime() {
 		this.name = "M$";
-		this.info = "system time in milliseconds as a double";
-		this.argTypes = "";
 	}
 	@Override
 	public void execute(Block block) {
@@ -213,15 +223,16 @@ class OP_SysTime extends Operation {
 
 // ? - 63
 class OP_Help extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "M?");
+		doc.desc("N", "list op descriptions where N=[0:std, 1:dot, 2:colon, 3:misc]");
+		doc.desc("S", "search all help data");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Help() {
 		this.name = "M?";
-		this.info = "search help\n"
-				+ "  \"string\"M? search all help text\n"
-				+ "  0M? list all 1 char ops\n"
-				+ "  1M? list all dot ops\n"
-				+ "  2M? list all colon ops\n"
-				+ "  3M? list all misc. ops\n";
-		this.argTypes = "S|N";
 	}
 	@Override
 	public void execute(Block block) {
@@ -251,16 +262,16 @@ class OP_Help extends Operation {
 			int n = ((Number)s).toInt();
 			switch (n) {
 			case 0:
-				block.push(convOpData(Ops.OPS));
+				block.push(OperationDocs.asDicts(OpDoc.STD));
 				break;
 			case 1:
-				block.push(convOpData(DotOps.DOT_OPS));
+				block.push(OperationDocs.asDicts(OpDoc.DOT));
 				break;
 			case 2:
-				block.push(convOpData(ColonOps.COLON_OPS));
+				block.push(OperationDocs.asDicts(OpDoc.COLON));
 				break;
 			case 3:
-				block.push(convOpData(MiscOps.MATH_OPS));
+				block.push(OperationDocs.asDicts(OpDoc.MISC));
 				break;
 
 			default:
@@ -271,40 +282,21 @@ class OP_Help extends Operation {
 			throw new TypeError(this, s);
 		}
 	}
-	
-	private List convOpData(Operation[] ops) {
-		ArrayList<Obj> opData = new ArrayList<Obj>(ops.length);
-		for (Operation o : ops) {
-			if (o != null) {
-				opData.add(opInfoToDict(o));
-			}
-		}
-		return new GenericList(opData);
-	}
-	
-	private Dict opInfoToDict(Operation op) {
-		Dict d = new Dict();
-		d.set("name", new Str(op.name));
-		d.set("types", new Str(op.argTypes));
-		d.set("desc", new Str(op.info));
-		 
-		if (op.overload != null) {
-			d.set("overload", new Str(op.overload));
-		} else {
-			d.set("overload", Str.EMPTY);
-		}
-		
-		return d;
-	}
 }
 
 // C - 67
 class OP_Acosine extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MC");
+		doc.desc("N", "inverse cosine");
+		doc.ovrld(Ops.KEYVAR_ACOS.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Acosine() {
 		this.name = "MC";
-		this.info = "trigonometric inverse cosine";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_ACOS.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -328,12 +320,17 @@ class OP_Acosine extends Operation {
 
 // D - 68
 class OP_MDate extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MD");
+		doc.desc("N", "given time in ms, return date params [day_of_week, year, month, day_of_month, hour, min, s]");
+		OperationDocs.add(doc);
+	}
+	
 	private Calendar cal = Calendar.getInstance();
 
 	public OP_MDate() {
 		this.name = "MD";
-		this.info = "input time in ms (M$) and return date params [day_of_week, year, month, day_of_month, hour, min, s]";
-		this.argTypes = "N";
 	}
 	@Override
 	public void execute(Block block) {
@@ -354,7 +351,7 @@ class OP_MDate extends Operation {
 
 			block.push(new NumberItemList(fields));
 		} else {
-			throw new TypeError(this.name, this.argTypes, a);
+			throw new TypeError(this, a);
 		}
 		
 	}
@@ -363,11 +360,15 @@ class OP_MDate extends Operation {
 
 // H - 68
 class OP_MParse_Date extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MH");
+		doc.desc("SS", "parse a date using a given format and return the time in ms");
+		OperationDocs.add(doc);
+	}
 
 	public OP_MParse_Date() {
 		this.name = "MH";
-		this.info = "parse a date using a given format and return the time in ms";
-		this.argTypes = "SS";
 	}
 	@Override
 	public void execute(Block block) {
@@ -394,21 +395,26 @@ class OP_MParse_Date extends Operation {
 			}
 			block.push(new Num(date.getTime()));
 		} else {
-			throw new TypeError(this.name, this.argTypes, a, b);
+			throw new TypeError(this, a, b);
 		}
 		
 	}
 }
 
 
-// l - 76
+// L - 76
 class OP_Log extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "ML");
+		doc.desc("N", "base-10 logarithm");
+		doc.ovrld(Ops.KEYVAR_LOG.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
 
 	public OP_Log() {
 		this.name = "ML";
-		this.info = "base-10 logarithm";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_LOG.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -430,10 +436,15 @@ class OP_Log extends Operation {
 
 // O - 79
 class OP_NewUserObject extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MO");
+		doc.desc("DD", "set D1s metatable to D2");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_NewUserObject() {
 		this.name = "MO";
-		this.info = "create a new user object using the first dict as the metatable";
-		this.argTypes = "RR";
 	}
 	@Override
 	public void execute(Block block) {
@@ -445,7 +456,7 @@ class OP_NewUserObject extends Operation {
 			((Dict)dict).setMetaTable((Dict)meta);
 			block.push(dict);
 		} else {
-			throw new TypeError(this.name, this.argTypes, meta, dict);
+			throw new TypeError(this, meta, dict);
 		}
 	}
 }
@@ -483,11 +494,17 @@ class OP_NewUserObject extends Operation {
 
 // S - 83
 class OP_Asine extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MS");
+		doc.desc("N", "inverse sine");
+		doc.ovrld(Ops.KEYVAR_ASIN.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Asine() {
 		this.name = "MS";
-		this.info = "trigonometric inverse sine";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_ASIN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -502,18 +519,24 @@ class OP_Asine extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_ASIN);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
 // T - 84
 class OP_Atangent extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MT");
+		doc.desc("N", "inverse tangent");
+		doc.ovrld(Ops.KEYVAR_ATAN.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Atangent() {
 		this.name = "MT";
-		this.info = "trigonometric inverse tangent";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_ATAN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -528,7 +551,7 @@ class OP_Atangent extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_ATAN);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
@@ -536,9 +559,15 @@ class OP_Atangent extends Operation {
 
 //V - 86
 class OP_Dialog extends Operation {
-	public OP_Dialog() {
-		this.name = "MV";
-		this.info = "options title windowhdr msgtype dialogtype MV\n"
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MV");
+		doc.desc("LSSNN", "options title windowhdr msgtype dialogtype MV\n"
+				+ "  msgtype:\n"
+				+ "    1: plain\n"
+				+ "    2: question\n"
+				+ "    3: warning\n"
+				+ "    4: error"
 				+ "  dialogtype:\n"
 				+ "    1: request string\n"
 				+ "    2: request number\n"
@@ -547,12 +576,12 @@ class OP_Dialog extends Operation {
 				+ "    5: option buttons\n"
 				+ "    6: option dropdown\n"
 				+ "    7: choose file\n"
-				+ "  msgtype:\n"
-				+ "    1: plain\n"
-				+ "    2: question\n"
-				+ "    3: warning\n"
-				+ "    4: error";
-		this.argTypes = "LSSII";
+);
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Dialog() {
+		this.name = "MV";
 	}
 	@Override
 	public void execute(Block block) {
@@ -612,9 +641,10 @@ class OP_Dialog extends Operation {
 
 //X - 88
 class OP_AdvPlot extends Operation {
-	public OP_AdvPlot() {
-		this.name = "MX";
-		this.info = "plot\n"
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MX");
+		doc.desc("D", "plot\n"
 				+ "  parameters:\n"
 				+ "    plottype (::line ::scatter)\n"
 				+ "    title S\n"
@@ -629,8 +659,12 @@ class OP_AdvPlot extends Operation {
 				+ "    show B\n"
 				+ "    legend B\n"
 				+ "    horizontal B\n"
-				+ "    filename S\n";
-		this.argTypes = "L";
+				+ "    filename S\n");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_AdvPlot() {
+		this.name = "MX";
 	}
 	@Override
 	public void execute(Block block) {
@@ -644,17 +678,22 @@ class OP_AdvPlot extends Operation {
 
 //Z - 9
 class OP_SysConfig extends Operation {
-	public OP_SysConfig() {
-		this.name = "MZ";
-		this.info = "system functions\n"
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MZ");
+		doc.desc("AN",  "system functions\n"
 				+ "  S1: change prompt text\n"
 				+ "  A2: get working dir\n"
 				+ "  S3: set working dir\n"
 				+ "  \"\"3: reset working dir\n"
 				+ "  S4: list files in working dir + S\n"
 				+ "  S5: create dir in working dir + S\n"
-				+ "  S6: delete file or dir";
-		this.argTypes = "AI";
+				+ "  S6: delete file or dir");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_SysConfig() {
+		this.name = "MZ";
 	}
 	@Override
 	public void execute(Block block) {
@@ -664,7 +703,7 @@ class OP_SysConfig extends Operation {
 		if(cmd.isa(NUMBER)) {
 			doCommand(((Number)cmd).toInt(), arg, block);
 		} else {	
-			throw new TypeError(this.name, this.argTypes, cmd, arg);
+			throw new TypeError(this, cmd, arg);
 		}
 	}
 	
@@ -761,11 +800,17 @@ class OP_SysConfig extends Operation {
 
 // c - 99
 class OP_Cosine extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mc");
+		doc.desc("N", "consine");
+		doc.ovrld(Ops.KEYVAR_COS.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Cosine() {
 		this.name = "Mc";
-		this.info = "trigonometric cosine";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_COS.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -781,18 +826,25 @@ class OP_Cosine extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_COS);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
 //d - 100
 class OP_CastDouble extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Md");
+		doc.desc("N", "cast to double");
+		doc.desc("S", "parse double, if invalid, return 0.0");
+		doc.ovrld(Ops.KEYVAR_FLOAT.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_CastDouble() {
 		this.name = "Md";
-		this.info = "cast number to double. if input not number, return 0.0";
-		this.argTypes = "SN";
-		this.overload = Ops.KEYVAR_FLOAT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -819,11 +871,17 @@ class OP_CastDouble extends Operation {
 
 // e - 100
 class OP_Me extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Me");
+		doc.desc("N", "exponential function");
+		doc.ovrld(Ops.KEYVAR_EXP.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Me() {
 		this.name = "Me";
-		this.info = "exponential";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_EXP.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -841,18 +899,23 @@ class OP_Me extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_EXP);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
 // h - 104
 class OP_MShow_Date extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mh");
+		doc.desc("NS", "convert the time in ms to a date string according to a given format");
+		OperationDocs.add(doc);
+	}
+	
 
 	public OP_MShow_Date() {
 		this.name = "Mh";
-		this.info = "convert the time in ms to a date string according to a given format";
-		this.argTypes = "NS";
 	}
 	@Override
 	public void execute(Block block) {
@@ -878,7 +941,7 @@ class OP_MShow_Date extends Operation {
 			}
 			block.push(new Str(out));
 		} else {
-			throw new TypeError(this.name, this.argTypes, a, b);
+			throw new TypeError(this, a, b);
 		}
 		
 	}
@@ -887,10 +950,15 @@ class OP_MShow_Date extends Operation {
 
 // k - 107
 class OP_AddParserChar extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mk");
+		doc.desc("CS", "add special character");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_AddParserChar() {
 		this.name = "Mk";
-		this.info = "add a special character";
-		this.argTypes = "CS";
 	}
 	@Override
 	public void execute(Block block) {
@@ -913,11 +981,17 @@ class OP_AddParserChar extends Operation {
 
 // l - 108
 class OP_Ln extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Ml");
+		doc.desc("N", "natural logarithm");
+		doc.ovrld(Ops.KEYVAR_LN.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Ln() {
 		this.name = "Ml";
-		this.info = "natural logarithm";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_LN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -939,10 +1013,15 @@ class OP_Ln extends Operation {
 
 // o - 111
 class OP_GetMeta extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mo");
+		doc.desc("D", "get metatable");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_GetMeta() {
 		this.name = "Mo";
-		this.info = "get a dict's metatable";
-		this.argTypes = "R";
 	}
 
 	@Override
@@ -959,10 +1038,15 @@ class OP_GetMeta extends Operation {
 
 // p - 112
 class OP_Primes extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mp");
+		doc.desc("N", "list primes up to N");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Primes() {
 		this.name = "Mp";
-		this.info = "N list all primes up to N";
-		this.argTypes = "N";
 	}
 
 	@Override
@@ -983,11 +1067,17 @@ class OP_Primes extends Operation {
 
 // q - 113
 class OP_SquareRoot extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mq");
+		doc.desc("N", "square root");
+		doc.ovrld(Ops.KEYVAR_SQRT.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_SquareRoot() {
 		this.name = "Mq";
-		this.info = "square root function";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_SQRT.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1010,10 +1100,16 @@ class OP_SquareRoot extends Operation {
 
 // r - 114
 class OP_To_Rat extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mr");
+		doc.desc("N", "convert to rational number");
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_To_Rat() {
 		this.name = "Mr";
-		this.info = "convert to rational number";
-		this.argTypes = "N";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1038,11 +1134,8 @@ class OP_To_Rat extends Operation {
 			}
 			block.push(new NumberItemList(ns));
 		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_SIN);
-		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
@@ -1050,11 +1143,17 @@ class OP_To_Rat extends Operation {
 
 // s - 115
 class OP_Sine extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Ms");
+		doc.desc("N", "sine");
+		doc.ovrld(Ops.KEYVAR_SIN.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Sine() {
 		this.name = "Ms";
-		this.info = "trigonometric sine";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_SIN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1070,7 +1169,7 @@ class OP_Sine extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_SIN);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
@@ -1080,11 +1179,17 @@ class OP_Sine extends Operation {
 
 // t - 116
 class OP_Tangent extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "Mt");
+		doc.desc("N", "tangent");
+		doc.ovrld(Ops.KEYVAR_TAN.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Tangent() {
 		this.name = "Mt";
-		this.info = "trigonometric tangent";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_TAN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1100,23 +1205,11 @@ class OP_Tangent extends Operation {
 			block.callVariable((Dict)n, Ops.KEYVAR_TAN);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, n);
+			throw new TypeError(this, n);
 		}
 	}
 }
 
-//w - 119
-class OP_TypeStr extends Operation {
-	public OP_TypeStr() {
-		this.name = "Mw";
-		this.info = "return string representation of the type\n  modules begin with a ':' and user types begin with a '.'";
-		this.argTypes = "A";
-	}
-	@Override
-	public void execute(Block block) {
-		block.push(new Str(Obj.typeName(block.pop().type())));
-	}
-}
 
 
 

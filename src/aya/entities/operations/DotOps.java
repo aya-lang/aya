@@ -1,15 +1,14 @@
 package aya.entities.operations;
 
 import static aya.obj.Obj.BLOCK;
-import static aya.obj.Obj.BIGNUM;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
-import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
+import static aya.obj.Obj.SYMBOL;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +22,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Stack;
 
-import org.apfloat.Apfloat;
-
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.OperationDocs;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
@@ -41,10 +39,10 @@ import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
-import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.QuickDialog;
@@ -158,16 +156,16 @@ public class DotOps {
 	};
 	
 	
-	/** Returns a list of all the op descriptions **/
-	public static ArrayList<String> getAllOpDescriptions() {
-		ArrayList<String> out = new ArrayList<String>();
-		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-			if(DOT_OPS[i] != null) {
-				out.add(DOT_OPS[i].getDocStr() + "\n(extended operator)");
-			}
-		}
-		return out;
-	}
+//	/** Returns a list of all the op descriptions **/
+//	public static ArrayList<String> getAllOpDescriptions() {
+//		ArrayList<String> out = new ArrayList<String>();
+//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
+//			if(DOT_OPS[i] != null) {
+//				out.add(DOT_OPS[i].getDocStr() + "\n(extended operator)");
+//			}
+//		}
+//		return out;
+//	}
 	
 	
 	/** Returns the operation bound to the character */
@@ -183,11 +181,17 @@ public class DotOps {
 
 // ! - 33
 class OP_Dot_Bang extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".!");
+		doc.desc("N", "signum");
+		doc.desc("S", "parse if number");
+		doc.ovrld(Ops.KEYVAR_SIGNUM.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Bang() {
 		this.name = ".!";
-		this.info = "N signnum\nS parse if number";
-		this.argTypes = "NS";
-		this.overload = Ops.KEYVAR_SIGNUM.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -196,14 +200,19 @@ class OP_Dot_Bang extends Operation {
 			block.push(((Number)o).signnum());
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
+			Block b;
 			try {
-				block.push(new Num(Integer.parseInt(numStr)));
-			} catch (NumberFormatException e) {
-				try {
-					block.push(new BigNum(new Apfloat(numStr)));
-				} catch (NumberFormatException e2) {
-					block.push(o);
-				}
+				b = Parser.compile(numStr, Aya.getInstance());
+			} catch (Exception e) {
+				b = null;
+			}
+			
+			if (b != null 
+					&& b.getInstructions().getInstrucionList().size() == 1
+					&& b.getInstructions().peek(0) instanceof Number) {
+				block.push((Obj) b.getInstructions().peek(0));
+			} else {
+				block.push(o);
 			}
 		} 
 		else if (o.isa(DICT)) {
@@ -217,10 +226,15 @@ class OP_Dot_Bang extends Operation {
 
 // $ - 36
 class OP_Dot_SortUsing extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".$");
+		doc.desc("LB", "sort leat to greatest by applying B to L");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_SortUsing() {
 		this.name = ".$";
-		this.info = "LE sort using the expresion E";
-		this.argTypes = "LE";
 	}
 	
 	@Override public void execute(Block block) {
@@ -268,8 +282,6 @@ class OP_Dot_SortUsing extends Operation {
 			this.d = d;
 		}
 		public int compareTo(SUItem<T> i) {
-			//Ascending
-			//return (int)((this.d - i.d)*10000); 
 			return d.compareTo(i.d);
 		}
 	}
@@ -280,11 +292,16 @@ class OP_Dot_SortUsing extends Operation {
 
 // % - 37
 class OP_Dot_Percent extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".%");
+		doc.desc("NN", "integer division");
+		doc.ovrld(Ops.KEYVAR_IDIV.name(), Ops.KEYVAR_RIDIV.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Percent() {
 		this.name = ".%";
-		this.info = "NN integer division";
-		this.argTypes = "NN";
-		this.overload = Ops.KEYVAR_IDIV.name() + "/" + Ops.KEYVAR_RIDIV.name();
 	}
 	@Override public void execute(final Block block) {
 		Obj a = block.pop();
@@ -325,10 +342,15 @@ class OP_Dot_Percent extends Operation {
 
 // & - 38
 class OP_Dot_And extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".&");
+		doc.desc("SSS", "replace all occurances of the regex S1 with S2 in S3");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_And() {
 		this.name = ".&";
-		this.info = "SSS replace all occurances of the regex S1 with S2 in S3";
-		this.argTypes = "SSS";
 	}
 	@Override public void execute(final Block block) {
 		Obj a = block.pop();  // str
@@ -345,10 +367,15 @@ class OP_Dot_And extends Operation {
 
 // ' - 39
 class OP_Dot_CastChar extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".'");
+		doc.desc("N|S", "cast to char");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_CastChar() {
 		this.name = ".'";
-		this.info = "NSC cast to char";
-		this.argTypes = "NS";
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
@@ -367,10 +394,15 @@ class OP_Dot_CastChar extends Operation {
 
 // + - 43
 class OP_Dot_Plus extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".+");
+		doc.desc("NN", "gdc");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Plus() {
 		this.name = ".+";
-		this.info = "NN gcd";
-		this.argTypes = "NN";
 	}
 	@Override
 	public void execute(Block block) {
@@ -387,10 +419,17 @@ class OP_Dot_Plus extends Operation {
 
 // - - 45
 class OP_Dot_Minus extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".-");
+		doc.desc("NN", "lcm");
+		doc.desc("LN", "remove item at index N from L");
+		doc.desc("LL", "remove items at indices L1 from L2");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Minus() {
 		this.name = ".-";
-		this.info = "NN lcm\nLN remove item N from list L";
-		this.argTypes = "NN";
 	}
 	@Override
 	public void execute(Block block) {
@@ -415,11 +454,16 @@ class OP_Dot_Minus extends Operation {
 
 // / - 47
 class OP_Dot_FwdSlash extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', "./");
+		doc.desc("N", "ceiling");
+		doc.ovrld(Ops.KEYVAR_CEIL.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_FwdSlash() {
 		this.name = "./";
-		this.info = "ceiling";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_CEIL.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -445,10 +489,15 @@ class OP_Dot_FwdSlash extends Operation {
 
 // ; - 59
 class OP_Dot_ClearAll extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".;");
+		doc.desc("..A", "clear the entire stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_ClearAll() {
 		this.name = ".;";
-		this.info = "clears the entire stack";
-		this.argTypes = "A";
 	}
 	@Override
 	public void execute(Block block) {
@@ -458,11 +507,18 @@ class OP_Dot_ClearAll extends Operation {
 
 // < - 60
 class OP_Dot_LessThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".<");
+		doc.desc("LN", "head / pad 0");
+		doc.desc("SN", "head / pad ' '");
+		doc.desc("NN|SS|CC", "lesser of");
+		doc.ovrld(Ops.KEYVAR_HEAD.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_LessThan() {
 		this.name = ".<";
-		this.info = "LN head, NN lesser of";
-		this.argTypes = "LN|NN";
-		this.overload = Ops.KEYVAR_HEAD.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -511,11 +567,18 @@ class OP_Dot_LessThan extends Operation {
 
 // > - 62
 class OP_Dot_GreaterThan extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".>");
+		doc.desc("LN", "tail / pad 0");
+		doc.desc("SN", "tail / pad ' '");
+		doc.desc("NN|CC|SS", "greater of");
+		doc.ovrld(Ops.KEYVAR_TAIL.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_GreaterThan() {
 		this.name = ".>";
-		this.info = "LN tail, NN greater of";
-		this.argTypes = "LN|NN";
-		this.overload = Ops.KEYVAR_TAIL.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -563,10 +626,15 @@ class OP_Dot_GreaterThan extends Operation {
 
 // = 61 new OP_Dot_Equals(),
 class OP_Dot_Equals extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".=");
+		doc.desc("LL|AL|LA", "element-wise equivalence");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Equals() {
 		this.name = ".=";
-		this.info = "LL element-wise equals";
-		this.argTypes = "LL|LA|AL";
 	}
 	
 	@Override
@@ -600,10 +668,15 @@ class OP_Dot_Equals extends Operation {
 
 // ? - 63
 class OP_Dot_Conditional extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".?");
+		doc.desc("AAA", "if A1 then A2, else A3. If A2/A3 are blocks, execute");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Conditional() {
 		this.name = ".?";
-		this.info = "BAA conditional operator. if B, then A1 else A2. If A is a block, execute it.";
-		this.argTypes = "BAA";
 	}
 	
 	@Override
@@ -633,10 +706,15 @@ class OP_Dot_Conditional extends Operation {
 
 // @ - 64
 class OP_Dot_At extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".@");
+		doc.desc("..AN", "moves the Nth item on the stack (not including N) to the top");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_At() {
 		this.name = ".@";
-		this.info = "moves the Nth item on the stack (not including N) to the top";
-		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -661,10 +739,15 @@ class OP_Dot_At extends Operation {
 
 // A - 65
 class OP_Dot_ArrayAll extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".A");
+		doc.desc("..A", "wrap entire stack in a list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_ArrayAll() {
 		this.name = ".A";
-		this.info = "wrap the entire stack in a generic list";
-		this.argTypes = "A";
 	}
 	@SuppressWarnings("unchecked")
 	@Override
@@ -678,10 +761,15 @@ class OP_Dot_ArrayAll extends Operation {
 
 // B - 66
 class OP_Dot_Append extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".B");
+		doc.desc("AL", "append item to the back of a list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Append() {
 		this.name = ".B";
-		this.info = "append item to the back of a list";
-		this.argTypes = "AL";
 	}
 	@Override
 	public void execute(Block block) {
@@ -702,10 +790,15 @@ class OP_Dot_Append extends Operation {
 
 // D - 68
 class OP_Dot_Error extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".D");
+		doc.desc("S", "interrupts the program and throws an error message");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Error() {
 		this.name = ".D";
-		this.info = "interrupts the program and throws an error message";
-		this.argTypes = "S";
 	}
 	@Override public void execute (Block block) {
 		Obj a = block.pop();
@@ -720,11 +813,16 @@ class OP_Dot_Error extends Operation {
 
 //E - 69
 class OP_Dot_Len extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".E");
+		doc.desc("L", "length, keep list on stack");
+		doc.ovrld(Ops.KEYVAR_LEN.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Len() {
 		this.name = ".E";
-		this.info = "return length and keep item on the stack";
-		this.argTypes = "A";
-		this.overload = Ops.KEYVAR_LEN.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -748,10 +846,15 @@ class OP_Dot_Len extends Operation {
 
 //F - 70
 class OP_Dot_Flatten extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".F");
+		doc.desc("L", "flatten nested list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Flatten() {
 		this.name = ".F";
-		this.info = "L flatten nested list";
-		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
@@ -774,10 +877,15 @@ class OP_Dot_Flatten extends Operation {
 
 // G - 71
 class OP_Dot_Write extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".G");
+		doc.desc("ASN", "write A as a string to file located at S. N = 0, overwrite. N = 1, append");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Write() {
 		this.name = ".G";
-		this.info = "write A as a string to file located at S. N = 0, overwrite. N = 1, append";
-		this.argTypes = "ASN";
 	}
 	@Override
 	public void execute(Block block) {
@@ -824,10 +932,16 @@ class OP_Dot_Write extends Operation {
 // I - 73
 //NOTE: If updating this operator, also update I
 class OP_Dot_I extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".I");
+		doc.desc("LN|LL", "index, keep list on stack");
+		doc.desc("LB", "filter, keep list on stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_I() {
-		this.name = "I";
-		this.info = "index, filter";
-		this.argTypes = "LL|LI|LE";
+		this.name = ".I";
 	}
 	@Override public void execute (final Block block) {
 		Obj index = block.pop();
@@ -863,10 +977,15 @@ class OP_Dot_I extends Operation {
 
 //K - 75
 class OP_Dot_TryCatch extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".K");
+		doc.desc("BB", "try B1, if error, execute B2. Neither block has access to the global stack");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_TryCatch() {
 		this.name = ".K";
-		this.info = "try B1, if error, execute B2. Neither block has access to the global stack";
-		this.argTypes = "EE";
 	}
 	@Override public void execute (Block block) {
 		Obj catchBlock = block.pop();
@@ -889,10 +1008,15 @@ class OP_Dot_TryCatch extends Operation {
 
 // N - 78
 class OP_Dot_N extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".N");
+		doc.desc("LB", "return the index of the first element of L that satifies E");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_N() {
 		this.name = ".N";
-		this.info = "return the index of the first element of L that satifies E";
-		this.argTypes = "LA";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop(); //Block
@@ -925,23 +1049,32 @@ class OP_Dot_N extends Operation {
 
 // P - 80
 class OP_Dot_Print extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".P");
+		doc.desc("A", "print to stdout");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Print() {
 		this.name = ".P";
-		this.info = "prints the value on the top of the stack to stdout";
-		this.argTypes = "A";
 	}
 	@Override public void execute (Block block) {
-		//Aya.getInstance().getOut().printAsPrint(block.pop().str());
 		Aya.getInstance().print(block.pop().str());
 	}
 }
 
 // Q - 81
 class OP_Dot_Rand extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".Q");
+		doc.desc("-", "return a random decimal from 0 to 1");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Rand() {
 		this.name = ".Q";
-		this.info = "returns a random decimal from 0 to 1";
-		this.argTypes = "";
 	}
 	@Override public void execute (Block block) {
 		block.push(new Num(Ops.RAND.nextDouble()));
@@ -950,10 +1083,15 @@ class OP_Dot_Rand extends Operation {
 
 // R - 82
 class OP_Dot_R extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".R");
+		doc.desc("N", "range [0, 1, .., N-1]");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_R() {
 		this.name = ".R";
-		this.info = "Returns a numeric list from 0 to N-1";
-		this.argTypes = "N";
 	}
 	@Override public void execute (Block block) {
 		final Obj a = block.pop();
@@ -979,10 +1117,15 @@ class OP_Dot_R extends Operation {
 
 // S - 83
 class OP_Dot_Case extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".S");
+		doc.desc(".S", "returns the first element of a list. if the first element is a block, evaluate");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Case() {
 		this.name = ".S";
-		this.info = "returns the first element of a list. if the first element is a block, push its contents to the instruction stack";
-		this.argTypes = "L";
 	}
 	@Override public void execute (Block block) {
 		Obj a = block.pop();
@@ -1008,10 +1151,15 @@ class OP_Dot_Case extends Operation {
 
 //T - 84
 class OP_Dot_T extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".T");
+		doc.desc("L", "transpose a 2d list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_T() {
 		this.name = ".T";
-		this.info = "transpose a 2d list";
-		this.argTypes = "L";
 	}
 	@Override public void execute (Block block) {		
 		final Obj a = block.pop();
@@ -1028,10 +1176,15 @@ class OP_Dot_T extends Operation {
 
 // U - 85
 class OP_RequestString extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".U");
+		doc.desc("S", "requests a string using a ui dialog, S is the prompt text");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_RequestString() {
 		this.name = ".U";
-		this.info = "requests a string using a ui dialog. S is the dialiog header";
-		this.argTypes = "S";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1043,10 +1196,15 @@ class OP_RequestString extends Operation {
 
 // V - 86
 class OP_Dot_AppendBack extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".V");
+		doc.desc("AL", "append item to back of list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_AppendBack() {
 		this.name = ".V";
-		this.info = "append item to the back of a list";
-		this.argTypes = "AL";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1064,10 +1222,15 @@ class OP_Dot_AppendBack extends Operation {
 
 // W - 87
 class OP_Dot_W extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".W");
+		doc.desc("D", "export variables only if they exist in the most local scope");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_W() {
 		this.name = ".W";
-		this.info = "R export variables only if they exist in the local scope";
-		this.argTypes = "AL";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1084,10 +1247,15 @@ class OP_Dot_W extends Operation {
 
 //X - 88
 class OP_SimplePlot extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".X");
+		doc.desc("L", "plots a list of numbers to a basic graph and saves the image in the plots folder");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_SimplePlot() {
 		this.name = ".X";
-		this.info = "plot operator. plots a list of numbers to a basic graph and saves the image in the plots folder";
-		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1132,15 +1300,20 @@ class OP_SimplePlot extends Operation {
 
 // Z - 90
 class OP_Dot_Zed extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".Z");
+		doc.desc("S|C|J", "dereference variable");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Zed() {
 		this.name = ".Z";
-		this.info = "dereferences a string as variable";
-		this.argTypes = "S";
 	}
 	@Override public void execute (Block block) {
 		Obj s = block.pop();
 		
-		if(s.isa(STR)) {
+		if(s.isa(STR) || s.isa(CHAR)) {
 			String str = s.str();
 			if(str.contains(".")) {
 				throw new AyaRuntimeException(".Z: Cannot look up dictionary variables");
@@ -1148,17 +1321,25 @@ class OP_Dot_Zed extends Operation {
 			Variable v = new Variable(str);
 			block.push(Aya.getInstance().getVars().getVar(v));
 			return;
+		} else if (s.isa(SYMBOL)) {
+			block.push(Aya.getInstance().getVars().getVar( ((Symbol)s).id() ));
+		} else {
+			throw new TypeError(this, s);
 		}
-		throw new TypeError(this, s);
 	}
 }
 
 // [ - 91
 class OP_Dot_Ceiling extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".[");
+		doc.desc("L", "promote list to more specific type if possible");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Ceiling() {
 		this.name = ".[";
-		this.info = "promote a list to a more specific type if possible";
-		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1170,18 +1351,23 @@ class OP_Dot_Ceiling extends Operation {
 			block.push(a);
 		}
 		else {
-			throw new TypeError(this.name, this.argTypes, a);
+			throw new TypeError(this, a);
 		}
 	}
 }
 
 // \ - 92
 class OP_Dot_BackSlash extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".\\");
+		doc.desc("N", "floor");
+		doc.ovrld(Ops.KEYVAR_FLOOR.name());
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_BackSlash() {
 		this.name = ".\\";
-		this.info = "floor";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_FLOOR.name();
 	}
 	@Override
 	public void execute(Block block) {
@@ -1204,10 +1390,15 @@ class OP_Dot_BackSlash extends Operation {
 
 // ] - 93
 class OP_Dot_Floor extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".]");
+		doc.desc("L", "copy list as generic list");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Floor() {
 		this.name = ".]";
-		this.info = "copy a list as a generic list";
-		this.argTypes = "L";
 	}
 	@Override
 	public void execute(Block block) {
@@ -1220,17 +1411,22 @@ class OP_Dot_Floor extends Operation {
 				block.push( new GenericList(((List)a).getObjAL()) );
 			}
 		} else {
-			throw new TypeError(this.name, this.argTypes, a);
+			throw new TypeError(this, a);
 		}
 	}
 }
 
 // _ - 95
 class OP_Dot_Underscore extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', "._");
+		doc.desc("..AN", "copies the Nth item on the stack to the top (not including N)");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Underscore() {
 		this.name = "._";
-		this.info = "copies the Nth item on the stack (not including N)";
-		this.argTypes = "N";
 	}
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
@@ -1258,11 +1454,17 @@ class OP_Dot_Underscore extends Operation {
 
 // | - 124
 class OP_Dot_Bar extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".|");
+		doc.desc("N", "absolute value");
+		doc.ovrld(Ops.KEYVAR_ABS.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Bar() {
 		this.name = ".|";
-		this.info = "absolute value";
-		this.argTypes = "N";
-		this.overload = Ops.KEYVAR_ABS.name();
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1285,10 +1487,16 @@ class OP_Dot_Bar extends Operation {
 
 // ~ - 126
 class OP_Dot_Tilde extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".~");
+		doc.desc("S", "parse contents to a block");
+		doc.desc("J|C", "deref variable; if not a block, put contents in block");
+		OperationDocs.add(doc);
+	}
+	
 	public OP_Dot_Tilde() {
 		this.name = ".~";
-		this.info = "parse a string or character to a block";
-		this.argTypes = "S|C";
 	}
 	@Override
 	public void execute(final Block block) {
@@ -1303,13 +1511,27 @@ class OP_Dot_Tilde extends Operation {
 			if(varname == null) {
 				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
-			Block b = new Block();
-			b.add(new Variable(varname));
-			block.add(b);
-			return;
+			
+			Obj e = Aya.getInstance().getVars().getVar(Variable.encodeString(varname));
+			if (!e.isa(BLOCK)) {
+				Block b = new Block();
+				b.add(e);
+				block.push(b);
+			} else {
+				block.push(e);
+			}
+		} else if (a.isa(SYMBOL)) {
+			Obj e = Aya.getInstance().getVars().getVar(((Symbol)a).id());
+			if (!e.isa(BLOCK)) {
+				Block b = new Block();
+				b.add(e);
+				block.push(b);
+			} else {
+				block.push(e);
+			}
+		} else {
+			throw new TypeError(this, a);
 		}
-		
-		throw new TypeError(this, a);
 	}
 }
 

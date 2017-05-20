@@ -75,7 +75,8 @@ public class VariableSet {
 				}
 				
 				if( !typematch && argTypes[i] != Obj.SYM_ANY.id() ) {
-					throw new TypeError("{ARGS}", Symbol.fromID(argTypes[i]).repr(), o);
+					throw new TypeError("{ARGS}\n\tExpected:" + Symbol.fromID(argTypes[i]).repr()
+							+ "\n\tReceived:" + o);
 				}
 				
 				vars.put(argNames[i].getID(), o);

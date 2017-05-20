@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 
+import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
 import aya.entities.operations.MiscOps;
@@ -52,7 +53,7 @@ public class Aya extends Thread {
 	public static Aya getInstance() {
 		if(_instance == null) {
 			_instance = new Aya();
-			_instance._helpData = new StringSearch(getQuickSearchData());
+			//_instance._helpData = new StringSearch(getQuickSearchData());
 			_instance._variables = new VariableData(_instance);
 			//instance.out = new AyaStdout();
 			CharacterParser.initMap();
@@ -101,29 +102,51 @@ public class Aya extends Thread {
 	}
 
 	
-	public void addHelpText(String in) {
-		_instance._helpData.addUnique(in);
+	///////////////
+	// HELP DATA //
+	///////////////
+	
+	private void initHelpData() {
+		if(_instance._helpData == null) {
+			
+			//Make sure all classes are loaded
+			try
+			{
+			  loadOps(Ops.OPS);
+			  loadOps(MiscOps.MATH_OPS);
+			  loadOps(ColonOps.COLON_OPS);
+			  loadOps(DotOps.DOT_OPS);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			ArrayList<String> searchList = new ArrayList<String>();
+			searchList.addAll(OperationDocs.getAllOpDescriptions());
+			searchList.toArray(new String[searchList.size()]);
+			_instance._helpData = new StringSearch(searchList);
+		}
 	}
 	
 	public StringSearch getHelpData() {
+		_instance.initHelpData();
 		return _helpData;
 	}
 	
+	public void addHelpText(String in) {
+		_instance.getHelpData().addUnique(in);
+	}
+
 	public static String[] getQuickSearchData() {
-		if(_instance._helpData == null) {
-			ArrayList<String> searchList = new ArrayList<String>();
-			
-			searchList.addAll(Ops.getAllOpDescriptions());
-			searchList.addAll(MiscOps.getAllOpDescriptions());
-			searchList.addAll(DotOps.getAllOpDescriptions());
-			searchList.addAll(ColonOps.getAllOpDescriptions());
-			//searchList.addAll(this.variables.getDefaultVariableDiscs(this));
-			
-			searchList.addAll(CharacterParser.getAllCharDiscs());	//always add last
-			
-			return searchList.toArray(new String[searchList.size()]);
-		} else {
-			return _instance._helpData.getAllItems();
+		return _instance.getHelpData().getAllItems();
+	}
+	
+	/* This function does nothing but force java to load
+	 * the operators and call the static blocks
+	 */
+	private void loadOps(Operation[] ops) {
+		for (Operation o : ops) {
+			if (o != null) o.getClass();
 		}
 	}
 	
