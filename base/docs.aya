@@ -80,7 +80,7 @@
 .}
 
 .{? constants
-  use ``:Nc` where N is:
+  use `:Nc` where N is:
   0: pi
   1: e
   2: double max

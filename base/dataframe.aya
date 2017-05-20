@@ -65,7 +65,7 @@ import ::file
       0 [
         columns ::na = {0} {columns E} .? :c
         index ::na = {0} {index E} .?
-        ] L :data :P
+        ] L :data;
     } ?
 
     columns ::na = {
@@ -279,10 +279,64 @@ import ::file
 
   }:setrow;
 
+  {column self : i,
+    column self.columns dataframe.toindex :i;
+    self.values .T {iI} .$ .T self.:values
+  }:sort;
 
+  .##########
+  .# Output #
+  .##########
+
+  {self,
+    [
+    self.columns _\; ""\.V " | " join
+    "---" self.columns E B L "|" join
+    ] # '| surround "\n" join
+
+    self.index E.R # {i,
+      self.index i I P '|\.B
+      self.values i #{IP} "|" join
+      +
+      '| surround
+    } "\n" join
+
+    "\n"\ ++
+
+  }:tomarkdown;
+
+
+  {kwargs self : noindex(0) border(0),
+    kwargs .W
+
+    "<table border=$border>\n\t<thead><tr><th>"
+    self.columns _\;
+    noindex ! {""\.V} ?
+    "</th><th>" join
+    "</th></tr></thead>\n"
+    ++
+
+    self.index E.R # {i,
+      "\t<tr>"
+
+      noindex ! {
+        "<td>"
+        self.index i I P tohtml +
+        "</td>" +
+      } ?
+
+      "<td>" +
+      self.values i #{IP tohtml} "</td><td>" join +
+      "</td></tr>" +
+
+    } "\n" join +
+
+    "\n</table>" +
+
+  }:tohtml;
 
   .#####################
-  .# Utility Functions #
+  .# Private Functions #
   .#####################
 
   {n,
@@ -294,12 +348,6 @@ import ::file
       n 26 .% 'a_@+K R "az"R {\P+} pu #~ n .< K
     } .?
   }:gencolnames;
-
-
-  {column self : i,
-    column self.columns dataframe.toindex :i;
-    self.values .T {iI} .$ .T self.:values
-  }:sort;
 
 }:dataframe;
 
