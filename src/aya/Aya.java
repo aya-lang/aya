@@ -237,7 +237,7 @@ public class Aya extends Thread {
 			}
 		} catch (Exception e) {
 			_instance._err.println(exToString(e));
-			_instance._err.println("after:\n\t" + b.getPrintOutputState());
+			_instance._err.println("stack:\n\t" + b.getPrintOutputState());
 			_instance._err.println("just before:\n\t" + b.getInstructions().toString());
 		} finally {
 			_instance._variables.reset();
