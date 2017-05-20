@@ -11,9 +11,9 @@ import ::dataframe
   ops # {op,
     count
     [ op.name
-      op.types _\; B;V;
+      op.types .EVVRI
       op.info
-      op [::overload ""] :I \;] .E:P
+      op [::overload ""] :I \;]
     opdf.setrow
     count B :count;
   };
@@ -31,4 +31,4 @@ import ::dataframe
 
 4.R # {i,
   names i I i M? gentable
-} S "ophtml.html" 0 .G
+} S "docs/ophtml.html" 0 .G
