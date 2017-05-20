@@ -113,7 +113,7 @@ public class OpDoc {
 		d.set("vect", _vectorized ? Num.ONE : Num.ZERO);
 		
 		if (_overload != null) {
-			d.set("oveload", new Str(_overload));
+			d.set("overload", new Str(_overload));
 		}
 		
 		return d;
