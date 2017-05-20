@@ -10,8 +10,10 @@ import ::dataframe
 
   ops # {op,
     count
-    [op.name op.typesB;V; op.info
-      op ::overload N\; {op.overload} {""} .?]
+    [ op.name
+      op.types _\; B;V;
+      op.info
+      op [::overload ""] :I \;] .E:P
     opdf.setrow
     count B :count;
   };

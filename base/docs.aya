@@ -95,28 +95,3 @@
   11: char max value
   12: system line separator
 .}
-
-
-.{
-
-o
-
-{o : op,
-  {,}:op;
-  o"\n"|B;:o;
-
-  o V\; " "|
-    V op.:name;
-    S op.:argtypes;
-
-  o "overloadable" N 0 =! {
-    1 op.:overloadable
-    o B;
-  }?
-
-  o "\n" join op.:desc
-
-  op
-}~
-
-.}
