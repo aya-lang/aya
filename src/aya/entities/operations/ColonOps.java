@@ -398,6 +398,19 @@ class OP_Colon_I extends Operation {
 				out = d.get(index.str());
 			} else if (index.isa(SYMBOL)) {
 				out = d.get( ((Symbol)index).id() );
+			} else if (index.isa(LIST)) {
+				List l = (List)index;
+				if (l.length() != 2 || !l.get(0).isa(SYMBOL)) {
+					throw new TypeError(this, index, list);
+				}
+				
+				Symbol key = (Symbol)(l.get(0));
+				if (d.containsKey(key.id())) {
+					out = d.get(key.id());
+				} else {
+					out = l.get(1);
+				}
+				
 			} else {
 				throw new TypeError(this, index, list);
 			}
