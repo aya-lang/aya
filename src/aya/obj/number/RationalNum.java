@@ -221,17 +221,6 @@ public class RationalNum extends Number {
 		}
 	}
 	
-	@Override
-	public RationalNum band(Number other) {
-		return new RationalNum(this.toLong() & other.toLong());
-	}
-	
-	@Override
-	public RationalNum bor(Number other) {
-		return new RationalNum(this.toLong() | other.toLong());
-	}
-	
-	
 	
 	/////////////////////
 	// MATH OPERATIONS //
@@ -250,11 +239,6 @@ public class RationalNum extends Number {
 	@Override
 	public Number dec() {
 		return this.r_sub(ONE);
-	}
-
-	@Override
-	public Number bnot() {
-		return new Num(~(this.toInt()));
 	}
 
 	@Override

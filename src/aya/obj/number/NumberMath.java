@@ -1,6 +1,7 @@
 package aya.obj.number;
 
 import org.apfloat.ApintMath;
+import aya.obj.number.Num;
 
 /** Various static functions for doing math on numbers */
 public class NumberMath {
@@ -112,4 +113,34 @@ public class NumberMath {
 	public static long lcm(int a, int b) {
 		return a * b / gcd(a,b);
 	}
+	
+	public static Num bnot(Number a) {
+		return new Num((double)(~(a.toInt())));
+	}
+	
+	public static Num band(Number a, Number b) {
+		return new Num((double)(a.toInt() & b.toInt()));
+	}
+	
+	public static Num bor(Number a, Number b) {
+		return new Num((double)(a.toInt() | b.toInt()));
+	}
+	
+	public static Num bxor(Number a, Number b) {
+		return new Num((double)(a.toInt() ^ b.toInt()));
+	}
+	
+	public static Num leftShift(Number a, Number b) {
+		return new Num((double)(a.toInt() << b.toInt()));
+	}
+	
+	public static Num signedRightShift(Number a, Number b) {
+		return new Num((double)(a.toInt() >> b.toInt()));
+	}
+	
+	public static Num unsignedRightShift(Number a, Number b) {
+		return new Num((double)(a.toInt() >>> b.toInt()));
+	}
+	
+	
 }

@@ -47,6 +47,7 @@ import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
@@ -381,7 +382,7 @@ class OP_Dollar extends Operation {
 		final Obj a = block.pop();
 		
 		if (a.isa(Obj.NUMBER)) {
-			block.push(((Number)(a)).bnot());
+			block.push( NumberMath.bnot((Number)a) );
 		}
 		else if(a.isa(LIST)) {
 			((List)a).sort();
@@ -473,9 +474,8 @@ class OP_And extends Operation {
 		final Obj b = block.pop();
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).band((Number)b) );
+			block.push( NumberMath.band((Number)a, (Number)b) );
 		} 
-		
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
 			Matcher m = Pattern.compile(a.str()).matcher(b.str());
@@ -1022,6 +1022,7 @@ class OP_F extends Operation {
 	static {
 		OpDoc doc = new OpDoc(' ', "F");
 		doc.desc("LB", "fold from right to left");
+		doc.desc("NN", "unsigned right bitshift");
 		OperationDocs.add(doc);
 	}
 	
@@ -1033,8 +1034,9 @@ class OP_F extends Operation {
 		Obj a = block.pop();
 		Obj b = block.pop();
 		
-		
-		if(a.isa(BLOCK) && b.isa(LIST)) {
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
+		} else if(a.isa(BLOCK) && b.isa(LIST)) {
 			List blist = (List)b;
 			
 			int length = blist.length();
@@ -1874,7 +1876,7 @@ class OP_Bar extends Operation {
 		
 		//Bitwise or
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).bor((Number)b) );
+			block.push( NumberMath.bor((Number)a, (Number)b) );
 		}
 		// find regex matches
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
