@@ -1,7 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .# character.aya
-.# defines functions for working with characters
+.# Defines functions for working with characters
 
 .#? C islower\n  tests if a character is lowercase
 {_'`>\'{<&}:islower;
