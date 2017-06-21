@@ -1,0 +1,22 @@
+.# Draws a rainbow in a plot window
+
+import ::plot
+import ::color
+import ::list
+
+plot!:p;
+0 0.9+ pi 0.9- 600.1 linspace p.domain
+[0.857 1.1] p.:yaxis
+
+0.011:mul;
+16:s;
+
+"" s colors.violet.rgb {Ms 1 mul* +} p.addexpr
+"" s colors.indigo.rgb {Ms 2 mul* +} p.addexpr
+"" s colors.blue.rgb   {Ms 3 mul* +} p.addexpr
+"" s colors.green.rgb  {Ms 4 mul* +} p.addexpr
+"" s colors.yellow.rgb {Ms 5 mul* +} p.addexpr
+"" s colors.orange.rgb {Ms 6 mul* +} p.addexpr
+"" s colors.red.rgb    {Ms 7 mul* +} p.addexpr
+
+p.view

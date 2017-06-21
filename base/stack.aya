@@ -1,5 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# stack.aya
+.# defines the stack type
 
 .{? type: stack
     A simple stack data structure

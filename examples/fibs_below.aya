@@ -1,0 +1,16 @@
+.# Generate fibs below n
+{n : a(0) b(1),
+   while {a n <} {
+    a println
+    a _ b + :a; :b;
+   }
+}:fib;
+
+"Fibs below 100:" :P
+100 fib
+
+.# Golfed
+{n,0 1{\_:P\_@+_n<}W;}:fib;
+
+"Fibs below 100 (golfed):" :P
+100 fib

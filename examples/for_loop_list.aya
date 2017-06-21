@@ -1,0 +1,13 @@
+.# For loop on a list
+[2 4 6 8] :numbers;
+
+1 :product;
+
+numbers # {n,
+  product n * :product
+};
+
+"The product is $product" println
+
+[2 4 6 8] {*} F :product;
+"The product is $product" println

@@ -1,3 +1,5 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
 .# docs.aya
 .# Basic documentation for Aya that appears in the quicksearch
 
@@ -79,7 +81,7 @@
   ex: 4 [1|10,] => [4 5 6 7 8 9 10]
 .}
 
-.{? constants
+.{? docs: constants
   use `:Nc` where N is:
   0: pi
   1: e

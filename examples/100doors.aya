@@ -4,14 +4,14 @@
 0 100L:list;
 
 .# do 100 passes
-for "pass" [100,] {
-  for "door" [pass __+ 100,] {
+[100,] # {pass,
+  [pass __+ 100,] # {door,
     .# Swap the state of the door
     list doorV I! list doorV D
   }
 };
 
 .# print the doors
-for "door" (list irange) {
+list E.R {door,
   {} {"door $(doorB) is open" :P} list door I ?
 };

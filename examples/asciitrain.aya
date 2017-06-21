@@ -1,0 +1,6 @@
+.# Generates an ASCII train with N carts
+{n::num, [" ______  ""|      | "" ()--() ~"]#{nLSB;'\n'+}S}:train;
+
+1 train println
+3 train println
+5 train println

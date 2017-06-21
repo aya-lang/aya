@@ -1,6 +1,9 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# dialog.aya
+.# Interface to the dialog operator MV
 
-.{? module: dialog
+.{? dialog
     various dialogs and windows
     all functions in this module are shortcuts for the MV operator
 .}

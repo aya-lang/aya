@@ -1,6 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
-.# Defines the `enum` keyword which allows for
+.# enum.aya
+.# Defines the enum keyword which allows for
 .#  easy creation of enum classes and symbol groups
 
 {``({class::sym enums::list : dict meta,

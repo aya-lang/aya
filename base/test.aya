@@ -1,5 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# test.aya
+.# Defines an interface for testing aya code
 
 .# Test object
 {,

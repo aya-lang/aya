@@ -1,5 +1,8 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# queue.aya
+.# Defines the queue data structure
+
 .{? type: queue
     A simple queue data structure
 

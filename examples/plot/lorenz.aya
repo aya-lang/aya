@@ -26,4 +26,4 @@
 } 5000 %
 
 .# Transpose to separate list of x and y values
-transpose ~ plot.line.view
+.T ~ plot.line.view

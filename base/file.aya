@@ -1,5 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# file.aya
+.# Defines functions for working with files and directories
 
 import ::string
 import ::list
@@ -64,7 +66,8 @@ import ::list
 })}:more;
 
 {
-  workingdir filesep | B; filesep join filesep + 3MZ
+
+  workingdir :9c | B; :9c join :9c + 3MZ
 }:updir;
 
 
