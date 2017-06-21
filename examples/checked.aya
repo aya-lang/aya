@@ -1,0 +1,8 @@
+.# https://codegolf.stackexchange.com/questions/120009/is-the-checkbox-not-not-unchecked
+
+{_"N|U|!"&E2%'!\L\:8RI"isC"\++}:ischecked;
+
+"isChecked()":str; "$str -> $(str ischecked)"  :P
+"!isChecked()":str; "$str -> $(str ischecked)"  :P
+"isNotUnchecked()":str; "$str -> $(str ischecked)"  :P
+"isNotNotUnchecked()":str; "$str -> $(str ischecked)"  :P

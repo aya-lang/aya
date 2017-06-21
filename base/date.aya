@@ -1,8 +1,12 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# date.aya
+.# Defines the date type
+
 .{? type: date
     The date type provides operations for accessing date and time variables.
 .}
+
 {,
 
   ::date :type;

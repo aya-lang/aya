@@ -1,0 +1,5 @@
+.# A golfed fib function
+{0\1{_@+}@%;}:fib;
+
+"The first 10 fib numbers are " .P
+10R #fib :P

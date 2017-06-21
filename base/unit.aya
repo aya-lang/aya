@@ -1,5 +1,6 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
+.# unit.aya
 .# Note: This file is currently deprecated.
 .#       It will be reintroduced at a later time.
 
@@ -10,12 +11,6 @@
      "1mile 1hour /" => 1mph
      "3hour 1mph *" => 3mile
 .}
-
-
-
-
-.# conv.aya
-.# **Easy unit conversions**
 
 {,
 
@@ -83,5 +78,3 @@
 
 .# Conversion operator
 '\U27f6' "to" Mk
-
-"unit.aya: Easy unit conversions for Aya".P

@@ -1,0 +1,30 @@
+import ::plot
+import ::list
+import ::math
+
+plot!:p;
+
+.# The domain
+0 2pi* 600 linspace p.domain
+
+.# Add each function
+"sin" 2 colors.red.rgb    {sin} p.addexpr
+"cos" 2 colors.blue.rgb   {cos} p.addexpr
+"ln"  2 colors.orange.rgb {ln} p.addexpr
+
+.# Plot title
+"A Sample Expression Plot" p.:title
+
+.# Other plot parameters
+[(-2) 2] p.:yaxis;
+[0 2pi*] p.:xaxis;
+1        p.:legend;
+"f(x)"   p.:ylabel;
+400      p.:width;
+300      p.:height;
+
+.# Open the plot window
+p.view
+
+.# Uncomment to save the plot
+.# "sample_plot.png" p.save

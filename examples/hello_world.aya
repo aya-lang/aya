@@ -1,0 +1,3 @@
+.# Run this script by typing "load scripts/hello_world"hello
+
+"Hello world!" .P

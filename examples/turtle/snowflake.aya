@@ -1,0 +1,14 @@
+.# Draw a snowflake using `turtle`
+
+import ::turtle
+import ::math
+
+turtle!:t;
+{
+  {
+    1 t.fwd
+    170 deg t.right
+  } 36 %
+  20 deg t.right
+} 24 %
+t.draw

@@ -1,3 +1,8 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# turtle.aya
+.# Defines the turtle type
+
 import ::list
 import ::plot
 import ::math
@@ -37,7 +42,7 @@ import ::math
   .#? turtle.draw\n  draw the turtle's path
   {self : x y p small big margin,
     plot!:p;
-    self.path transpose ~\ :x;:y;
+    self.path .T ~\ :x;:y;
     x p.domain
     y p.addline
 
@@ -45,66 +50,10 @@ import ::math
     [x min y min] min :small;
     big 0.1* :margin;
 
-    [small margin- big margin+] p.:xaxis
-    [small margin- big margin+] p.:yaxis
+    [small margin- big margin+] p.:xaxis;
+    [small margin- big margin+] p.:yaxis;
 
     p.view
 
   }:draw;
 }:turtle;
-
-.{
-
-{,
-
-  .#? turtledemo.ribbon\n  a ribbon
-  {:t,
-    turtle! :t;
-    0 :count;
-    {
-      1 t.fwd
-      count Ms t.right
-      0.01 count +: count;
-    } 1200 %
-    t.draw
-  }:ribbon;
-
-  .#? turtledemo.flower\n  a simple flower
-  {:t,
-    turtle!:t;
-    {
-      {
-        1 t.fwd
-        30 deg t.right
-      } 12 %
-        30 deg t.right
-    } 12 %
-    t.draw
-  }:flower;
-
-  .#? turtledemo.snowflake\n  a snowflake
-  {:t,
-    turtle!:t;
-    {
-      {
-        1 t.fwd
-        170 deg t.right
-      } 36 %
-      20 deg t.right
-    } 24 %
-    t.draw
-  }:snowflake;
-
-}:turtledemo;
-
-{:choice,
-  turtledemo :K #:C $
-  "Select a Demo" "Turtle Demo" 1 6 MV :choice;
-
-  "turtledemo." choice + ~
-
-}:turtledemos;
-
-.}
-
-"turtle imported" :P

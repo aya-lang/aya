@@ -1,0 +1,13 @@
+.# A simple scatter plot
+
+import ::plot
+
+.# Generate random data
+[100,;.Q]:x;
+[100,;.Q]:y;
+
+x y plot.scatter:p;
+
+"A Scatter Plot" p.:title;
+
+p.view

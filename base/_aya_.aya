@@ -1,7 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .# _aya_
-.# Defines the aya namespace and Aya keywords
+.# Defines the aya namespace and keywords
 
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
@@ -186,13 +186,6 @@
   {}
   .?
 })}:while;
-
-.{ Depreciated
-.#? for S|C L E\n  for loop\n  for "varname" [list] {\n    expressions\n  }
-{```({forloopczzzz forlooplistz forloopblkzz,
-  "forlooplistz#{:$forloopczzzz; forloopblkzz}"~
-})}:for;
-.}
 
 .#? A print\n  convert to string a print to console
 {.P}:print;

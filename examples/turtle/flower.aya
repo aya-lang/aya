@@ -1,0 +1,14 @@
+.# Draw a flower using `turtle`
+
+import ::turtle
+import ::math
+
+turtle!:t;
+{
+  {
+    1 t.fwd
+    30 deg t.right
+  } 12 %
+    30 deg t.right
+} 12 %
+t.draw

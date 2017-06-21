@@ -1,0 +1,35 @@
+.# Fetch a verse from esvapi.org, format it and pring it to the console
+
+import ::dialog
+
+.# Request a verse
+"Type the name of a verse" dialog.requeststr :vs;
+
+.# URL encode the verse
+" " "%20" vs .& :ref;
+
+.# Create the url and download the web file
+["http://www.esvapi.org/v2/rest/passageQuery"
+ "?key=IP"
+ "&passage=$ref"
+ "&include-verse-numbers=1"
+ "&include-headings=0"
+ "&include-footnotes=0"
+ "&output-format=plain-text"
+]S
+G:out;
+
+.# Make sure the verse does not return an error
+.# '\;' to remove `out` string from the stack
+out "ERROR" N :1 = \; {
+  .# Trim the header
+  out "[" N | \; :out;
+
+  .# Remove newlines
+  "\n" " " out .& :out;
+
+  .# Format for single line output
+  "\s\s+" " " out .& println
+} {
+  "Cannot find verse: $vs" println
+} .?

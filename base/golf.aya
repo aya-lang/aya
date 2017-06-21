@@ -1,3 +1,8 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# golf.aya
+.# Defines operators and variables useful for golfing
+
 import """
   list
   string

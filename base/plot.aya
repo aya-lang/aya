@@ -1,4 +1,9 @@
-import "list"
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# plot.aya
+.# Defines the plot type
+
+import ::list
 
 {, .# plot
 
@@ -100,7 +105,7 @@ import "list"
   {min::num max::num exs::list : plt,
     plot!:plt;
     minMd maxMd 600.1 linspace plt.domain
-    for 'x exs {
+    exs # {x,
       "" 1 [] {x} plt.addexpr
     };
     plt

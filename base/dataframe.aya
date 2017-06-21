@@ -1,8 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .# dataframe.aya
-.# provides easy ways for representing and manipulating tabular data
-
+.# Provides easy ways for representing and manipulating tabular data
 
 import ::list
 import ::file

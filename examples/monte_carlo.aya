@@ -19,13 +19,13 @@
   rain
 }:shouldrain;
 
-{samples :counter,
+{samples : counter,
   {
     counter shouldrain+:counter;
   } samples %
   counter samples/
 }:rainprob;
 
-2500 rainprob 100*:' :result;
+2500 rainprob 100* :result;
 
 "There is a $result% chance of 3 consecutive days of rain.":P
