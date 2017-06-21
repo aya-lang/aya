@@ -268,6 +268,7 @@ public class Aya extends Thread {
 			if(PRINT_LARGE_ERRORS) {
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);
+				pw.println(AyaPrefs.BUG_MESSAGE);
 				e.printStackTrace(pw);
 				return sw.toString();
 			} else {

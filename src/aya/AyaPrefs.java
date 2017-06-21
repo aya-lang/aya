@@ -18,7 +18,10 @@ public class AyaPrefs {
 	private static String prompt = "aya> ";
 	private static String workingDir = null;
 	private static String defaultWorkingDir = null;
-
+	
+	protected static final String BUG_MESSAGE =  "An unhandled exception occurred. If this is a bug, please submit an issue to "
+			+ "https://github.com/nick-paul/aya-lang/issues with the stacktrace below.\n"
+			+ "=== [ Stacktrace ] ===";
 	
 
 	public static void init() {
