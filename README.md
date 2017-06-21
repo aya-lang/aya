@@ -5,27 +5,32 @@
 ## Features
 
   - Terse, yet readable syntax
-  - Basic standard library
+  - Standard library written in aya code
   - Key-value pair dictionaries and objects
   - Number types: double, arbitrary precision float, rational, *complex (coming soon)*
   - Basic support for objects and data structures using metatables
-  - Macro-like pre-evaluation stack manipulation
+  - Pre-evaluation stack manipulation (custom infix operators)
   - List comprehension
   - String Interpolation, Unicode, and special characters
   - Interactive GUI
   - Built in plotting
   - Interactive help and Documentation
-  - Simple UI elements
+  - Simple GUI dialogs
 
 ## Overview
 
-Aya is a stack based programming language originally intended for code golf and programming puzzles. Unlike other stack-based programming languages, it supports user-defined types, macro-like function definitions, key-value pair dictionaries, and natural variable scoping rules allowing for more complex programs and data structures.
+Aya is a stack based programming language originally intended for code golf and programming puzzles. Unlike other stack-based programming languages, it supports user-defined types, key-value pair dictionaries, natural variable scoping rules, and many other things which allow for more complex programs and data structures than other stack based languages.
 
-Aya comes with a rapidly-growing standard library written entirely in Aya code. The standard library features types such as matrices, stacks, dates and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O. It even features a basic turtle library for creating drawings in the plot window.
+Aya comes with a standard library written entirely in Aya code. The standard library features types such as matrices, sets, dates, colors and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O. It even features a basic turtle library for creating drawings in the plot window.
 
 Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The GUI features, plotting, tab-completion for special characters, and an interactive way to search QuickSearch help data.
 
-![QuickSearch window](images/quicksearch_window.png)
+## Useful Links
+
+  - [A Tour of Aya](https://github.com/nick-paul/aya-lang/wiki/A-Tour-of-Aya)
+  - [Documentation / Wiki](https://github.com/nick-paul/aya-lang/wiki)
+  - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
+  - [Esolang Wiki](http://esolangs.org/wiki/Aya)
 
 ## Usage
 
@@ -54,14 +59,14 @@ java -jar aya.jar filename.aya
 *Find the sum of all the multiples of 3 or 5 below 1000.*
 
 ```
-aya> kVR{15.+!}IS
+aya> :1e3VR{15.+!}IS
 233168
 ```
 
 ```
 aya> 0:sum;
-     for 'x (999R) {
-       x5%0= x3%0= | then {x sum +:sum}
+     999R # {x,
+       x5%0= x3%0= | {x sum +:sum} ?
      };
      sum
 233168
@@ -73,11 +78,11 @@ The tick (\`) operator is used to convert postfix operators into infix ones.
 
 ```
 `:factorial {n,
-  if (n `.< 1) {
+  n `:< 1 {
     1
   } {
     n `* ( `factorial(n`-1) )
-  }
+  } .?
 }
 ```
 
@@ -107,16 +112,13 @@ Type definition:
 Call constructor using `!` operator and print using `.repr` definition:
 
 ```
-aya> 1 2 vec!
+aya> 3 4 vec! :v
 <1,2>
 
 ```
 Perform operations on the type:
 
 ```
-aya> 3 4 vec! :v
-<3,4>
-
 aya> v.len
 5.0
 
@@ -127,6 +129,8 @@ aya> 10 10 vec! v +
 ### Plot some expressions
 
 ```
+import "plot color list math"
+
 plot!:p;
 
 .# The domain
@@ -151,7 +155,7 @@ plot!:p;
 .# Open the plot window
 p.view
 
-.# Uncomment to save the plot
+.# Save the plot
 "sample_plot.png" p.save
 ```
 
@@ -162,6 +166,8 @@ Output:
 ### Plot a Lorenz Attractor
 
 ```
+import ::plot
+
 .# Starting parameters
 0.01 :x;
 0.1  :y;
@@ -187,7 +193,7 @@ Output:
 } 5000 %
 
 .# Transpose to separate list of x and y values
-transpose ~ plot.line:p
+.T ~ plot.line:p
 
 "Lorenz Attractor" p.:title;
 
@@ -231,5 +237,5 @@ Sample documentation from `math.aya`
   - Complex number types
 
 # Limitations
- 
-Aya was not originally intended for computational or memory intensive tasks. It was intended to be used as an advanced desktop "calcuator" for programming puzzles and simple or tedious computational tasks. It's compact syntax and extensibility make it great for both of these. As the language grows it will become better for larger and larger tasks. 
+
+Aya was not originally intended for computational or memory intensive tasks. It was intended to be used as an advanced desktop "calculator" for programming puzzles and simple or tedious computational tasks. It's compact syntax and extensibility make it great for both of these. As the language grows it will become better for larger and larger tasks.
