@@ -146,11 +146,7 @@ public class EditorWindow extends JPanel {
 		//Key Bindings
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(activeFrame, ""
-						+ "ctrl+Q		  Quick Search\n"
-						+ "ctrl+I		  Interpreter\n"
-						+ "ctrl+E         Editor\n"
-						);
+				JOptionPane.showMessageDialog(activeFrame, AyaIDE.HELP_KEY_BINDINGS);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -160,19 +156,6 @@ public class EditorWindow extends JPanel {
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Key Bindings");
-		menu.add(mi);
-		mi = new JMenuItem(new Action() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(activeFrame, "Aya IDE\nNicholas Paul\nVersion: " + AyaIDE.VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
-			}
-			public void addPropertyChangeListener(PropertyChangeListener l) {}
-			public Object getValue(String k) {return null;}
-			public boolean isEnabled() {return true;}
-			public void putValue(String k, Object v) {}
-			public void removePropertyChangeListener(PropertyChangeListener l) {}
-			public void setEnabled(boolean b) {}
-		});
-		mi.setText("About");
 		menu.add(mi);
 		menuBar.add(menu);
 		

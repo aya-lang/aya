@@ -30,7 +30,17 @@ import aya.InteractiveAya;
 @SuppressWarnings("serial")
 public class AyaIDE extends JFrame
 {	
-	public static final String VERSION_NAME = "2016 Nov 11";
+	protected static String HELP_KEY_BINDINGS = ""
+			+ "Quick Search: ctrl-q\n"
+			+ "Interpreter: ctrl-i\n"
+			+ "Editor: ctrl-e\n"
+			+ "Run Editor: ctrl-r\n";
+	protected static String HELP_ABOUT = "Aya\n"
+			+ "Version: " + Aya.VERSION_NAME + "\n"
+			+ "Source: github.com/nick-paul/aya-lang\n"
+			+ "Wiki: github.com/nick-paul/aya-lang/wiki";
+
+	
 	
 	private Aya _aya;
 	
@@ -225,11 +235,7 @@ public class AyaIDE extends JFrame
 		//Key Bindings
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(_interpreter, ""
-						+ "ctrl+Q		  Quick Search\n"
-						+ "ctrl+I		  Interpreter\n"
-						+ "ctrl+E         Editor\n"
-						);
+				JOptionPane.showMessageDialog(_interpreter, HELP_KEY_BINDINGS);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
@@ -242,7 +248,7 @@ public class AyaIDE extends JFrame
 		_menu.add(mi);
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(_interpreter, "Aya IDE\nNicholas Paul\nVersion: " + VERSION_NAME + "\nAya Version: " + Aya.VERSION_NAME);
+				JOptionPane.showMessageDialog(_interpreter, HELP_ABOUT);
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
 			public Object getValue(String k) {return null;}
