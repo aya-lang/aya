@@ -50,6 +50,9 @@ public class NumberMath {
 	
 	/** Greatest common denominator (long) */
 	public static long gcd(long a, long b) {
+		if (a == 0) return Math.abs(b);
+		if (b == 0) return Math.abs(a);
+		
 		long r = 0;
 		long x, y;
 		a = Math.abs(a);
