@@ -9,6 +9,7 @@ import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.number.NumberMath;
 
 /** List containing a list of Number objects */
 public class NumberItemList extends NumberList {
@@ -233,7 +234,7 @@ public class NumberItemList extends NumberList {
 	public NumberList band(Number n) {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).band(n));
+			out.add( NumberMath.band(_list.get(i), n) );
 		}
 		return new NumberItemList(out);
 	}
@@ -242,7 +243,7 @@ public class NumberItemList extends NumberList {
 	public NumberList bandFrom(Number n) {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.band(_list.get(i)));
+			out.add( NumberMath.band(n, _list.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -251,7 +252,7 @@ public class NumberItemList extends NumberList {
 	public NumberList bor(Number n) {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).bor(n));
+			out.add( NumberMath.bor(_list.get(i), n));
 		}
 		return new NumberItemList(out);
 	}
@@ -260,7 +261,7 @@ public class NumberItemList extends NumberList {
 	public NumberList borFrom(Number n) {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.bor(_list.get(i)));
+			out.add( NumberMath.bor(n, _list.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -281,7 +282,7 @@ public class NumberItemList extends NumberList {
 	public NumberList bnot() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).bnot());
+			out.add( NumberMath.bnot(_list.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -910,7 +911,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).band(ns.get(i)));
+			out.add( NumberMath.band(this.get(i), ns.get(i)) );
 		}
 		return new NumberItemList(out);
 	}
@@ -921,7 +922,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).band(this.get(i)));
+			out.add( NumberMath.band(ns.get(i), this.get(i)) );
 		}
 		return new NumberItemList(out);
 	}
@@ -932,7 +933,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).bor(ns.get(i)));
+			out.add( NumberMath.bor(this.get(i), ns.get(i)) );
 		}
 		return new NumberItemList(out);
 	}
@@ -943,7 +944,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).bor(this.get(i)));
+			out.add( NumberMath.bor(ns.get(i), this.get(i)) );
 		}
 		return new NumberItemList(out);
 	}

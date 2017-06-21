@@ -196,38 +196,7 @@ public class Num extends Number {
 		default:
 			return null;
 		}
-	}
-	
-	@Override
-	public Number band(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(((long)_val) & other.toLong());
-		case Obj.BIGNUM:
-			return new BigNum(((long)_val) & other.toLong());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum( (long)_val & other.toLong() );
-		default:
-			return null;
-		}
-	}
-	
-	@Override
-	public Number bor(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(((long)_val) | other.toLong());
-		case Obj.BIGNUM:
-			return new BigNum(((long)_val) | other.toLong());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum( (long)_val | other.toLong() );
-		default:
-			return null;
-		}
-	}
-	
+	}	
 	
 	/////////////////////
 	// MATH OPERATIONS //
@@ -246,11 +215,6 @@ public class Num extends Number {
 	@Override
 	public Number dec() {
 		return new Num(_val - 1.0);
-	}
-
-	@Override
-	public Number bnot() {
-		return new Num((double)~((int)_val));
 	}
 
 	@Override

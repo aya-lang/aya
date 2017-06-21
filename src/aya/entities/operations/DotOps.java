@@ -66,8 +66,8 @@ public class DotOps {
 		/* 37 %  */ new OP_Dot_Percent(),
 		/* 38 &  */ new OP_Dot_And(),
 		/* 39 '  */ new OP_Dot_CastChar(),
-		/* 40 (  */ null,
-		/* 41 )  */ null,
+		/* 40 (  */ new OP_Dot_OParen(),
+		/* 41 )  */ new OP_Dot_CParen(),
 		/* 42 *  */ null,
 		/* 43 +  */ new OP_Dot_Plus(),
 		/* 44 ,  */ null,
@@ -391,6 +391,60 @@ class OP_Dot_CastChar extends Operation {
 		}
 	}
 }
+
+
+// ( - 40
+class OP_Dot_OParen extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".(");
+		doc.desc("NN", "left bitwise shift");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Dot_OParen() {
+		this.name = ".(";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
+		
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			// Reverse ops
+			block.push( NumberMath.leftShift((Number)b, (Number)a) );	
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// ) - 41
+class OP_Dot_CParen extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('.', ".)");
+		doc.desc("NN", "signed right bitwise shift");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Dot_CParen() {
+		this.name = ".)";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
+		
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			// Reverse ops
+			block.push( NumberMath.signedRightShift((Number)b, (Number)a) );
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
+
 
 // + - 43
 class OP_Dot_Plus extends Operation {

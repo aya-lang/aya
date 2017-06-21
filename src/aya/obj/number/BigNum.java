@@ -184,35 +184,7 @@ public class BigNum extends Number {
 		}
 	}
 	
-	@Override
-	public Number band(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.longValue() & other.toLong());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.longValue() & other.toLong());
-		case Obj.NUM:
-			return new BigNum(_val.longValue() & other.toLong());
-		default:
-			return null;
-		}
-	}
-	
-	@Override
-	public Number bor(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.longValue() | other.toLong());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.longValue() | other.toLong());
-		case Obj.NUM:
-			return new BigNum(_val.longValue() | other.toLong());
-		default:
-			return null;
-		}
-	}
+
 	/////////////////////
 	// MATH OPERATIONS //
 	/////////////////////
@@ -231,11 +203,6 @@ public class BigNum extends Number {
 	public Number dec() {
 		return new BigNum(_val.subtract(Apfloat.ONE));
 
-	}
-
-	@Override
-	public Number bnot() {
-		return new BigNum(~(_val.intValue()));
 	}
 
 	@Override
