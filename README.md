@@ -32,9 +32,11 @@ Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The
   - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
   - [Esolang Wiki](http://esolangs.org/wiki/Aya)
 
-## Usage
+## Installation
 
-Aya requires Java 8. To run the GUI, run the command:
+Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive. 
+
+Aya requires Java 8. To run the GUI, double click the jar file or run the command:
 
 ```
 java -jar aya.jar
@@ -235,6 +237,10 @@ Sample documentation from `math.aya`
   - **Refine the Standard Library**: Debug, fix small errors, clean
   - **Better I/O Support**: Currently IO includes text files (input and output) and the ability to download files from the web. An official IOStream object should be implemented.
   - Complex number types
+
+## Contributing
+
+If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternively, implement any feature or bugfix yourself and submit a pull request. 
 
 # Limitations
 
