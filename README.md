@@ -23,7 +23,7 @@ Aya is a terse stack based programming language originally intended for code gol
 
 Aya comes with a standard library written entirely in Aya code. The standard library features types such as matrices, sets, dates, colors and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O. It even features a basic turtle library for creating drawings in the plot window.
 
-Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The GUI features, plotting, tab-completion for special characters, and an interactive way to search QuickSearch help data.
+Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The GUI features plotting, tab-completion for special characters, and an interactive way to search QuickSearch help data.
 
 ## Useful Links
 
@@ -64,6 +64,7 @@ java -jar aya.jar filename.aya
 aya> :1e3VR{15.+!}IS
 233168
 ```
+Note that `V`, `R`, `I`, and `S` (and all other uppercase letters) are operators just like `+`, `-`, `*`, `/`, etc.
 
 ```
 aya> 0:sum;
