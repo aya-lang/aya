@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -350,11 +351,9 @@ public class AyaIDE extends JFrame
 			Aya aya = Aya.getInstance();
 			AyaIDE ide = new AyaIDE(aya);
 			
-			PrintStream out = new PrintStream(ide.getOutputStream());
-			
 			// Aya Prefs
-			aya.setOut(out);
-			aya.setErr(out);
+			aya.setOut(ide.getOutputStream());
+			aya.setErr(ide.getOutputStream());
 			aya.setIn(ide.getInputStream());
 			
 			// InteractiveAya Prefs

@@ -31,14 +31,33 @@ public class TextPanePrintStream extends OutputStream {
 		setColor(Color.WHITE);
 	}
 	
+	private final int BUFFER_SIZE = 4096;
+	byte[] buffer = new byte[BUFFER_SIZE];
+	int pos = 0;
+	
 	@Override
 	public void write(int b) throws IOException {
-		// redirects data to the text area
-		print(String.valueOf((char)b));
-        // scrolls the text area to the end of data
-       goToEnd();
+		buffer[pos++] = (byte)b;
+		if (pos >= BUFFER_SIZE) {
+			flush();
+		}
 	}
 	
+	@Override
+	public void flush() throws IOException {
+		byte[] str_bytes = new byte[pos];
+		
+		System.arraycopy(buffer, 0, str_bytes, 0, pos);
+		String out = new String(str_bytes, "UTF-8");
+		//System.out.println(out);
+		print(out);
+		
+		pos = 0;
+		
+        // scrolls the text area to the end of data
+		goToEnd();
+	}
+//	
 	/**
 	 * Prints the string to the console in the given color
 	 * @param string
