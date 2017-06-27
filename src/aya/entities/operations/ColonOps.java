@@ -24,6 +24,7 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -184,6 +185,8 @@ class OP_Colon_Quote extends Operation {
 	static {
 		OpDoc doc = new OpDoc(':', ":'");
 		doc.desc("C", "ord (cast to int)");
+		doc.desc("S", "convert a string to bytes using UTF-8 encoding");
+		doc.desc("N", "identity; return N");
 		OperationDocs.add(doc);
 	}
 	
@@ -194,8 +197,18 @@ class OP_Colon_Quote extends Operation {
 	public void execute(Block block) {
 		Obj a = block.pop();
 		
-		if (a.isa(CHAR)) { 
+		if (a.isa(NUMBER)) {
+			block.push(a);
+		} else if (a.isa(CHAR)) { 
 			block.push( new Num((int)(((Char)a).charValue())) );
+		} else if (a.isa(STR)) {
+			Str s = (Str)a;
+			ArrayList<Number> nums = new ArrayList<Number>(s.length());
+			byte[] bytes = s.getBytes();
+			for (byte b : bytes) {
+				nums.add(new Num(b));
+			}
+			block.push(new NumberItemList(nums));
 		} else {
 			throw new TypeError(this, a);
 		}
