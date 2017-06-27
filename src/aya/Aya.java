@@ -1,9 +1,11 @@
 package aya;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Scanner;
@@ -38,7 +40,7 @@ public class Aya extends Thread {
 	private PrintStream _out = System.out;
 	private PrintStream _err = System.err;
 	private InputStream _in = System.in;
-	private Scanner _scanner = new Scanner(_in);
+	private Scanner _scanner = new Scanner(_in, "UTF-8");
 	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
 	private StringSearch _helpData;
 	private VariableData _variables;
@@ -95,6 +97,10 @@ public class Aya extends Thread {
 	
 	public String nextLine() {
 		return _scanner.nextLine();
+	}
+	
+	public Scanner getScanner() {
+		return _scanner;
 	}
 	
 	public VariableData getVars() {
@@ -179,22 +185,29 @@ public class Aya extends Thread {
 	public PrintStream getErr() {
 		return _err;
 	}
+
 	
-	public InputStream getIn() {
-		return _in;
+	public void setOut(OutputStream os) {
+		try {
+			_out = new PrintStream(os, true, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	
-	public void setOut(PrintStream ps) {
-		_out = ps;
-	}
-	
-	public void setErr(PrintStream ps) {
-		_err = ps;
+	public void setErr(OutputStream os) {
+		try {
+			_err = new PrintStream(os, true, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	
 	public void setIn(InputStream is) {
 		_in = is;
-		_scanner = new Scanner(_in);
+		_scanner = new Scanner(_in, "UTF-8");
 	}
 	
 	
