@@ -25,6 +25,7 @@ import aya.exceptions.TypeError;
 import aya.obj.block.Block;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
+import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 import aya.variable.VariableData;
 
@@ -129,6 +130,9 @@ public class Aya extends Thread {
 			}
 			ArrayList<String> searchList = new ArrayList<String>();
 			searchList.addAll(OperationDocs.getAllOpDescriptions());
+			// Add additional help data
+			searchList.add(AyaPrefs.CONSTANTS_HELP);
+			searchList.add(SpecialNumberParser.STR_CONSTANTS_HELP);
 			searchList.toArray(new String[searchList.size()]);
 			_instance._helpData = new StringSearch(searchList);
 		}

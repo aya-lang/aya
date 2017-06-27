@@ -145,6 +145,22 @@ public class AyaPrefs {
 	public static final Str SYS_LINE_SEPARATOR = new Str(System.lineSeparator());
 	
 	
+	public static String CONSTANTS_HELP = "constants follow the format :Nc where N is:\n"
+			+ "   0: pi\n"
+			+ "   1: e\n"
+			+ "   2: double max\n"
+			+ "   3: double min\n"
+			+ "   4: nan\n"
+			+ "   5: inf\n"
+			+ "   6: -inf\n"
+			+ "   7: int max\n"
+			+ "   8: int min\n"
+			+ "   9: system file separator\n"
+			+ "  10: system path separator\n"
+			+ "  11: char max\n"
+			+ "  12: system line sepatator\n";
+
+	
 	public static final Obj[] CONSTS = {
 			/* 00 */ Num.PI,
 			/* 01 */ Num.E,

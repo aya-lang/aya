@@ -8,6 +8,7 @@ import aya.Aya;
 import aya.AyaPrefs;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
+import aya.obj.list.Str;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -62,6 +63,7 @@ public class SpecialNumberParser {
 	private final char ROOT = 'q';
 	private final char SCI = 'e';
 	private final char CONST = 'c';
+	private final char STR = 's';
 	
 	public SpecialNumberParser(String s) {
 		_sep = NEG;
@@ -121,6 +123,8 @@ public class SpecialNumberParser {
 				return toSciNumber();
 			case CONST:
 				return toConstVal();
+			case STR:
+				return toStrVal();
 			default:
 				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 			}
@@ -217,6 +221,67 @@ public class SpecialNumberParser {
 					"c is out of range. Max val =" + AyaPrefs.CONSTS.length);
 		}
 		return AyaPrefs.CONSTS[i];
+	}
+	
+	
+	public static String STR_CONSTANTS_HELP = "string constants follow the format :Ns where N is:\n"
+			+ "  0: \"Hello, world!\"\n"
+			+ "  1/-1: A-Z / a-z\n"
+			+ "  2/-2: a-zA-Z / A-Za-z\n"
+			+ "  3/-3: a-zA-Z0-9 / A-Za-z0-9\n"
+			+ "  4/-4: \"bcdfghjklmnpqrstvwxyz\" / \"aeiou\"\n"
+			+ "  5/-5: \"bcdfghjklmnpqrstvwxz\" / \"aeiouy\"\n"
+			+ "  6/-6: 0-9 / 9-0\n"
+			+ "  7/-7: ascii (0-255) / printable ascii (23-128)\n";
+	
+	/* 0*/ public static final Str S_HW = new Str("Hello, world!");
+	/* 1*/ public static final Str S_AZ = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZ");
+	/*-1*/ public static final Str S_az = new Str("abcdefghijklmnopqrstuvwxyz");
+	/* 2*/ public static final Str S_azAZ = new Str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ");
+	/*-2*/ public static final Str S_AZaz = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+	/* 3*/ public static final Str S_azAZ09 = new Str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ0123456789");
+	/*-3*/ public static final Str S_AZaz09 = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+	/* 4*/ public static final Str S_CTSY = new Str("bcdfghjklmnpqrstvwxyz");
+	/*-4*/ public static final Str S_VOWEL = new Str("aeiou");
+	/* 5*/ public static final Str S_CTS = new Str("bcdfghjklmnpqrstvwxz");
+	/*-5*/ public static final Str S_VOWELY = new Str("aeiouy");
+	/* 6*/ public static final Str S_09 = new Str("0123456789");
+	/*-6*/ public static final Str S_90= new Str("9876543210");
+	/* 7*/ public static final Str S_ASCII = new Str((char)0,(char)255);
+	/*-7*/ public static final Str S_ASCIIP = new Str((char)32,(char)128);
+	/* ?*/ public static final Str S_EMPTY = new Str("");
+	
+	private Str toStrVal() {
+		if (_snd.equals("")) {
+			int id = 0;
+			try {
+				id = Integer.parseInt(_fst);
+			} catch (NumberFormatException nfe) {
+				throw new SyntaxError("Invalid special number: :" + _fst + "s" + _snd);
+			}
+			
+			switch (id) {
+			case 0: return S_HW;
+			case 1: return S_AZ;
+			case -1: return S_az;
+			case 2: return S_azAZ;
+			case -2: return S_AZaz;
+			case 3: return S_azAZ09;
+			case -3: return S_AZaz09;
+			case 4: return S_CTSY;
+			case -4: return S_VOWEL;
+			case 5: return S_CTS;
+			case -5: return S_VOWELY;
+			case 6: return S_09;
+			case -6: return S_90;
+			case 7: return S_ASCII;
+			case -7: return S_ASCIIP;
+			default: return S_EMPTY;
+			}
+		}
+		else {
+			return Str.EMPTY;
+		}
 	}
 }
 

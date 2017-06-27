@@ -17,6 +17,7 @@ import aya.obj.number.Number;
 public class Str extends List implements Comparable<Str> {
 	
 	public static final Str EMPTY = new Str("");
+
 	private String _str;
 	
 	public String getStr() {
@@ -30,6 +31,19 @@ public class Str extends List implements Comparable<Str> {
 	/** Create a new string by repeating c n times */
 	public Str(char c, int repeats) {
 		_str = repeat(c, repeats);
+	}
+	
+	public Str(char start, char end) {
+		if (start > end) {
+			char t = end;
+			end = start;
+			start = t;
+		}
+		_str = "";
+		while (start <= end) {
+			_str += ""+start;
+			start++;
+		}
 	}
 	
 	///////////////////////
