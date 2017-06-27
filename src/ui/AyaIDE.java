@@ -358,7 +358,6 @@ public class AyaIDE extends JFrame
 			
 			// InteractiveAya Prefs
 			InteractiveAya iaya = new InteractiveAya(aya);
-			iaya.setArgs(args);
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
 			iaya.showBanner(false);

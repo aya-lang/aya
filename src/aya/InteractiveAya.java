@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+import aya.obj.list.List;
 import aya.util.FileUtils;
 
 public class InteractiveAya extends Thread {
@@ -18,9 +19,9 @@ public class InteractiveAya extends Thread {
 	public static final int EMPTY_INPUT = 7; // Empty string was sent as input
 	
 	private boolean _echo = false;
-	String[] _args = new String[0];
 	private boolean _showPromptText = true;
 	private boolean _showBanner = true;
+	private String _initcode = null;
 	
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
@@ -130,10 +131,8 @@ public class InteractiveAya extends Thread {
 		return SKIP_WAIT;
 	}
 
-	
-	
-	public void setArgs(String[] args) {
-		_args = args;
+	public void initCode(String code) {
+		_initcode = code;
 	}
 	
 	public void setPromptText(boolean b) {
@@ -147,6 +146,11 @@ public class InteractiveAya extends Thread {
 	@Override
 	public void run() {
  		_aya.start();
+ 		
+		if (_initcode != null) {
+			_aya.queueInput(_initcode);
+		}
+		
 		_aya.loadAyarc();
 
 		
@@ -202,18 +206,27 @@ public class InteractiveAya extends Thread {
 		
 	}
 	
+	private static String argCode(String[] args, int start) {
+		//Reassemble the code on the stack
+		String code = "";
+		for (int i = start; i < args.length; i++) {
+			code += args[i] + " ";
+		}
+		return code;
+	}
+	
 	public static void main(String[] args) {
 		
 		if (args.length > 0) {
 			
 			// Interactive Terminal
 			if (args[0].equals("-i")) {
-		
+						
 				Aya aya = Aya.getInstance();
 				
 				//Use default system io (interactive in the terminal)
 				InteractiveAya iaya = new InteractiveAya(aya);
-				iaya.setArgs(args);
+				iaya.initCode(argCode(args, 1));
 				iaya.run();
 				
 				try {
@@ -228,11 +241,7 @@ public class InteractiveAya extends Thread {
 			else if (args[0].contains(".aya")) {
 				String filename = args[0];
 					
-				//Reassemble the code on the stack
-				String code = "";
-				for (int i = 1; i < args.length; i++) {
-					code += args[i] + " ";
-				}
+				String code = argCode(args,	1);
 				
 				try {
 					String script = code + "\n" + FileUtils.readAllText(filename);
