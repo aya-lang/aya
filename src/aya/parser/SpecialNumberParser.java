@@ -131,7 +131,13 @@ public class SpecialNumberParser {
 	
 	private Number toSciNumber() {
 		double fst = Double.parseDouble(_fst);
-		double snd = Double.parseDouble(_snd);
+		double snd = 0.0;
+		if (_snd.equals("")) {
+			snd = fst;
+			fst = 1.0;
+		} else {
+			snd = Double.parseDouble(_snd);
+		}
 		return new Num(fst * Math.pow(10, snd));
 	}
 
