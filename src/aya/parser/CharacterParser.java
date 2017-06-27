@@ -467,7 +467,13 @@ public class CharacterParser {
 		charName.reverse();
 		otherText.reverse();
 		
-		char c = parse(charName.toString());
+		char c = INVALID;
+		try {
+			c = parse(charName.toString());
+		} catch (SyntaxError e) {
+			c = INVALID; //Don't tab complete
+		}
+		
 		if (c == INVALID || charName.length() == 1) {
 			return s+TAB_STR; //No valid character, append the normal tab
 		} else {
