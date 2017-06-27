@@ -121,7 +121,17 @@ public class NumberItemList extends NumberList {
 		}
 		return ds;
 	}
+	
+	@Override
+	public byte[] toByteArray() {
+		byte[] bs = new byte[_list.size()];
+		for (int i = 0; i < _list.size(); i++) {
+			bs[i] = (byte)_list.get(i).toInt();
+		}
+		return bs;
+	}
 
+	
 	@Override
 	public NumberList add(Number n) {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
@@ -1055,6 +1065,7 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
+
 
 
 }

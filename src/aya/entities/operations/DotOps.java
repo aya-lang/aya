@@ -379,6 +379,7 @@ class OP_Dot_CastChar extends Operation {
 	static {
 		OpDoc doc = new OpDoc('.', ".'");
 		doc.desc("N|S", "cast to char");
+		doc.desc("L", "convert number list to string using UTF-8 encoding");
 		OperationDocs.add(doc);
 	}
 	
@@ -392,7 +393,9 @@ class OP_Dot_CastChar extends Operation {
 			block.push( Char.valueOf(((Number)o).toInt()) );
 		} else if (o.isa(STR)) {
 			block.push( Char.valueOf(o.str().charAt(0)) );
-		} else if (o.isa(CHAR)) {
+		} else if (o.isa(LIST)) {
+			block.push( Str.fromBytes(((List)o).toNumberList().toByteArray()) );
+		}else if (o.isa(CHAR)) {
 			block.push(o);
 		} else {
 			throw new TypeError(this,o);

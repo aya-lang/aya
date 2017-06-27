@@ -37,6 +37,9 @@ public abstract class NumberList extends List {
 	/** Convert to double[] */
 	public abstract double[] todoubleArray();
 	
+	/** Convert to byte[] */
+	public abstract byte[] toByteArray();
+	
 	///////////////////////////
 	// VECTORIZED OPERATIONS //
 	///////////////////////////
@@ -190,6 +193,8 @@ public abstract class NumberList extends List {
 	
 	@Override
 	public abstract Number get(int i);
+
+
 
 	
 

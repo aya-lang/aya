@@ -1,5 +1,6 @@
 package aya.obj.list;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -301,6 +302,22 @@ public class Str extends List implements Comparable<Str> {
 		}
 		return new Str(new String(swapped));
 	}
+	
+	public static Str fromBytes(byte[] bytes) {
+		try {
+			return new Str(new String(bytes, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new AyaRuntimeException(".' Unsuported encoding");
+		}
+	}
+	
+	public byte[] getBytes() {
+		try {
+			return _str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new AyaRuntimeException(":' Unsuported encoding");
+		}
+	}
 
 
 	
@@ -420,6 +437,8 @@ public class Str extends List implements Comparable<Str> {
 	    // the distance is the cost for transforming all letters in both strings        
 	    return cost[len0 - 1];                                                          
 	}
+
+	
 
 	
 
