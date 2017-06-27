@@ -529,6 +529,17 @@ class OP_Times extends Operation {
 		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).mul((NumberList)b) );
 		}
+		else if ((a.isa(STR) || a.isa(CHAR)) && b.isa(LIST)) {
+			StringBuilder sb = new StringBuilder();
+			List la = (List)b;
+			String sep = a.str();
+			for (int i = 0; i < la.length()-1; i++) {
+				sb.append(la.get(i).str());
+				sb.append(sep);
+			}
+			sb.append(la.get(-1).str());
+			block.push(new Str(sb.toString()));
+		}
 		else if (a.isa(DICT)) {
 			block.push(b);
 			block.callVariable((Dict)a, Ops.KEYVAR_MUL);
