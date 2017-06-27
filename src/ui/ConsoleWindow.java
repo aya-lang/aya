@@ -1,5 +1,7 @@
 package ui;
 
+import java.io.IOException;
+
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
