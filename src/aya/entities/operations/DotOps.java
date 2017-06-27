@@ -229,7 +229,8 @@ class OP_Dot_SortUsing extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc('.', ".$");
-		doc.desc("LB", "sort leat to greatest by applying B to L");
+		doc.desc("LB", "sort least to greatest by applying B to L");
+		doc.desc("NN", "xor");
 		OperationDocs.add(doc);
 	}
 	
@@ -241,7 +242,10 @@ class OP_Dot_SortUsing extends Operation {
 		Obj a = block.pop();
 		Obj b = block.pop();
 		
-		if (a.isa(BLOCK) && b.isa(LIST)) {
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push(NumberMath.bxor((Number)a, (Number)b));
+		}
+		else if (a.isa(BLOCK) && b.isa(LIST)) {
 			final Block blk = ((Block)a).duplicate();
 			List objs = ((List)b);
 			List key_obj = blk.mapTo(objs);
