@@ -503,6 +503,7 @@ class OP_Times extends Operation {
 	static {
 		OpDoc doc = new OpDoc(' ', "*");
 		doc.desc("NN", "multiply");
+		doc.desc("LS|LC", "join");
 		doc.vect();
 		doc.ovrld(Ops.KEYVAR_MUL.name(), Ops.KEYVAR_RMUL.name());
 		OperationDocs.add(doc);

@@ -346,6 +346,7 @@ class OP_Dot_And extends Operation {
 	static {
 		OpDoc doc = new OpDoc('.', ".&");
 		doc.desc("SSS", "replace all occurances of the regex S1 with S2 in S3");
+		doc.desc("LLB", "zip with");
 		OperationDocs.add(doc);
 	}
 	
@@ -359,6 +360,13 @@ class OP_Dot_And extends Operation {
 		
 		if ( a.isa(STR) && (b.isa(STR) || b.isa(CHAR)) && (c.isa(STR) || c.isa(CHAR))) {
 			block.push(new Str( a.str().replaceAll(c.str(), b.str()) ));
+		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
+			Block initial = new Block();
+			initial.push(c);
+			initial.push(b);
+			ListBuilder lb = new ListBuilder(initial, (Block)a, null, 0);
+			block.add(lb);
+			
 		} else {
 			throw new TypeError(this,a,b,c);
 		}
