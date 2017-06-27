@@ -376,6 +376,8 @@ public class CharacterParser {
 				return '\b';
 			case 'f':
 				return '\f';
+			case '0':
+				return '\0';
 				
 			default:
 				return c;
@@ -383,7 +385,7 @@ public class CharacterParser {
 		}
 		
 		//Hex Character
-		else if (s.charAt(0) == 'U') {
+		else if (s.charAt(0) == 'x') {
 			s = s.substring(1, s.length()).trim();
 			if (isHex(s)) {
 				try {
@@ -393,6 +395,16 @@ public class CharacterParser {
 				}
 			} else {
 				return INVALID;
+			}
+		} 
+	
+		// Decimal Character
+		else if (s.charAt(0) == '0') {
+			//s = s.substring(1, s.length()).trim()
+			try {
+				return (char)Integer.parseInt(s);
+			} catch (NumberFormatException e) {
+				throw new SyntaxError("Cannot parse decimal character value in " + in);
 			}
 		} 
 		
