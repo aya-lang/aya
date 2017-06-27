@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,7 +15,7 @@ import aya.Aya;
 public class TextPaneInputStream extends InputStream {
 
     final InputLine field;
-    final BlockingQueue<String> q;
+    final BlockingQueue<Byte> q;
 
     public TextPaneInputStream() {
         this.field = new InputLine();
@@ -25,7 +26,10 @@ public class TextPaneInputStream extends InputStream {
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyChar()=='\n'){
                 	 String str = field.getText() + "\r\n";
-                	 q.add(str);
+                	 //q.add(str);
+                	 for (byte b : str.getBytes(StandardCharsets.UTF_8)) {
+                		 q.add(b);
+                	 }
                      field.clear();
                 }
             }
@@ -38,22 +42,22 @@ public class TextPaneInputStream extends InputStream {
         });
     }
 
-    private String s;
-    int pos;
+    //private String s;
+    //int pos;
+    private byte out_byte;
 
     @Override
     public int read() throws IOException {
-        while (null == s || s.length() <= pos) {
+        //while (null == s || s.length() <= pos) {
             try {
-                s = q.take();
-                pos = 0;
+                out_byte = q.take();
+                //pos = 0;
             } catch (InterruptedException ex) {
                ex.printStackTrace(Aya.getInstance().getErr());
             }
-        }
-        int ret = (int) s.charAt(pos);
-        pos++;
-        return ret;
+        //}
+        System.out.println("Sending byte: " + out_byte);
+        return out_byte;
     }
 
     @Override
@@ -61,24 +65,33 @@ public class TextPaneInputStream extends InputStream {
         return false;
     }
 
+    byte[] buffer = new byte[1024];
+    
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int bytes_copied = 0;
-        while (bytes_copied < 1) {
-            while (null == s || s.length() <= pos) {
-                try {
-                    s = q.take();
-                    pos = 0;
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace(Aya.getInstance().getErr());
+        int byte_count = 0;
+        byte prev = '\0';
+        byte cur = '\0';
+        
+        while (true) {
+            try {
+                cur = q.take();
+                buffer[byte_count] = cur;
+                byte_count++;
+                
+                if (prev == (byte)'\r' && cur == (byte)'\n') {
+                	break;
                 }
+                
+                prev = cur;
+            } catch (InterruptedException ex) {
+                ex.printStackTrace(Aya.getInstance().getErr());
             }
-            int bytes_to_copy = len < s.length()-pos ? len : s.length()-pos;
-            System.arraycopy(s.getBytes(), pos, b, off, bytes_to_copy);
-            pos += bytes_to_copy;
-            bytes_copied += bytes_to_copy;
         }
-        return bytes_copied;
+
+        System.arraycopy(buffer, 0, b, off, byte_count);
+        
+        return byte_count;
     }
 
     @Override
