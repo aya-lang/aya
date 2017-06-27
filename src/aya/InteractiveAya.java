@@ -155,7 +155,7 @@ public class InteractiveAya extends Thread {
 		PrintStream out = _aya.getOut();
 		PrintStream err = _aya.getErr();
 		
-		Scanner scanner = new Scanner(_aya.getIn());
+		Scanner scanner = _aya.getScanner();
 		String input = "";
 		int status;
 				
