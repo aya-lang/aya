@@ -11,6 +11,7 @@ public class Flag {
 	public static final byte NULL = 0;
 	public static final byte POPVAR = 1;
 	public static final byte EVAL_BLOCK = 2;
+	public static final byte QUOTE_FUNCTION = 3;
 
 	/** No need to create new flag objects every time,
 	 *  just reference the table when you need a new flag
@@ -18,7 +19,8 @@ public class Flag {
 	private static final Flag[] FLAGTABLE = {
 		new Flag(NULL),
 		new Flag(POPVAR),
-		new Flag(EVAL_BLOCK)
+		new Flag(EVAL_BLOCK),
+		new Flag(QUOTE_FUNCTION)
 	};
 
 	
@@ -44,16 +46,10 @@ public class Flag {
 	
 	@Override
 	public String toString() {
-		return "";
-//		switch(id) {
-//		case NULL:
-//			return "NULL";
-//		case POPVAR:
-//			return "POPVAR";
-//		case EVAL_BLOCK:
-//			return "EVAL_BLOCK";
-//		default:
-//			return "(Flag.toString(): Type not set up yet)";
-//		}
+		if (id == QUOTE_FUNCTION) {
+			return ".`";
+		} else {
+			return "";
+		}
 	}
 }

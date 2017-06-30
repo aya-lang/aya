@@ -15,6 +15,7 @@ public class SpecialToken extends Token {
 	public static final SpecialToken COLON			    = new SpecialToken(Token.COLON, ":");
 	public static final SpecialToken POUND				= new SpecialToken(Token.POUND, "#");
 	public static final SpecialToken DOT_COLON			= new SpecialToken(Token.DOT_COLON, ".:");
+	public static final SpecialToken FN_QUOTE 			= new SpecialToken(Token.FN_QUOTE, ".`");
 	
 	
 	public SpecialToken(int type, String name) {
@@ -104,6 +105,8 @@ public class SpecialToken extends Token {
 			return "list";
 		case Token.DOT_COLON:
 			return "dotColon";
+		case Token.FN_QUOTE:
+			return "fnQuote";
 				
 		default:
 			return "not specified";

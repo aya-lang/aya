@@ -147,15 +147,7 @@ public class Block extends Obj {
 					stack.push(dict);
 				} else {
 					Obj o = dict.get(var);
-					if (o.isa(Obj.BLOCK)) {
-						// If user object, leave it as the first item on the stack
-						if (dict.hasMetaTable()) {
-							stack.push(dict);
-						}
-						instructions.addAll( ((Block)o).getInstructions().getInstrucionList() );
-					} else {
-						stack.push(o);
-					}
+					addOrDumpVar(o);
 				}
 			}
 			
@@ -166,11 +158,7 @@ public class Block extends Obj {
 					Aya.getInstance().getVars().setVar(var, stack.peek());
 				} else {
 					Obj o = Aya.getInstance().getVars().getVar(((Variable)current));
-					if (o.isa(Obj.BLOCK)) {
-						instructions.addAll(((Block)o).getInstructions().getInstrucionList());
-					} else {
-						stack.push(o);
-					}
+					addOrDumpVar(o);
 				}
 			}
 			
@@ -195,6 +183,8 @@ public class Block extends Obj {
 						System.out.println("Could not add block");
 					}
 					break;
+				case Flag.QUOTE_FUNCTION:
+					throw new AyaRuntimeException("Quote (.`) expected function before operator");
 				default:
 					//Tick operator
 					if (flagID < 0) {
@@ -332,11 +322,19 @@ public class Block extends Obj {
 	 * else add the item to the stack
 	 */
 	public void addOrDumpVar(Obj o) {
-		if (o.isa(Obj.BLOCK)) {
-			instructions.addAll( ((Block)o).getInstructions().getInstrucionList() );
+		if (o.isa(Obj.BLOCK) 
+				// If there is a quote_fn flag 
+				&& !(instructions.size() >= 1 
+					&& instructions.peek(0) instanceof Flag 
+					&& ((Flag)instructions.peek(0)).getID() == Flag.QUOTE_FUNCTION)) {
+			instructions.addAll(((Block)o).getInstructions().getInstrucionList());
+			// Pop the flag
+			instructions.pop();
 		} else {
 			stack.push(o);
+
 		}
+
 	}
 	
 	/** Calls the variable and dumps the result to the stack existing in the input block */

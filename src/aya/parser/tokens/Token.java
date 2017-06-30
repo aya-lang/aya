@@ -38,6 +38,7 @@ public abstract class Token {
 	public static final int OP_MATH         = TypeIDs.T_OP_MATH;
 	public static final int POUND           = TypeIDs.T_POUND;
 	public static final int DOT_COLON		= TypeIDs.T_DOT_COLON;
+	public static final int FN_QUOTE		= TypeIDs.T_FN_QUOTE;
 	
 	
 	protected Token(int type) {

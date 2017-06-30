@@ -1,6 +1,7 @@
 package aya.parser;
 
 import aya.Aya;
+import aya.entities.Flag;
 import aya.entities.InstructionStack;
 import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
@@ -171,6 +172,12 @@ public class Parser {
 					//Special Character Key Variable
 					else if (CharacterParser.isSpecialChar(in.peek())) {
 						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
+					}
+					
+					// Quote a function (.`)
+					else if (in.peek() == '`') {
+						tokens.add(SpecialToken.FN_QUOTE);
+						in.next(); //Skip the '`'
 					}
 					
 					// Dot Colon
@@ -472,6 +479,7 @@ public class Parser {
 				}
 				out.add(new TickToken(ticks));
 			break;
+			
 				
 			default:
 				out.add(current);
@@ -609,6 +617,10 @@ public class Parser {
 					is.push(Ops.getOp('#'));
 					is.push(colonBlock);	
 				}
+			}
+			
+			else if (current.isa(Token.FN_QUOTE)) {
+				is.push(Flag.getFlag(Flag.QUOTE_FUNCTION));
 			}
 			
 			else if (current.typeString().equals("special")) {
