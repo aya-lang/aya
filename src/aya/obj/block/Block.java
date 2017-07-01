@@ -147,8 +147,8 @@ public class Block extends Obj {
 					stack.push(dict);
 				} else {
 					Obj o = dict.get(var);
-					// If user object, leave it as the first item on the stack
-					if (dict.hasMetaTable()) {
+					// If user object function, leave it as the first item on the stack
+					if (dict.hasMetaTable() && o.isa(BLOCK)) {
 						stack.push(dict);
 					}
 					addOrDumpVar(o);
