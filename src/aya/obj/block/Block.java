@@ -322,14 +322,17 @@ public class Block extends Obj {
 	 * else add the item to the stack
 	 */
 	public void addOrDumpVar(Obj o) {
-		if (o.isa(Obj.BLOCK) 
+		if (o.isa(Obj.BLOCK)) {
 				// If there is a quote_fn flag 
-				&& !(instructions.size() >= 1 
+			if (instructions.size() >= 1 
 					&& instructions.peek(0) instanceof Flag 
-					&& ((Flag)instructions.peek(0)).getID() == Flag.QUOTE_FUNCTION)) {
-			instructions.addAll(((Block)o).getInstructions().getInstrucionList());
-			// Pop the flag
-			instructions.pop();
+					&& ((Flag)instructions.peek(0)).getID() == Flag.QUOTE_FUNCTION) {
+				stack.push(o);
+				// Pop the flag
+				instructions.pop();
+			} else {
+				instructions.addAll(((Block)o).getInstructions().getInstrucionList());
+			}
 		} else {
 			stack.push(o);
 
