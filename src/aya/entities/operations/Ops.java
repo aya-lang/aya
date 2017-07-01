@@ -1280,23 +1280,7 @@ class OP_I extends Operation {
 		final Obj list = block.pop();
 				
 		if(list.isa(LIST)) {		
-			if(index.isa(NUMBER)) {
-				block.push( ((List)list).get(((Number)index).toInt()) );
-			} else if (index.isa(NUMBERLIST)) {
-				int[] is = ((NumberList)index).toIntArray();
-				block.push(((List)list).get(is));
-			} else if (index.isa(LIST)) {
-				List ix = (List)index;
-				if (ix.length() == 0) {
-					block.push(list.deepcopy());
-				} else {
-					throw new AyaRuntimeException("Operator .I expected a numeric list, recieved:\n\t"
-							+ list.repr());
-				}
-			}
-			else if (index.isa(BLOCK)) {
-				block.push( ((Block)index).filter((List)list) );
-			}
+			block.push(List.getIndex((List)list, index));
 		}else if (list.isa(DICT)) {
 			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
 		}
@@ -2019,6 +2003,14 @@ class OP_ApplyTo extends Operation {
 		doc.desc("LN:E", "apply block to item at index N");
 		doc.desc("LN:A", "set index");
 		OperationDocs.add(doc);
+		
+		/*
+		[list] index : item
+		[list] [index] : {block}
+		{,dict} ::sym : {item}
+		{block} ::sym : item
+		
+		*/
 	}
 	
 	public OP_ApplyTo() {
@@ -2028,6 +2020,7 @@ class OP_ApplyTo extends Operation {
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
+		//final Obj c = block.pop();
 		
 		//Apply block to an index in the list
 		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
@@ -2045,10 +2038,10 @@ class OP_ApplyTo extends Operation {
 			list.set(index, blk.pop());
 			
 			block.push(c);
-		} else if (a.isa(Obj.BLOCK) && b.isa(Obj.LIST)) {
-			block.push(((Block)(a)).mapTo((List)b));
-		} else {
-			throw new TypeError(this, a,b);
+		}
+		
+		else {
+			throw new TypeError(this, a,b);//,c);
 		}
 	}
 }

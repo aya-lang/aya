@@ -1018,23 +1018,7 @@ class OP_Dot_I extends Operation {
 		block.push(list); //.I keeps the list on the stack
 		
 		if(list.isa(LIST)) {		
-			if(index.isa(NUMBER)) {
-				block.push( ((List)list).get(((Number)index).toInt()) );
-			} else if (index.isa(NUMBERLIST)) {
-				int[] is = ((NumberList)index).toIntArray();
-				block.push(((List)list).get(is));
-			} else if (index.isa(LIST)) {
-				List ix = (List)index;
-				if (ix.length() == 0) {
-					block.push(list.deepcopy());
-				} else {
-					throw new AyaRuntimeException("Operator .I expected a numeric list, recieved:\n\t"
-							+ list.repr());
-				}
-			}
-			else if (index.isa(BLOCK)) {
-				block.push( ((Block)index).filter((List)list) );
-			}
+			block.push( List.getIndex((List)list, index));
 		}else if (list.isa(DICT)) {
 			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
 		}

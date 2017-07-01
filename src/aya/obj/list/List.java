@@ -1,11 +1,18 @@
 package aya.obj.list;
 
+import static aya.obj.Obj.BLOCK;
+import static aya.obj.Obj.LIST;
+import static aya.obj.Obj.NUMBER;
+
 import java.util.ArrayList;
 
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.TypeError;
 import aya.obj.Obj;
+import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
+import aya.obj.number.Number;
 
 /** List supertype */
 public abstract class List extends Obj {
@@ -13,6 +20,24 @@ public abstract class List extends Obj {
 	/** Index from the back if negative */
 	public static int index(int i, int length) {
 		return i >= 0 ? i : length + i;
+	}
+	
+	/** General list indexing */
+	public static Obj getIndex(List list, Obj index) {
+		if(index.isa(NUMBER)) {
+			return list.get(((Number)index).toInt());
+		} 
+		else if (index.isa(LIST)) {
+			int[] is = ((List)index).toNumberList().toIntArray();
+			return list.get(is);
+		} 
+		else if (index.isa(BLOCK)) {
+			return ((Block)index).filter(list);
+		} else {
+			throw new TypeError("Cannot index list using object:\n"
+					+ "\tlist: " + list.repr() + "\n"
+					+ "\tindex: " + index.repr());
+		}
 	}
 	
 	/** Completely flatten a nested list structure. Promote if possible */
