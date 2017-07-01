@@ -67,23 +67,39 @@ matrix:m;
 
 {`range}:to;
 
-'\U82' "to"         Mk .# 130
-'\Ua5' "println"    Mk .# 165
-'\Ua6' "matstr"     Mk .# 166
-'\Ua7' "zw"         Mk .# 167
-'\Uac' "back"       Mk .# 172
-'\Ub6' "pu"         Mk .# 182
-'\Uc5' "ascii"      Mk .# 197
-'\Ud0' "now"        Mk .# 208
-'\Ude' "lcm"        Mk .# 222
-'\Udf' "gcd"        Mk .# 223
-'\Ue6' "surround"   Mk .# 230
-'\Ueb' "euler"      Mk .# 235
-'\Uec' "badd"       Mk .# 236
-'\Ued' "bsub"       Mk .# 237
-'\Uee' "bmul"       Mk .# 238
-'\Uef' "bdiv"       Mk .# 239
-'\Uf0' "bmod"       Mk .# 240
+'\x82' "to"         Mk .# 130
+'\xa5' "println"    Mk .# 165
+'\xa6' "matstr"     Mk .# 166
+'\xa7' "zw"         Mk .# 167
+'\xac' "back"       Mk .# 172
+'\xb6' "pu"         Mk .# 182
+'\xc5' "ascii"      Mk .# 197
+'\xd0' "now"        Mk .# 208
+'\xde' "lcm"        Mk .# 222
+'\xdf' "gcd"        Mk .# 223
+'\xe6' "surround"   Mk .# 230
+'\xeb' "euler"      Mk .# 235
+'\xec' "badd"       Mk .# 236
+'\xed' "bsub"       Mk .# 237
+'\xee' "bmul"       Mk .# 238
+'\xef' "bdiv"       Mk .# 239
+'\xf0' "bmod"       Mk .# 240
+
+{Mq}:sqrt;
+'√ "sqrt" Mk
+{1 3/^}:cbrt;
+'∛ "cbrt" Mk
+
+'⁴ "supfour"  Mk
+'⁵ "supfive"  Mk
+'⁶ "supsix"   Mk
+'⁷ "supseven" Mk
+'⁸ "supeight" Mk
+'⁹ "supnine"  Mk
+
+'∆ "inc" Mk
+'∇ "dec" Mk
+
 
 
 .# Simple example: addition table
