@@ -17,8 +17,8 @@ import ::list
 :4c :nan;      .#? nan:  not a number double literal
 :5c :inf;      .#? inf:  infinity double literal
 :6c :minf;     .#? minf:  minus infinity double literal
-:1r4:fourth;  .# ¼
-:1r2:half;	  .# ½
+:1r4:fourth;   .# ¼
+:1r2:half;     .# ½
 
 .#? phi: golden ratio (constant)
 .# Compute phi using 2 adjacent fib numbers
@@ -56,8 +56,6 @@ import ::list
 .# Binary vectorized functions
 {2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
 {ML\ML\/}:logn;		.#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
-
-
 
 
 .###################

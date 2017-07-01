@@ -7,10 +7,6 @@ import ::char
 import ::types
 import ::list
 
-
-.#? L S|C join\n  join a list of strings with another string or char
-{l s, l#s B; S}:join;
-
 .#? S alldigits\n  tests if all chars in a string are digits
 {.E \ #isdigit S =}:alldigits;
 
@@ -48,7 +44,7 @@ import ::list
   .F{.<}F 2+      .# Find the maximum and add two
   #{#{\P\.>}S}    .# Pad each entry in the original
                   .#   by the max and sum each row
-  '\n' join       .# Join the rows with a newline
+  '\n' *          .# Join the rows with a newline
 }:matstr;
 
 
@@ -73,8 +69,8 @@ import ::list
   list #{
     .# If it is na, make it emptystr
     #{_ na = {;""} ?}
-    sep join
-  } "\n" join
+    sep *
+  } "\n" *
 }:tocsvstr;
 
 
@@ -86,6 +82,7 @@ import ::list
     ?
   };
   str 0:(str 0I toupper)
+  str
 }:titlecase;
 
 {
@@ -128,8 +125,6 @@ import ::test
 
   "string" testset! :ts;
 
-  {["a""b""c"] '~ join} ["a~b~c"] ts+
-  {["a"] '~ join} ["a"] ts+
   {"123" alldigits} [1] ts+
   {"_12" alldigits} [0] ts+
   {"abc" alldigits} [0] ts+

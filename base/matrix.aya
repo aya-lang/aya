@@ -50,9 +50,9 @@ import ::math
 
   .#? NN::matrix rowmul\n  multiply row N2 by a scalar N1
   {n rn mat,
-    (mat.rows rn :           .# Assign the rnth row of mat...
+    mat.rows rn :           .# Assign the rnth row of mat...
 	  (mat.rows rn I n*)  .# ..to the rnth row times n
-	  );
+
     mat
   }:rowmul;
 
@@ -60,8 +60,8 @@ import ::math
   {ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows ra I :tmp;            .# Store row N1 in a tmp var
-	(matrows ra:(matrows rb I));  .# row N1 = row N2
-	(matrows rb:(tmp));           .# row N2 = tmp
+	matrows ra:(matrows rb I)    .# row N1 = row N2
+	matrows rb:(tmp)             .# row N2 = tmp
 	mat
   }:rowswap;
 
@@ -70,7 +70,7 @@ import ::math
   {add ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows ra I add #*:tmp;              .# Multiply the N2 row by N1
-	 (matrows rb:([matrows rb I tmp, +])); .# Add the N2 row to N3
+	matrows rb:([matrows rb I tmp, +])    .# Add the N2 row to N3
 	mat
   }:rowadd;
 
@@ -81,7 +81,10 @@ import ::math
   .############
 
   .#? NII ::matrix matrix.set\n  set the item at index I1, I2 to N
-  {n::num i::num j::num m, (m.rows iI j : (n));m}:set;
+  {n::num i::num j::num m,
+    m.rows iI j : (n)
+    m
+  }:set;
 
    .#? ::matrix matrix.r\n  return the number of rows in the matrix
   {.rowsE}:r;
@@ -202,7 +205,7 @@ import ::math
 
   .#? ::block ::matrix matrix.apply\n  apply an expression to each element of the matrix in place
   {expr::block mat::matrix,
-    mat.rows : {#expr} mat.:rows; mat
+    mat.rows # {#expr} mat.:rows; mat
   }:apply;
 
   .#? ::block ::matrix matrix.map\n  make a copy of the matrix and apply an expression to each element
@@ -258,7 +261,8 @@ import ::math
     prevE:len;
     1 0 lenVLK:new;
     1:ix;
-    new {(ix:(prev ixI new ixVI+)) ixB:ix;}lenV%
+    {new ix:(prev ixI new ixVI+) ixB:ix;}lenV%
+    new
   }:nextpascalr;
 
   .#? I matrix.pascal\n  generate an I by I matrix representation of pascal's triangle

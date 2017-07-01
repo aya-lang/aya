@@ -289,16 +289,16 @@ import ::file
 
   {self,
     [
-    self.columns _\; ""\.V " | " join
-    "---" self.columns E B L "|" join
-    ] # '| surround "\n" join
+    self.columns _\; ""\.V " | " *
+    "---" self.columns E B L "|" *
+    ] # '| surround "\n" *
 
     self.index E.R # {i,
       self.index i I P '|\.B
-      self.values i #{IP} "|" join
+      self.values i #{IP} "|" *
       +
       '| surround
-    } "\n" join
+    } "\n" *
 
     "\n"\ ++
 
@@ -311,7 +311,7 @@ import ::file
     "<table border=$border>\n\t<thead><tr><th>"
     self.columns _\;
     noindex ! {""\.V} ?
-    "</th><th>" join
+    "</th><th>" *
     "</th></tr></thead>\n"
     ++
 
@@ -325,10 +325,10 @@ import ::file
       } ?
 
       "<td>" +
-      self.values i #{IP tohtml} "</td><td>" join +
+      self.values i #{IP tohtml} "</td><td>" * +
       "</td></tr>" +
 
-    } "\n" join +
+    } "\n" * +
 
     "\n</table>" +
 
