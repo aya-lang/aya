@@ -44,27 +44,35 @@ public abstract class List extends Obj {
 			list.set(((Number)index).toInt(), item);
 		} 
 		
-		// If both are list, assign corresponding values to indices.
-		// wrap if needed
-		// Ex [1 2 3 4].set([1 2], ['a 'b]) = [1 'a 'b 4]
-		//    [1 2 3 4].set([1 2], ['a])    = [1 'a 'a 4]
-		else if (index.isa(LIST) && item.isa(LIST)) {
+		
+		else if (index.isa(LIST)) {
 			NumberList l_index = ((List)index).toNumberList();
-			List l_item = (List)item;
-			
-			if (l_item.length() == 0) {
-				throw new AyaRuntimeException("Cannot set index of list using empty item list:\n"
-						+ "list:\t" + list.repr() + "\n"
-						+ "index:\t" +  index.repr() + "\n"
-						+ "items:\t" + item.repr() + "\n");
-			}
-			
-			int itlen = l_item.length();
-			int itix = 0;
-			
-			for (int i = 0; i < l_index.length(); i++) {
-				itix = itix >= itlen ? 0 : itix;
-				list.set(l_index.get(i).toInt(), l_item.get(itix++));
+
+			// If both are list, assign corresponding values to indices.
+			// wrap if needed
+			// Ex [1 2 3 4].set([1 2], ['a 'b]) = [1 'a 'b 4]
+			//    [1 2 3 4].set([1 2], ['a])    = [1 'a 'a 4]
+			if (item.isa(LIST)) {
+				List l_item = (List)item;
+				
+				if (l_item.length() == 0) {
+					throw new AyaRuntimeException("Cannot set index of list using empty item list:\n"
+							+ "list:\t" + list.repr() + "\n"
+							+ "index:\t" +  index.repr() + "\n"
+							+ "items:\t" + item.repr() + "\n");
+				}
+				
+				int itlen = l_item.length();
+				int itix = 0;
+				
+				for (int i = 0; i < l_index.length(); i++) {
+					itix = itix >= itlen ? 0 : itix;
+					list.set(l_index.get(i).toInt(), l_item.get(itix++));
+				}
+			} else {
+				for (int i = 0; i < l_index.length(); i++) {
+					list.set(l_index.get(i).toInt(), item);
+				}
 			}
 			
 		} 

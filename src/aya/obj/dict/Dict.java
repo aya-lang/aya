@@ -316,6 +316,11 @@ public class Dict extends Obj {
 			b.getInstructions().assignVarValue(pair.first().getID(), pair.second());
 		}
 	}
+
+	/** Returns true if the metatable defines a given key name */
+	public boolean hasMetaKey(String str) {
+		return _meta != null && _meta.hasVar(Variable.encodeString(str));
+	}
 	
 
 

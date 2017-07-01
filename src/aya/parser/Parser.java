@@ -555,26 +555,10 @@ public class Parser {
 					v.flagBind();
 					is.push(v);
 				}
-				
-				//Apply block to list
-				else if (next instanceof Block) {
+				else {
+					// Swap on instruction stack
 					is.push(Ops.APPLY_TO);
 					is.push(next);
-				}
-				//Create a block and apply it to a list
-				else {
-					Block colonBlock = new Block();
-					is.push(next); //Add next back in
-					
-					while (!is.isEmpty()) {
-						Object o = is.pop();
-						colonBlock.getInstructions().insert(0, o);
-						if(o instanceof Operation || o instanceof Variable) {
-							break;
-						}
-					}
-					is.push(Ops.APPLY_TO);
-					is.push(colonBlock);	
 				}
 			}
 			

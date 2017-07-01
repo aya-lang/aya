@@ -2005,11 +2005,11 @@ class OP_ApplyTo extends Operation {
 		OperationDocs.add(doc);
 		
 		/*
-		[list] index : item
-		[list] [index] : {block}
-		{,dict} ::sym : {item}
+		[list] index : item			basic 
+		[list] [index] : [items]
+		{,dict} ::sym : item
 		{block} ::sym : item
-		
+		list.set(i, block) = apply block to item i in list
 		*/
 	}
 	
@@ -2018,30 +2018,47 @@ class OP_ApplyTo extends Operation {
 	}
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
-		//final Obj c = block.pop();
+		final Obj item = block.pop(); // item
+		final Obj index = block.pop(); // index
+		final Obj col = block.pop(); // collection
 		
-		//Apply block to an index in the list
-		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
-			Obj c = block.pop();
-			if(!c.isa(LIST)) {
-				throw new TypeError(this, a,b,c);
+//		//Apply block to an index in the list
+//		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
+//			if(!c.isa(LIST)) {
+//				throw new TypeError(this, a,b,c);
+//			}
+//			List list = (List)c;
+//			Block blk = new Block();
+//			blk.addAll(((Block)(a)).getInstructions().getInstrucionList());
+//			int index = ((Number)(b)).toInt();
+//
+//			blk.push(list.get(index));
+//			blk.eval();
+//			list.set(index, blk.pop());
+//			
+//			block.push(c);
+//		}
+		
+		if (col.isa(LIST)) {
+			List.setIndex((List)col, index, item);
+		} else if (col.isa(BLOCK) && index.isa(SYMBOL)) {
+			long symid = ((Symbol)index).id();
+			Block b = (Block)col;
+			b.getInstructions().assignVarValue(symid, item);
+		} else if (col.isa(DICT)) {
+			Dict d = (Dict)col;
+			if (d.hasMetaKey("setindex")) {
+				block.push(item);
+				block.push(index);
+				block.callVariable(d, Ops.KEYVAR_SETINDEX);
+			} else {
+				long symid = ((Symbol)index).id();
+				d.set(symid, item);
 			}
-			List list = (List)c;
-			Block blk = new Block();
-			blk.addAll(((Block)(a)).getInstructions().getInstrucionList());
-			int index = ((Number)(b)).toInt();
-
-			blk.push(list.get(index));
-			blk.eval();
-			list.set(index, blk.pop());
-			
-			block.push(c);
 		}
 		
 		else {
-			throw new TypeError(this, a,b);//,c);
+			throw new TypeError(this, item, index, col);
 		}
 	}
 }

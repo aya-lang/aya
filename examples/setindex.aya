@@ -1,0 +1,35 @@
+"Lists":P
+[1 2 3 'a 'b 'c] :list;
+{list_X;x}:newlist;
+
+newlist 0 : 0            x:P  .# [ 0 2 3 'a 'b 'c ]
+newlist :1 : 0           x:P  .# [ 1 2 3 'a 'b 0 ]
+newlist [0 :1] : 0       x:P  .# [ 0 2 3 'a 'b 0 ]
+newlist [0 :1] : [9 10]  x:P  .# [ 9 2 3 'a 'b 10 ]
+newlist .E.R : [1 0]     x:P  .# [ 1 0 1 0 1 0 ]
+newlist {:T::num=} : 9   x:P  .# [ 9 9 9 'a 'b 'c ]
+newlist {:T::str=} : 9   x:P  .# [ 1 2 3 'a 'b 'c ]
+
+"Dicts":P
+{, 1:a 2:b 3:c} :dict;
+{dict_X;x}:newdict;
+
+newdict ::a : 9          x:P  .# {, 9:a; 2:b; 3:c; }
+newdict ::x : 9          x:P  .# {, 1:a; 2:b; 3:c; 9:x; }
+
+.# setindex overload
+newdict :d;
+d {, {item index self,
+"d.setindex:
+  Item: $item
+  Index: $index
+  Self: $self":P}:setindex} MO;
+d ::a : 9
+
+
+"Blocks":P
+{a b c 1 2 3} :block;
+{block.`_X;x.`}:newblock;
+
+newblock ::a : 1         x.`:P  .# {1 b c 1 2 3}
+newblock ::x : 1         x.`:P  .# {a b c 1 2 3}
