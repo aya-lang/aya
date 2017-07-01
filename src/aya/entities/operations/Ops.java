@@ -476,6 +476,11 @@ class OP_And extends Operation {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.band((Number)a, (Number)b) );
 		} 
+		else if (a.isa(SYMBOL)) {
+			long varid = ((Symbol)a).id();
+			Aya.getInstance().getVars().setVar(varid, b);
+			block.push(b);
+		}
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
 			Matcher m = Pattern.compile(a.str()).matcher(b.str());
