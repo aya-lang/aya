@@ -147,6 +147,10 @@ public class Block extends Obj {
 					stack.push(dict);
 				} else {
 					Obj o = dict.get(var);
+					// If user object, leave it as the first item on the stack
+					if (dict.hasMetaTable()) {
+						stack.push(dict);
+					}
 					addOrDumpVar(o);
 				}
 			}
