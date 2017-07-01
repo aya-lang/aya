@@ -1,9 +1,5 @@
 package aya.obj.list;
 
-import static aya.obj.Obj.BLOCK;
-import static aya.obj.Obj.LIST;
-import static aya.obj.Obj.NUMBER;
-
 import java.util.ArrayList;
 
 import aya.exceptions.AyaRuntimeException;
@@ -33,6 +29,53 @@ public abstract class List extends Obj {
 		} 
 		else if (index.isa(BLOCK)) {
 			return ((Block)index).filter(list);
+		} else {
+			throw new TypeError("Cannot index list using object:\n"
+					+ "list:\t" + list.repr() + "\n"
+					+ "index:\t" + index.repr());
+		}
+	}
+	
+
+	
+	/** General list setting **/
+	public static void setIndex(List list, Obj index, Obj item) {
+		if(index.isa(NUMBER)) {
+			list.set(((Number)index).toInt(), item);
+		} 
+		
+		// If both are list, assign corresponding values to indices.
+		// wrap if needed
+		// Ex [1 2 3 4].set([1 2], ['a 'b]) = [1 'a 'b 4]
+		//    [1 2 3 4].set([1 2], ['a])    = [1 'a 'a 4]
+		else if (index.isa(LIST) && item.isa(LIST)) {
+			NumberList l_index = ((List)index).toNumberList();
+			List l_item = (List)item;
+			
+			if (l_item.length() == 0) {
+				throw new AyaRuntimeException("Cannot set index of list using empty item list:\n"
+						+ "list:\t" + list.repr() + "\n"
+						+ "index:\t" +  index.repr() + "\n"
+						+ "items:\t" + item.repr() + "\n");
+			}
+			
+			int itlen = l_item.length();
+			int itix = 0;
+			
+			for (int i = 0; i < l_index.length(); i++) {
+				itix = itix >= itlen ? 0 : itix;
+				list.set(l_index.get(i).toInt(), l_item.get(itix++));
+			}
+			
+		} 
+		else if (index.isa(BLOCK)) {
+			boolean[] truthIdxs = ((Block)index).truthIdxs(list);
+			for (int i = 0; i < list.length(); i++) {
+				if (truthIdxs[i]) {
+					list.set(i, item);
+				}
+			}
+			
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "\tlist: " + list.repr() + "\n"

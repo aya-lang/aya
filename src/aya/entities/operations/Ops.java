@@ -1004,14 +1004,14 @@ class OP_D extends Operation {
 		final Obj a = block.pop();  	//Index
 		final Obj b = block.pop();		//List
 		final Obj o = block.pop();		//Item
-		
-		if(a.isa(NUMBER) && b.isa(LIST)) {
-			((List)b).set( ((Number)a).toInt(), o);
-			block.push(b);
-		} 
-		else if (b.isa(DICT)) {
+
+		if (b.isa(DICT)) {
 			block.push(o);
 			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
+		}
+		else if (b.isa(LIST)) {
+			List.setIndex((List)b, a, o);
+			block.push(b);
 		}
 		else {		
 			throw new TypeError(this, a, b, o);

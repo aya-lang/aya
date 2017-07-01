@@ -277,6 +277,24 @@ public class Block extends Obj {
 		return new GenericList(out).promote();
 	}
 	
+	/** Like filter but returns a list of true/false values representing
+	 * the outcome of each applying the block to each item in the list
+	 * @param list
+	 * @return
+	 */
+	public boolean[] truthIdxs(List list) {
+		boolean[] out = new boolean[list.length()];
+		Block b = new Block();
+		for (int i = 0; i < list.length(); i++) {
+			b.addAll(this.instructions.getInstrucionList());
+			b.add(list.get(i));
+			b.eval();
+			out[i] = b.peek().bool();
+			b.clear();
+		}
+		return out;
+	}
+	
 	/** Returns a string representation of the output stack */
 	public String getPrintOutputState() {
 		StringBuilder sb = new StringBuilder();
@@ -420,5 +438,7 @@ public class Block extends Obj {
 	public byte type() {
 		return Obj.BLOCK;
 	}
+
+	
 
 }
