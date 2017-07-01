@@ -925,12 +925,13 @@ class OP_A extends Operation {
 	}
 }
 
-//B - 66
+// B - 66
 class OP_B extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "B");
 		doc.desc("N|C", "increment");
+		doc.desc("J", "increment in place");
 		doc.desc("L", "uncons from front");
 		doc.ovrld(Ops.KEYVAR_INC.name());
 		OperationDocs.add(doc);
@@ -947,6 +948,17 @@ class OP_B extends Operation {
 			block.push( ((Number)a).inc() );
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).inc() );
+		} else if (a.isa(SYMBOL)) {
+			long varid = ((Symbol)a).id();
+			Obj o = Aya.getInstance().getVars().getVar(varid);
+			if (o.isa(NUMBER)) {
+				Aya.getInstance().getVars().setVar(varid, ((Number)o).inc());
+			} else if (o.isa(CHAR)) {
+				Aya.getInstance().getVars().setVar(varid, ((Char)o).inc());
+			}  else {
+				throw new AyaRuntimeException("Cannot increment " + o.repr() 
+				+ " in place in call " + a.repr() + " V");
+			}
 		} else if (a.isa(LIST)) {
 			List l = (List)a;
 			Obj popped = l.popBack();
@@ -1626,12 +1638,13 @@ class OP_U extends Operation {
 
 
 
-//V - 86
+// V - 86
 class OP_V extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "V");
 		doc.desc("N|C", "increment");
+		doc.desc("J", "decrement in place");
 		doc.desc("L", "uncons from back");
 		doc.ovrld(Ops.KEYVAR_DEC.name());
 		OperationDocs.add(doc);
@@ -1648,6 +1661,17 @@ class OP_V extends Operation {
 			block.push( ((Number)a).dec() );
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).dec() );
+		} else if (a.isa(SYMBOL)) {
+			long varid = ((Symbol)a).id();
+			Obj o = Aya.getInstance().getVars().getVar(varid);
+			if (o.isa(NUMBER)) {
+				Aya.getInstance().getVars().setVar(varid, ((Number)o).dec());
+			} else if (o.isa(CHAR)) {
+				Aya.getInstance().getVars().setVar(varid, ((Char)o).dec());
+			} else {
+				throw new AyaRuntimeException("Cannot decrement " + o.repr() 
+						+ " in place in call " + a.repr() + " V");
+			}
 		} else if (a.isa(LIST)) {
 			List l = (List)a;
 			Obj popped = l.pop();
