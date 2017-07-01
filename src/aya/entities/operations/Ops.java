@@ -461,6 +461,7 @@ class OP_And extends Operation {
 		OpDoc doc = new OpDoc(' ', "&");
 		doc.desc("NN", "bitwise and");
 		doc.desc("SS", "list all expressions matching the regex");
+		doc.desc("BD", "swap vars in a copy of B for values defined in D");
 		doc.ovrld(Ops.KEYVAR_AND.name(),  Ops.KEYVAR_RAND.name());
 		OperationDocs.add(doc);
 	}
@@ -477,8 +478,9 @@ class OP_And extends Operation {
 			block.push( NumberMath.band((Number)a, (Number)b) );
 		} 
 		else if (a.isa(DICT) && b.isa(BLOCK)) {
-			Dict.assignVarValues((Dict)a, (Block)b);
-			block.push(b);
+			Block blk = (Block)b.deepcopy();
+			Dict.assignVarValues((Dict)a, blk);
+			block.push(blk);
 		}
 		else if (a.isa(SYMBOL)) {
 			long varid = ((Symbol)a).id();
