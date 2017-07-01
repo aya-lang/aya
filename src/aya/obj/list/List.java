@@ -24,8 +24,13 @@ public abstract class List extends Obj {
 			return list.get(((Number)index).toInt());
 		} 
 		else if (index.isa(LIST)) {
-			int[] is = ((List)index).toNumberList().toIntArray();
-			return list.get(is);
+			List idx = (List)index;
+			if (idx.length() == 0) {
+				return list.deepcopy();
+			} else {
+				int[] is = ((List)index).toNumberList().toIntArray();
+				return list.get(is);
+			}
 		} 
 		else if (index.isa(BLOCK)) {
 			return ((Block)index).filter(list);
