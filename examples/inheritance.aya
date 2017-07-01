@@ -1,0 +1,21 @@
+{,
+  0:width;
+  0:height;
+  {self, self.width self.height *}:area;
+  {w self, w self.:width;}:setwidth;
+  {h self, h self.:height;}:setheight;
+  "rectangle":name;
+}:rectangle;
+
+{,
+  rectangleW
+  "square":name;
+}:square;
+
+square!:box;
+4 box.setwidth
+5 box.setheight
+box.area :P
+
+
+  
