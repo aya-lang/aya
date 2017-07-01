@@ -467,6 +467,7 @@ class OP_Dot_Plus extends Operation {
 	static {
 		OpDoc doc = new OpDoc('.', ".+");
 		doc.desc("NN", "gdc");
+		doc.desc("BD", "swap vars in a copy of B for values defined in D");
 		OperationDocs.add(doc);
 	}
 	
@@ -480,6 +481,10 @@ class OP_Dot_Plus extends Operation {
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.gcd((Number)a, (Number)b));	
+		} else if (a.isa(DICT) && b.isa(BLOCK)) {
+			Block blk = (Block)b.deepcopy();
+			Dict.assignVarValues((Dict)a, blk);
+			block.push(blk);
 		} else {
 			throw new TypeError(this, a, b);
 		}
