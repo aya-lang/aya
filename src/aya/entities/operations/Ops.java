@@ -476,6 +476,10 @@ class OP_And extends Operation {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.band((Number)a, (Number)b) );
 		} 
+		else if (a.isa(DICT) && b.isa(BLOCK)) {
+			Dict.assignVarValues((Dict)a, (Block)b);
+			block.push(b);
+		}
 		else if (a.isa(SYMBOL)) {
 			long varid = ((Symbol)a).id();
 			Aya.getInstance().getVars().setVar(varid, b);

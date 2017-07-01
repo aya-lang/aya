@@ -6,6 +6,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.util.Pair;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -300,7 +301,21 @@ public class Dict extends Obj {
 		if (_metadict == null) _metadict = new Dict(_meta);
 		return _metadict;
 	}
-
+	
+	////////////////////
+	// STATIC METHODS //
+	////////////////////
+	
+	/** Given a block, swap all references to variables defined in the dict
+	 * with the values corresponding to the keys in the dict.
+	 * @param d
+	 * @param b
+	 */
+	public static void assignVarValues(Dict d, Block b) {
+		for (Pair<Variable, Obj> pair : d._vars.getAllVars()) {
+			b.getInstructions().assignVarValue(pair.first().getID(), pair.second());
+		}
+	}
 	
 
 

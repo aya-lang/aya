@@ -3,6 +3,8 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.obj.Obj;
+import aya.variable.Variable;
 import aya.variable.VariableSet;
 
 /**
@@ -97,6 +99,18 @@ public class InstructionStack {
 			addAll(((InstructionStack)o).getInstrucionList());
 		} else {
 			push(o);
+		}
+	}
+	
+	/** Finds all vars with id matching varid and swaps them
+	 * with `item`
+	 */
+	public void assignVarValue(long varid, Obj item) {
+		for (int i = 0; i < instructions.size(); i++) {
+			final Object o = instructions.get(i);
+			if (o instanceof Variable && ((Variable)o).getID() == varid) {
+				instructions.set(i, item);
+			}
 		}
 	}
 }
