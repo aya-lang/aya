@@ -10,7 +10,7 @@ import "math plot list"
 
 .# generate polynomials
 coeff B R # {x,
-  "$(xV) coeff bernstein" .~
+  {a coeff bernstein} {,xV:a} .+
 }:fns;
 
 .# plot the generated polynomials from 0 to 1
