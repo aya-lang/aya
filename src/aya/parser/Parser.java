@@ -400,7 +400,7 @@ public class Parser {
 				}
 				
 				//Colon Operator 
-				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
+				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
 					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
 				} 
 				
