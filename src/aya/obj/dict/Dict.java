@@ -6,6 +6,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.symbol.Symbol;
 import aya.util.Pair;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
@@ -320,6 +321,17 @@ public class Dict extends Obj {
 	/** Returns true if the metatable defines a given key name */
 	public boolean hasMetaKey(String str) {
 		return _meta != null && _meta.hasVar(Variable.encodeString(str));
+	}
+
+	/** General getindex */
+	public static Obj getIndex(Dict dict, Obj index) {
+		if (index.isa(Obj.STR)) {
+			return dict.get(index.str());
+		} else if (index.isa(Obj.SYMBOL)) {
+			return dict.get(((Symbol)index).id());
+		} else {
+			throw new AyaRuntimeException("Cannot access dict at index " + index.repr() + "\n" + dict.repr());
+		}
 	}
 	
 

@@ -35,6 +35,20 @@ public class ListLiteral extends Block {
 		return new GenericList(new ArrayList<Obj>(ll.stack)).promote();
 	}
 	
+	/** Returns null if is not list literal */
+	public List toList() {
+		ArrayList<Obj> items = new ArrayList<Obj>();
+		ArrayList<Object> instrs = instructions.getInstrucionList();
+		for (int i = instrs.size()-1; i>=0; i--) {
+			if (instrs.get(i) instanceof Obj) {
+				items.add((Obj)instrs.get(i));
+			} else {
+				return null;
+			}
+		}
+		return new GenericList(items).promote();
+	}
+	
 	@Override
 	public ListLiteral duplicate() {
 		ListLiteral ll = new ListLiteral(this.instructions.duplicate(), this.pops);

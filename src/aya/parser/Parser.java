@@ -3,6 +3,7 @@ package aya.parser;
 import aya.Aya;
 import aya.entities.Flag;
 import aya.entities.InstructionStack;
+import aya.entities.ListLiteral;
 import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.Ops;
@@ -10,6 +11,7 @@ import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
 import aya.obj.block.Block;
 import aya.obj.dict.KeyVariable;
+import aya.obj.list.List;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
@@ -183,6 +185,11 @@ public class Parser {
 					// Dot Colon
 					else if (in.peek() == ':') {
 						tokens.add(SpecialToken.DOT_COLON);
+					}
+					
+					// Plain Dot
+					else if (in.peek() == '[') {
+						tokens.add(SpecialToken.DOT);
 					}
 					
 					//Dot operator
@@ -400,7 +407,7 @@ public class Parser {
 				}
 				
 				//Colon Operator 
-				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek())) {
+				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
 					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
 				} 
 				
@@ -468,8 +475,8 @@ public class Parser {
 			case Token.CLOSE_SQBRACKET:
 				throw new SyntaxError("Unexpected token ']'");
 				
-			case Token.DOT:
-				throw new RuntimeException("Unexpected DOT operator. parser needs to be fixed");
+//			case Token.DOT:
+//				throw new RuntimeException("Unexpected DOT operator. parser needs to be fixed");
 				
 			case Token.TICK:
 				int ticks = 1;
@@ -559,6 +566,27 @@ public class Parser {
 					// Swap on instruction stack
 					is.push(Ops.APPLY_TO);
 					is.push(next);
+				}
+			}
+			
+			else if (current.isa(Token.DOT)) {
+				if(is.isEmpty()) {
+					throw new SyntaxError("Expected token after '. in:\n\t" + tokens_in.toString());
+				}
+				Object next = is.pop();
+				
+				if (next instanceof ListLiteral) {
+					is.push(Ops.GETINDEX);
+					List l = ((ListLiteral) next).toList();
+					if (l != null) {
+						if (l.length() == 1) {
+							is.push(l.get(0));
+						} else {
+							is.push(l);
+						}
+					} else {
+						is.push(next);
+					}
 				}
 			}
 			

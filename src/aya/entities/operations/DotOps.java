@@ -6,7 +6,6 @@ import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
-import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
@@ -117,9 +116,9 @@ public class DotOps {
 		/* 88 X  */ new OP_SimplePlot(),
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
-		/* 91 [  */ new OP_Dot_Ceiling(),
+		/* 91 [  */ null,
 		/* 92 \  */ new OP_Dot_BackSlash(),
-		/* 93 ]  */ new OP_Dot_Floor(),
+		/* 93 ]  */ new OP_Colon_Demote(),
 		/* 94 ^  */ null,
 		/* 95 _  */ new OP_Dot_Underscore(),
 		/* 96 `  */ null,
@@ -1387,32 +1386,7 @@ class OP_Dot_Zed extends Operation {
 	}
 }
 
-// [ - 91
-class OP_Dot_Ceiling extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc('.', ".[");
-		doc.desc("L", "promote list to more specific type if possible");
-		OperationDocs.add(doc);
-	}
-	
-	public OP_Dot_Ceiling() {
-		this.name = ".[";
-	}
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if (a.isa(OBJLIST)) {
-			block.push(((GenericList)a).promote());
-		} else if (a.isa(LIST)) {
-			block.push(a);
-		}
-		else {
-			throw new TypeError(this, a);
-		}
-	}
-}
+
 
 // \ - 92
 class OP_Dot_BackSlash extends Operation {
@@ -1446,33 +1420,6 @@ class OP_Dot_BackSlash extends Operation {
 }
 
 
-// ] - 93
-class OP_Dot_Floor extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc('.', ".]");
-		doc.desc("L", "copy list as generic list");
-		OperationDocs.add(doc);
-	}
-	
-	public OP_Dot_Floor() {
-		this.name = ".]";
-	}
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if(a.isa(LIST)) {
-			if (a.isa(OBJLIST)) {
-				block.push(a.deepcopy());
-			} else {
-				block.push( new GenericList(((List)a).getObjAL()) );
-			}
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
 
 // _ - 95
 class OP_Dot_Underscore extends Operation {

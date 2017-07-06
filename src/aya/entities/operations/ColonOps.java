@@ -6,6 +6,7 @@ import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
+import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
@@ -56,7 +57,7 @@ public class ColonOps {
 		/* 44 ,  */ null,
 		/* 45 -  */ null, //Special number literals
 		/* 46 .  */ null,
-		/* 47 /  */ null,
+		/* 47 /  */ new OP_Colon_Promote(),
 		/* 48 0  */ null, //Number Literal
 		/* 49 1  */ null, //Number Literal
 		/* 50 2  */ null, //Number Literal
@@ -101,7 +102,7 @@ public class ColonOps {
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Colon_Zed(),
 		/* 91 [  */ null,
-		/* 92 \  */ null,
+		/* 92 \  */ new OP_Colon_Demote(),
 		/* 93 ]  */ null,
 		/* 94 ^  */ null,
 		/* 95 _  */ new OP_Colon_Underscore(),
@@ -210,6 +211,33 @@ class OP_Colon_Quote extends Operation {
 			}
 			block.push(new NumberItemList(nums));
 		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+// / - 47
+class OP_Colon_Promote extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":/");
+		doc.desc("L", "promote list to more specific type if possible");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Promote() {
+		this.name = ":/";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(OBJLIST)) {
+			block.push(((GenericList)a).promote());
+		} else if (a.isa(LIST)) {
+			block.push(a);
+		}
+		else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -624,6 +652,34 @@ class OP_Colon_Zed extends Operation {
 	}
 }
 
+
+// \ - 92
+class OP_Colon_Demote extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":\\");
+		doc.desc("L", "copy list as generic list");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Demote() {
+		this.name = ":\\";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if(a.isa(LIST)) {
+			if (a.isa(OBJLIST)) {
+				block.push(a.deepcopy());
+			} else {
+				block.push( new GenericList(((List)a).getObjAL()) );
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
 //_ - 95
 class OP_Colon_Underscore extends Operation {
