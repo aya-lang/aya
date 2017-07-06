@@ -1277,7 +1277,11 @@ class OP_GetIndex extends Operation {
 		if(list.isa(LIST)) {		
 			block.push(List.getIndex((List)list, index));
 		}else if (list.isa(DICT)) {
-			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+			if ( ((Dict)list).hasMetaKey("getindex") ) {
+				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+			} else {
+				block.push(Dict.getIndex((Dict)list, index));
+			}
 		}
 		else {
 			throw new TypeError(this, index, list);
