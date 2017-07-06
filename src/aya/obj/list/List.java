@@ -27,7 +27,11 @@ public abstract class List extends Obj {
 			List idx = (List)index;
 			if (idx.length() == 0) {
 				return list.deepcopy();
-			} else {
+			} 
+			else if (idx.length() == 1) {
+				return List.getIndex(list, idx.get(0));
+			}
+			else {
 				int[] is = ((List)index).toNumberList().toIntArray();
 				return list.get(is);
 			}
