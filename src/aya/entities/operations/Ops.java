@@ -179,7 +179,7 @@ public class Ops {
 		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
-		/* 73 I  */ new OP_I(),
+		/* 73 I  */ new OP_GetIndex(),
 		/* 74 J  */ null,
 		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
@@ -210,6 +210,7 @@ public class Ops {
 	
 	//Special Ops
 	public static final Operation APPLY_TO = new OP_ApplyTo();
+	public static final Operation GETINDEX = new OP_GetIndex();
 	
 	/** Returns true if char c is bound to an operator */
 	public static boolean isOp(char c) {
@@ -1256,7 +1257,7 @@ class OP_H extends Operation {
 
 // I - 73
 //NOTE: If updating this operator, also update .I
-class OP_I extends Operation {
+class OP_GetIndex extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "I");
@@ -1266,7 +1267,7 @@ class OP_I extends Operation {
 		OperationDocs.add(doc);
 	}
 	
-	public OP_I() {
+	public OP_GetIndex() {
 		this.name = "I";
 	}
 	@Override public void execute (final Block block) {
