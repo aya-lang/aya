@@ -39,8 +39,8 @@ import ::iterator
     }:start;
 
     {self,
-      self.map.keys.[self.state]
-      self.map.values.[self.state]
+      [self.map.keys.[self.state]
+      self.map.values.[self.state]]
       self.state B self.:state;
     }:next;
 
