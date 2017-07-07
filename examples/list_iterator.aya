@@ -1,0 +1,54 @@
+import ::iterator
+
+.# Implementing and using an iterator
+
+{,
+  .# Any user types must define a "type"
+  .# "type" should always be a symbol
+  .#   representation of the type name
+  ::mylist:type;
+
+  .# To implement an iterator we import
+  .#   its variables into this one
+  using iterator
+
+  .# `mylist` is just a wrapper for a list
+  .#   we assign the list variable to `.l`
+  {l,
+    {,l:l} mylist MO
+  }:new;
+
+  .# All types that implement iterator must
+  .#   must define an `iter` dict
+  {,
+    .# since mylist is just a list wrapper,
+    .#   we can use the built in listiter
+    .#   to define `start`, `next`, and `done`
+    using listiter
+
+    .# In the `new` function, we simply create
+    .#   a new `listiter` on our list stored
+    .#   in the variable `.l`
+    {ml::mylist,
+      ml.l listiter!
+    }:new;
+
+  }:iter;
+
+}:mylist;
+
+.# Create an object of type `mylist`
+[1 2 3] mylist! :l;
+
+.# We can now use the `.each` function to
+.#   operate on our list
+"The list elements are:" println
+{n, "  - $n" println} l.each
+
+.# `reduce` function
+"The sum of the list is: " print
+{+} l.reduce println
+
+.# `reducewith` uses the first arg as the starting point
+"A list of objects: " print
+[] {.B} l.reducewith println
