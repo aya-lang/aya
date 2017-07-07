@@ -1,0 +1,17 @@
+{,
+
+  {d::dict dflt,
+    {,d:dict dflt:dflt} defaultdict MO
+  }:new;
+
+  {self index : t,
+    self.dict index N 0 = \; {
+      self.dflt_ :t;;
+      self.dict index : (t)
+      t
+    } {
+      self.dict.[index]
+    } .?
+  }:getindex;
+
+}:defaultdict;
