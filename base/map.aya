@@ -1,0 +1,54 @@
+import ::iterator
+
+{,
+  ::map :type;
+
+  .# Implement iterator
+  using iterator
+
+
+  { {,[]:keys []:values} map MO}:new;
+
+  {key self,
+    self.keys key N :1 = ! \;
+  }:haskey;
+
+  {key self,
+    key self.haskey { : idx ,
+      self.values.[self.keys key N \;]
+    } {
+      "map does not contain key $key" .D
+    }.?
+  }:getindex;
+
+  {key value self,
+    key self.keys .B;
+    value self.values .B;
+  }:put;
+
+
+  .# Iterator implementation
+  {,
+
+    {map,
+      {,0:state map:map} map.iter MO
+    }:new;
+
+    {self,
+      0 self.:state;
+    }:start;
+
+    {self,
+      self.map.keys.[self.state]
+      self.map.values.[self.state]
+      self.state B self.:state;
+    }:next;
+
+    {self,
+      self.state self.map.keys E :>
+    }:done
+
+  }:iter;
+
+
+}:map;
