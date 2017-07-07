@@ -10,7 +10,7 @@
     if (2Q) {
       0:counter;
     } {
-      counterB:counter;
+      ::counter B
       if (counter 3:>) {
          1:rain;
       }{}
