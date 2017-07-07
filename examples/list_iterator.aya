@@ -52,3 +52,8 @@ import ::iterator
 .# `reducewith` uses the first arg as the starting point
 "A list of objects: " print
 [] {.B} l.reducewith println
+
+.# `collect` collects all items into
+.#   a single list
+"Another list of objects: " print
+l.collect println

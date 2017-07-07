@@ -32,6 +32,18 @@
     total
   }:reducewith;
 
+  {collection : it list,
+    collection collection Mo.iter! :it;
+    it.start
+    [it.next] :list;
+    {
+      it.next list .B :list;
+      it.done!
+    } W
+    list
+  }:collect;
+
+
 }:iterator;
 
 
