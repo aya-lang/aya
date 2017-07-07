@@ -11,9 +11,13 @@
 .}
 
 
+import ::iterator
+
 {,
 
   ::stack :type;
+
+  using iterator
 
   .#? L stack.new\n  convert a list into a stack
   {l, {, l:list} stack MO}:new;
@@ -52,6 +56,18 @@
   .#? ::stack stack.clear\n  clear the queue
   {self, [] self.:list}:clear;
 
+  .###########################
+  .# ITERATOR IMPLEMENTATION #
+  .###########################
+
+  {,
+    .# Basic list iterator on set.list
+    using listiter
+    {stk::stack,
+        stk.list listiter!
+    }:new;
+  }:iter;
+  
 }:stack;
 
 

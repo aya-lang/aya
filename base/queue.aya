@@ -11,9 +11,16 @@
 .}
 
 
-{,
 
+
+import ::iterator
+
+{,
   ::queue :type;
+
+  .# Implement iterator
+  using iterator
+
 
   .#? L queue.new\n  convert a list into a queue
   {l, {,l:list} queue MO}:new;
@@ -49,6 +56,16 @@
 
   .#? ::queue queue.clear\n  clear the queue
   {self, [] self.:list}:clear;
+
+  .# Iterator implementation
+  {,
+    .# Use listiter on queue.list
+    using listiter
+
+    {q::queue,
+        q.list listiter!
+    }:new;
+  }:iter;
 
 }:queue;
 
