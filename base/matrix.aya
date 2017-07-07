@@ -261,7 +261,7 @@ import ::math
     prevE:len;
     1 0 lenVLK:new;
     1:ix;
-    {new ix:(prev ixI new ixVI+) ixB:ix;}lenV%
+    {new ix:(prev ixI new ixVI+) ::ix B}lenV%
     new
   }:nextpascalr;
 
