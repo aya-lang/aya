@@ -176,5 +176,16 @@ public class AyaPrefs {
 			/* 11 */ Char.MAX_VALUE,
 			/* 12 */ SYS_LINE_SEPARATOR
 	};
+
+	public static final String SYS_HOME_DIR = System.getProperty("user.home");
+	public static final Str SYS_HOME_DIR_STR = new Str(SYS_HOME_DIR);
+
+	public static String getHomeDir() {
+		return SYS_HOME_DIR;
+	}
+	public static Str getHomeDirStr() {
+		return SYS_HOME_DIR_STR;
+	}
 	
+
 }

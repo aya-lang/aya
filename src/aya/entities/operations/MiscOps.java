@@ -37,6 +37,7 @@ import aya.obj.number.Number;
 import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
 import aya.util.ChartParams;
+import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
 
@@ -688,7 +689,8 @@ class OP_SysConfig extends Operation {
 				+ "  \"\"3: reset working dir\n"
 				+ "  S4: list files in working dir + S\n"
 				+ "  S5: create dir in working dir + S\n"
-				+ "  S6: delete file or dir");
+				+ "  S6: delete file or dir"
+				+ "  S7: get home dir + S");
 		OperationDocs.add(doc);
 	}
 	
@@ -789,6 +791,12 @@ class OP_SysConfig extends Operation {
 			}
 
 		break;
+		
+		case 7:
+			b.push(new Str(FileUtils.pathAppend(AyaPrefs.getHomeDir(), arg.str())));
+			break;
+			
+
 		
 		default:
 			throw new AyaRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
