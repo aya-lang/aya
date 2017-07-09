@@ -1,0 +1,59 @@
+{,
+    .#? sys.iswindows\n  returns true if system is windows
+    {:9c"\\"=}:iswindows;
+
+    .#? sys.root\n  the system root folder
+    iswindows {
+        "C:"
+    } {
+        ""
+    } .? :root;
+}:sys;
+
+
+.#? workingdir\n  get the working dir as a string
+{""2MZ}:workingdir;
+
+
+{dirname,
+    dirname sys.root :9c + = {
+        sys.root :9c + 3MZ
+    } {
+        dirname :9c | # changedirrel ;
+    } .?
+}:changedir;
+
+{dirname::str,
+    [
+    dirname sys.root = {sys.root :9c +} ?
+    dirname ".." = {updir} ?
+    dirname "~" = {""7MZ} ?
+    {
+        workingdir dirname + :9c +
+    }
+    ].S 3MZ
+}:changedirrel;
+
+.#? updir\n  return a path of the enclosing directory
+{
+    workingdir sys.root :9c+ = {
+        workingdir
+    } {
+        workingdir :9c | B; :9c * :9c +
+    } .?
+}:updir;
+
+
+.#? mkdir S\n  create a new directory
+{`({dir::str,
+    dir 5MZ
+})}:mkdir;
+
+.#? defaultwd\n  return the default working directory as a string
+{:wd dflt,
+    workingdir :wd;
+    resetwd
+    workingdir :dflt;
+    wd 3 MZ
+    dflt
+}:defaultwd;

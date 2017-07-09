@@ -5,6 +5,7 @@
 
 import ::string
 import ::list
+import ::sys
 
 .#? SS readdlm\n  open a file, split into lines, split each line using dlm
 {dlm::str, G dlm fromcsvstr}:readdlm;
@@ -12,63 +13,6 @@ import ::list
 .#? S opencsv\n  opens and parses a csv file into a matrix
 {"," readdlm}:opencsv;
 
-.#? S alterprompt\n  change the prompt
-{1MZ}:alterprompt;
-
-.#? ls\n  print a list of files in the working dir
-{
-  (""4MZ$#{"  "\+println0}E0=) then {
-    "  <no files>" println
-  }
-}:ls;
-
-.#? pwd\n  print the working dir
-{""2MZprintln}:pwd;
-
-.#? workingdir\n  get the working dir as a string
-{""2MZ}:workingdir;
-
-.#? cd S\n  change directory
-{`({dir::str,
-  if (dir "" =) {
-    ""3MZ
-  } {
-    if (dir ".." =) {
-      updir
-    } {
-      workingdir "$dir/" + 3MZ
-    }
-  }
-  pwd
-})}:cd;
-
-.#? resetwd\n  reset working directory
-{""3MZ}:resetwd;
-
-.#? mkdir S\n  create a new directory
-{`({dir::str,
-  dir 5MZ
-})}:mkdir;
-
-.#? defaultwd\n  return the default working directory as a string
-{:wd dflt,
-  workingdir :wd;
-  resetwd
-  workingdir :dflt;
-  wd 3 MZ
-  dflt
-}:defaultwd;
-
-
-.#? more S\n  print a file to the console
-{`({filename::str,
-  filename G println
-})}:more;
-
-{
-
-  workingdir :9c | B; :9c join :9c + 3MZ
-}:updir;
 
 
 
