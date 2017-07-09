@@ -23,6 +23,7 @@ public class InteractiveAya extends Thread {
 	private boolean _showPromptText = true;
 	private boolean _showBanner = true;
 	private String _initcode = null;
+	private String _usercmd = null;
 	
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
@@ -42,11 +43,14 @@ public class InteractiveAya extends Thread {
 			+ "\n";
 	
 	public static final String HELP_TEXT = "Help:\n"
-			+ "  \\q\t\t\tquit interactive Aya\n"
-			+ "  \\h\t\t\tview this page\n"
-			+ "  \\? <help text>\t\tsearch for help text in Aya\n"
-			+ "  \\cls\t\t\tclear the console window\n"
-			+ "  \\version\t\t\tdisplay Ara version name";
+			+ "  \\QUIT or \\Q\n\tquit interactive Aya\n"
+			+ "  \\HELP or \\H\n\tview this page\n"
+			+ "  \\? <help text>\n\tsearch for help text in Aya\n"
+			+ "  \\VERSION or \\V\n\tdisplay Ara version name\n"
+			+ "  \\USERCMD <variable> [.] or \\: <variable> [.]\n"
+			+ "\tInput will be parsed as \"\"\"input\"\"\" aya.interpreter.<variable>\n"
+			+ "\tUse \"\\USERCMD -\" to return to normal\n"
+			+ "\tUse \"\\USERCMD <variable> .\" to hide message\n";
 	
 	public int processInput(String input) {
 		//Empty Input
@@ -54,13 +58,29 @@ public class InteractiveAya extends Thread {
 			return EMPTY_INPUT;
 		}
 		
+		// User Command
+		if (_usercmd != null) {
+			if (input.equals("\\USERCMD -") || input.equals("\\: -") ) {
+				_usercmd = null;
+				return SKIP_WAIT;
+			} else {
+				String code = "\"\"\"" + input + "\"\"\" aya.interpreter." + _usercmd;
+				_aya.queueInput(code);
+				return NORMAL_INPUT;
+			}
+		}
+		
+		
 		//Settings
 		else if (input.charAt(0) == '\\') {
+
+			
 			String[] settings = input.split(" ");
 			String command = settings[0].substring(1, settings[0].length());
 			
+			
 			//Exit
-			if(command.equals("q")) {
+			if(command.equals("Q")) {
 				// Notify aya to exit
 				_aya.quit();
 				return EXIT; //return exit flag
@@ -68,7 +88,7 @@ public class InteractiveAya extends Thread {
 			
 			
 			//Help
-			else if(command.equals("h") || command.equals("help")) {
+			else if(command.equals("H") || command.equals("HELP")) {
 				_aya.println(HELP_TEXT);
 				return SKIP_WAIT;
 			}
@@ -95,13 +115,13 @@ public class InteractiveAya extends Thread {
 			}
 			
 			//Version
-			else if(command.equals("version")) {
+			else if(command.equals("V") || command.equals("VERSION")) {
 				_aya.println(Aya.VERSION_NAME);
 				return SKIP_WAIT;
 			}
 			
 			//Time
-			else if(command.equals("time")) {
+			else if(command.equals("TIME")) {
 				String code = splitAtFirst(' ', input).trim();
 				if(code.equals("")) {
 					_aya.getErr().println("Nothing to time");
@@ -111,7 +131,22 @@ public class InteractiveAya extends Thread {
 				}
 			}
 			
-			else if (command.length() <= 12 && Variable.isValidStr(command)) {
+			//User Command
+			else if (command.equals(":") || command.equals("USERCMD")) {
+				if (settings.length > 1 && Variable.isValidStr(settings[1])) {
+					_usercmd = settings[1];
+					if (!(settings.length > 2 && settings[2].equals("."))) {
+						_aya.getOut().println("Input now being parsed as:\n\t\"\"\"input\"\"\" aya.interpreter." + _usercmd
+								+ "\nType \"\\" + command + " -\" to return to normal"
+								+ "\nType \"\\" + command + " " + _usercmd + " .\" to hide this message in the future");
+					}
+				} else {
+					_aya.getErr().println("usercmd: \"" + settings[1] + "\" is not a valid user command");
+				}
+				return SKIP_WAIT;
+			}
+			
+			else if (Variable.isValidStr(command)) {
 				String code = splitAtFirst(' ', input).trim();
 				if(code.equals("")) {
 					_aya.getErr().println("No input provided");
