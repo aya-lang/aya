@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import aya.obj.list.List;
 import aya.util.FileUtils;
+import aya.variable.Variable;
 
 public class InteractiveAya extends Thread {
 	
@@ -56,9 +57,10 @@ public class InteractiveAya extends Thread {
 		//Settings
 		else if (input.charAt(0) == '\\') {
 			String[] settings = input.split(" ");
+			String command = settings[0].substring(1, settings[0].length());
 			
 			//Exit
-			if(settings[0].equals("\\q")) {
+			if(command.equals("q")) {
 				// Notify aya to exit
 				_aya.quit();
 				return EXIT; //return exit flag
@@ -66,13 +68,13 @@ public class InteractiveAya extends Thread {
 			
 			
 			//Help
-			else if(settings[0].equals("\\h") || settings[0].equals("\\help")) {
+			else if(command.equals("h") || command.equals("help")) {
 				_aya.println(HELP_TEXT);
 				return SKIP_WAIT;
 			}
 			
 			//Search
-			else if(settings[0].equals("\\?") && settings.length > 1) {
+			else if(command.equals("?") && settings.length > 1) {
 				String searchText = "";
 				for (int i = 1; i < settings.length; i++) {
 					searchText += settings[i] + " ";
@@ -93,24 +95,31 @@ public class InteractiveAya extends Thread {
 			}
 			
 			//Version
-			else if(settings[0].equals("\\version")) {
+			else if(command.equals("version")) {
 				_aya.println(Aya.VERSION_NAME);
 				return SKIP_WAIT;
 			}
 			
 			//Time
-			else if(settings[0].equals("\\time")) {
-				//Reassemble the code
-				String code = "";
-				for (int i = 1; i < settings.length; i++) {
-					code += settings[i] + " ";
-				}
-				code = code.trim();
+			else if(command.equals("time")) {
+				String code = splitAtFirst(' ', input).trim();
 				if(code.equals("")) {
 					_aya.getErr().println("Nothing to time");
 				} else {					
 					_aya.queueInput(code);
 					return TIME;
+				}
+			}
+			
+			else if (command.length() <= 12 && Variable.isValidStr(command)) {
+				String code = splitAtFirst(' ', input).trim();
+				if(code.equals("")) {
+					_aya.getErr().println("No input provided");
+				} else {			
+					// construct [ """ (code) """ varname ]
+					code = "\"\"\"" + code + "\"\"\" aya.interpreter." + command;
+					_aya.queueInput(code);
+					return NORMAL_INPUT;
 				}
 			}
 						
@@ -129,6 +138,10 @@ public class InteractiveAya extends Thread {
 		
 		_aya.getErr().println("invalid input");
 		return SKIP_WAIT;
+	}
+	
+	private static String splitAtFirst(char splitter, String str) {
+		return str.substring(str.indexOf(splitter), str.length());
 	}
 
 	public void initCode(String code) {

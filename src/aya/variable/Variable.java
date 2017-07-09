@@ -97,6 +97,20 @@ public class Variable {
 		return res;
 	}
 	
+	/** Return true if the string is a valid variable name */
+	public static boolean isValidStr(String varname) {
+		if (varname.length() >= 12) return false;
+		
+		char[] chars = varname.toCharArray();
+		for (char c : chars) {
+			if (c < 'a' || c > 'z') {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return this.id == ((Variable)obj).getID();
