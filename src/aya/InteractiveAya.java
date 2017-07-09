@@ -176,7 +176,12 @@ public class InteractiveAya extends Thread {
 	}
 	
 	private static String splitAtFirst(char splitter, String str) {
-		return str.substring(str.indexOf(splitter), str.length());
+		int index = str.indexOf(' ');
+		if (index == -1) {
+			return "";
+		} else {
+			return str.substring(index, str.length());
+		}
 	}
 
 	public void initCode(String code) {
