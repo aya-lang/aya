@@ -4,7 +4,7 @@
     {,d:dict dflt:dflt} defaultdict MO
   }:new;
 
-  {self index : t,
+  {index self : t,
     self.dict index N 0 = \; {
       self.dflt_ :t;;
       self.dict index : (t)
