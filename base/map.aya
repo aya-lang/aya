@@ -1,54 +1,124 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# map.aya
+.# Defines the map data structure
+
+.{? type: map
+    The map type is a key-value pair dictionary which supports any
+      and mixed data types as the key.
+    implements iterator
+.}
+
+
 import ::iterator
 
 {,
-  ::map :type;
+    ::map :type;
 
-  .# Implement iterator
-  using iterator
+    .# Implement iterator
+    using iterator
+
+    { {,[]:keys []:values} map MO}:new;
+
+    .#? key map.haskey\n  true if map contains key
+    {key self,
+        self.keys key N :1 = ! \;
+    }:haskey;
+
+    .#? key value self map.put\n  put key value pair in the map
+    {key value self : idx,
+        self.keys key N :idx;;
+        idx :1 = {
+            key self.keys .B;
+            value self.values .B;
+        } {
+            self.values idx : (value)
+        } .?
+    }:put;
+
+    {key self,
+        .# Apply remove code only if it is in the map
+        self.keys key N _ :1 =! {
+            _@\.-;              .# remove from keys
+            self.values\.-;     .# remove from values
+        } {
+            ;;                  .# do nothing, clean stacke
+        } .?
+    }:del;
+
+    .#? key map.getindex\n  get the value for the key in the map
+    {key self : idx,
+        self.keys key N :idx;;
+        idx :1 = {
+            "map does not contain key $key" .D
+        } {
+            self.values.[idx]
+        }.?
+    }:getindex;
 
 
-  { {,[]:keys []:values} map MO}:new;
+    .# Generator Functions
 
-  {key self,
-    self.keys key N :1 = ! \;
-  }:haskey;
-
-  {key self,
-    key self.haskey { : idx ,
-      self.values.[self.keys key N \;]
-    } {
-      "map does not contain key $key" .D
-    }.?
-  }:getindex;
-
-  {key value self,
-    key self.keys .B;
-    value self.values .B;
-  }:put;
+    {list : m,
+        map!:m;
+        list # {~ m.put};
+        m
+    }:fromlist;
 
 
-  .# Iterator implementation
-  {,
 
-    {map,
-      {,0:state map:map} map.iter MO
-    }:new;
 
-    {self,
-      0 self.:state;
-    }:start;
+    .###########################
+    .# Iterator implementation #
+    .###########################
 
-    {self,
-      [self.map.keys.[self.state]
-      self.map.values.[self.state]]
-      self.state B self.:state;
-    }:next;
+    {,
 
-    {self,
-      self.state self.map.keys E :>
-    }:done
+        {map,
+            {,0:state map:map} map.iter MO
+        }:new;
 
-  }:iter;
+        {self,
+            0 self.:state;
+        }:start;
+
+        {self,
+            [self.map.keys.[self.state]
+            self.map.values.[self.state]]
+            self.state B self.:state;
+        }:next;
+
+        {self,
+            self.state self.map.keys E :>
+        }:done
+
+    }:iter;
 
 
 }:map;
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "map" testset! :ts;
+
+  {[[::a"a"]['b::b][2 1]]map.fromlist.[::a]} ["a"] ts+
+  {[[::a"a"]['b::b][2 1]]map.fromlist.['b]} [::b] ts+
+  {[[::a"a"]['b::b][2 1]]map.fromlist.[2]} [1] ts+
+  {::a [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [1] ts+
+  {::c [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [0] ts+
+  {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; ::c "C" m.put m.[::c]} ["C"] ts+
+  {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; ::c "C" m.put ::c "c" m.put m.[::c]} ["c"] ts+
+  {:m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [2] ts+
+  {:m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [3] ts+
+  {[[::a"a"][::b"b"]]map.fromlist.collect} [[[::a"a"][::b"b"]]] ts+
+
+  ts aya.addtest
+
+}
