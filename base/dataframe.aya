@@ -235,7 +235,7 @@ import ::file
   }:col;
 
 
-  {self index::list,
+  {index::list self::dataframe,
     index self.loc
   }:getindex;
 
