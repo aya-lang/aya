@@ -10,6 +10,14 @@ import """
   math
   matrix
   dataframe
+  map
+  set
+  queue
+  sys
+  file
+  shell
+  iterator
+  plot
 """
 
 .# Single letter variables
