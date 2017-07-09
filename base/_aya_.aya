@@ -17,6 +17,10 @@
 ""2MZ "base/" K :basedir;
 ""2MZ :homedir;
 
+.#? S aya.alterprompt\n  change the prompt text
+{1MZ}:alterprompt;
+
+{,}:interpreter;
 
 {importnamezz importdirnmz,
 
