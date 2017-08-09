@@ -17,8 +17,6 @@ import ::iterator
 
   ::stack :type;
 
-  using iterator
-
   .#? L stack.new\n  convert a list into a stack
   {l, {, l:list} stack MO}:new;
 
@@ -66,8 +64,9 @@ import ::iterator
     {stk::stack,
         stk.list listiter!
     }:new;
+    "<stack iterator>":repr;
   }:iter;
-  
+
 }:stack;
 
 

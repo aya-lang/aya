@@ -1,54 +1,60 @@
 .# Functions for iterators
 
 {,
-  {f collection : it,
-    collection collection Mo.iter! :it;
-    it.start
-    {
-      it.next f
-      it.done!
-    } W
-  }:each;
 
-  {f collection : it total,
-    collection collection Mo.iter! :it;
-    it.start
-    it.next :total;
-    {
-      it.next total f :total;
-      it.done!
-    } W
-    total
-  }:reduce;
-
-  {begin f collection : it total,
-    collection collection Mo.iter! :it;
-    it.start
-    begin :total;
-    {
-      it.next total f :total;
-      it.done!
-    } W
-    total
-  }:reducewith;
-
-  {collection : it list,
-    collection collection Mo.iter! :it;
-    it.start
-    [it.next] :\ :list;
-    {
-      it.next list .B :list;
-      it.done!
-    } W
-    list
-  }:collect;
-
+  {collection,
+    collection collection.iter!
+  }:new;
 
 }:iterator;
 
 
+{f collection : it,
+  collection iterator! :it;
+  it.start
+  {
+    it.next f
+    it.done!
+  } W
+}:each;
+
+{f collection : it total,
+  collection iterator! :it;
+  it.start
+  it.next :total;
+  {
+    it.next total f :total;
+    it.done!
+  } W
+  total
+}:reduce;
+
+{begin f collection : it total,
+  collection iterator! :it;
+  it.start
+  begin :total;
+  {
+    it.next total f :total;
+    it.done!
+  } W
+  total
+}:reducewith;
+
+{collection : it list,
+  collection iterator! :it;
+  it.start
+  [it.next] :\ :list;
+  {
+    it.next list .B :list;
+    it.done!
+  } W
+  list
+}:collect;
+
 
 {,
+  ::iter:type;
+
   {l::list,
     {, 0:state l:l } listiter MO
   }:new;
@@ -69,6 +75,8 @@
 }:listiter;
 
 {,
+  ::iter:type;
+
   {d::dict,
     {, 0:state d:K:keys d:d} dictiter MO
   }:new;

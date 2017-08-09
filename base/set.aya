@@ -16,8 +16,6 @@ import ::iterator
 
   ::set :type;
 
-  using iterator
-
   {l::list, {,l :~ :list} set MO}:new;
 
 
@@ -106,6 +104,7 @@ import ::iterator
     {s::set,
         s.list listiter!
     }:new;
+    "<set iterator>":repr;
   }:iter;
 
 

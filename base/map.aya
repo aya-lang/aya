@@ -10,13 +10,8 @@
 .}
 
 
-import ::iterator
-
 {,
     ::map :type;
-
-    .# Implement iterator
-    using iterator
 
     { {,[]:keys []:values} map MO}:new;
 
@@ -84,13 +79,15 @@ import ::iterator
 
         {self,
             [self.map.keys.[self.state]
-            self.map.values.[self.state]]
+             self.map.values.[self.state]]
             self.state B self.:state;
         }:next;
 
         {self,
             self.state self.map.keys E :>
         }:done
+
+        "<map iterator>":repr;
 
     }:iter;
 
