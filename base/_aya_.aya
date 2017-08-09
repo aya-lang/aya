@@ -14,7 +14,7 @@
   "_aya_"  .# This file
 ]:imported;
 
-""2MZ "base/" K :basedir;
+""2MZ "base" :9c + + :basedir;
 ""2MZ :homedir;
 
 .#? S aya.alterprompt\n  change the prompt text
@@ -24,7 +24,7 @@
 
 {importnamezz importdirnmz,
 
-  .# True if the fine is not imported
+  .# True if the file is not imported
   aya.imported importnamezz N\; :-1 =
 
   .# If condition is true
@@ -132,7 +132,7 @@
 .# RELOAD
 .# ------
 
-.#? reload\n  reload the standard library
+.#? reload\n  reload imported files
 {:workingdirzz,
   ""2MZ            .# Save the current working dir
   ""3MZ            .# Reset the working dir
