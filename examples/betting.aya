@@ -1,0 +1,66 @@
+import ::enum
+import ::plot
+
+enum ::state [::win ::lose]
+
+1000      :maxbet;
+300       :games;
+state.win :laststate;
+
+{
+    if (laststate state.lose =) {
+        bet 2 * :bet;
+        maxbet 0 =! bet maxbet > & {
+            maxbet:bet;
+        } ?
+    } {
+        5 :bet;
+    }
+}:updatebet;
+
+
+{chance,
+    updatebet
+    cash bet - :cash;
+
+    if (.Q chance <) {
+        state.win :laststate;
+        cash bet 2 * + :cash;
+    } {
+        state.lose :laststate;
+    }
+}:play;
+
+{numiters chance : cash(100) bet(5) interactive(0),
+    state.win :laststate;
+
+    [{
+        chance play
+        interactive {
+            laststate state.win = {
+                "bet: $bet, WIN -> cash: $cash"
+            } {
+                "bet: $bet, lost -> cash: $cash"
+            } .? println
+        } ?
+        cash
+    } numiters %]
+
+}:runsim;
+
+
+plot!:plt;
+games R plt.domain
+
+{plt r,
+    "$r" 2 [] games r runsim plt.addseries
+}:runit
+
+[0.3 0.35 0.4 0.45 0.5 0.55] # {r,
+    plt r runit
+}
+
+"Betting Strategy" plt.:title
+"cash" plt.:ylabel
+"games" plt.:xlabel
+plt.view
