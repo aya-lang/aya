@@ -32,6 +32,11 @@ import ::string
 
 {`:P}:echo;
 
+{`({s::str,"" s 1.G})}:touch;
+
+{`(6MZ)}:rm;
+
+{`(".aya"+G~)}:run;
 
 {str : cmd args,
     str ' N _ :1 = {
