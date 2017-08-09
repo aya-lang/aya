@@ -7,16 +7,16 @@
 
 
 .###########################
-.#		Essentials
+.#        Essentials
 .###########################
 
 .# Aya is a stack based programming language.
 .# The stack is evaluated from left to right
 
-	1 3 + 2 - 4 +
+    1 3 + 2 - 4 +
 .#      4 2 - 4 +
-.#		    2 4 +
-.#			    6
+.#          2 4 +
+.#              6
 
 
 .# Numbers
@@ -30,8 +30,8 @@
 .# Special numbers begin with a colon (:)
 
 .# Negative numbers begin with a (:-) or just a colon (:)
-:-3      .# => -3
-:4.53    .# => -4.53
+:-3     .# => -3
+:4.53   .# => -4.53
 
 .# Arbitrary precision float numbers end with a 'z'
 :1z
@@ -43,78 +43,76 @@
 
 .# Binary and hexadecimal literals are created using
 .# :0xNNNN and :0bNNNN respectively
-:0b101001	.# => 41
-:0x0f05 	.# => 3845 (hex letters must be lowercase)
+:0b101001   .# => 41
+:0x0f05     .# => 3845 (hex letters must be lowercase)
 
 
 
 .# Math
-:1r2 :4r5 + .# => :9r10
-5 6 - 	    .# => -1
-2 0.5 *     .# => 1.0
-3 2 ^ 	    .# => 9
-6 4 /				.# => 1.5
-6 2 / 			.# => 3
+:1r2 :4r5 +     .# => :9r10
+5 6 -           .# => -1
+2 0.5 *         .# => 1.0
+3 2 ^           .# => 9
+6 4 /           .# => 1.5
+6 2 /           .# => 3
 
 .# - is never a unary operator (use :N for negative numbers)
 8 3 -1  .# is evaluated as (8 3-) 1 => 5 1
--1	 	.# ERROR: Empty stack at operator '-'
+-1      .# ERROR: Empty stack at operator '-'
 
 
 .# Boolean operations
-1!		  .# => 0
-0!		  .# => 1
-1 1 =	  .# => 1
-1 1 =!	.# => 0
-8 3 >	  .# => 1
-5 5 <	  .# => 0
-5 5 .<	.# => 1
+1!      .# => 0
+0!      .# => 1
+1 1 =   .# => 1
+1 1 =!  .# => 0
+8 3 >   .# => 1
+5 5 <   .# => 0
+5 5 :<  .# => 1
 
 
 .###########################
-.#	  Chars and Strings
+.#      Chars and Strings
 .###########################
 
 .# Characters
-'a		.# basic characters do not need closing quotes
-'p'q	.# => 'p' 'q'
+'a      .# basic characters do not need closing quotes
+'p'q    .# => 'p' 'q'
 
 .# Escaped characters need closing quotes
-'\n' '\t' '\f' '\b'
+'\n' '\t' '\f' '\b' '\x1b'
 
-
-.# Unicode character literals
-.# Unicode characters are written using a \U
+.# Hex representations of characters are written using a \x
 .# and need closing quotes
-'\U 00FF'	.# => 'ÿ'
-.# The space is optional
-'\U00A1'	.# => '¡'
+'\x00FF'    .# => 'ÿ'
+'\x00A1'    .# => '¡'
 
 .# Many characters have names
-'\alpha'	.# => 'α'
-'\pi'		.# => 'π'
-'\because'	.# => '∵'
+'\alpha'    .# => 'α'
+'\pi'       .# => 'π'
+'\because'  .# => '∵'
 
 .# You can do math with characters
 'a 4 +  .# 'e
 
 
-.#Strings
+.# Strings
 
 "I am a string"
 
 .# Strings can contain special characters using \{}
-"Jack \{heart}s Jill" 		.# => "Jack ♥s Jill"
-"sin(\{theta}) = \{alpha}"	.# => "sin(θ) = α"
+"Jack \{heart}s Jill"       .# => "Jack ♥s Jill"
+"sin(\{theta}) = \{alpha}"  .# => "sin(θ) = α"
+"hello \{xff}"              .# => "hello ÿ"
 
 .# Strings can be treated like lists of characters
 "Hello " "world!" K .# => "Hello world!"
-['s't'r'i'n'g] .# => "string"
-"abcde" 2 I .# => 'c'
+['s't'r'i'n'g]  .# => "string"
+"abcde".[2]     .# => 'c'
 
 
 .###########################
-.#	    Operators
+.#        Operators
 .###########################
 
 .# Most non-alpha characters are operators
@@ -129,24 +127,24 @@ I .# get nth item from list / filter
 "hello"! .# => "olleh"
 
 .# Almost all uppercase letters are operators
-.#		(R => range, K => concatenate, Q => rand)
+.#        (R => range, K => concatenate, Q => rand)
 10Q .# => an int between 0 and 10
 10R .# => [1 2 3 4 5 6 7 8 9 10]
 [1 2 3] [7 8 9] K .# => [1 2 3 7 8 9]
 
 
 .# Any character following a . (except numbers and lowercase letters) are operators
-.#		(.X => quickplot, .T => type, .< => less than or equal to)
-1.T	.# => 'D'
+.#        (.X => quickplot, .T => type, .< => less than or equal to)
+1.T    .# => 'D'
 
 .# Any character following a M is an operator
 .# and is usually math related or miscellaneous
-.#   	(Ms => sin, M! => factorial, Mq =>sqrt)
+.#       (Ms => sin, M! => factorial, Mq =>sqrt)
 4 Mq .# => 2
 
 
 .###########################
-.#		   Lists
+.#           Lists
 .###########################
 
 .# Lists are created using square brackets
@@ -187,7 +185,7 @@ I .# get nth item from list / filter
 
 .# List comprehension
 .# Follows the format:
-.# 		[range, map, filter1, filter2,  ..., filterK]
+.#         [range, map, filter1, filter2,  ..., filterK]
 .# Range is evaluated like the R operator
 .# Map and filters are optional
 
@@ -204,7 +202,7 @@ I .# get nth item from list / filter
 
 
 .###########################
-.#	     Variables
+.#         Variables
 .###########################
 
 .# Variables can only contain lower case letters
@@ -213,8 +211,8 @@ I .# get nth item from list / filter
 1 :a .# => 1
 
 .# There are many default variables
-pi	.# => 3.1415....
-w 	.# => -1
+pi    .# => 3.1415....
+w     .# => -1
 
 .# Only the first 12 characters of a variable are used
 "hello":abcdefghijklmnop
@@ -222,54 +220,54 @@ abcdefghijklwxyz .# => "hello"
 
 .# Any of the named special characters can be used as a variable
 0.05:α;
-100 α * 	.# => 5.0
+100 α *     .# => 5.0
 
 .# The compiler translates the special character into its name
 .# This means that the name of the special character and the
-.#		special character itself are equivalent
+.#        special character itself are equivalent
 2:alpha;
 4:β;
-α beta *	.# => 8
+α beta *    .# => 8
 
 
 .###########################
-.#		  Types
+.#          Types
 .###########################
 
 .# the .T operator returns an object's type as a character
-1 .T  	.# => 'D
-'1 .T 	.# => 'C
-1.T.T 	.# => 'C
+1 .T      .# => 'D
+'1 .T     .# => 'C
+1.T.T     .# => 'C
 
 .# The library function `isa` takes a type and an item and
-.# 		returns true if the item matches the type
-5 'N isa 				    .# => 1
-[1 2 3 4] 'L isa		.# => 1
+.#         returns true if the item matches the type
+5 'N isa                     .# => 1
+[1 2 3 4] 'L isa        .# => 1
 "1234" 'L isa       .# => 1
 
 .# 'N' represents any number type (Double, Rational, etc)
 [1 :1r :1z] #.T     .# "DNF"
-[1 :1r :1z] 'N #isa	.# => [ 1 1 1 ]
+[1 :1r :1z] 'N #isa    .# => [ 1 1 1 ]
 
 .# 'A' represents any type
-['c "c" 1 []] 'A #isa	.# => [ 1 1 1 1 ]
+['c "c" 1 []] 'A #isa    .# => [ 1 1 1 1 ]
 
 .# Strings are lists
-"hello" 'L isa			.# => 1
+"hello" 'L isa            .# => 1
 
 .# Lists are only strings if all items are characters
-[1 2 3] 'S isa			.# => 0
-['a 'b 'c] 'S isa 		.# => 1
+[1 2 3] 'S isa            .# => 0
+['a 'b 'c] 'S isa         .# => 1
 
 
 .# TYPE CHART
 .# =========================
-.#   	D - Num (represented by a double)
-.#		F - BigNum (represented by an arbitrary precision float)
+.#       D - Num (represented by a double)
+.#        F - BigNum (represented by an arbitrary precision float)
 .#    N - number (D|F)
 .#    E - expression/block
 .#    C - character
-.#		L - list
+.#        L - list
 .#    S - string
 .#    R - dict
 .#    A - any
@@ -277,7 +275,7 @@ abcdefghijklwxyz .# => "hello"
 
 
 .###########################
-.#		  Blocks
+.#          Blocks
 .###########################
 
 .# blocks contain code
@@ -309,91 +307,91 @@ abcdefghijklwxyz .# => "hello"
 .# The type assertion is written as an uppercase letter
 .#    following the argument name
 {aD bD, a b +}:add;
-1 2 add		.# => 3
+1 2 add        .# => 3
 :1z :2z add
- 				.# TYPE ERROR: Type error at ({ARGS}):
-				.#		Expected (NUM)
-				.#    Received (2 )
+                 .# TYPE ERROR: Type error at ({ARGS}):
+    .#        Expected (NUM)
+    .#    Received (2 )
 
 
 .# See the types section for more information on types
 {nN, n1+}:addone;
-1 addone		  .# => 2
-:1z addone 		.# => 2.0
-"1" addone 		.# Error
+1 addone          .# => 2
+:1z addone         .# => 2.0
+"1" addone         .# Error
 
 
 .###########################
-.#	 Stack Manipulation
+.#     Stack Manipulation
 .###########################
 
 .# Sometimes we may need to traverse the stack before
-.#		it has been evaluated
+.#        it has been evaluated
 
 .# The tick (`) operator will move the item just after it
-.# 		back the unevaluated stack 1 place
-1 `2 3 4	.# => 1 3 2 4
+.#         back the unevaluated stack 1 place
+1 `2 3 4    .# => 1 3 2 4
 
 .# The object will be moved back BEFORE being evaluated
 1 `+ 1
 
 .# Ticks can be stacked. The object will move back one
-.#		place for every tick
+.#        place for every tick
 ``+ 3 4
 
 .# Ticks are evaluated at run time. This meeans that users
-.# 	can define their own "infix" operators
+.#     can define their own "infix" operators
 {`*}:times;
-3 times 4 		.# => 12
+3 times 4         .# => 12
 
 
 .# Objects on the stack can be grouped using parenthesis
 .# Items in parenthesis are dumped and evaluated at run time
-(1 2 + 3) +		.# => 6
+(1 2 + 3) +        .# => 6
 
 .# Since grouped items are treated as one item by the compiler,
-.#		they are especially useful when used with the tick operator
-`+ (1 2)		.# => 3
+.#        they are especially useful when used with the tick operator
+`+ (1 2)        .# => 3
 
 .# If a block is the only thing inside a group, it will be
-.#		automatically dumped and evaluated at runtime
-1 2 {+}		.# => 1 2 {+}
-1 2 ({+}) 	.# => 3
+.#        automatically dumped and evaluated at runtime
+1 2 {+}        .# => 1 2 {+}
+1 2 ({+})     .# => 3
 
 
 .###########################
-.#	     The REPL
+.#         The REPL
 .###########################
 
 .# The GUI REPL can be launched by double clicking the jar
-.#		file or running the command
+.#        file or running the command
 .# java -jar path/to/aya.jar
 
 
 .# The REPL can be launched via the command line by running
-.#		the above command but with '-i' as an argument
+.#        the above command but with '-i' as an argument
 .# java -jar path/to/aya.jar -i
 
 .# Aside from running aya code, the REPL has several useful features
 .# Enter '\h' to view the REPLs commands
 .# aya> \h
 .# Help:
-.#   \q						quit interactive Aya
-.#   \c [infix|stack]		change compiler type
-.#   \v <expr>				view compiler output of expression
-.#   \h						view this page
-.#   \? <help text>			search for help text in Aya
-.#   \cls					clear the console window
-.#   \version				display Aya version name
+.#   \q                        quit interactive Aya
+.#   \c [infix|stack]        change compiler type
+.#   \v <expr>                view compiler output of expression
+.#   \h                        view this page
+.#   \? <help text>            search for help text in Aya
+.#   \cls                    clear the console window
+.#   \version                display Aya version name
 
 .# Many of these features can be explored on your own, but the
-.# 		most useful feature is help '\?'
+.#         most useful feature is help '\?'
 .# Using help, you can search for just about anything
 
 .# Operators
 .# aya> \? $
-.#	$ (L<N>|L<S>|S)
-.#  	sort least to greatest
+.#    $ (L<N>|L<S>|S)
+.#      sort least to greatest
 .#      (operator)
 
 .# Reverse search operators
@@ -404,7 +402,7 @@ abcdefghijklwxyz .# => "hello"
 
 .# Topics
 .# aya> \? type key
-.#	argument type key
+.#    argument type key
 .#     I - integer
 .#     D - double
 .#     ...
