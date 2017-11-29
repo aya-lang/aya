@@ -31,5 +31,6 @@ public class TypeIDs {
 	public static final byte T_POUND           = 124; // (#) special operator
 	public static final byte T_DOT_COLON       = 125; // (.:) dot colon operator
 	public static final byte T_FN_QUOTE 	   = 126; // (.`) function quote
+	public static final byte T_COLON_POUND 	   = 127; // (:#) special operator
 	
 }

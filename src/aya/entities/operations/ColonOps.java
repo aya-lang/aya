@@ -45,7 +45,7 @@ public class ColonOps {
 	public static Operation[] COLON_OPS = {
 		/* 33 !  */ null,
 		/* 34 "  */ null,
-		/* 35 #  */ null,
+		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ null,
 		/* 37 %  */ null,
 		/* 38 &  */ null,
@@ -178,6 +178,35 @@ public class ColonOps {
 		return c >= 'a' && c <= 'z';
 	}
 }
+
+// # - 35
+class OP_Colon_Pound extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":#");
+		doc.desc("L:#B", "map");
+		doc.desc("D:#B", "map over key value pairs");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Pound() {
+		this.name = ":#";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj blk = block.pop();
+		Obj col = block.pop();
+		
+		if (blk.isa(BLOCK) && col.isa(LIST)) {
+			block.push( ((Block)blk).mapTo((List)col) );
+		} else if (blk.isa(BLOCK) && col.isa(DICT)) {
+			((Block)blk).mapTo((Dict)col);
+		} else {
+			throw new TypeError(this, col, blk);
+		}
+	}
+}
+
 
 
 // ' - 39

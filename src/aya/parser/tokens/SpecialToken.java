@@ -16,6 +16,7 @@ public class SpecialToken extends Token {
 	public static final SpecialToken POUND				= new SpecialToken(Token.POUND, "#");
 	public static final SpecialToken DOT_COLON			= new SpecialToken(Token.DOT_COLON, ".:");
 	public static final SpecialToken FN_QUOTE 			= new SpecialToken(Token.FN_QUOTE, ".`");
+	public static final SpecialToken COLON_POUND		= new SpecialToken(Token.COLON_POUND, ":#");
 	
 	
 	public SpecialToken(int type, String name) {

@@ -185,6 +185,7 @@ public class Parser {
 					// Dot Colon
 					else if (in.peek() == ':') {
 						tokens.add(SpecialToken.DOT_COLON);
+						in.next(); // Skip the ':'
 					}
 					
 					// Plain Dot
@@ -406,6 +407,12 @@ public class Parser {
 					tokens.add(new SymbolToken(sym));
 				}
 				
+				// Colon Pound
+				else if (in.hasNext() && in.peek() == '#') {
+					tokens.add(SpecialToken.COLON_POUND);
+					in.next(); // Skip the #
+				}
+				
 				//Colon Operator 
 				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
 					tokens.add(new OperatorToken(""+in.next(), OperatorToken.COLON_OP));
@@ -571,7 +578,7 @@ public class Parser {
 			
 			else if (current.isa(Token.DOT)) {
 				if(is.isEmpty()) {
-					throw new SyntaxError("Expected token after '. in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after '.' in:\n\t" + tokens_in.toString());
 				}
 				Object next = is.pop();
 				
@@ -600,6 +607,21 @@ public class Parser {
 					KeyVariable kv = new KeyVariable(((Variable)next).getID());
 					kv.flagBind();
 					is.push(kv);
+				}
+				
+				// Index assignment
+				else if (next instanceof ListLiteral) {
+					is.push(Ops.SETINDEX);
+					List l = ((ListLiteral) next).toList();
+					if (l != null) {
+						if (l.length() == 1) {
+							is.push(l.get(0));
+						} else {
+							throw new SyntaxError("Expected single element list after '.:' in:\n\t" + tokens_in.toString());
+						}
+					} else {
+						throw new SyntaxError("Expected single element list after '.:' in:\n\t" + tokens_in.toString());
+					}
 				}
 			}
 			
@@ -630,6 +652,19 @@ public class Parser {
 					is.push(colonBlock);	
 				}
 			}
+			
+			
+			//COLON POUND
+			else if (current.isa(Token.COLON_POUND)) {
+				if(is.isEmpty()) {
+					throw new SyntaxError("Expected token after ':#' in:\n\t" + tokens_in.toString());
+				}
+				Object next = is.pop();	
+				//Apply a block to a list or dict
+				is.push(ColonOps.getOp('#'));
+				is.push(next);
+			}
+			
 			
 			else if (current.isa(Token.FN_QUOTE)) {
 				is.push(Flag.getFlag(Flag.QUOTE_FUNCTION));

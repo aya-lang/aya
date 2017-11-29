@@ -39,6 +39,7 @@ public abstract class Token {
 	public static final int POUND           = TypeIDs.T_POUND;
 	public static final int DOT_COLON		= TypeIDs.T_DOT_COLON;
 	public static final int FN_QUOTE		= TypeIDs.T_FN_QUOTE;
+	public static final int COLON_POUND 	= TypeIDs.T_COLON_POUND;
 	
 	
 	protected Token(int type) {

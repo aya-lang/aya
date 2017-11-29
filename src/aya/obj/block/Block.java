@@ -23,6 +23,7 @@ import aya.obj.dict.KeyVariable;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -261,6 +262,19 @@ public class Block extends Obj {
 		return new GenericList(out).promote();
 	}
 	
+	/** Maps a block to a dictionary and returns nothing. Neither the block nor the dict is effected */
+	public void mapTo(Dict dict) {
+		Block b = new Block();
+		ArrayList<Long> keys = dict.keys();
+		for (long key : keys) {
+			b.addAll(this.instructions.getInstrucionList());
+			b.push(Symbol.fromID(key));
+			b.push(dict.get(key));
+			b.eval();
+			b.clear();
+		}
+	}
+	
 	/** Applies this block as a filter to a list */
 	public List filter(List list) {
 		ArrayList<Obj> out = new ArrayList<Obj>();
@@ -438,6 +452,8 @@ public class Block extends Obj {
 	public byte type() {
 		return Obj.BLOCK;
 	}
+
+	
 
 	
 
