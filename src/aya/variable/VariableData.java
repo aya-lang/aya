@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import aya.Aya;
 import aya.InteractiveAya;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.list.Str;
@@ -123,7 +124,7 @@ public class VariableData {
 				return res;
 			}
 		}
-		throw new SyntaxError("Variable " + Variable.decodeLong(id) + " not found");
+		throw new AyaRuntimeException("Variable " + Variable.decodeLong(id) + " not found");
 	}
 	
 	public void add(VariableSet vs) {

@@ -94,19 +94,19 @@ matrix:m;
 '\xf0' "bmod"       Mk .# 240
 
 {Mq}:sqrt;
-'√ "sqrt" Mk
+8730.' "sqrt" Mk
 {1 3/^}:cbrt;
-'∛ "cbrt" Mk
+8731.' "cbrt" Mk
 
-'⁴ "supfour"  Mk
-'⁵ "supfive"  Mk
-'⁶ "supsix"   Mk
-'⁷ "supseven" Mk
-'⁸ "supeight" Mk
-'⁹ "supnine"  Mk
+3808.' "supfour"  Mk
+8309.' "supfive"  Mk
+8310.' "supsix"   Mk
+8311.' "supseven" Mk
+3812.' "supeight" Mk
+8313.' "supnine"  Mk
 
-'∆ "inc" Mk
-'∇ "dec" Mk
+8710.' "inc" Mk
+8711.' "dec" Mk
 
 
 
