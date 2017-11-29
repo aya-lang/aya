@@ -620,7 +620,7 @@ public class Parser {
 							throw new SyntaxError("Expected single element list after '.:' in:\n\t" + tokens_in.toString());
 						}
 					} else {
-						throw new SyntaxError("Expected single element list after '.:' in:\n\t" + tokens_in.toString());
+						is.push(next);
 					}
 				}
 			}

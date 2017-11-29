@@ -1315,6 +1315,12 @@ class OP_SetIndex extends Operation {
 		
 		// If it is a dictionary check to see if has a metamethod first
 		else if (list.isa(DICT)) {
+			if (index.isa(LIST)) {
+				List l = (List)index;
+				if (l.length() == 1)
+					index = l.get(0);
+			}
+			
 			if ( ((Dict)list).hasMetaKey("setindex") ) {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);
