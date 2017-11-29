@@ -211,6 +211,7 @@ public class Ops {
 	//Special Ops
 	public static final Operation APPLY_TO = new OP_ApplyTo();
 	public static final Operation GETINDEX = new OP_GetIndex();
+	public static final Operation SETINDEX = new OP_SetIndex();
 	
 	/** Returns true if char c is bound to an operator */
 	public static boolean isOp(char c) {
@@ -1296,6 +1297,40 @@ class OP_GetIndex extends Operation {
 	}
 }
 
+// N/A - N/A
+class OP_SetIndex extends Operation {
+	
+	public OP_SetIndex() {
+		this.name = ".:";
+	}
+	@Override public void execute (final Block block) {
+		Obj index = block.pop();
+		final Obj list = block.pop();
+		final Obj item = block.pop();
+		
+		// If it is a lits, run the standard setindex method
+		if(list.isa(LIST)) {		
+			List.setIndex((List)list, index, item);
+		}
+		
+		// If it is a dictionary check to see if has a metamethod first
+		else if (list.isa(DICT)) {
+			if ( ((Dict)list).hasMetaKey("setindex") ) {
+				block.push(index);
+				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);
+			} else {
+				if (index.isa(SYMBOL)) {
+					((Dict)list).set(((Symbol)index).id(), item);
+				} else {
+					throw new TypeError("Cannot set index of dict: " + index.repr());
+				}
+			}
+		}
+		else {
+			throw new TypeError(this, index, list);
+		}
+	}
+}
 
 
 
