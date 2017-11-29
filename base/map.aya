@@ -27,7 +27,7 @@
             key self.keys .B;
             value self.values .B;
         } {
-            self.values idx : (value)
+            value self.values.:[idx]
         } .?
     }:put;
 

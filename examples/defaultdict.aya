@@ -7,7 +7,7 @@
   {index self : t,
     self.dict index N 0 = \; {
       self.dflt_ :t;;
-      self.dict index : (t)
+      t self.dict.:[index]
       t
     } {
       self.dict.[index]

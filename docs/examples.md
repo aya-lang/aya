@@ -105,9 +105,9 @@ repeats a string with a delimiter in between
 
 ```
     {list i j,
-        list i # : tmp;
-        (list i : (list j #)) : list;
-        list j : {tmp}
+        list.[i] :tmp;
+        list.[j] list.:[i]
+        tmp list.:[j]
     }:swap;
 ```
 

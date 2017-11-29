@@ -264,7 +264,7 @@ import ::file
     .# Append each data to the columns
     {
       rowdata E.R # {col,
-        self.values col I ix : (rowdata col I)
+        rowdata.[col] self.values.[col].:[ix]
       };
     } {e,
       .# There was an error, return the dataframe

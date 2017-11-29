@@ -1308,19 +1308,19 @@ class OP_SetIndex extends Operation {
 		final Obj list = block.pop();
 		final Obj item = block.pop();
 		
-		// If it is a lits, run the standard setindex method
+		if (index.isa(LIST)) {
+			List l = (List)index;
+			if (l.length() == 1)
+				index = l.get(0);
+		}
+		
+		// If it is a list, run the standard setindex method
 		if(list.isa(LIST)) {		
 			List.setIndex((List)list, index, item);
 		}
 		
 		// If it is a dictionary check to see if has a metamethod first
 		else if (list.isa(DICT)) {
-			if (index.isa(LIST)) {
-				List l = (List)index;
-				if (l.length() == 1)
-					index = l.get(0);
-			}
-			
 			if ( ((Dict)list).hasMetaKey("setindex") ) {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);

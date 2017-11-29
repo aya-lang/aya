@@ -570,9 +570,7 @@ public class Parser {
 					is.push(v);
 				}
 				else {
-					// Swap on instruction stack
-					is.push(Ops.APPLY_TO);
-					is.push(next);
+					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
 				}
 			}
 			
