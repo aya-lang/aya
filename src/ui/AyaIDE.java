@@ -344,11 +344,16 @@ public class AyaIDE extends JFrame
 	
 	public static void main(String[] args) {
 		
-		//No args: use the GUI
-		if(args.length == 0) {
+		Aya aya = Aya.getInstance();
+		boolean readstdin = aya.isInputAvaiable();
+		if (args.length > 0 || readstdin) {
+			// If reading from STDIN (piped input), don't use interactive mode
+			if (readstdin) InteractiveAya.setInteractive(false);
+			InteractiveAya.main(args);
+		} else {
+			// Use the GUI
 			
-			//Load and initialize aya
-			Aya aya = Aya.getInstance();
+			//Load and initialize the ide
 			AyaIDE ide = new AyaIDE(aya);
 			
 			// Aya Prefs
@@ -371,13 +376,10 @@ public class AyaIDE extends JFrame
 			} catch (InterruptedException e) {
 				e.printStackTrace(aya.getErr());
 			}
+			
+			System.exit(1);
 		}
-		
-		//Command line arguments: use the console
-		else {
-			InteractiveAya.setInteractive(System.console() == null);
-			InteractiveAya.main(args);
-		}		
+	
 	}
 }
 

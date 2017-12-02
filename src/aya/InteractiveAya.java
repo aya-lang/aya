@@ -200,6 +200,8 @@ public class InteractiveAya extends Thread {
 	
 	@Override
 	public void run() {
+		boolean running = true;
+		
  		_aya.start();
  		
 		if (_initcode != null) {
@@ -219,7 +221,7 @@ public class InteractiveAya extends Thread {
 		String input = "";
 		int status;
 				
-		while (true) {
+		while (running) {
 			
 			if (_showPromptText && interactive) {
 				out.print(AyaPrefs.getPrompt());
@@ -229,7 +231,8 @@ public class InteractiveAya extends Thread {
 				input = scanner.nextLine();
 			} catch (NoSuchElementException e) {
 				// EOF Encountered
-				return;
+				_aya.quit();
+				running = false;
 			}
 			if (input.equals("")) {
 				continue;
@@ -249,7 +252,8 @@ public class InteractiveAya extends Thread {
 					} catch (InterruptedException e) {
 						out.println("Aya interrupted");
 						e.printStackTrace(err);
-						return;
+						running = false;
+						status = EXIT;
 					}
 				}
 			}
@@ -258,7 +262,9 @@ public class InteractiveAya extends Thread {
 			switch (status) {
 			case EXIT:
 				scanner.close();
-				return;
+				running = false;
+				_aya.quit();
+				break;
 			case TIME:
 				out.println("Execution time: " + ((double)_aya.getLastInputRunTime())/1000 + "s");
 			}
@@ -280,24 +286,16 @@ public class InteractiveAya extends Thread {
 	
 	public static void main(String[] args) {
 		
+		Aya aya = Aya.getInstance();
+		
+		//Use default system io (interactive in the terminal)
+		InteractiveAya iaya = new InteractiveAya(aya);
+		
 		if (args.length > 0) {
 			
 			// Interactive Terminal
 			if (args[0].equals("-i")) {
-						
-				Aya aya = Aya.getInstance();
-				
-				//Use default system io (interactive in the terminal)
-				InteractiveAya iaya = new InteractiveAya(aya);
 				iaya.initCode(argCode(args, 1));
-				iaya.run();
-				
-				try {
-					iaya.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace(aya.getErr());
-				}
-				
 			} 
 			
 			// Run a script 
@@ -309,18 +307,9 @@ public class InteractiveAya extends Thread {
 				try {
 					String script = code + "\n" + FileUtils.readAllText(filename);
 					
-					Aya aya = Aya.getInstance();
 					aya.loadAyarc();
 					aya.queueInput(script);
 					aya.queueInput(Aya.QUIT);
-					
-					aya.run();
-					
-					try {
-						aya.join();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 					
 				} catch (IOException e) {
 					System.err.println("Cannot find file: " + filename);
@@ -331,10 +320,18 @@ public class InteractiveAya extends Thread {
 			else {
 				System.out.println("use `aya -i` to enter the repl or `aya script.aya [arg1 arg2 ...]` to run a file");
 			}
-		} else {
-			System.out.println("use `aya -i` to enter the repl or `aya script.aya [arg1 arg2 ...]` to run a file");
 		}
 		
+		iaya.run();
+		
+
+		try {
+			iaya.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace(aya.getErr());
+		}
+		
+		System.exit(1);
 	}
 		
 	

@@ -1,5 +1,6 @@
 package aya;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -31,7 +32,7 @@ import aya.variable.VariableData;
 
 public class Aya extends Thread {
 	public static final boolean DEBUG = true;
-	public static final String QUIT = "\\q";
+	public static final String QUIT = "\\Q";
 	
 	public static final String VERSION_NAME = "v0.2.0";
 	public static String ayarcPath = "ayarc.aya";
@@ -304,6 +305,16 @@ public class Aya extends Thread {
 
 	public void quit() {
 		queueInput(Aya.QUIT);
+	}
+
+
+	/** Return true if input is ready to be read */
+	public boolean isInputAvaiable() {
+		try {
+			return _instance._in.available() > 0;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 }
