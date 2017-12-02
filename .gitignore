@@ -4,3 +4,5 @@
 /bin/aya
 /bin/test
 /data/rdatasets
+*.swp
+*.DS_Store
