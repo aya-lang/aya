@@ -375,6 +375,7 @@ public class AyaIDE extends JFrame
 		
 		//Command line arguments: use the console
 		else {
+			InteractiveAya.setInteractive(System.console() == null);
 			InteractiveAya.main(args);
 		}		
 	}

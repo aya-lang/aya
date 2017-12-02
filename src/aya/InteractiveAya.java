@@ -2,6 +2,7 @@ package aya;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import aya.obj.list.List;
@@ -18,7 +19,8 @@ public class InteractiveAya extends Thread {
 	public static final int SKIP_WAIT = 5; // Do not wait for aya as no input was queued
 	public static final int NORMAL_INPUT = 6; // Normal 8input was sent to aya, wait for it to complete
 	public static final int EMPTY_INPUT = 7; // Empty string was sent as input
-	
+	private static boolean interactive = true;
+
 	private boolean _echo = false;
 	private boolean _showPromptText = true;
 	private boolean _showBanner = true;
@@ -205,29 +207,35 @@ public class InteractiveAya extends Thread {
 		}
 		
 		_aya.loadAyarc();
-
 		
-		if (_showBanner) _aya.print(BANNER);
-		
+		// Get Aya I/O
 		PrintStream out = _aya.getOut();
-		PrintStream err = _aya.getErr();
-		
+		PrintStream err = _aya.getErr();		
 		Scanner scanner = _aya.getScanner();
+		
+		
+		if (_showBanner && interactive) _aya.print(BANNER);
+
 		String input = "";
 		int status;
 				
 		while (true) {
 			
-			if (_showPromptText) {
+			if (_showPromptText && interactive) {
 				out.print(AyaPrefs.getPrompt());
 			}
-			input = scanner.nextLine();
 			
+			try {
+				input = scanner.nextLine();
+			} catch (NoSuchElementException e) {
+				// EOF Encountered
+				return;
+			}
 			if (input.equals("")) {
 				continue;
 			}
 			
-			if (_echo) {
+			if (_echo && interactive) {
 				out.println(AyaPrefs.getPrompt() + input);
 			}
 			
@@ -239,7 +247,9 @@ public class InteractiveAya extends Thread {
 					try {
 						_aya.wait();
 					} catch (InterruptedException e) {
+						out.println("Aya interrupted");
 						e.printStackTrace(err);
+						return;
 					}
 				}
 			}
@@ -343,5 +353,8 @@ public class InteractiveAya extends Thread {
 	    catch (final Exception e) {
 	    	throw new RuntimeException(e);
 	    }
+	}
+	public static void setInteractive(boolean b) {
+		interactive = b;
 	}
 }
