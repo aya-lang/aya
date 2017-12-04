@@ -1,14 +1,112 @@
 {,
     .#? sys.iswindows\n  returns true if system is windows
     {:9c"\\"=}:iswindows;
-
-    .#? sys.root\n  the system root folder
-    iswindows {
-        "C:"
-    } {
-        ""
-    } .? :root;
 }:sys;
+
+{,
+
+::path:type;
+
+[]:dirs;
+
+{dir::str,
+  .# If direct path
+  (dir "/" N 0 = \;) (dir path.root N 0 = \;) | ! {
+    path.workingP "/"+ dir + :dir;
+  } ?
+  {, dir path.split path.clean :dirs} path MO
+}:new;
+
+{dir::str,
+  .# Split using system sep
+  dir A :# {path.filesplit |~}
+  .# Split using "/"
+  :# {"/"|~}
+  .# Remove empties
+  [""] :|
+}:split;
+
+{p::path,
+  p.dirs.[:1] "." N :1 =! \;
+}:isfile;
+
+{dirs::list : i(0),
+  .# Remove root and self refs (".")
+  dirs [path.root "."] :| ;
+
+  .# If there is a ".." remove the dir before it
+  {{
+    .# If there is a "..",
+    dirs.[iB] ".." = {
+      .# Remove the ".." and the dir before it
+      dirs [i iB] .-;
+      .# Then move the index back 2
+      i2-:i;
+    } ?
+   ::iB
+   i dirs EV <
+  }W}
+  .# If the above code has an error, the path is invalid
+  {; []:dirs;} .K
+  dirs
+}:clean;
+
+sys.iswindows {:9c_+} {:9c} .? :filesplit;
+
+{dir self,
+  .# Modify a copy of this path
+  self _ :self; ;
+  .# Can only join if the path is not a file
+  self.isfile ! {
+    self.dirs dir path.split K
+    path.clean ;
+  } ?
+  self
+}:join;
+
+{.join}:add;
+{\.join}:radd;
+{self,
+  self.dirs :9c * path.root :9c + \+
+  self.isfile ! {:9c +} ?
+}:str:repr;
+{self, self.dirs B;; self}:up;
+
+.# Root dir name
+sys.iswindows {
+  "C:"
+} {
+  ""
+} .? :root;
+
+.# Working dir
+{""2MZ path!}:working;
+
+}:path;
+
+""7MZ path! path.:home;
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+  "path" testset! :ts;
+
+  {"/a/b/c" path!.dirs} [["a""b""c"]] ts+
+  {"/a/b/c/.." path!.dirs} [["a""b"]] ts+
+  {"/a/b/c" path! ".." + .dirs} [["a""b"]] ts+
+  {"/a/b/c" path!.up.dirs} [["a""b"]] ts+
+
+  ts aya.addtest
+
+}
+
+
 
 
 .#? workingdir\n  get the working dir as a string
@@ -19,7 +117,7 @@
     dirname sys.root :9c + = {
         sys.root :9c + 3MZ
     } {
-        dirname :9c | # changedirrel ;
+        dirname sys.splitpath # changedirrel ;
     } .?
 }:changedir;
 

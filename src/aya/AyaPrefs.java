@@ -38,6 +38,8 @@ public class AyaPrefs {
 				int ix = workingDir.lastIndexOf('/');
 				workingDir = workingDir.substring(0, ix+1);
 			}
+			
+			workingDir = (new File(workingDir).toPath()).toString() + File.separator;
 		} catch (URISyntaxException e) {
 			workingDir = "";
 			Aya.getInstance().printDebug("Cannot locate working dir");
@@ -67,7 +69,7 @@ public class AyaPrefs {
 			//Create a path to test if it exists
 			Path path = new File(workingDir).toPath();
 			if (Files.exists(path)) {
-				AyaPrefs.workingDir = workingDir;
+				AyaPrefs.workingDir = path.toString() + File.separator;
 				return true;
 			} else {
 				return false;
