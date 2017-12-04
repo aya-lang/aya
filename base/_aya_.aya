@@ -205,14 +205,3 @@
 
 .#? SB conderr\n  throw error message if condition is true
 {{.D} {;} .?}:conderr;
-
-
-.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
-{`({blk::block expected::list,
-  if ([blk] expected=) {
-	  .# Do nothing
-	} {
-    .# Throw an error message about the assertation
-	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
-	}
-})}:assert;

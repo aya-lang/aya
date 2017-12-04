@@ -15,15 +15,13 @@ import ::string
 }:ls;
 
 .#? pwd\n  print working directory
-{""2MZ:P}:pwd;
+{path.working.P}:pwd;
 
 .#? cd dir\n  change directory
-{`(changedir pwd)}:cd;
+{`(sys.cd)}:cd;
 
 .#? mkdir S\n  create a new directory
-{`({dir::str,
-  dir 5MZ
-})}:mkdir;
+{`(sys.mkdir)}:mkdir;
 
 .#? more S\n  print a file to the console
 {`({filename::str,
