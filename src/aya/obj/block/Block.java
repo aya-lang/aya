@@ -25,6 +25,7 @@ import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
+import aya.variable.VariableData;
 import aya.variable.VariableSet;
 
 /** 
@@ -134,26 +135,39 @@ public class Block extends Obj {
 			// KeyVariable
 			else if (current instanceof KeyVariable) {
 				KeyVariable var = ((KeyVariable)current);
-				Obj dict_obj = stack.pop();
-				Dict dict;
-				if (dict_obj.isa(Obj.DICT)) {
-					dict = (Dict)dict_obj;
+				Obj kv_obj = stack.pop();
+				if (kv_obj.isa(Obj.DICT)) {
+					Dict dict;
+					dict = (Dict)kv_obj;
+					if (var.shouldBind()) {
+						dict.set(var, stack.pop());
+						stack.push(dict);
+					} else {
+						Obj o = dict.get(var);
+						// If user object function, leave it as the first item on the stack
+						if (dict.hasMetaTable() && o.isa(BLOCK)) {
+							stack.push(dict);
+						}
+						addOrDumpVar(o);
+					}
 				} else {
-					throw new AyaRuntimeException("Expected dict before key " + var.toString()
-							+ ", recieved " + dict_obj.str()); 
+					Symbol typeSym = Obj.IDToSym(kv_obj.type());
+					Obj builtin_dict = Aya.getInstance().getVars().getVar(typeSym.id());
+					if (builtin_dict.isa(Obj.DICT)) {
+						Dict dict = (Dict)builtin_dict;
+						if (!dict.containsKey(var)) {
+							throw new AyaRuntimeException("Built in type " + typeSym + 
+									" does not contain member '" + var + "'");
+						}
+						Obj o = dict.get(var);
+						stack.push(kv_obj);
+						addOrDumpVar(o);
+					} else {
+						throw new AyaRuntimeException("Built in type " + typeSym + " was redefined to " + builtin_dict);
+					}
+					
 				}
 				
-				if (var.shouldBind()) {
-					dict.set(var, stack.pop());
-					stack.push(dict);
-				} else {
-					Obj o = dict.get(var);
-					// If user object function, leave it as the first item on the stack
-					if (dict.hasMetaTable() && o.isa(BLOCK)) {
-						stack.push(dict);
-					}
-					addOrDumpVar(o);
-				}
 			}
 			
 			//Variable: Decide weather to read or write

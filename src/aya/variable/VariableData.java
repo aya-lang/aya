@@ -10,6 +10,7 @@ import aya.InteractiveAya;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
+import aya.obj.dict.Dict;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.parser.Parser;
@@ -27,6 +28,13 @@ import aya.parser.Parser;
 public class VariableData {
 	private ArrayList<VariableSet> varSets = new ArrayList<VariableSet>();
 
+	private final Dict OBJ_STR = new Dict();
+	private final Dict OBJ_SYM = new Dict();
+	private final Dict OBJ_LIST = new Dict();
+	private final Dict OBJ_NUM = new Dict();
+	private final Dict OBJ_CHAR = new Dict();
+	private final Dict OBJ_BLOCK = new Dict();
+
 	public VariableData(Aya aya) {
 		initGlobals(aya);
 	}
@@ -40,6 +48,13 @@ public class VariableData {
 
 		globals.setVar(new Variable("e"), Num.E);				
 		globals.setVar(new Variable("pi"), Num.PI);
+		
+		globals.setVar(new Variable("block"), OBJ_BLOCK);
+		globals.setVar(new Variable("sym"), OBJ_SYM);
+		globals.setVar(new Variable("list"), OBJ_LIST);
+		globals.setVar(new Variable("num"), OBJ_NUM);
+		globals.setVar(new Variable("char"), OBJ_CHAR);
+		globals.setVar(new Variable("str"), OBJ_STR);
 
 		varSets.add(globals);
 	}
