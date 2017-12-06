@@ -1,0 +1,172 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# string.aya
+.# Defines functions for working with strings and regular expressions
+
+import ::char
+import ::types
+import ::list
+
+{,
+    .#? S.trim\n  remove whitespace from start and end of string
+    {"^\\s+|\\s+$" |S _0={;""}?}:trim;
+
+    .#? ICS.leftpad\n  left pad string S so it is at least length I using char C
+    {len::num pad::char s,
+        s.E len\- {pad\K}\%
+    }:leftpad;
+
+    .#? ICS.rightpad\n  right pad string S so it is at least length I using char C
+    {len::num pad::char s,
+        s.E len\- {padK}\%
+    }:rightpad;
+
+    .#? S.bytes\n  convert string to byte list
+    {:'}:bytes;
+
+    .# S.tolower\n  convert string to uppercase
+    {:#{.toupper}}:toupper;
+
+    .# S.toupper\n  convert string to lowercase
+    {:#{.tolower}}:tolower;
+
+    .#? S.isnum\n  returns true if the string is a valid number
+    {.! :T ::num =}:isnum;
+
+    .# S.lines\n  split a string into lines. ignore traling newlines
+    {"\n"|}:lines;
+
+    .#? S.titlecase\n  convert a string to titlecase
+    {s,
+      s ERB; # {i,
+        s iV I .iswhitespace
+        {s.[i].toupper s.:[i]}
+        ?
+      };
+      s.[0].toupper s.:[0]
+      s
+    }:titlecase;
+
+    .#? S.parse\n  If num, return num, else return str (rm surrounding quotes)
+    {
+        .!
+        _:T ::str = {
+            .# If it is a string, test if it has quotes and remove them
+            .trim _ [0 :1]I "\"\"" = {B;V;} ?
+        } ?
+    }:parsenum;
+
+
+    .#? sep S.readdlm\n  convert a csv string into a 2d list
+    {sep s,
+        sepP:sep;
+        s.lines :# {
+            sep | :# {.parsenum}
+        }
+        makesquare
+    }:readdlm;
+
+}:str;
+
+
+
+.#? L<L> matstr\n  print a list of lists in matrix format
+{
+    _ [1|,~.A#{PE}] .# Calculate the length of each
+                    .#   entry mapped as a string
+    .F{.<}F 2+      .# Find the maximum and add two
+    #{#{\P\.>}S}    .# Pad each entry in the original
+                    .#   by the max and sum each row
+    '\n' *          .# Join the rows with a newline
+}:matstr;
+
+
+
+.#? list sep na tocsvstr\n  convert a 2d list to a csv string
+{list sep na,
+    list :# {
+        .# If it is na, make it emptystr
+        :#{_ na = {;""} ?}
+        sep *
+    } "\n" *
+}:tocsvstr;
+
+
+
+{
+    "<" "&lt;" @ .&
+    ">" "&gt;" @ .&
+    "\n" "<br />" @ .&
+}:tohtml;
+
+
+
+.# REGEX FUNCTIONS
+
+{, .# begin regex module
+
+    .# Returns all URLs in a string
+    {"http[|s]://[^ |>|<]+"&}:geturls;
+
+    .# Return the first match of a regular expression
+    {&0I}:firstmatch;
+
+    .# Return the last match of a regular expression
+    {&:1I}:lastmatch;
+
+    .# Remove all matches of a regex in a string
+    {|S}:removeall;
+
+    .# Removes all spaces from a string
+    {"\\s+"|S}:trimall;
+
+}:rgx;
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+    "string" testset! :ts;
+
+    {"\n\t abc \t \n".trim} ["abc"] ts+
+    {"\n\t ".trim} [""] ts+
+    {5 '- "abc".leftpad} ["--abc"] ts+
+    {3 '- "abc".leftpad} ["abc"] ts+
+    {0 '- "abc".leftpad} ["abc"] ts+
+    {5 '- "abc".rightpad} ["abc--"] ts+
+    {3 '- "abc".rightpad} ["abc"] ts+
+    {0 '- "abc".rightpad} ["abc"] ts+
+    {"aBc!1".toupper} ["ABC!1"] ts+
+    {"aBc!1".tolower} ["abc!1"] ts+
+    {"".toupper} [""] ts+
+    {"".tolower} [""] ts+
+    {"12.34".isnum} [1] ts+
+    {"12..123".isnum} [0] ts+
+    {"".isnum} [0] ts+
+    {"to be or not to be".titlecase} ["To Be Or Not To Be"] ts+
+    {"1\n2\n\n3\n\n".lines} [["1" "2" "" "3"]] ts+
+    {"abc".bytes} [[97 98 99]] ts+
+    {"1".parsenum} [1] ts+
+    {"1.2".parsenum} [1.2] ts+
+    {"hello".parsenum} ["hello"] ts+
+    {"\"hello\"".parsenum} ["hello"] ts+
+    {', "1,2,3".readdlm} [[[1 2 3]]] ts+
+    {"," "1,2,3\n4,5,6".readdlm} [[[1 2 3][4 5 6]]] ts+
+
+    {[[7 8][9 10]] matstr} ["   7   8\n   9  10"] ts+
+    {"," "A,B\n1,2\n3,4".readdlm} [[[ "A" "B" ] [ 1 2 ] [ 3 4 ]]] ts+
+    {[[1 2][3 4]] "," 0 tocsvstr} ["1,2\n3,4"] ts+
+    {[[1 2][::na 0][4 5]] "," ::na tocsvstr} ["1,2\n,0\n4,5"] ts+
+    {"abc def ghi" "\w+" rgx.firstmatch} ["abc"] ts+
+    {"abc def ghi" "\w+" rgx.lastmatch} ["ghi"] ts+
+    {"dn783d908d0m30" "\d+" rgx.removeall} ["dnddm"] ts+
+    {"\t\tAB \n C" rgx.trimall} ["ABC"] ts+
+
+    ts aya.addtest
+
+}

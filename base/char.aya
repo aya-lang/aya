@@ -1,25 +1,28 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
-.# character.aya
+.# char.aya
 .# Defines functions for working with characters
 
-.#? C islower\n  tests if a character is lowercase
-{_'`>\'{<&}:islower;
+{,
+    .#? C islower\n  tests if a character is lowercase
+    {_'`>\'{<&}:islower;
 
-.#? C isupper\n  tests if a character is uppercase
-{_'@>\'[<&}:isupper;
+    .#? C isupper\n  tests if a character is uppercase
+    {_'@>\'[<&}:isupper;
 
-.#? C toupper\n  converts a character to uppercase
-{c::char,c_ isupper! {!}? }:toupper;
+    .#? C toupper\n  converts a character to uppercase
+    {_.isupper! {!} ? }:toupper;
 
-.#? C tolower\n  converts a character to lowercase
-{c::char,c_ islower! {!}? }:tolower;
+    .#? C tolower\n  converts a character to lowercase
+    {_.islower! {!} ? }:tolower;
 
-.#? C isdigit\n  tests if a character is a digit
-{ _'0:>\'9:<&}:isdigit;
+    .#? C isdigit\n  tests if a character is a digit
+    { _'0:>\'9:<&}:isdigit;
 
-.#? C iswhitespace\n  tests if a character is a whitespace character
-{P"\W+"&E1=}:iswhitespace;
+    .#? C iswhitespace\n  tests if a character is a whitespace character
+    {P"\W+"&E1=}:iswhitespace;
+
+}:char;
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
 {a::str,"\"\\{$a}\""~.'}:spechar;
@@ -36,12 +39,12 @@ import ::test
 
   "char" testset! :ts;
 
-  {"cC*" #islower} [[1 0 0]] ts+
-  {"cC*" #isupper} [[0 1 0]] ts+
-  {"HelLo!" #toupper} ["HELLO!"] ts+
-  {"HelLo!" #tolower} ["hello!"] ts+
-  {"Cr4zy1!" #isdigit} [[0 0 1 0 0 1 0]] ts+
-  {"\n\t s" #iswhitespace} [[1 1 1 0]] ts+
+  {"cC*" #.islower} [[1 0 0]] ts+
+  {"cC*" #.isupper} [[0 1 0]] ts+
+  {"HelLo!" #.toupper} ["HELLO!"] ts+
+  {"HelLo!" #.tolower} ["hello!"] ts+
+  {"Cr4zy1!" #.isdigit} [[0 0 1 0 0 1 0]] ts+
+  {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
   {"alpha" spechar '\alpha' =} [1] ts+
 
   ts aya.addtest

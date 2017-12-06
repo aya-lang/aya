@@ -78,13 +78,14 @@
     .# Working dir
     {""2MZ path!}:working;
 
+
     .##########################
     .# PRIVATE HELPER METHODS #
     .##########################
 
     .# Regular expression used for splitting path strings
     .# If :9c is "\", return escaped "\\" otherwise return :9c
-    sys.iswindows V{:9c_+} {:9c} .? :filesplit;
+    sys.iswindows {:9c_+} {:9c} .? :filesplit;
 
     .# Split a string using the system file sepatator and remove empy dir names
     {dir::str,
