@@ -3,7 +3,7 @@
 .# matrix.aya
 .# Defines the matrix type
 
-import ::string
+import ::str
 import ::list
 import ::math
 
@@ -18,10 +18,10 @@ import ::math
   .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
   {m,
   .# Both of the following must be true:
-  	m#:T{::list=}all .# The list is made up of only other lists
-  	{
-  		m#E{m0IE=}all 			.# All of the list lengths are the same
-  	} 0 .?
+    m#:T{::list=}all .# The list is made up of only other lists
+    {
+        m#E{m0IE=}all           .# All of the list lengths are the same
+    } 0 .?
   }:is;
 
   .# matrix constructor: first test if it is a valid matrix
@@ -59,9 +59,9 @@ import ::math
   {ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows.[ra] :tmp;            .# Store row N1 in a tmp var
-	  matrows.[rb] matrows.:[ra]   .# row N1 = row N2
-	  tmp matrows.:[rb]             .# row N2 = tmp
-	  mat
+      matrows.[rb] matrows.:[ra]   .# row N1 = row N2
+      tmp matrows.:[rb]             .# row N2 = tmp
+      mat
   }:rowswap;
 
 
@@ -69,8 +69,8 @@ import ::math
   {add ra rb mat : tmp matrows,
     mat.rows :matrows;
     matrows.[ra] add #*:tmp;              .# Multiply the N2 row by N1
-	  [matrows.[rb] tmp, +] matrows.:[rb]    .# Add the N2 row to N3
-	mat
+      [matrows.[rb] tmp, +] matrows.:[rb]    .# Add the N2 row to N3
+    mat
   }:rowadd;
 
 
@@ -178,7 +178,7 @@ import ::math
   }:mul;
 
   {o self,
-    o.c self.r =! {"matrix.mul: dim mismatch ($o.c) != $(self.r)".D} ?
+    o.c self.r =! {"matrix.mul: dim mismatch $(o.c) != $(self.r)".D} ?
     .# (*S) is the dot product
     o.rows  # {r, self.t.rows#{r *S}}
     matrix!
@@ -274,13 +274,13 @@ import ::math
   {n::num m, n m.cL m.rLmatrix!}:fill;
 
   .#? NN matrix.zeros\n  create a N1 by N2 matrix of zeros
-  {0matrix.newfill}:zeros;
+  {0 matrix.newfill}:zeros;
 
   .#? NN matrix.ones\n  create a N1 by N2 matrix of ones
-  {1matrix.newfill}:ones;
+  {1 matrix.newfill}:ones;
 
-  .#? NN matrix.rand\n  create a N1 by N2 matrix of random values [0,1]
-  {K0\L #{#{;.Q}} matrix!}:rand;
+  .#? NN matrix.random\n  create a N1 by N2 matrix of random values [0,1]
+  {K0\L #{#{;.Q}} matrix!}:random;
 
   .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
   {@@K L #{#Q} matrix!}:randint;

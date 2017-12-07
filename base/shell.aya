@@ -1,7 +1,7 @@
 .# Shell-like commands for Aya
 
 import ::sys
-import ::string
+import ::str
 
 
 .#? ls\n  print a list of files in the working dir

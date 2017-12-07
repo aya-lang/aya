@@ -3,7 +3,7 @@
 .# file.aya
 .# Defines functions for working with files and directories
 
-import ::string
+import ::str
 import ::list
 import ::sys
 

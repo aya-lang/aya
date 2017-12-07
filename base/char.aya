@@ -4,23 +4,29 @@
 .# Defines functions for working with characters
 
 {,
-    .#? C islower\n  tests if a character is lowercase
-    {_'`>\'{<&}:islower;
+    .#? C.islower\n  tests if a character is lowercase
+    {_ 'a :> \ 'z :< &}:islower;
 
-    .#? C isupper\n  tests if a character is uppercase
-    {_'@>\'[<&}:isupper;
+    .#? C.isupper\n  tests if a character is uppercase
+    {_ 'A :> \ 'Z :< &}:isupper;
 
-    .#? C toupper\n  converts a character to uppercase
+    .#? C.toupper\n  converts a character to uppercase
     {_.isupper! {!} ? }:toupper;
 
-    .#? C tolower\n  converts a character to lowercase
+    .#? C.tolower\n  converts a character to lowercase
     {_.islower! {!} ? }:tolower;
 
-    .#? C isdigit\n  tests if a character is a digit
-    { _'0:>\'9:<&}:isdigit;
+    .#? C.isdigit\n  tests if a character is a digit
+    {_ '0 :> \ '9 :< &}:isdigit;
 
-    .#? C iswhitespace\n  tests if a character is a whitespace character
-    {P"\W+"&E1=}:iswhitespace;
+    .#? C.iswhitespace\n  tests if a character is a whitespace character
+    {P "\W+" & E 1 =}:iswhitespace;
+
+    .#? C.isascii\n  test if character is ascii
+    {:' 127 <}:isascii;
+
+    .#? C.isalpha\n  test if character is alphabetical
+    {_ _ 'a :> \ 'z :< & \ _ 'A :> \ 'Z :< & |}:isalpha;
 
 }:char;
 

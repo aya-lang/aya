@@ -131,7 +131,7 @@ import ::test
 
 `~ {:ts,
 
-    "string" testset! :ts;
+    "str" testset! :ts;
 
     {"\n\t abc \t \n".trim} ["abc"] ts+
     {"\n\t ".trim} [""] ts+

@@ -5,7 +5,7 @@
 
 import """
   list
-  string
+  str
   date
   math
   matrix
