@@ -1,0 +1,254 @@
+import ::sys
+
+
+.###################
+.# PATH            #
+.###################
+
+{,
+
+    ::path:type;
+
+    .# Create a new path (accepts relative or abs paths)
+    {dir::str,
+        .# If direct path
+        dir path.isabs ! {
+            path.workingP "/"+ dir + :dir;
+        } ?
+        {, dir path.split path.fixhome path.clean :dirs} path MO
+    }:new;
+
+    .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
+    {p::path,
+        p.dirs.[:1] "." N :1 =! \;
+    }:isfile;
+
+    .#? dir::str ::path.add\n  append file or dir to path, if path is file, don't change
+    {dir::str self,
+        .# Modify a copy of this path
+        self _ :self; ;
+        .# Can only join if the path is not a file
+        self.isfile ! {
+        self.dirs dir path.split K
+            path.clean ;
+        } ?
+        self
+    }:add;
+    {\.add}:radd;
+
+
+   .# String representation of the path
+    {self,
+        self.dirs :9c * path.root :9c + \+
+        self.isfile ! {:9c +} ?
+    }:str:repr;
+
+
+    .#? ::path.dec\n  Go up a directory
+    {self,
+        self.dirs B;; self
+    }:dec;
+
+
+
+    .# Constants
+
+    .# Root dir name
+    sys.iswindows {
+        "C:"
+    } {
+        ""
+    } .? :root;
+
+    .# Working dir
+    {""2MZ path!}:working;
+
+
+    .##########################
+    .# PRIVATE HELPER METHODS #
+    .##########################
+
+    .# Regular expression used for splitting path strings
+    .# If :9c is "\", return escaped "\\" otherwise return :9c
+    sys.iswindows {:9c_+} {:9c} .? :filesplit;
+
+    .# Split a string using the system file sepatator and remove empy dir names
+    {dir::str,
+        .# Split using system sep
+        dir A :# {path.filesplit |~}
+        .# Split using "/"
+        :# {"/"|~}
+        .# Remove empties
+        [""] :|
+    }:split;
+
+
+    .# If the path list contains a "~"
+    .#   find the last "~" and take all directories after it
+    {dirs::list,
+        dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
+
+        .# Does the path contain a "~" ?
+        _:1=! {
+            .< U .# Take all directories before the "~" and reverse
+
+            .# Append the home dir to the front
+            path.home.dirs _\;  .# Copy home.dirs
+            \K                  .# Append to front
+        } {
+            ;U .# Pop the -1 and put the list back
+        } .?
+    }:fixhome;
+
+
+    .# Return true of the given string is an absolute path
+    {p::str,
+        p "/" N 0 = \;
+        p path.root :9c + N 0 = \;
+        p path.root "/" + N 0 = \;
+        | |
+    }:isabs;
+
+    .# Remove all ".." by traversing the directories
+    {dirs::list : i(0),
+        .# Remove root and self refs (".")
+        dirs [path.root "."] :| ;
+
+        .# If there is a ".." remove the dir before it
+        {{
+            .# If there is a "..",
+            dirs.[iB] ".." = {
+                .# Remove the ".." and the dir before it
+                dirs [i iB] .-;
+                .# Then move the index back 2
+                i2-:i;
+            } ?
+            ::iB
+            i dirs EV <
+        }W}
+        .# If the above code has an error, the path is invalid
+        {; []:dirs;} .K
+        dirs
+    }:clean;
+
+}:path;
+
+
+{, ""7MZ path.split :dirs} path MO path.:home;
+{, ""2MZ path.split :dirs} path MO path.:dfltworking;
+
+
+.#########
+.# TESTS #
+.#########
+
+import ::test
+
+`~ {:ts,
+
+    "path" testset! :ts;
+
+    {"/a/b/c" path!.dirs} [["a""b""c"]] ts+
+    {"/a/b/c/.." path!.dirs} [["a""b"]] ts+
+    {"/a/b/c" path! ".." + .dirs} [["a""b"]] ts+
+    {"/a/b/c" path! V .dirs} [["a""b"]] ts+
+    {"~/a" path!P} [path.homeP "a" + :9c +] ts+
+
+    ts aya.addtest
+
+}
+
+
+.####################
+.# FILE             #
+.####################
+
+
+{,
+    ::file:type;
+
+    {filepath type::char,
+        {,
+            filepath:T ::path = {filepath:path} {filepath path!:path} .?
+            pathP type O :id
+        } file MO
+    }:new;
+
+    .#? ::file.close\n  close a file. return 1 is success
+    {f,
+        f.id 'c O
+    }:close;
+
+    .#? ::file.isopen\n  test if a file stream is open
+    {f,
+        f.id 'i O 0 .<
+    }:isopen;
+
+    .#? ::file.isread\n  return 1 if file is an input stream
+    {f,
+        f.id 'i O 1 =
+    }:isinput;
+
+    .#? ::file.iswrite\n  return 1 if file is an output stream
+    {f,
+        f.id 'i O 2 =
+    }:isoutput;
+
+    .#? ::file.print\n  print to a file if it is an input stream
+    {s f,
+        sP f.id O
+    }:print;
+
+    .#? ::file.println\n  print string followed by a newline tp a file
+    {s f,
+        sP "\n" + f.id O
+    }:println;
+
+    .#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
+    {f,
+        f.id 'b O
+    }:readchar;
+
+    .#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
+    {f,
+        f.id 'l O
+    }:readline;
+
+    .#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
+    {f,
+        f.id 'a O
+    }:readall;
+
+    .#? ::file.lines\n  return a list containing the lines in the file
+    {f,
+        f.id 'a O "\n" |
+    }:lines;
+
+    .#? ::file.flush\n  flush an output stream
+    {f,
+        f.id 'f O
+    }:flush;
+
+}:file;
+
+.#? stdin::file\n  standard input stream
+{,
+    1:id;
+
+    .# Overloads
+    1:isopen;
+    0:close;
+    1:isread;
+    0:iswrite;
+} file MO :stdin;
+
+.#? stdout::file\n  standard outpur stream
+{,
+    2:id;
+
+    .# Overloads
+    1:isopen;
+    0:close;
+    1:iswrite;
+    0:isread;
+} file MO :stdout;
