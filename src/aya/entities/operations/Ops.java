@@ -29,6 +29,7 @@ import org.apfloat.Apfloat;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.OperationDocs;
+import aya.StreamMgr;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
@@ -185,7 +186,7 @@ public class Ops {
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
 		/* 78 N  */ new OP_N(),
-		/* 79 O  */ null,
+		/* 79 O  */ new OP_O(),
 		/* 80 P  */ new OP_P(),
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
@@ -983,6 +984,8 @@ class OP_B extends Operation {
 	}
 }
 
+
+
 // D - 68
 class OP_D extends Operation {
 	
@@ -1469,6 +1472,84 @@ class OP_N extends Operation {
 		}
 	}
 }
+
+// O - 79
+class OP_O extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "O");
+		doc.desc("NC", "stream operations: l:readline, b:readchar, a:readall, c:close, f:flush, i:info");
+		doc.desc("SC", "open/close stream: w:write, r:read");
+		doc.desc("SN", "write to stream");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_O() {
+		this.name = "O";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		
+		if (a.isa(CHAR) && b.isa(NUMBER)) {
+			char c = ((Char)a).charValue();
+			int i  = ((Num)b).toInt();
+			
+			switch (c) {
+			case 'l':
+				// Push 0 if invalid
+				String line = StreamMgr.readline(i);
+				if (line == null) {
+					block.push(Num.ZERO);
+				} else {
+					block.push(new Str(line));
+				}
+				break;
+			case 'b':
+				// Since 0 is a valid byte, push -1 if invalid
+				block.push(new Num(StreamMgr.read(i)));
+				break;
+			case 'a':
+				// Pushes 0 if invalid
+				String all = StreamMgr.readAll(i);
+				if (all == null) {
+					block.push(Num.ZERO);
+				} else {
+					block.push(new Str(all));
+				}
+				break;
+			case 'c':
+				// Close the file
+				block.push(StreamMgr.close(i) ? Num.ONE : Num.ZERO);
+				break;
+			case 'f':
+				// Flush
+				block.push(StreamMgr.flush(i) ? Num.ONE : Num.ZERO);
+				break;
+			case 'i':
+				// Info 0:does not exist, 1:input, 2:output
+				block.push(new Num(StreamMgr.info(i)));
+				break;
+			default:
+				throw new AyaRuntimeException("Invalid char for operator 'O': " + c);
+			}
+			
+		} else if (a.isa(NUMBER)) {
+			int i = ((Num)a).toInt();
+			block.push(StreamMgr.print(i, b.str()) ? Num.ONE : Num.ZERO);
+		} else if (a.isa(CHAR)) {
+			char c = ((Char)a).charValue();
+			String filename = b.str();
+			block.push(new Num(StreamMgr.open(filename, c+"")));
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+
 
 // P - 80
 class OP_P extends Operation {
