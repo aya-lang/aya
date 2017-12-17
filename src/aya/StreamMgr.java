@@ -145,7 +145,7 @@ public class StreamMgr {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(file));
-			output = br.lines().collect(Collectors.joining());
+			output = br.lines().collect(Collectors.joining("\n"));
 			br.close();
 		} catch (IOException e) {
 			br.close();
@@ -158,7 +158,7 @@ public class StreamMgr {
 	public static String readAll(int fileid) {
 		BufferedReader f = _input_streams.get(fileid);
 		if (f == null) return null;
-		return f.lines().collect(Collectors.joining());
+		return f.lines().collect(Collectors.joining("\n"));
 	}
 	
 	
