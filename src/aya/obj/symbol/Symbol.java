@@ -1,14 +1,13 @@
 package aya.obj.symbol;
 
-import java.util.WeakHashMap;
-
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
+import aya.util.LRUCache;
 import aya.variable.Variable;
 
 public class Symbol extends Obj {
 	
-	static WeakHashMap<Long, Symbol> cache = new WeakHashMap<Long, Symbol>();
+	static LRUCache<Long, Symbol> cache = new LRUCache<>(128);	
 	
 	long _id;
 

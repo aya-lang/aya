@@ -603,7 +603,7 @@ public class Parser {
 				Object next = is.pop();
 				//Key Variable Assignment
 				if (next instanceof Variable) {
-					KeyVariable kv = new KeyVariable(((Variable)next).getID());
+					KeyVariable kv = KeyVariable.fromID(((Variable)next).getID());
 					kv.flagBind();
 					is.push(kv);
 				}

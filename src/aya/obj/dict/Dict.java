@@ -70,7 +70,7 @@ public class Dict extends Obj {
 	 * If this key is unassigned, throw an error
 	 */
 	public Obj get(String s) {
-		return get(Variable.encodeString(s));
+		return get(Symbol.convToSymbol(s).id());
 	}
 	
 	public Obj get(long id) {
@@ -81,7 +81,7 @@ public class Dict extends Obj {
 			o = _meta == null ? null : _meta.getObject(id);
 			if (o == null) {
 				throw new UndefVarException("Dict does not contain key '" 
-						+ new KeyVariable(id).toString() + "'");
+						+ KeyVariable.fromID(id).toString() + "'");
 			}
 		}
 		return o;
