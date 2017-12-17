@@ -137,11 +137,7 @@ public class Ops {
 	public static final KeyVariable KEYVAR_RANGE 	= new KeyVariable("range");
 	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("new");
 	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("float");
-
-	
-
-
-
+	public static final KeyVariable KEYVAR_EACH 	= new KeyVariable("each");
 	
 	
 	public static final char FIRST_OP = '!';

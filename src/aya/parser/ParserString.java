@@ -60,4 +60,14 @@ public class ParserString {
 		
 		return "\n" + s + '\n' + sb.toString();
 	}
+
+	public String lookAround(int i) {
+		int start = Math.max(0, ix - i);
+		int end = Math.min(ix + i, chars.length);
+		//char[] out = new char[(end - start) + 1];
+		String out = "";
+		for (int k = start; k < end - 1; k++)
+			out += chars[k];
+		return new String(out);
+	}
 }

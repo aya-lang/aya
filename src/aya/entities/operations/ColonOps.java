@@ -200,7 +200,13 @@ class OP_Colon_Pound extends Operation {
 		if (blk.isa(BLOCK) && col.isa(LIST)) {
 			block.push( ((Block)blk).mapTo((List)col) );
 		} else if (blk.isa(BLOCK) && col.isa(DICT)) {
-			((Block)blk).mapTo((Dict)col);
+			Dict d = (Dict)col;
+			if (d.hasMetaTable()) {
+				block.push(blk);
+				block.callVariable(d, Ops.KEYVAR_EACH);
+			} else {
+				((Block)blk).mapTo((Dict)col);
+			}
 		} else {
 			throw new TypeError(this, col, blk);
 		}
