@@ -432,7 +432,8 @@ public class Parser {
 				
 				// Normal Colon
 				else {
-					tokens.add(SpecialToken.COLON);
+					throw new SyntaxError("Expected non-whitespace after ':' near " + tokens);
+					//tokens.add(SpecialToken.COLON);
 				}
 			}
 			

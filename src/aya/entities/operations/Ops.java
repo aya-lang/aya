@@ -210,7 +210,7 @@ public class Ops {
 	/* 126 ~ */ public static final Operation TILDE = new OP_Tilde();
 	
 	//Special Ops
-	public static final Operation APPLY_TO = new OP_ApplyTo();
+	//public static final Operation APPLY_TO = new OP_ApplyTo();
 	public static final Operation GETINDEX = new OP_GetIndex();
 	public static final Operation SETINDEX = new OP_SetIndex();
 	
@@ -2123,72 +2123,72 @@ class OP_Tilde extends Operation {
 
 
 // : - special
-class OP_ApplyTo extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc(' ', ":");
-		doc.desc("L:B", "map");
-		doc.desc("LN:E", "apply block to item at index N");
-		doc.desc("LN:A", "set index");
-		OperationDocs.add(doc);
-		
-		/*
-		[list] index : item			basic 
-		[list] [index] : [items]
-		{,dict} ::sym : item
-		{block} ::sym : item
-		list.set(i, block) = apply block to item i in list
-		*/
-	}
-	
-	public OP_ApplyTo() {
-		this.name = ":";
-	}
-	@Override
-	public void execute(final Block block) {
-		final Obj item = block.pop(); // item
-		final Obj index = block.pop(); // index
-		final Obj col = block.pop(); // collection
-		
-//		//Apply block to an index in the list
-//		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
-//			if(!c.isa(LIST)) {
-//				throw new TypeError(this, a,b,c);
+//class OP_ApplyTo extends Operation {
+//	
+//	static {
+//		OpDoc doc = new OpDoc(' ', ":");
+//		doc.desc("L:B", "map");
+//		doc.desc("LN:E", "apply block to item at index N");
+//		doc.desc("LN:A", "set index");
+//		OperationDocs.add(doc);
+//		
+//		/*
+//		[list] index : item			basic 
+//		[list] [index] : [items]
+//		{,dict} ::sym : item
+//		{block} ::sym : item
+//		list.set(i, block) = apply block to item i in list
+//		*/
+//	}
+//	
+//	public OP_ApplyTo() {
+//		this.name = ":";
+//	}
+//	@Override
+//	public void execute(final Block block) {
+//		final Obj item = block.pop(); // item
+//		final Obj index = block.pop(); // index
+//		final Obj col = block.pop(); // collection
+//		
+////		//Apply block to an index in the list
+////		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
+////			if(!c.isa(LIST)) {
+////				throw new TypeError(this, a,b,c);
+////			}
+////			List list = (List)c;
+////			Block blk = new Block();
+////			blk.addAll(((Block)(a)).getInstructions().getInstrucionList());
+////			int index = ((Number)(b)).toInt();
+////
+////			blk.push(list.get(index));
+////			blk.eval();
+////			list.set(index, blk.pop());
+////			
+////			block.push(c);
+////		}
+//		
+//		if (col.isa(LIST)) {
+//			List.setIndex((List)col, index, item);
+//		} else if (col.isa(BLOCK) && index.isa(SYMBOL)) {
+//			long symid = ((Symbol)index).id();
+//			Block b = (Block)col;
+//			b.getInstructions().assignVarValue(symid, item);
+//		} else if (col.isa(DICT)) {
+//			Dict d = (Dict)col;
+//			if (d.hasMetaKey("setindex")) {
+//				block.push(item);
+//				block.push(index);
+//				block.callVariable(d, Ops.KEYVAR_SETINDEX);
+//			} else {
+//				long symid = ((Symbol)index).id();
+//				d.set(symid, item);
 //			}
-//			List list = (List)c;
-//			Block blk = new Block();
-//			blk.addAll(((Block)(a)).getInstructions().getInstrucionList());
-//			int index = ((Number)(b)).toInt();
-//
-//			blk.push(list.get(index));
-//			blk.eval();
-//			list.set(index, blk.pop());
-//			
-//			block.push(c);
 //		}
-		
-		if (col.isa(LIST)) {
-			List.setIndex((List)col, index, item);
-		} else if (col.isa(BLOCK) && index.isa(SYMBOL)) {
-			long symid = ((Symbol)index).id();
-			Block b = (Block)col;
-			b.getInstructions().assignVarValue(symid, item);
-		} else if (col.isa(DICT)) {
-			Dict d = (Dict)col;
-			if (d.hasMetaKey("setindex")) {
-				block.push(item);
-				block.push(index);
-				block.callVariable(d, Ops.KEYVAR_SETINDEX);
-			} else {
-				long symid = ((Symbol)index).id();
-				d.set(symid, item);
-			}
-		}
-		
-		else {
-			throw new TypeError(this, item, index, col);
-		}
-	}
-}
+//		
+//		else {
+//			throw new TypeError(this, item, index, col);
+//		}
+//	}
+//}
 
 
