@@ -1,0 +1,9 @@
+
+.#? S tocamel\n  convert a string with underscores to camel case
+{str,
+  ['a'z,] # {c,
+    "_+$c" c! str .& :str;
+  };
+  .# remove extra (trailing) '_'
+  str "_" :|
+}:tocamel;

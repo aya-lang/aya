@@ -49,6 +49,10 @@ import ::sys
         self.dirs B;; self
     }:dec;
 
+    {
+        P""4MZ
+    }:readdir;
+
 
 
     .# Constants

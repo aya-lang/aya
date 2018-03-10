@@ -1,0 +1,86 @@
+:! .! !
+:@ .@ @
+$ .$ :$
+% .% :%
++ .+ :+
+* .* :*
+- .- :-
+A .A :A
+_ ._ :_
+= .= :=
+/ ./ :/
+\ .\ :\
+? .? \?
+| .| :|
+~ .~ :~
+
+aM4a aMZa aMza aM+a
+
+
+." :" "str"
+.' :' 'c 'b
+
+:
+; .; :;
+, ., :,
+[ .[ :[
+] .] :]
+( .( :(
+) .) :)
+:# # .# blah
+
+a.:x a.x
+
+.{  You are going on a vacation next week. A 50% chance of rain
+.   is forecasted each day. What is the probability that it
+.   will rain 3 consecutive days over the week you are on
+.   vacation?
+.   Use a monte-carlo approximation.
+.}
+.# aowind
+
+['a 'b 'c]:abc;
+
+{: counter rain,
+  {
+    if (2 Q) {
+      0 :counter;
+    } {
+      ::counter B
+      if (counter 3:>) {
+         1:rain;
+      }{}
+    }
+  } 7 %
+  rain
+}:shouldrain;
+
+{samples : counter,
+  {
+    counter shouldrain+:counter;
+  } samples %
+  counter samples/
+}:rainprob;
+
+{:< :> .< .> .~ :~ }
+
+.# Another comment!
+2500 rainprob 100.0 * :result;
+
+{,
+
+    ::point:type;
+
+    {x::num y::num,
+        {, x:x y:y} plot MO
+    }:new!;
+
+    {other self, 
+        other.x self.x +:x other.y self.y + point!
+    }:add;
+}
+
+'d 'b 
+
+
+"There is a $result% chance of 3 consecutive days of rain.":P

@@ -1,0 +1,10 @@
+{,
+    .#? LLE zw\n  zip two lists with a block
+    {.&}:zip;
+
+    .#? <LLE> pu\n  (permusing) permutes elements of two lists and applies an expression to each
+    {la lb ex, [la lb laEL,\#{ex}]}:pu;
+
+    .#? list expr tw\n  (takewhile) take from list while the condition is satisfied
+    {e,{e!}.N _0= {;;[]} {|;} .? }:tw;
+}:block;
