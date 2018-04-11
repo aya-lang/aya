@@ -21,14 +21,20 @@ import ::list
         s.E len\- {padK}\%
     }:rightpad;
 
+    .#? S.replace(S1,S2)\n  replace S! with S2 in S
+    {`(@.&)}:replace;
+
+    .#? S.split\n  split a string at whitespace
+    {.trim "\W+"|}:split;
+
     .#? S.bytes\n  convert string to byte list
     {:'}:bytes;
 
     .# S.tolower\n  convert string to uppercase
-    {:#{.toupper}}:toupper;
+    {:#{.upper}}:upper;
 
     .# S.toupper\n  convert string to lowercase
-    {:#{.tolower}}:tolower;
+    {:#{.lower}}:lower;
 
     .#? S.isnum\n  returns true if the string is a valid number
     {.! :T ::num =}:isnum;
@@ -39,11 +45,11 @@ import ::list
     .#? S.titlecase\n  convert a string to titlecase
     {s,
       s ERB; # {i,
-        s iV I .iswhitespace
-        {s.[i].toupper s.:[i]}
+        s.[iV] .iswhitespace
+        {s.[i].upper s.:[i]}
         ?
       };
-      s.[0].toupper s.:[0]
+      s.[0].upper s.:[0]
       s
     }:titlecase;
 
@@ -141,10 +147,10 @@ import ::test
     {5 '- "abc".rightpad} ["abc--"] ts+
     {3 '- "abc".rightpad} ["abc"] ts+
     {0 '- "abc".rightpad} ["abc"] ts+
-    {"aBc!1".toupper} ["ABC!1"] ts+
-    {"aBc!1".tolower} ["abc!1"] ts+
-    {"".toupper} [""] ts+
-    {"".tolower} [""] ts+
+    {"aBc!1".upper} ["ABC!1"] ts+
+    {"aBc!1".lower} ["abc!1"] ts+
+    {"".upper} [""] ts+
+    {"".lower} [""] ts+
     {"12.34".isnum} [1] ts+
     {"12..123".isnum} [0] ts+
     {"".isnum} [0] ts+
@@ -157,6 +163,7 @@ import ::test
     {"\"hello\"".parsenum} ["hello"] ts+
     {', "1,2,3".readdlm} [[[1 2 3]]] ts+
     {"," "1,2,3\n4,5,6".readdlm} [[[1 2 3][4 5 6]]] ts+
+    {"hat cat".replace("a", "o")} ["cot hot"] ts+
 
     {[[7 8][9 10]] matstr} ["   7   8\n   9  10"] ts+
     {"," "A,B\n1,2\n3,4".readdlm} [[[ "A" "B" ] [ 1 2 ] [ 3 4 ]]] ts+

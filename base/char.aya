@@ -11,10 +11,10 @@
     {_ 'A :> \ 'Z :< &}:isupper;
 
     .#? C.toupper\n  converts a character to uppercase
-    {_.isupper! {!} ? }:toupper;
+    {_.isupper! {!} ? }:upper;
 
     .#? C.tolower\n  converts a character to lowercase
-    {_.islower! {!} ? }:tolower;
+    {_.islower! {!} ? }:lower;
 
     .#? C.isdigit\n  tests if a character is a digit
     {_ '0 :> \ '9 :< &}:isdigit;
@@ -47,8 +47,8 @@ import ::test
 
   {"cC*" #.islower} [[1 0 0]] ts+
   {"cC*" #.isupper} [[0 1 0]] ts+
-  {"HelLo!" #.toupper} ["HELLO!"] ts+
-  {"HelLo!" #.tolower} ["hello!"] ts+
+  {"HelLo!" #.upper} ["HELLO!"] ts+
+  {"HelLo!" #.lower} ["hello!"] ts+
   {"Cr4zy1!" #.isdigit} [[0 0 1 0 0 1 0]] ts+
   {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
   {"alpha" spechar '\alpha' =} [1] ts+
