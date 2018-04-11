@@ -18,12 +18,15 @@
 {{.<}F}:max;           .#? L max\n  max value of a list
 {{.>}F}:min;           .#? L min\n  min value of a list
 
+{_.maxN\;}:argmax; .#? L.argmax\n  return the index of the largest value in the list
+{_.minN\;}:argmin; .#? L.argmin\n  return the index of the smallest value in the list
+
 .#? L enumerate\n  return a list of index-value pairs for the list
 {.E.R{A.B}.&}:enumerate;
 
 
 .#? L rank\n  rank a list
-{_{>}pu#S1+}:rank;
+{_{>}.pu#S1+}:rank;
 
 .#? L irange\n generates a range of indices for the list
 {E.R}:irange;
@@ -131,15 +134,15 @@ import ::test
   {"abc" irange} [[0 1 2]] ts+
   {"01""abc" {P+} pu .F} ["a0b0c0a1b1c1"] ts+
   {"abcd" _\; 0 :1 swap} ["dbca"] ts+
-  {10R shuffle S} [55] ts+
-  {0 1 5 linspace} [[0 .25 .5 .75 1]] ts+
-  {1 10 4 intspace} [[1 4 7 10]] ts+
+  {10R.shuffle S} [55] ts+
+  .# {0 1 5 linspace} [[0 .25 .5 .75 1]] ts+
+  .# {1 10 4 intspace} [[1 4 7 10]] ts+
   {[2 4 2 5] digitstonum} [2425] ts+
   {[2] digitstonum} [2] ts+
   {[] digitstonum} [0] ts+
   {[[1 2][4][1 2 3]] makesquare} [[[1 2 0][4 0 0][1 2 3]]] ts+
-  {[1 2 3 4 5] {4<} tw} [[1 2 3]] ts+
-  {[1 2 3] {10=} tw} [[]] ts+
+  .#{[1 2 3 4 5] {4<} tw} [[1 2 3]] ts+
+  .#{[1 2 3] {10=} tw} [[]] ts+
 
   ts aya.addtest
 

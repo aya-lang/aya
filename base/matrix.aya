@@ -371,11 +371,11 @@ import ::test
   {[[1 2][3 4]]m! 2 ^ .rows} [ [[7 10][15 22]] ] ts+
 
   .# Iteration
-  {:a, [[1 2][3 4]]m!:a; {2*} a.apply.rows} [ [[2 4][6 8]] ] ts+
-  {:a, [[1 2][3 4]]m!:a; {2*} a.apply; a.rows} [ [[2 4][6 8]] ] ts+
-  {:a, [[1 2][3 4]]m!:a; {2*} a.map.rows} [ [[2 4][6 8]] ] ts+
-  {:a, [[1 2][3 4]]m!:a; {2*} a.map; a.rows} [ [[1 2][3 4]] ] ts+
-  {:a, [[1 2][3 4]]m!:a; {2*} a.each a.rows} [ [[1 2][3 4]] ] ts+
+  {: a, [[1 2][3 4]]m!:a; {2*} a.apply.rows} [ [[2 4][6 8]] ] ts+
+  {: a, [[1 2][3 4]]m!:a; {2*} a.apply; a.rows} [ [[2 4][6 8]] ] ts+
+  {: a, [[1 2][3 4]]m!:a; {2*} a.map.rows} [ [[2 4][6 8]] ] ts+
+  {: a, [[1 2][3 4]]m!:a; {2*} a.map; a.rows} [ [[1 2][3 4]] ] ts+
+  {: a, [[1 2][3 4]]m!:a; {2*} a.each a.rows} [ [[1 2][3 4]] ] ts+
 
   .# Other Overloads
   .# No need to check them all, just check to see if they are loaded

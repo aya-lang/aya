@@ -2,6 +2,7 @@
 
 import ::sys
 import ::str
+import ::io
 
 
 .#? ls\n  print a list of files in the working dir
