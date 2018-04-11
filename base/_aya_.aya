@@ -205,3 +205,18 @@
 
 .#? SB conderr\n  throw error message if condition is true
 {{.D} {;} .?}:conderr;
+
+
+.################
+.# import types #
+.################
+
+import """
+types
+str
+num
+char
+block
+list
+test
+"""
