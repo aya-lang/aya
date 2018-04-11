@@ -185,7 +185,7 @@ import ::test
 
     .#? ::file.isopen\n  test if a file stream is open
     {f,
-        f.id 'i O 0 .<
+        f.id 'i O 0 =!
     }:isopen;
 
     .#? ::file.isread\n  return 1 if file is an input stream
@@ -233,6 +233,15 @@ import ::test
         f.id 'f O
     }:flush;
 
+    {f,
+        [
+            f.isopen
+                {"<stream(" {"R"} {"W"} f.isinput .? "):"}
+                "<closed:"
+            .?
+            f.path.str ">"
+        ]S
+    }:repr;
 }:file;
 
 .#? stdin::file\n  standard input stream
@@ -244,6 +253,7 @@ import ::test
     0:close;
     1:isread;
     0:iswrite;
+    "stdin":path;
 } file MO :stdin;
 
 .#? stdout::file\n  standard outpur stream
@@ -255,4 +265,5 @@ import ::test
     0:close;
     1:iswrite;
     0:isread;
+    "stdout":path;
 } file MO :stdout;
