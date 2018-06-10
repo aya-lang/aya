@@ -46,7 +46,7 @@ public class ColonOps {
 		/* 33 !  */ null,
 		/* 34 "  */ null,
 		/* 35 #  */ new OP_Colon_Pound(),
-		/* 36 $  */ null,
+		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ null,
 		/* 38 &  */ null,
 		/* 39 '  */ new OP_Colon_Quote(),
@@ -105,7 +105,7 @@ public class ColonOps {
 		/* 92 \  */ new OP_Colon_Demote(),
 		/* 93 ]  */ null,
 		/* 94 ^  */ null,
-		/* 95 _  */ new OP_Colon_Underscore(),
+		/* 95 _  */ null, // Assignment
 		/* 96 `  */ null,
 		/* 97 a  */ null, // Assignment
 		/* 98 b  */ null, // Assignment
@@ -164,9 +164,9 @@ public class ColonOps {
 	
 	public static boolean isColonOpChar(char c) {
 		//A char is a colonOp if it is not a lowercase letter or a '('
-		return (c >= '!' && c <= '~') 	//Char bounds
-				&& !isLowercase(c) 		//Not lowercase alpha
-				&& !isDigit(c) 			//Not digit
+		return (c >= '!' && c <= '~') 		 //Char bounds
+				&& !Variable.isValidChar(c)  //Not variable char
+				&& !isDigit(c) 		         //Not digit
 				&& c != '(' && c != ' ' && c != '-'; //Special cases
 	}
 
@@ -213,7 +213,47 @@ class OP_Colon_Pound extends Operation {
 	}
 }
 
-
+// $ - 36
+class OP_Colon_Duplicate extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":$");
+		doc.desc("..AN", "copies the first N items on the stack (not including N)");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Duplicate() {
+		this.name = ":_";
+	}
+	@Override public void execute (final Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(NUMBER)) {
+			int size = block.getStack().size();
+			int i = ((Number)a).toInt();
+			
+			if (i > size || i <= 0) {
+				throw new AyaRuntimeException(i + " :$ stack index out of bounds");
+			} else {
+				
+				while (i > 0) {
+					final Obj cp = block.getStack().get(size - i);
+					
+					if(cp.isa(LIST)) {
+						block.push( ((List)cp).deepcopy() );
+					} else {
+						block.push(cp);
+					}
+				i--;
+				}
+				
+			}
+			
+		} else {
+			
+		}
+	}
+}
 
 // ' - 39
 class OP_Colon_Quote extends Operation {
@@ -717,46 +757,7 @@ class OP_Colon_Demote extends Operation {
 }
 
 //_ - 95
-class OP_Colon_Underscore extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc(':', ":_");
-		doc.desc("..AN", "copies the first N items on the stack (not including N)");
-		OperationDocs.add(doc);
-	}
-	
-	public OP_Colon_Underscore() {
-		this.name = ":_";
-	}
-	@Override public void execute (final Block block) {
-		final Obj a = block.pop();
-		
-		if (a.isa(NUMBER)) {
-			int size = block.getStack().size();
-			int i = ((Number)a).toInt();
-			
-			if (i > size || i <= 0) {
-				throw new AyaRuntimeException(i + " :_ stack index out of bounds");
-			} else {
-				
-				while (i > 0) {
-					final Obj cp = block.getStack().get(size - i);
-					
-					if(cp.isa(LIST)) {
-						block.push( ((List)cp).deepcopy() );
-					} else {
-						block.push(cp);
-					}
-				i--;
-				}
-				
-			}
-			
-		} else {
-			
-		}
-	}
-}
+
 
 // | - 124
 class OP_SetMinus extends Operation {

@@ -287,7 +287,7 @@ import ::io
 
     {column self : i,
         column self.columns dataframe.toindex :i;
-        self.values .T {iI} .$ .T self.:values
+        self.values .T {iI} .C .T self.:values
     }:sort;
 
     .##########

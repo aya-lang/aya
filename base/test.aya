@@ -77,3 +77,10 @@
         ts.run
     };
 } aya.:doruntests;
+
+
+.{
+Visualize a decoded long:
+32 2 {l n, l .bits n5* .> [n 5] L :#{$ 2 10 H $'a+ [3|] :P}; }:b~
+172066848 6 b
+.}

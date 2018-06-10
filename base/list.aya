@@ -39,7 +39,7 @@
 }:swap;
 
 .#? <L> shuffle\n  shuffle a list
-{{;.Q}.$}:shuffle;
+{{;.Q}.C}:shuffle;
 
 }:list;
 

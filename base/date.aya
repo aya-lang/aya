@@ -72,7 +72,7 @@
         u1I:conv;
         "
         {,
-            {n::num, {,n:n} dateunit.$name MO}:new;
+            {n::num, {,n:n} dateunit .C name MO}:new;
             {.n\" dates.$name\"+}:show;
             {.n $conv*}:ms;
             {date.radd}:add;

@@ -163,9 +163,9 @@ public class Parser {
 					}
 					
 					//Key Variable
-					else if ('a' <= in.peek() && in.peek() <= 'z') {
+					else if (Variable.isValidChar(in.peek())) {
 						String varname = ""+in.next();
-						while(in.hasNext() && 'a' <= in.peek() && in.peek() <= 'z') {
+						while(in.hasNext() && Variable.isValidChar(in.peek())) {
 							varname += in.next();
 						}
 						tokens.add(new KeyVarToken(varname));
@@ -440,11 +440,6 @@ public class Parser {
 			//Special Character Variables
 			else if (CharacterParser.isSpecialChar(current)) {
 				tokens.add(new VarToken(CharacterParser.getName(current)));
-			}
-			
-			else if (current == '_')
-			{
-				throw new SyntaxError("Underscore is depreciated");
 			}
 			//Single Character Special Tokens
 			else {

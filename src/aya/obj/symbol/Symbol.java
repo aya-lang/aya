@@ -29,10 +29,12 @@ public class Symbol extends Obj {
 		String sym = "";
 		
 		for (char c : str.toCharArray()) {
-			if (c >= 'a' && c <= 'z') {
+			if (Variable.isValidChar(c)) {
 				sym += c;
 			} else if (c >= 'A' && c <= 'Z') {
 				sym += Character.toLowerCase(c); // Make lowercase
+			} else if (c == ' ') {
+				sym += '_';
 			}
 			
 			// Symbols can only be 12 chars

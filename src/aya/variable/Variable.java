@@ -10,6 +10,12 @@ public class Variable {
 	protected long id;
 	protected boolean referanceVariable = true;
 	
+	private static final char UNDERSCORE  = 'z' + 1; 
+	private static final char TERMINATION = 'z' + 2;
+	
+	private static final char ENCODED_UNDERSCORE  = UNDERSCORE - 'a';
+	private static final char ENCODED_TERMINATION = TERMINATION - 'a';
+
 	/** Creates a variable object using a string.
 	 *  Only the first 12 characters of the string are used
 	 */
@@ -54,10 +60,13 @@ public class Variable {
 					);
 		
 			//Early termination character
-			if(c == '{') {
+			if(c == TERMINATION) {
 				break;
+			} else if (c == UNDERSCORE) {
+				sb.append('_');
+			} else {
+				sb.append(c);
 			}
-			sb.append(c);
 		}
 		
 		return sb.toString();
@@ -81,7 +90,9 @@ public class Variable {
 		long res = 0L;
 		int i;
 		for (i = 0; i < loops; i++) {
-			//Shift the 5 bits (a-z and the termination char '{') into the long
+			// Convert underscore
+			if (chars[i] == '_') chars[i] = UNDERSCORE;
+			//Shift the 5 bits (a-z and the termination char) into the long
 			long alpha = ((long)(chars[i]-'a')) << ((long)i*5);
 			//Combine the 2 longs using or
 			res =  res | alpha;
@@ -89,7 +100,7 @@ public class Variable {
 		
 		//Add the early termination character
 		if(chars.length < 12) {
-			long alpha = 26L << ((long)(i)*5);
+			long alpha = (long)(ENCODED_TERMINATION) << ((long)(i)*5);
 			res = ((long)res) | ((long)alpha);
 			
 		}
@@ -110,7 +121,7 @@ public class Variable {
 	}
 	
 	public static boolean isValidChar(char c) {
-		return (c >= 'a' && c <= 'z'); // || c == '_'
+		return (c >= 'a' && c <= 'z') || c == '_';
 	}
 	
 	@Override
