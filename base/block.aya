@@ -6,5 +6,5 @@
     {la lb ex, [la lb laEL,\#{ex}]}:pu;
 
     .#? list expr tw\n  (takewhile) take from list while the condition is satisfied
-    {e,{e!}.N _0= {;;[]} {|;} .? }:tw;
+    {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
 }:block;

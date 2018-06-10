@@ -1,9 +1,7 @@
 package aya.util;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
@@ -22,8 +20,6 @@ import org.jfree.ui.RefineryUtilities;
 
 import aya.AyaPrefs;
 import aya.exceptions.AyaRuntimeException;
-import aya.obj.number.Num;
-import aya.obj.number.Number;
 
 @SuppressWarnings("serial")
 public class FreeChartInterface extends JFrame 
@@ -140,36 +136,36 @@ public class FreeChartInterface extends JFrame
 	   chart.setVisible(cp.isShow());
    }
 
-   public static void main( String[ ] args ) 
-   {
-      ChartParams cp = new ChartParams();
-      cp.setTitle("Title");
-      cp.setXlabel("X Label");
-      cp.setYlabel("Y Label");
-      
-      cp.setYaxis(10, -10);
-      
-      ArrayList<Number> xvals = new ArrayList<Number>();
-      for (double d = 0.0; d < 7.0; d += 0.1) {
-    	  xvals.add(new Num(d));
-      }
-      
-      //Create y values
-      ArrayList<Number> ycos = new ArrayList<>();
-      ArrayList<Number> ysin = new ArrayList<>();
-            
-      for (Number n : xvals) {
-    	  ycos.add(n.sin());
-    	  ysin.add(n.tan());
-      }
-      
-      cp.setXvalues(xvals);
-      cp.addYvalues("sin", 2, null,  ysin);
-      cp.addYvalues("cos", 2, Color.YELLOW, ycos);
-      
-      
-      drawChart(cp);
-   }
+//   public static void main( String[ ] args ) 
+//   {
+//      ChartParams cp = new ChartParams();
+//      cp.setTitle("Title");
+//      cp.setXlabel("X Label");
+//      cp.setYlabel("Y Label");
+//      
+//      cp.setYaxis(10, -10);
+//      
+//      ArrayList<Number> xvals = new ArrayList<Number>();
+//      for (double d = 0.0; d < 7.0; d += 0.1) {
+//    	  xvals.add(new Num(d));
+//      }
+//      
+//      //Create y values
+//      ArrayList<Number> ycos = new ArrayList<>();
+//      ArrayList<Number> ysin = new ArrayList<>();
+//            
+//      for (Number n : xvals) {
+//    	  ycos.add(n.sin());
+//    	  ysin.add(n.tan());
+//      }
+//      
+//      cp.setXvalues(xvals);
+//      cp.addYvalues("sin", 2, null,  ysin);
+//      cp.addYvalues("cos", 2, Color.YELLOW, ycos);
+//      
+//      
+//      drawChart(cp);
+//   }
    
    
 }

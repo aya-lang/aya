@@ -16,55 +16,57 @@
 import ::iterator
 
 {,
-  ::queue :type;
+    ::queue :type;
 
 
-  .#? L queue.new\n  convert a list into a queue
-  {l, {,l:list} queue MO}:new;
+    .#? L queue.new\n  convert a list into a queue
+    {l, {,l:list} queue MO}:new;
 
-  .# str and repr overloads
-  {self,
-    self.isempty
-    {"queue: <- -<"}
-    {"queue: <-"self.listPB;V;"-<"++}
-    .?
-  }:repr:str;
+    .# str and repr overloads
+    {self,
+        self.isempty
+        {
+            "queue: <- -<"
+        } {
+            "queue: <-"self.listPB;V;"-<"++
+        } .?
+    }:repr:str;
 
-  .#? ::queue queue.next\n  return the next item in the queue
-  {self,
-    "queue obj is empty" self.listE0= conderr
-    self.listV\;
-  }:next;
+    .#? ::queue queue.next\n  return the next item in the queue
+    {self,
+        "queue obj is empty" self.listE0= conderr
+        self.listV\;
+    }:next;
 
-  .#? ::queue queue.peek\n  return the next item in the queue without removing it from the queue
-  {self,
-    "queue obj is empty" self.listE0= conderr
-    self.list0I
-  }:peek;
+    .#? ::queue queue.peek\n  return the next item in the queue without removing it from the queue
+    {self,
+        "queue obj is empty" self.listE0= conderr
+        self.list0I
+    }:peek;
 
-  .#? ::queue queue.len\n  return the number of elements in the queue
-  {.listE}:len;
+    .#? ::queue queue.len\n  return the number of elements in the queue
+    {.listE}:len;
 
-  .#? (queue) queue.isempty\n  tests if the queue is empty
-  {.listE0=}:isempty;
+    .#? (queue) queue.isempty\n  tests if the queue is empty
+    {.listE0=}:isempty;
 
-  .#? A ::queue queue.add\n  add an item to the queue
-  {self, self.list.B; self}:add;
+    .#? A ::queue queue.add\n  add an item to the queue
+    {self, self.list.B; self}:add;
 
-  .#? ::queue queue.clear\n  clear the queue
-  {self, [] self.:list}:clear;
+    .#? ::queue queue.clear\n  clear the queue
+    {self, [] self.:list}:clear;
 
-  .# Iterator implementation
-  {,
-    .# Use listiter on queue.list
-    using listiter
+    .# Iterator implementation
+    {,
+        .# Use listiter on queue.list
+        using listiter
 
-    {q::queue,
-        q.list listiter!
-    }:new;
-    
-    "<queue iterator>":repr;
-  }:iter;
+        {q::queue,
+            q.list listiter!
+        }:new;
+
+        "<queue iterator>":repr;
+    }:iter;
 
 }:queue;
 
@@ -78,19 +80,19 @@ import ::test
 
 `~ {:ts,
 
-  "queue" testset! :ts;
+    "queue" testset! :ts;
 
-  {[1 2 3] queue! :T} [::queue] ts+
-  {[1 2 3] queue! .next} [1] ts+
-  {:q, [1 2] queue!:q .next; q.next} [2] ts+
-  {:q, [1 2] queue!:q .peek; q.next} [1] ts+
-  {[1 2] queue! .clear .list} [[]] ts+
-  {3 [1 2] queue! + .next} [1] ts+
-  {[1 2 3] queue! E} [3] ts+
-  {:q, [1] queue!:q .next; q.isempty} [1] ts+
-  {[1] queue! .isempty} [0] ts+
-  {[] queue! .isempty} [1] ts+
+    {[1 2 3] queue! :T} [::queue] ts+
+    {[1 2 3] queue! .next} [1] ts+
+    {:q, [1 2] queue!:q .next; q.next} [2] ts+
+    {:q, [1 2] queue!:q .peek; q.next} [1] ts+
+    {[1 2] queue! .clear .list} [[]] ts+
+    {3 [1 2] queue! + .next} [1] ts+
+    {[1 2 3] queue! E} [3] ts+
+    {:q, [1] queue!:q .next; q.isempty} [1] ts+
+    {[1] queue! .isempty} [0] ts+
+    {[] queue! .isempty} [1] ts+
 
 
-  ts aya.addtest
+    ts aya.addtest
 }

@@ -22,7 +22,7 @@ import ::list
 
 .#? phi: golden ratio (constant)
 .# Compute phi using 2 adjacent fib numbers
-[1000 _B, 1\0{_@+}@%;]_1I\0I/
+[1000 $B, 1\0{$@+}@%;]$1I\0I/
 :phi;
 
 
@@ -41,7 +41,7 @@ import ::list
 {Me}:exp;    	    .#? N exp\n  exp(x)
 {M!}:fact;      	.#? N fact\n  factorial
 {.\}:floor;      	.#? N floor\n  floor
-{_.\-}:frac;    	.#? N frac\n  fractional part
+{$.\-}:frac;    	.#? N frac\n  fractional part
 {ML2ML/}:lg;		.#? N lg\n  base-2 log
 {Ml}:ln;      		.#? N ln\n  natural log
 {ML}:log;      		.#? N log\n  base-10 log
@@ -62,23 +62,23 @@ import ::list
 .# List Operations #
 .###################
 
-{_2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{$2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}F}:product;     .#? L product\n  product of a list
 {*S}:dot;           .#? LL dot\n  dot product of a list
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{_ :T ::num = {.-}{{.-}F} .?}:lcm;
+{$ :T ::num = {.-}{{.-}F} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisor of 2 numbers or a list of numbers
-{_ :T ::num = {.+}{{.+}F} .?}:gcd;
+{$ :T ::num = {.+}{{.+}F} .?}:gcd;
 
 .#? L<N> cumsum\n  cumulative summation of a list
 {list : sum outlist,
   .# Allocate output list
   0 listE L :outlist;
 
-  list irange # {i,
+  list.irange # {i,
     list iI sum + : sum;
     sum outlist i D
   };
@@ -94,7 +94,7 @@ import ::list
   .# Allocate output list
   0 listE L :outlist;
 
-  list irange # {i,
+  list.irange # {i,
     list iI prod * : prod;
     prod outlist i D
   };
@@ -125,19 +125,19 @@ import ::list
 {1\/MC}:asec;               .#? N asec \n  inverse secant
 {1\/MT}:acot;               .#? N acot \n  inverse cotangent
 
-{_exp\Texp-2/}:sinh;        .#? N sinh \n  hyperbolic sine
-{_exp\Texp+2/}:cosh;        .#? N cosh \n  hyperbolic cosine
-{_sinh\cosh/}:tanh;         .#? N tanh \n  hyperbolic tangent
+{$exp\Texp-2/}:sinh;        .#? N sinh \n  hyperbolic sine
+{$exp\Texp+2/}:cosh;        .#? N cosh \n  hyperbolic cosine
+{$sinh\cosh/}:tanh;         .#? N tanh \n  hyperbolic tangent
 {sinh1\/}:csch;             .#? N csch \n  hyperbolic cosecant
 {cosh1\/}:sech;             .#? N sech \n  hyperbolic secant
 {tanh1\/}:coth;             .#? N coth \n  hyperbolic cotangent
 
-{_2^1+Mq+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
-{__1-Mq\1+Mq*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
-{_1\+Ml\1\-Ml-0.5*}:atanh;      .#? N atanh \n  inverse hyperbolic tangent
-{_1\/\2^1\/1+Mq+Ml}:acsch;      .#? N acsch \n  inverse hyperbolic cosecant
-{1\/__1+Mq\1-Mq*+Ml}:asech;    	.#? N asech \n  inverse hyperbolic secant
-{1\/_1\-Ml\1+Ml\-0.5*}:acoth;  	.#? N acoth \n  inverse hyperbolic cotangent
+{$2^1+Mq+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
+{$$1-Mq\1+Mq*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
+{$1\+Ml\1\-Ml-0.5*}:atanh;      .#? N atanh \n  inverse hyperbolic tangent
+{$1\/\2^1\/1+Mq+Ml}:acsch;      .#? N acsch \n  inverse hyperbolic cosecant
+{1\/$$1+Mq\1-Mq*+Ml}:asech;    	.#? N asech \n  inverse hyperbolic secant
+{1\/$1\-Ml\1+Ml\-0.5*}:acoth;  	.#? N acoth \n  inverse hyperbolic cotangent
 
 
 
@@ -145,18 +145,18 @@ import ::list
 .# Statistics #
 .##############
 
-{_E\S\/}:mean;		.#? L mean\n  average of a list of numbers
+{$E\S\/}:mean;		.#? L mean\n  average of a list of numbers
 {set : m, set mean:m; set#{m-2^}S setE /}:variance; .#? L variance\n  population variance
 {variance Mq}:stdev; .#? L stdev\n  standard deviation
 
 .#? L geomean \n  geometric mean
 .# the nth root of the product of n numbers
-{_E\{*}F1@/^}:geomean;
+{$E\{*}F1@/^}:geomean;
 
 .#? L median \n  median value of a list
 {l,
-  l$_E2/.\               .# Sort the list and get its middle index
-  lE2%0= {_1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
+  lC$E2/.\               .# Sort the list and get its middle index
+  lE2%0= {$1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
                           .# The list has odd length, take the middle item
 }:median;
 
@@ -206,7 +206,7 @@ import ::list
 .#############################
 
 .# Numerics
-{E_@@*.\\/}:round; .#? NN round\n  round N1 to N2 decimal digits
+{E$@@*.\\/}:round; .#? NN round\n  round N1 to N2 decimal digits
 
 .# BASE
 
@@ -227,7 +227,7 @@ import ::list
 {n, [1 n,, n\%0=]}:divisors;
 
 .#? N factors\n  compute a number's prime factors
-.# golf: {n,{2to(nV){n\%0=}.NI_n\/fK}{n}nGn2<|?}:f;
+.# golf: {n,{2to(nV){n\%0=}.NI$n\/fK}{n}nGn2<|?}:f;
 {n,
   .# is the number prime
   nG n2< |
@@ -246,7 +246,7 @@ import ::list
 
     .# Append this factor to the list of
     .#   factors recursively
-    I _n\/ factors K
+    I $n\/ factors K
   }
 
   .?
@@ -273,7 +273,7 @@ import ::test
   {[3 5][4 12] hypot} [[5 13]] ts+
 
   .# List operations
-  {10R normal _S/S .\} [1] ts+
+  {10R normal $S/S .\} [1] ts+
   {5R product} [120] ts+
   {[] product} [0] ts+
   {[1 2 3][4 5 6] dot} [32] ts+
@@ -291,7 +291,7 @@ import ::test
   {10R geomean 2 round} [4.52] ts+
   {[1 6 3 4 7 8 3 2 2] median} [3] ts+
   {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] regression 10\~ 3 round} [8.902]
-  {10R _ pearson} [1] ts+
+  {10R $ pearson} [1] ts+
   {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] pearson 3 round} [.902] ts+
 
   .# Other
@@ -302,7 +302,7 @@ import ::test
   {100R #isprime S} [25] ts+
   {9 4 npr} [3024] ts+
   {9 4 bin} [126] ts+
-  {5R _ bin S} [5] ts+
+  {5R $ bin S} [5] ts+
   {12 divisors} [[1 2 3 4 6 12]] ts+
   {12 factors} [[2 2 3]] ts+
 

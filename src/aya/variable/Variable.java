@@ -103,12 +103,14 @@ public class Variable {
 		
 		char[] chars = varname.toCharArray();
 		for (char c : chars) {
-			if (c < 'a' || c > 'z') {
-				return false;
-			}
+			if (!isValidChar(c)) return false;
 		}
 		
 		return true;
+	}
+	
+	public static boolean isValidChar(char c) {
+		return (c >= 'a' && c <= 'z'); // || c == '_'
 	}
 	
 	@Override

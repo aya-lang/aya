@@ -5,19 +5,19 @@
 
 {,
     .#? C.islower\n  tests if a character is lowercase
-    {_ 'a :> \ 'z :< &}:islower;
+    {$ 'a :> \ 'z :< &}:islower;
 
     .#? C.isupper\n  tests if a character is uppercase
-    {_ 'A :> \ 'Z :< &}:isupper;
+    {$ 'A :> \ 'Z :< &}:isupper;
 
     .#? C.toupper\n  converts a character to uppercase
-    {_.isupper! {!} ? }:upper;
+    {$.isupper! {!} ? }:upper;
 
     .#? C.tolower\n  converts a character to lowercase
-    {_.islower! {!} ? }:lower;
+    {$.islower! {!} ? }:lower;
 
     .#? C.isdigit\n  tests if a character is a digit
-    {_ '0 :> \ '9 :< &}:isdigit;
+    {$ '0 :> \ '9 :< &}:isdigit;
 
     .#? C.iswhitespace\n  tests if a character is a whitespace character
     {P "\W+" & E 1 =}:iswhitespace;
@@ -26,7 +26,7 @@
     {:' 127 <}:isascii;
 
     .#? C.isalpha\n  test if character is alphabetical
-    {_ _ 'a :> \ 'z :< & \ _ 'A :> \ 'Z :< & |}:isalpha;
+    {$ $ 'a :> \ 'z :< & \ $ 'A :> \ 'Z :< & |}:isalpha;
 
 }:char;
 

@@ -68,8 +68,8 @@
 
 {importnamezz,
   .# Does the name contain a file sep? (:9c)
-  .# :9c _ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
-  importnamezz _ (:9c _ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
+  .# :9c $ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
+  importnamezz $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
   { .# No file sep, import from base
     importnamezz aya.importbase
@@ -120,7 +120,7 @@
 
 .#? import library\n  import a aya file\n  files are only imported once
 {`(
-  _ :T ::sym = {:C} ?
+  $ :T ::sym = {:C} ?
   .# Split whitespace separated names
   "\s+" | [""] :| #{aya.import};
 )}:import;
@@ -136,7 +136,7 @@
 {:workingdirzz,
   ""2MZ            .# Save the current working dir
   ""3MZ            .# Reset the working dir
-  aya.imported_\;  .# Copy currently imported files
+  aya.imported$\;  .# Copy currently imported files
   aya.resetimports .# Clear all imports
   "ayarc.aya" G ~  .# Load ayarc
   \ 3 MZ           .# Change the working dir back
@@ -210,6 +210,8 @@
 .################
 .# import types #
 .################
+
+"C:/Users/Nick/git/aya-lang/base/" aya.:basedir;
 
 import """
 types

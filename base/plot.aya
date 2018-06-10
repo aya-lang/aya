@@ -9,110 +9,120 @@ import ::list
 
     ::plot :type;
 
-  {, .# axis
-    {min::num max::num,
-      {,min:min max:max} plot.axis MO
+    {, .# axis
+        {min::num max::num,
+            {,min:min max:max} plot.axis MO
+        }:new;
+    }:axis;
+
+
+    .#? plot.new\n  create a new plot instance with default settings
+    {:plt,
+        .# [plot.fieldnamesE,0] plot MO :plt;
+        {,
+            ::line      :plottype
+            500         :width
+            400         :height
+            ""          :title
+            ""          :xlabel
+            ""          :ylabel
+            []          :x
+            []          :y
+            1           :legend
+            :-1         :stroke .# Use individual strokes
+        }
+        plot MO
     }:new;
-  }:axis;
 
+    .#? ::plot plot.view\n  view the plot in a new window
+    {self::plot,
+        self MX
+    }:view;
 
-  .#? plot.new\n  create a new plot instance with default settings
-  {:plt,
-    .# [plot.fieldnamesE,0] plot MO :plt;
-    {,
-      ::line      :plottype
-      500         :width
-      400         :height
-      ""          :title
-      ""          :xlabel
-      ""          :ylabel
-      []          :x
-      []          :y
-      1           :legend
-      :-1         :stroke .# Use individual strokes
-    }
-    plot MO
-  }:new;
+    .#? S ::plot plot.save\n  save the plot as a PNG in the working directory with the name S
+    {filename::str self : cpy,
+        self$ :cpy;; .# Create a copy
+        0 cpy.:show;
+        filename  cpy.:filename;
+        cpy MX
+    }:save;
 
-  .#? ::plot plot.view\n  view the plot in a new window
-  {self::plot,
-    self MX
-  }:view;
+    .#? L<N> ::plot plot.addline\n  add a dataset to the plot using defaults
+    {list::list self,
+        "" 1 [] list self.addseries
+    }:addline;
 
-  .#? S ::plot plot.save\n  save the plot as a PNG in the working directory with the name S
-  {filename::str self : cpy,
-    self_ :cpy;; .# Create a copy
-    0 cpy.:show;
-    filename  cpy.:filename;
-    cpy MX
-  }:save;
+    .#? L<N> ::plot plot.domain\n  set the domain of the plot
+    {data::list self,
+        data self.:x;
+    }:domain;
 
-  .#? L<N> ::plot plot.addline\n  add a dataset to the plot using defaults
-  {list::list self,
-    "" 1 [] list self.addseries
-  }:addline;
-
-   .#? L<N> ::plot plot.domain\n  set the domain of the plot
-  {data::list self,
-    data self.:x;
-  }:domain;
-
-  .#? nameS strokeN colorL dataL ::plot plot.addseries\n  add a series to a plot
-  {name::str stroke::num color::list data::list self,
+    .#? nameS strokeN colorL dataL ::plot plot.addseries\n  add a series to a plot
+    {name::str stroke::num color::list data::list self,
     .# stroke 0 = then {self.stroke :stroke;}
-    self.y {,name:name stroke:stroke color:color data:data} AK;
-  }:addseries;
+        self.y {,
+            name:name
+            stroke:stroke
+            color:color
+            data:data
+        } AK;
+    }:addseries;
 
-  .#? nameS strokeN colorL exprE ::plot plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
-  {name::str stroke::num color::list expr::block self,
-    self.y {,name:name stroke:stroke color:color [self.x, expr]:data} AK;
-  }:addexpr;
+    .#? nameS strokeN colorL exprE ::plot plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
+    {name::str stroke::num color::list expr::block self,
+        self.y {,
+            name:name
+            stroke:stroke
+            color:color
+            [self.x, expr]:data
+        } AK;
+    }:addexpr;
 
-  .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
-  {domain::list range::list : plt,
-    plot!:plt;
-    ::scatter plt.:plottype;
-    domain plt.domain
-    range plt.addline
-    plt
-  }:scatter;
+    .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
+    {domain::list range::list : plt,
+        plot!:plt;
+        ::scatter plt.:plottype;
+        domain plt.domain
+        range plt.addline
+        plt
+    }:scatter;
 
-  .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
-  {x::list y::list : reg,
-    x y regression :reg;
-    x y plot.scatter.view
-    x [x,reg] plot.line.view
-    "Regression: y= $(1reg0reg-)x + ($(0reg))".P
-  }:scatterreg;
+    .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
+    {x::list y::list : reg,
+        x y regression :reg;
+        x y plot.scatter.view
+        x [x,reg] plot.line.view
+        "Regression: y= $(1reg0reg-)x + ($(0reg))".P
+    }:scatterreg;
 
-  .# domainL rangeL plot.line\n  return a line plot with the given domain and range
-  {domain::list range::list : plt,
-    plot!:plt;
-    domain plt.domain
-    range plt.addline
-    plt
-  }:line;
+    .# domainL rangeL plot.line\n  return a line plot with the given domain and range
+    {domain::list range::list : plt,
+        plot!:plt;
+        domain plt.domain
+        range plt.addline
+        plt
+    }:line;
 
-  .#? munN maxN eE plot.fn\n  plot the function e on the domain (min, max). return a plot instance
-  {min::num max::num ex::block : plt,
-    plot!:plt;
-    minMd maxMd 600.1 linspace plt.domain
-    "" 1 [] {ex} plt.addexpr
-    plt
-  }:fn;
+    .#? munN maxN eE plot.fn\n  plot the function e on the domain (min, max). return a plot instance
+    {min::num max::num ex::block : plt,
+        plot!:plt;
+        minMd maxMd 600.1 linspace plt.domain
+        "" 1 [] {ex} plt.addexpr
+        plt
+    }:fn;
 
-  .#? minN maxN exsL plot.fns\n  plot each function in exs on the domain (min, max). return a plot instance
-  {min::num max::num exs::list : plt,
-    plot!:plt;
-    minMd maxMd 600.1 linspace plt.domain
-    exs # {x,
-      "" 1 [] {x} plt.addexpr
-    };
-    plt
-  }:fns;
+    .#? minN maxN exsL plot.fns\n  plot each function in exs on the domain (min, max). return a plot instance
+    {min::num max::num exs::list : plt,
+        plot!:plt;
+        minMd maxMd 600.1 linspace plt.domain
+        exs # {x,
+            "" 1 [] {x} plt.addexpr
+        };
+        plt
+    }:fns;
 
 
-  {"Plot Instance"}:str:repr;
+    {"Plot Instance"}:str:repr;
 
 }:plot;
 
@@ -121,10 +131,10 @@ import ::list
 
 .{
 {.X}:plot;
-[(-10)_0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
-{fE,[(-10)_.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
-{fE,[(-10)_.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
-{_(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
+[(-10)$0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
+{fE,[(-10)$.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
+{fE,[(-10)$.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
+{$(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
 {(-2)E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
 .}
 
@@ -137,7 +147,7 @@ import ::list
 .}
 
 .{? line plot example
-  10R _#Mq plot.line :p;
+  10R $#Mq plot.line :p;
   3 p.:stroke
   p.view
 .}

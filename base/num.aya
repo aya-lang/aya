@@ -19,7 +19,7 @@
   .?
 
   .# If the length is not equal to nums, add b to the end
-  _Enums={}{bK}.?
+  $Enums={}{bK}.?
 }:linspace;
 
 

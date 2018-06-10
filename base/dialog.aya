@@ -10,34 +10,34 @@
 
 {,
 
-  .#? S dialog.requeststr\n  request a string from the user
-  {question, [] questionP "" 1 1 MV}:requeststr;
+    .#? S dialog.requeststr\n  request a string from the user
+    {question, [] questionP "" 1 1 MV}:requeststr;
 
-  .#? S dialog.requestnum\n  request a number from the user
-  {question, [] questionP "" 1 2 MV}:requestnum;
+    .#? S dialog.requestnum\n  request a number from the user
+    {question, [] questionP "" 1 2 MV}:requestnum;
 
-  .#? S dialog.alert\n  display a dialog box with a given message
-  {text, [] text "Aya" 1 3 MV}:alert;
+    .#? S dialog.alert\n  display a dialog box with a given message
+    {text, [] text "Aya" 1 3 MV}:alert;
 
-  .#? S dialog.warning\n  display a warning message with the given message
-  {text, [] text "Aya" 3 3 MV}:warn;
+    .#? S dialog.warning\n  display a warning message with the given message
+    {text, [] text "Aya" 3 3 MV}:warn;
 
-  .#? S dialog.error\n  display an error message with the given message
-  {text, [] text "Aya" 4 3 MV}:error;
+    .#? S dialog.error\n  display an error message with the given message
+    {text, [] text "Aya" 4 3 MV}:error;
 
-  .#? SSS dialog.yesno\n  display a dialog box with the question S1. S2 and S3 return true and false respectively
-  {question yes no, [yes no] question "Aya" 2 4 MV}:yesno;
+    .#? SSS dialog.yesno\n  display a dialog box with the question S1. S2 and S3 return true and false respectively
+    {question yes no, [yes no] question "Aya" 2 4 MV}:yesno;
 
-  .#? SL<S> dialog.buttons\n  display a dialog box with buttons for each of the options in L
-  {question options::list, options question "Aya" 2 5 MV}:buttons;
+    .#? SL<S> dialog.buttons\n  display a dialog box with buttons for each of the options in L
+    {question options::list, options question "Aya" 2 5 MV}:buttons;
 
-  .#? SL<S> dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
-  {question options::list, options question "Aya" 2 6 MV}:dropdown;
+    .#? SL<S> dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
+    {question options::list, options question "Aya" 2 6 MV}:dropdown;
 
-  .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
-  {[] "" "" 1 7 MV}:choosefile;
+    .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
+    {[] "" "" 1 7 MV}:choosefile;
 
-  .#? ::str dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
-  {["Ok" "Cancel"] "Confirm" _ 1 4 MV}:confirm;
+    .#? ::str dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
+    {["Ok" "Cancel"] "Confirm" $ 1 4 MV}:confirm;
 
 }:dialog;

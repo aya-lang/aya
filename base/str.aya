@@ -9,7 +9,7 @@ import ::list
 
 {,
     .#? S.trim\n  remove whitespace from start and end of string
-    {"^\\s+|\\s+$" |S _0={;""}?}:trim;
+    {"^\\s+|\\s+$" |S $0={;""}?}:trim;
 
     .#? ICS.leftpad\n  left pad string S so it is at least length I using char C
     {len::num pad::char s,
@@ -44,21 +44,21 @@ import ::list
 
     .#? S.titlecase\n  convert a string to titlecase
     {s,
-      s ERB; # {i,
-        s.[iV] .iswhitespace
-        {s.[i].upper s.:[i]}
-        ?
-      };
-      s.[0].upper s.:[0]
-      s
+        s ERB; # {i,
+            s.[iV] .iswhitespace {
+                s.[i].upper s.:[i]
+            } ?
+        };
+        s.[0].upper s.:[0]
+        s
     }:titlecase;
 
     .#? S.parse\n  If num, return num, else return str (rm surrounding quotes)
     {
         .!
-        _:T ::str = {
+        $:T ::str = {
             .# If it is a string, test if it has quotes and remove them
-            .trim _ [0 :1]I "\"\"" = {B;V;} ?
+            .trim $ [0 :1]I "\"\"" = {B;V;} ?
         } ?
     }:parsenum;
 
@@ -78,7 +78,7 @@ import ::list
 
 .#? L<L> matstr\n  print a list of lists in matrix format
 {
-    _ [1|,~.A#{PE}] .# Calculate the length of each
+    $ [1|,~.A#{PE}] .# Calculate the length of each
                     .#   entry mapped as a string
     .F{.<}F 2+      .# Find the maximum and add two
     #{#{\P\.>}S}    .# Pad each entry in the original
@@ -92,7 +92,7 @@ import ::list
 {list sep na,
     list :# {
         .# If it is na, make it emptystr
-        :#{_ na = {;""} ?}
+        :#{$ na = {;""} ?}
         sep *
     } "\n" *
 }:tocsvstr;
@@ -163,7 +163,7 @@ import ::test
     {"\"hello\"".parsenum} ["hello"] ts+
     {', "1,2,3".readdlm} [[[1 2 3]]] ts+
     {"," "1,2,3\n4,5,6".readdlm} [[[1 2 3][4 5 6]]] ts+
-    {"hat cat".replace("a", "o")} ["cot hot"] ts+
+    {"hat cat".replace("a", "o")} ["hot cot"] ts+
 
     {[[7 8][9 10]] matstr} ["   7   8\n   9  10"] ts+
     {"," "A,B\n1,2\n3,4".readdlm} [[[ "A" "B" ] [ 1 2 ] [ 3 4 ]]] ts+

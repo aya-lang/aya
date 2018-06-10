@@ -15,57 +15,60 @@ import ::iterator
 
 {,
 
-  ::stack :type;
+    ::stack :type;
 
-  .#? L stack.new\n  convert a list into a stack
-  {l, {, l:list} stack MO}:new;
+    .#? L stack.new\n  convert a list into a stack
+    {l, {, l:list} stack MO}:new;
 
-  .#? ::stack stack.show\n  convert a stack to a string
-  {self,
-    self.isempty
-    {"stack: <- -|"}
-    {"stack: <-"self.listPB;V;"-|"++}
-    .?
-  }:str:repr;
+    .#? ::stack stack.show\n  convert a stack to a string
+    {self,
+        self.isempty {
+            "stack: <- -|"
+        } {
+            "stack: <-"self.listPB;V;"-|"++
+        } .?
+    }:str:repr;
 
-  .#? ::stack stack.dollar\n::stack stack.next\n  return the next item in the stack
-  {self,
-    self.listE0= {"stack obj is empty" .D} ?
-    self.listV\;
-  }:dollar;
+    .#? ::stack stack.dollar\n::stack stack.next\n  return the next item in the stack
+    {self,
+        self.listE0= {"stack obj is empty" .D} ?
+        self.listV\;
+    }:dollar;
 
-  {stack.dollar}:pop;
+    {stack.dollar}:pop;
 
-  .#? ::stack stack.peek\n  return the next item in the stack without removing it from the stack
-  {self,
-     self.listE0= {"stack obj is empty" .D} ?
-    self.list0I
-  }:peek;
+    .#? ::stack stack.peek\n  return the next item in the stack without removing it from the stack
+    {self,
+        self.listE0= {"stack obj is empty" .D} ?
+        self.list0I
+    }:peek;
 
-  .#? ::stack stack.len\n  return the number of elements in the stack
-  {.listE}:len;
+    .#? ::stack stack.len\n  return the number of elements in the stack
+    {.listE}:len;
 
-  .#? ::stack stack.isempty\n  tests if the stack is empty
-  {.listE0=}:isempty;
+    .#? ::stack stack.isempty\n  tests if the stack is empty
+    {.listE0=}:isempty;
 
-  .#? A ::stack stack.add\n  add an item to the stack
-  {self, self.list.V; self}:add;
+    .#? A ::stack stack.add\n  add an item to the stack
+    {self, self.list.V; self}:add;
 
-  .#? ::stack stack.clear\n  clear the queue
-  {self, [] self.:list}:clear;
+    .#? ::stack stack.clear\n  clear the queue
+    {self, [] self.:list}:clear;
 
-  .###########################
-  .# ITERATOR IMPLEMENTATION #
-  .###########################
+    .###########################
+    .# ITERATOR IMPLEMENTATION #
+    .###########################
 
-  {,
-    .# Basic list iterator on set.list
-    using listiter
-    {stk::stack,
-        stk.list listiter!
-    }:new;
-    "<stack iterator>":repr;
-  }:iter;
+    {,
+        .# Basic list iterator on set.list
+        using listiter
+
+        {stk::stack,
+            stk.list listiter!
+        }:new;
+
+        "<stack iterator>":repr;
+    }:iter;
 
 }:stack;
 
@@ -78,19 +81,19 @@ import ::test
 
 `~ {:ts,
 
-  "stack" testset! :ts;
+    "stack" testset! :ts;
 
-  {[1 2 3] stack! :T} [::stack] ts+
-  {[1 2 3] stack! .pop} [1] ts+
-  {:s, [1 2] stack!:s .pop; s.pop} [2] ts+
-  {:s, [1 2] stack!:s .peek; s.pop} [1] ts+
-  {[1 2] stack! .clear .list} [[]] ts+
-  {3 [1 2] stack! + .pop} [3] ts+
-  {[1 2 3] stack! E} [3] ts+
-  {:s, [1] stack!:s .pop; s.isempty} [1] ts+
-  {[1] stack! .isempty} [0] ts+
-  {[] stack! .isempty} [1] ts+
+    {[1 2 3] stack! :T} [::stack] ts+
+    {[1 2 3] stack! .pop} [1] ts+
+    {:s, [1 2] stack!:s .pop; s.pop} [2] ts+
+    {:s, [1 2] stack!:s .peek; s.pop} [1] ts+
+    {[1 2] stack! .clear .list} [[]] ts+
+    {3 [1 2] stack! + .pop} [3] ts+
+    {[1 2 3] stack! E} [3] ts+
+    {:s, [1] stack!:s .pop; s.isempty} [1] ts+
+    {[1] stack! .isempty} [0] ts+
+    {[] stack! .isempty} [1] ts+
 
 
-  ts aya.addtest
+    ts aya.addtest
 }

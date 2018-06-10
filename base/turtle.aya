@@ -12,48 +12,48 @@ import ::math
 .}
 {,
 
-  ::turtle :type;
+    ::turtle :type;
 
-  {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
-
-
-  {self,
-    "turtle: pos=($(self.x), $(self.y)) dir=$(self.r)"
-  }:repr:str;
+    {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
 
 
-  .#? N turtle.fwd\n  move the turtle forward N units
-  {len self,
-    self.x self.r Mc len* + self.:x;
-    self.y self.r Ms len* + self.:y;
-    [self.x self.y] self.path .V;
-  }:fwd;
+    {self,
+        "turtle: pos=($(self.x), $(self.y)) dir=$(self.r)"
+    }:repr:str;
 
-  .#? N turtle.left\n  turn the turtle left N radians
-  {rads self,
-    self.r rads + self.:r;
-  }:left;
 
-  .#? N turtle.right\n  turn the turtle right N radians
-  {rads self,
-    self.r rads - self.:r;
-  }:right;
+    .#? N turtle.fwd\n  move the turtle forward N units
+    {len self,
+        self.x self.r Mc len* + self.:x;
+        self.y self.r Ms len* + self.:y;
+        [self.x self.y] self.path .V;
+    }:fwd;
 
-  .#? turtle.draw\n  draw the turtle's path
-  {self : x y p small big margin,
-    plot!:p;
-    self.path .T ~\ :x;:y;
-    x p.domain
-    y p.addline
+    .#? N turtle.left\n  turn the turtle left N radians
+    {rads self,
+        self.r rads + self.:r;
+    }:left;
 
-    [x max y max] max :big;
-    [x min y min] min :small;
-    big 0.1* :margin;
+    .#? N turtle.right\n  turn the turtle right N radians
+    {rads self,
+        self.r rads - self.:r;
+    }:right;
 
-    [small margin- big margin+] p.:xaxis;
-    [small margin- big margin+] p.:yaxis;
+    .#? turtle.draw\n  draw the turtle's path
+    {self : x y p small big margin,
+        plot!:p;
+        self.path .T ~\ :x;:y;
+        x p.domain
+        y p.addline
 
-    p.view
+        [x max y max] max :big;
+        [x min y min] min :small;
+        big 0.1* :margin;
 
-  }:draw;
+        [small margin- big margin+] p.:xaxis;
+        [small margin- big margin+] p.:yaxis;
+
+        p.view
+
+    }:draw;
 }:turtle;

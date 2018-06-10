@@ -4,7 +4,7 @@
 .# Provides easy ways for representing and manipulating tabular data
 
 import ::list
-import ::file
+import ::io
 
 .{ TODO:
    filter
@@ -18,15 +18,15 @@ import ::file
 
 {,
 
-  ::dataframe :type;
+    ::dataframe :type;
 
-  {self,
-	  [""] (self.columns_\;) K A
-	  self.index #{P" |"K}
-	  self.values
-	  [2|~,.A]K
-	  matstr "\n"\+
-  }:repr:str;
+    {self,
+        [""] (self.columns$\;) K A
+        self.index #{P" |"K}
+        self.values
+        [2|~,.A]K
+        matstr "\n"\+
+    }:repr:str;
 
 
 
@@ -34,319 +34,324 @@ import ::file
   .# Creating Dataframes #
   .#######################
 
-  {kwargs::dict : columns(::na) index(::na) data(::na) csvindex(::na) filename header(1) numofrows,
-    kwargs .W
-
-    filename :T ::str = {
-      {, filename :filename
-         header :header
-         index ::na =! {index:index} ?
-         columns ::na =! {columns:columns} ?
-         csvindex ::na =! {csvindex:csvindex} ?
-      } dataframe.opencsv
-    } {
-      {, data ::na =! {data :data} ?
-         index ::na =! {index:index} ?
-         columns ::na =! {columns:columns} ?
-      } dataframe.fromdata
-    } .?
-
-  }:new;
-
-
-  .# {colnm::list rownm::list cols::list : numofrows,
-
-  .# Data is a list of lists (columns)
-  {kwargs::dict : index(::na) columns(::na) data(::na) numofrows,
-    kwargs .W
+    {kwargs::dict : columns(::na) index(::na) data(::na) csvindex(::na) filename header(1) numofrows,
+        kwargs .W
+
+        filename :T ::str = {
+            {,
+                filename :filename
+                header :header
+                index ::na =! {index:index} ?
+                columns ::na =! {columns:columns} ?
+                csvindex ::na =! {csvindex:csvindex} ?
+            } dataframe.opencsv
+        } {
+            {,
+                data ::na =! {data :data} ?
+                index ::na =! {index:index} ?
+                columns ::na =! {columns:columns} ?
+            } dataframe.fromdata
+        } .?
+
+    }:new;
+
+
+    .# {colnm::list rownm::list cols::list : numofrows,
+
+    .# Data is a list of lists (columns)
+    {kwargs::dict : index(::na) columns(::na) data(::na) numofrows,
+            kwargs .W
 
-    data ::na = {
-      0 [
-        columns ::na = {0} {columns E} .? :c
-        index ::na = {0} {index E} .?
-        ] L :data;
-    } ?
+        data ::na = {
+            0 [
+                columns ::na = {0} {columns E} .? :c
+                index ::na = {0} {index E} .?
+            ] L :data;
+        } ?
 
-    columns ::na = {
-      data E dataframe.gencolnames :columns;
-    } {
-      columns #P :columns;
-    } .?
+        columns ::na = {
+            data E dataframe.gencolnames :columns;
+        } {
+            columns #P :columns;
+        } .?
 
-    data E 0 = {
-      .# no data -> empty dataframe
-      0:numofrows;
-    } {
-      .# num of rows is first column length
-      data 0 I E :numofrows;
-    } .?
+        data E 0 = {
+            .# no data -> empty dataframe
+            0:numofrows;
+        } {
+            .# num of rows is first column length
+            data 0 I E :numofrows;
+        } .?
 
-    .# if no index is given, generate one
-    index ::na = {
-      numofrows 0 = {
-        []:index;
-      } {
-        numofrows .R :index;
-      } .?
-    } ?
+        .# if no index is given, generate one
+        index ::na = {
+            numofrows 0 = {
+                []:index;
+            } {
+                numofrows .R :index;
+            } .?
+        } ?
+
+        .# Additional checks
+
+        data E columns E =! {
+            "column names and given data lengths do not match" .D
+        } ?
 
-    .# Additional checks
+        numofrows index E =! {
+            "row title lengths do not match numofrows: $numofrows, index length: $(index E)" .D
+        } ?
 
-    data E columns E =! {
-      "column names and given data lengths do not match" .D
-    } ?
+        data #{E numofrows =} {&}F ! {
+            "dataframe.fromdata: all row lengths must be equal" .D
+        } ?
 
-    numofrows index E =! {
-      "row title lengths do not match numofrows: $numofrows, index length: $(index E)" .D
-    } ?
 
-    data #{E numofrows =} {&}F ! {
-      "dataframe.fromdata: all row lengths must be equal" .D
-    } ?
+        {,
+            columns :columns
+            index :index
+            data :values
+            numofrows :numofrows
+        } dataframe MO
 
+    }:fromdata;
 
-    {,
-      columns :columns
-      index :index
-      data :values
-      numofrows :numofrows
-    } dataframe MO
 
-  }:fromdata;
+    .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
+    {kwargs::dict : filename(::na) index(::na) columns(::na) csvindex(0) header data,
+        kwargs.W
+
+        filename ::na = {
+            "dataframe.opencsv: filename not provided" .D
+        } ?
+
+        filename opencsv :data;
+
+        header {
+            data E 0 = {"dataframe.opencsv: no header found in file" .D} ?
+            data V :columns; ;
+        } ?
+
+        .# Given data is list of rows, transform to list of cols
+        data .T :data;
 
+        .# Use the first col of the csv as the index?
+        csvindex {
+            data V :index; ;
+            columns V ;;
+        } ?
 
-  .#? SBB dataframe.opencsv\n  open a csv file and create a dataframe\n  BB = rowheaders, colheaders
-  {kwargs::dict : filename(::na) index(::na) columns(::na) csvindex(0) header data,
-    kwargs.W
 
-    filename ::na = {
-      "dataframe.opencsv: filename not provided" .D
-    } ?
 
-    filename opencsv :data;
+        {,
+            .# define only if they exist
+            index ::na =! {index:index} ?
+            columns ::na =! {columns:columns} ?
 
-    header {
-      data E 0 = {"dataframe.opencsv: no header found in file" .D} ?
-      data V :columns; ;
-    } ?
+            .# opencsv returns a list of rows
+            data :data
+        }
+        dataframe.fromdata
+    }:opencsv;
 
-    .# Given data is list of rows, transform to list of cols
-    data .T :data;
 
-    .# Use the first col of the csv as the index?
-    csvindex {
-      data V :index; ;
-      columns V ;;
-    } ?
+    {[]$$dataframe.new}:newempty;
 
 
 
-    {,
-      .# define only if they exist
-      index ::na =! {index:index} ?
-      columns ::na =! {columns:columns} ?
 
-      .# opencsv returns a list of rows
-      data :data
-    }
-    dataframe.fromdata
-  }:opencsv;
+    .############
+    .# Indexing #
+    .############
 
+    .#? i::list self::dataframe dataframe.iloc\n  index a dataframe using row and col indices
+    {i::list self : r c cols,
+        i E 2 = ! {
+            "dataframe.iloc: requires length 2 list. Recieved $i" .D
+        } ?
 
-  {[]__dataframe.new}:newempty;
+        i 0 I :r;
+        i 1 I :c;
 
+        r :T ::num =
+        c :T ::num = & {
+            .# r and c are both numbers, return a value
+            self.values c I r I
+        } {
+            .# r or c is a list, return a new dataframe
 
+            self.values c I
+            .# if c is a number, wrap in array
+            c :T ::num = {A} ?
+            .# if r is a number, wrap each in an array
+            #{rI r :T ::num = {A} ?}
+            :cols;
 
+            {,
+                cols :data;
+                self.index r I r:T ::num = {A} ? :index;
+                self.columns c I  c:T ::num = {A} ? :columns;
+            } dataframe!
+        } .?
 
-  .############
-  .# Indexing #
-  .############
+    }:iloc;
 
-  .#? i::list self::dataframe dataframe.iloc\n  index a dataframe using row and col indices
-  {i::list self : r c cols,
-    i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
-    i 0 I :r;
-    i 1 I :c;
+    .#? i::list self::dataframe dataframe.loc\n  index a dataframe using row and col indices or names
+    {i::list self : r c,
+        i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
-    r :T ::num =
-    c :T ::num = & {
-      .# r and c are both numbers, return a value
-      self.values c I r I
+        i 0 I :r;
+        i 1 I :c;
 
-    } {
+        r self.index   dataframe.toindex :r;
+        c self.columns dataframe.toindex :c;
 
-      .# r or c is a list, return a new dataframe
+        [r c] self.iloc
+    }:loc;
 
-      self.values c I
-      .# if c is a number, wrap in array
-      c :T ::num = {A} ?
-      .# if r is a number, wrap each in an array
-      #{rI r :T ::num = {A} ?}
-      :cols;
 
-      {, cols :data;
-         self.index r I r:T ::num = {A} ? :index;
-         self.columns c I  c:T ::num = {A} ? :columns;
-      } dataframe!
+    .#? i::any hdr::list dataframe.toindex\n  convert i to a list of numeric indices for the items in hdr
+    {i hdr,
+        i :T ::num = {
+            i
+        } {
+            i :T ::str = {
+                hdr i N \;
+                $ :-1 = {
+                    "dataframe.toindex: index $i not found in $hdr" .D
+                } ?
+            } {
+                i #{hdr dataframe.toindex}
+            }.?
+        }.?
 
-    } .?
+    }:toindex;
 
-  }:iloc;
 
+    .#? i::any self::dataframe dataframe.row\n  get the rows at indices i
+    {i self,
+        self.values .T i self.index dataframe.toindex I
+    }:row;
 
-  .#? i::list self::dataframe dataframe.loc\n  index a dataframe using row and col indices or names
-  {i::list self : r c,
-    i E 2 = ! {"dataframe.iloc: requires length 2 list. Recieved $i" .D} ?
 
-    i 0 I :r;
-    i 1 I :c;
+    .#? i::any self::dataframe dataframe.row\n  get the cols at indices i
+    {i self,
+        self.values i self.columns dataframe.toindex I
+    }:col;
 
-    r self.index   dataframe.toindex :r;
-    c self.columns dataframe.toindex :c;
 
-    [r c] self.iloc
-  }:loc;
+    {index::list self::dataframe,
+        index self.loc
+    }:getindex;
 
 
-  .#? i::any hdr::list dataframe.toindex\n  convert i to a list of numeric indices for the items in hdr
-  {i hdr,
-    i :T ::num = {
-      i
-    } { i :T ::str = {
-      hdr i N \;
-      _ :-1 = {"dataframe.toindex: index $i not found in $hdr" .D} ?
-    } {
-      i #{hdr dataframe.toindex}
-    }.?}.?
+    .################
+    .# Transforming #
+    .################
 
-  }:toindex;
+    .#? index rowdata self dataframe.setrow\n  set a row of a dataframe given its index
+    {index rowdata::list self : ix,
+        rowdataE self.columnsE =! {
+            "addrow: row and col lengths to not match:\n\t$rowdata\n\t$(self.columns)" .D
+        } ?
 
+        .# Does the index exist?
+        self.index index N :ix :1 = {
+            .# The index does not exist
+            .# Add a row to the cols
+            index self.index .B ;
+            self.values # {0\.B} ;
+            self.values 0I E V :ix;
+        } ?
 
-  .#? i::any self::dataframe dataframe.row\n  get the rows at indices i
-  {i self,
-    self.values .T i self.index dataframe.toindex I
-  }:row;
+        .# pop the result of `N`
+        ;
 
+        .# Append each data to the columns
+        {
+            rowdata E.R # {col,
+                rowdata.[col] self.values.[col].:[ix]
+            };
+        } {e,
+            .# There was an error, return the dataframe
+            .#   to its original state
+            self.index B;
+            self.values # {B;}
 
-  .#? i::any self::dataframe dataframe.row\n  get the cols at indices i
-  {i self,
-    self.values i self.columns dataframe.toindex I
-  }:col;
+            .# Throw the error message
+            e .D
+        } .K
 
+    }:setrow;
 
-  {index::list self::dataframe,
-    index self.loc
-  }:getindex;
+    {column self : i,
+        column self.columns dataframe.toindex :i;
+        self.values .T {iI} .$ .T self.:values
+    }:sort;
 
+    .##########
+    .# Output #
+    .##########
 
-  .################
-  .# Transforming #
-  .################
-
-  .#? index rowdata self dataframe.setrow\n  set a row of a dataframe given its index
-  {index rowdata::list self : ix,
-    rowdataE self.columnsE =!
-      {"addrow: row and col lengths to not match:\n\t$rowdata\n\t$(self.columns)" .D} ?
-
-    .# Does the index exist?
-    self.index index N :ix :1 = {
-      .# The index does not exist
-      .# Add a row to the cols
-      index self.index .B ;
-      self.values # {0\.B} ;
-      self.values 0I E V :ix;
-    } ?
-
-    .# pop the result of `N`
-    ;
-
-    .# Append each data to the columns
-    {
-      rowdata E.R # {col,
-        rowdata.[col] self.values.[col].:[ix]
-      };
-    } {e,
-      .# There was an error, return the dataframe
-      .#   to its original state
-      self.index B;
-      self.values # {B;}
-
-      .# Throw the error message
-      e .D
-    } .K
-
-  }:setrow;
-
-  {column self : i,
-    column self.columns dataframe.toindex :i;
-    self.values .T {iI} .$ .T self.:values
-  }:sort;
-
-  .##########
-  .# Output #
-  .##########
-
-  {self,
+    {self,
     [
-    self.columns _\; ""\.V " | " *
+    self.columns $\; ""\.V " | " *
     "---" self.columns E B L "|" *
     ] # '| surround "\n" *
 
     self.index E.R # {i,
-      self.index i I P '|\.B
-      self.values i #{IP} "|" *
-      +
-      '| surround
+    self.index i I P '|\.B
+    self.values i #{IP} "|" *
+    +
+    '| surround
     } "\n" *
 
     "\n"\ ++
 
-  }:tomarkdown;
+    }:tomarkdown;
 
 
-  {kwargs self : noindex(0) border(0),
-    kwargs .W
+    {kwargs self : noindex(0) border(0),
+        kwargs .W
 
-    "<table border=$border>\n\t<thead><tr><th>"
-    self.columns _\;
-    noindex ! {""\.V} ?
-    "</th><th>" *
-    "</th></tr></thead>\n"
-    ++
+        "<table border=$border>\n\t<thead><tr><th>"
+        self.columns $\;
+        noindex ! {""\.V} ?
+        "</th><th>" *
+        "</th></tr></thead>\n"
+        ++
 
-    self.index E.R # {i,
-      "\t<tr>"
+        self.index E.R # {i,
+            "\t<tr>"
 
-      noindex ! {
-        "<td>"
-        self.index i I P tohtml +
-        "</td>" +
-      } ?
+            noindex ! {
+                "<td>"
+                self.index i I P tohtml +
+                "</td>" +
+            } ?
 
-      "<td>" +
-      self.values i #{IP tohtml} "</td><td>" * +
-      "</td></tr>" +
+            "<td>" +
+            self.values i #{IP tohtml} "</td><td>" * +
+            "</td></tr>" +
+        } "\n" * +
 
-    } "\n" * +
+        "\n</table>" +
+    }:tohtml;
 
-    "\n</table>" +
+    .#####################
+    .# Private Functions #
+    .#####################
 
-  }:tohtml;
-
-  .#####################
-  .# Private Functions #
-  .#####################
-
-  {n,
-    n 26 :< {
-      ['a _nV+] R#P
-    } {
-      n 26- :n;
-      "az"R#P
-      n 26 .% 'a_@+K R "az"R {\P+} pu #~ n .< K
-    } .?
-  }:gencolnames;
+    {n,
+        n 26 :< {
+            ['a $nV+] R#P
+        } {
+            n 26- :n;
+            "az"R#P
+            n 26 .% 'a$@+K R "az"R {\P+}.pu #~ n .< K
+        } .?
+    }:gencolnames;
 
 }:dataframe;
 
@@ -356,8 +361,8 @@ dataframe:f;
 
 .{ Sample dataframe
     {, ["total" "percent"]:columns
-       ["a" "b"]:index
-       [[10 15][40 60]]:data
+        ["a" "b"]:index
+        [[10 15][40 60]]:data
     } dataframe!:df;
 .}
 
@@ -371,43 +376,42 @@ dataframe:f;
 import ::test
 
 `~ {:ts,
+    "dataframe" testset! :ts;
 
-  "dataframe" testset! :ts;
+    .# Indexing
 
-  .# Indexing
+    .# Basics
+    {0 {,3R:index"ac"R:columns9R[3$]L:data}f!.col} [ [1 2 3] ] ts+
+    {[0 :1] {,3R:index"ac"R:columns9R[3$]L:data}f!.col} [ [[1 2 3][7 8 9]] ] ts+
+    {0 {,3R:index"ac"R:columns9R[3$]L:data}f!.row} [ [1 4 7] ] ts+
+    {[0 :1] {,3R:index"ac"R:columns9R[3$]L:data}f!.row} [ [[1 4 7][3 6 9]] ] ts+
 
-  .# Basics
-  {0 {,3R:index"ac"R:columns9R[3_]L:data}f!.col} [ [1 2 3] ] ts+
-  {[0 :1] {,3R:index"ac"R:columns9R[3_]L:data}f!.col} [ [[1 2 3][7 8 9]] ] ts+
-  {0 {,3R:index"ac"R:columns9R[3_]L:data}f!.row} [ [1 4 7] ] ts+
-  {[0 :1] {,3R:index"ac"R:columns9R[3_]L:data}f!.row} [ [[1 4 7][3 6 9]] ] ts+
+    .# iloc
+    {[2 2] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc} [9] ts+
+    {[[] 2] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[7 8 9]] ] ts+
+    {[2 []] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[3][6][9]] ] ts+
+    {[[] []] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+    {[0 [0 1]] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1][4]] ] ts+
+    {[[0 1] 0] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1 2]] ] ts+
+    {[[0 1] []] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1 2][4 5][7 8]] ] ts+
+    {[[] [0 1]] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1 2 3][4 5 6]] ] ts+
+    {[[0 1][0 1]] {,3R:index"ac"R:columns9R[3$]L:data}f!.iloc.values} [ [[1 2][4 5]] ] ts+
 
-  .# iloc
-  {[2 2] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc} [9] ts+
-  {[[] 2] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[7 8 9]] ] ts+
-  {[2 []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[3][6][9]] ] ts+
-  {[[] []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
-  {[0 [0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1][4]] ] ts+
-  {[[0 1] 0] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2]] ] ts+
-  {[[0 1] []] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2][4 5][7 8]] ] ts+
-  {[[] [0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2 3][4 5 6]] ] ts+
-  {[[0 1][0 1]] {,3R:index"ac"R:columns9R[3_]L:data}f!.iloc.values} [ [[1 2][4 5]] ] ts+
+    .# loc
+    {["z" "c"] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc} [9] ts+
+    {[[] "c"] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[7 8 9]] ] ts+
+    {["z" []] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[3][6][9]] ] ts+
+    {[[] []] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+    {["x" ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1][4]] ] ts+
+    {[["x" "y"] "a"] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1 2]] ] ts+
+    {[["x" "y"] []] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1 2][4 5][7 8]] ] ts+
+    {[[] ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1 2 3][4 5 6]] ] ts+
+    {[["x" "y"]["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3$]L:data}f!.loc.values} [ [[1 2][4 5]] ] ts+
 
-  .# loc
-  {["z" "c"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc} [9] ts+
-  {[[] "c"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[7 8 9]] ] ts+
-  {["z" []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[3][6][9]] ] ts+
-  {[[] []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
-  {["x" ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1][4]] ] ts+
-  {[["x" "y"] "a"] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2]] ] ts+
-  {[["x" "y"] []] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2][4 5][7 8]] ] ts+
-  {[[] ["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2 3][4 5 6]] ] ts+
-  {[["x" "y"]["a" "b"]] {,"xz"R#P:index"ac"R#P:columns9R[3_]L:data}f!.loc.values} [ [[1 2][4 5]] ] ts+
+    .# Other
+    {100 dataframe.gencolnames [0 25 26 :1] I} [ ["a" "z" "aa" "cv"] ] ts+
+    {"b" {,"xz"R#P:index"ac"R#P:columns[3R [5 2 8] 3R]:data}f!.sort.values} [ [[2 1 3][2 5 8][2 1 3]] ] ts+
 
-  .# Other
-  {100 dataframe.gencolnames [0 25 26 :1] I} [ ["a" "z" "aa" "cv"] ] ts+
-  {"b" {,"xz"R#P:index"ac"R#P:columns[3R [5 2 8] 3R]:data}f!.sort.values} [ [[2 1 3][2 5 8][2 1 3]] ] ts+
-
-  ts aya.addtest
+    ts aya.addtest
 
 }

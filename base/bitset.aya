@@ -5,31 +5,31 @@
 
 {,
 
-  ::bitset:type;
+    ::bitset:type;
 
-  {s::num,
-    {, s:size 0sL:bits } bitset MO
-  }:new;
+    {s::num,
+        {, s:size 0sL:bits } bitset MO
+    }:new;
 
-  {l::list,
-    {, lE:size l:bits } bitset MO
-  }:fromlist;
+    {l::list,
+        {, lE:size l:bits } bitset MO
+    }:fromlist;
 
-  {self,
-    self.bits
-  }:str:repr;
+    {self,
+        self.bits
+    }:str:repr;
 
-  {n self,
-    1 self.bits.:[n]
-  }:set;
+    {n self,
+        1 self.bits.:[n]
+    }:set;
 
-  {n self,
-    0 self.bits.:[n]
-  }:reset;
+    {n self,
+        0 self.bits.:[n]
+    }:reset;
 
-  {other self,
-    other.bits self.bits {&}.&
-    bitset.fromlist
-  }:and;
+    {other self,
+        other.bits self.bits {&}.&
+        bitset.fromlist
+    }:and;
 
 }:bitset;

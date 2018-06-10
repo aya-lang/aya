@@ -25,12 +25,13 @@ public class Tuple {
 	public ArrayList<Obj> evalToResults() {
 		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
+			Block b = elements[i].duplicate();
 			try {
-				elements[i].eval();
+				b.eval();
 			} catch (EmptyStackException e) {
 				throw new RuntimeException("Empty Stack in tuple");
 			}
-			out.add(elements[i].pop());
+			out.add(b.pop());
 		}
 		return out;
 	}

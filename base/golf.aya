@@ -14,7 +14,7 @@ import """
   set
   queue
   sys
-  file
+  io
   shell
   iterator
   plot
@@ -111,4 +111,4 @@ matrix:m;
 
 
 .# Simple example: addition table
-.# 6r_ì¶¦Ŗ
+.# 6r$ì¶¦Ŗ

@@ -26,7 +26,7 @@ import ::sys
     .#? dir::str ::path.add\n  append file or dir to path, if path is file, don't change
     {dir::str self,
         .# Modify a copy of this path
-        self _ :self; ;
+        self $ :self; ;
         .# Can only join if the path is not a file
         self.isfile ! {
         self.dirs dir path.split K
@@ -74,7 +74,7 @@ import ::sys
 
     .# Regular expression used for splitting path strings
     .# If :9c is "\", return escaped "\\" otherwise return :9c
-    sys.iswindows {:9c_+} {:9c} .? :filesplit;
+    sys.iswindows {:9c$+} {:9c} .? :filesplit;
 
     .# Split a string using the system file sepatator and remove empy dir names
     {dir::str,
@@ -93,11 +93,11 @@ import ::sys
         dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
 
         .# Does the path contain a "~" ?
-        _:1=! {
+        $:1=! {
             .< U .# Take all directories before the "~" and reverse
 
             .# Append the home dir to the front
-            path.home.dirs _\;  .# Copy home.dirs
+            path.home.dirs $\;  .# Copy home.dirs
             \K                  .# Append to front
         } {
             ;U .# Pop the -1 and put the list back
@@ -138,7 +138,8 @@ import ::sys
 }:path;
 
 
-{, ""7MZ path.split :dirs} path MO path.:home;
+.#{, ""7MZ path.split :dirs} path MO path.:home;
+""7MZ path! path.:home;
 {, ""2MZ path.split :dirs} path MO path.:dfltworking;
 
 

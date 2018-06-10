@@ -5,62 +5,61 @@
 
 .# Test object
 {,
-  ::test :type;
+    ::test :type;
 
-  .# Create a new test
-  .#   blk:      the stack to be evauated
-  .#   expected: the state of the stack after evaluation
-  .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
-  {blk::block expected::list,
-    {, "blk".Z:blk expected:expected } test MO
-  }:new;
+    .# Create a new test
+    .#   blk:      the stack to be evauated
+    .#   expected: the state of the stack after evaluation
+    .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
+    {blk::block expected::list,
+        {, "blk".Z:blk expected:expected } test MO
+    }:new;
 
-  .# Run the test. If passed, return "", else return error message
-  {self : res blk expected,
-    self.W
+    .# Run the test. If passed, return "", else return error message
+    {self : res blk expected,
+        self.W
 
-    {[blk _\;] :res;} {e,
-      "Exception in test $blk:\n\t$e" .D
+        {[blk $\;] :res;} {e,
+        "Exception in test $blk:\n\t$e" .D
     } .K
 
 
     res expected = ! {
-      ["Test failed: $blk\n"
-       "\tExpected: $expected\n"
-       "\tRecieved: $res" ]S
+        ["Test failed: $blk\n"
+         "\tExpected: $expected\n"
+         "\tRecieved: $res" ]S
     } { "" } .?
 
-  }:run;
-
+    }:run;
 }:test;
 
 
 
 {,
-  ::testset :type;
+    ::testset :type;
 
-  .# Create a new test set
-  {name::str,
-    {, name:name []:tests} testset MO
-  }:new;
+    .# Create a new test set
+    {name::str,
+        {, name:name []:tests} testset MO
+    }:new;
 
-  .# Add a new test to the test set
-  {blk::block expected::list self,
-    "blk".Z expected test!
-    self.tests
-    K ;
-  }:add;
+    .# Add a new test to the test set
+    {blk::block expected::list self,
+        "blk".Z expected test!
+        self.tests
+        K ;
+    }:add;
 
-  .# Evaluate all tests, if any failed, report
-  {self,
-    self.tests #{.run} [""] :|
-    .E 0 = {
-      ; "testset '$(self.name)': All tests passed!" :P
-    } {
-      "testset '$(self.name)': Tests failed!\n" :P
-      #{:P}
-    } .?
-  }:run;
+    .# Evaluate all tests, if any failed, report
+    {self,
+        self.tests #{.run} [""] :|
+        .E 0 = {
+            ; "testset '$(self.name)': All tests passed!" :P
+        } {
+            "testset '$(self.name)': Tests failed!\n" :P
+            #{:P}
+        } .?
+    }:run;
 }:testset;
 
 
@@ -70,11 +69,11 @@
 [] aya.:tests
 
 {ts::testset,
-  aya.tests ts K ;
+    aya.tests ts K ;
 } aya.:addtest;
 
 {
-  aya.tests # {ts,
-    ts.run
-  };
+    aya.tests # {ts,
+        ts.run
+    };
 } aya.:doruntests;

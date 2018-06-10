@@ -371,9 +371,9 @@ public class Parser {
 			}
 			
 			//Variable Name
-			else if (isLowerAlpha(current)) {
+			else if (Variable.isValidChar(current)) {
 				StringBuilder sb = new StringBuilder(""+current);
-				while (in.hasNext() && isLowerAlpha(in.peek())) {
+				while (in.hasNext() && Variable.isValidChar(in.peek())) {
 					sb.append(in.next());
 				}
 				if(sb.length() > 12) {
@@ -396,7 +396,7 @@ public class Parser {
 				if (in.hasNext() && in.peek() == ':') {
 					in.next(); // Move to the next colon
 					String sym = "";
-					while(in.hasNext() && isLowerAlpha(in.peek())) {
+					while(in.hasNext() && Variable.isValidChar(in.peek())) {
 						sym += in.next();
 					}
 					
@@ -442,6 +442,10 @@ public class Parser {
 				tokens.add(new VarToken(CharacterParser.getName(current)));
 			}
 			
+			else if (current == '_')
+			{
+				throw new SyntaxError("Underscore is depreciated");
+			}
 			//Single Character Special Tokens
 			else {
 				SpecialToken tmp = SpecialToken.get(current);

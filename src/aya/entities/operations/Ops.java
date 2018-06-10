@@ -145,7 +145,7 @@ public class Ops {
 		/* 33 !  */ new OP_Bang(),
 		/* 34 "  */ null, // String
 		/* 35 #  */ new OP_Pound(),
-		/* 36 $  */ new OP_Dollar(),
+		/* 36 $  */ new OP_Underscore(),
 		/* 37 %  */ new OP_Percent(),
 		/* 38 &  */ new OP_And(),
 		/* 39 '  */ null, // Character / Base Numbers
@@ -170,7 +170,7 @@ public class Ops {
 		/* 64 @  */ new OP_At(),
 		/* 65 A  */ new OP_A(),
 		/* 66 B  */ new OP_B(),
-		/* 67 C  */ null,
+		/* 67 C  */ new OP_Dollar(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
 		/* 70 F  */ new OP_F(),
@@ -198,7 +198,7 @@ public class Ops {
 		/* 92 \  */ new OP_Backslash(),
 		/* 93 ]  */ null, // List Literal
 		/* 94 ^  */ new OP_Caret(),
-		/* 95 _  */ new OP_Underscore(),
+		/* 95 _  */ null, // Symbol
 		/* 96 `  */ null, // Hold Operator
 	};
 	
@@ -222,7 +222,7 @@ public class Ops {
 	
 	public static boolean isOpChar(char c) {
 		char[] op_exceptions = {
-				',','(',')','[',']','`','.','"','\'', '#',
+				',','(',')','[',']','`','.','"','\'', '#','_'
 			};		
 		
 		//Check Exceptions
@@ -1134,7 +1134,7 @@ class OP_G extends Operation {
 				}
 			} else {
 				String path = "";
-				if (name.charAt(0) == '/' || name.contains(":\\")) {
+				if (name.charAt(0) == '/' || name.contains(":\\") || name.contains(":/")) {
 					path = name;
 				} else {
 					path = AyaPrefs.getWorkingDir() + name;
