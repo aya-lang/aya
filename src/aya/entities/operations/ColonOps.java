@@ -653,7 +653,7 @@ class OP_Colon_T extends Operation {
 		this.name = ":T";
 	}
 	
-	private static final long TYPE_ID = Variable.encodeString("type");
+	private static final long TYPE_ID = Variable.encodeString("__type__");
 	
 	@Override
 	public void execute(Block block) {

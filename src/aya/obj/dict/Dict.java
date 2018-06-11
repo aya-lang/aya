@@ -18,8 +18,8 @@ import aya.variable.VariableSet;
  */
 public class Dict extends Obj {
 	
-	public static final long STR = Variable.encodeString("str");
-	public static final long REPR = Variable.encodeString("repr");
+	public static final long STR = Variable.encodeString("__str__");
+	public static final long REPR = Variable.encodeString("__repr__");
 	
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
