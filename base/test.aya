@@ -13,7 +13,7 @@
     .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
     {blk::block expected::list,
         {, "blk".Z:blk expected:expected } test MO
-    }:new;
+    }:__new__;
 
     .# Run the test. If passed, return "", else return error message
     {self : res blk expected,
@@ -41,14 +41,14 @@
     .# Create a new test set
     {name::str,
         {, name:name []:tests} testset MO
-    }:new;
+    }:__new__;
 
     .# Add a new test to the test set
     {blk::block expected::list self,
         "blk".Z expected test!
         self.tests
         K ;
-    }:add;
+    }:__add__;
 
     .# Evaluate all tests, if any failed, report
     {self,

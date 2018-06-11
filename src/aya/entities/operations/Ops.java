@@ -67,77 +67,77 @@ public class Ops {
 	
 	// NUMERIC - Binary
 	// mod
-	public static final KeyVariable KEYVAR_MOD	= new KeyVariable("mod");
-	public static final KeyVariable KEYVAR_RMOD	= new KeyVariable("rmod");
+	public static final KeyVariable KEYVAR_MOD	= new KeyVariable("__mod__");
+	public static final KeyVariable KEYVAR_RMOD	= new KeyVariable("__rmod__");
 	// mul
-	public static final KeyVariable KEYVAR_MUL	= new KeyVariable("mul");
-	public static final KeyVariable KEYVAR_RMUL	= new KeyVariable("rmul");
+	public static final KeyVariable KEYVAR_MUL	= new KeyVariable("__mul__");
+	public static final KeyVariable KEYVAR_RMUL	= new KeyVariable("__rmul__");
 	// add
-	public static final KeyVariable KEYVAR_ADD	= new KeyVariable("add");
-	public static final KeyVariable KEYVAR_RADD	= new KeyVariable("radd");
+	public static final KeyVariable KEYVAR_ADD	= new KeyVariable("__add__");
+	public static final KeyVariable KEYVAR_RADD	= new KeyVariable("__radd__");
 	// sub
-	public static final KeyVariable KEYVAR_SUB	= new KeyVariable("sub");
-	public static final KeyVariable KEYVAR_RSUB	= new KeyVariable("rsub");
+	public static final KeyVariable KEYVAR_SUB	= new KeyVariable("__sub__");
+	public static final KeyVariable KEYVAR_RSUB	= new KeyVariable("__rsub__");
 	// div 
-	public static final KeyVariable KEYVAR_DIV	= new KeyVariable("div");
-	public static final KeyVariable KEYVAR_RDIV	= new KeyVariable("rdiv");
+	public static final KeyVariable KEYVAR_DIV	= new KeyVariable("__div__");
+	public static final KeyVariable KEYVAR_RDIV	= new KeyVariable("__rdiv__");
 	// idiv
-	public static final KeyVariable KEYVAR_IDIV	= new KeyVariable("idiv");
-	public static final KeyVariable KEYVAR_RIDIV= new KeyVariable("ridiv");
+	public static final KeyVariable KEYVAR_IDIV	= new KeyVariable("__idiv__");
+	public static final KeyVariable KEYVAR_RIDIV= new KeyVariable("__ridiv__");
 	// pow
-	public static final KeyVariable KEYVAR_POW	= new KeyVariable("pow");
-	public static final KeyVariable KEYVAR_RPOW	= new KeyVariable("rpow");
+	public static final KeyVariable KEYVAR_POW	= new KeyVariable("__pow__");
+	public static final KeyVariable KEYVAR_RPOW	= new KeyVariable("__rpow__");
 	
 	// NUMERIC - Comparison
-	public static final KeyVariable KEYVAR_LT = new KeyVariable("lt");
-	public static final KeyVariable KEYVAR_GT = new KeyVariable("gt");
-	public static final KeyVariable KEYVAR_LEQ = new KeyVariable("leq");
-	public static final KeyVariable KEYVAR_GEQ = new KeyVariable("geq");
-	public static final KeyVariable KEYVAR_EQ	= new KeyVariable("eq");
+	public static final KeyVariable KEYVAR_LT = new KeyVariable("__lt__");
+	public static final KeyVariable KEYVAR_GT = new KeyVariable("__gt__");
+	public static final KeyVariable KEYVAR_LEQ = new KeyVariable("__leq__");
+	public static final KeyVariable KEYVAR_GEQ = new KeyVariable("__geq__");
+	public static final KeyVariable KEYVAR_EQ	= new KeyVariable("__eq__");
 	
 	// Numeric - Monads
-	public static final KeyVariable KEYVAR_NEGATE = new KeyVariable("negate");
-	public static final KeyVariable KEYVAR_CEIL = new KeyVariable("ceil");
-	public static final KeyVariable KEYVAR_FLOOR = new KeyVariable("floor");
-	public static final KeyVariable KEYVAR_ABS = new KeyVariable("abs");
-	public static final KeyVariable KEYVAR_SIGNUM = new KeyVariable("signum");
-	public static final KeyVariable KEYVAR_INC = new KeyVariable("inc");
-	public static final KeyVariable KEYVAR_DEC = new KeyVariable("dec");
+	public static final KeyVariable KEYVAR_NEGATE = new KeyVariable("__negate__");
+	public static final KeyVariable KEYVAR_CEIL = new KeyVariable("__ceil__");
+	public static final KeyVariable KEYVAR_FLOOR = new KeyVariable("__floor__");
+	public static final KeyVariable KEYVAR_ABS = new KeyVariable("__abs__");
+	public static final KeyVariable KEYVAR_SIGNUM = new KeyVariable("__signum__");
+	public static final KeyVariable KEYVAR_INC = new KeyVariable("__inc__");
+	public static final KeyVariable KEYVAR_DEC = new KeyVariable("__dec__");
 	
 	// Numeric - Math
-	public static final KeyVariable KEYVAR_SIN = new KeyVariable("sin");
-	public static final KeyVariable KEYVAR_ASIN = new KeyVariable("asin");
-	public static final KeyVariable KEYVAR_COS = new KeyVariable("cos");
-	public static final KeyVariable KEYVAR_ACOS = new KeyVariable("acos");
-	public static final KeyVariable KEYVAR_TAN = new KeyVariable("tan");
-	public static final KeyVariable KEYVAR_ATAN = new KeyVariable("atan");
-	public static final KeyVariable KEYVAR_LN = new KeyVariable("ln");
-	public static final KeyVariable KEYVAR_LOG = new KeyVariable("log");
-	public static final KeyVariable KEYVAR_EXP = new KeyVariable("exp");
-	public static final KeyVariable KEYVAR_FACT = new KeyVariable("fact");
-	public static final KeyVariable KEYVAR_SQRT = new KeyVariable("sqrt");
+	public static final KeyVariable KEYVAR_SIN = new KeyVariable("__sin__");
+	public static final KeyVariable KEYVAR_ASIN = new KeyVariable("__asin__");
+	public static final KeyVariable KEYVAR_COS = new KeyVariable("__cos__");
+	public static final KeyVariable KEYVAR_ACOS = new KeyVariable("__acos__");
+	public static final KeyVariable KEYVAR_TAN = new KeyVariable("__tan__");
+	public static final KeyVariable KEYVAR_ATAN = new KeyVariable("__atan__");
+	public static final KeyVariable KEYVAR_LN = new KeyVariable("__ln__");
+	public static final KeyVariable KEYVAR_LOG = new KeyVariable("__log__");
+	public static final KeyVariable KEYVAR_EXP = new KeyVariable("__exp__");
+	public static final KeyVariable KEYVAR_FACT = new KeyVariable("__fact__");
+	public static final KeyVariable KEYVAR_SQRT = new KeyVariable("__sqrt__");
 	
 	// List
-	public static final KeyVariable KEYVAR_GETINDEX = new KeyVariable("getindex");
-	public static final KeyVariable KEYVAR_SETINDEX = new KeyVariable("setindex");
-	public static final KeyVariable KEYVAR_HEAD = new KeyVariable("head");
-	public static final KeyVariable KEYVAR_TAIL = new KeyVariable("tail");
-	public static final KeyVariable KEYVAR_MAP = new KeyVariable("map");
-	public static final KeyVariable KEYVAR_LEN = new KeyVariable("len");
-	public static final KeyVariable KEYVAR_REVERSE = new KeyVariable("reverse");
-	public static final KeyVariable KEYVAR_SORT = new KeyVariable("sort");
+	public static final KeyVariable KEYVAR_GETINDEX = new KeyVariable("__getindex__");
+	public static final KeyVariable KEYVAR_SETINDEX = new KeyVariable("__setindex__");
+	public static final KeyVariable KEYVAR_HEAD = new KeyVariable("__head__");
+	public static final KeyVariable KEYVAR_TAIL = new KeyVariable("__tail__");
+	public static final KeyVariable KEYVAR_MAP = new KeyVariable("__map__");
+	public static final KeyVariable KEYVAR_LEN = new KeyVariable("__len__");
+	public static final KeyVariable KEYVAR_REVERSE = new KeyVariable("__reverse__");
+	public static final KeyVariable KEYVAR_SORT = new KeyVariable("__sort__");
 
 	
 	// Misc.
-	public static final KeyVariable KEYVAR_AND		= new KeyVariable("and");
-	public static final KeyVariable KEYVAR_RAND		= new KeyVariable("rand");
-	public static final KeyVariable KEYVAR_OR		= new KeyVariable("or");
-	public static final KeyVariable KEYVAR_ROR		= new KeyVariable("ror");
-	public static final KeyVariable KEYVAR_RANDOM 	= new KeyVariable("random");
-	public static final KeyVariable KEYVAR_RANGE 	= new KeyVariable("range");
-	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("new");
-	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("float");
-	public static final KeyVariable KEYVAR_EACH 	= new KeyVariable("each");
+	public static final KeyVariable KEYVAR_AND		= new KeyVariable("__and__");
+	public static final KeyVariable KEYVAR_RAND		= new KeyVariable("__rand__");
+	public static final KeyVariable KEYVAR_OR		= new KeyVariable("__or__");
+	public static final KeyVariable KEYVAR_ROR		= new KeyVariable("__ror__");
+	public static final KeyVariable KEYVAR_RANDOM 	= new KeyVariable("__random__");
+	public static final KeyVariable KEYVAR_RANGE 	= new KeyVariable("__range__");
+	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("__new__");
+	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("__float__");
+	public static final KeyVariable KEYVAR_EACH 	= new KeyVariable("__each__");
 	
 	
 	public static final char FIRST_OP = '!';
@@ -307,7 +307,8 @@ class OP_Bang extends Operation {
 				block.addOrDumpVar(d.get(Ops.KEYVAR_NEW));
 			} else {
 				//Create a new empty dict with the input as its metatable
-				block.push(new Dict((Dict)o));
+				//block.push(new Dict((Dict)o));
+				throw new AyaRuntimeException("! : keyword __new__ not found");
 			}
 
 		}
