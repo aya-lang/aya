@@ -14,9 +14,9 @@ import ::iterator
 
 {,
 
-    ::set :type;
+    ::set :__type__;
 
-    {l::list, {,l :~ :list} set MO}:new;
+    {l::list, {,l :~ :list} set MO}:__new__;
 
 
 
@@ -27,12 +27,12 @@ import ::iterator
     .#? A ::set set.add\n  add an item to a set\n  overloaded operator: +
     {item self,
         item self.in ! {self.list [item] K;} ? self
-    }:add;
+    }:__add__;
 
     .#? A ::set set.rem\n  remove an item from a set\n  overloaded operator: -
     {item self,
         self.list [item] :| self.:list
-    }:sub;
+    }:__sub__;
 
 
 
@@ -43,39 +43,39 @@ import ::iterator
     .#? ::set ::set set.or\n  set union
     {sa::set sb::set,
         sa.list $ \; sb.list K :~ set!
-    }:or;
+    }:__or__;
 
     .#? ::set ::set set.and\n  set intersection
     {sa::set sb::set : l,
         sb.list :l;
         sa.list # {l \N$ 0:> {I} {;;} .?} set!
-    }:and;
+    }:__and__;
 
     .#? ::set ::set set.div\n  set difference
     {sa::set sb::set,
         sa.list $\; sb.list :| set!
-    }:div;
+    }:__div__;
 
     .#? ::set ::set set.eq\n test if two sets are the same
     {sa::set sb::set,
         sa.list sb.list =
-    }:eq;
+    }:__eq__;
 
     .#? ::set ::set set.lt/gt\n proper subset
     {sa::set sb::set : l,
         sa sb.leq            .# subset
         sa.list sb.list = !  .# proper subset
         &
-    }:lt;
-    {\.lt}:gt;
+    }:__lt__;
+    {\.lt}:__gt__;
 
     .#? ::set ::set set.leq\n subset
     {sa::set sb::set : l,
         sa.list :l;
         sb.list # { l \ N \; 0 :>} {*}F
-    }:leq;
+    }:__leq__;
 
-    {\.leq}:geq;
+    {\.leq}:__geq__;
 
 
 
@@ -87,12 +87,12 @@ import ::iterator
     {item self, self.list item N\; :1 =!}:in;
 
     .#? ::set set.len\n  returns the number of elements in the set
-    {.listE}:len;
+    {.listE}:__len__;
 
     .#? ::set set.clear\n  clear the contents of a set
     {[]\ .:list}:clear;
 
-    {.listP"s"\+}:str:repr;
+    {.listP"s"\+}:__str__:__repr__;
 
 
     .###########################
@@ -105,9 +105,9 @@ import ::iterator
 
         {s::set,
             s.list listiter!
-        }:new;
+        }:__new__;
 
-        "<set iterator>":repr;
+        "<set iterator>":__repr__;
     }:iter;
 
 

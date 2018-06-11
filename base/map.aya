@@ -11,7 +11,7 @@
 
 
 {,
-    ::map :type;
+    ::map :__type__;
 
     { {,[]:keys []:values} map MO}:new;
 
@@ -49,7 +49,7 @@
         } {
             self.values.[idx]
         }.?
-    }:getindex;
+    }:__getindex__;
 
 
     .# Generator Functions
@@ -68,10 +68,11 @@
     .###########################
 
     {,
+        ::iter:__type__;
 
         {map,
             {,0:state map:map} map.iter MO
-        }:new;
+        }:__new__;
 
         {self,
             0 self.:state;
@@ -87,7 +88,7 @@
             self.state self.map.keys E :>
         }:done
 
-        "<map iterator>":repr;
+        "<map iterator>":__repr__;
 
     }:iter;
 

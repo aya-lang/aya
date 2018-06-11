@@ -53,11 +53,11 @@
 
 
 {,
-    ::iter:type;
+    ::iter:__type__;
 
     {l::list,
         {, 0:state l:l } listiter MO
-    }:new;
+    }:__new__;
 
     {self,
         0 self.:state;
@@ -75,11 +75,11 @@
 }:listiter;
 
 {,
-    ::iter:type;
+    ::iter:__type__;
 
     {d::dict,
         {, 0:state d:K:keys d:d} dictiter MO
-    }:new;
+    }:__new__;
 
     {self,
         0 self.:state;

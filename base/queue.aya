@@ -16,11 +16,11 @@
 import ::iterator
 
 {,
-    ::queue :type;
+    ::queue :__type__;
 
 
     .#? L queue.new\n  convert a list into a queue
-    {l, {,l:list} queue MO}:new;
+    {l, {,l:list} queue MO}:__new__;
 
     .# str and repr overloads
     {self,
@@ -30,7 +30,7 @@ import ::iterator
         } {
             "queue: <-"self.listPB;V;"-<"++
         } .?
-    }:repr:str;
+    }:__repr__:__str__;
 
     .#? ::queue queue.next\n  return the next item in the queue
     {self,
@@ -45,13 +45,13 @@ import ::iterator
     }:peek;
 
     .#? ::queue queue.len\n  return the number of elements in the queue
-    {.listE}:len;
+    {.listE}:__len__;
 
     .#? (queue) queue.isempty\n  tests if the queue is empty
     {.listE0=}:isempty;
 
     .#? A ::queue queue.add\n  add an item to the queue
-    {self, self.list.B; self}:add;
+    {self, self.list.B; self}:__add__;
 
     .#? ::queue queue.clear\n  clear the queue
     {self, [] self.:list}:clear;
@@ -63,9 +63,9 @@ import ::iterator
 
         {q::queue,
             q.list listiter!
-        }:new;
+        }:__new__;
 
-        "<queue iterator>":repr;
+        "<queue iterator>":__repr__;
     }:iter;
 
 }:queue;

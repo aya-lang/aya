@@ -15,10 +15,10 @@ import ::iterator
 
 {,
 
-    ::stack :type;
+    ::stack :__type__;
 
     .#? L stack.new\n  convert a list into a stack
-    {l, {, l:list} stack MO}:new;
+    {l, {, l:list} stack MO}:__new__;
 
     .#? ::stack stack.show\n  convert a stack to a string
     {self,
@@ -27,15 +27,13 @@ import ::iterator
         } {
             "stack: <-"self.listPB;V;"-|"++
         } .?
-    }:str:repr;
+    }:__str__:__repr__;
 
-    .#? ::stack stack.dollar\n::stack stack.next\n  return the next item in the stack
+    .#? ::stack stack.next\n  return the next item in the stack
     {self,
         self.listE0= {"stack obj is empty" .D} ?
         self.listV\;
-    }:dollar;
-
-    {stack.dollar}:pop;
+    }:pop;
 
     .#? ::stack stack.peek\n  return the next item in the stack without removing it from the stack
     {self,
@@ -44,13 +42,13 @@ import ::iterator
     }:peek;
 
     .#? ::stack stack.len\n  return the number of elements in the stack
-    {.listE}:len;
+    {.listE}:__len__;
 
     .#? ::stack stack.isempty\n  tests if the stack is empty
     {.listE0=}:isempty;
 
     .#? A ::stack stack.add\n  add an item to the stack
-    {self, self.list.V; self}:add;
+    {self, self.list.V; self}:__add__;
 
     .#? ::stack stack.clear\n  clear the queue
     {self, [] self.:list}:clear;
@@ -65,9 +63,9 @@ import ::iterator
 
         {stk::stack,
             stk.list listiter!
-        }:new;
+        }:__new__;
 
-        "<stack iterator>":repr;
+        "<stack iterator>":__repr__;
     }:iter;
 
 }:stack;

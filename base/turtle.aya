@@ -12,14 +12,14 @@ import ::math
 .}
 {,
 
-    ::turtle :type;
+    ::turtle :__type__;
 
-    {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:new;
+    {{,0:x 0:y pi2/:r [[0 0]]:path} turtle MO}:__new__;
 
 
     {self,
         "turtle: pos=($(self.x), $(self.y)) dir=$(self.r)"
-    }:repr:str;
+    }:__repr__:__str__;
 
 
     .#? N turtle.fwd\n  move the turtle forward N units

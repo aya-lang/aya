@@ -211,7 +211,7 @@
 .# import types #
 .################
 
-"C:/Users/Nick/git/aya-lang/base/" aya.:basedir;
+.#"C:/Users/Nick/git/aya-lang/base/" aya.:basedir;
 
 import """
 types

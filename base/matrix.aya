@@ -13,7 +13,7 @@ import ::math
 
 {,
 
-    ::matrix :type;
+    ::matrix :__type__;
 
     .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
     {m,
@@ -31,7 +31,7 @@ import ::math
         } {
             in P " is not a valid matrix" K .D
         } .?
-    }:new;
+    }:__new__;
 
     .#? ::matrix matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
     {.rows.E\0IEK}:dim;
@@ -123,7 +123,7 @@ import ::math
             .# Only rows returned, convert to matrix
             matrix!
         } .?
-    }:getindex;
+    }:__getindex__;
 
 
 
@@ -138,11 +138,11 @@ import ::math
         } {
             self.rows # {o+} matrix!
         }.?
-    }:add;
+    }:__add__;
 
     {self o,
         self.rows # {o+} matrix!
-    }:radd;
+    }:__radd__;
 
 
     .#? N ::matrix (\) matrix.sub\n  subtract a number or another matrix
@@ -152,21 +152,21 @@ import ::math
         } {
             self.rows # {o\-} matrix!
         }.?
-    }:sub;
+    }:__sub__;
 
     {self o,
         self.rows # {o-} matrix!
-    }:rsub;
+    }:__rsub__;
 
 
     .#? ::matrix N (\) matrix.div\n  divide matrix by a number
     {o self,
         self.rows # {o\/} matrix!
-    }:div;
+    }:__div__;
 
     {self o,
         self.rows # {o/} matrix!
-    }:rdiv;
+    }:__rdiv__;
 
 
     .#? N ::matrix (\) matrix.mul\n  multiply a number or another matrix
@@ -176,7 +176,7 @@ import ::math
         } {
             self.rows # {o\*} matrix!
         }.?
-    }:mul;
+    }:__mul__;
 
     {o self,
         o.c self.r =! {
@@ -189,7 +189,7 @@ import ::math
 
     {self o,
         self.rows # {o*} matrix!
-    }:rmul;
+    }:__rmul__;
 
 
 
@@ -198,7 +198,7 @@ import ::math
         "matrix.pow: exponent must be positive" exp 1 < conderr
         mat {$} exp V %
         {.matmul} exp V %
-    }:rpow;
+    }:__rpow__;
 
     .#############
     .# ITERATION #
@@ -236,10 +236,10 @@ import ::math
     .#? ::matrix ::matrix matrix.eq\n  test if two matrices are equal
     {a b,
         a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
-    }:eq;
+    }:__eq__;
 
     .#? ::matrix matrix.signnum\n  apply signnum to each element of the matrix
-    {.rows #{#.!} matrix!}:signum;
+    {.rows #{#.!} matrix!}:__signum__;
 
     .#? ::matrix matrix.repr\n  converts a matrix to a string
     {
@@ -247,7 +247,7 @@ import ::math
         "\n"" |\n|"@.&       .# Inside bars
         " |"K'|\K            .# Outside bars
         "\n"+ "\n"\+
-    }:repr;
+    }:__repr__;
 
     .#######################
     .# GENERATOR FUNCTIONS #
@@ -283,7 +283,7 @@ import ::math
     {1 matrix.newfill}:ones;
 
     .#? NN matrix.random\n  create a N1 by N2 matrix of random values [0,1]
-    {K0\L #{#{;.Q}} matrix!}:random;
+    {K0\L #{#{;.Q}} matrix!}:__random__;
 
     .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
     {@@K L #{#Q} matrix!}:randint;

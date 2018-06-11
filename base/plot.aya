@@ -7,12 +7,12 @@ import ::list
 
 {, .# plot
 
-    ::plot :type;
+    ::plot :__type__;
 
     {, .# axis
         {min::num max::num,
             {,min:min max:max} plot.axis MO
-        }:new;
+        }:__new__;
     }:axis;
 
 
@@ -32,7 +32,7 @@ import ::list
             :-1         :stroke .# Use individual strokes
         }
         plot MO
-    }:new;
+    }:__new__;
 
     .#? ::plot plot.view\n  view the plot in a new window
     {self::plot,

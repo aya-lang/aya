@@ -5,7 +5,7 @@
 
 .# Test object
 {,
-    ::test :type;
+    ::test :__type__;
 
     .# Create a new test
     .#   blk:      the stack to be evauated
@@ -36,7 +36,7 @@
 
 
 {,
-    ::testset :type;
+    ::testset :__type__;
 
     .# Create a new test set
     {name::str,

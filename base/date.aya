@@ -9,7 +9,7 @@
 
 {,
 
-    ::date :type;
+    ::date :__type__;
 
     {{,M$:ms} date MO}:now;
 
@@ -17,10 +17,10 @@
         in:T ::num = {{,in:ms} date MO} ?
         in:T ::str = {{,in "yyyy-MM-dd" MH:ms} date MO} ?
         {"Expected S|D, recieved: $in".D}
-    ].S }:new;
+    ].S }:__new__;
 
     {.ms "MMM dd, yyyy h:mm:ss a" Mh}:repr;
-    {.repr}:str;
+    {.repr}:__str__;
 
     {.msMD0I}:dayofweekid;
     {.msMD0I dates.weekdays\V I}:dayofweek;
@@ -37,13 +37,13 @@
 
     {self unit,
         self.ms unit.ms + date!
-    }:radd;
+    }:__radd__;
 
     {self unit,
         self.ms unit.ms - date!
-    }:rsub;
+    }:__rsub__;
 
-    {.ms}:dollar;
+    {.ms}:__sort__;
 
     .# Parse Functions
     {"MM/dd/yy"MH}:parsemdy;
@@ -72,11 +72,11 @@
         u1I:conv;
         "
         {,
-            {n::num, {,n:n} dateunit .C name MO}:new;
-            {.n\" dates.$name\"+}:show;
+            {n::num, {,n:n} dateunit.$name MO}:__new__;
+            {.n\" dates.$name\"+}:__repr__;
             {.n $conv*}:ms;
-            {date.radd}:add;
-            {date.rsub}:sub;
+            {date.__radd__}:__add__;
+            {date.__rsub__}:__sub__;
         }:$name;
         " ~
     };

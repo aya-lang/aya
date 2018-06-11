@@ -2,14 +2,13 @@
 
 .# bitset.aya
 .# Defines bitset type
-
 {,
 
-    ::bitset:type;
+    ::bitset:__type__;
 
     {s::num,
         {, s:size 0sL:bits } bitset MO
-    }:new;
+    }:__new__;
 
     {l::list,
         {, lE:size l:bits } bitset MO
@@ -17,7 +16,7 @@
 
     {self,
         self.bits
-    }:str:repr;
+    }:__str__:__repr__;
 
     {n self,
         1 self.bits.:[n]
@@ -30,6 +29,6 @@
     {other self,
         other.bits self.bits {&}.&
         bitset.fromlist
-    }:and;
+    }:__and__;
 
 }:bitset;

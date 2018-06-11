@@ -8,12 +8,12 @@
 
   .# The metatable for each enum member
   {,
-    class :type;
-    {self, "$(self.type:C).$(self.name:C)"}:str:repr;
+    class :__type__;
+    {self, "$(self.type:C).$(self.name:C)"}:__str__:__repr__;
     {other self,
       other.type self.type =
       other.name self.name = &
-    }:eq;
+    }:__eq__;
   }:meta;
 
   .# The enum dict
@@ -26,8 +26,8 @@
 
   .# Create and add the metatable for the enum
   dict {,
-    ::enum :type;
-    {.name:C}:repr:str;
+    ::enum :__type__;
+    {.name:C}:__repr__:__str__;
   } MO
 
   .# Assign the name of the enum to the enum class

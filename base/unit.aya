@@ -55,14 +55,14 @@
 
     1:bit;
     1000:kilobit:kib;
-    1000kilobit*:megabit:mib;
-    1000megabit*:gigabit:gib;
-    1000gigabit*:terabit:tib;
+    1000 kilobit *:megabit:mib;
+    1000 megabit *:gigabit:gib;
+    1000 gigabit *:terabit:tib;
     8:byte;
-    1000byte*:kilobyte:kb;
-    1000kilobyte*:megabyte:mb;
-    1000megabyte*:gigabyte:gb;
-    1000gigabyte*:terabyte:tb;
+    1000 byte *:kilobyte:kb;
+    1000 kilobyte *:megabyte:mb;
+    1000 megabyte *:gigabyte:gb;
+    1000 gigabyte *:terabyte:tb;
 
 
 }:unit;

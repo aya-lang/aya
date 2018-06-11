@@ -7,7 +7,7 @@ import ::sys
 
 {,
 
-    ::path:type;
+    ::path:__type__;
 
     .# Create a new path (accepts relative or abs paths)
     {dir::str,
@@ -16,7 +16,7 @@ import ::sys
             path.workingP "/"+ dir + :dir;
         } ?
         {, dir path.split path.fixhome path.clean :dirs} path MO
-    }:new;
+    }:__new__;
 
     .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
     {p::path,
@@ -33,21 +33,21 @@ import ::sys
             path.clean ;
         } ?
         self
-    }:add;
-    {\.add}:radd;
+    }:__add__;
+    {\.__add__}:__radd__;
 
 
    .# String representation of the path
     {self,
         self.dirs :9c * path.root :9c + \+
         self.isfile ! {:9c +} ?
-    }:str:repr;
+    }:__str__:__repr__;
 
 
     .#? ::path.dec\n  Go up a directory
     {self,
         self.dirs B;; self
-    }:dec;
+    }:__dec__;
 
     {
         P""4MZ
@@ -157,7 +157,7 @@ import ::test
     {"/a/b/c/.." path!.dirs} [["a""b"]] ts+
     {"/a/b/c" path! ".." + .dirs} [["a""b"]] ts+
     {"/a/b/c" path! V .dirs} [["a""b"]] ts+
-    {"~/a" path!P} [path.homeP "a" + :9c +] ts+
+    {"~/a" path!.__str__} [path.home.__str__ "a" + :9c +] ts+
 
     ts aya.addtest
 
@@ -170,14 +170,14 @@ import ::test
 
 
 {,
-    ::file:type;
+    ::file:__type__;
 
     {filepath type::char,
         {,
             filepath:T ::path = {filepath:path} {filepath path!:path} .?
             pathP type O :id
         } file MO
-    }:new;
+    }:__new__;
 
     .#? ::file.close\n  close a file. return 1 is success
     {f,
@@ -240,9 +240,9 @@ import ::test
                 {"<stream(" {"R"} {"W"} f.isinput .? "):"}
                 "<closed:"
             .?
-            f.path.str ">"
+            f.path.__str__ ">"
         ]S
-    }:repr;
+    }:__repr__;
 }:file;
 
 .#? stdin::file\n  standard input stream
