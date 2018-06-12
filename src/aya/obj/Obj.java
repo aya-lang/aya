@@ -132,7 +132,7 @@ public abstract class Obj {
 	public static final Symbol SYM_SYM	 	= Symbol.fromStr("sym");
 	public static final Symbol SYM_ANY 		= Symbol.fromStr("any");
 	public static final Symbol SYM_UNKNOWN 	= Symbol.fromStr("unknown");
-	public static final Symbol SYM_TYPE 	= Symbol.fromStr("type");
+	public static final Symbol SYM_TYPE 	= Symbol.fromStr("__type__");
 
 	
 	/** Converts an ID to a symbol */
