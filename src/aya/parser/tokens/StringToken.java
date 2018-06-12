@@ -51,9 +51,9 @@ public class StringToken extends StdToken {
 				c = in.next();
 				
 				//Normal Var
-				if ('a' <= c && c <= 'z') {
+				if (Variable.isValidChar(c)) {
 					String var_name = ""+c;
-					while (in.hasNext() && 'a' <= in.peek() && in.peek() <= 'z') {
+					while (in.hasNext() && Variable.isValidChar(in.peek())) {
 						var_name += in.next();
 					}
 					

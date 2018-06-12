@@ -138,6 +138,8 @@ public class Ops {
 	public static final KeyVariable KEYVAR_NEW 		= new KeyVariable("__new__");
 	public static final KeyVariable KEYVAR_FLOAT 	= new KeyVariable("__float__");
 	public static final KeyVariable KEYVAR_EACH 	= new KeyVariable("__each__");
+	public static final KeyVariable KEYVAR_STR 		= new KeyVariable("__str__");
+	public static final KeyVariable KEYVAR_REPR 	= new KeyVariable("__repr__");
 	
 	
 	public static final char FIRST_OP = '!';
@@ -145,7 +147,7 @@ public class Ops {
 		/* 33 !  */ new OP_Bang(),
 		/* 34 "  */ null, // String
 		/* 35 #  */ new OP_Pound(),
-		/* 36 $  */ new OP_Underscore(),
+		/* 36 $  */ new OP_Duplicate(),
 		/* 37 %  */ new OP_Percent(),
 		/* 38 &  */ new OP_And(),
 		/* 39 '  */ null, // Character / Base Numbers
@@ -170,7 +172,7 @@ public class Ops {
 		/* 64 @  */ new OP_At(),
 		/* 65 A  */ new OP_A(),
 		/* 66 B  */ new OP_B(),
-		/* 67 C  */ new OP_Dollar(),
+		/* 67 C  */ new OP_Sort(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
 		/* 70 F  */ new OP_F(),
@@ -275,7 +277,7 @@ class OP_Bang extends Operation {
 		OpDoc doc = new OpDoc(' ', "!");
 		doc.desc("N", "1-N (logical not, complementary probability)");
 		doc.desc("C", "swap case");
-		doc.ovrld("new");
+		doc.ovrld(Ops.KEYVAR_NEW.name());
 		doc.vect();
 		OperationDocs.add(doc);
 	}
@@ -363,35 +365,19 @@ class OP_Pound extends Operation {
 }
 
 // $ - 36
-class OP_Dollar extends Operation {
-	
+class OP_Duplicate extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "$");
-		doc.desc("S|L", "sort least to greatest");
-		doc.desc("N", "bitwise not");
-		doc.ovrld(Ops.KEYVAR_SORT.name());
+		doc.desc("A", "deepcopy (duplicate)");
 		OperationDocs.add(doc);
 	}
 	
-	public OP_Dollar() {
+	public OP_Duplicate() {
 		this.name = "$";
 	}
-	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
-		
-		if (a.isa(Obj.NUMBER)) {
-			block.push( NumberMath.bnot((Number)a) );
-		}
-		else if(a.isa(LIST)) {
-			((List)a).sort();
-			block.push(a);
-		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_SORT);
-		} else {
-			throw new TypeError(this,a);
-		}		
+	@Override public void execute (final Block block) {
+		block.push(block.peek().deepcopy());
 	}
 }
 
@@ -981,6 +967,37 @@ class OP_B extends Operation {
 	}
 }
 
+// C - 67
+class OP_Sort extends Operation {
+	static {
+		OpDoc doc = new OpDoc(' ', "C");
+		doc.desc("S|L", "sort least to greatest");
+		doc.desc("N", "bitwise not");
+		doc.ovrld(Ops.KEYVAR_SORT.name());
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Sort() {
+		this.name = "C";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(Obj.NUMBER)) {
+			block.push( NumberMath.bnot((Number)a) );
+		}
+		else if(a.isa(LIST)) {
+			((List)a).sort();
+			block.push(a);
+		} else if (a.isa(DICT)) {
+			block.callVariable((Dict)a, Ops.KEYVAR_SORT);
+		} else {
+			throw new TypeError(this,a);
+		}		
+	}
+}
+
 
 
 // D - 68
@@ -1284,7 +1301,7 @@ class OP_GetIndex extends Operation {
 					index = l.get(0);
 			}
 			
-			if ( ((Dict)list).hasMetaKey("getindex") ) {
+			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX);
 			} else {
@@ -1321,7 +1338,7 @@ class OP_SetIndex extends Operation {
 		
 		// If it is a dictionary check to see if has a metamethod first
 		else if (list.isa(DICT)) {
-			if ( ((Dict)list).hasMetaKey("setindex") ) {
+			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_SETINDEX) ) {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);
 			} else {
@@ -1554,7 +1571,7 @@ class OP_P extends Operation {
 	static {
 		OpDoc doc = new OpDoc(' ', "P");
 		doc.desc("A", "to string");
-		doc.ovrld("str");
+		doc.ovrld(Ops.KEYVAR_STR.name());
 		OperationDocs.add(doc);
 	}
 	
@@ -1993,24 +2010,6 @@ class OP_Caret extends Operation {
 	}
 }
 
-// _ - 95
-class OP_Underscore extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc(' ', "_");
-		doc.desc("A", "deepcopy (duplicate)");
-		OperationDocs.add(doc);
-	}
-	
-	public OP_Underscore() {
-		this.name = "_";
-	}
-	@Override public void execute (final Block block) {
-		block.push(block.peek().deepcopy());
-	}
-}
-
-
 // | - 124
 class OP_Bar extends Operation {
 	
@@ -2116,76 +2115,5 @@ class OP_Tilde extends Operation {
 		}
 	}
 }
-
-
-
-// : - special
-//class OP_ApplyTo extends Operation {
-//	
-//	static {
-//		OpDoc doc = new OpDoc(' ', ":");
-//		doc.desc("L:B", "map");
-//		doc.desc("LN:E", "apply block to item at index N");
-//		doc.desc("LN:A", "set index");
-//		OperationDocs.add(doc);
-//		
-//		/*
-//		[list] index : item			basic 
-//		[list] [index] : [items]
-//		{,dict} ::sym : item
-//		{block} ::sym : item
-//		list.set(i, block) = apply block to item i in list
-//		*/
-//	}
-//	
-//	public OP_ApplyTo() {
-//		this.name = ":";
-//	}
-//	@Override
-//	public void execute(final Block block) {
-//		final Obj item = block.pop(); // item
-//		final Obj index = block.pop(); // index
-//		final Obj col = block.pop(); // collection
-//		
-////		//Apply block to an index in the list
-////		if(a.isa(Obj.BLOCK) && b.isa(Obj.NUMBER)) {
-////			if(!c.isa(LIST)) {
-////				throw new TypeError(this, a,b,c);
-////			}
-////			List list = (List)c;
-////			Block blk = new Block();
-////			blk.addAll(((Block)(a)).getInstructions().getInstrucionList());
-////			int index = ((Number)(b)).toInt();
-////
-////			blk.push(list.get(index));
-////			blk.eval();
-////			list.set(index, blk.pop());
-////			
-////			block.push(c);
-////		}
-//		
-//		if (col.isa(LIST)) {
-//			List.setIndex((List)col, index, item);
-//		} else if (col.isa(BLOCK) && index.isa(SYMBOL)) {
-//			long symid = ((Symbol)index).id();
-//			Block b = (Block)col;
-//			b.getInstructions().assignVarValue(symid, item);
-//		} else if (col.isa(DICT)) {
-//			Dict d = (Dict)col;
-//			if (d.hasMetaKey("setindex")) {
-//				block.push(item);
-//				block.push(index);
-//				block.callVariable(d, Ops.KEYVAR_SETINDEX);
-//			} else {
-//				long symid = ((Symbol)index).id();
-//				d.set(symid, item);
-//			}
-//		}
-//		
-//		else {
-//			throw new TypeError(this, item, index, col);
-//		}
-//	}
-//}
 
 

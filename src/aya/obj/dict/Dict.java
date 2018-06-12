@@ -2,6 +2,7 @@ package aya.obj.dict;
 
 import java.util.ArrayList;
 
+import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
@@ -17,9 +18,6 @@ import aya.variable.VariableSet;
  *
  */
 public class Dict extends Obj {
-	
-	public static final long STR = Variable.encodeString("__str__");
-	public static final long REPR = Variable.encodeString("__repr__");
 	
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
@@ -203,8 +201,8 @@ public class Dict extends Obj {
 
 	@Override
 	public String repr() {
-		if (_meta != null &&_meta.getObject(REPR) != null) {
-			Obj obj_str = _meta.getObject(REPR);
+		if (_meta != null &&_meta.getObject(Ops.KEYVAR_REPR) != null) {
+			Obj obj_str = _meta.getObject(Ops.KEYVAR_REPR);
 			if(obj_str.isa(Obj.BLOCK)) {
 				Block blk_show = ((Block)obj_str).duplicate();
 				blk_show.push(this);
@@ -221,8 +219,8 @@ public class Dict extends Obj {
 
 	@Override
 	public String str() {
-		if (_meta != null && _meta.getObject(STR) != null) {
-			Obj obj_str = _meta.getObject(STR);
+		if (_meta != null && _meta.getObject(Ops.KEYVAR_STR) != null) {
+			Obj obj_str = _meta.getObject(Ops.KEYVAR_STR);
 			if(obj_str.isa(Obj.BLOCK)) {
 				Block blk_show = ((Block)obj_str).duplicate();
 				blk_show.push(this);
@@ -322,6 +320,12 @@ public class Dict extends Obj {
 	public boolean hasMetaKey(String str) {
 		return _meta != null && _meta.hasVar(Variable.encodeString(str));
 	}
+	
+	/** Returns true if the metatable defines a given key */
+	public boolean hasMetaKey(KeyVariable kv) {
+		// TODO Auto-generated method stub
+		return _meta != null && _meta.hasVar(kv.getID());
+	}
 
 	/** General getindex */
 	public static Obj getIndex(Dict dict, Obj index) {
@@ -333,6 +337,7 @@ public class Dict extends Obj {
 			throw new AyaRuntimeException("Cannot access dict at index " + index.repr() + "\n" + dict.repr());
 		}
 	}
+
 	
 
 

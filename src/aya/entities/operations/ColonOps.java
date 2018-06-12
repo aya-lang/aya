@@ -173,10 +173,6 @@ public class ColonOps {
 	private static boolean isDigit(char c) {
 		return c >= '0' && c <= '9';
 	}
-	
-	private static boolean isLowercase(char c) {
-		return c >= 'a' && c <= 'z';
-	}
 }
 
 // # - 35
@@ -186,6 +182,7 @@ class OP_Colon_Pound extends Operation {
 		OpDoc doc = new OpDoc(':', ":#");
 		doc.desc("L:#B", "map");
 		doc.desc("D:#B", "map over key value pairs");
+		doc.ovrld(Ops.KEYVAR_EACH.name());
 		OperationDocs.add(doc);
 	}
 	
@@ -618,7 +615,7 @@ class OP_Colon_S extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":S");
-		doc.desc("SC", "convert to symbol");
+		doc.desc("S|C", "convert to symbol");
 		OperationDocs.add(doc);
 	}
 	

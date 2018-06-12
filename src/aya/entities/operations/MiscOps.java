@@ -811,7 +811,7 @@ class OP_Cosine extends Operation {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mc");
-		doc.desc("N", "consine");
+		doc.desc("N", "cosine");
 		doc.ovrld(Ops.KEYVAR_COS.name());
 		doc.vect();
 		OperationDocs.add(doc);
