@@ -10,8 +10,6 @@
 
 
 
-import ::iterator
-
 {,
 
     ::set :__type__;
@@ -63,11 +61,11 @@ import ::iterator
 
     .#? ::set ::set set.lt/gt\n proper subset
     {sa::set sb::set : l,
-        sa sb.leq            .# subset
+        sa sb.__leq__            .# subset
         sa.list sb.list = !  .# proper subset
         &
     }:__lt__;
-    {\.lt}:__gt__;
+    {\.__lt__}:__gt__;
 
     .#? ::set ::set set.leq\n subset
     {sa::set sb::set : l,
@@ -75,7 +73,7 @@ import ::iterator
         sb.list # { l \ N \; 0 :>} {*}F
     }:__leq__;
 
-    {\.leq}:__geq__;
+    {\.__leq__}:__geq__;
 
 
 
@@ -94,27 +92,13 @@ import ::iterator
 
     {.listP"s"\+}:__str__:__repr__;
 
-
-    .###########################
-    .# ITERATOR IMPLEMENTATION #
-    .###########################
-
-    {,
-        .# Basic list iterator on set.list
-        using listiter
-
-        {s::set,
-            s.list listiter!
-        }:__new__;
-
-        "<set iterator>":__repr__;
-    }:iter;
-
-
+    {blk self,
+        self.list :# {blk}
+    }:__each__;
 
 }:set;
 
-{`(set.new)}:s;
+{`(set.__new__)}:s;
 
 
 .#########
@@ -148,5 +132,5 @@ import ::test
     {s[1 2 3].clear} [s[]] ts+
 
 
-    ts aya.addtest
+    ts __aya__.addtest
 }

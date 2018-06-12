@@ -144,6 +144,6 @@ import ::test
     .#{[1 2 3 4 5] {4<} tw} [[1 2 3]] ts+
     .#{[1 2 3] {10=} tw} [[]] ts+
 
-    ts aya.addtest
+    ts __aya__.addtest
 
 }

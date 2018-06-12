@@ -44,4 +44,4 @@ import ::io
         | trim :args; :cmd;
         cmd~ args
     } .?
-} aya.interpreter.:shell;
+} __aya__.interpreter.:shell;

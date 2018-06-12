@@ -6,14 +6,13 @@
 .{? type: map
     The map type is a key-value pair dictionary which supports any
       and mixed data types as the key.
-    implements iterator
 .}
 
 
 {,
     ::map :__type__;
 
-    { {,[]:keys []:values} map MO}:new;
+    { {,[]:keys []:values} map MO}:__new__;
 
     .#? key map.haskey\n  true if map contains key
     {key self,
@@ -61,37 +60,9 @@
     }:fromlist;
 
 
-
-
-    .###########################
-    .# Iterator implementation #
-    .###########################
-
-    {,
-        ::iter:__type__;
-
-        {map,
-            {,0:state map:map} map.iter MO
-        }:__new__;
-
-        {self,
-            0 self.:state;
-        }:start;
-
-        {self,
-            [self.map.keys.[self.state]
-             self.map.values.[self.state]]
-            self.state B self.:state;
-        }:next;
-
-        {self,
-            self.state self.map.keys E :>
-        }:done
-
-        "<map iterator>":__repr__;
-
-    }:iter;
-
+    {blk self,
+        [self.keys self.values] .T :# {~ blk}
+    }:__each__;
 
 }:map;
 
@@ -117,6 +88,6 @@ import ::test
     {:m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [3] ts+
     {[[::a"a"][::b"b"]]map.fromlist collect} [[[::a"a"][::b"b"]]] ts+
 
-    ts aya.addtest
+    ts __aya__.addtest
 
 }

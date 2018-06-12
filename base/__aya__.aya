@@ -1,45 +1,46 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of aya: https://github.com/nick-paul/__aya__-lang
 
-.# _aya_
-.# Defines the aya namespace and keywords
+.# __aya__
+.# Defines the __aya__ namespace and keywords
 
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
 
 
-{, .# begin aya namespace
+{, .# begin __aya__ namespace
 
 [
-  "_aya_"  .# This file
+  "__aya__"  .# This file
 ]:imported;
 
 ""2MZ "base" :9c + + :basedir;
 ""2MZ :homedir;
 
-.#? S aya.alterprompt\n  change the prompt text
+.#? S __aya__.alterprompt\n  change the prompt text
 {1MZ}:alterprompt;
 
 {,}:interpreter;
 
-{importnamezz importdirnmz,
+.# import name; import dir name
+{importname__ importdirn__,
 
   .# True if the file is not imported
-  aya.imported importnamezz N\; :-1 =
+  __aya__.imported importname__ N\; :-1 =
 
   .# If condition is true
   { .# File not already imported, load it
 
     .# Add the name to the list
-    importnamezz aya.imported .B;
+    importname__ __aya__.imported .B;
 
     { .# try
       .# Load the file
-      importdirnmz importnamezz + ".aya" + G ~
+      importdirn__ importname__ + ".aya" + G ~
     } {e, .# catch
       .# Remove the file from imported list
-      aya.imported importnamezz N .- ;
-      "Error importing '$importnamezz':\n\t$e" .D
+      __aya__.imported importname__ N .- ;
+      "Error importing '$(importname__)':\n\t$e" .D
     } .K
 
   }
@@ -56,27 +57,27 @@
 .# importbase uses the home dir instead of the
 .# base dir
 {
-  aya.basedir aya.importfrmdir
+  __aya__.basedir __aya__.importfrmdir
 }:importbase;
 
 
 .# importfile uses the home dir instead of the
 .# base dir
 {
-  aya.homedir aya.importfrmdir
+  __aya__.homedir __aya__.importfrmdir
 }:importfile;
 
-{importnamezz,
+{importname__,
   .# Does the name contain a file sep? (:9c)
   .# :9c $ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
-  importnamezz $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
+  importname__ $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
   { .# No file sep, import from base
-    importnamezz aya.importbase
+    importname__ __aya__.importbase
   }
 
   { .# input contains a file sep
-    importnamezz aya.importfile
+    importname__ __aya__.importfile
   }
 
   .?
@@ -84,32 +85,32 @@
 
 
 {
-  [] aya.:imported;
+  [] __aya__.:imported;
 }:resetimports;
 
 {,
-  "M!" :fact
-  "Ms" :sin
-  "Mc" :cos
-  "Mt" :tan
-  "MS" :asin
-  "MC" :acos
-  "MT" :atan
-  "ML" :log
-  "Ml" :ln
-  "Me" :exp
-  "Md" :float
-  "Mq" :sqrt
+  "M!" :__fact__
+  "Ms" :__sin__
+  "Mc" :__cos__
+  "Mt" :__tan__
+  "MS" :__asin__
+  "MC" :__acos__
+  "MT" :__atan__
+  "ML" :__log__
+  "Ml" :__ln__
+  "Me" :__exp__
+  "Md" :__float__
+  "Mq" :__sqrt__
 }:mathoverload
 
-}:aya;
+}:__aya__;
 
 
 
 
 
 .#######################
-.# DEFINE AYA KEYWORDS #
+.# DEFINE __aya__ KEYWORDS #
 .#######################
 
 
@@ -118,11 +119,11 @@
 .# IMPORT
 .# ------
 
-.#? import library\n  import a aya file\n  files are only imported once
+.#? import library\n  import a __aya__ file\n  files are only imported once
 {`(
   $ :T ::sym = {:C} ?
   .# Split whitespace separated names
-  "\s+" | [""] :| #{aya.import};
+  "\s+" | [""] :| #{__aya__.import};
 )}:import;
 
 
@@ -133,14 +134,14 @@
 .# ------
 
 .#? reload\n  reload imported files
-{:workingdirzz,
+{:workingdir__,
   ""2MZ            .# Save the current working dir
   ""3MZ            .# Reset the working dir
-  aya.imported$\;  .# Copy currently imported files
-  aya.resetimports .# Clear all imports
-  "ayarc.aya" G ~  .# Load ayarc
+  __aya__.imported$\;  .# Copy currently imported files
+  __aya__.resetimports .# Clear all imports
+  "ayarc.aya" G ~  .# Load __aya__rc
   \ 3 MZ           .# Change the working dir back
-  # {aya.import};  .# Reimport files
+  # {__aya__.import};  .# Reimport files
 }:reload;
 
 
@@ -180,15 +181,16 @@
 
 
 .#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
-{``({dowhilecondz dowhileloopz, {dowhileloopz dowhilecondz}W})}:dowhile;
+{``({condition__ loop__,
+    {loop__ condition__} W
+})}:dowhile;
 
 
 .#? while E E\n  evaluates E1 as long as E2 is true
-{``({whilecondzzz whileloopzzz,
-  whilecondzzz
-  {{whileloopzzz whilecondzzz}W}
-  {}
-  .?
+{``({condition__ loop__,
+    condition__ {
+        {loop__ condition__} W
+    } ?
 })}:while;
 
 .#? A print\n  convert to string a print to console
@@ -211,7 +213,7 @@
 .# import types #
 .################
 
-.#"C:/Users/Nick/git/aya-lang/base/" aya.:basedir;
+.#"C:/Users/Nick/git/aya-lang/base/" __aya__.:basedir;
 
 import """
 types

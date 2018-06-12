@@ -53,6 +53,6 @@ import ::test
   {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
   {"alpha" spechar '\alpha' =} [1] ts+
 
-  ts aya.addtest
+  ts __aya__.addtest
 
 }

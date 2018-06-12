@@ -66,17 +66,17 @@
 
 .# Add functions to the aya namespace
 
-[] aya.:tests
+[] __aya__.:tests
 
 {ts::testset,
-    aya.tests ts K ;
-} aya.:addtest;
+    __aya__.tests ts K ;
+} __aya__.:addtest;
 
 {
-    aya.tests # {ts,
+    __aya__.tests # {ts,
         ts.run
     };
-} aya.:doruntests;
+} __aya__.:doruntests;
 
 
 .{

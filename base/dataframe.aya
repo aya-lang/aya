@@ -412,6 +412,6 @@ import ::test
     {100 dataframe.gencolnames [0 25 26 :1] I} [ ["a" "z" "aa" "cv"] ] ts+
     {"b" {,"xz"R#P:index"ac"R#P:columns[3R [5 2 8] 3R]:data}f!.__sort__.values} [ [[2 1 3][2 5 8][2 1 3]] ] ts+
 
-    ts aya.addtest
+    ts __aya__.addtest
 
 }

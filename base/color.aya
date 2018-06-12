@@ -237,5 +237,5 @@ import ::test
     {colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
     {3 colors.blue colors.yellow.grad .FS} [1146] ts+
 
-    ts aya.addtest
+    ts __aya__.addtest
 }

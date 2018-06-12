@@ -228,7 +228,7 @@ import ::math
     .###################
 
     .# Math overloads
-    [aya.mathoverload $ :K\:V, {k v,
+    [__aya__.mathoverload $ :K\:V, {k v,
         "{.rows #{# $v } matrix!} :$(k:C);" .~
     }] #~
 
@@ -402,5 +402,5 @@ import ::test
 
 
 
-    ts aya.addtest
+    ts __aya__.addtest
 }

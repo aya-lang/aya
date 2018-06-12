@@ -306,5 +306,5 @@ import ::test
   {12 divisors} [[1 2 3 4 6 12]] ts+
   {12 factors} [[2 2 3]] ts+
 
-  ts aya.addtest
+  ts __aya__.addtest
 }

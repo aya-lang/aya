@@ -135,6 +135,6 @@ import ::test
     {"1707-04-15" date! 2 dates.minute + .min} [2] ts+
 
 
-    ts aya.addtest
+    ts __aya__.addtest
 
 }

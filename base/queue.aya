@@ -13,8 +13,6 @@
 
 
 
-import ::iterator
-
 {,
     ::queue :__type__;
 
@@ -56,17 +54,9 @@ import ::iterator
     .#? ::queue queue.clear\n  clear the queue
     {self, [] self.:list}:clear;
 
-    .# Iterator implementation
-    {,
-        .# Use listiter on queue.list
-        using listiter
-
-        {q::queue,
-            q.list listiter!
-        }:__new__;
-
-        "<queue iterator>":__repr__;
-    }:iter;
+    {blk self,
+        self.list :# {blk}
+    }:__each__;
 
 }:queue;
 
@@ -94,5 +84,5 @@ import ::test
     {[] queue! .isempty} [1] ts+
 
 
-    ts aya.addtest
+    ts __aya__.addtest
 }

@@ -159,7 +159,7 @@ import ::test
     {"/a/b/c" path! V .dirs} [["a""b"]] ts+
     {"~/a" path!.__str__} [path.home.__str__ "a" + :9c +] ts+
 
-    ts aya.addtest
+    ts __aya__.addtest
 
 }
 

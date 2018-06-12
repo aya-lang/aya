@@ -51,6 +51,6 @@ import ::test
   {:e, enum ::e [::a ::b ::c] e.a e.b =} [0] ts+
   {:e, enum ::e [::a ::b ::c] e.a e.a =} [1] ts+
 
-  ts aya.addtest
+  ts __aya__.addtest
 
 }
