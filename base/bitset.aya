@@ -14,8 +14,8 @@
         {, lE:size l:bits } bitset MO
     }:fromlist;
 
-    {self,
-        self.bits
+    {
+        .bits P
     }:__str__:__repr__;
 
     {n self,
@@ -26,9 +26,22 @@
         0 self.bits.:[n]
     }:reset;
 
+    {
+        .bits S
+    }:count;
+
+    {other self,
+        other.bits self.bits {|}.&
+        bitset.fromlist
+    }:__or__;
+
     {other self,
         other.bits self.bits {&}.&
         bitset.fromlist
     }:__and__;
+
+    {
+        .bits E
+    }:__len__;
 
 }:bitset;
