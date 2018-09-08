@@ -4,7 +4,7 @@
 
   {name,
     {, 0:balance name:name} account MO
-  }:new;
+  }:__new__;
 
   {amnt self,
     self.balance amnt + self.:balance ;
@@ -19,7 +19,7 @@
 
   {self,
     "$(self.name): \$$(self.balance)"
-  }:repr:str;
+  }:__repr__:__str__;
 
 }:account;
 

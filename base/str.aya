@@ -8,6 +8,9 @@ import ::types
 import ::list
 
 {,
+    .# Import list variables
+    using list
+
     .#? S.trim\n  remove whitespace from start and end of string
     {"^\\s+|\\s+$" |S $0={;""}?}:trim;
 

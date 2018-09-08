@@ -2,7 +2,7 @@
 {n : a(0) b(1),
    while {a n <} {
     a println
-    a _ b + :a; :b;
+    a $ b + :a; :b;
    }
 }:fib;
 
@@ -10,7 +10,7 @@
 100 fib
 
 .# Golfed
-{n,0 1{\_:P\_@+_n<}W;}:fib;
+{n,0 1{\$:P\$@+$n<}W;}:fib;
 
 "Fibs below 100 (golfed):" :P
 100 fib

@@ -5,13 +5,13 @@
 
 .# do 100 passes
 [100,] # {pass,
-  [pass __+ 100,] # {door,
+  [pass $$+ 100,] # {door,
     .# Swap the state of the door
-    list doorV I! list doorV D
+    list.[doorV] ! list.:[doorV]
   }
 };
 
 .# print the doors
-list E.R {door,
-  {} {"door $(doorB) is open" :P} list door I ?
+list E.R :# {door,
+  list.[door] {"door $(doorB) is open" :P} ?
 };

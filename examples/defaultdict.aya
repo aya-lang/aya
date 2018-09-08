@@ -2,16 +2,20 @@
 
   {d::dict dflt,
     {,d:dict dflt:dflt} defaultdict MO
-  }:new;
+  }:__new__;
 
   {index self : t,
     self.dict index N 0 = \; {
-      self.dflt_ :t;;
+      self.dflt $ :t;;
       t self.dict.:[index]
       t
     } {
       self.dict.[index]
     } .?
-  }:getindex;
+  }:__getindex__;
+
+    {index self,
+        self.:dict[index]
+    }:__setindex__;
 
 }:defaultdict;

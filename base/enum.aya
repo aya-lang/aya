@@ -9,9 +9,9 @@
   .# The metatable for each enum member
   {,
     class :__type__;
-    {self, "$(self.type:C).$(self.name:C)"}:__str__:__repr__;
+    {self, "$(self.__type__:C).$(self.name:C)"}:__str__:__repr__;
     {other self,
-      other.type self.type =
+      other.__type__ self.__type__ =
       other.name self.name = &
     }:__eq__;
   }:meta;

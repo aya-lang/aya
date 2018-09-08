@@ -10,7 +10,7 @@ import ::dialog
 
 .# Create the url and download the web file
 ["http://www.esvapi.org/v2/rest/passageQuery"
- "?key=IP"
+ "?key=TEST"
  "&passage=$ref"
  "&include-verse-numbers=1"
  "&include-headings=0"

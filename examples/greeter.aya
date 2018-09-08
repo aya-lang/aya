@@ -4,8 +4,8 @@
 .# The greeter type
 {,
   {name,
-    {, name titlecase :name } greeter MO
-  }:new;
+    {, name.titlecase :name } greeter MO
+  }:__new__;
 
   {self,
     "Hello $(self.name)!" println

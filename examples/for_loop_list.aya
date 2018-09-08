@@ -3,7 +3,7 @@
 
 1 :product;
 
-numbers # {n,
+numbers :# {n,
   product n * :product
 };
 

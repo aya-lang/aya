@@ -125,7 +125,7 @@ import ::io
             "dataframe.opencsv: filename not provided" .D
         } ?
 
-        filename opencsv :data;
+        ', filename G .readdlm :data;
 
         header {
             data E 0 = {"dataframe.opencsv: no header found in file" .D} ?

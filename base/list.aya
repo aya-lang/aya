@@ -12,7 +12,6 @@
 
 
 {,
-
 {B\.V}:roll;           .#? L roll\n  move the last element to the front
 {\$@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
 {{.<}F}:max;           .#? L max\n  max value of a list
