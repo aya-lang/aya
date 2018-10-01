@@ -208,6 +208,9 @@
 .#? SB conderr\n  throw error message if condition is true
 {{.D} {;} .?}:conderr;
 
+.#? B where D\n  use variables defined in D in B
+{`.+}:where;
+
 
 .################
 .# import types #

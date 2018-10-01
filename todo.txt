@@ -1,0 +1,17 @@
+list indexing
+item list [< i,j,..]
+     list [> i,j,..]
+     list [? i,j,..]
+
+set value of symbol
+item ::symbol <set>
+
+inc/dec symbol
+::sym V
+::sym B
+
+fill in block
+{...} {, 1:a 2:b 3:c} <set>
+
+map over dict
+{, ..} # {k v, ...}

@@ -7,15 +7,18 @@
   name:C :namestr;
   [
     "{,"
+
     "  ::$namestr:__type__;"
     "  {"  members :#{:C} " "* "," ++
     "    {, " members :#{[1|:C$]":"*}" "* + "}"+
     "    $namestr MO"
     "  }:__new__;"
+
     "  {self, [ \"(\""
     "    " members :# {"self."\:C+} " "* +
     """    ")" ] " "* " """ namestr + "!\" +" +
     "  }:__str__:__repr__;"
+
     "}:$namestr;"
   ]"\n"* ~
 })}:struct;

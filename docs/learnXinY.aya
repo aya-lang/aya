@@ -34,8 +34,8 @@
 :4.53   .# => -4.53
 
 .# Arbitrary precision float numbers end with a 'z'
-:1z
-:-2.0234z
+1.1234567890123      .# => 1.12345679
+:1.1234567890123z    .# => 1.1234567890123
 
 .# Rational numbers have a numerator and denominator separated by a 'r'
 :1r2   .# 1/2

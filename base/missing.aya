@@ -1,0 +1,47 @@
+{,} {,
+  ::nil:__type__;
+  {"Cannot create instance of nil" .D}:__new__;
+  {"nil"}:__str__:__repr__;
+  {; :T ::nil =}:__eq__;
+} MO :nil;
+
+{,} {,
+  ::missing:__type__;
+  {"Cannot create instance of missing" .D}:__new__;
+  {"missing"}:__str__:__repr__;
+  {; []}:__range__;
+
+  {;; 0}
+    :__eq__
+    :__lt__:__leq__
+    :__gt__:__geq__;
+
+  {;; missing}
+    :__add__:__radd__
+    :__sub__:__rsub__
+    :__mod__:__rmod__
+    :__and__:__rand__
+    :__or__ :__ror__
+    :__mul__:__rmul__
+    :__div__:__rdiv__
+    :__pow__:__rpow__
+    :__idiv__:__irdiv__;
+
+  {}
+    :__fact__
+    :__negate__
+    :__signnum__
+    :__sin__:__asin__
+    :__cos__:__acos__
+    :__tan__:__atan__
+    :__float__
+    :__random__
+    :__ceil__
+    :__floor__
+    :__log__
+    :__ln__
+    :__exp__
+    :__sqrt__
+    :__abs__;
+
+} MO :missing;

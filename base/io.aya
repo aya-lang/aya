@@ -237,7 +237,7 @@ import ::test
     {f,
         [
             f.isopen
-                {"<stream(" {"R"} {"W"} f.isinput .? "):"}
+                {"<stream(" f.isinput {"R"} {"W"} .? "):"}
                 "<closed:"
             .?
             f.path.__str__ ">"
