@@ -787,10 +787,23 @@ class OP_Equal extends Operation {
 		final Obj b = block.pop();
 		
 		if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_EQ);
+			
+			if (((Dict)a).hasMetaKey(Ops.KEYVAR_EQ)) {
+				block.push(b);
+				block.callVariable((Dict)a, Ops.KEYVAR_EQ);
+			} else {
+				if (b.isa(DICT)) {
+					block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
+				} else {
+					block.push(Num.ZERO);
+				}
+			}
 		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_EQ, a);
+			if (((Dict)b).hasMetaKey(Ops.KEYVAR_EQ)) {
+				block.callVariable((Dict)b, Ops.KEYVAR_EQ, a);
+			} else {
+				block.push(Num.ZERO);
+			}
 		} else {
 			block.push(new Num(a.equiv(b)));
 		}
