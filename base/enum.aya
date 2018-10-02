@@ -6,32 +6,32 @@
 
 {``({class::sym enums::list : dict meta,
 
-  .# The metatable for each enum member
-  {,
-    class :__type__;
-    {self, "$(self.__type__:C).$(self.name:C)"}:__str__:__repr__;
-    {other self,
-      other.__type__ self.__type__ =
-      other.name self.name = &
-    }:__eq__;
-  }:meta;
+    .# The metatable for each enum member
+    {,
+        class :__type__;
+        {self, "$(self.__type__:C).$(self.name:C)"}:__str__:__repr__;
+        {other self,
+            other.__type__ self.__type__ =
+            other.name self.name = &
+        }:__eq__;
+    }:meta;
 
-  .# The enum dict
-  {, class:name }:dict;
+    .# The enum dict
+    {, class:name }:dict;
 
-  .# Add each element to the enum dict
-  enums # {e,
-    {,e:name} meta MO e dict :D ;
-  };
+    .# Add each element to the enum dict
+    enums # {e,
+        {,e:name} meta MO e dict :D ;
+    };
 
-  .# Create and add the metatable for the enum
-  dict {,
-    ::enum :__type__;
-    {.name:C}:__repr__:__str__;
-  } MO
+    .# Create and add the metatable for the enum
+    dict {,
+        ::enum :__type__;
+        {.name:C}:__repr__:__str__;
+    } MO
 
-  .# Assign the name of the enum to the enum class
-  class :C':\.V~;
+    .# Assign the name of the enum to the enum class
+    class :C':\.V~;
 })}:enum;
 
 
@@ -44,13 +44,12 @@ import ::test
 
 `~ {:ts,
 
-  "enum" testset! :ts;
+    "enum" testset! :ts;
 
-  {:e, enum ::e [::a ::b ::c] e P} ["e"] ts+
-  {:e, enum ::e [::a ::b ::c] e.a P} ["e.a"] ts+
-  {:e, enum ::e [::a ::b ::c] e.a e.b =} [0] ts+
-  {:e, enum ::e [::a ::b ::c] e.a e.a =} [1] ts+
+    {:e, enum ::e [::a ::b ::c] e P} ["e"] ts+
+    {:e, enum ::e [::a ::b ::c] e.a P} ["e.a"] ts+
+    {:e, enum ::e [::a ::b ::c] e.a e.b =} [0] ts+
+    {:e, enum ::e [::a ::b ::c] e.a e.a =} [1] ts+
 
-  ts __aya__.addtest
-
+    ts __aya__.addtest
 }

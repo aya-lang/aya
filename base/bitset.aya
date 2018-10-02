@@ -26,6 +26,10 @@
         0 self.bits.:[n]
     }:reset;
 
+    {n self,
+        self.bits.[n]
+    }:__getindex__;
+
     {
         .bits S
     }:count;

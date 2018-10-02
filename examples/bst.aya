@@ -3,52 +3,52 @@
 
 {,
 
-  ::bst:__type__;
+    ::bst:__type__;
 
-  {data, 
-    {, data:data ::nil:left ::nil:right } bst MO
-  }:__new__;
+    {data,
+        {, data:data ::nil:left ::nil:right } bst MO
+    }:__new__;
 
-  {a b, 
-    
-  }:__eq__;
+    {a b,
 
-  {node depth,
-    " |" depth L S .P
-    node :T ::bst = {
-      node.data :P
+    }:__eq__;
 
-      node.right depth 1+ bst._print
-      node.left  depth 1+ bst._print
-    } { "-":P } .?
-  }:_print;
+    {node depth,
+        " |" depth L S .P
+        node :T ::bst = {
+            node.data :P
 
-  {data node parent::bst side::sym,
-     node :T ::bst = {
-      data node.data > {
-        data node.right node ::right bst._insert
-      } {
-        data node.data < {
-          data node.left node ::left bst._insert
-        } ?
-      } .?
-    } {
-      data bst! parent.:[side]
-    } .?
-  }:_insert;
+            node.right depth 1+ bst._print
+            node.left  depth 1+ bst._print
+        } { "-":P } .?
+    }:_print;
 
-  {self,
-    self 0 bst._print
-    ""
-  }:__repr__;
+    {data node parent::bst side::sym,
+        node :T ::bst = {
+            data node.data > {
+                data node.right node ::right bst._insert
+            } {
+                data node.data < {
+                    data node.left node ::left bst._insert
+                } ?
+            } .?
+        } {
+            data bst! parent.:[side]
+        } .?
+    }:_insert;
 
-  {data self,
-    data self.data > {
-      data self.right self ::right bst._insert
-    } {
-      data self.left  self ::left  bst._insert
-    } .?
-  }:insert;
+    {self,
+        self 0 bst._print
+        ""
+    }:__repr__;
+
+    {data self,
+        data self.data > {
+            data self.right self ::right bst._insert
+        } {
+            data self.left  self ::left  bst._insert
+        } .?
+    }:insert;
 
 }:bst;
 

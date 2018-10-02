@@ -4,19 +4,19 @@
 .# Defines operators and variables useful for golfing
 
 import """
-  list
-  str
-  date
-  math
-  matrix
-  dataframe
-  map
-  set
-  queue
-  sys
-  io
-  shell
-  plot
+    list
+    str
+    date
+    math
+    matrix
+    dataframe
+    map
+    set
+    queue
+    sys
+    io
+    shell
+    plot
 """
 
 .# Single letter variables
@@ -55,14 +55,14 @@ matrix:m;
 {{%}} :bmod;
 
 .# Operators (for special characters)
-{:>}:geq; 		.#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
-{:<}:leq; 		.#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
-{=!}:ne;		.#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
+{:>}:geq;       .#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
+{:<}:leq;       .#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
+{=!}:ne;        .#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
 
 .# Common functions
-[]		:emptyset;
-{2^}	:square;
-{3^}	:cube;
+[]      :emptyset;
+{2^}    :square;
+{3^}    :cube;
 [256,V.']:ascii;
 
 

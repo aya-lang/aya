@@ -25,31 +25,31 @@
 .# import name; import dir name
 {importname__ importdirn__,
 
-  .# True if the file is not imported
-  __aya__.imported importname__ N\; :-1 =
+    .# True if the file is not imported
+    __aya__.imported importname__ N\; :-1 =
 
-  .# If condition is true
-  { .# File not already imported, load it
+    .# If condition is true
+    { .# File not already imported, load it
 
-    .# Add the name to the list
-    importname__ __aya__.imported .B;
+        .# Add the name to the list
+        importname__ __aya__.imported .B;
 
-    { .# try
-      .# Load the file
-      importdirn__ importname__ + ".aya" + G ~
-    } {e, .# catch
-      .# Remove the file from imported list
-      __aya__.imported importname__ N .- ;
-      "Error importing '$(importname__)':\n\t$e" .D
-    } .K
+        { .# try
+            .# Load the file
+            importdirn__ importname__ + ".aya" + G ~
+        } {e, .# catch
+            .# Remove the file from imported list
+            __aya__.imported importname__ N .- ;
+            "Error importing '$(importname__)':\n\t$e" .D
+        } .K
 
-  }
+    }
 
-  .# If condition is false
-  { .# File already imported
-    .# do nothing
-  }
-  .?
+    .# If condition is false
+    { .# File already imported
+      .# do nothing
+    }
+    .?
 
 }:importfrmdir;
 
@@ -68,39 +68,39 @@
 }:importfile;
 
 {importname__,
-  .# Does the name contain a file sep? (:9c)
-  .# :9c $ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
-  importname__ $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
+    .# Does the name contain a file sep? (:9c)
+    .# :9c $ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
+    importname__ $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
 
-  { .# No file sep, import from base
-    importname__ __aya__.importbase
-  }
+    { .# No file sep, import from base
+        importname__ __aya__.importbase
+    }
 
-  { .# input contains a file sep
-    importname__ __aya__.importfile
-  }
+    { .# input contains a file sep
+        importname__ __aya__.importfile
+    }
 
-  .?
+    .?
 }:import;
 
 
 {
-  [] __aya__.:imported;
+    [] __aya__.:imported;
 }:resetimports;
 
 {,
-  "M!" :__fact__
-  "Ms" :__sin__
-  "Mc" :__cos__
-  "Mt" :__tan__
-  "MS" :__asin__
-  "MC" :__acos__
-  "MT" :__atan__
-  "ML" :__log__
-  "Ml" :__ln__
-  "Me" :__exp__
-  "Md" :__float__
-  "Mq" :__sqrt__
+    "M!" :__fact__
+    "Ms" :__sin__
+    "Mc" :__cos__
+    "Mt" :__tan__
+    "MS" :__asin__
+    "MC" :__acos__
+    "MT" :__atan__
+    "ML" :__log__
+    "Ml" :__ln__
+    "Me" :__exp__
+    "Md" :__float__
+    "Mq" :__sqrt__
 }:mathoverload
 
 }:__aya__;
@@ -121,9 +121,9 @@
 
 .#? import library\n  import a __aya__ file\n  files are only imported once
 {`(
-  $ :T ::sym = {:C} ?
-  .# Split whitespace separated names
-  "\s+" | [""] :| #{__aya__.import};
+    $ :T ::sym = {:C} ?
+    .# Split whitespace separated names
+    "\s+" | [""] :| #{__aya__.import};
 )}:import;
 
 
@@ -135,13 +135,13 @@
 
 .#? reload\n  reload imported files
 {:workingdir__,
-  ""2MZ            .# Save the current working dir
-  ""3MZ            .# Reset the working dir
-  __aya__.imported$\;  .# Copy currently imported files
-  __aya__.resetimports .# Clear all imports
-  "ayarc.aya" G ~  .# Load __aya__rc
-  \ 3 MZ           .# Change the working dir back
-  # {__aya__.import};  .# Reimport files
+    ""2MZ            .# Save the current working dir
+    ""3MZ            .# Reset the working dir
+    __aya__.imported$\;  .# Copy currently imported files
+    __aya__.resetimports .# Clear all imports
+    "ayarc.aya" G ~  .# Load __aya__rc
+    \ 3 MZ           .# Change the working dir back
+    # {__aya__.import};  .# Reimport files
 }:reload;
 
 
@@ -160,9 +160,34 @@
 .# USING
 .# -----
 
-.# using dict\n  import variables from a dict into the global scope
+.#? using dict\n  import variables from a dict into the global scope
 {`W}:using;
 
+
+
+.# ------
+.# STRUCT
+.# ------
+
+{``({name::sym members::list : namestr,
+    name:C :namestr;
+    [
+        "{,"
+
+        "  ::$namestr:__type__;"
+        "  {"  members :#{:C} " "* "," ++
+        "    {, " members :#{[1|:C$]":"*}" "* + "}"+
+        "    $namestr MO"
+        "  }:__new__;"
+
+        "  {self, [ \"(\""
+        "    " members :# {"self."\:C+} " "* +
+        """    ")" ] " "* " """ namestr + "!\" +" +
+        "  }:__str__:__repr__;"
+
+        "}:$namestr;"
+    ]"\n"* ~
+})}:struct;
 
 
 

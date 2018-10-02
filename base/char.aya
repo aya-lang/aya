@@ -43,16 +43,16 @@ import ::test
 
 `~ {:ts,
 
-  "char" testset! :ts;
+    "char" testset! :ts;
 
-  {"cC*" #.islower} [[1 0 0]] ts+
-  {"cC*" #.isupper} [[0 1 0]] ts+
-  {"HelLo!" #.upper} ["HELLO!"] ts+
-  {"HelLo!" #.lower} ["hello!"] ts+
-  {"Cr4zy1!" #.isdigit} [[0 0 1 0 0 1 0]] ts+
-  {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
-  {"alpha" spechar '\alpha' =} [1] ts+
+    {"cC*" #.islower} [[1 0 0]] ts+
+    {"cC*" #.isupper} [[0 1 0]] ts+
+    {"HelLo!" #.upper} ["HELLO!"] ts+
+    {"HelLo!" #.lower} ["hello!"] ts+
+    {"Cr4zy1!" #.isdigit} [[0 0 1 0 0 1 0]] ts+
+    {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
+    {"alpha" spechar '\alpha' =} [1] ts+
 
-  ts __aya__.addtest
+    ts __aya__.addtest
 
 }
