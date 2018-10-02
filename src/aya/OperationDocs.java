@@ -11,13 +11,19 @@ import aya.obj.list.List;
 public class OperationDocs {
 	private static HashMap<String, OpDoc> _docs = new HashMap<String, OpDoc>();
 	private static HashMap<Integer, List> _allOpsCache;
+	private static OpDoc NONE = new OpDoc(' ', "");
 	
 	public static void add(OpDoc doc) {
 		_docs.put(doc.opName(), doc);
 	}
 	
 	public static OpDoc get(String opName) {
-		return _docs.get(opName);
+		OpDoc doc = _docs.get(opName);
+		if (doc == null) {
+			return NONE;
+		} else {
+			return doc;
+		}
 	}
 	
 	/** Given the type of operator, return a list of dicts containing
