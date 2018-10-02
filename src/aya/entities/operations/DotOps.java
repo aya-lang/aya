@@ -1055,10 +1055,21 @@ class OP_Dot_I extends Operation {
 		final Obj list = block.pop();
 		block.push(list); //.I keeps the list on the stack
 
-		if(list.isa(LIST)) {
-			block.push( List.getIndex((List)list, index));
+		if(list.isa(LIST)) {		
+			block.push(List.getIndex((List)list, index));
 		}else if (list.isa(DICT)) {
-			block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX, index);
+			if (index.isa(LIST) && !index.isa(STR)) {
+				List l = (List)index;
+				if (l.length() == 1)
+					index = l.get(0);
+			}
+			
+			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
+				block.push(index);
+				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX);
+			} else {
+				block.push(Dict.getIndex((Dict)list, index));
+			}
 		}
 		else {
 			throw new TypeError(this, index, list);

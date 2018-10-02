@@ -32,6 +32,7 @@ import aya.OperationDocs;
 import aya.StreamMgr;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
+import aya.exceptions.AyaException;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
@@ -1308,7 +1309,7 @@ class OP_GetIndex extends Operation {
 		if(list.isa(LIST)) {		
 			block.push(List.getIndex((List)list, index));
 		}else if (list.isa(DICT)) {
-			if (index.isa(LIST)) {
+			if (index.isa(LIST) && !index.isa(STR)) {
 				List l = (List)index;
 				if (l.length() == 1)
 					index = l.get(0);
@@ -1338,7 +1339,7 @@ class OP_SetIndex extends Operation {
 		final Obj list = block.pop();
 		final Obj item = block.pop();
 		
-		if (index.isa(LIST)) {
+		if (index.isa(LIST) && !index.isa(STR)) {
 			List l = (List)index;
 			if (l.length() == 1)
 				index = l.get(0);
@@ -1355,11 +1356,7 @@ class OP_SetIndex extends Operation {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);
 			} else {
-				if (index.isa(SYMBOL)) {
-					((Dict)list).set(((Symbol)index).id(), item);
-				} else {
-					throw new TypeError("Cannot set index of dict: " + index.repr());
-				}
+				Dict.setIndex((Dict)list, index, item);
 			}
 		}
 		else {

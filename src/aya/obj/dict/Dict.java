@@ -337,6 +337,17 @@ public class Dict extends Obj {
 			throw new AyaRuntimeException("Cannot access dict at index " + index.repr() + "\n" + dict.repr());
 		}
 	}
+	
+	/** General setindex */
+	public static void setIndex(Dict dict, Obj index, Obj value) {
+		if (index.isa(Obj.STR)) {
+			dict.set(index.str(), value);
+		} else if (index.isa(Obj.SYMBOL)) {
+			dict.set(((Symbol)index).id(), value);
+		} else {
+			throw new AyaRuntimeException("Cannot set value of dict at index " + index.repr() + "\n" + dict.repr());
+		}
+	}
 
 	
 
