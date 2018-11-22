@@ -13,6 +13,17 @@
 
 {,
 {B\.V}:roll;           .#? L roll\n  move the last element to the front
+
+{
+    .E@-        .# inverse so rotate in correct direction 2 5R => 3
+    \.E@\%      .# force bounds: n % length
+    $0= {
+        ;       .# if 0, do nothing
+    } {
+        | \K    .# split and rejoin halves
+    } .?
+}:r;
+
 {\$@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
 {{.<}F}:max;           .#? L max\n  max value of a list
 {{.>}F}:min;           .#? L min\n  min value of a list
@@ -120,6 +131,12 @@ import ::test
     {[] allf} [1] ts+
     {[] {3=} any} [0] ts+
     {[] {3=} all} [1] ts+
+
+    {1  [1 2 3 4] .r} [[2 3 4 1]] ts+
+    {0  [1 2 3 4] .r} [[1 2 3 4]] ts+
+    {:1 [1 2 3 4] .r} [[4 1 2 3]] ts+
+    {7  [1 2 3 4] .r} [[4 1 2 3]] ts+
+
 
     {"abc" :\ .enumerate} [[[0 'a][1 'b][2 'c]]] ts+
     {[10].enumerate} [[[0 10]]] ts+

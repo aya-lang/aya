@@ -233,6 +233,9 @@
 .#? SB conderr\n  throw error message if condition is true
 {{.D} {;} .?}:conderr;
 
+.#? BS assert\n throw error if bool is false
+{\! {.D} {;} .?}:assert;
+
 .#? B where D\n  use variables defined in D in B
 {`.+}:where;
 

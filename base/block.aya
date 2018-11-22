@@ -7,4 +7,15 @@
 
     .#? list expr tw\n  (takewhile) take from list while the condition is satisfied
     {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
+
+    .#? ::any ::list ::block.al\n  apply block to `any` and `i` for each element across list
+    .# "a" ["A" "B" "C"] {+}.across => ["aA" "aB" "aC"]
+    {@@.E@\L\@.&}:el;
+
+    .#? ::list ::any ::block.la\n  apply block to `any` and `i` for each element across list
+    .# ["A" "B" "C"] "a" {+}.across => ["Aa" "Ba" "Ca"]
+    {@@\.E@\L@.&}:le;
 }:block;
+
+{.le}:otimes;
+{.el}:odot;

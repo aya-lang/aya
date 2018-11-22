@@ -16,7 +16,7 @@ import ::io
 }:ls;
 
 .#? pwd\n  print working directory
-{path.working.P}:pwd;
+{path.working:P}:pwd;
 
 .#? cd dir\n  change directory
 {`(sys.cd)}:cd;
@@ -24,10 +24,10 @@ import ::io
 .#? mkdir S\n  create a new directory
 {`(sys.mkdir)}:mkdir;
 
-.#? more S\n  print a file to the console
+.#? cat S\n  print a file to the console
 {`({filename::str,
     filename G println
-})}:more;
+})}:cat;
 
 {`:P}:echo;
 

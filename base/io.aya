@@ -10,12 +10,22 @@ import ::sys
     ::path:__type__;
 
     .# Create a new path (accepts relative or abs paths)
-    {dir::str,
-        .# If direct path
-        dir path.isabs ! {
-            path.workingP "/"+ dir + :dir;
-        } ?
-        {, dir path.split path.fixhome path.clean :dirs} path MO
+    {dir,
+        .# Already a path?
+        dir:T ::path = {
+            dir
+        } {
+            .# Input is a string?
+            dir:T ::str = {
+                .# If direct path
+                dir path.isabs ! {
+                    path.workingP "/"+ dir + :dir;
+                } ?
+                {, dir path.split path.fixhome path.clean :dirs} path MO
+            } {
+                "Cannot create path from $dir" .D
+            } .?
+        } .?
     }:__new__;
 
     .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
@@ -174,8 +184,8 @@ import ::test
 
     {filepath type::char,
         {,
-            filepath:T ::path = {filepath:path} {filepath path!:path} .?
-            pathP type O :id
+            filepath path!:path
+            P type O :id
         } file MO
     }:__new__;
 
@@ -243,6 +253,7 @@ import ::test
             f.path.__str__ ">"
         ]S
     }:__repr__;
+
 }:file;
 
 .#? stdin::file\n  standard input stream
