@@ -2063,9 +2063,8 @@ class OP_Bar extends Operation {
 				block.push(l.slice(0, l.length()+index));
 				block.push(l.slice(l.length()+index, l.length()));
 			} else if (index == 0) {
-				for (int i = 0; i < l.length(); i++) {
-					block.push(l.slice(i, i+1));
-				}
+				block.push(new GenericList(new ArrayList<Obj>()));
+				block.push(b);
 			} else {
 				throw new TypeError(this, a, b);
 			}
