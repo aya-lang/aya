@@ -5,6 +5,7 @@ import ::matrix
 .# Life function
 {$3R2-$@{.rc}⊗{{.rr}⊙S}⊗S$3=\4=@&|}:life;
 
+{$3R2-$@{.rc}:*{.rr}:*#SS$3=\4=@&|}:life;
 .# Generate initial Matrix
 9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 6 \ .pad
 

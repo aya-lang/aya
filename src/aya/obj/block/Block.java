@@ -276,6 +276,23 @@ public class Block extends Obj {
 		return new GenericList(out).promote();
 	}
 	
+	/** Maps a block to a list and returns the new list. The block is not effected */
+	public List mapToPushStack(Obj obj, List list) {
+		ArrayList<Obj> out = new ArrayList<Obj>(list.length());
+		Block b = new Block();
+		for (int i = 0; i < list.length(); i++) {
+			b.push(obj.deepcopy());
+			b.addAll(this.instructions.getInstrucionList());
+			b.add(list.get(i));
+			b.eval();
+			out.addAll(b.stack);
+			b.clear();
+		}
+		return new GenericList(out).promote();
+	}
+	
+	
+	
 	/** Maps a block to a dictionary and returns nothing. Neither the block nor the dict is effected */
 	public void mapTo(Dict dict) {
 		Block b = new Block();

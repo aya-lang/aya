@@ -52,7 +52,7 @@ public class ColonOps {
 		/* 39 '  */ new OP_Colon_Quote(),
 		/* 40 (  */ null, //List item assignment
 		/* 41 )  */ null,
-		/* 42 *  */ null,
+		/* 42 *  */ new OP_Colon_Times(),
 		/* 43 +  */ null,
 		/* 44 ,  */ null,
 		/* 45 -  */ null, //Special number literals
@@ -284,6 +284,58 @@ class OP_Colon_Quote extends Operation {
 			block.push(new NumberItemList(nums));
 		} else {
 			throw new TypeError(this, a);
+		}
+	}
+}
+
+//* - 42
+class OP_Colon_Times extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":*");
+		doc.desc("LLB", "outer product of two lists using B");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Times() {
+		this.name = ":*";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj blk = block.pop();
+		Obj a  = block.pop();
+		Obj b  = block.pop();
+		
+		if (blk.isa(BLOCK)) {
+			Block expr = (Block)blk;
+			if (a.isa(LIST) && b.isa(LIST)) {
+				List l1 = (List)a;
+				List l2 = (List)b;
+				ArrayList<Obj> out = new ArrayList<Obj>(l1.length());
+				
+				for (int i = 0; i < l2.length(); i++) {
+					Block e = new Block();
+					e.addAll(expr.getInstructions().getInstrucionList());
+					out.add(e.mapToPushStack(l2.get(i), l1));
+				}
+				
+				block.push(new GenericList(out));
+			} else if (a.isa(LIST)) {
+				List l1 = (List)a;
+				Block e = new Block();
+				e.addAll(expr.getInstructions().getInstrucionList());
+				block.push(e.mapToPushStack(b, l1));
+			} else if (b.isa(LIST)) {
+				List l2 = (List)b;
+				Block e = new Block();
+				e.addAll(expr.getInstructions().getInstrucionList());
+				e.add(a);
+				block.push(e.mapTo(l2));
+			} else {
+				throw new TypeError(this, blk, a, b);
+			}
+		} else {
+			throw new TypeError(this, blk, a, b);
 		}
 	}
 }
