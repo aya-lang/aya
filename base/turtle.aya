@@ -46,8 +46,8 @@ import ::math
         x p.domain
         y p.addline
 
-        [x max y max] max :big;
-        [x min y min] min :small;
+        x.max y.max .< :big;
+        x.min y.min .> :small;
         big 0.1* :margin;
 
         [small margin- big margin+] p.:xaxis;

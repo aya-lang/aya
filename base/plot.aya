@@ -17,7 +17,7 @@ import ::list
 
 
     .#? plot.new\n  create a new plot instance with default settings
-    {:plt,
+    {: plt,
         .# [plot.fieldnamesE,0] plot MO :plt;
         {,
             ::line      :plottype
@@ -120,6 +120,31 @@ import ::list
         };
         plt
     }:fns;
+
+    {c::color : plt,
+        plot! :plt;
+        [1 2 2 1 1] plt.domain
+        "" 500 c.rgb [1 1 2 2 1] plt.addseries
+        100 plt.:width;
+        100 plt.:height;
+        [1 2] plt.:yaxis;
+        [1 2] plt.:xaxis;
+        plt.view
+    }:showcolor;
+
+    {cs::list : plt i(0),
+        plot! :plt;
+        100 plt.:width;
+        100 10 csE* + 100 400.clip plt.:height;
+        [1 2] plt.domain
+        cs :# {c,
+            "" 10 c.rgb [i i] plt.addseries
+            ::i B
+        };
+        [1 csE] plt.:yaxis;
+        [1 2] plt.:xaxis;
+        plt.view
+    }:showcolors;
 
 
     {"Plot Instance"}:str:repr;

@@ -6,7 +6,6 @@ $ .$ :$
 * .* :*
 - .- :-
 A .A :A
-_ ._ :_
 = .= :=
 / ./ :/
 \ .\ :\
@@ -30,6 +29,9 @@ aM4a aMZa aMza aM+a
 :# # .# blah
 
 a.:x a.x
+
+_ a._ a:_
+
 
 .{  You are going on a vacation next week. A 50% chance of rain
 .   is forecasted each day. What is the probability that it

@@ -9,6 +9,12 @@
 
 {10 2 H}:bits;
 
+.#? round a decimal to the nearest whole value
+{0.5-./}:round;
+
+.#? N1 N2 N3 .clip N1 between N2 (lo) and N3 (hi)
+{@.>.<}:clip;
+
 }:num;
 
 .#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)

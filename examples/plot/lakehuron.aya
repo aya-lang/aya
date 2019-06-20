@@ -22,7 +22,7 @@ time plt.domain
 "Level of Lake Huron" plt.:title;
 "Year" plt.:xlabel;
 "Level" plt.:ylabel;
-[level min 2- level max 5+] plt.:yaxis;
+[level.min 2- level.max 5+] plt.:yaxis;
 
 level plt.addline
 

@@ -16,27 +16,52 @@ import ::str
 
     .# Constructors
 
-    {r::num g::num b::num, {, r:r g:g b:b} color MO}:__new__;
+    {r::num g::num b::num, {,
+        [[r g b], .round 0 255 .clip] ~
+        :b;:g;:r; .# assign items off the stack in reverse
+    } color MO}:__new__;
 
     .#? S color.newhex\n  create a new color using a hex value represented as a string
-    {c:str, [c 16 2 H .E24\-{0\K}\%8|8|]#{2 10 H} ~color!}:newhex;
+    {16 2 H 24 .> [3 8] L #{2 10 H} ~color!}:newhex;
 
-    {c, "($(c.r), $(c.g), $(c.b))"}:__repr__;
-    {c, "($(c.r), $(c.g), $(c.b))"}:__str__;
+    .#? h s v color.newhsv\n  create a new color using hsv values (0-360,0-1,0-1)
+    {h::num s::num v::num,
+        h s v color._hsvtorgb ~color!
+    }:newhsv;
+
+    {c, "($(c.r) $(c.g) $(c.b)) color!"}:__repr__;
+    {c, "($(c.r) $(c.g) $(c.b)) color!"}:__str__;
+
+
+    .###############
+    .# Math        #
+    .###############
+
+    .# ::color ::color *\n  multiply two colors
+    {other self,
+        other.rgbf self.rgbf * 255* ~color!
+    }:__mul__;
+
+    .# ::color N *\n  multiply a color by a value
+    {self n,
+        self.rgbf n * 255* :#{0 255 .clip} ~color!
+    }:__rmul__;
 
 
     .###############
     .# Conversions #
     .###############
 
-    .#? (color) color.rgb\n  return a list containing red, green, and blue values respectively
+    .#? ::color.rgb\n  return a list containing red, green, and blue values respectively
     {self, [self.r self.g self.b]}:rgb;
-    .#? (color) color.hex\n  return a hexadecimal string representation of the color
-    {.rgb#{10 16 H '0 2 strleftpad}S}:hex;
-    .#? (color) color.hsv\n  return a list containing hue, sat, and val respectively
-    {.rgb255/~ color.rgbtohsv}:hsv;
+    .#? ::color.rgbf\n  return a list of RGB values represented as floats from 0.0 to 1.0
+    {self, [self.r self.g self.b] 255/}:rgbf;
+    .#? ::color.hex\n  return a hexadecimal string representation of the color
+    {.rgb #{10 16 H 2 '0 @.leftpad}S}:hex;
+    .#? ::color.hsv\n  return a list containing hue, sat, and val respectively
+    {.rgb255/~ color._rgbtohsv}:hsv;
 
-    .#? NNN rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
+    .#? NNN color._rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
     {r g b : h s v delta maxv minv,
         [r g b].min:minv;
         [r g b].max:maxv;
@@ -62,49 +87,54 @@ import ::str
             (-1):h;
         } .?
         [h s v]
-    }:rgbtohsv;
+    }:_rgbtohsv;
+
+    {h s v : hi p q t ff,
+
+        .# no saturation, just greyscale
+        s 0 = {
+            [v v v]
+        } {
+            .# Compute hue index
+            .# floor -> mod 360 -> /60 (hh) -> floor (hi)
+            h .\ 360 % 60 /:hh;
+            hh .\ :hi;
+
+            hh hi - :ff; .# fractional part
+
+            v 1 s - * :p;
+            v 1 s ff * - * :q;
+            v 1 s 1 ff - * - * :t;
+
+            [
+                [v t p]
+                [q v p]
+                [p v t]
+                [p q v]
+                [t p v]
+                [v p q]
+            ] hi I
+        } .?
+
+        255* :#{.round}
+
+    }:_hsvtorgb;
 
 
     .#############
     .# Gradients #
     .#############
 
-    .#? (color) (color) color.grad\n  creates a gradient of rgb lists from color1 to color2
-    {n a b, [ [a.rgb b.rgb, n intspace]~, .A ]}:grad;
+    .#? N ::color ::color.grad\n  creates a gradient of rgb lists from color1 to color2
+    {n a b, [ [a.rgb b.rgb, n intspace]~, color!]}:grad;
 
-    .#? (color) (color) color.mid\n  returns the color in between color1 and color2 using rgb
+    .#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb
     {3@@\.grad 1I~ color!}:mid;
-
-
-    .##################
-    .# Printing       #
-    .# (depreciated)  #
-    .##################
-
-    .# .#? L L<(color)> color.circprint\n  print each element of L1 using a rotation of colors from L2
-    .# {lst cols,
-    .#   for 'i (lst irange) {
-    .#     lst iI                  .# The ith item of the list
-    .#     cols i colsE%I          .# The next color in the cycle
-    .#     .print
-    .#   };
-    .# }:circprint;
-    .# .#? A (color) color.print\n  print A using the color
-    .# {.rgb~ .P}:print;
-    .# .#? A (color) color.println\n  print A using the color; append a newline
-    .# {.print"\n".P}:println;
-    .# .#? (color) color.show\n  print a square of color and return the rgb values of the color
-    .# .#? (color) (color) color.quickgrad\n  creates  gradient from color1 to color2 across the IDE console
-    .# {a b, '\block' 38L a b color.printgrad}:quickgrad;
-    .# .#? L (color) (color) color.printgrad\n  prints L using a gradient from color1 to color2
-    .# {o::list a b, o.E a b color.grad#{~color.new}{.print0}zw;}:printgrad;
-
-
 
 }:color;
 
 .{? module: colors
-    The colors module defines several color objects. Here are some examples:
+    The colors module defines several color objects. For example:
       colors.red
       colors.aqua
       colors.raspberry
@@ -234,6 +264,8 @@ import ::test
     {0 0 0 color! :T} [::color] ts+
     {"35C62A" color.newhex.rgb} [[53 198 42]] ts+
     {"35C62A" color.newhex.hsv 100*./} [[11577 79 78]] ts+
+    {"35C62A" color.newhex.hex} ["35c62a"] ts+
+    {"ff00ff" color.newhex.hex} ["ff00ff"] ts+
     {colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
     {3 colors.blue colors.yellow.grad .FS} [1146] ts+
 

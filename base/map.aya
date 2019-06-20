@@ -30,6 +30,8 @@
         } .?
     }:put;
 
+    {.put}:__setindex__;
+
     {key self,
         .# Apply remove code only if it is in the map
         self.keys key N $ :1 =! {

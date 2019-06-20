@@ -1,0 +1,7 @@
+.# plot a simple colorbar
+
+import ::color
+import ::plot
+
+
+[360, 1 1 color.newhsv] plot.showcolors
