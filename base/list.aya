@@ -12,40 +12,68 @@
 
 
 {,
-{B\.V}:roll;           .#? L roll\n  move the last element to the front
+    {B\.V}:roll;           .#? L roll\n  move the last element to the front
 
-{
-    .E@-        .# inverse so rotate in correct direction 2 5R => 3
-    \.E@\%      .# force bounds: n % length
-    | \ K       .# Split, swap, and rejoin
-}:r;
+    .#? ::list.r\n  generate a multidimentional range
+    .{ Example:
+        aya> [2 3].r
+        [ [ 1 2 3 ] [ 4 5 6 ] ]
+    .}
+    {${*}FR\L}:r;
 
-{\$@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
-{{.<}F}:max;           .#? L max\n  max value of a list
-{{.>}F}:min;           .#? L min\n  min value of a list
+    .#? ::list.zeros\n  generate a [N1 x N2 x ...] list of zeros
+    .#? ::list.ones\n  generate a [N1 x N2 x ...] list of ones
+    .{? Example:
+        aya> [2 3].zeros
+        [ [ 0 0 0 ] [ 0 0 0 ] ]
+        aya> [4].ones
+        [ 1 1 1 1 ]
+    .}
+    {${*}F0\L\L}:zeros;
+    {${*}F1\L\L}:ones;
 
-{$.maxN\;}:argmax; .#? L.argmax\n  return the index of the largest value in the list
-{$.minN\;}:argmin; .#? L.argmin\n  return the index of the smallest value in the list
+    .#? ::num ::list.rotate\n  shift items in list up N times wrappping the items around
+    .{ Example:
+        aya> 1 [1 2 3 4].rotate
+        [ 4 1 2 3 ]
+        aya> 2 [1 2 3 4].rotate
+        [ 3 4 1 2 ]
+        aya> :1 [1 2 3 4].rotate
+        [ 2 3 4 1 ]
+    .}
+    {
+        .E@-        .# inverse so rotate in correct direction 2 5R => 3
+        \.E@\%      .# force bounds: n % length
+        | \ K       .# Split, swap, and rejoin
+    }:rotate;
 
-.#? L enumerate\n  return a list of index-value pairs for the list
-{.E.R{A.B}.&}:enumerate;
+
+    {\$@K\K}:surround;      .#? LA surround\n  append A to the front and back of L
+    {{.<}F}:max;           .#? L max\n  max value of a list
+    {{.>}F}:min;           .#? L min\n  min value of a list
+
+    {$.maxN\;}:argmax; .#? L.argmax\n  return the index of the largest value in the list
+    {$.minN\;}:argmin; .#? L.argmin\n  return the index of the smallest value in the list
+
+    .#? L enumerate\n  return a list of index-value pairs for the list
+    {.E.R{A.B}.&}:enumerate;
 
 
-.#? L rank\n  rank a list
-{${>}.pu#S1+}:rank;
+    .#? L rank\n  rank a list
+    {${>}.pu#S1+}:rank;
 
-.#? L irange\n generates a range of indices for the list
-{E.R}:irange;
+    .#? L irange\n generates a range of indices for the list
+    {E.R}:irange;
 
-.#? <LII> swap\n  swap two elements in a list given their indices
-{i::num j::num l::list: tmp,
-    l i I : tmp;
-    l j I  l i D;
-    tmp l j D
-}:swap;
+    .#? <LII> swap\n  swap two elements in a list given their indices
+    {i::num j::num l::list: tmp,
+        l i I : tmp;
+        l j I  l i D;
+        tmp l j D
+    }:swap;
 
-.#? <L> shuffle\n  shuffle a list
-{{;.Q}.C}:shuffle;
+    .#? <L> shuffle\n  shuffle a list
+    {{;.Q}.C}:shuffle;
 
 }:list;
 

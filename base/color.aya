@@ -131,6 +131,9 @@ import ::str
     .#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb
     {3@@\.grad 1I~ color!}:mid;
 
+    .#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
+    {l n, [l {a b, n a b .grad B} F ; ].F}:multigrad;
+
 }:color;
 
 .{? module: colors

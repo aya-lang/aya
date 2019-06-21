@@ -10,10 +10,19 @@
 {10 2 H}:bits;
 
 .#? round a decimal to the nearest whole value
-{0.5-./}:round;
+{0.49999999-./}:round;
 
 .#? N1 N2 N3 .clip N1 between N2 (lo) and N3 (hi)
 {@.>.<}:clip;
+
+.#? ::num.posneg\n  generate a range from -N to N
+.{ Example:
+    aya> 4.i
+    [ -4 -3 -2 -1 0 1 2 3 4 ]
+    aya> :-1.i
+    [ 1 0 -1 ]
+.}
+{.|$TR\R0\KK}:i;
 
 }:num;
 

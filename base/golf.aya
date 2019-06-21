@@ -19,6 +19,24 @@ import """
     plot
 """
 
+.# Standard library shortcuts
+num.clip.`   num.:c;
+num.digits.` num.:d;
+num.round.`  num.:r;
+char.upper.` char.:u;
+char.lower.` char.:l;
+str.upper.`  str.:u;
+str.lower.`  str.:l;
+str.split.`  str.:s;
+str.trim.`   str.:t;
+str.lines.`  str.:n;
+list.shuffle.` list.:q;
+list.max.` list.:u;
+list.min.` list.:l;
+list.irange.` list.:i;
+matrix.rotate_cols.` matrix.:n;
+matrix.rotate_rows.` matrix.:z;
+
 .# Single letter variables
 1:a;
 2:b;

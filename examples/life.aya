@@ -1,13 +1,13 @@
 import ::matrix
-
-.# {m, [:1 0 1] $ m \{\.rc}.el \ {\{.rr}.elS}.el S $ 3 = \4= m & |} :life;
+import ::golf
 
 .# Life function
-{$3R2-$@{.rc}⊗{{.rr}⊙S}⊗S$3=\4=@&|}:life;
+.# Algorithm based off the APL implementation here:
+.# https://www.youtube.com/watch?v=a9xAKttWgP4
+{$1.i$@{.n}:*{.z}:*.FS$3=\4=@&|}:life;
 
-{$3R2-$@{.rc}:*{.rr}:*#SS$3=\4=@&|}:life;
 .# Generate initial Matrix
 9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 6 \ .pad
 
 .# Apply life and print
-5\.pad {life $ .rows :# {" #"\I:P}; 100:Z "-":P} 60 % ;
+5\.pad {life $ .rows :# {" #"\I:P}; 100:Z "-":P} 100 % ;

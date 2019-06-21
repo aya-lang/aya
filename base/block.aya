@@ -2,19 +2,28 @@
     .#? LLE zw\n  zip two lists with a block
     {.&}:zip;
 
-    .#? <LLE> pu\n  (permusing) permutes elements of two lists and applies an expression to each
+    .#? ::list ::list ::block.pu\n  (permusing) permutes elements of two lists and applies an expression to each
+    .# aya> "AB" "ab" {P+}.pu
+    .#      [ [ "aA" "bA" ] [ "aB" "bB" ] ]
+    .# aya> [1 2 3][1 2 3] {*} .pu
+    .#      [ [ 1 2 3 ] [ 2 4 6 ] [ 3 6 9 ] ]
     {la lb ex, [la lb laEL,\#{ex}]}:pu;
 
-    .#? list expr tw\n  (takewhile) take from list while the condition is satisfied
+    .#? ::list ::block.tw\n  (takewhile) take from list while the condition is satisfied
+    .# aya> 10R {5<}.tw
+    .#      [ 1 2 3 4 ] 
     {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
 
-    .#? ::any ::list ::block.al\n  apply block to `any` and `i` for each element across list
-    .# "a" ["A" "B" "C"] {+}.across => ["aA" "aB" "aC"]
+    .#? ::any ::list ::block.el\n  apply block to `any` and `i` for each element across list
+    .# aya> "a" ["A" "B" "C"] {+}.el
+    .#      ["aA" "aB" "aC"]
     {@@.E@\L\@.&}:el;
 
-    .#? ::list ::any ::block.la\n  apply block to `any` and `i` for each element across list
-    .# ["A" "B" "C"] "a" {+}.across => ["Aa" "Ba" "Ca"]
+    .#? ::list ::any ::block.le\n  apply block to `any` and `i` for each element across list
+    .# aya> ["A" "B" "C"] "a" {+}.le
+    .#      ["Aa" "Ba" "Ca"]
     {@@\.E@\L@.&}:le;
+
 }:block;
 
 {.le}:otimes;

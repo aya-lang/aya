@@ -1,21 +1,53 @@
+.# Dictionary where indexing missing keys, the default value is returned
+.# Must use "d.[::key]" syntax not "d.key" as d.key is not overloadable
+
 {,
 
-  {d::dict dflt,
-    {,d:dict dflt:dflt} defaultdict MO
-  }:__new__;
+    {d::dict dflt,
+        {,d:dict dflt:dflt} defaultdict MO
+    }:__new__;
 
-  {index self : t,
-    self.dict index N 0 = \; {
-      self.dflt $ :t;;
-      t self.dict.:[index]
-      t
-    } {
-      self.dict.[index]
-    } .?
-  }:__getindex__;
+    {index self : t,
+        self.dict index N 0 = \; {
+            self.dflt $ :t;;
+            t self.dict.:[index]
+            t
+        } {
+            self.dict.[index]
+        } .?
+    }:__getindex__;
 
-    {index self,
-        self.:dict[index]
+    .# TODO: __setindex__ is broken...
+    .{
+        aya> run "examples/defaultdict"
+        aya> {, 1:x } 0 defaultdict! :d
+        {, 1:x; }
+        aya> 5 d.:[::y]
+        Unexpected empty stack
+        stack:
+
+        just before:
+                "index" :P index :P "self" :P self :P "val" :P val :P .A :P self .dict [index] .:
+    .}
+    {val index self,
+        "index" :P index :P
+        "self" :P self :P
+        "val" :P val :P
+        .A :P self.dict.:[index]
     }:__setindex__;
 
+    {self,
+        self.dict P
+    }:__str__:__repr__;
+
+
 }:defaultdict;
+
+.{
+    Example:
+
+    {,} 0 defaultdict!
+
+
+
+.}

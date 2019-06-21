@@ -1,0 +1,46 @@
+.# A simple spell checker using levenshtein distance
+
+.# Load the word database
+"data/words.txt"G.lines :words;
+
+.#
+.# A minimal example:
+.#
+
+.# aya> words {"necessacary"^}.C 3.<
+.# [ "necessary" "necessarily" "accessary" ]
+
+
+.#
+.# Interactive example
+.#
+
+import ::dialog
+
+.# A function which takes a word and returns the word
+.#   with the nearest levenshtein distance
+{w,
+    words {w^}.C V\;
+}:nearest_word;
+
+"Enter a word" dialog.requeststr.lower :my_word;
+
+my_word "" = {
+  "No word entered" dialog.error
+} {
+    .# get nearest word
+    my_word nearest_word :nearest;
+
+    nearest my_word = {
+        "Spelling is correct!" dialog.alert
+    } {
+        "The correct spelling is '$nearest'" dialog.warn
+        "Other possible spellings:":P
+        words {my_word^}.C 5 .< # {w,
+          "  - $w":P
+        };
+    } .?
+} .?
+
+
+
