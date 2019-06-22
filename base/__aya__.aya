@@ -160,7 +160,7 @@
 .# USING
 .# -----
 
-.#? using dict\n  import variables from a dict into the global scope
+.#? using dict\n  import variables from a dict into the current scope
 {`W}:using;
 
 
@@ -237,7 +237,55 @@
 {\! {.D} {;} .?}:assert;
 
 .#? B where D\n  use variables defined in D in B
+.{ Example
+    aya> {a, a b *} where {, 2:b } :double
+    {a , a 2 * }
+    aya> 3 double
+    6
+
+   Set constant values in loops.
+   Before
+    aya> 3R :# {{a, a b *} where {, 10:b "evaluating..":P} ~}
+    evaluating..
+    evaluating..
+    evaluating..
+    [ 10 20 30 ]
+   After: (note the parenthesis)
+    aya> 3R :# ({a, a b *} where {, 10:b "evaluating..":P})
+    evaluating..
+    [ 10 20 30 ]
+
+   Escape functions with .` and ~ :
+    aya> {a, a fn~} where {, double.` :fn} :apply_double
+    {a , a {x , x 2 * } ~ }
+    aya> 2 apply_double
+    4
+
+   Nesting!
+    aya> {a, a fn~} where {, {a, a b *} where {, 2:b} :fn} :apply_double
+    {a , a {a , a 2 * } ~ }
+    aya> 2 apply_double
+    4
+.}
 {`.+}:where;
+
+
+.#? ::block with ::list\n  evaulate the variables (given by a list of symbols) in the block in the current scope
+.{ Example:
+    aya> 2:y
+    2
+    aya> {x, x y *} with [::y] :double
+    {x , x 2 * }
+    aya> 3 double
+    6
+.}
+{`({:d__,
+    .# Create a dictionary of all valies given by the list
+    {,}:d__;
+    :#{$~\d__:D;};
+    .# Substitute the values from the dictionary into the block
+    d__ .+
+})}:with;
 
 
 .################
