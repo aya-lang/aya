@@ -361,7 +361,7 @@ import ::math
     {1 matrix.newfill}:ones;
 
     .#? NN matrix.random\n  create a N1 by N2 matrix of random values [0,1]
-    {K0\L #{#{;.Q}} matrix!}:__random__;
+    {;K0\L #{#{;.Q}} matrix!}:__random__;
 
     .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
     {@@K L #{#Q} matrix!}:randint;
@@ -373,8 +373,27 @@ import ::math
     .# INPUT / OUTPUT #
     .##################
 
-    .#? S matrix.fopen\n  open a space-delimited file containing a matrix as a matrix object
-    {G"\n"|#{" "|#~}matrix!}:fopen;
+    .{ Save / Load Example:
+        aya> [4 4].r matrix! :mat
+        |   1   2   3   4 |
+        |   5   6   7   8 |
+        |   9  10  11  12 |
+        |  13  14  15  16 |
+
+        aya> mat "my_mat.txt"\.save
+        aya> "my_mat.txt" matrix.load
+        |   1   2   3   4 |
+        |   5   6   7   8 |
+        |   9  10  11  12 |
+        |  13  14  15  16 |
+    .}
+
+    .#? ::str matrix.load\n  open a space-delimited file containing a matrix as a matrix object
+    {G"\n"|#{" "|#~}matrix!}:load;
+
+    .# ::str ::matrix.save\n  write the matrix to a file
+    {.rows:#{#P' *}'\n'* \ 0 .G}:save;
+
 
     .###################
     .# TRANSFORMATIONS #
