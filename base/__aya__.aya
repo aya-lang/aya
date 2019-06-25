@@ -169,26 +169,42 @@
 .# STRUCT
 .# ------
 
-{``({name::sym members::list : namestr,
-    name:C :namestr;
-    [
-        "{,"
 
-        "  ::$namestr:__type__;"
-        "  {"  members :#{:C} " "* "," ++
-        "    {, " members :#{[1|:C$]":"*}" "* + "}"+
-        "    $namestr MO"
-        "  }:__new__;"
+{``({name::sym members::list,
+    members $:~=!{"struct: all members must be unique in $members".D}?
 
-        "  {self, [ \"(\""
-        "    " members :# {"self."\:C+} " "* +
-        """    ")" ] " "* " """ namestr + "!\" +" +
-        "  }:__str__:__repr__;"
+    .# Metatable
+    {,
+        .# Constructor
+        {: self,
+            .# This object
+            {,} :self;
+            .# args will grab all args off the stack using list grabbing
+            args~ members {self :D}.&;
+            .# add the outer table as a metatable at runtime
+            self name .Z MO
+        } where {,
+            members:members
+            name:name
+            "{[$(membersE)|]}"~:args
+        }:__new__;
 
-        "}:$namestr;"
-    ]"\n"* ~
+        .# string and print overloads
+        .# default string:
+        .# ( m1 m2 ... mN ) type!
+        {self,
+            "( "
+            members :# {self \:I \;} " "* +
+            " ) " +
+            name :C +
+            "!"+
+        } with [
+            ::name
+            ::members
+        ]:__str__:__repr__;
+
+    } name {,}:DW
 })}:struct;
-
 
 
 
