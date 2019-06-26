@@ -6,44 +6,116 @@
 
     ::bitset:__type__;
 
-    {s::num,
-        {, s:size 0sL:bits } bitset MO
+    {s,
+        s :T ::num = {
+            {, s:size 0sL:bits } bitset MO
+        } {
+            s bitset.fromlist
+        } .?
     }:__new__;
 
     {l::list,
         {, lE:size l:bits } bitset MO
     }:fromlist;
 
+
     {
-        .bits P
+        .bits P "bitset!" +
     }:__str__:__repr__;
 
+
+    .#? index ::bitset.set\n  set the bits given by the index to true
+    .{ Example:
+        aya> 4 bitset! :b
+        [ 0 0 0 0 ]
+        aya> 1 b.set
+        aya> b
+        [ 0 1 0 0 ]
+        aya> [0 3] b.set
+        aya> b
+        [ 1 1 0 1 ]
+    .}
     {n self,
         1 self.bits.:[n]
     }:set;
 
+
+    .#? index ::bitset.set\n  set the bits given by the index to false
+    .{ Example:
+        aya> [1 0 1 0] bitset! :b
+        [ 1 0 1 0 ]bitset!
+        aya> 0 b.reset
+        aya> b
+        [ 0 0 1 0 ]bitset!
+    .}
     {n self,
         0 self.bits.:[n]
     }:reset;
 
+    .#? ::bitset.__getindex__\n  get value of bit at the given index
+    .{ Example:
+        aya> [1 0 1 0] bitset! :b
+        [ 1 0 1 0 ]bitset!
+        aya> b.[0]
+        1
+        aya> b.[0 2]
+        [ 1 1 ]
+    .}
     {n self,
         self.bits.[n]
     }:__getindex__;
 
+
+    .#? ::bitset.count\n  return the number of true bits in the set
+    .{ Example:
+        aya> [0 1 0 1] bitset! .count
+        2
+        aya> [1 1 1 1] bitset! .count
+        4
+    .}
     {
         .bits S
     }:count;
 
+    .#? ::bitset.__signum__\n  not each bit
+    .{ Example:
+        aya> [1 0 1 0] bitset! .!
+        [ 0 1 0 1 ]bitset!
+    .}
+    {self,
+        self.bits #! self Mo.fromlist
+    }:__signum__;
+
+
+    .#? ::bitset ::bitset.__or__\n  or two bitsets
+    .{ Example:
+        aya> [0 0 0 1] bitset! [1 1 0 0] bitset! |
+        [ 1 1 0 1 ]bitset!
+    .}
     {other self,
         other.bits self.bits {|}.&
         bitset.fromlist
     }:__or__;
 
+
+    .#? ::bitset ::bitset.__and__\n  and two bits
+    .{ Example:
+        aya> [1 0 0 1] bitset! [1 1 0 0] bitset! &
+        [ 1 0 0 0 ]bitset!
+    .}
     {other self,
         other.bits self.bits {&}.&
         bitset.fromlist
     }:__and__;
 
+
+    .#? ::bitset.__len__\n  the size of the bitset
+    .{ Example:
+        aya> [1 1 0 0] bitset! E
+        4
+        aya> [1 1 0 0 1 1 0 0] bitset! E
+        8
+    .}
     {
         .bits E
     }:__len__;
