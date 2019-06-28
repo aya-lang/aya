@@ -1,0 +1,27 @@
+import ::missing
+
+class ::singleton
+
+nil singleton.:_instance;
+
+impl singleton::__init__ {self,
+    0 self.:counter ;
+}
+
+impl singleton::add {self,
+    self.counter 1 + self.:counter;
+}
+
+impl_static singleton::get_instance {meta,
+    meta._instance nil = {: self,
+        {,} meta MO: self .__init__
+        self meta.:_instance;
+    } ?
+
+    meta._instance
+}
+
+impl singleton::__new__ {
+    "Do not create instance of singleton directly" .D
+}
+

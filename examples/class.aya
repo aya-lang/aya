@@ -1,0 +1,42 @@
+.# Example of defning a class using the `class` keywords
+.#   - class: declare a class
+.#   - impl: instance function (instance is first arg)
+.#   - impl_static: class function (class dict is fist arg)
+.#   - static: plain "static" function (no args)
+
+class ::point
+
+.# constructor
+impl point::__init__ {x y self,
+    x self.:x ;
+    y self.:y ;
+}
+
+.# print overload
+impl point::__repr__ {self,
+    "($(self.x), $(self.y))"
+}
+
+.# operator overload
+impl point::__add__ {other self,
+    other.x self.x +
+    other.y self.y +
+    self Mo !
+}
+
+.# static class variable
+0 point.:my_value;
+
+.# static class function
+impl_static point::inc_my_value {meta,
+    meta.my_value 1 + meta.:my_value ;
+}
+
+impl_static point::get_my_value {meta,
+    meta.my_value
+}
+
+.# Plain static function
+static point::say_hello {
+    "Hello world!" :P
+}

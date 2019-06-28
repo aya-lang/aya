@@ -1,11 +1,4 @@
 {,} {,
-    ::nil:__type__;
-    {"Cannot create instance of nil" .D}:__new__;
-    {"nil"}:__str__:__repr__;
-    {; :T ::nil =}:__eq__;
-} MO :nil;
-
-{,} {,
   ::missing:__type__;
   {"Cannot create instance of missing" .D}:__new__;
   {"missing"}:__str__:__repr__;

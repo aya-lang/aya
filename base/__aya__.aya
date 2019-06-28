@@ -207,6 +207,93 @@
 })}:struct;
 
 
+.# ------
+.# CLASS
+.# ------
+
+.#? class ::sym\n  declare a new class
+{`({sym,
+    {,
+        sym:__type__;
+
+        .# { meta : self,
+        { : self meta, sym.Z :meta ;
+            .# Create a new dict and set its metatable
+            {,}:self meta MO;
+
+            .# if it has a constructor, call it
+            meta ::__init__ N \; {
+                self.__init__
+            } ?
+
+            .# return the new object
+            self
+        } with [::sym] :__new__;
+    } sym {,}:DW
+})}:class;
+
+
+.# Variables for implementing class functions
+
+.#? impl\n  implement instance functions\n  impl class_name::function_name {self, body}
+{```(\@:D ;)}:impl;
+.#? impl_static\n  static class function which get the class dict as the first argument\n  impl_static class_name::function_name {meta, body}
+{```(\@Mo:D ;)}:impl_static;
+.#? static\n  static class function\n  static class_name::function_name {body}
+{```( {f, {;f~} with [::f]}~ \@Mo:D ;)}:static;
+
+.{ class Example:
+
+class ::point
+
+.# Static class variable
+0 point.:counter;
+
+.# Cass constructor uses __init__ instead of __new__
+.# and gets the object as the first argument
+impl point::__init__ {x y self : meta,
+    self Mo :meta ;
+    meta.counter 1 + meta.:counter ;
+    x 10 * self.:x ;
+    y 100 * self.:y ;
+}
+
+.# Instance functions get an instance of the class as the first arg
+
+impl point::__str__ {self,
+    "( $(self.x) $(self.y) ) point!"
+}
+
+.# Instance function alias
+(point.__str__.`, 0); point.:__repr__;
+
+impl point::sum {self,
+    self.x self.y +
+}
+
+.# impl_static function gets metatable
+
+impl_static point::num_points {meta,
+    meta.counter
+}
+
+.# plain static gets nothing
+
+static point::static_fn {
+    "static" :P
+}
+
+.}
+
+.# -------
+.#   NIL
+.# -------
+
+{, } {,
+    ::__nil:__type__;
+    {"nil"}:__str__:__repr__;
+    {; :T ::__nil =}:__eq__;
+} MO :nil;
 
 
 .###########
