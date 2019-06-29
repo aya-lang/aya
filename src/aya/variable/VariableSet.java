@@ -88,6 +88,10 @@ public class VariableSet {
 		vars.put(v.getID(),o);
 	}
 	
+	public void unsetVar(Variable v) {
+		vars.remove(v.getID());
+	}
+	
 	
 	public void setVar(long v, Obj o) {
 		vars.put(v,o);
