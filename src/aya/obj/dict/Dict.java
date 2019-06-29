@@ -227,7 +227,17 @@ public class Dict extends Obj {
 	
 	@Override
 	public Obj deepcopy() {
+		// Don't deep copy the meta
+		if (_meta != null) {
+			_vars.unsetVar(META);
+		}
+		
 		Dict d = new Dict(_vars.deepcopy(), _meta);
+		
+		// Re-attach the meta if it exists
+		if (_meta != null) {
+			d.setMetaTable(_meta);
+		}
 		return d;
 	}
 
