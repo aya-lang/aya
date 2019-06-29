@@ -176,16 +176,15 @@
     .# Metatable
     {,
         .# Constructor
-        {: self,
+        {meta : self,
             .# This object
             {,} :self;
             .# args will grab all args off the stack using list grabbing
             args~ members {self :D}.&;
             .# add the outer table as a metatable at runtime
-            self name .Z :M
+            self meta :M
         } where {,
             members:members
-            name:name
             "{[$(membersE)|]}"~:args
         }:__new__;
 
@@ -216,8 +215,7 @@
     {,
         sym:__type__;
 
-        .# { meta : self,
-        { : self meta, sym.Z :meta ;
+        {meta : self,
             .# Create a new dict and set its metatable
             {,}:self meta :M;
 
@@ -228,10 +226,10 @@
 
             .# return the new object
             self
-        } with [::sym] :__new__;
+        } :__new__;
     }
     {,} :M .# add empty metatable
-    sym {,}:DW .# assign variable
+    sym := ; .# assign variable
 })}:class;
 
 

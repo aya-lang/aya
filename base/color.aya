@@ -6,135 +6,164 @@
 import ::list
 import ::str
 
-
-.{? module: color
+.{? class color
     A module for manipulating and printing colors in Aya
 .}
-{,
-
-    ::color :__type__;
-
-    .# Constructors
-
-    {r::num g::num b::num meta, {,
-        [[r g b], .round 0 255 .clip] ~
-        :b;:g;:r; .# assign items off the stack in reverse
-    } meta :M}:__new__;
-
-    .#? S color.newhex\n  create a new color using a hex value represented as a string
-    {16 2 H 24 .> [3 8] L #{2 10 H} ~color!}:newhex;
-
-    .#? h s v color.newhsv\n  create a new color using hsv values (0-360,0-1,0-1)
-    {h::num s::num v::num,
-        h s v color._hsvtorgb ~color!
-    }:newhsv;
-
-    {c, "($(c.r) $(c.g) $(c.b)) color!"}:__repr__;
-    {c, "($(c.r) $(c.g) $(c.b)) color!"}:__str__;
+class ::color
 
 
-    .###############
-    .# Math        #
-    .###############
+.#
+.# Constructors
+.#
 
-    .# ::color ::color *\n  multiply two colors
-    {other self,
-        other.rgbf self.rgbf * 255* ~color!
-    }:__mul__;
-
-    .# ::color N *\n  multiply a color by a value
-    {self n,
-        self.rgbf n * 255* :#{0 255 .clip} ~color!
-    }:__rmul__;
+impl color::__init__ {r::num g::num b::num self,
+    [[r g b], .round 0 255 .clip] ~
+    self .:b .:g .:r ;
+}
 
 
-    .###############
-    .# Conversions #
-    .###############
+impl_static color::newhex {meta,
+    16 2 H 24 .> [3 8] L #{2 10 H} ~ meta!
+}
 
-    .#? ::color.rgb\n  return a list containing red, green, and blue values respectively
-    {self, [self.r self.g self.b]}:rgb;
-    .#? ::color.rgbf\n  return a list of RGB values represented as floats from 0.0 to 1.0
-    {self, [self.r self.g self.b] 255/}:rgbf;
-    .#? ::color.hex\n  return a hexadecimal string representation of the color
-    {.rgb #{10 16 H 2 '0 @.leftpad}S}:hex;
-    .#? ::color.hsv\n  return a list containing hue, sat, and val respectively
-    {.rgb255/~ color._rgbtohsv}:hsv;
 
-    .#? NNN color._rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
-    {r g b : h s v delta maxv minv,
-        [r g b].min:minv;
-        [r g b].max:maxv;
-        maxv:v;
-        maxv minv-:delta;
+impl_static color::newhsv {meta,
+    meta.hsvtorgb~ meta!
+}
 
-        maxv 0 =! {
-            r maxv = {
-                g b- delta/
+
+.#
+.# Overloads
+.#
+
+impl color::__repr__ {self,
+    "($(self.r) $(self.g) $(self.b)) color!"
+}
+
+
+impl color::__str__ {self,
+    "($(self.r) $(self.g) $(self.b)) color!"
+}
+
+
+.#
+.# Math
+.#
+
+.#? ::color ::color *\n  multiply two colors
+impl color::__mul__ {other self
+    other.rgbf self.rgbf * 255* ~ self.M!
+}
+
+
+.# ::color N *\n  multiply a color by a value
+impl color::__rmul__ {self n,
+    self.rgbf n * 255* :#{0 255 .clip} ~ self.M!
+}
+
+
+.#
+.# Conversions
+.#
+
+.#? ::color.rgbf\n  return a list of RGB values represented as floats from 0.0 to 1.0
+impl color::rgbf {self, [self.r self.g self.b] 255 / }
+
+
+.#? ::color.rgb\n  return a list containing red, green, and blue values respectively
+impl color::rgb {self, [self.r self.g self.b]}
+
+
+.#? ::color.hex\n  return a hexadecimal string representation of the color
+impl color::hex {.rgb #{10 16 H 2 '0 @.leftpad}S}
+
+
+.#? ::color.hsv\n  return a list containing hue, sat, and val respectively
+impl color::hsv {self, self.rgb255/~ self.M.rgbtohsv}
+
+
+.#
+.# Interpolation
+.#
+
+.#? ::num ::color ::color.grad\n  creates a gradient of rgb lists from color1 to color2
+impl color::grad {n::num begin::color self,
+    [ [begin.rgb self.rgb, n intspace]~, self.M!]
+}
+
+.#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb
+impl color::mid {3@@\.grad 1I}
+
+
+.#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
+static color::multigrad {l n,
+    [l {a b, n a b .grad B} F ; ].F
+}
+
+
+.#
+.# Static conversion utilities
+.#
+
+.#? NNN color.hsvtorgb\n  convert h s v (0-360,0-1,0-1) color to hsv
+static color::hsvtorgb {h s v : hi p q t ff,
+    .# no saturation, just greyscale
+    s 0 = {
+        [v v v]
+    } {
+        .# Compute hue index
+        .# floor -> mod 360 -> /60 (hh) -> floor (hi)
+        h .\ 360 % 60 /:hh;
+        hh .\ :hi;
+
+        hh hi - :ff; .# fractional part
+
+        v 1 s - * :p;
+        v 1 s ff * - * :q;
+        v 1 s 1 ff - * - * :t;
+
+        [
+            [v t p]
+            [q v p]
+            [p v t]
+            [p q v]
+            [t p v]
+            [v p q]
+        ] hi I
+    } .?
+
+    255* :#{.round}
+}
+
+
+.#? NNN color.rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
+static color::rgbtohsv {r g b : h s v delta maxv minv,
+    [r g b].min:minv;
+    [r g b].max:maxv;
+    maxv:v;
+    maxv minv-:delta;
+
+    maxv 0 =! {
+        r maxv = {
+            g b- delta/
+        } {
+            g maxv = {
+                b r- delta/ 2+
             } {
-                g maxv = {
-                    b r- delta/ 2+
-                } {
-                    r g- delta/ 4+
-                } .?
-            } .? 60* :h;
+                r g- delta/ 4+
+            } .?
+        } .? 60* :h;
 
-            h 0< {h 360+:h;} ?
+        h 0< {h 360+:h;} ?
 
-            delta maxv/:s;
-        } {
-            0:s;
-            (-1):h;
-        } .?
-        [h s v]
-    }:_rgbtohsv;
+        delta maxv/:s;
+    } {
+        0:s;
+        (-1):h;
+    } .?
+    [h s v]
+}
 
-    {h s v : hi p q t ff,
-
-        .# no saturation, just greyscale
-        s 0 = {
-            [v v v]
-        } {
-            .# Compute hue index
-            .# floor -> mod 360 -> /60 (hh) -> floor (hi)
-            h .\ 360 % 60 /:hh;
-            hh .\ :hi;
-
-            hh hi - :ff; .# fractional part
-
-            v 1 s - * :p;
-            v 1 s ff * - * :q;
-            v 1 s 1 ff - * - * :t;
-
-            [
-                [v t p]
-                [q v p]
-                [p v t]
-                [p q v]
-                [t p v]
-                [v p q]
-            ] hi I
-        } .?
-
-        255* :#{.round}
-
-    }:_hsvtorgb;
-
-
-    .#############
-    .# Gradients #
-    .#############
-
-    .#? N ::color ::color.grad\n  creates a gradient of rgb lists from color1 to color2
-    {n a b, [ [a.rgb b.rgb, n intspace]~, color!]}:grad;
-
-    .#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb
-    {3@@\.grad 1I~ color!}:mid;
-
-    .#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
-    {l n, [l {a b, n a b .grad B} F ; ].F}:multigrad;
-
-}:color;
 
 .{? module: colors
     The colors module defines several color objects. For example:
