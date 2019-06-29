@@ -97,7 +97,7 @@ public class MiscOps {
 		/* 76 L  */ new OP_Log(),
 		/* 77 M  */ null,
 		/* 78 N  */ null,
-		/* 79 O  */ new OP_NewUserObject(),
+		/* 79 O  */ null,
 		/* 80 P  */ null,//new OP_PrintColor(),
 		/* 81 Q  */ null,
 		/* 82 R  */ null,
@@ -127,9 +127,9 @@ public class MiscOps {
 		/* 106 j */ null,
 		/* 107 k */ new OP_AddParserChar(),
 		/* 108 l */ new OP_Ln(),
-		/* 109 m */ null,
+		/* 109 m */ new OP_HasMeta(),
 		/* 110 n */ null,
-		/* 111 o */ new OP_GetMeta(),
+		/* 111 o */ null,
 		/* 112 p */ new OP_Primes(),
 		/* 113 q */ new OP_SquareRoot(),
 		/* 114 r */ new OP_To_Rat(),
@@ -435,63 +435,6 @@ class OP_Log extends Operation {
 	}
 }
 
-// O - 79
-class OP_NewUserObject extends Operation {
-	
-	static {
-		OpDoc doc = new OpDoc('M', "MO");
-		doc.desc("DD", "set D1s metatable to D2");
-		OperationDocs.add(doc);
-	}
-	
-	public OP_NewUserObject() {
-		this.name = "MO";
-	}
-	@Override
-	public void execute(Block block) {
-		final Obj meta = block.pop();
-		final Obj dict = block.pop();
-
-
-		if(dict.isa(DICT) && meta.isa(DICT)) {
-			((Dict)dict).setMetaTable((Dict)meta);
-			block.push(dict);
-		} else {
-			throw new TypeError(this, meta, dict);
-		}
-	}
-}
-
-////P - 80
-//class OP_PrintColor extends Operation {
-//	public OP_PrintColor() {
-//		this.name = "MP";
-//		this.info = "print a string to the console with the given color";
-//		this.argTypes = "SIII";
-//	}
-//	@Override
-//	public void execute(Block block) {
-//		final Obj a = block.pop();
-//		final Obj b = block.pop();
-//		final Obj c = block.pop();
-//		final Obj d = block.pop();
-//		
-//		if(a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
-//			int ai = ((Number)a).toInt();
-//			int bi = ((Number)b).toInt();
-//			int ci = ((Number)c).toInt();
-//			
-//			try {
-//				//Aya.getInstance().getOut().printColor(d.str(), new Color(ci, bi, ai));
-//			} catch (IllegalArgumentException e) {
-//				throw new AyaRuntimeException("Cannot print using color (" + ci + ", " + bi + ", " + ai + ")" );
-//			}
-//			return;
-//		}
-//		
-//		throw new TypeError(this.name, this.argTypes, a,b,c,d);
-//	}
-//}
 
 // S - 83
 class OP_Asine extends Operation {
@@ -1019,29 +962,28 @@ class OP_Ln extends Operation {
 	}
 }
 
-// o - 111
-class OP_GetMeta extends Operation {
+// m - 109
+class OP_HasMeta extends Operation {
 	
 	static {
-		OpDoc doc = new OpDoc('M', "Mo");
-		doc.desc("D", "get metatable");
+		OpDoc doc = new OpDoc('M', "Mm");
+		doc.desc("D", "true if the dict has a metatable, leave D on stack");
 		OperationDocs.add(doc);
 	}
 	
-	public OP_GetMeta() {
-		this.name = "Mo";
+	public OP_HasMeta() {
+		this.name = "Mm";
 	}
-
 	@Override
 	public void execute(Block block) {
-		Obj a = block.pop();
-		if (a.isa(DICT)) {
-			block.push(((Dict)a).getMetaDict());
-		} else {
-			throw new TypeError(this, a);
+		final Obj d = block.pop();
+		if (d.isa(DICT)) {
+			block.push(((Dict)d).hasMetaTable() ? Num.ONE : Num.ZERO);
+		}
+		else {
+			throw new TypeError(this, d);
 		}
 	}
-
 }
 
 // p - 112

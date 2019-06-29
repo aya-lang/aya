@@ -102,7 +102,7 @@ public class DotOps {
 		/* 74 J  */ null,
 		/* 75 K  */ new OP_Dot_TryCatch(),
 		/* 76 L  */ null,
-		/* 77 M  */ null,
+		/* 77 M  */ new OP_Dot_M(),
 		/* 78 N  */ new OP_Dot_N(),
 		/* 79 O  */ null,
 		/* 80 P  */ new OP_Dot_Print(),
@@ -1108,6 +1108,29 @@ class OP_Dot_TryCatch extends Operation {
 	}
 }
 
+
+//M- 77
+class OP_Dot_M extends Operation {
+
+	static {
+		OpDoc doc = new OpDoc('.', ".M");
+		doc.desc("D", "get D's meta, create one if it does not exist");
+		OperationDocs.add(doc);
+	}
+
+	public OP_Dot_M() {
+		this.name = ".M";
+	}
+	@Override public void execute (final Block block) {
+		Obj a = block.pop();
+		if (a.isa(DICT)) {
+			block.push(((Dict)a).getMetaDict());
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 // N - 78
 class OP_Dot_N extends Operation {
 
@@ -1148,6 +1171,7 @@ class OP_Dot_N extends Operation {
 		}
 	}
 }
+
 
 // P - 80
 class OP_Dot_Print extends Operation {

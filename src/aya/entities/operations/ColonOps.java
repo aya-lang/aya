@@ -87,7 +87,7 @@ public class ColonOps {
 		/* 74 J  */ null,
 		/* 75 K  */ new OP_Colon_K(),
 		/* 76 L  */ null,
-		/* 77 M  */ null,
+		/* 77 M  */ new OP_Colon_M(),
 		/* 78 N  */ null,
 		/* 79 O  */ null,
 		/* 80 P  */ new OP_Colon_P(),
@@ -619,6 +619,33 @@ class OP_Colon_K extends Operation {
 			block.push(new GenericList(keyNames));
 		} else {
 			throw new TypeError(this, a);
+		}
+	}
+}
+
+// M - 77
+class OP_Colon_M extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":M");
+		doc.desc("DD", "set D1's meta to D2 leave D1 on stack");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_M() {
+		this.name = ":M";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj meta = block.pop();
+		final Obj dict = block.pop();
+
+
+		if(dict.isa(DICT) && meta.isa(DICT)) {
+			((Dict)dict).setMetaTable((Dict)meta);
+			block.push(dict);
+		} else {
+			throw new TypeError(this, meta, dict);
 		}
 	}
 }
