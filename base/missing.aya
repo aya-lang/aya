@@ -1,6 +1,6 @@
 {,} {,
   ::missing:__type__;
-  {"Cannot create instance of missing" .D}:__new__;
+  {; "Cannot create instance of missing" .D}:__new__;
   {"missing"}:__str__:__repr__;
   {; []}:__range__;
 

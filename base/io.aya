@@ -10,7 +10,7 @@ import ::sys
     ::path:__type__;
 
     .# Create a new path (accepts relative or abs paths)
-    {dir,
+    {dir meta,
         .# Already a path?
         dir:T ::path = {
             dir
@@ -18,10 +18,10 @@ import ::sys
             .# Input is a string?
             dir:T ::str = {
                 .# If direct path
-                dir path.isabs ! {
-                    path.workingP "/"+ dir + :dir;
+                dir meta.isabs ! {
+                    meta.workingP "/"+ dir + :dir;
                 } ?
-                {, dir path.split path.fixhome path.clean :dirs} path MO
+                {, dir meta.split meta.fixhome meta.clean :dirs} meta MO
             } {
                 "Cannot create path from $dir" .D
             } .?
@@ -182,11 +182,11 @@ import ::test
 {,
     ::file:__type__;
 
-    {filepath type::char,
+    {filepath type::char meta,
         {,
             filepath path!:path
             P type O :id
-        } file MO
+        } meta MO
     }:__new__;
 
     .#? ::file.close\n  close a file. return 1 is success

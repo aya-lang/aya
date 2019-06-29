@@ -14,7 +14,7 @@
 
     ::set :__type__;
 
-    {l::list, {,l :~ :list} set MO}:__new__;
+    {l::list meta, {,l :~ :list} meta MO}:__new__;
 
 
 
@@ -98,7 +98,7 @@
 
 }:set;
 
-{`(set.__new__)}:s;
+{`(set!)}:s;
 
 
 .#########

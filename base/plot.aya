@@ -17,7 +17,7 @@ import ::list
 
 
     .#? plot.new\n  create a new plot instance with default settings
-    {: plt,
+    {meta : plt,
         .# [plot.fieldnamesE,0] plot MO :plt;
         {,
             ::line      :plottype
@@ -31,7 +31,7 @@ import ::list
             1           :legend
             :-1         :stroke .# Use individual strokes
         }
-        plot MO
+        meta MO
     }:__new__;
 
     .#? ::plot plot.view\n  view the plot in a new window

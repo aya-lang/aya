@@ -16,10 +16,10 @@ import ::str
 
     .# Constructors
 
-    {r::num g::num b::num, {,
+    {r::num g::num b::num meta, {,
         [[r g b], .round 0 255 .clip] ~
         :b;:g;:r; .# assign items off the stack in reverse
-    } color MO}:__new__;
+    } meta MO}:__new__;
 
     .#? S color.newhex\n  create a new color using a hex value represented as a string
     {16 2 H 24 .> [3 8] L #{2 10 H} ~color!}:newhex;

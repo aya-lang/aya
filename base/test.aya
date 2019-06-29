@@ -11,8 +11,8 @@
     .#   blk:      the stack to be evauated
     .#   expected: the state of the stack after evaluation
     .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
-    {blk::block expected::list,
-        {, "blk".Z:blk expected:expected } test MO
+    {blk::block expected::list meta,
+        {, "blk".Z:blk expected:expected } meta MO
     }:__new__;
 
     .# Run the test. If passed, return "", else return error message
@@ -39,8 +39,8 @@
     ::testset :__type__;
 
     .# Create a new test set
-    {name::str,
-        {, name:name []:tests} testset MO
+    {name::str meta,
+        {, name:name []:tests} meta MO
     }:__new__;
 
     .# Add a new test to the test set

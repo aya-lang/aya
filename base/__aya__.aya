@@ -229,7 +229,9 @@
             .# return the new object
             self
         } with [::sym] :__new__;
-    } sym {,}:DW
+    }
+    {,} MO .# add empty metatable
+    sym {,}:DW .# assign variable
 })}:class;
 
 
@@ -238,9 +240,9 @@
 .#? impl\n  implement instance functions\n  impl class_name::function_name {self, body}
 {```(\@:D ;)}:impl;
 .#? impl_static\n  static class function which get the class dict as the first argument\n  impl_static class_name::function_name {meta, body}
-{```(\@Mo:D ;)}:impl_static;
+{```(\@:D ;)}:impl_static;
 .#? static\n  static class function\n  static class_name::function_name {body}
-{```( {f, {;f~} with [::f]}~ \@Mo:D ;)}:static;
+{```( {f, {;f~} with [::f]}~ \@:D ;)}:static;
 
 .{ class Example:
 

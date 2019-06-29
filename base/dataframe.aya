@@ -34,7 +34,7 @@ import ::io
   .# Creating Dataframes #
   .#######################
 
-    {kwargs::dict : columns(::na) index(::na) data(::na) csvindex(::na) filename header(1) numofrows,
+    {kwargs::dict meta : columns(::na) index(::na) data(::na) csvindex(::na) filename header(1) numofrows,
         kwargs .W
 
         filename :T ::str = {
@@ -44,13 +44,13 @@ import ::io
                 index ::na =! {index:index} ?
                 columns ::na =! {columns:columns} ?
                 csvindex ::na =! {csvindex:csvindex} ?
-            } dataframe.opencsv
+            } meta.opencsv
         } {
             {,
                 data ::na =! {data :data} ?
                 index ::na =! {index:index} ?
                 columns ::na =! {columns:columns} ?
-            } dataframe.fromdata
+            } meta.fromdata
         } .?
 
     }:__new__;

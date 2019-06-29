@@ -13,9 +13,9 @@
 
     {{,M$:ms} date MO}:now;
 
-    {in, [
-        in:T ::num = {{,in:ms} date MO} ?
-        in:T ::str = {{,in "yyyy-MM-dd" MH:ms} date MO} ?
+    {in meta, [
+        in:T ::num = {{,in:ms} meta MO} ?
+        in:T ::str = {{,in "yyyy-MM-dd" MH:ms} meta MO} ?
         {"Expected S|D, recieved: $in".D}
     ].S }:__new__;
 

@@ -25,9 +25,9 @@ import ::math
     }:is;
 
     .# matrix constructor: first test if it is a valid matrix
-    {in::list,
-        in matrix.is {
-            {,in:rows} matrix MO
+    {in::list meta,
+        in meta.is {
+            {,in:rows} meta MO
         } {
             in P " is not a valid matrix" K .D
         } .?
