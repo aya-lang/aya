@@ -307,6 +307,7 @@ class OP_Bang extends Operation {
 		else if (o.isa(DICT)) {
 			Dict d = (Dict)o;
 			if (d.containsKey(Ops.KEYVAR_NEW)) {
+				block.push(o);
 				block.addOrDumpVar(d.get(Ops.KEYVAR_NEW));
 			} else {
 				//Create a new empty dict with the input as its metatable
