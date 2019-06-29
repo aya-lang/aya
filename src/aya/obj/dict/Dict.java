@@ -19,16 +19,24 @@ import aya.variable.VariableSet;
  */
 public class Dict extends Obj {
 	
+	public static Variable META = new Variable("__meta__");
+	
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
-	
-	/** Metatable for the dict */
-	protected VariableSet _meta;
+	private Dict _meta; // Quick lookup for meta
 
 	/** Create a new empty dict, use the input dict as the metatable */
-	public Dict(Dict metatable) {
-		_vars = new VariableSet(false);
-		_meta = metatable._vars;
+	public Dict(VariableSet vars, Dict metatable) {
+		if (vars == null) {
+			_vars = new VariableSet(false);
+		} else {
+			_vars = vars;
+		}
+		
+		if (metatable != null)
+		{
+			_vars.setVar(META, metatable);
+		}
 	}
 	
 	/** Create a new dict given a variable set */
@@ -45,13 +53,10 @@ public class Dict extends Obj {
 
 	/** Set the metatable to the input dict */
 	public void setMetaTable(Dict d) {
-		_meta = d._vars;
+		_vars.setVar(META, d);
+		_meta = d;
 	}
-	
-	/** Set the metatable to the input variable set */
-	public void setMetaTable(VariableSet vs) {
-		_meta = vs;
-	}
+
 	
 	
 	/////////////
@@ -71,18 +76,65 @@ public class Dict extends Obj {
 		return get(Symbol.convToSymbol(s).id());
 	}
 	
+	/** throws exception if key not found */
 	public Obj get(long id) {
-		// First search object vars...
-		Obj o = _vars.getObject(id);
+		Obj o = _get(id, null);
+		
 		if (o == null) {
-			// ...then search meta vars if there are any
-			o = _meta == null ? null : _meta.getObject(id);
-			if (o == null) {
-				throw new UndefVarException("Dict does not contain key '" 
-						+ KeyVariable.fromID(id).toString() + "'");
+			throw new UndefVarException("Dict does not contain key '" 
+					+ KeyVariable.fromID(id).toString() + "'");
+		} else {
+			return o;
+		}
+	}
+	
+	
+	
+	/** returns null if key not found */
+	public Obj _get(long id)
+	{
+		return _get(id, null);
+	}
+	
+	/** Returns null if no key found */
+	private Obj _get(long id, ArrayList<Integer> visited) {
+		Obj o = _vars.getObject(id);
+		if (o != null)
+		{
+			return o;
+		}
+		else {
+			// Check meta
+			if (_meta != null) {
+				// Add this dict as visited
+				// Only allocate the visited array of needed
+				if (visited == null) visited = new ArrayList<Integer>();
+				visited.add(this.hashCode());
+				
+				// Have we already visited this?
+				int hash = _meta.hashCode();
+				boolean visited_meta = false;
+				for (Integer i : visited) {
+					if (hash == i.intValue()) {
+						visited_meta = true;
+						break;
+					}
+				}
+				
+				// Already visited, do not look up
+				if (visited_meta) {
+					return null;
+				} else {
+					// Not visited, search it (and it's metas) for the key
+					o = _meta._get(id, visited);
+					return o;
+				}
+				
+			} else {
+				// Key not found in dict and this dict has no meta
+				return null;
 			}
 		}
-		return o;
 	}
 	
 	/** Get from metatable. If no such key, return null */
@@ -90,23 +142,14 @@ public class Dict extends Obj {
 		if (_meta == null) {
 			return null;
 		} else {
-			return _meta.getObject(id);
+			return _meta._get(id);
 
 		}
 	}
 	
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(long id) {
-		// First search object vars...
-		Obj o = _vars.getObject(id);
-		if (o == null) {
-			// ...then search meta vars if there are any
-			o = _meta == null ? null : _meta.getObject(id);
-			if (o == null) {
-				return false;
-			}
-		}
-		return true;
+		return _get(id) != null;
 	}
 	
 	/** Returns true if this dict contains the input key */
@@ -133,12 +176,7 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(KeyVariable v, Obj o) {
-		if (o.equals(this)) {
-			throw new AyaRuntimeException("Error assigning '" + v.toString() + "': "
-					+ "Cannot assign dict as member of itself");
-		} else {
-			_vars.setVar(v, o);
-		}
+		set(v.getID(), o);
 	}
 	
 	/** Set a key-value pair.
@@ -151,6 +189,11 @@ public class Dict extends Obj {
 					+ "Cannot assign dict as member of itself");
 		} else {
 			_vars.setVar(id, o);
+			
+			if (id == META.getID() && o.isa(Obj.DICT))
+			{
+				_meta = (Dict)o;
+			}
 		}
 	}
 	
@@ -159,12 +202,7 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(String s, Obj o) {
-		if (o.equals(this)) {
-			throw new AyaRuntimeException("Error assigning '" + s + "': "
-					+ "Cannot assign dict as member of itself");
-		} else {
-			_vars.setVar(Variable.encodeString(s), o);
-		}
+		set(Variable.encodeString(s), o);
 	}
 	
 	/** The number of items in this dict */
@@ -190,7 +228,6 @@ public class Dict extends Obj {
 	public Obj deepcopy() {
 		// deep copy only the vars, not the metatable
 		Dict d = new Dict(_vars.deepcopy());
-		d.setMetaTable(_meta);
 		return d;
 	}
 
@@ -201,38 +238,42 @@ public class Dict extends Obj {
 
 	@Override
 	public String repr() {
-		if (_meta != null &&_meta.getObject(Ops.KEYVAR_REPR) != null) {
-			Obj obj_str = _meta.getObject(Ops.KEYVAR_REPR);
-			if(obj_str.isa(Obj.BLOCK)) {
-				Block blk_show = ((Block)obj_str).duplicate();
-				blk_show.push(this);
-				blk_show.eval();
-				Obj obj_res = blk_show.pop();
-				return obj_res.str();
-			} else {
-				return obj_str.str();
+		if (_meta != null) {
+			Obj repr = _meta._get(Ops.KEYVAR_REPR.getID());
+			if (repr != null) {
+				if (repr.isa(Obj.BLOCK)) {
+					Block blk_repr = ((Block)repr).duplicate();
+					blk_repr.push(this);
+					blk_repr.eval();
+					Obj obj_res = blk_repr.pop();
+					return obj_res.str();
+				} else {
+					return repr.repr();
+				}
 			}
-		} else {
-			return dictRepr();
 		}
+		
+		return dictRepr();
 	}
-
+		
 	@Override
 	public String str() {
-		if (_meta != null && _meta.getObject(Ops.KEYVAR_STR) != null) {
-			Obj obj_str = _meta.getObject(Ops.KEYVAR_STR);
-			if(obj_str.isa(Obj.BLOCK)) {
-				Block blk_show = ((Block)obj_str).duplicate();
-				blk_show.push(this);
-				blk_show.eval();
-				Obj obj_res = blk_show.pop();
-				return obj_res.str();
-			} else {
-				return obj_str.str();
+		if (_meta != null) {
+			Obj str = _meta._get(Ops.KEYVAR_REPR.getID());
+			if (str != null) {
+				if (str.isa(Obj.BLOCK)) {
+					Block blk_str = ((Block)str).duplicate();
+					blk_str.push(this);
+					blk_str.eval();
+					Obj obj_res = blk_str.pop();
+					return obj_res.str();
+				} else {
+					return str.str();
+				}
 			}
-		} else {
-			return dictStr();
 		}
+		
+		return dictStr();
 	}
 
 	@Override
@@ -277,7 +318,9 @@ public class Dict extends Obj {
 	private String dictStr() {
 		StringBuilder sb = new StringBuilder("{, ");
 		for (Long l : _vars.getMap().keySet()) {
-			sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+			if (l != META.getID()) {
+				sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
+			}
 		}
 		sb.append("}");
 		return sb.toString();
@@ -287,18 +330,18 @@ public class Dict extends Obj {
 	private String dictRepr() {
 		StringBuilder sb = new StringBuilder("{,\n");
 		for (Long l : _vars.getMap().keySet()) {
-			sb.append("  " + _vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + ";\n");
+			if (l != META.getID()) {
+				sb.append("  " + _vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + ";\n");
+			}
 		}
 		sb.append("}");
 		return sb.toString();
 	}
 
-	private Dict _metadict = null;
 	
 	public Obj getMetaDict() {
-		if (_meta == null) _meta = new VariableSet(false);
-		if (_metadict == null) _metadict = new Dict(_meta);
-		return _metadict;
+		if (_meta == null) setMetaTable(new Dict());
+		return _meta;
 	}
 	
 	////////////////////
@@ -318,13 +361,12 @@ public class Dict extends Obj {
 
 	/** Returns true if the metatable defines a given key name */
 	public boolean hasMetaKey(String str) {
-		return _meta != null && _meta.hasVar(Variable.encodeString(str));
+		return _meta != null && _meta.containsKey(Variable.encodeString(str));
 	}
 	
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(KeyVariable kv) {
-		// TODO Auto-generated method stub
-		return _meta != null && _meta.hasVar(kv.getID());
+		return _meta != null && _meta.containsKey(kv.getID());
 	}
 
 	/** General getindex */
