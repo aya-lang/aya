@@ -76,7 +76,7 @@
             {.n conv*} with [::conv]:ms;
             {date.__radd__}:__add__;
             {date.__rsub__}:__sub__;
-        } name:S.assign;
+        } name:S := ;
     };
 }:dateunit;
 

@@ -3,70 +3,86 @@
 .# map.aya
 .# Defines the map data structure
 
-.{? type: map
+.{? class: map
     The map type is a key-value pair dictionary which supports any
       and mixed data types as the key.
 .}
 
+class ::map
 
+impl map::__init__ {self,
+    [] self.:keys;
+    [] self.:values;
+}
+
+
+.#? key map.haskey\n  true if map contains key
+impl map::haskey {key self,
+    self.keys key N :1 = ! \;
+}
+
+
+.#? key value self map.put\n  put key value pair in the map
+impl map::put {value key self : idx,
+    self.keys key N :idx;;
+    idx :1 = {
+        key self.keys .B;
+        value self.values .B;
+    } {
+        value self.values.:[idx]
+    } .?
+}
+
+
+.#? key ::map.del\n  remove the key value pair from thist list
+impl map::del {key self,
+    .# Apply remove code only if it is in the map
+    self.keys key N $ :1 =! {
+        $@\.-;              .# remove from keys
+        self.values\.-;     .# remove from values
+    } {
+        ;;                  .# do nothing, clean stacke
+    } .?
+}
+
+
+.#? key map.getindex\n  get the value for the key in the map
+impl map::__getindex__ {key self : idx,
+    self.keys key N :idx;;
+    idx :1 = {
+        "map does not contain key $key" .D
+    } {
+        self.values.[idx]
+    }.?
+}
+
+.#? ::block ::map.__each__\n  apply the block to each key value pair
+.{ Example:
+aya> [[1 "one"][2 "two"]] map.fromlist :m
 {,
-    ::map :__type__;
-
-    { {,[]:keys []:values} \ :M}:__new__;
-
-    .#? key map.haskey\n  true if map contains key
-    {key self,
-        self.keys key N :1 = ! \;
-    }:haskey;
-
-    .#? key value self map.put\n  put key value pair in the map
-    {key value self : idx,
-        self.keys key N :idx;;
-        idx :1 = {
-            key self.keys .B;
-            value self.values .B;
-        } {
-            value self.values.:[idx]
-        } .?
-    }:put;
-
-    {.put}:__setindex__;
-
-    {key self,
-        .# Apply remove code only if it is in the map
-        self.keys key N $ :1 =! {
-            $@\.-;              .# remove from keys
-            self.values\.-;     .# remove from values
-        } {
-            ;;                  .# do nothing, clean stacke
-        } .?
-    }:del;
-
-    .#? key map.getindex\n  get the value for the key in the map
-    {key self : idx,
-        self.keys key N :idx;;
-        idx :1 = {
-            "map does not contain key $key" .D
-        } {
-            self.values.[idx]
-        }.?
-    }:__getindex__;
+  [ 1 2 ]:keys;
+  [ "one" "two" ]:values;
+}
+aya> m :# {k v, v.upper k m.put}
+aya> m
+{,
+  [ 1 2 ]:keys;
+  [ "ONE" "TWO" ]:values;
+}
+aya> m :# {k v, "$k = $v" :P}
+1 = ONE
+2 = TWO
+.}
+impl map::__each__ {blk self,
+    [self.keys self.values] .T :# {~ blk} ;
+}
 
 
-    .# Generator Functions
-
-    {list : m,
-        map!:m;
-        list # {~ m.put};
-        m
-    }:fromlist;
-
-
-    {blk self,
-        [self.keys self.values] .T :# {~ blk}
-    }:__each__;
-
-}:map;
+impl_static map::fromlist {list meta: m,
+    meta!:m;
+    list # {~ \m.put};
+    m
+}
 
 
 .#########
@@ -84,11 +100,10 @@ import ::test
     {[[::a"a"]['b::b][2 1]]map.fromlist.[2]} [1] ts+
     {::a [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [1] ts+
     {::c [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [0] ts+
-    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; ::c "C" m.put m.[::c]} ["C"] ts+
-    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; ::c "C" m.put ::c "c" m.put m.[::c]} ["c"] ts+
+    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put m.[::c]} ["C"] ts+
+    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put "c" ::c m.put m.[::c]} ["c"] ts+
     {:m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [2] ts+
     {:m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [3] ts+
-    {[[::a"a"][::b"b"]]map.fromlist collect} [[[::a"a"][::b"b"]]] ts+
 
     ts __aya__.addtest
 

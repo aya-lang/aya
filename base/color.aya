@@ -6,7 +6,7 @@
 import ::list
 import ::str
 
-.{? class color
+.{? class: color
     A module for manipulating and printing colors in Aya
 .}
 class ::color
