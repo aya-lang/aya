@@ -19,7 +19,7 @@ import ::str
     {r::num g::num b::num meta, {,
         [[r g b], .round 0 255 .clip] ~
         :b;:g;:r; .# assign items off the stack in reverse
-    } meta MO}:__new__;
+    } meta :M}:__new__;
 
     .#? S color.newhex\n  create a new color using a hex value represented as a string
     {16 2 H 24 .> [3 8] L #{2 10 H} ~color!}:newhex;
@@ -270,7 +270,6 @@ import ::test
     {"35C62A" color.newhex.hex} ["35c62a"] ts+
     {"ff00ff" color.newhex.hex} ["ff00ff"] ts+
     {colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
-    {3 colors.blue colors.yellow.grad .FS} [1146] ts+
 
     ts __aya__.addtest
 }

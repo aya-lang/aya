@@ -7,14 +7,14 @@ class ::bitset
 
 impl bitset::__new__ {s meta,
     s :T ::num = {
-        {, s:size 0sL:bits } meta MO
+        {, s:size 0sL:bits } meta :M
     } {
         s meta.fromlist
     } .?
 }
 
 impl_static bitset::fromlist {l::list meta,
-    {, lE:size l:bits } meta MO
+    {, lE:size l:bits } meta :M
 }
 
 
@@ -86,7 +86,7 @@ impl bitset::count {
     [ 0 1 0 1 ]bitset!
 .}
 impl bitset::__signum__ {self,
-    self.bits #! self Mo.fromlist
+    self.bits #! self.M.fromlist
 }
 
 
@@ -97,7 +97,7 @@ impl bitset::__signum__ {self,
 .}
 impl bitset::__or__ {other self,
     other.bits self.bits {|}.&
-    self Mo.fromlist
+    self.M.fromlist
 }
 
 
@@ -108,7 +108,7 @@ impl bitset::__or__ {other self,
 .}
 impl bitset::__and__ {other self,
     other.bits self.bits {&}.&
-    self Mo.fromlist
+    self.M.fromlist
 }
 
 

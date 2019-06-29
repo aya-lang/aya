@@ -182,7 +182,7 @@
             .# args will grab all args off the stack using list grabbing
             args~ members {self :D}.&;
             .# add the outer table as a metatable at runtime
-            self name .Z MO
+            self name .Z :M
         } where {,
             members:members
             name:name
@@ -219,7 +219,7 @@
         .# { meta : self,
         { : self meta, sym.Z :meta ;
             .# Create a new dict and set its metatable
-            {,}:self meta MO;
+            {,}:self meta :M;
 
             .# if it has a constructor, call it
             meta ::__init__ N \; {
@@ -230,7 +230,7 @@
             self
         } with [::sym] :__new__;
     }
-    {,} MO .# add empty metatable
+    {,} :M .# add empty metatable
     sym {,}:DW .# assign variable
 })}:class;
 
@@ -240,9 +240,9 @@
 .#? impl\n  implement instance functions\n  impl class_name::function_name {self, body}
 {```(\@:D ;)}:impl;
 .#? impl_static\n  static class function which get the class dict as the first argument\n  impl_static class_name::function_name {meta, body}
-{```(\@:D ;)}:impl_static;
+{```(\@.M:D ;)}:impl_static;
 .#? static\n  static class function\n  static class_name::function_name {body}
-{```( {f, {;f~} with [::f]}~ \@:D ;)}:static;
+{```( {f, {;f~} with [::f]}~ \@.M:D ;)}:static;
 
 .{ class Example:
 
@@ -254,7 +254,7 @@ class ::point
 .# Cass constructor uses __init__ instead of __new__
 .# and gets the object as the first argument
 impl point::__init__ {x y self : meta,
-    self Mo :meta ;
+    self .M :meta ;
     meta.counter 1 + meta.:counter ;
     x 10 * self.:x ;
     y 100 * self.:y ;
@@ -295,7 +295,7 @@ static point::static_fn {
     ::__nil:__type__;
     {"nil"}:__str__:__repr__;
     {; :T ::__nil =}:__eq__;
-} MO :nil;
+} :M :nil;
 
 
 .###########

@@ -14,7 +14,7 @@
 
     ::set :__type__;
 
-    {l::list meta, {,l :~ :list} meta MO}:__new__;
+    {l::list meta, {,l :~ :list} meta :M}:__new__;
 
 
 

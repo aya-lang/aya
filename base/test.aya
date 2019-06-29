@@ -12,7 +12,7 @@
     .#   expected: the state of the stack after evaluation
     .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
     {blk::block expected::list meta,
-        {, "blk".Z:blk expected:expected } meta MO
+        {, "blk".Z:blk expected:expected } meta :M
     }:__new__;
 
     .# Run the test. If passed, return "", else return error message
@@ -40,7 +40,7 @@
 
     .# Create a new test set
     {name::str meta,
-        {, name:name []:tests} meta MO
+        {, name:name []:tests} meta :M
     }:__new__;
 
     .# Add a new test to the test set

@@ -18,7 +18,7 @@
 
 
     .#? L queue.new\n  convert a list into a queue
-    {l meta, {,l:list} meta MO}:__new__;
+    {l meta, {,l:list} meta :M}:__new__;
 
     .# str and repr overloads
     {self,

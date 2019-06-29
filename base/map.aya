@@ -12,7 +12,7 @@
 {,
     ::map :__type__;
 
-    { {,[]:keys []:values} \ MO}:__new__;
+    { {,[]:keys []:values} \ :M}:__new__;
 
     .#? key map.haskey\n  true if map contains key
     {key self,

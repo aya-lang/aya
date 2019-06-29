@@ -16,7 +16,7 @@
     ::stack :__type__;
 
     .#? L stack.new\n  convert a list into a stack
-    {l meta, {, l:list} meta MO}:__new__;
+    {l meta, {, l:list} meta Mo}:__new__;
 
     .#? ::stack stack.show\n  convert a stack to a string
     {self,

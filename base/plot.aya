@@ -11,7 +11,7 @@ import ::list
 
     {, .# axis
         {min::num max::num,
-            {,min:min max:max} plot.axis MO
+            {,min:min max:max} plot.axis :M
         }:__new__;
     }:axis;
 
@@ -31,7 +31,7 @@ import ::list
             1           :legend
             :-1         :stroke .# Use individual strokes
         }
-        meta MO
+        meta :M
     }:__new__;
 
     .#? ::plot plot.view\n  view the plot in a new window

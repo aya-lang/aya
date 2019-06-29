@@ -37,4 +37,4 @@
       :__sqrt__
       :__abs__;
 
-} MO :missing;
+} :M :missing;

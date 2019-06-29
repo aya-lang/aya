@@ -21,14 +21,14 @@
 
     .# Add each element to the enum dict
     enums # {e,
-        {,e:name} meta MO e dict :D ;
+        {,e:name} meta :M e dict :D ;
     };
 
     .# Create and add the metatable for the enum
     dict {,
         ::enum :__type__;
         {.name:C}:__repr__:__str__;
-    } MO
+    } :M
 
     .# Assign the name of the enum to the enum class
     class :C':\.V~;

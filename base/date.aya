@@ -11,16 +11,16 @@
 
     ::date :__type__;
 
-    {{,M$:ms} date MO}:now;
+    {{,M$:ms} date :M}:now;
 
     {in meta, [
-        in:T ::num = {{,in:ms} meta MO} ?
-        in:T ::str = {{,in "yyyy-MM-dd" MH:ms} meta MO} ?
+        in:T ::num = {{,in:ms} meta :M} ?
+        in:T ::str = {{,in "yyyy-MM-dd" MH:ms} meta :M} ?
         {"Expected S|D, recieved: $in".D}
     ].S }:__new__;
 
-    {.ms "MMM dd, yyyy h:mm:ss a" Mh}:repr;
-    {.repr}:__str__;
+    {.ms "MMM dd, yyyy h:mm:ss a" Mh}:__repr__;
+    {.__repr__}:__str__;
 
     {.msMD0I}:dayofweekid;
     {.msMD0I dates.weekdays\V I}:dayofweek;
@@ -70,15 +70,13 @@
     units # {u : name conv,
         u0I:name;
         u1I:conv;
-        "
         {,
-            {n::num, {,n:n} dateunit.$name MO}:__new__;
-            {.n\" dates.$name\"+}:__repr__;
-            {.n $conv*}:ms;
+            {n::num meta, {,n:n} meta :M}:__new__;
+            {.n x +} where {, " dates.$name":x} :__repr__;
+            {.n conv*} with [::conv]:ms;
             {date.__radd__}:__add__;
             {date.__rsub__}:__sub__;
-        }:$name;
-        " ~
+        } name:S.assign;
     };
 }:dateunit;
 

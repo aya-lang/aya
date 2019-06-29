@@ -21,7 +21,7 @@ import ::sys
                 dir meta.isabs ! {
                     meta.workingP "/"+ dir + :dir;
                 } ?
-                {, dir meta.split meta.fixhome meta.clean :dirs} meta MO
+                {, dir meta.split meta.fixhome meta.clean :dirs} meta :M
             } {
                 "Cannot create path from $dir" .D
             } .?
@@ -148,9 +148,9 @@ import ::sys
 }:path;
 
 
-.#{, ""7MZ path.split :dirs} path MO path.:home;
+.#{, ""7MZ path.split :dirs} path :M path.:home;
 ""7MZ path! path.:home;
-{, ""2MZ path.split :dirs} path MO path.:dfltworking;
+{, ""2MZ path.split :dirs} path :M path.:dfltworking;
 
 
 .#########
@@ -186,7 +186,7 @@ import ::test
         {,
             filepath path!:path
             P type O :id
-        } meta MO
+        } meta :M
     }:__new__;
 
     .#? ::file.close\n  close a file. return 1 is success
@@ -266,7 +266,7 @@ import ::test
     1:isread;
     0:iswrite;
     "stdin":path;
-} file MO :stdin;
+} file :M :stdin;
 
 .#? stdout::file\n  standard outpur stream
 {,
@@ -278,4 +278,4 @@ import ::test
     1:iswrite;
     0:isread;
     "stdout":path;
-} file MO :stdout;
+} file :M :stdout;

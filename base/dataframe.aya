@@ -112,7 +112,7 @@ import ::io
             index :index
             data :values
             numofrows :numofrows
-        } dataframe MO
+        } dataframe :M
 
     }:fromdata;
 

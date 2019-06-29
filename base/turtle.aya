@@ -14,7 +14,7 @@ import ::math
 
     ::turtle :__type__;
 
-    {{,0:x 0:y pi2/:r [[0 0]]:path} \ MO}:__new__;
+    {{,0:x 0:y pi2/:r [[0 0]]:path} \ :M}:__new__;
 
 
     {self,
