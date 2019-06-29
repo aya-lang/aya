@@ -276,6 +276,10 @@ public class GenericList extends List {
 
 	@Override
 	public void set(int i, Obj o) {
+		if (o.hashCode() == this.hashCode())
+		{
+			throw new AyaRuntimeException("Cannot set list as member of itself");
+		}
 		// Decrement the _char / _num counter
 		Obj old = _list.get(List.index(i, _list.size()));
 		decCharNumCounter(old);

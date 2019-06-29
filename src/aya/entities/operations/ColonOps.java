@@ -16,6 +16,7 @@ import aya.Aya;
 import aya.OperationDocs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
@@ -48,7 +49,7 @@ public class ColonOps {
 		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ null,
-		/* 38 &  */ null,
+		/* 38 &  */ new OP_Colon_And(),
 		/* 39 '  */ new OP_Colon_Quote(),
 		/* 40 (  */ null, //List item assignment
 		/* 41 )  */ null,
@@ -71,7 +72,7 @@ public class ColonOps {
 		/* 58    */ null,
 		/* 59 ;  */ null,
 		/* 60 <  */ new OP_Colon_LessThan(),
-		/* 61 =  */ null,
+		/* 61 =  */ new OP_Colon_Equals(),
 		/* 62 >  */ new OP_Colon_GreaterThan(),
 		/* 63 ?  */ null,
 		/* 64 @  */ null,
@@ -252,6 +253,25 @@ class OP_Colon_Duplicate extends Operation {
 	}
 }
 
+// & - 39
+class OP_Colon_And extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":&");
+		doc.desc("A", "duplicate reference (same as $ but does not make a copy)");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_And() {
+		this.name = ":&";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj a = block.peek();
+		block.push(a);
+	}
+}
+
 // ' - 39
 class OP_Colon_Quote extends Operation {
 	
@@ -410,6 +430,37 @@ class OP_Colon_LessThan extends Operation {
 	}
 }
 
+// = - 61
+class OP_Colon_Equals extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":=");
+		doc.desc("AJ|AC|AS", "assign A to variable");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Equals() {
+		this.name = ":=";
+	}
+	@Override
+	public void execute(final Block block) {
+		final Obj sym = block.pop();
+		final Obj obj = block.peek();
+		
+		if (sym.isa(SYMBOL)) {
+			Aya.getInstance().getVars().setVar(((Symbol)sym).id(), obj);
+		} else if (sym.isa(CHAR) || sym.isa(STR)) {
+			String s = sym.str();
+			if (Variable.isValidStr(s)) {
+				Aya.getInstance().getVars().setVar(Variable.encodeString(s), obj);
+			} else {
+				throw new AyaRuntimeException(":= Invalid identifier: '" + s + "'");
+			}
+		} else {
+			throw new TypeError(this, sym, obj);
+		}
+	}
+}
 
 // > - 62
 class OP_Colon_GreaterThan extends Operation {
@@ -450,7 +501,7 @@ class OP_Colon_GreaterThan extends Operation {
 		
 		
 		else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, a, b);
 		}
 	}
 }

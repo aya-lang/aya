@@ -36,6 +36,7 @@ public class Dict extends Obj {
 		if (metatable != null)
 		{
 			_vars.setVar(META, metatable);
+			_meta = metatable;
 		}
 	}
 	
@@ -226,8 +227,7 @@ public class Dict extends Obj {
 	
 	@Override
 	public Obj deepcopy() {
-		// deep copy only the vars, not the metatable
-		Dict d = new Dict(_vars.deepcopy());
+		Dict d = new Dict(_vars.deepcopy(), _meta);
 		return d;
 	}
 
