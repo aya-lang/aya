@@ -1,156 +1,165 @@
 import ::sys
 
 
-.###################
-.# PATH            #
-.###################
-
-{,
-
-    ::path:__type__;
-
-    .# Create a new path (accepts relative or abs paths)
-    {dir meta,
-        .# Already a path?
-        dir:T ::path = {
-            dir
-        } {
-            .# Input is a string?
-            dir:T ::str = {
-                .# If direct path
-                dir meta.isabs ! {
-                    meta.workingP "/"+ dir + :dir;
-                } ?
-                {, dir meta.split meta.fixhome meta.clean :dirs} meta :M
-            } {
-                "Cannot create path from $dir" .D
-            } .?
-        } .?
-    }:__new__;
-
-    .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
-    {p::path,
-        p.dirs.[:1] "." N :1 =! \;
-    }:isfile;
-
-    .#? dir::str ::path.add\n  append file or dir to path, if path is file, don't change
-    {dir::str self,
-        .# Modify a copy of this path
-        self $ :self; ;
-        .# Can only join if the path is not a file
-        self.isfile ! {
-        self.dirs dir path.split K
-            path.clean ;
-        } ?
-        self
-    }:__add__;
-    {\.__add__}:__radd__;
+class ::path
 
 
-   .# String representation of the path
-    {self,
-        self.dirs :9c * path.root :9c + \+
-        self.isfile ! {:9c +} ?
-    }:__str__:__repr__;
-
-
-    .#? ::path.dec\n  Go up a directory
-    {self,
-        self.dirs B;; self
-    }:__dec__;
-
-    {
-        P""4MZ
-    }:readdir;
-
-
-
-    .# Constants
-
-    .# Root dir name
-    sys.iswindows {
-        "C:"
+.# Create a new path (accepts relative or abs paths)
+.# Custom constructor
+{dir meta,
+    .# Already a path?
+    dir:T ::path = {
+        dir
     } {
-        ""
-    } .? :root;
-
-    .# Working dir
-    {""2MZ path!}:working;
-
-
-    .##########################
-    .# PRIVATE HELPER METHODS #
-    .##########################
-
-    .# Regular expression used for splitting path strings
-    .# If :9c is "\", return escaped "\\" otherwise return :9c
-    sys.iswindows {:9c$+} {:9c} .? :filesplit;
-
-    .# Split a string using the system file sepatator and remove empy dir names
-    {dir::str,
-        .# Split using system sep
-        dir A :# {path.filesplit |~}
-        .# Split using "/"
-        :# {"/"|~}
-        .# Remove empties
-        [""] :|
-    }:split;
-
-
-    .# If the path list contains a "~"
-    .#   find the last "~" and take all directories after it
-    {dirs::list,
-        dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
-
-        .# Does the path contain a "~" ?
-        $:1=! {
-            .< U .# Take all directories before the "~" and reverse
-
-            .# Append the home dir to the front
-            path.home.dirs $\;  .# Copy home.dirs
-            \K                  .# Append to front
-        } {
-            ;U .# Pop the -1 and put the list back
-        } .?
-    }:fixhome;
-
-
-    .# Return true of the given string is an absolute path
-    {p::str,
-        p "/" N 0 = \;
-        p path.root :9c + N 0 = \;
-        p path.root "/" + N 0 = \;
-        | |
-    }:isabs;
-
-    .# Remove all ".." by traversing the directories
-    {dirs::list : i(0),
-        .# Remove root and self refs (".")
-        dirs [path.root "."] :| ;
-
-        .# If there is a ".." remove the dir before it
-        {{
-            .# If there is a "..",
-            dirs.[iB] ".." = {
-                .# Remove the ".." and the dir before it
-                dirs [i iB] .-;
-                .# Then move the index back 2
-                i2-:i;
+        .# Input is a string?
+        dir:T ::str = {
+            .# If direct path
+            dir meta._isabs ! {
+                meta.workingP "/"+ dir + :dir;
             } ?
-            ::iB
-            i dirs EV <
-        }W}
-        .# If the above code has an error, the path is invalid
-        {; []:dirs;} .K
-        dirs
-    }:clean;
-
-}:path;
+            {, dir meta._split meta._fixhome meta._clean :dirs} meta :M
+        } {
+            "Cannot create path from $dir" .D
+        } .?
+    } .?
+} path.:__new__;
 
 
-.#{, ""7MZ path.split :dirs} path :M path.:home;
+.# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
+impl path::isfile {self, 
+    self.dirs.[:1] "." N :1 =! \;
+}
+
+
+.#? ::str ::path.add\n  append file or dir to path, if path is file, don't change
+impl path::__add__ {dir::str self,
+    .# Modify a copy of this path
+    self $ :self; ;
+    .# Can only join if the path is not a file
+    self.isfile ! {
+    self.dirs dir path._split K
+        path._clean ;
+    } ?
+    self
+}
+
+impl path::__radd__ {\.__add__}
+
+
+.# String representation of the path
+impl path::__str__ {self,
+    self.dirs :9c * self.M.root :9c + \+
+    self.isfile ! {:9c +} ?
+}
+
+(path.__str__.`,0); path.:__repr__;
+
+
+.#? ::path.dec\n  Go up a directory
+impl path::__dec__ {self,
+    self.dirs B;; self
+}
+
+.#? ::str path.readdir\n  list of file/dir names in the given path
+static path::readdir {
+    P""4MZ
+}
+
+.#? path.working\n  working directory
+impl_static path::working {meta,
+    ""2MZ meta!
+}
+
+
+
+.#
+.# Private helper methods
+.#
+
+
+.# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
+impl_static path::_split {dir::str meta,
+    .# Split using system sep
+    dir A :# {meta.filesplit |~}
+    .# Split using "/"
+    :# {"/"|~}
+    .# Remove empties
+    [""] :|
+}
+
+.# dirs::list path._fixhome
+.# If the path list contains a "~"
+.#   find the last "~" and take all directories after it
+impl_static path::_fixhome {dirs::list meta,
+    dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
+
+    .# Does the path contain a "~" ?
+    $:1=! {
+        .< U .# Take all directories before the "~" and reverse
+
+        .# Append the home dir to the front
+        meta.home.dirs $\;  .# Copy home.dirs
+        \K                  .# Append to front
+    } {
+        ;U .# Pop the -1 and put the list back
+    } .?
+}
+
+.# ::str path._isabs\n  return true of the given string is an absolute path
+impl_static path::_isabs {p::str meta,
+    p "/" N 0 = \;
+    p meta.root :9c + N 0 = \;
+    p meta.root "/" + N 0 = \;
+    | |
+}
+
+.# Remove all ".." by traversing the directories
+impl_static path::_clean {dirs::list meta : i(0),
+    .# Remove root and self refs (".")
+    dirs [meta.root "."] :| ;
+
+    .# If there is a ".." remove the dir before it
+    {{
+        .# If there is a "..",
+        dirs.[iB] ".." = {
+            .# Remove the ".." and the dir before it
+            dirs [i iB] .-;
+            .# Then move the index back 2
+            i2-:i;
+        } ?
+        ::iB
+        i dirs EV <
+    }W}
+    .# If the above code has an error, the path is invalid
+    {; []:dirs;} .K
+    dirs
+}
+
+
+
+.#
+.# Constants
+.#
+
+.#? path.root\n  root dir name
+sys.iswindows {
+    "C:"
+} {
+    ""
+} .? path.:root;
+
+
+.# Regular expression used for splitting path strings
+.# If :9c is "\", return escaped "\\" otherwise return :9c
+.#? path.filesplit\n  constant "\\" if windows, "/" if unix
+sys.iswindows {:9c$+} {:9c} .? path.:filesplit;
+
+
+
 ""7MZ path! path.:home;
-{, ""2MZ path.split :dirs} path :M path.:dfltworking;
+
+{, ""2MZ path._split :dirs} path :M path.:dfltworking;
+
 
 
 .#########
@@ -178,83 +187,80 @@ import ::test
 .# FILE             #
 .####################
 
+class ::file
 
-{,
-    ::file:__type__;
+impl file::__init__ {filepath type::char  self,
+    .# save a copy of the path
+    filepath path!      self.:path ;
+    .# open the stream
+    self.path P type O self.:id ;
+}
 
-    {filepath type::char meta,
-        {,
-            filepath path!:path
-            P type O :id
-        } meta :M
-    }:__new__;
+.#? ::file.close\n  close a file. return 1 is success
+impl file::close {self,
+    self.id 'c O
+}
 
-    .#? ::file.close\n  close a file. return 1 is success
-    {f,
-        f.id 'c O
-    }:close;
+.#? ::file.isopen\n  test if a file stream is open
+impl file::isopen {self,
+    self.id 'i O 0 =!
+}
 
-    .#? ::file.isopen\n  test if a file stream is open
-    {f,
-        f.id 'i O 0 =!
-    }:isopen;
+.#? ::file.isread\n  return 1 if file is an input stream
+impl file::isinput {self,
+    self.id 'i O 1 =
+}
 
-    .#? ::file.isread\n  return 1 if file is an input stream
-    {f,
-        f.id 'i O 1 =
-    }:isinput;
+.#? ::file.iswrite\n  return 1 if file is an output stream
+impl file::isoutput {self,
+    self.id 'i O 2 =
+}
 
-    .#? ::file.iswrite\n  return 1 if file is an output stream
-    {f,
-        f.id 'i O 2 =
-    }:isoutput;
+.#? ::file.print\n  print to a file if it is an input stream
+impl file::print {s self,
+    sP self.id O
+}
 
-    .#? ::file.print\n  print to a file if it is an input stream
-    {s f,
-        sP f.id O
-    }:print;
+.#? ::file.println\n  print string followed by a newline tp a file
+impl file::println {s self,
+    sP "\n" + self.id O
+}
 
-    .#? ::file.println\n  print string followed by a newline tp a file
-    {s f,
-        sP "\n" + f.id O
-    }:println;
+.#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
+impl file::readchar {self,
+    self.id 'b O
+}
 
-    .#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
-    {f,
-        f.id 'b O
-    }:readchar;
+.#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
+impl file::readline {self,
+    self.id 'l O
+}
 
-    .#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
-    {f,
-        f.id 'l O
-    }:readline;
+.#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
+impl file::readall {self,
+    self.id 'a O
+}
 
-    .#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
-    {f,
-        f.id 'a O
-    }:readall;
+.#? ::file.lines\n  return a list containing the lines in the file
+impl file::lines {self,
+    self.id 'a O "\n" |
+}
 
-    .#? ::file.lines\n  return a list containing the lines in the file
-    {f,
-        f.id 'a O "\n" |
-    }:lines;
+.#? ::file.flush\n  flush an output stream
+impl file::flush {self,
+    self.id 'f O
+}
 
-    .#? ::file.flush\n  flush an output stream
-    {f,
-        f.id 'f O
-    }:flush;
+impl file::__repr__ {self,
+    [
+        self.isopen
+            {"<stream(" self.isinput {"R"} {"W"} .? "):"}
+            "<closed:"
+        .?
+        self.path.__str__ ">"
+    ]S
+}
 
-    {f,
-        [
-            f.isopen
-                {"<stream(" f.isinput {"R"} {"W"} .? "):"}
-                "<closed:"
-            .?
-            f.path.__str__ ">"
-        ]S
-    }:__repr__;
-
-}:file;
 
 .#? stdin::file\n  standard input stream
 {,
