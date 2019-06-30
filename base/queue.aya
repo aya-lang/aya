@@ -11,54 +11,62 @@
 .}
 
 
+class ::queue
 
 
-{,
-    ::queue :__type__;
+.#? ::list ::queue.__init__\n  convert a list into a queue
+impl queue::__init__ {l self,
+    l self.:list ;
+}
 
 
-    .#? L queue.new\n  convert a list into a queue
-    {l meta, {,l:list} meta :M}:__new__;
+.# str and repr overloads
+impl queue::__str__ {self,
+    self.isempty {
+        "queue: <- -<"
+    } {
+        "queue: <-" self.list P B; V; "-<" ++
+    } .?
+}
 
-    .# str and repr overloads
-    {self,
-        self.isempty
-        {
-            "queue: <- -<"
-        } {
-            "queue: <-"self.listPB;V;"-<"++
-        } .?
-    }:__repr__:__str__;
+(queue.__str__.`,0); queue.:__repr__;
 
-    .#? ::queue queue.next\n  return the next item in the queue
-    {self,
-        "queue obj is empty" self.listE0= conderr
-        self.listV\;
-    }:next;
 
-    .#? ::queue queue.peek\n  return the next item in the queue without removing it from the queue
-    {self,
-        "queue obj is empty" self.listE0= conderr
-        self.list0I
-    }:peek;
+.#? ::queue.next\n  return the next item in the queue
+impl queue::next {self,
+    "queue obj is empty" self.list E 0 = conderr
+    self.list V \ ;
+}
 
-    .#? ::queue queue.len\n  return the number of elements in the queue
-    {.listE}:__len__;
 
-    .#? (queue) queue.isempty\n  tests if the queue is empty
-    {.listE0=}:isempty;
+.#? ::queue.peek\n  return the next item in the queue without removing it from the queue
+impl queue::peek {self,
+    "queue obj is empty" self.list E 0 = conderr
+    self.list 0 I
+}
 
-    .#? A ::queue queue.add\n  add an item to the queue
-    {self, self.list.B; self}:__add__;
+.#? ::queue.__len__\n  return the number of elements in the queue
+impl queue::__len__ { .list E }
 
-    .#? ::queue queue.clear\n  clear the queue
-    {self, [] self.:list}:clear;
 
-    {blk self,
-        self.list :# {blk}
-    }:__each__;
+.#? ::queue.isempty\n  tests if the queue is empty
+impl queue::isempty { .list E 0 = }
 
-}:queue;
+
+.#? ::any ::queue.add\n  add an item to the queue
+impl queue::__add__ {self,
+    self.list.B ; self
+}
+
+
+.#? ::queue.clear\n  clear the queue
+impl queue::clear {self,
+    [] self.:list
+}
+
+impl queue::__each__ {blk self,
+    self.list :# {blk}
+}
 
 
 

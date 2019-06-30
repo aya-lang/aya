@@ -9,94 +9,103 @@
 .}
 
 
+class ::set
 
-{,
-
-    ::set :__type__;
-
-    {l::list meta, {,l :~ :list} meta :M}:__new__;
-
+impl set::__init__ {l::list self,
+    l self.:list ;
+}
 
 
-    .##############################
-    .# ADDING / REMOVING ELEMENTS #
-    .##############################
+.#
+.# Adding / Removing elements
+.#
 
-    .#? A ::set set.add\n  add an item to a set\n  overloaded operator: +
-    {item self,
-        item self.in ! {self.list [item] K;} ? self
-    }:__add__;
+.#? ::any ::set.__add__\n  add an item to a set
+impl set::__add__ {item self,
+    item self.in ! {self.list [item] K;} ? self
+}
 
-    .#? A ::set set.rem\n  remove an item from a set\n  overloaded operator: -
-    {item self,
-        self.list [item] :| self.:list
-    }:__sub__;
+.#? ::any ::set.__sub__\n  remove an item from a set
+impl set::__sub__ {item self,
+    self.list [item] :| self.:list
+}
 
 
 
-    .##################
-    .# SET OPERATIONS #
-    .##################
+.#
+.# Set operations
+.#
 
-    .#? ::set ::set set.or\n  set union
-    {sa::set sb::set,
-        sa.list $ \; sb.list K :~ set!
-    }:__or__;
+.#? ::set ::set.__or__\n  set union
+impl set::__or__ {other::set self,
+    other.list $ \; self.list K :~ self.M!
+}
 
-    .#? ::set ::set set.and\n  set intersection
-    {sa::set sb::set : l,
-        sb.list :l;
-        sa.list # {l \N$ 0:> {I} {;;} .?} set!
-    }:__and__;
-
-    .#? ::set ::set set.div\n  set difference
-    {sa::set sb::set,
-        sa.list $\; sb.list :| set!
-    }:__div__;
-
-    .#? ::set ::set set.eq\n test if two sets are the same
-    {sa::set sb::set,
-        sa.list sb.list =
-    }:__eq__;
-
-    .#? ::set ::set set.lt/gt\n proper subset
-    {sa::set sb::set : l,
-        sa sb.__leq__            .# subset
-        sa.list sb.list = !  .# proper subset
-        &
-    }:__lt__;
-    {\.__lt__}:__gt__;
-
-    .#? ::set ::set set.leq\n subset
-    {sa::set sb::set : l,
-        sa.list :l;
-        sb.list # { l \ N \; 0 :>} {*}F
-    }:__leq__;
-
-    {\.__leq__}:__geq__;
+.#? ::set ::set.__and__\n  set intersection
+impl set::__and__ {other::set self : l,
+    self.list :l;
+    other.list # {l \N$ 0:> {I} {;;} .?} self.M!
+}
 
 
+.#? ::set ::set.__div__\n  set difference
+impl set::__div__ {other::set self,
+    other.list $\; self.list :| self.M!
+}
 
-    .###################
-    .# OTHER FUNCTIONS #
-    .###################
 
-    .#? A ::set set.in\n  tests if an item is in a set
-    {item self, self.list item N\; :1 =!}:in;
+.#? ::set ::set.__eq__\n test if two sets are the same
+impl set::__eq__ {other::set self,
+    other.list self.list =
+}
 
-    .#? ::set set.len\n  returns the number of elements in the set
-    {.listE}:__len__;
 
-    .#? ::set set.clear\n  clear the contents of a set
-    {[]\ .:list}:clear;
+.#? ::set ::set.__lt__\n  proper subset
+impl set::__lt__ {other::set self,
+    other self.__leq__            .# subset
+    other.list self.list = !  .# proper subset
+    &
+}
 
-    {.listP"s"\+}:__str__:__repr__;
+.#? ::set ::set.__gt__\n  proper subset
+impl set::__gt__ {\.__lt__}
 
-    {blk self,
-        self.list :# {blk}
-    }:__each__;
 
-}:set;
+.#? ::set ::set.__leq__\n subset
+impl set::__leq__ {other::set self : l,
+    other.list :l;
+    self.list # { l \ N \; 0 :>} {*}F
+}
+
+.#? ::set ::set.__geq__\n subset
+impl set::__geq__ {\.__leq__}
+
+
+
+.#
+.# Other functions
+.#
+
+.#? ::any ::set.in\n  tests if an item is in a set
+impl set::in {item self,
+    self.list item N\; :1 =!
+}
+
+
+.#? ::set.__len__\n  returns the number of elements in the set
+impl set::__len__ { .list E }
+
+
+.#? ::set.clear\n  clear the contents of a set
+impl set::clear {[]\ .:list}
+
+impl set::__repr__ {.listP"s"\+}
+impl set::__str__  {.listP"s"\+}
+
+impl set::__each__ {blk self,
+    self.list :# {blk}
+}
+
 
 {`(set!)}:s;
 
@@ -111,7 +120,7 @@ import ::test
 
     "set" testset! :ts;
 
-    {s[1 2 3]} [[1 2 3] set!] ts+
+    {s[1 2 3].list} [[1 2 3]] ts+
     {3 s[1 2 3] -} [s[1 2]] ts+
     {4 s[1 2 3] -} [s[1 2 3]] ts+
     {4 s[1 2 3] +} [s[1 2 3 4]] ts+
@@ -129,7 +138,7 @@ import ::test
     {2 s[1 2 3].in} [1] ts+
     {0 s[1 2 3].in} [0] ts+
     {s[1 2 3] E} [3] ts+
-    {s[1 2 3].clear} [s[]] ts+
+    {s[1 2 3].clear.list} [[]] ts+
 
 
     ts __aya__.addtest
