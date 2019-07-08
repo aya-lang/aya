@@ -11,7 +11,7 @@
 
     .#? ::list ::block.tw\n  (takewhile) take from list while the condition is satisfied
     .# aya> 10R {5<}.tw
-    .#      [ 1 2 3 4 ] 
+    .#      [ 1 2 3 4 ]
     {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
 
     .#? ::any ::list ::block.el\n  apply block to `any` and `i` for each element across list
@@ -23,6 +23,38 @@
     .# aya> ["A" "B" "C"] "a" {+}.le
     .#      ["Aa" "Ba" "Ca"]
     {@@\.E@\L@.&}:le;
+
+
+    .#? ::list ::block.setlocals\n  wrap a block in a scope which has locals provided by the list of symbols
+    .# aya> [::x] {:x; "x is $x"}.setlocals :setx
+    .# {: x , {:x ; "$xx is "} ~ }
+    .# aya> 4 setx
+    .# "x is 4"
+    .# aya> x
+    .# ERROR: Variable x not found
+    {`({code syms::list,
+        syms #:C " " *      .# [::x ::y ::z] -> "x y z"
+        "{:" \ ",__~}"++~     .# {x y z, __~}
+        {, code.`:__} .+    .# {x y z, {...}~ }
+    })}:setlocals;
+
+
+    .#? ::block .use ::list\n  evaulate the variables (given by a list of symbols) in the block in the current scope
+    .{ Example:
+        aya> 2:y
+        2
+        aya> {x, x y *}.use[::y] :double
+        {x , x 2 * }
+        aya> 3 double
+        6
+    .}
+    {`({:d__,
+        .# Create a dictionary of all values given by the list
+        {,}:d__;
+        :#{$~\d__:D;};
+        .# Substitute the values from the dictionary into the block
+        d__ .+
+    })}:use;
 
 }:block;
 

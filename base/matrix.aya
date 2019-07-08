@@ -223,12 +223,13 @@ import ::math
         }.?
     }:__mul__;
 
-    {o self,
+    {o self : t,
         o.c self.r =! {
             "matrix.mul: dim mismatch $(o.c) != $(self.r)".D
         } ?
         .# (*S) is the dot product
-        o.rows  # {r, self.t.rows#{r *S}}
+        self.t.rows :t;
+        o.rows  :# {r, t :#{r *S}}
         matrix!
     }:matmul;
 

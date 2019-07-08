@@ -75,6 +75,3 @@
 
 .# Regular Version
 .#	{`(\@*\/)}:to;
-
-.# Conversion operator
-'\U27f6' "to" Mk

@@ -31,7 +31,7 @@
     } :M
 
     .# Assign the name of the enum to the enum class
-    class :C':\.V~;
+    class := ;
 })}:enum;
 
 

@@ -274,7 +274,7 @@ impl file::__repr__ {self,
     "stdin":path;
 } file :M :stdin;
 
-.#? stdout::file\n  standard outpur stream
+.#? stdout::file\n  standard output stream
 {,
     2:id;
 
@@ -285,3 +285,24 @@ impl file::__repr__ {self,
     0:isread;
     "stdout":path;
 } file :M :stdout;
+
+
+
+.# dummyfile for testing opening and closing of input streams
+
+class ::dummyfile
+
+impl dummyfile::__init__ {name self,
+    "opened dummy file '$name'" :P
+    name self.:name;
+}
+
+impl dummyfile::__repr__ {self,
+    "<dummyfile: $(self.name)>"
+}
+
+impl dummyfile::close {self,
+    "closed dummy file '$(self.name)'" :P
+}
+
+dummyfile file.:dummyfile ;

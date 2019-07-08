@@ -1,0 +1,178 @@
+
+class ::asciiart
+
+impl asciiart::__init__ {str self,
+    str :T ::str = {
+        [str] self.:list ;
+    } {
+        .# list
+        .# Make sure all are at least as long as the longest
+        str :&#E .max #.< :str ;
+        str self.:list ;
+    } .?
+}
+
+impl asciiart::__str__ {self,
+    self.list "\n" *
+}
+
+impl asciiart::__repr__ {self,
+    "asciiart:\n$(self.__str__)\n"
+}
+
+
+.{  Transpose
+    Example:
+
+    aya> "3#`.##`..#"_ $ T
+    asciiart:
+    ###
+    .##
+    ..#
+     asciiart:
+    #..
+    ##.
+    ###
+.}
+impl asciiart::__negate__ {self,
+    self.list.T self.M!
+}
+
+
+.{ Example:
+
+    aya> "3#`3.`#.."_ $ +
+    asciiart:
+    ######
+    ......
+    #..#..
+
+    aya> "3#`3.`#.."_ '~ +
+    asciiart:
+    ###~
+    ...~
+    #..~
+
+    aya> "3#`3.`#.."_ ")>" +
+    asciiart:
+    ###)>
+    ...)>
+    #..)>
+
+    aya> ["3#`3.`#.."_ $ '~\] S
+    asciiart:
+    ###~###
+    ...~...
+    #..~#..
+.}
+impl asciiart::__add__ {other self,
+    other :T ::char = other :T ::str = | {
+        self.list #{other \+} self.M!
+    } {
+        other.list .T self.list.T K .T self.M!
+    } .?
+}
+
+
+impl asciiart::__radd__ {self other,
+    self.list #{other +} self.M!
+}
+
+
+impl asciiart::w {self,
+    self.list.T E
+}
+
+impl asciiart::h {self,
+    self.list E
+}
+
+.{ Example:
+    aya> "3#`3.`#.."_ $ /
+    asciiart:
+    ###
+    ...
+    #..
+    ###
+    ...
+    #..
+.}
+impl asciiart::__div__ {other self,
+    other.list $\; self.list $\; K self.M!
+}
+
+
+.{ Example:
+    aya> "3#`3.`#.."_ $ U
+    asciiart:
+    ###
+    ...
+    #..
+     asciiart:
+    ###
+    ...
+    ..#
+.}
+impl asciiart::__reverse__ {self,
+    self.list $\; :#{U} self.M!
+}
+
+impl asciiart::__mul__ {list self,
+    list :#{self} B; S
+}
+
+impl asciiart::__rpow__ {self num,
+    self {self +} numV %
+}
+
+
+.{ Example:
+    aya> "3x``x"_ " *" I
+    asciiart:
+    xxx
+    ***
+    x**
+
+    aya> "3x``x"_ " *" I "xxx`---" I
+    asciiart:
+    ---
+    ***
+    x**
+.}
+impl asciiart::__getindex__ {index self,
+    index "`" | .E1={~}? :index ;
+    index V:from ; V:to ; ;
+    self.list :# {from to @ .&}
+    self.M!
+}
+
+static asciiart::rle {s,
+    s $ "\\d+"| \ "\\d+" &  .# Split into lists of string sections and runs
+                            .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
+    .E 0 = {;;s}            .# If no rle to do, just return the string
+    {                       .# There is rle to do, do this block
+        #.!                 .# convert strings to nums => [3 4]
+        \V@@                .# Remove the leading string and rearrange
+        {
+            V               .# pop the charachter to repeat
+            @L              .# repeat the character
+            \+              .# join with original string
+        }
+        .&                  .# Apply the above block to each pair in the list
+        S+                  .# Combine everything
+    }
+    .?
+}
+
+
+
+
+
+[ "00000" "0   0" "00000" ] asciiart!T :o;
+[ "EEEEE" "E E E" "E   E" ] asciiart!T :e;
+[ "T    " "TTTTT" "T    " ] asciiart!T :t;
+[ "GGGGG" "G G G" "G GGG" ] asciiart!T :g;
+
+asciiart:aa;
+
+{asciiart.rle "`"| asciiart!}:_;
