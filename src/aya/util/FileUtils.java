@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import aya.AyaPrefs;
 import aya.obj.Obj;
 
 public class FileUtils {
@@ -34,6 +35,14 @@ public class FileUtils {
 
 	public static String pathAppend(String dir1, String dir2) {
 		return dir1 + File.separator + dir2;
+	}
+	
+	public static String workingRelative(String dir) {
+		if (dir.startsWith("/") || dir.startsWith("C:")) {
+			return dir;
+		} else {
+			return pathAppend(AyaPrefs.getWorkingDir(), dir);
+		}
 	}
 	
 }

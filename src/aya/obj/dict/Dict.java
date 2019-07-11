@@ -92,8 +92,12 @@ public class Dict extends Obj {
 	
 	
 	/** returns null if key not found */
-	public Obj _get(long id)
-	{
+	private Obj _get(long id) {
+		return _get(id, null);
+	}
+	
+	/** Returns null if key not found */
+	public Obj getSafe(long id) {
 		return _get(id, null);
 	}
 	

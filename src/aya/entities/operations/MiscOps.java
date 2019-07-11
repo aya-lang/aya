@@ -7,6 +7,7 @@ import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
+import static aya.obj.Obj.SYMBOL;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -35,7 +36,9 @@ import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.RationalNum;
+import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
+import aya.util.CanvasInterface;
 import aya.util.ChartParams;
 import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
@@ -89,7 +92,7 @@ public class MiscOps {
 		/* 68 D  */ new OP_MDate(),
 		/* 69 E  */ null, //new OP_ScientificNotation(),
 		/* 70 F  */ null,
-		/* 71 G  */ null,
+		/* 71 G  */ new OP_Graphics(),
 		/* 72 H  */ new OP_MParse_Date(),
 		/* 73 I  */ null,
 		/* 74 J  */ null,
@@ -357,6 +360,47 @@ class OP_MDate extends Operation {
 		
 	}
 }
+
+
+// G - 67
+class OP_Graphics extends Operation {
+	
+	CanvasInterface canvas;
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MG");
+		doc.desc("JDN", "2D graphics interface");
+		OperationDocs.add(doc);
+	}
+
+	public OP_Graphics() {
+		this.name = "MG";
+		this.canvas = new CanvasInterface();
+	}
+	
+	
+	
+	@Override
+	public void execute(Block block) {
+		final Obj o_id = block.pop();
+		final Obj o_params = block.pop();
+		final Obj o_command = block.pop();
+		
+		
+		if (o_id.isa(NUM) && o_params.isa(DICT) && o_command.isa(SYMBOL)) {
+			int id = ((Number)o_id).toInt();
+			Dict params = (Dict)o_params;
+			Symbol command = (Symbol)o_command;
+			
+			int result = this.canvas.doCommand(id, command, params);
+			block.push(new Num(result));
+		} else {
+			throw new TypeError(this, o_id, o_params, o_command);
+		}
+		
+	}
+}
+
 
 
 // H - 68
