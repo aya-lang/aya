@@ -1,0 +1,75 @@
+import ::canvas
+import ::color
+
+.# A randomly generated vaporwave style city
+
+500:w;
+300:h;
+
+.# Close old canvas if this was run previously
+{c.close} {;} .K
+
+.# Create a new canvas
+{,
+    "Vaporwave City":name
+    w:width
+    h:height
+    1:show
+    .# Display drawings immediately
+    .# Slower but looks cooler
+    1:autoflush
+} canvas! :c
+
+.# Custom colors
+"FF2DF0" color.newhex :magenta;
+"E85B1E" color.newhex :orange;
+"191D43" color.newhex :darkblue;
+"3048CC" color.newhex :lightblue;
+
+.# Background
+[0 0] colors.blue0.4* [0 h0.75*] magenta 0 c.set_grad
+0 0 w h c.fillrect
+
+.# Stars
+colors.white c.set_color
+{ wQ hQ c.point } 50 %
+{ wQ h3/Q c.point } 30 %
+
+.# Sun
+[0 30] magenta0.8* [0 h0.4*] orange3* 0 c.set_grad
+w2/ 150 100 c.fillcircle
+
+.# Buildings
+{ w h x cvs,
+    (x, cvs.height h -, w, h) cvs.fillrect
+}:building;
+
+.# Small distant buildings
+{ 
+    darkblue .Q5/1.5+ * c.set_color
+    20Q5+ 50Q120+ 500Q c building
+} 20 %
+
+.# Tall buildings
+darkblue c.set_color
+{ 45Q15+ 100Q120+ 500Q c building} 5 %
+
+.# Nearby buildings (multiple layers)
+{
+    {
+        darkblue .Q5/0.7+ * c.set_color
+        100Q15+ 100Q10+ 500Q c building
+    } 40 %
+
+    .# Transparent gradient to provide depth
+    [0 150] {,0:a} [0 h1.7*] lightblue 0 c.set_grad
+    0 0 w h c.fillrect
+} 2 %
+
+{
+    darkblue .Q5/0.5+ * c.set_color
+    60Q40+ 100Q10+ 500Q c building
+} 10 %
+
+
+c.show
