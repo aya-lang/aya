@@ -104,6 +104,10 @@ public class DictReader {
 		}
 	}
 	
+	public float getFloat(long key, float dflt) {
+		return (float)(getDouble(key, (double)dflt));
+	}
+	
 	public double getDouble(long key, double dflt) {
 		Obj o = _dict.getSafe(key);
 		

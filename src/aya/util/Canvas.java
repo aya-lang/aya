@@ -16,6 +16,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import aya.Aya;
+
 
 /**
  * A very basic plotting tool. Plots an arbitrary number of doubles to a graph
@@ -70,10 +72,10 @@ public class Canvas {
 		
 		if (_frame == null) {
 			_frame = new JFrame(_name);
-			_frame.setPreferredSize(new Dimension(_width+2, _height+28));
+			_frame.getContentPane().setPreferredSize(new Dimension(_width, _height));
 			_frame.add(new ImageView(_plotImage));
-			_frame.pack();
 			_frame.setResizable(false);
+			_frame.pack();
 			_frame.setLocationRelativeTo(comp);
 		} else {
 			_frame.repaint();
@@ -113,6 +115,8 @@ public class Canvas {
 		private BufferedImage img;
 		public ImageView(BufferedImage imgIn) {
 			img = imgIn;
+			setSize(_width, _height);
+			setPreferredSize(new Dimension(_width, _height));
 		}
 		
 		@Override protected void paintComponent(Graphics g) {
