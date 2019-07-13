@@ -1,0 +1,49 @@
+
+class ::canvas
+
+impl canvas::__init__ {params::dict self,
+
+    ::new {, 
+        400:width
+        400:height
+        "Canvas":name
+        params W
+    }0 MG self.:id ;
+}
+
+impl canvas::__str__ {self,
+    "<canvas($(self.id))>"
+}
+
+(canvas.__str__.`,0); canvas.:__repr__;
+
+impl canvas::line {xa ya xb yb self,
+    ::line {, xa:xa ya:ya xb:xb yb:yb } self.id MG ;
+}
+
+impl canvas::point {x y self,
+    ::line {, x:xa:xb y:ya:yb} self.id MG ;
+}
+
+impl canvas::set_color {color::color self,
+    ::set_color {, color.r:r color.g:g color.b:b } self.id MG ;
+}
+
+impl canvas::save {filename self,
+    ::save {,
+        .# Convert to string (in case it is a path object)
+        filename P
+        .# Add file extension if it does not exist
+        :&"\\.png"&E{}{".png"+}.?
+        .# use as path
+        :file
+    } self.id MG ;
+}
+
+impl canvas::close {self,
+    ::close {,} self.id MG ;
+}
+
+impl canvas::rect {x y w h self,
+    ::rect {, x:x y:y w:w h:h } self.id MG ;
+}

@@ -151,6 +151,17 @@ import ::list
 
 }:plot;
 
+.#? ::list lineplot\n  draw a quick lineplot of the list
+{
+    .# Generate a plot object
+    :& .ER\plot.line
+    .# Compute 2% margin on top and bottom
+    \:&.max \.min\K :&{-}F0.02*.|[1|$T\]+ \.:yaxis
+    .# Display the plot
+    .view
+}:lineplot;
+
+
 
 .# Basic Plotting
 

@@ -62,16 +62,16 @@ import ::list
 .# List Operations #
 .###################
 
-{$2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{:&2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}F}:product;     .#? L product\n  product of a list
 {*S}:dot;           .#? LL dot\n  dot product of a list
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{$ :T ::num = {.-}{{.-}F} .?}:lcm;
+{:& :T ::num = {.-}{{.-}F} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisor of 2 numbers or a list of numbers
-{$ :T ::num = {.+}{{.+}F} .?}:gcd;
+{:& :T ::num = {.+}{{.+}F} .?}:gcd;
 
 .#? L<N> cumsum\n  cumulative summation of a list
 {list : sum outlist,
@@ -145,7 +145,7 @@ import ::list
 .# Statistics #
 .##############
 
-{$E\S\/}:mean;      .#? L mean\n  average of a list of numbers
+{.E\S\/}:mean;      .#? L mean\n  average of a list of numbers
 {set : m, set mean:m; set#{m-2^}S setE /}:variance; .#? L variance\n  population variance
 {variance Mq}:stdev; .#? L stdev\n  standard deviation
 

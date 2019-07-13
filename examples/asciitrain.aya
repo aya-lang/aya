@@ -4,3 +4,13 @@
 1 train println
 3 train println
 5 train println
+
+
+.# Or using asciiart
+import ::asciiart
+
+{
+" 6_`|6 |` ()--()"_\L"  ~"_T*
+}:train;
+
+3 train :P
