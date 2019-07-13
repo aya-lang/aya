@@ -11,6 +11,7 @@ import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import aya.Aya;
 import aya.OperationDocs;
@@ -76,7 +77,7 @@ public class ColonOps {
 		/* 62 >  */ new OP_Colon_GreaterThan(),
 		/* 63 ?  */ null,
 		/* 64 @  */ null,
-		/* 65 A  */ null,
+		/* 65 A  */ new OP_Colon_A(),
 		/* 66 B  */ null,
 		/* 67 C  */ new OP_Colon_C(),
 		/* 68 D  */ new OP_Colon_D(),
@@ -502,6 +503,38 @@ class OP_Colon_GreaterThan extends Operation {
 		
 		else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// A - 65
+class OP_Colon_A extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":A");
+		doc.desc("..AN", "collect N items from stack into list");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_A() {
+		this.name = ":A";
+	}
+	@Override public void execute (Block block) {		
+		final Obj n = block.pop();
+		
+		if (n.isa(NUMBER)) {
+			int N = ((Number)n).toInt();
+			ArrayList<Obj> arr = new ArrayList<>();
+			for (int i = 0; i < N; i++)
+			{
+				arr.add(block.pop());
+			}
+			Collections.reverse(arr);
+			block.push((new GenericList(arr)).promote());
+		}
+		
+		else {
+			throw new TypeError(this, n);
 		}
 	}
 }

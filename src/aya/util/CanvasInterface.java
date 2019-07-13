@@ -1,11 +1,16 @@
 package aya.util;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
 import java.io.File;
 import java.io.IOException;
+
+import com.sun.javafx.image.impl.General;
 
 import aya.AyaPrefs;
 import aya.exceptions.AyaRuntimeException;
@@ -19,14 +24,20 @@ public class CanvasInterface {
 	// Keys
 	private final long AUTOFLUSH = Variable.encodeString("autoflush");
 	private final long EXTENT = Variable.encodeString("extent");
-	private final long ANGLE = Variable.encodeString("angle");
 	private final long HEIGHT = Variable.encodeString("height");
+	private final long ANGLE = Variable.encodeString("angle");
+	private final long THETA = Variable.encodeString("theta");
+	private final long CYCLE = Variable.encodeString("cycle");
+	private final long COLOR = Variable.encodeString("color");
 	private final long WIDTH = Variable.encodeString("width");
+	private final long START = Variable.encodeString("start");
 	private final long NAME = Variable.encodeString("name");
+	private final long TYPE = Variable.encodeString("type");
 	private final long FILE = Variable.encodeString("file");
 	private final long FILL = Variable.encodeString("fill");
 	private final long SHOW = Variable.encodeString("show");
 	private final long JOIN = Variable.encodeString("join");
+	private final long END = Variable.encodeString("end");
 	private final long CAP = Variable.encodeString("cap");
 	private final long DH = Variable.encodeString("dh");
 	private final long DV = Variable.encodeString("dv");
@@ -34,6 +45,8 @@ public class CanvasInterface {
 	private final long Y1 = Variable.encodeString("ya");
 	private final long X2 = Variable.encodeString("xb");
 	private final long Y2 = Variable.encodeString("yb");
+	private final long XS = Variable.encodeString("xs");
+	private final long YS = Variable.encodeString("ys");
 	private final long W = Variable.encodeString("w");
 	private final long H = Variable.encodeString("h");
 	private final long X = Variable.encodeString("x");
@@ -41,6 +54,7 @@ public class CanvasInterface {
 	private final long R = Variable.encodeString("r");
 	private final long G = Variable.encodeString("g");
 	private final long B = Variable.encodeString("b");
+	private final long A = Variable.encodeString("a");
 	
 	public CanvasInterface() {
 		_table = new CanvasTable();
@@ -75,7 +89,15 @@ public class CanvasInterface {
 		case "oval": return cmdOval(params, cvs);
 		case "ellipse": return cmdEllipse(params, cvs);
 		case "arc": return cmdArc(params, cvs);
+		case "path": return cmdPath(params, cvs);
+		case "rotate": return cmdRotate(params, cvs);
+		case "scale": return cmdScale(params, cvs);
+		case "translate": return cmdTranslate(params, cvs);
+		case "shear": return cmdTranslate(params, cvs);
+		case "set_bg": return cmdSetBackground(params, cvs);
 		case "set_color": return cmdSetColor(params, cvs);
+		case "set_paint": return cmdSetPaint(params, cvs);
+		case "set_alpha": return cmdSetAlpha(params, cvs);
 		case "set_stroke": return cmdSetStroke(params, cvs);
 		case "show": return cmdShow(params, cvs);
 		case "save": return cmdSave(params, cvs);
@@ -84,6 +106,11 @@ public class CanvasInterface {
 		}
 
 	}
+	
+	
+	///////////////////
+	// Canvas        //
+	///////////////////
 	
 	private int cmdNew(DictReader params) {
 		int id = _table.newCanvas(params.getString(NAME, "Canvas"), params.getIntEx(WIDTH), params.getIntEx(HEIGHT));
@@ -94,6 +121,29 @@ public class CanvasInterface {
 		}
 		return id;
 	}
+	
+	private int cmdShow(DictReader params, Canvas cvs) {
+		cvs.show();
+		return 1;
+	}
+	
+	private int cmdSave(DictReader params, Canvas cvs) {
+		String filename = params.getStringEx(FILE);
+		
+		try {
+			File f = new File(FileUtils.workingRelative(filename));
+			cvs.save(f);
+		} catch (IOException e) {
+			return 0;
+		}
+		
+		return 1;
+	}
+	
+	
+	///////////////////
+	// Shapes        //
+	///////////////////
 	
 	private int cmdLine(DictReader params, Canvas cvs) {
 		cvs.getG2D().drawLine(params.getIntEx(X1),
@@ -193,12 +243,129 @@ public class CanvasInterface {
 		return 1;
 	}
 	
-	private int cmdSetColor(DictReader params, Canvas cvs) {
-		cvs.getG2D().setColor(new Color(params.getInt(R, 0),
-							  			params.getInt(G, 0),
-							  			params.getInt(B, 0)));
-		cvs.refresh();
+	private int cmdPath(DictReader params, Canvas cvs) {
+		double[] xs = params.getDoubleArrayEx(XS);
+		double[] ys = params.getDoubleArrayEx(YS);
+		
+		if (xs.length != ys.length) {
+			throw new AyaRuntimeException(
+					"MG: ::path 'xs' and 'ys' must be the same length. Got xs(" +
+					xs.length + "), ys(" + ys.length + ")");
+		}
+		
+		if (xs.length == 0) {
+			throw new AyaRuntimeException(
+					"MG: ::path 'xs' and 'ys' must contain at least 1 point.");
+		}
+		
+		GeneralPath path = new GeneralPath();
+		path.moveTo(xs[0], ys[0]);
+		
+		for (int i = 1; i < xs.length; i++) {
+			path.lineTo(xs[i], ys[i]);
+		}
+		
+		path.closePath();
+		
+		if (params.getInt(FILL, 0) == 1) {
+			cvs.getG2D().fill(path);
+		} else {
+			cvs.getG2D().draw(path);
+		}
+		
 		return 1;
+	}
+	
+
+	////////////////////
+	// Transformation //
+	////////////////////
+	
+	private int cmdRotate(DictReader params, Canvas cvs) {
+		cvs.getG2D().rotate(params.getDouble(THETA, 0.0));
+		
+		return 1;
+	}
+	
+	private int cmdScale(DictReader params, Canvas cvs) {
+		cvs.getG2D().scale(params.getDoubleEx(X), params.getDoubleEx(Y));
+		
+		return 1;
+	}
+	
+	private int cmdTranslate(DictReader params, Canvas cvs) {
+		cvs.getG2D().translate(params.getDoubleEx(X), params.getDoubleEx(Y));
+		
+		return 1;
+	}
+	
+	private int cmdShear(DictReader params, Canvas cvs) {
+		cvs.getG2D().shear(params.getDoubleEx(X), params.getDoubleEx(Y));
+		
+		return 1;
+	}
+	
+	
+	///////////////////
+	// Configuration //
+	///////////////////
+	
+	private int cmdSetColor(DictReader params, Canvas cvs) {
+		Color col = params.getColor(COLOR);
+		if (col != null) {
+			cvs.getG2D().setColor(col);
+		} else {
+			cvs.getG2D().setColor(new Color(params.getInt(R, 0),
+		  			params.getInt(G, 0),
+		  			params.getInt(B, 0)));
+		}
+		return 1;
+	}
+	
+	
+	private int cmdSetBackground(DictReader params, Canvas cvs) {
+		Color col = params.getColor(COLOR);
+		if (col != null) {
+			cvs.getG2D().setBackground(col);
+		} else {
+			cvs.getG2D().setBackground(new Color(params.getInt(R, 0),
+		  			params.getInt(G, 0),
+		  			params.getInt(B, 0)));
+		}
+		return 1;
+	}
+	
+	
+	private int cmdSetPaint(DictReader params, Canvas cvs) {
+		String type = params.getSymString(TYPE);
+		
+		switch (type) {
+		case "grad": {
+			float x1 = (float)(params.getDoubleEx(X1));
+			float y1 = (float)(params.getDoubleEx(Y1));
+			float x2 = (float)(params.getDoubleEx(X2));
+			float y2 = (float)(params.getDoubleEx(Y2));
+			boolean cycle = params.getInt(CYCLE, 1) == 1;
+			Color col1 = params.getColorEx(START);
+			Color col2 = params.getColorEx(END);
+			
+			cvs.getG2D().setPaint(new GradientPaint(x1, y1, col1, x2, y2, col2, cycle));
+		}
+		break;
+		default:
+			cmdSetColor(params, cvs);
+		}
+		
+		
+		return 1;
+	}
+
+	private int cmdSetAlpha(DictReader params, Canvas cvs) {
+		double alpha = Double.max(0, Double.min(1.0, params.getDouble(A, 1.0)));
+		AlphaComposite alcom = AlphaComposite.getInstance(
+                 AlphaComposite.SRC_OVER, (float)alpha);
+        cvs.getG2D().setComposite(alcom);
+        return 1;
 	}
 	
 	private int symToCap(String s) {
@@ -222,7 +389,7 @@ public class CanvasInterface {
 	private int cmdSetStroke(DictReader params, Canvas cvs) {
 		BasicStroke prev = (BasicStroke)(cvs.getG2D().getStroke());
 		int cap  = symToCap(params.getSymString(CAP, ""));
-		int join = symToCap(params.getSymString(JOIN, ""));
+		int join = symToJoin(params.getSymString(JOIN, ""));
 		cvs.getG2D().setStroke(new BasicStroke(
 				params.getFloat(WIDTH, prev.getLineWidth()),
 				cap  == -1 ? prev.getEndCap() : cap,
@@ -231,22 +398,6 @@ public class CanvasInterface {
 		return 1;
 	}
 	
-	private int cmdShow(DictReader params, Canvas cvs) {
-		cvs.show();
-		return 1;
-	}
-	
-	private int cmdSave(DictReader params, Canvas cvs) {
-		String filename = params.getStringEx(FILE);
-		
-		try {
-			File f = new File(FileUtils.workingRelative(filename));
-			cvs.save(f);
-		} catch (IOException e) {
-			return 0;
-		}
-		
-		return 1;
-	}
+
 
 }

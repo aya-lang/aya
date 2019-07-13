@@ -1,15 +1,25 @@
 package aya.util;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.dict.KeyVariable;
 import aya.obj.list.List;
+import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
 public class DictReader {
+	
+	private final long R = Variable.encodeString("r");
+	private final long G = Variable.encodeString("g");
+	private final long B = Variable.encodeString("b");
+	private final long A = Variable.encodeString("a");
+	
 	private Dict _dict;
 	private String _err_name;
 	
@@ -32,6 +42,18 @@ public class DictReader {
 		return new AyaRuntimeException(_err_name + ": Expected type ::" + type_expected +" for key '" + key_name + "' but got " + got.repr());
 	}
 	
+	public double[] getDoubleArrayEx(long key) {
+		Obj arr = _dict.getSafe(key);
+		
+		if (arr == null) {
+			throw notFound(key);
+		} if (arr.isa(Obj.LIST)) {
+			return ((List)arr).toNumberList().todoubleArray();
+		} else {
+			throw badType(key, "list<num>", arr);
+		}
+	}
+	
 	public String getSymStringEx(long key) throws AyaRuntimeException {
 		Obj val = _dict.getSafe(key);
 		if (val == null) throw notFound(key);
@@ -40,6 +62,26 @@ public class DictReader {
 			return val.str();
 		} else if (val.isa(Obj.SYMBOL)) {
 			return ((Symbol)val).name();
+		} else {
+			throw badType(key, "sym", val);
+		}
+	}
+	
+	public Color getColorEx(long key) {
+		Obj val = _dict.getSafe(key);
+		if (val == null) throw notFound(key);
+		
+		if (val.isa(Obj.DICT)) {
+			DictReader c = new DictReader((Dict)val);
+			int r = c.getInt(R, 0);
+			int g = c.getInt(G, 0);
+			int b = c.getInt(B, 0);
+			int a = c.getInt(A, 255);
+			try {
+				return new Color(r,g,b,a);
+			} catch (IllegalArgumentException e) {
+				throw new AyaRuntimeException("Invalid color: " + r + "," + g + "," + b + "," + a);
+			}
 		} else {
 			throw badType(key, "sym", val);
 		}
@@ -81,6 +123,26 @@ public class DictReader {
 			return o.str();
 		}
 	}
+	
+	public Color getColor(long key) {
+		Obj val = _dict.getSafe(key);
+		
+		if (val != null && val.isa(Obj.DICT)) {
+			DictReader c = new DictReader((Dict)val);
+			int r = c.getInt(R, 0);
+			int g = c.getInt(G, 0);
+			int b = c.getInt(B, 0);
+			int a = c.getInt(A, 255);
+			try {
+				return new Color(r,g,b,a);
+			} catch (IllegalArgumentException e) {
+				throw new AyaRuntimeException("Invalid color: " + r + "," + g + "," + b + "," + a);
+			}
+		} else {
+			return null;
+		}
+	}
+	
 	
 	public String getSymString(long key) {
 		Obj val = _dict.getSafe(key);
