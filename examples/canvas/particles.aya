@@ -1,0 +1,59 @@
+import ::canvas
+{c.close} {;} .K
+
+struct ::vector [::x ::y]
+
+impl vector::__add__{other self,
+    other.x self.x +
+    other.y self.y +
+    self.M!
+}
+
+struct ::particle [::pos ::vel ::acc ::life]
+
+impl_static particle::from_vec {pos meta : p,
+    0 0 vector! $ $ 255 particle! :p;
+    pos p.reset
+    p
+}
+
+impl particle::update {self,
+    self.vel self.acc + self.:vel;
+    self.pos self.vel + self.:pos;
+    self.life 2 - self.:life;
+}
+
+impl particle::draw {self,
+    self.life 255/ c.set_alpha
+    self.pos.x self.pos.y 4 c.fillcircle
+}
+
+impl particle::reset {pos self,
+    pos self.:pos;
+    .Q2*1- .Q2*2- vector! self.:vel;
+    0 0.05 vector! self.:acc;
+    255 self.:life;
+}
+
+impl particle::dead {self,
+    self.life 0 :<
+}
+
+{, "Particles":name } canvas! :c;
+200 100 vector! :origin;
+
+[100,; origin particle.from_vec]:particles;
+particles :# {255Q \.:life};
+
+{
+    c.clear
+    particles :# {p,
+        p.update
+        p.dead {origin p.reset} ?
+        p.draw
+    } ;
+    
+    c.show
+    12:Z
+    c.isopen
+} W

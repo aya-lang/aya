@@ -46,8 +46,12 @@ impl canvas::fillcircle {x y r self,
     ::ellipse {, 1:fill x:x y:y r2*:w:h } self.id MG ;
 }
 
-impl canvas::set_color {color::color self,
+impl canvas::set_color {color self,
     ::set_color {, color.r:r color.g:g color.b:b } self.id MG ;
+}
+
+impl canvas::set_alpha {a self,
+    ::set_alpha {, a:a } self.id MG ;
 }
 
 impl canvas::set_grad {start ca end cb cycle self,
@@ -56,7 +60,7 @@ impl canvas::set_grad {start ca end cb cycle self,
                    cycle:cycle ::grad:type } self.id MG ;
 }
 
-impl canvas::set_bg {color::color self, 
+impl canvas::set_bg {color self, 
     ::set_bg {, color.r:r color.g:g color.b:b } self.id MG ;
 }
 
@@ -79,6 +83,10 @@ impl canvas::show {self,
     ::show {,} self.id MG ;
 }
 
+impl canvas::isopen {self,
+    ::isopen {,} self.id MG
+}
+
 impl canvas::rect {x y w h self,
 
     ::rect {, x:x y:y w:w h:h } self.id MG ;
@@ -89,38 +97,5 @@ impl canvas::fillrect {x y w h self,
 }
 
 impl canvas::clear {self,
-    ::set_color {, 255:r:g:b } self.id MG ;
-    ::rect {, 0:x:y self.width:w self.height:h 1:fill} self.id MG ;
-    ::set_color {, 0:r:g:b } self.id MG ;
+    ::clear {,} self.id MG ;
 }
-
-{c.close} {;} .K
-
-400:w;
-400:h;
-{, w:width h:height} canvas! :c
-
-
-30:rad;
-200:x;
-200:y;
-4.8:xspeed;
-4.2:yspeed;
-1:xdir;
-1:ydir;
-
-{
-    c.clear
-
-    x xspeed xdir * +:x;
-    y yspeed ydir * +:y;
-
-    x w rad - > x rad < | { xdir :1 * :xdir;} ?
-    y h rad - > y rad < | { ydir :1 * :ydir;} ?
-
-    x y rad c.fillcircle
-
-    c.show
-    33:Z
-    
-} .# 100 %

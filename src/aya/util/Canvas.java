@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,9 +17,6 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import aya.Aya;
-
 
 /**
  * A very basic plotting tool. Plots an arbitrary number of doubles to a graph
@@ -49,10 +48,20 @@ public class Canvas {
 		_g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
 		RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		
-		//Make the image BG white
-		_g2d.setColor(Color.WHITE);
-		_g2d.fillRect(0, 0, width, height);
+		// Black as default color
 		_g2d.setColor(Color.BLACK);
+		
+		// White as default background
+		_g2d.setBackground(new Color(255, 255, 255));
+		_g2d.clearRect(0, 0, _width, _height);
+	}
+	
+	public int getWidth() {
+		return _width;
+	}
+	
+	public int getHeight() {
+		return _height;
 	}
 	
 	public void setShowOnRefresh(boolean b) {
@@ -77,11 +86,17 @@ public class Canvas {
 			_frame.setResizable(false);
 			_frame.pack();
 			_frame.setLocationRelativeTo(comp);
+			_frame.setVisible(true);
+			
+			_frame.addWindowListener(new WindowAdapter() {
+				@Override
+		        public void windowClosing(WindowEvent event) {
+		            close();
+		        }
+			});
 		} else {
 			_frame.repaint();
 		}
-		
-		_frame.setVisible(true);
 	}
 	
 	public void hide() {
@@ -131,7 +146,7 @@ public class Canvas {
 	
 	public static void main(String[] args) throws IOException {
 		System.out.println("Hello Canvas");
-		
+				
 		Canvas c = new Canvas("Canvas", 200, 200);
 		c.show();
 		

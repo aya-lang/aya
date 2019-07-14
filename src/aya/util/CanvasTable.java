@@ -18,6 +18,7 @@ public class CanvasTable {
 		return _canvas_count;
 	}
 	
+	/** returns null if canvas id does not exist */
 	public Canvas getCanvas(int id) {
 		return _canvas_table.get(id);
 	}

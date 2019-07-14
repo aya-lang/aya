@@ -1,0 +1,35 @@
+import ::canvas
+
+{c.close} {;} .K
+
+400:w;
+300:h;
+{, w:width h:height "Bouncing":name } canvas! :c;
+colors.white c.set_bg
+colors.white 0.5* c.set_color
+
+
+
+30:rad;
+200:x;
+200:y;
+2.8:xspeed;
+2.2:yspeed;
+1:xdir;
+1:ydir;
+
+{
+    c.clear
+  
+    x xspeed xdir * +:x;
+    y yspeed ydir * +:y;
+
+    x w rad - > x rad < | { xdir :1 * :xdir;} ?
+    y h rad - > y rad < | { ydir :1 * :ydir;} ?
+
+    x y rad c.fillcircle
+
+    c.show
+    33:Z
+    c.isopen
+} W

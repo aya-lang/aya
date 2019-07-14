@@ -1,3 +1,5 @@
+{::close {,} g MG} {;} .K
+
 {255Q:r 255Q:g 255Q:b}:col;
 {x y, 
   ::set_stroke {, 1:width } g MG
@@ -70,9 +72,23 @@
 } g MG
 
 
-
-
 225 225 point
 260 260 point
+
+.# fonts
+
+::set_alpha {,} g MG
+::set_color {, 0:r:g:b } g MG
+::text {, 20:x 20:y "Hello world!":text } g MG
+
+::set_font {, "Times New Roman":name ::bold:style 20:size} g MG
+::text {, 20:x 40:y "Hello world!":text } g MG
+
+::set_color {, col } g MG
+::set_font {, "Comic Sans MS":name ::italic:style 15:size } g MG
+::text {, 20:x 60:y "Hello world!":text } g MG
+
+::set_font {, "Courier New":name ::bolditalic:style 24:size } g MG
+::text {, 20:x 80:y "Hello world!":text } g MG
 
 
