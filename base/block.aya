@@ -56,6 +56,9 @@
         d__ .+
     })}:use;
 
+    .#? ::block .time\n  return the execution time of a block in ms
+    {M$ \[1|~]; M$ \-}:time;
+
 }:block;
 
 {.le}:otimes;

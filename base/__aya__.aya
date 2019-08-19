@@ -300,6 +300,41 @@ static point::static_fn {
 .# CONTROL #
 .###########
 
+{__l : __n __e __i(0) __done(0),
+    __lE:__n 2/.\:__e ;
+
+    .# Loop over indices 0, 2, 4 ... to check condition
+    .# if condition passes, return the next block and break the loop
+    {
+        .# Load and run condition
+        (__l __i2* I ~, 0); {
+            __l __i2* 1+ I
+            ::__done B .# set true
+            __e :__i; .# exit loop
+        } ?
+
+        .# Loop condition
+        ::__i B __i __e <
+    } W
+
+    .# Was a condition chosen?
+    __done ! {
+        .# Was there an else?
+        __n 2 % {
+            .# else
+            __l :1 I
+        } {
+            .# no else
+            {}
+        } .?
+    } ?
+
+    .# Evaluate the final block
+    ~
+
+} :ifelse;
+
+
 .#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
 {```.?}:if;
 

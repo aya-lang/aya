@@ -1,7 +1,10 @@
 import ::canvas
 {c.close} {;} .K
 
-struct ::vector [::x ::y]
+struct ::vector [
+    ::x
+    ::y
+]
 
 impl vector::__add__{other self,
     other.x self.x +
@@ -9,7 +12,12 @@ impl vector::__add__{other self,
     self.M!
 }
 
-struct ::particle [::pos ::vel ::acc ::life]
+struct ::particle [
+    ::pos
+    ::vel
+    ::acc
+    ::life
+]
 
 impl_static particle::from_vec {pos meta : p,
     0 0 vector! $ $ 255 particle! :p;

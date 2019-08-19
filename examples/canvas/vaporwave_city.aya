@@ -58,7 +58,7 @@ darkblue c.set_color
 {
     {
         darkblue .Q5/0.7+ * c.set_color
-        100Q15+ 100Q10+ 500Q c building
+        100Q15+ 100Q10+ 530Q30- c building
     } 40 %
 
     .# Transparent gradient to provide depth

@@ -5,7 +5,7 @@
   ::set_stroke {, 1:width } g MG
   ::set_color {, 0:r:g:b } g MG
   ::line {, x:xa:xb y:ya:yb } g MG
-}:point
+}:point;
 
 ::new {, 300:width 300:height "Test":name 1:autoflush 1:show} 0 MG :g
 200 200 point
@@ -38,7 +38,7 @@
   ::set_stroke {, cap:cap } g MG
   ::line {, idx20*:ya 150:xa idx20*:yb 250:xb} g MG
   ::idx B
-}
+};
 
 ::set_stroke {, 5:width } g MG
 ::set_color {, col } g MG
@@ -46,7 +46,8 @@
   ::set_stroke {, join:join } g MG
   ::rect {, idx30*:y 150:x 100:w 15:h} g MG
   ::idx B
-}
+};
+
 ::set_paint {, 
   ::grad:type
   0:xa 0:ya 20:xb 20:yb

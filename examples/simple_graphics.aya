@@ -1,5 +1,0 @@
-::new {, 200:width 300:height "Test":name } 0 MG
-::line {, 0:xa 0:ya 100:xb 200:yb } 1 MG
-::rect {, 20:x 30:y 10:w 100:h } 1 MG
-::set_color {, 200:r 0:g 0:b} 1 MG
-::line {, 40:xa 40:ya 0:xb 50:yb } 1 MG
