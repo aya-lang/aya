@@ -369,10 +369,14 @@ public class Block extends Obj {
 		this.instructions.addAll(b.getInstructions().getInstrucionList());
 	}
 	
+	public void addBlockBack(Block b) {
+		this.instructions.addAll(0, b.getInstructions().getInstrucionList());
+	}
+	
 
 
-	/** Adds an item to the front of the instruction stack. (opposite of add()) */
-	public void addToFontInstructions(Obj b) {
+	/** Adds an item to the back of the instruction stack. (opposite of add()) */
+	public void addBack(Obj b) {
 		instructions.insert(0, b);
 		
 	}

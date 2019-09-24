@@ -119,7 +119,7 @@ public class DotOps {
 		/* 91 [  */ null,
 		/* 92 \  */ new OP_Dot_BackSlash(),
 		/* 93 ]  */ new OP_Colon_Demote(),
-		/* 94 ^  */ null,
+		/* 94 ^  */ new OP_Dot_Pow(),
 		/* 95 _  */ null, // Member Variable
 		/* 96 `  */ null,
 		/* 97 a  */ null, // Member Variable
@@ -1482,6 +1482,41 @@ class OP_Dot_BackSlash extends Operation {
 			block.push( ((NumberList)a).floor() );
 		}
 
+		else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+// ^ - 94
+class OP_Dot_Pow extends Operation {
+
+	static {
+		OpDoc doc = new OpDoc('.', ".^");
+		doc.desc("L", "compile");
+		OperationDocs.add(doc);
+	}
+
+	public void OP_DOT_Pow() {
+		this.name = ".^";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+
+		if (a.isa(LIST)) {
+			ArrayList<Obj> l = ((List)a).getObjAL();
+			Block b = new Block();
+			for (int i = 0; i < l.size(); i++) {
+				final Obj k = l.get(i);
+				if (k.isa(BLOCK)) {
+					b.addBlockBack((Block)k);
+				} else {
+					b.addBack(l.get(i));
+				}
+			}
+			block.push(b);
+		}
 		else {
 			throw new TypeError(this, a);
 		}

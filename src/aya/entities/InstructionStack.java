@@ -48,6 +48,11 @@ public class InstructionStack {
 		instructions.addAll(c);
 	}
 	
+	/** Adds a list of instructions */
+	public void addAll(int index, Collection<? extends Object> c) {
+		instructions.addAll(index, c);
+	}
+	
 	/** Returns true if there are no more instructions */
 	public boolean isEmpty() {
 		return instructions.isEmpty();
