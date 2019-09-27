@@ -111,6 +111,13 @@ public class Block extends Obj {
 		return stack.isEmpty();
 	}
 	
+	/** Test if this block has a local variable set */
+	public boolean hasLocals() {
+		if (instructions.isEmpty()) return false;
+		final Object flag = instructions.getInstrucionList().get(0);
+		return flag instanceof Flag && ((Flag)flag).getID() == Flag.POPVAR;
+	}
+	
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
 	public void eval() {
 		while (!instructions.isEmpty()) {
@@ -366,11 +373,19 @@ public class Block extends Obj {
 	
 	/** Adds a block to this block (does not duplicate the block) */
 	public void addBlock(Block b) {
-		this.instructions.addAll(b.getInstructions().getInstrucionList());
+		if (b.hasLocals()) {
+			this.instructions.push(new Lambda(b.getInstructions()));
+		} else {
+			this.instructions.addAll(b.getInstructions().getInstrucionList());
+		}
 	}
 	
 	public void addBlockBack(Block b) {
-		this.instructions.addAll(0, b.getInstructions().getInstrucionList());
+		if (b.hasLocals()) {
+			this.instructions.insert(0, new Lambda(b.getInstructions()));
+		} else {
+			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
+		}
 	}
 	
 
