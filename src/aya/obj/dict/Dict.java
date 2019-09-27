@@ -1,6 +1,7 @@
 package aya.obj.dict;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
@@ -24,6 +25,7 @@ public class Dict extends Obj {
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
 	private Dict _meta; // Quick lookup for meta
+	private HashMap<String, Obj> _string_vars;
 
 	/** Create a new empty dict, use the input dict as the metatable */
 	public Dict(VariableSet vars, Dict metatable) {
@@ -38,18 +40,21 @@ public class Dict extends Obj {
 			_vars.setVar(META, metatable);
 			_meta = metatable;
 		}
+		_string_vars = new HashMap<>();
 	}
 	
 	/** Create a new dict given a variable set */
 	public Dict(VariableSet vars) {
 		_vars = vars;
 		_meta = null;
+		_string_vars = new HashMap<>();
 	}
 	
 	/** Create a new empty dict */
 	public Dict() {
 		_vars = new VariableSet(false);
 		_meta = null;
+		_string_vars = new HashMap<>();
 	}
 
 	/** Set the metatable to the input dict */
@@ -58,6 +63,17 @@ public class Dict extends Obj {
 		_meta = d;
 	}
 
+	//////////////////
+	// STRING TABLE //
+	//////////////////
+	
+	public Obj strGet(String s) {
+		return _string_vars.get(s);
+	}
+	
+	public void strSet(String s, Obj o) {
+		_string_vars.put(s, o);
+	}
 	
 	
 	/////////////
@@ -336,6 +352,9 @@ public class Dict extends Obj {
 				sb.append(_vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + "; ");
 			}
 		}
+		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
+			sb.append(e.getValue().repr() + ":\"" + e.getKey() + "\"; ");
+		}
 		sb.append("}");
 		return sb.toString();
 	}
@@ -347,6 +366,9 @@ public class Dict extends Obj {
 			if (l != META.getID()) {
 				sb.append("  " + _vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + ";\n");
 			}
+		}
+		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
+			sb.append("  ").append(e.getValue().repr() + ":\"" + e.getKey() + "\";\n");
 		}
 		sb.append("}");
 		return sb.toString();

@@ -67,7 +67,7 @@ public class MiscOps {
 		/* 43 +  */ null,
 		/* 44 ,  */ null,
 		/* 45 -  */ null,
-		/* 46 .  */ null,
+		/* 46 .  */ new OP_StrGet(),
 		/* 47 /  */ null,
 		/* 48 0  */ null,
 		/* 49 1  */ null,
@@ -79,7 +79,7 @@ public class MiscOps {
 		/* 55 7  */ null,
 		/* 56 8  */ null,
 		/* 57 9  */ null,
-		/* 58    */ null,
+		/* 58 :  */ new OP_StrSet(),
 		/* 59 ;  */ null,
 		/* 60 <  */ null, //new OP_ModSet(),
 		/* 61 =  */ null,
@@ -224,6 +224,66 @@ class OP_SysTime extends Operation {
 		block.push(new Num(System.currentTimeMillis()));
 	}
 }
+
+// . - 46
+class OP_StrGet extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "M.");
+		doc.desc("DS", "get from dict using string key");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_StrGet() {
+		this.name = "M.";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		if (a.isa(STR) && b.isa(DICT)) {
+			final Obj val = ((Dict)b).strGet(a.str());
+			if (val == null) {
+				throw new AyaRuntimeException("Dict does not contain string key \"" + a.str() + "\"");
+			} else {
+				block.push(val);
+			}
+		} else {
+			throw new TypeError(this, a, b);
+		}
+
+	}
+}
+
+
+// : - 58
+class OP_StrSet extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "M:");
+		doc.desc("ADS", "set object to dict using string key, leave dict on stack");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_StrSet() {
+		this.name = "M:";
+	}
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		final Obj c = block.pop();
+		
+		if (a.isa(STR) && b.isa(DICT)) {
+			((Dict)b).strSet(a.str(), c);
+			block.push(b);
+		} else {
+			throw new TypeError(this, a, b, c);
+		}
+	}
+}
+
 
 // ? - 63
 class OP_Help extends Operation {

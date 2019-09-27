@@ -121,7 +121,7 @@ public class DotOps {
 		/* 93 ]  */ new OP_Colon_Demote(),
 		/* 94 ^  */ new OP_Dot_Pow(),
 		/* 95 _  */ null, // Member Variable
-		/* 96 `  */ null,
+		/* 96 `  */ null, // Block variable escape
 		/* 97 a  */ null, // Member Variable
 		/* 98 b  */ null, // Member Variable
 		/* 99 c  */ null, // Member Variable
@@ -1497,9 +1497,10 @@ class OP_Dot_Pow extends Operation {
 		OperationDocs.add(doc);
 	}
 
-	public void OP_DOT_Pow() {
+	public OP_Dot_Pow() {
 		this.name = ".^";
 	}
+	
 	@Override
 	public void execute(Block block) {
 		final Obj a = block.pop();
