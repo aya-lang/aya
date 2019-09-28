@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import aya.obj.Obj;
+import aya.obj.symbol.Symbol;
+import aya.util.Pair;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -11,6 +13,8 @@ import aya.variable.VariableSet;
  *  Used by the aya.Block class to hold and manage instructions
  */
 public class InstructionStack {
+	private static final Symbol SYM_ANY = Symbol.fromStr("any");
+	
 	ArrayList<Object> instructions = new ArrayList<Object>();
 	
 	/** Pops the instructions from the top of the instruction stack */
@@ -116,6 +120,43 @@ public class InstructionStack {
 			if (o instanceof Variable && ((Variable)o).getID() == varid) {
 				instructions.set(i, item);
 			}
+		}
+	}
+	
+	/** Introspection: Get all arg names and types as symbols */
+	public ArrayList<Pair<Symbol, Symbol>> getArgsAndTypes() {
+		ArrayList<Pair<Symbol, Symbol>> args_and_types  = new ArrayList<>();
+		if (instructions.size() == 0) return args_and_types;
+		final Object last = instructions.get(instructions.size()-1);
+		if (last instanceof VariableSet) {
+			VariableSet varset = (VariableSet)last;
+			Variable[] vars = varset.getArgs();
+			long[] types = varset.getArgTypes();
+			if (vars == null) {
+				return args_and_types;
+			} else if (types == null) {
+				for (Variable v : vars) {
+					args_and_types.add(new Pair<Symbol, Symbol>(Symbol.fromID(v.getID()), SYM_ANY));
+				}
+			} else {
+				for (int i = 0; i < types.length; i++) {
+					args_and_types.add(new Pair<Symbol, Symbol>(
+							Symbol.fromID(vars[i].getID()),
+							Symbol.fromID(types[i])));
+				}
+			}
+		}
+		return args_and_types;
+	}
+	
+	/** If this block has local variables (including args), return the variable set */
+	public VariableSet getLocals() {
+		if (instructions.size() == 0) return null;
+		final Object last = instructions.get(instructions.size()-1);
+		if (last instanceof VariableSet) {
+			return (VariableSet)last;
+		} else {
+			return null;
 		}
 	}
 }

@@ -118,6 +118,12 @@ public class Block extends Obj {
 		return flag instanceof Flag && ((Flag)flag).getID() == Flag.POPVAR;
 	}
 	
+	/** Get a list of args for this block */
+	public ArrayList<Symbol> getArgs() {
+		ArrayList<Symbol> list = new ArrayList<>();
+		return list;
+	}
+	
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
 	public void eval() {
 		while (!instructions.isEmpty()) {

@@ -37,6 +37,7 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
+import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -44,9 +45,11 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
+import aya.util.Pair;
 import aya.util.QuickDialog;
 import aya.util.SimplePlot;
 import aya.variable.Variable;
+import aya.variable.VariableSet;
 
 public class DotOps {
 
@@ -1121,13 +1124,40 @@ class OP_Dot_M extends Operation {
 	public OP_Dot_M() {
 		this.name = ".M";
 	}
+	
+	public static final long ARGS = Variable.encodeString("args");
+	public static final long ARGTYPES = Variable.encodeString("argtypes");
+	public static final long LOCALS = Variable.encodeString("locals");
+	
 	@Override public void execute (final Block block) {
 		Obj a = block.pop();
-		if (a.isa(DICT)) {
+		 if (a.isa(DICT)) {
 			block.push(((Dict)a).getMetaDict());
+		} else if (a.isa(BLOCK)) {
+			block.push(getBlockMeta((Block)a));
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	private Dict getBlockMeta(Block b) {
+		Dict d = new Dict();
+		// Arg Names
+		final ArrayList<Pair<Symbol, Symbol>> args_and_types = b.getInstructions().getArgsAndTypes();
+		ArrayList<Obj> argnames = new ArrayList<>(args_and_types.size());
+		Dict argtypes = new Dict();
+		
+		for (Pair<Symbol, Symbol> p : args_and_types) {
+			argnames.add(p.first());
+			argtypes.set(p.first().id(), p.second());
+		}
+		d.set(ARGS, new GenericList(argnames));
+		d.set(ARGTYPES, argtypes);
+		final VariableSet vars = b.getInstructions().getLocals();
+		if (vars != null) {
+			d.set(LOCALS, new Dict(vars));
+		}
+				
+		return d;
 	}
 }
 

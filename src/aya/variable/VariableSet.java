@@ -239,5 +239,15 @@ public class VariableSet {
 		
 	}
 	
+	/** Return a list of arg names */
+	public Variable[] getArgs() {
+		return argNames; 
+	}
+	
+	/** Return a list of arg types */
+	public long[] getArgTypes() {
+		return argTypes; 
+	}
+	
 	
 }
