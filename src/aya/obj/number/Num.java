@@ -24,6 +24,12 @@ public class Num extends Number {
 	public static final Num DOUBLE_NINF = new Num(Double.NEGATIVE_INFINITY);
 	public static final Num INT_MAX = new Num(Integer.MAX_VALUE);
 	public static final Num INT_MIN = new Num(Integer.MIN_VALUE);
+	public static final Num[] BYTES = new Num[256];
+	static {
+		BYTES[0] = ZERO;
+		BYTES[1] = ONE;
+		for (int i = 2; i < 256; i++) BYTES[i] = new Num(i);
+	}
 	
 	
 	double _val;

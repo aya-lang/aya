@@ -308,10 +308,55 @@ public abstract class List extends Obj {
 		return out;
 	}
 	
+	/** Add obj to the end of the list. Always make a copy of the list */
+	public static List joinBack(List list, Obj o) {
+		if (list.canInsert(o)) {
+			List l = list.copy();
+			l.addItem(o);
+			return l;
+		} else {
+			GenericList g = new GenericList(list.copy().getObjAL());
+			g.addItem(o);
+			return g;
+		}
+	}
+	
+	/** Add obj to the front of the list. Always make a copy of the list */
+	public static List joinFront(Obj o, List list) {
+		if (list.canInsert(o)) {
+			List l = list.copy();
+			l.addItem(0, o);
+			return l;
+		} else {
+			GenericList g = new GenericList(list.copy().getObjAL());
+			g.addItem(0, o);
+			return g;
+		}
+	}
+	
+	/** Join two lists into a single list. Always make a copy of the list */
+	public static List joinLists(List list1, List list2) {
+		List a = list1.copy();
+		if (a.isa(NUMBERLIST) && list2.isa(NUMBERLIST)) {
+			a.addAll(list2);
+			return a;
+		} else if (a.isa(STRLIST) && list2.isa(STRLIST)) {
+			a.addAll(list2);
+			return a;
+		} else {
+			GenericList g = new GenericList(a.getObjAL());
+			g.addAll(list2);
+			return g.promote();
+		}
+	}
+	
 	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////
+	
+	/** Create a shallow copy of this list */
+	public abstract List copy();
 	
 	/** The number of elements in the list */
 	public abstract int length();
@@ -380,6 +425,9 @@ public abstract class List extends Obj {
 	
 	/** Return a list containing the unique elements of the original list */
 	public abstract List unique();
+	
+	/** Return true if the input object can be a vaild member of the list */
+	public abstract boolean canInsert(Obj o);
 	
 	////////////////////////
 	// LIST MODIFICATIONS //

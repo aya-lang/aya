@@ -333,9 +333,15 @@ public class Str extends List implements Comparable<Str> {
 		}
 	}
 
-
+	@Override
+	public Str copy() {
+		return new Str(_str);
+	}
 	
-	
+	@Override
+	public boolean canInsert(Obj o) {
+		return o.isa(Obj.CHAR);
+	}
 	
 	
 	///////////////////

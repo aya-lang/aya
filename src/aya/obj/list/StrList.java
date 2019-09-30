@@ -262,6 +262,18 @@ public class StrList extends List {
 		return new Str(sb.toString());
 	}
 	
+	@Override
+	public StrList copy() {
+		ArrayList<Str> out = new ArrayList<Str>(_list.size());
+		out.addAll(_list);
+		return new StrList(out);
+	}
+	
+	@Override
+	public boolean canInsert(Obj o) {
+		return o.isa(STR);
+	}
+	
 	///////////////////
 	// OBJ OVERRIDES //
 	///////////////////

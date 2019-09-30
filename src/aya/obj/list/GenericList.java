@@ -332,6 +332,18 @@ public class GenericList extends List {
 			_list.add(l.get(i));
 		}
 	}
+	
+	@Override
+	public List copy() {
+		ArrayList<Obj> out = new ArrayList<>(_list.size());
+		out.addAll(_list);
+		return new GenericList(out);
+	}
+	
+	@Override
+	public boolean canInsert(Obj o) {
+		return true;
+	}
 
 	
 	

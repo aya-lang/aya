@@ -180,7 +180,7 @@ public class Ops {
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ new OP_GetIndex(),
-		/* 74 J  */ null,
+		/* 74 J  */ new OP_Join(),
 		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
@@ -1207,13 +1207,16 @@ class OP_H extends Operation {
 			if (from_b.isa(NUMBER) && to_b.isa(NUMBER)) {
 				int from_base = ((Number)from_b).toInt();
 				int to_base = ((Number)to_b).toInt();
-				BigInteger out_bi;
+				BigInteger out_bi = BigInteger.ZERO;
 				
 				//Check Radix Ranges
-				if (Character.MIN_RADIX > from_base 
+				if ((Character.MIN_RADIX > from_base 
 						|| Character.MIN_RADIX > to_base
 						|| Character.MAX_RADIX < from_base
-						|| Character.MAX_RADIX < to_base) {
+						|| Character.MAX_RADIX < to_base) && (
+								from_base != 0
+								&& to_base != 0
+								)){
 					throw new AyaRuntimeException("H: base out of range (" + from_base + ", " + to_base + ")");
 				}
 				
@@ -1230,20 +1233,32 @@ class OP_H extends Operation {
 				
 				//Assume base 2
 				else if (num.isa(NUMBERLIST)) {
-					NumberList bin_list = ((NumberList)num);
-					StringBuilder sb = new StringBuilder(bin_list.length());
-	
-						for (int i = 0; i < bin_list.length(); i++) {
-							int c = bin_list.get(i).toInt();
-							//Check for binary only
-							if (c == 1 || c == 0) {
-								sb.append(c);
-							} else {
-								throw new AyaRuntimeException("H: List must be base 2");
+					if (from_base == 2) {
+						NumberList bin_list = ((NumberList)num);
+						StringBuilder sb = new StringBuilder(bin_list.length());
+		
+							for (int i = 0; i < bin_list.length(); i++) {
+								int c = bin_list.get(i).toInt();
+								//Check for binary only
+								if (c == 1 || c == 0) {
+									sb.append(c);
+								} else {
+									throw new AyaRuntimeException("H: List must be base 2");
+								}
+								
 							}
-							
+						out_bi = new BigInteger(sb.toString(), 2);
+					} else if (from_base == 0) {
+						NumberList nums = ((NumberList)num);
+						byte[] in_bytes = new byte[nums.length()];
+						for (int i = 0; i < nums.length(); i++) {
+							int c = nums.get(i).toInt();
+							in_bytes[i] = (byte)c;
 						}
-					out_bi = new BigInteger(sb.toString(), 2);
+						out_bi = new BigInteger(in_bytes);
+					} else {
+						throw new AyaRuntimeException("H: List must be base 2 or bytes (base 0)");
+					}
 				}
 				
 				else {
@@ -1271,6 +1286,19 @@ class OP_H extends Operation {
 						out_list.add(new Num(c-'0'));
 					}
 					block.push(new NumberItemList(out_list));
+					return;
+				} else if (to_base == 0) {
+					// Special case: byte list
+					byte[] bytes = out_bi.toByteArray();
+					ArrayList<Number> nums = new ArrayList<>(bytes.length);
+					for (byte b : bytes) {
+						if (b >= 0) {
+							nums.add(Num.BYTES[b]);
+						} else {
+							nums.add(new Num(b));
+						}
+					}
+					block.push(new NumberItemList(nums));
 					return;
 				} else {
 					block.push(new Str(out_bi.toString(to_base)));
@@ -1367,6 +1395,41 @@ class OP_SetIndex extends Operation {
 }
 
 
+// J - 74
+class OP_Join extends Operation {
+	
+	static {
+		OpDoc doc = new OpDoc(' ', "J");
+		doc.desc("LL", "join lists");
+		doc.desc("LA|AL", "add to list");
+		doc.desc("AA", "create list [ A A ]");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Join() {
+		this.name = "J";
+	}
+	@Override public void execute (final Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		final boolean a_is_list = a.isa(LIST) && !a.isa(STR);
+		final boolean b_is_list = b.isa(LIST) && !b.isa(STR);
+		
+		if (a_is_list && b_is_list) {
+			block.push(List.joinLists((List)b, (List)a));
+		} else if (a_is_list) {
+			block.push(List.joinFront(b, (List)a));
+		} else if (b_is_list) {
+			block.push(List.joinBack((List)b, a));
+		} else {
+			final ArrayList<Obj> list = new ArrayList<Obj>();
+			list.add(b);  //Stack - Add in reverse order
+			list.add(a);
+			block.push(new GenericList(list).promote());
+		}
+	}
+}
 
 
 // L - 76

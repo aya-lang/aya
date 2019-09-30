@@ -659,6 +659,17 @@ public class NumberItemList extends NumberList {
 		}
 	}
 	
+	@Override
+	public NumberItemList copy() {
+		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		out.addAll(_list);
+		return new NumberItemList(out);
+	}
+	
+	@Override
+	public boolean canInsert(Obj o) {
+		return o.isa(NUMBER);
+	}
 	
 	
 	///////////////////
