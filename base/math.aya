@@ -182,7 +182,7 @@ import ::list
     n sumxsq * sumx2^-
     /:b;
 
-    "($b)*($a)+" .~
+    {b * a +}.use[::a ::b]
 }:regression;
 
 

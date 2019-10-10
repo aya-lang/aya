@@ -180,12 +180,12 @@
             .# This object
             {,} :self;
             .# args will grab all args off the stack using list grabbing
-            args~ members {self :D}.&;
+            num_members :A members {self :D}.&;
             .# add the outer table as a metatable at runtime
             self meta :M
         } where {,
-            members:members
-            "{[$(membersE)|]}"~:args
+            members  :members
+            membersE :num_members
         }:__new__;
 
         .# string and print overloads
@@ -409,11 +409,11 @@ static point::static_fn {
 
 
 .{ Example:
-    aya> with_ {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P}
+    aya> with {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P}
     opened dummy file 'foo'
     File name is foo
     closed dummy file 'foo'
-    aya> with_ {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P "Some error!".D }
+    aya> with {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P "Some error!".D }
     opened dummy file 'foo'
     File name is foo
     closed dummy file 'foo'
@@ -423,13 +423,18 @@ static point::static_fn {
     just before:
             {::f .Z .close} ~
 .}
-{```({init::block var::sym code::block: try catch close,
+{```(__aya__.with_ ~)}:with;
+
+.# Helper function for `with` keyword which generates wrapper code
+{init::block var::sym code::block: try catch close,
     {init~ var := ; code~}.use[::init ::code ::var] :try ;
     {var.Z .close .D}.use[::var] :catch ;
     {var.Z .close}.use[::var] :close ;
     {try catch .K close~}.use[::try ::catch ::close]
     .setlocals[var]
-})}:with_;
+}__aya__.:with_;
+
+
 
 
 .################
