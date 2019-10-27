@@ -2,6 +2,7 @@ package aya.obj.dict;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
@@ -314,6 +315,8 @@ public class Dict extends Obj {
 
 	@Override
 	public boolean equiv(Obj o) {
+		if (this == o) return true;
+		
 		if (o instanceof Dict) {
 			Dict other = (Dict)o;
 			if (other.size() == this.size()) {
@@ -367,17 +370,52 @@ public class Dict extends Obj {
 	
 	/** Return a string representation of the dict */
 	private String dictRepr() {
-		StringBuilder sb = new StringBuilder("{,\n");
-		for (Long l : _vars.getMap().keySet()) {
-			if (l != META.getID()) {
-				sb.append("  " + _vars.getMap().get(l).repr() + ":" + Variable.decodeLong(l) + ";\n");
+		LinkedList<Dict> visited = new LinkedList<Dict>();
+		return dictRepr(0, visited);
+	}
+	
+	private String dictRepr(int depth, LinkedList<Dict> visited) {
+		final int width = 2;
+		if (visited.contains(this)) {
+			return "{, ...}";
+		} else {
+			visited.add(this);
+			StringBuilder sb = new StringBuilder("{,\n");
+			for (Long l : _vars.getMap().keySet()) {
+				if (l != META.getID()) {
+					sb.append(spaces((depth + 1) * width));
+					sb.append(pairString(depth+1, visited, Variable.decodeLong(l), _vars.getObject(l)));
+					sb.append('\n');
+				}
 			}
+			for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
+				sb.append(spaces((depth + 1) * width));
+				sb.append(pairString(depth+1, visited, e.getKey(), e.getValue()));
+				sb.append('\n');
+			}
+			sb.append(spaces(depth*width)).append("}");
+			return sb.toString();
+
+			
 		}
-		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
-			sb.append("  ").append(e.getValue().repr() + ":\"" + e.getKey() + "\";\n");
+	}
+	
+	private String pairString(int depth, LinkedList<Dict> visited, String key, Obj o) {
+		String object;
+		if (o.isa(DICT)) {
+			object = ((Dict)o).dictRepr(depth, visited);
+		} else {
+	
+			object = o.repr();
 		}
-		sb.append("}");
-		return sb.toString();
+		
+		return object + ":" + key + ";";
+	}
+	
+	private String spaces(int n) {
+		char[] margin_ch = new char[n];
+		for (int i = 0; i < margin_ch.length; i++) margin_ch[i] = ' ';
+		return new String(margin_ch);	
 	}
 
 	
