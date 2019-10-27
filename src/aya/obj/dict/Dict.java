@@ -46,7 +46,13 @@ public class Dict extends Obj {
 	/** Create a new dict given a variable set */
 	public Dict(VariableSet vars) {
 		_vars = vars;
-		_meta = null;
+		// Check if the VariableSet has a __meta__ key
+		Obj maybe_meta = vars.getObject(META);
+		if (maybe_meta != null && maybe_meta.isa(DICT)) {
+			_meta = (Dict)(maybe_meta);
+		} else {
+			_meta = null;
+		}
 		_string_vars = new HashMap<>();
 	}
 	

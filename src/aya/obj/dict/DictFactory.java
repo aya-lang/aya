@@ -22,7 +22,7 @@ public class DictFactory {
 		//Capture all assignments within the scope
 		VariableSet module = new VariableSet(true);
 		
-		//Ass the variable set to the stack
+		//Add the variable set to the stack
 		Aya.getInstance().getVars().add(module);
 		
 		//Run the block
