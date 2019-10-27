@@ -2169,11 +2169,15 @@ class OP_Tilde extends Operation {
 			block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
-			final String varname = CharacterParser.getName(c);
-			if(varname == null) {
-				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
+			if (c >= '0' && c <= '9') {
+				block.add(Num.BYTES[c-'0']);
+			} else {
+				final String varname = CharacterParser.getName(c);
+				if(varname == null) {
+					throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
+				}
+				block.add(new Variable(varname));
 			}
-			block.add(new Variable(varname));
 		} else if (a.isa(LIST)) {
 			List list = (List)a;
 			//Collections.reverse(list);
