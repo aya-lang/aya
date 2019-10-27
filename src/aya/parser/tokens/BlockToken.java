@@ -38,6 +38,16 @@ public class BlockToken extends CollectionToken {
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				return new DictFactory(b);
 			}
+			// Single number in header, create a dict factory with a capture
+			if (header.size() == 1 && header.peek() instanceof NumberToken) {
+				int n = ((Num)header.peek().getAyaObj()).toInt();
+				if (n < 0) {
+					throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
+				}
+				Block b = new Block();
+				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
+				return new DictFactory(b, n);
+			}
 			//Non-empty header, args and local variables
 			else {
 				Block b = new Block();

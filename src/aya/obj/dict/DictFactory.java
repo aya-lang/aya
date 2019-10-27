@@ -1,6 +1,9 @@
 package aya.obj.dict;
 
+import java.util.Queue;
+
 import aya.Aya;
+import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.variable.VariableSet;
 
@@ -11,13 +14,24 @@ import aya.variable.VariableSet;
  */
 public class DictFactory {
 	Block b;
+	private int num_captures;
 	
 	public DictFactory(Block b) {
 		this.b = b;
+		this.num_captures = 0;
+	}
+	
+	public DictFactory(Block b, int num_captures) {
+		this.b = b;
+		this.num_captures = num_captures;
+	}
+	
+	public int numCaptures() {
+		return num_captures;
 	}
 	
 	/** Run the dict, collect variables, return the Dict object */
-	public Dict getDict() {
+	public Dict getDict(Queue<Obj> q) {
 		
 		//Capture all assignments within the scope
 		VariableSet module = new VariableSet(true);
@@ -26,7 +40,13 @@ public class DictFactory {
 		Aya.getInstance().getVars().add(module);
 		
 		//Run the block
-		b.duplicate().eval();
+		Block b2 = b.duplicate();
+		if (q != null) {
+			while (!q.isEmpty()) {
+				b2.push(q.poll());
+			}
+		}
+		b2.eval();
 		
 		//Retrieve the variableSet
 		module = Aya.getInstance().getVars().popGet();
@@ -37,6 +57,11 @@ public class DictFactory {
 	
 	@Override
 	public String toString() {
-		return b.toString();
+		String bstr = b.toString().substring(1);
+		if (num_captures == 0) {
+			return "{," + bstr;
+		} else {
+			return "{" + num_captures + "," + bstr;
+		}
 	}
 }

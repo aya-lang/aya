@@ -3,7 +3,10 @@ package aya.obj.block;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.EmptyStackException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 import aya.Aya;
@@ -194,7 +197,16 @@ public class Block extends Obj {
 			}
 			
 			else if (current instanceof DictFactory) {
-				stack.push(((DictFactory)current).getDict());
+				DictFactory df = (DictFactory)current;
+				Queue<Obj> q = null;
+				int n = df.numCaptures();
+				if (n > 0) {
+					q = new LinkedList<Obj>();
+					for (int i = 0; i < n; i++) {
+						q.add(pop());
+					}
+				}
+				stack.push(df.getDict(q));
 			}
 			
 			//Flag: Special instructions for the interpreter
