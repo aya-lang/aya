@@ -1,50 +1,50 @@
-{::close {,} g MG} {;} .K
+{::close {,} g MG;} {;} .K
 
 {255Q:r 255Q:g 255Q:b}:col;
 {x y, 
-  ::set_stroke {, 1:width } g MG
-  ::set_color {, 0:r:g:b } g MG
-  ::line {, x:xa:xb y:ya:yb } g MG
+  ::set_stroke {, 1:width } g MG;
+  ::set_color {, 0:r:g:b } g MG;
+  ::line {, x:xa:xb y:ya:yb } g MG;
 }:point;
 
-::new {, 300:width 300:height "Test":name 1:autoflush 1:show} 0 MG :g
+::new {, 300:width 300:height "Test":name 1:autoflush 1:show} 0 MG :g;
 200 200 point
-::line {, 0:xa 0:ya 100:xb 200:yb } g MG
-::line {, 150:xa 0:ya 150:xb 300:yb} g MG
-::line {, 150:ya 0:xa 150:yb 300:xb} g MG
-::rect {, 20:x 30:y 10:w 100:h } g MG
-::set_color {, 200:r 0:g 0:b} g MG
-::set_stroke {, 3:width } g MG
-::line {, 40:xa 40:ya 0:xb 50:yb } g MG
-::rect {, 120:x 130:y 10:w 50:h 1:fill } g MG
-::set_color {, 200:r 250:g 0:b} g MG
-::roundrect {, 50:x 50:y 50:w 50:h 30:dh 15:dv 1:fill } g MG
-::roundrect {, 45:x 45:y 60:w 60:h 15:dh 30:dv } g MG
-::set_color {, col } g MG
-::oval {, 200:x 200:y 50:w 50:h 1:fill } g MG
-::oval {, 194:x 194:y 61:w 61:h 0:fill } g MG
-::ellipse {, 150:x 150:y 40:w 60:h 0:fill } g MG
-::arc {, 150:x 150:y 100:w 100:h 0:angle 90:extent} g MG
-::arc {, 150:x 150:y 100:w 100:h 90:angle 90:extent 1:fill} g MG
+::line {, 0:xa 0:ya 100:xb 200:yb } g MG;
+::line {, 150:xa 0:ya 150:xb 300:yb} g MG;
+::line {, 150:ya 0:xa 150:yb 300:xb} g MG;
+::rect {, 20:x 30:y 10:w 100:h } g MG;
+::set_color {, 200:r 0:g 0:b} g MG;
+::set_stroke {, 3:width } g MG;
+::line {, 40:xa 40:ya 0:xb 50:yb } g MG;
+::rect {, 120:x 130:y 10:w 50:h 1:fill } g MG;
+::set_color {, 200:r 250:g 0:b} g MG;
+::roundrect {, 50:x 50:y 50:w 50:h 30:dh 15:dv 1:fill } g MG;
+::roundrect {, 45:x 45:y 60:w 60:h 15:dh 30:dv } g MG;
+::set_color {, col } g MG;
+::oval {, 200:x 200:y 50:w 50:h 1:fill } g MG;
+::oval {, 194:x 194:y 61:w 61:h 0:fill } g MG;
+::ellipse {, 150:x 150:y 40:w 60:h 0:fill } g MG;
+::arc {, 150:x 150:y 100:w 100:h 0:angle 90:extent} g MG;
+::arc {, 150:x 150:y 100:w 100:h 90:angle 90:extent 1:fill} g MG;
 
-::set_color {, 0:r:g:b} g MG
-::set_stroke {, 1:width } g MG
-::line {, 250:xa 0:ya 250:xb 300:yb} g MG
-::set_color {, 100:r:g 0:b} g MG
-::set_stroke {, 5:width } g MG
+::set_color {, 0:r:g:b} g MG;
+::set_stroke {, 1:width } g MG;
+::line {, 250:xa 0:ya 250:xb 300:yb} g MG;
+::set_color {, 100:r:g 0:b} g MG;
+::set_stroke {, 5:width } g MG;
 
 1:idx;
 [::butt ::round ::square] :# {cap,
-  ::set_stroke {, cap:cap } g MG
-  ::line {, idx20*:ya 150:xa idx20*:yb 250:xb} g MG
+  ::set_stroke {, cap:cap } g MG;
+  ::line {, idx20*:ya 150:xa idx20*:yb 250:xb} g MG;
   ::idx B
 };
 
-::set_stroke {, 5:width } g MG
-::set_color {, col } g MG
+::set_stroke {, 5:width } g MG;
+::set_color {, col } g MG;
 [::bevel ::miter ::round] :# {join,
-  ::set_stroke {, join:join } g MG
-  ::rect {, idx30*:y 150:x 100:w 15:h} g MG
+  ::set_stroke {, join:join } g MG;
+  ::rect {, idx30*:y 150:x 100:w 15:h} g MG;
   ::idx B
 };
 
@@ -53,24 +53,24 @@
   0:xa 0:ya 20:xb 20:yb
   {, 255:r 0:g   0:b }:start
   {, 0:r   255:g 0:b }:end
-}  g MG
+}  g MG;
 
-::set_alpha {, 0.4:a } g MG
+::set_alpha {, 0.4:a } g MG;
 ::path {,
   [ 0 75 100 125 200 150 160 100 40 50 0 ]:xs
   [ 85 75 10 75 85 125 190 150 190 125 85 ]:ys
   1:fill
-} g MG
+} g MG;
 
-::set_alpha {, } g MG
-::set_color {, 0:r:g:b } g MG
-::set_stroke {, 2:width } g MG
+::set_alpha {, } g MG;
+::set_color {, 0:r:g:b } g MG;
+::set_stroke {, 2:width } g MG;
 
 ::path {,
   [ 0 75 100 125 200 150 160 100 40 50 0 ]:xs
   [ 85 75 10 75 85 125 190 150 190 125 85 ]:ys
   0:fill
-} g MG
+} g MG;
 
 
 225 225 point
@@ -78,18 +78,18 @@
 
 .# fonts
 
-::set_alpha {,} g MG
-::set_color {, 0:r:g:b } g MG
-::text {, 20:x 20:y "Hello world!":text } g MG
+::set_alpha {,} g MG;
+::set_color {, 0:r:g:b } g MG;
+::text {, 20:x 20:y "Hello world!":text } g MG;
 
-::set_font {, "Times New Roman":name ::bold:style 20:size} g MG
-::text {, 20:x 40:y "Hello world!":text } g MG
+::set_font {, "Times New Roman":name ::bold:style 20:size} g MG;
+::text {, 20:x 40:y "Hello world!":text } g MG;
 
-::set_color {, col } g MG
-::set_font {, "Comic Sans MS":name ::italic:style 15:size } g MG
-::text {, 20:x 60:y "Hello world!":text } g MG
+::set_color {, col } g MG;
+::set_font {, "Comic Sans MS":name ::italic:style 15:size } g MG;
+::text {, 20:x 60:y "Hello world!":text } g MG;
 
-::set_font {, "Courier New":name ::bolditalic:style 24:size } g MG
-::text {, 20:x 80:y "Hello world!":text } g MG
+::set_font {, "Courier New":name ::bolditalic:style 24:size } g MG;
+::text {, 20:x 80:y "Hello world!":text } g MG;
 
 

@@ -47,18 +47,18 @@ w2/ 150 100 c.fillcircle
 .# Small distant buildings
 { 
     darkblue .Q5/1.5+ * c.set_color
-    20Q5+ 50Q120+ 500Q c building
+    20Q5+ 50Q120+ wQ c building
 } 20 %
 
 .# Tall buildings
 darkblue c.set_color
-{ 45Q15+ 100Q120+ 500Q c building} 5 %
+{ 45Q15+ 100Q120+ wQ c building} 5 %
 
 .# Nearby buildings (multiple layers)
 {
     {
         darkblue .Q5/0.7+ * c.set_color
-        100Q15+ 100Q10+ 530Q30- c building
+        100Q15+ 100Q10+ w30+Q30- c building
     } 40 %
 
     .# Transparent gradient to provide depth
@@ -68,7 +68,7 @@ darkblue c.set_color
 
 {
     darkblue .Q5/0.5+ * c.set_color
-    60Q40+ 100Q10+ 500Q c building
+    60Q40+ 100Q10+ wQ c building
 } 10 %
 
 

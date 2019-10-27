@@ -1,6 +1,10 @@
 import ::canvas
+
+.# Close the open canvas if there is one
 {c.close} {;} .K
 
+
+.# Vector used for physics calculations
 struct ::vector [
     ::x
     ::y
@@ -12,30 +16,39 @@ impl vector::__add__{other self,
     self.M!
 }
 
+
 struct ::particle [
-    ::pos
-    ::vel
-    ::acc
-    ::life
+    ::pos   .# vector
+    ::vel   .# vector
+    ::acc   .# vector
+    ::life  .# num (0-255)
 ]
 
+
+.# Create a particle from a vector
+.# Use the input vector as the position
 impl_static particle::from_vec {pos meta : p,
     0 0 vector! $ $ 255 particle! :p;
     pos p.reset
     p
 }
 
+.# Apply physics simulation to the particle
 impl particle::update {self,
     self.vel self.acc + self.:vel;
     self.pos self.vel + self.:pos;
     self.life 2 - self.:life;
 }
 
+
+.# Draw the particle on the canvas
 impl particle::draw {self,
     self.life 255/ c.set_alpha
     self.pos.x self.pos.y 4 c.fillcircle
 }
 
+.# Set the particle to the given location and
+.# randomize the velocity
 impl particle::reset {pos self,
     pos self.:pos;
     .Q2*1- .Q2*2- vector! self.:vel;
@@ -43,25 +56,33 @@ impl particle::reset {pos self,
     255 self.:life;
 }
 
+.# Return true if the particle is dead
 impl particle::dead {self,
     self.life 0 :<
 }
 
-{, "Particles":name } canvas! :c;
-200 100 vector! :origin;
 
-[100,; origin particle.from_vec]:particles;
+.# Create a new canvas
+{, "Particles":name } canvas! :c;
+.# The spawn location of the particles
+200 100 vector! :origin;
+.# Array of particles
+[400,; origin particle.from_vec]:particles;
+.# Initialize all lifetimes
 particles :# {255Q \.:life};
 
+.# Simulation loop
 {
     c.clear
+
+    .# Update particles
     particles :# {p,
         p.update
         p.dead {origin p.reset} ?
         p.draw
     } ;
-    
+
     c.show
-    12:Z
+    5:Z
     c.isopen
 } W

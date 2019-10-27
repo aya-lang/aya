@@ -2,6 +2,7 @@ import ::canvas
 
 {c.close} {;} .K
 
+.# Initialize the canvas
 400:w;
 300:h;
 {, w:width h:height "Bouncing":name } canvas! :c;
@@ -20,16 +21,22 @@ colors.white 0.5* c.set_color
 
 {
     c.clear
-  
+
+    .# Update position
     x xspeed xdir * +:x;
     y yspeed ydir * +:y;
 
+    .# Check bounds
     x w rad - > x rad < | { xdir :1 * :xdir;} ?
     y h rad - > y rad < | { ydir :1 * :ydir;} ?
 
+    .# Draw the circle
     x y rad c.fillcircle
 
+    .# Update the canvas
     c.show
     33:Z
+
+    .# Check if the window is open
     c.isopen
 } W
