@@ -436,24 +436,55 @@ class OP_Dot_Plus extends Operation {
 		OpDoc doc = new OpDoc('.', ".+");
 		doc.desc("NN", "gdc");
 		doc.desc("BD", "swap vars in a copy of B for values defined in D");
+		doc.desc("BJ", "constant capture variable from outer scope");
+		doc.desc("BL<J>", "constant capture variables from outer scope");
 		OperationDocs.add(doc);
 	}
 
 	public OP_Dot_Plus() {
 		this.name = ".+";
 	}
+	private void capture(Block b, Symbol s) {
+		Obj o = Aya.getInstance().getVars().getVar(s.id());
+		b.getInstructions().assignVarValue(s.id(), o);
+	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
 		Obj b = block.pop();
 
+		// GCD
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.gcd((Number)a, (Number)b));
-		} else if (a.isa(DICT) && b.isa(BLOCK)) {
-			Block blk = (Block)b.deepcopy();
-			Dict.assignVarValues((Dict)a, blk);
+		}
+		else if (b.isa(BLOCK)) {
+			Block blk = (Block)(b.deepcopy());
+			// Constant capture from dict
+			if (a.isa(DICT)) {
+				Dict.assignVarValues((Dict)a, blk);
+			}
+			// Constant capture from scope
+			else if (a.isa(SYMBOL)) {
+				capture(blk, (Symbol)a);
+			}
+			// Constant capture from scope (list)
+			else if (a.isa(LIST)) {
+				List l = (List)a;
+				for (int i = 0; i < l.length(); i++) {
+					final Obj s = l.get(i);
+					if (s.isa(SYMBOL)) {
+						capture(blk, (Symbol)s);
+					} else {
+						throw new AyaRuntimeException(".+ Expected list of symbols. Got:\n" + a.repr());
+					}
+				}
+			}
+			
 			block.push(blk);
-		} else {
+		}
+		
+		
+		else {
 			throw new TypeError(this, a, b);
 		}
 	}
