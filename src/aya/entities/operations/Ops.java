@@ -32,7 +32,6 @@ import aya.OperationDocs;
 import aya.StreamMgr;
 import aya.entities.ListBuilder;
 import aya.entities.Operation;
-import aya.exceptions.AyaException;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;

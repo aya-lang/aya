@@ -25,7 +25,6 @@ import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
-import aya.variable.VariableData;
 import aya.variable.VariableSet;
 
 /** 

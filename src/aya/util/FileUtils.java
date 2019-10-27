@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import aya.AyaPrefs;
-import aya.obj.Obj;
 
 public class FileUtils {
 	

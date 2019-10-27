@@ -37,7 +37,6 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -842,6 +841,7 @@ class OP_Dot_SortUsing extends Operation {
 		this.name = ".C";
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override public void execute(Block block) {
 		Obj a = block.pop();
 		Obj b = block.pop();
@@ -882,6 +882,7 @@ class OP_Dot_SortUsing extends Operation {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	class SUItem<T extends Comparable> implements Comparable<SUItem<T>>{
 		public Obj o;
 		public T d;
@@ -889,6 +890,7 @@ class OP_Dot_SortUsing extends Operation {
 			this.o = o;
 			this.d = d;
 		}
+		@SuppressWarnings("unchecked")
 		public int compareTo(SUItem<T> i) {
 			return d.compareTo(i.d);
 		}

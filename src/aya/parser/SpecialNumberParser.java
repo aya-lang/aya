@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import org.apfloat.Apfloat;
 
-import aya.Aya;
 import aya.AyaPrefs;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;

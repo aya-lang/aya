@@ -13,6 +13,7 @@ public class Variable {
 	private static final char UNDERSCORE  = 'z' + 1; 
 	private static final char TERMINATION = 'z' + 2;
 	
+	@SuppressWarnings("unused")
 	private static final char ENCODED_UNDERSCORE  = UNDERSCORE - 'a';
 	private static final char ENCODED_TERMINATION = TERMINATION - 'a';
 

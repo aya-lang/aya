@@ -17,7 +17,6 @@ import aya.Aya;
 import aya.OperationDocs;
 import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;

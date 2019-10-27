@@ -12,8 +12,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;

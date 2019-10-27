@@ -3,7 +3,6 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.entities.Flag;
-import aya.entities.Lambda;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.block.Block;

@@ -1,6 +1,5 @@
 package aya.obj.dict;
 
-import aya.obj.symbol.Symbol;
 import aya.util.LRUCache;
 import aya.variable.Variable;
 

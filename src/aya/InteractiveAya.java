@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import aya.obj.list.List;
 import aya.util.FileUtils;
 import aya.variable.Variable;
 
