@@ -139,5 +139,13 @@ public class Variable {
 			return ":" + name;
 		}
 	}
+
+	public static Long encodeOrNull(String s) {
+		if (isValidStr(s)) {
+			return encodeString(s);
+		} else {
+			return null;
+		}
+	}
 	
 }

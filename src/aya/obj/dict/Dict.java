@@ -75,11 +75,16 @@ public class Dict extends Obj {
 	// STRING TABLE //
 	//////////////////
 	
-	public Obj strGet(String s) {
-		return _string_vars.get(s);
+	private Obj strGet(String s) {
+		final Obj o = _string_vars.get(s);
+		if (o == null) {
+			throw new UndefVarException("Dict does not contain string key \"" + s + "\"");
+		} else {
+			return o;
+		}
 	}
 	
-	public void strSet(String s, Obj o) {
+	private void strSet(String s, Obj o) {
 		_string_vars.put(s, o);
 	}
 	
@@ -95,10 +100,16 @@ public class Dict extends Obj {
 	}
 	
 	/** Get the object assigned to key whos name is {@code s} 
+	 * If the string is not a valid symbol, look it up in the string dict
 	 * If this key is unassigned, throw an error
 	 */
 	public Obj get(String s) {
-		return get(Symbol.convToSymbol(s).id());
+		Long id = Variable.encodeOrNull(s);
+		if (id == null) {
+			return strGet(s);
+		} else {
+			return get(id);
+		}
 	}
 	
 	/** throws exception if key not found */
@@ -246,7 +257,12 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(String s, Obj o) {
-		set(Variable.encodeString(s), o);
+		Long id = Variable.encodeOrNull(s);
+		if (id == null) {
+			_string_vars.put(s, o);
+		} else {
+			set(id, o);
+		}
 	}
 	
 	/** Update values in this dict to the values from the input dict */
@@ -385,7 +401,7 @@ public class Dict extends Obj {
 	
 	private String dictRepr(int depth, LinkedList<Dict> visited) {
 		final int width = 2;
-		if (_vars.size() == 0) {
+		if (_vars.size() == 0 && _string_vars.size() == 0) {
 			return "{,}";
 		}
 		else if (visited.contains(this)) {
@@ -402,7 +418,7 @@ public class Dict extends Obj {
 			}
 			for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
 				sb.append(spaces((depth + 1) * width));
-				sb.append(pairString(depth+1, visited, e.getKey(), e.getValue()));
+				sb.append(pairString(depth+1, visited, "\"" + e.getKey() + "\"", e.getValue()));
 				sb.append('\n');
 			}
 			sb.append(spaces(depth*width)).append("}");

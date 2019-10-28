@@ -587,7 +587,7 @@ class OP_Colon_D extends Operation {
 			((Dict)dict).set(((Symbol)index).id(), item);
 			block.push(dict);
 		} else if (dict.isa(DICT) && index.isa(STR)) {
-			((Dict)dict).set(Symbol.convToSymbol(index.str()).id(), item);
+			((Dict)dict).set(index.str(), item);
 			block.push(dict);
 		} else {
 			throw new TypeError(this, item, index, dict);
