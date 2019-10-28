@@ -69,6 +69,7 @@ public class Dict extends Obj {
 		_vars.setVar(META, d);
 		_meta = d;
 	}
+	
 
 	//////////////////
 	// STRING TABLE //
@@ -194,6 +195,21 @@ public class Dict extends Obj {
 	public VariableSet getVarSet() {
 		return _vars;
 	}
+
+	/** The number of items in this dict */
+	public int size() {
+		return _vars.getMap().size();
+	}
+	
+	/** A list of keys */
+	public ArrayList<Long> keys() {
+		return _vars.keys();
+	}
+	
+	/** A list of values */
+	public ArrayList<Obj> values() {
+		return _vars.values();
+	}
 	
 	/////////////
 	// SETTERS //
@@ -233,20 +249,13 @@ public class Dict extends Obj {
 		set(Variable.encodeString(s), o);
 	}
 	
-	/** The number of items in this dict */
-	public int size() {
-		return _vars.getMap().size();
+	/** Update values in this dict to the values from the input dict */
+	public void update(Dict other) {
+		_vars.update(other._vars);
+		_string_vars.putAll(other._string_vars);
 	}
 	
-	/** A list of keys */
-	public ArrayList<Long> keys() {
-		return _vars.keys();
-	}
 	
-	/** A list of values */
-	public ArrayList<Obj> values() {
-		return _vars.values();
-	}
 	
 	///////////////////
 	// OBJ OVERRIDES //

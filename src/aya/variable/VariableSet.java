@@ -273,8 +273,14 @@ public class VariableSet {
 		}
 	}
 
+	/** Remove the mapping defined by the given id */
 	public void remove(long id) {
 		vars.remove(id);
+	}
+
+	/** Copy variable mappings from the input set to this one. Does not copy additional metadata such as args */
+	public void update(VariableSet other) {
+		vars.putAll(other.vars);
 	}
 	
 	

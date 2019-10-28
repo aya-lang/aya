@@ -438,6 +438,7 @@ class OP_Dot_Plus extends Operation {
 		doc.desc("BD", "swap vars in a copy of B for values defined in D");
 		doc.desc("BJ", "constant capture variable from outer scope");
 		doc.desc("BL<J>", "constant capture variables from outer scope");
+		doc.desc("DD", "update D1 with the values from D2 (modify D1)");
 		OperationDocs.add(doc);
 	}
 
@@ -481,6 +482,10 @@ class OP_Dot_Plus extends Operation {
 			}
 			
 			block.push(blk);
+		}
+		else if (a.isa(DICT) && b.isa(DICT)) {
+			((Dict)b).update((Dict)a);
+			block.push(b);
 		}
 		
 		
