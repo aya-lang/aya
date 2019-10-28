@@ -6,14 +6,16 @@ import aya.obj.list.Str;
 import aya.variable.Variable;
 
 public class InterpolateString  {
+	String orig; // For printing
 	InstructionStack instructions;
 	
-	public InterpolateString(InstructionStack is) {
+	public InterpolateString(String orig, InstructionStack is) {
+		this.orig = orig;
 		instructions = is;
 	}
 	
 	public InterpolateString duplicate() {
-		InterpolateString is = new InterpolateString(this.instructions);
+		InterpolateString is = new InterpolateString(this.orig, this.instructions);
 		return is;
 	}
 	
@@ -45,18 +47,6 @@ public class InterpolateString  {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for(Object o : instructions.instructions) {
-			if (o instanceof Str) {
-				sb.append(((Str)o).str());
-			} else if (o instanceof Variable) {
-				sb.append("$").append(Variable.decodeLong(((Variable)o).getID()));
-			} else if (o instanceof Block) {
-				sb.append("$(").append(((Block)o).str()).append(")"); 
-			} else {
-				throw new RuntimeException("Invalid object in string: " + o.toString());
-			}
-		}
-		return "\""+sb.toString()+"\"";
+		return "\"" + orig + "\"";
 	}
 }

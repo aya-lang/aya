@@ -126,7 +126,7 @@ public class StringToken extends StdToken {
 		}
 		
 		instrs.insert(0, new Str(sb.toString()));
-		return new InterpolateString(instrs);
+		return new InterpolateString(data, instrs);
 	}
 
 	@Override
