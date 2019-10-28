@@ -3,7 +3,6 @@ package aya.obj.block;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -144,6 +143,7 @@ public class Block extends Obj {
 			else if (current instanceof VariableSet) {
 				VariableSet vars = ((VariableSet)current).clone();
 				vars.setArgs(this);
+				vars.copyExplicitLocals();
 				Aya.getInstance().getVars().add(vars);
 			}
 			

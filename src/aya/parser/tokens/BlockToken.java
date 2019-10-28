@@ -6,6 +6,7 @@ import aya.entities.Flag;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
@@ -36,17 +37,25 @@ public class BlockToken extends CollectionToken {
 			if (!header.hasNext()) {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				return new DictFactory(b);
+				if (b.isEmpty()) {
+					return new Dict();
+				} else {
+					return new DictFactory(b);
+				}
 			}
 			// Single number in header, create a dict factory with a capture
-			if (header.size() == 1 && header.peek() instanceof NumberToken) {
+			else if (header.size() == 1 && header.peek() instanceof NumberToken) {
 				int n = ((Num)header.peek().getAyaObj()).toInt();
 				if (n < 0) {
 					throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
 				}
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				return new DictFactory(b, n);
+				if (n == 0 && b.isEmpty()) {
+					return new Dict();
+				} else {
+					return new DictFactory(b, n);
+				}
 			}
 			//Non-empty header, args and local variables
 			else {
@@ -75,7 +84,7 @@ public class BlockToken extends CollectionToken {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = (Variable) tokens.get(i).getAyaObj();
 			}
-			return new VariableSet(args,  null);
+			return new VariableSet(args,  null, null);
 		} 
 		
 		//Contains Local Variables
@@ -99,13 +108,13 @@ public class BlockToken extends CollectionToken {
 			if (before_colon.size() != 0) {
 				args = parseVariableSet(before_colon);
 			} else {
-				args = new VariableSet(null, null);
+				args = new VariableSet(null, null, null);
 			}
 			
 			//Initialize local variables in the set
 			Variable last = null;
 			for (Token t : tokens) {
-				
+
 				if (t.isa(Token.LAMBDA) && last != null) {
 					LambdaToken lt = (LambdaToken)t;
 					if (!lt.containsConst()) {
@@ -113,6 +122,7 @@ public class BlockToken extends CollectionToken {
 					}
 					Obj item = lt.getConstObj();
 					args.setVar(last, item);
+					args.copyOnInit(last);
 					last = null;
 				} else if(!t.isa(VAR)) {
 					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
@@ -120,6 +130,7 @@ public class BlockToken extends CollectionToken {
 				} else {
 					last = new Variable(t.getData());
 					args.setVar(last, DEFAULT_LOCAL_VAR);
+					// Note: Variables without an explicit item will not be added to the copyOnInit list
 				}
 			}
 			return args;
@@ -167,7 +178,7 @@ public class BlockToken extends CollectionToken {
 				types = null;
 			}
 			
-			return new VariableSet(argNames.toArray(new Variable[argNames.size()]), types);
+			return new VariableSet(argNames.toArray(new Variable[argNames.size()]), types, null);
 		}
 	}
 	

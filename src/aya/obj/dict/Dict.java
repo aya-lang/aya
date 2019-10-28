@@ -376,7 +376,10 @@ public class Dict extends Obj {
 	
 	private String dictRepr(int depth, LinkedList<Dict> visited) {
 		final int width = 2;
-		if (visited.contains(this)) {
+		if (_vars.size() == 0) {
+			return "{,}";
+		}
+		else if (visited.contains(this)) {
 			return "{, ...}";
 		} else {
 			visited.add(this);

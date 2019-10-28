@@ -3,6 +3,7 @@ package aya.variable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,16 +18,20 @@ public class VariableSet {
 	private Variable[] argNames;
 	private long[] argTypes;
 	private HashMap<Long, Obj> vars;
+	// These are the names of the variables explicitly set in the header of the block
+	// Any variable in this list will be copied (re-initialized) when the block is called
+	private LinkedList<Long> _copyOnInit;
 	// Setting this to true will tell VariableData to assign new variables here
 	// It emulates every variable being declared local
 	private boolean captureAllAssignments;
 
 	
-	public VariableSet(Variable[] argNames, long[] argTypes) {
+	public VariableSet(Variable[] argNames, long[] argTypes, LinkedList<Long> copyOnInit) {
 		this.argTypes = argTypes;
 		this.argNames = argNames;
 		this.vars = new HashMap<Long, Obj>();
 		this.captureAllAssignments = false;
+		this._copyOnInit = copyOnInit;
 	}
 	
 	public VariableSet(boolean is_module) {
@@ -38,6 +43,10 @@ public class VariableSet {
 	
 	public boolean isModule() {
 		return captureAllAssignments;
+	}
+	
+	public int size() {
+		return vars.size();
 	}
 	
 	public void setArgs(Block b) {
@@ -169,14 +178,14 @@ public class VariableSet {
 	
 	@SuppressWarnings("unchecked")
 	@Override public VariableSet clone() {
-		VariableSet out = new VariableSet(argNames, argTypes);
+		VariableSet out = new VariableSet(argNames, argTypes, _copyOnInit);
 		out.setAllVars((HashMap<Long, Obj>)vars.clone());
 		return out;
 	}
 	
 	/** Create a deep copy of the variable set */
 	public VariableSet deepcopy() {
-		VariableSet out = new VariableSet(argNames, argTypes);
+		VariableSet out = new VariableSet(argNames, argTypes, _copyOnInit);
 		for (Long l : vars.keySet()) {
 			out.setVar(l, vars.get(l).deepcopy());
 		}
@@ -247,6 +256,21 @@ public class VariableSet {
 	/** Return a list of arg types */
 	public long[] getArgTypes() {
 		return argTypes; 
+	}
+
+	public void copyOnInit(Variable last) {
+		if (_copyOnInit == null) {
+			_copyOnInit = new LinkedList<Long>();
+		}
+		_copyOnInit.add(last.id);
+	}
+
+	public void copyExplicitLocals() {
+		if (_copyOnInit != null) {
+			for (Long l : _copyOnInit) {
+				setVar(l, getObject(l).deepcopy());
+			}
+		}
 	}
 	
 	

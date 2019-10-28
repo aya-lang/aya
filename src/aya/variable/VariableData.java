@@ -39,7 +39,7 @@ public class VariableData {
 	}
 	
 	public void initGlobals(Aya aya) {
-		VariableSet globals = new VariableSet(null, null);
+		VariableSet globals = new VariableSet(null, null, null);
 		
 		globals.setVar(new Variable("import"), Parser.compile("`(\".aya\"+G~)", aya));
 		globals.setVar(new Variable("version"), new Str(Aya.VERSION_NAME));
