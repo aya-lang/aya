@@ -474,6 +474,18 @@ public class Dict extends Obj {
 		}
 	}
 
+	public void remove(long id) {
+		_vars.remove(id);
+	}
+	
+	public void remove(String s) {
+		if (Variable.isValidStr(s)) {
+			remove(Variable.encodeString(s));
+		} else {
+			_string_vars.remove(s);
+		}
+	}
+
 	
 
 

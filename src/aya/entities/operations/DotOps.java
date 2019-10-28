@@ -498,12 +498,32 @@ class OP_Dot_Minus extends Operation {
 		doc.desc("NN", "lcm");
 		doc.desc("LN", "remove item at index N from L");
 		doc.desc("LL", "remove items at indices L1 from L2");
+		doc.desc("DJ", "remove key from dict");
+		doc.desc("DS", "remove key from dict");
 		OperationDocs.add(doc);
 	}
 
 	public OP_Dot_Minus() {
 		this.name = ".-";
 	}
+
+	public boolean rmFromDict(Dict d, Obj idx) {
+		if (idx.isa(SYMBOL)) {
+			d.remove(((Symbol)idx).id());
+		} else if (idx.isa(STR)) {
+			d.remove(idx.str());
+		} else if (idx.isa(LIST)) {
+			List l = (List)idx;
+			for (int i = 0; i < l.length(); i++) {
+				if (!rmFromDict(d, l.get(i))) return false;
+			}
+		} else {
+			return false;
+		}
+		
+		return true;
+	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -519,6 +539,12 @@ class OP_Dot_Minus extends Operation {
 			NumberList ns = l.toNumberList();
 			((List)b).removeAll(ns.toIntegerArray());
 			block.push(b);
+		} else if (b.isa(DICT)) {
+			Dict d = (Dict)b;
+			if (!rmFromDict(d, a)) {
+				throw new TypeError(this, a, b);
+			}
+			block.push(d);
 		} else {
 			throw new TypeError(this, a, b);
 		}

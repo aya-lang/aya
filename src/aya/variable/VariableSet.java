@@ -272,6 +272,10 @@ public class VariableSet {
 			}
 		}
 	}
+
+	public void remove(long id) {
+		vars.remove(id);
+	}
 	
 	
 }
