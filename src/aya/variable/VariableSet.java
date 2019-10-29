@@ -153,8 +153,19 @@ public class VariableSet {
 	public String show() {
 		StringBuilder sb = new StringBuilder("");
 		if(argNames != null) {
-			for(Variable v : argNames) {
-				sb.append(v.toString() + " ");
+			if (argTypes != null && argTypes.length == argNames.length) {
+				for (int i = 0; i < argNames.length; i++) {
+					sb.append(argNames[i].toString());
+					if (argTypes[i] != Obj.SYM_ANY.id()) {
+						sb.append("::");
+						sb.append(Variable.decodeLong(argTypes[i]));
+					}
+					sb.append(" ");
+				}
+			} else {
+				for(Variable v : argNames) {
+					sb.append(v.toString() + " ");
+				}
 			}
 		}
 		
@@ -163,7 +174,21 @@ public class VariableSet {
 			Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
-				sb.append(Variable.decodeLong(pair.getKey()) + " ");
+				sb.append(Variable.decodeLong(pair.getKey()));
+
+				boolean print = true;
+				if (pair.getValue().isa(Obj.NUM)) {
+					aya.obj.number.Number n = (aya.obj.number.Number)pair.getValue();
+					if (n.toInt() == 0) {
+						print = false;
+					}
+				}
+				
+				if (print) {
+					sb.append("(" + pair.getValue().str() + ") ");
+				} else {
+					sb.append(" ");
+				}
 			}
 		}
 		

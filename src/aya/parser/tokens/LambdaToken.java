@@ -2,15 +2,20 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
+import aya.Aya;
+import aya.entities.EmptyListLiteral;
 import aya.entities.InstructionStack;
 import aya.entities.Lambda;
 import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.dict.EmptyDictFactory;
 import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
+import aya.util.Pair;
+import aya.variable.Variable;
 
 public class LambdaToken extends CollectionToken {
 	
@@ -77,32 +82,27 @@ public class LambdaToken extends CollectionToken {
 		return "block";
 	}
 
-
-	public boolean containsConst() {
-		ArrayList<TokenQueue> lambdaData = getLambdaData();
-		if (lambdaData.size() == 1) {
-			InstructionStack is = Parser.generate(lambdaData.get(0));
-			if (is.size() == 1 && is.peek(0) instanceof Obj) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
-	
-	/** Use containsConst() first */
-	public Obj getConstObj() {
+	/**
+	 * Should copy in init will only be false if the value is a variable reference
+	 * @return Should copy on init, Aya object
+	 */
+	public Pair<Boolean, Obj> getInnerConstObj() {
 		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		InstructionStack is = Parser.generate(lambdaData.get(0));
-		Obj o = (Obj)is.pop();
+		if (is.size() != 1) return null;
+
+		final Object o = is.pop();
 		
-		// If list literal, wrap it in a block so that it will be evaluated at run time 
-		if (o instanceof ListLiteral) {
-			Block b = new Block();
-			b.add(o);
-			return b;
+		if (o instanceof EmptyListLiteral) {
+			return new Pair<Boolean, Obj>(true, EmptyListLiteral.INSTANCE.getListCopy());
+		} else if (o instanceof EmptyDictFactory) {
+			return new Pair<Boolean, Obj>(true, EmptyDictFactory.INSTANCE.getDict());
+		} else if (o instanceof Variable) {
+			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar((Variable)o));
+		} else if (o instanceof Obj) {
+			return new Pair<Boolean, Obj>(true, (Obj)o);
 		} else {
-			return o;
+			return new Pair<Boolean, Obj>(false, null);
 		}
 	}
 }

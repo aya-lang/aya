@@ -6,12 +6,13 @@ import aya.entities.Flag;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
+import aya.obj.dict.EmptyDictFactory;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
+import aya.util.Pair;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -38,7 +39,7 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				if (b.isEmpty()) {
-					return new Dict();
+					return EmptyDictFactory.INSTANCE;
 				} else {
 					return new DictFactory(b);
 				}
@@ -52,7 +53,7 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				if (n == 0 && b.isEmpty()) {
-					return new Dict();
+					return EmptyDictFactory.INSTANCE;
 				} else {
 					return new DictFactory(b, n);
 				}
@@ -117,12 +118,13 @@ public class BlockToken extends CollectionToken {
 
 				if (t.isa(Token.LAMBDA) && last != null) {
 					LambdaToken lt = (LambdaToken)t;
-					if (!lt.containsConst()) {
+					Pair<Boolean, Obj> inner_obj = lt.getInnerConstObj();
+					Obj obj = inner_obj.second();
+					if (obj == null) {
 						throw new SyntaxError("Block header: Local Variables Initializer: Must contain only const values");
 					}
-					Obj item = lt.getConstObj();
-					args.setVar(last, item);
-					args.copyOnInit(last);
+					args.setVar(last, obj);
+					if (inner_obj.first()) args.copyOnInit(last);
 					last = null;
 				} else if(!t.isa(VAR)) {
 					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
