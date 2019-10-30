@@ -42,8 +42,11 @@ import ::list
     .#? S.isnum\n  returns true if the string is a valid number
     {.! :T ::num =}:isnum;
 
-    .# S.lines\n  split a string into lines. ignore traling newlines
+    .#? S.lines\n  split a string into lines. ignore traling newlines
     {"\n"|}:lines;
+
+    .#? ::str ::str.endswith\n  test if a string 2 ends with string 1
+    {\:&E@\.>=}:endswith;
 
     .#? S.titlecase\n  convert a string to titlecase
     {s,
@@ -74,6 +77,29 @@ import ::list
         }
         makesquare
     }:readdlm;
+
+    {n s,
+        s.lines :#{" "nLS\+"\n"}S
+    }:padlines;
+
+    {s__:orig__,
+        .# Make a copy of the original for error message
+        s__ $ :orig__;;
+
+        .# Find all variable names to replace
+        s__  "\\{[a-z]+\}" &
+        .# Remove braces from names
+        :#{"{}":|}
+        .# Remove duplicates
+        :~
+        .# For each variable, replace with value
+        :# {n__,
+            "\\{$n__}"
+            {n__:S~P} {err, "Error in fmt string:\n\"$orig__\"\n$err" .D} .K
+            s__ .& :s__
+        };
+        s__
+    }:fmt;
 
 }:str;
 

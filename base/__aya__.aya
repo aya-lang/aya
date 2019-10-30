@@ -175,6 +175,8 @@
 
     .# Metatable
     {,
+        name:__type__;
+
         .# Constructor
         {meta : self,
             .# This object
@@ -183,10 +185,10 @@
             num_members :A members {self :D}.&;
             .# add the outer table as a metatable at runtime
             self meta :M
-        } where {,
+        } {,
             members  :members
             membersE :num_members
-        }:__new__;
+        } .+ :__new__;
 
         .# string and print overloads
         .# default string:
@@ -201,6 +203,7 @@
             ::name
             ::members
         ]:__str__:__repr__;
+
 
     } name {,}:DW
 })}:struct;
@@ -374,39 +377,6 @@ static point::static_fn {
 .#? BS assert\n throw error if bool is false
 {\! {.D} {;} .?}:assert;
 
-.#? B where D\n  use variables defined in D in B
-.{ Example
-    aya> {a, a b *} where {, 2:b } :double
-    {a , a 2 * }
-    aya> 3 double
-    6
-
-   Set constant values in loops.
-   Before
-    aya> 3R :# {{a, a b *} where {, 10:b "evaluating..":P} ~}
-    evaluating..
-    evaluating..
-    evaluating..
-    [ 10 20 30 ]
-   After: (note the parenthesis)
-    aya> 3R :# ({a, a b *} where {, 10:b "evaluating..":P})
-    evaluating..
-    [ 10 20 30 ]
-
-   Escape functions with .` and ~ :
-    aya> {a, a fn~} where {, double.` :fn} :apply_double
-    {a , a {x , x 2 * } ~ }
-    aya> 2 apply_double
-    4
-
-   Nesting!
-    aya> {a, a fn~} where {, {a, a b *} where {, 2:b} :fn} :apply_double
-    {a , a {a , a 2 * } ~ }
-    aya> 2 apply_double
-    4
-.}
-{`.+}:where;
-
 
 .{ Example:
     aya> with {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P}
@@ -425,6 +395,7 @@ static point::static_fn {
 .}
 {```(__aya__.with_ ~)}:with;
 
+
 .# Helper function for `with` keyword which generates wrapper code
 {init::block var::sym code::block: try catch close,
     {init~ var := ; code~}.use[::init ::code ::var] :try ;
@@ -433,9 +404,6 @@ static point::static_fn {
     {try catch .K close~}.use[::try ::catch ::close]
     .setlocals[var]
 }__aya__.:with_;
-
-
-
 
 .################
 .# import types #

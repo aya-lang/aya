@@ -72,7 +72,7 @@
         u1I:conv;
         {,
             {n::num meta, {,n:n} meta :M}:__new__;
-            {.n x +} where {, " dates.$name":x} :__repr__;
+            {.n x +} {, " dates.$name":x} .+ :__repr__;
             {.n conv*}.use[::conv]:ms;
             {date.__radd__}:__add__;
             {date.__rsub__}:__sub__;

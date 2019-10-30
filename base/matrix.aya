@@ -45,6 +45,18 @@ import ::math
     .#? ::matrix matrix.t\n  transpose a matrix
     {m, m.rows .T matrix!}:t;
 
+    .#? ::matrix.max\n  the max value of a matrix
+    {.rows#.max.max}:max;
+
+    .#? ::matrix.min\n  the min value of a matrix
+    {.rows#.min.min}:min;
+
+    .#? ::matrix.norm\n  normalize the matrix
+    {:& .vsq .sum Mq /}:norm;
+
+    .#? ::matrix.sum\n  the sum of all values in the matrix
+    {.rows #SS}:sum;
+
     .#? ::matrix U\n  reverse the rows of a matrix
     {.rows U matrix!}:__reverse__;
 
@@ -237,6 +249,16 @@ import ::math
         self.rows # {o*} matrix!
     }:__rmul__;
 
+    .#? ::matrix ::matrix.vmul\n value multiply: multiply adjacent values in each matrix
+    {other self,
+        other.rows self.rows {*} .& self.M!
+    }:vmul;
+
+    .#? ::matrix ::matrix.vsq\n value square: multiply adjacent values in each matrix
+    {self,
+        self :&.vmul
+    }:vsq;
+
 
 
     .#? ::matrix N matrix.rpow\n  raise matrix to the Nth power
@@ -309,7 +331,7 @@ import ::math
         .# swap args if b is not a matrix
         b :T ::matrix =! {\} ?
         __fn 3.$ :T I ~
-    } where {,
+    }.where_const {,
         {,
             _eq_list .` :list;
             _eq_num  .` :num;
@@ -327,6 +349,8 @@ import ::math
         " |"K'|\K            .# Outside bars
         "\n"+ "\n"\+
     }:__repr__;
+
+    {.rows #.\}:__floor__;
 
     .#######################
     .# GENERATOR FUNCTIONS #

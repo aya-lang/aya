@@ -75,6 +75,37 @@
     .#? <L> shuffle\n  shuffle a list
     {{;.Q}.C}:shuffle;
 
+
+    .#? ::list.allsame\n  return true if all items in the list are the same
+    {:~E1:<}:allsame;
+
+    .# Always return a list
+    {.ER*{0=!}I1#- .E0={;;[]} {.E@@I\ 1={A}?} .?}:i;
+
+
+    .#? ::list.capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
+    .{ Example:
+        aya> {1 +}:a 2:b
+        {1 +} 2
+        aya> [::a ::b].capture_vars
+        {,
+          {1 +}:a;
+          2:b;
+        }
+        aya> [::a ::b ::c].capture_vars
+        ERROR: Variable c not found
+        stack:
+                [ ::a ::b ::c ]
+        just before:
+                \ {J} .& :l__ ; {l__ {~ :=} :#}
+    .}
+    {:l__,
+        .# Create a list of key value pairs
+        :&#~\{J}.&:l__;
+        .# Map assignment to each of the pairs inside a dict
+        {, l__:#{~:=}}
+    }:capture_vars;
+
 }:list;
 
 

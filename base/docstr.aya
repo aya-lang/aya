@@ -1,0 +1,97 @@
+class ::docstr
+
+.# Note, docstr needs to save sc[
+
+impl docstr::__init__ {name desc self,
+    name self.:name;
+    desc self.:desc;
+}
+
+impl docstr::__str__ {self,
+    self.desc
+}
+
+(docstr.__str__.`,0); docstr.:__repr__;
+
+impl docstr::new_in_scope {self,
+    self self.name self.M.get_doc :D
+}
+
+static docstr::get_doc {
+    {__doc__} {;{,}:__doc__} .K
+}
+
+{``( docstr! .new_in_scope )}:doc;
+
+
+.{
+
+doc [docstr::get_doc] """
+    Return the scoped __doc__ dictionary.
+    If if does not exist, create it
+"""
+
+doc ::docstr """
+    docstrs are used to document code inline.
+    All docstrs are store in the scope's __doc__ dict
+
+    Use the macro `doc` to create a docstr
+        doc ([module::name]|::name) "desc"
+    Use `doc_fn` to create a docstr for a function
+        doc ([module::name]|::name) "desc" fn
+"""
+
+help [module::name]
+help ::name
+
+help ::docstr
+help [docstr::get_doc]
+
+
+doc [module::variable] """
+    Some description of the variable or function
+"""
+.arg "a: what a is used for"
+.arg "b: what b is used for"
+.example """
+    aya> {x, a x +}.capture[::a]
+    {x : a , a x + }
+    aya> {x, a x +}.capture[::a] :f
+    {x : a , a x + }
+    aya> 5 f
+    6
+    aya> 2:a
+    2
+"""
+
+
+or 
+
+    doc [module::variable] """
+        Some description of the variable or function
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Aliquam pulvinar, metus et pretium malesuada, risus
+        risus pulvinar lacus, ut molestie neque sapien at felis.
+        (by default, this text ends up in the "desc" key
+
+    @args:
+        a: what a is for
+        b: what b is for
+            more info about b
+      more about b
+
+    @example:
+        aya> {x, a x +}.capture[::a]
+        {x : a , a x + }
+        aya> {x, a x +}.capture[::a] :f
+        {x : a , a x + }
+        aya> 5 f
+        6
+        aya> 2:a
+        2
+
+    other_key:
+        more text that will end up in the above key
+    """
+
+.}
