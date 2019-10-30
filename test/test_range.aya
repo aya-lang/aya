@@ -5,7 +5,7 @@
 1 :testspassed;
 {.E\S= "Passed" {0:testspassed; "FAILED"} .?:P} :test;
 
-"----[ Running Operator Overload Tests ]----":P
+"\n----[ Running Range Tests ]----":P
 
 "n R: " .P
 [

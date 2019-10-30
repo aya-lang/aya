@@ -13,8 +13,16 @@
 	} .?
 })}:assert;
 
+{blk::block,
+    .; .# Clear stack
+    {blk} {;::__fail} .K .A [::__fail] =! {
+        "assertfail: code $(blk.`) should have failed but did not" .D
+    } ?
+}:assertfail;
 
 
+
+"\n----[ Running Core Tests ]----":P
 
 
 .# Parsing and Literals
@@ -110,6 +118,8 @@
 {'C {s::char,s} ~} assert ['C]
 {1 'C "C" {a::any b::any c::any, a b c} ~} assert [1 'C "C"]
 { {,} {d::dict,d}~} assert [{,}]
+{1 {s::str,} ~} assertfail
+{[1 2 3] {s::str,} ~} assertfail
 
 .# Dictionaries
 
@@ -121,16 +131,29 @@
 { {,5:x} "x" N \;} assert [1]
 { {,5:x} "y" N \;} assert [0]
 
+.# Meta dictionaries
 
-.# Objects
-{{, {self, self.x 2* self.:x}:double}:d; d!:p; 3p.:x; p.double.x}
-assert
-[6]
-
-{{, {x y, {, x:x; y:y;} {, 3:z} MO }:new }:t; 3 4 t!:ta; ta.x ta.y ta.z}
-assert
-[3 4 3]
+{{, 1:a} {, 2:b} :M .a} assert [1]
+{{, 1:a} {, 2:b} :M .b} assert [2]
+{{, 1:a} {, 2:b 10:a} :M .a} assert [1]
+{{, 1:a {, 2:b}:__meta__} .a} assert [1]
+{{, 1:a {, 2:b}:__meta__} .b} assert [2]
+{{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
 
 
-import "test/test_op_overload"
-import "test/test_range"
+"Core tests passed!" :P
+
+load "test/test_range"
+load "test/test_op_overload"
+
+reload
+"":P
+
+.# Import entire standard library
+"Importing standard library..." :P
+"base"4MZ :# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
+"Import finished!" :P
+"":P
+
+"Running tests..." :P
+__aya__.doruntests
