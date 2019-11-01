@@ -13,7 +13,6 @@
             .# The head from the list
             V:x;;
             .# [ sort items less than x, x, sort items larger than x]
-            .# [ [l,,x:<]q~ x  [l,,x>]q~ ]
             [l,,x:<]q x [l,,x>]q JJ
         } ?
     }:q ~
@@ -24,7 +23,8 @@ lst qs :P
 
 .# Golfed version of the above algorithm
 .# (V operator modifies original list)
-.# {l:x,l.E1>{V:x;;[l{x:<}Iq~x l{x>}Iq~]}?}:q
+.# lst $\; q
+.# {l:x,l.E1>{V:x\{x:<}Iq\Jl{x>}IqJ}?}:q;
 
 .# Stack only version
 {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i qss @@qss JJ} ?}:qss;
@@ -32,26 +32,6 @@ lst qs :P
 .# Stack only version with no global vars
 .# {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i _ @@_ JJ} ?} {1, :_} :+
 
-
-.# With prints
-.# qss.`:qs_trace;
-.# {"- ".P $:P qs_trace~ } ::qs_trace .+ :qs_trace;
-
-.# Clean version
-.{
-{l$ : x,
-    .# If the list is more than 1 item long, perform the operation
-    .#   otherwise just leave the original list on the stack
-    l .E 1 > {
-        .# The head from the list
-        V:x;;
-        .# [ sort items less than x, x, sort items larger than x]
-        [ [l,,x:<]q~ x  [l,,x>]q~ ]
-    } ?
-}:q ~
-.}
-
 .# Quicksort benchmark and example output
 .# 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \S\/
-.# [ 608 588 609 585 605 582 586 607 621 620 ] 601.1 
-.# 10 R :# {; [100000,;.Q] {qss;}.time} :& .E \S\/
+.# [ 608 588 609 585 605 582 586 607 621 620 ] 601.1
