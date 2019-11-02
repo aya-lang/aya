@@ -3,6 +3,7 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 
+import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
@@ -29,7 +30,7 @@ public class Tuple {
 			try {
 				b.eval();
 			} catch (EmptyStackException e) {
-				throw new RuntimeException("Empty Stack in tuple");
+				throw new AyaRuntimeException("Empty Stack in tuple");
 			}
 			out.add(b.pop());
 		}
