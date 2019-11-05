@@ -1,16 +1,21 @@
 package aya.parser.tokens;
 
-import aya.obj.dict.KeyVariable;
+import aya.instruction.variable.GetKeyVariableInstruction;
+import aya.variable.Variable;
 
 public class KeyVarToken extends StdToken {
 
 	public KeyVarToken(String data) {
 		super(data, Token.KEY_VAR);
 	}
+	
+	public long getID() {
+		return Variable.encodeString(data);
+	}
 
 	@Override
 	public Object getAyaObj() {
-		return new KeyVariable(data);
+		return new GetKeyVariableInstruction(getID());
 	}
 
 	@Override

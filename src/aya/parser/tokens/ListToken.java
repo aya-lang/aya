@@ -7,7 +7,6 @@ import aya.entities.ListBuilder;
 import aya.entities.ListLiteral;
 import aya.exceptions.SyntaxError;
 import aya.obj.block.Block;
-import aya.obj.list.GenericList;
 import aya.obj.number.Number;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;

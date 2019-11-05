@@ -161,6 +161,7 @@ public abstract class Obj {
 		}
 	}
 	
+	
 	/** Converts a character abbreviation to its ID */
 	public static byte symToID(long s) {
 		if (s == SYM_NUM.id()) {

@@ -9,8 +9,13 @@ import aya.entities.operations.ColonOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
+import aya.instruction.variable.GetKeyVariableInstruction;
+import aya.instruction.variable.GetVariableInstruction;
+import aya.instruction.variable.QuoteGetKeyVariableInstruction;
+import aya.instruction.variable.QuoteGetVariableInstruction;
+import aya.instruction.variable.SetKeyVariableInstruction;
+import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.block.Block;
-import aya.obj.dict.KeyVariable;
 import aya.obj.list.List;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
@@ -564,10 +569,9 @@ public class Parser {
 				}
 				Object next = is.pop();
 				//Variable Assignment
-				if (next instanceof Variable) {
-					Variable v = ((Variable)next);
-					v.flagBind();
-					is.push(v);
+				if (next instanceof GetVariableInstruction) {
+					GetVariableInstruction v = ((GetVariableInstruction)next);
+					is.push(new SetVariableInstruction(v.getID()));
 				}
 				else {
 					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
@@ -601,10 +605,9 @@ public class Parser {
 				}
 				Object next = is.pop();
 				//Key Variable Assignment
-				if (next instanceof Variable) {
-					KeyVariable kv = KeyVariable.fromID(((Variable)next).getID());
-					kv.flagBind();
-					is.push(kv);
+				if (next instanceof GetVariableInstruction) {
+					GetVariableInstruction v = ((GetVariableInstruction)next);
+					is.push(new SetKeyVariableInstruction(v.getID()));
 				}
 				
 				// Index assignment
@@ -642,7 +645,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(o instanceof Operation || o instanceof Variable) {
+						if(o instanceof Operation || o instanceof GetVariableInstruction || o instanceof GetKeyVariableInstruction) {
 							break;
 						}
 					}
@@ -665,12 +668,22 @@ public class Parser {
 			
 			
 			else if (current.isa(Token.FN_QUOTE)) {
-				is.push(Flag.getFlag(Flag.QUOTE_FUNCTION));
+				if (stk.hasNext()) {
+					if (stk.peek().isa(Token.VAR)) {
+						VarToken t = (VarToken)stk.pop();
+						is.push(new QuoteGetVariableInstruction(t.getID()));
+					} else if (stk.peek().isa(Token.KEY_VAR)) {
+						KeyVarToken t = (KeyVarToken)stk.pop();
+						is.push(new QuoteGetKeyVariableInstruction(t.getID()));
+					}
+				}
+					
 			}
 			
 			else if (current.typeString().equals("special")) {
 				throw new SyntaxError("Unexpected token in:\n\t" + tokens_in.toString());
 			}
+			
 			
 			//Std Token
 			else {

@@ -18,10 +18,10 @@ import aya.entities.ListLiteral;
 import aya.entities.Operation;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
+import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
-import aya.obj.dict.KeyVariable;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
@@ -139,6 +139,10 @@ public class Block extends Obj {
 				}
 			}
 			
+			else if (current instanceof Instruction) {
+				((Instruction) current).execute(this);
+			}
+			
 			// Variable Set: Push it to Aya's variable data
 			else if (current instanceof VariableSet) {
 				VariableSet vars = ((VariableSet)current).clone();
@@ -148,6 +152,7 @@ public class Block extends Obj {
 			}
 			
 			// KeyVariable
+			/*
 			else if (current instanceof KeyVariable) {
 				KeyVariable var = ((KeyVariable)current);
 				Obj kv_obj = stack.pop();
@@ -184,17 +189,18 @@ public class Block extends Obj {
 				}
 				
 			}
+			*/
 			
 			//Variable: Decide weather to read or write
-			else if (current instanceof Variable) {
-				Variable var = ((Variable)current);
-				if(var.shouldBind()) {
-					Aya.getInstance().getVars().setVar(var, stack.peek());
-				} else {
-					Obj o = Aya.getInstance().getVars().getVar(((Variable)current));
-					addOrDumpVar(o);
-				}
-			}
+			//else if (current instanceof Variable) {
+			//	Variable var = ((Variable)current);
+			//	if(var.shouldBind()) {
+			//		Aya.getInstance().getVars().setVar(var, stack.peek());
+			//	} else {
+			//		Obj o = Aya.getInstance().getVars().getVar(((Variable)current));
+			//		addOrDumpVar(o);
+			//	}
+			//}
 			
 			else if (current instanceof DictFactory) {
 				DictFactory df = (DictFactory)current;
@@ -444,7 +450,7 @@ public class Block extends Obj {
 	}
 	
 	/** Calls the variable and dumps the result to the stack existing in the input block */
-	public void callVariable(Dict dict, KeyVariable keyVar, Obj... push_first) {
+	public void callVariable(Dict dict, Variable keyVar, Obj... push_first) {
 		//Push self
 		stack.push(dict);
 		

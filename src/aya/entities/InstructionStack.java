@@ -3,6 +3,7 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
 import aya.util.Pair;
@@ -117,7 +118,7 @@ public class InstructionStack {
 	public void assignVarValue(long varid, Obj item) {
 		for (int i = 0; i < instructions.size(); i++) {
 			final Object o = instructions.get(i);
-			if (o instanceof Variable && ((Variable)o).getID() == varid) {
+			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getID() == varid) {
 				instructions.set(i, item);
 			}
 		}

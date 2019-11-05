@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import aya.entities.Flag;
 import aya.exceptions.SyntaxError;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.DictFactory;
@@ -83,7 +84,9 @@ public class BlockToken extends CollectionToken {
 			//Set up arguments
 			Variable[] args = new Variable[tokens.size()];
 			for (int i = 0; i < args.length; i++) {
-				args[i] = (Variable) tokens.get(i).getAyaObj();
+				final Token t = tokens.get(i);
+				final GetVariableInstruction v = (GetVariableInstruction)(t.getAyaObj());
+				args[i] = new Variable(v.getID());
 			}
 			return new VariableSet(args,  null, null);
 		} 

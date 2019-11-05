@@ -84,20 +84,10 @@ public class Dict extends Obj {
 		}
 	}
 	
-	private void strSet(String s, Obj o) {
-		_string_vars.put(s, o);
-	}
-	
 	
 	/////////////
 	// GETTERS //
 	/////////////
-	
-	/** Get the object assigned to key {@code v} 
-	 * If this key is unassigned, throw an error */
-	public Obj get(KeyVariable v) {
-		return get(v.getID());
-	}
 	
 	/** Get the object assigned to key whos name is {@code s} 
 	 * If the string is not a valid symbol, look it up in the string dict
@@ -117,15 +107,19 @@ public class Dict extends Obj {
 		Obj o = _get(id, null);
 		
 		if (o == null) {
-			throw new UndefVarException("Dict does not contain key '" 
-					+ KeyVariable.fromID(id).toString() + "'");
+			throw new UndefVarException("Dict does not contain key '" + Variable.decodeLong(id) + "'");
 		} else {
 			return o;
 		}
 	}
+
+
+	/** throws exception if key not found */
+	public Obj get(Variable v) {
+		return get(v.getID());
+	}
 	
-	
-	
+
 	/** returns null if key not found */
 	private Obj _get(long id) {
 		return _get(id, null);
@@ -196,11 +190,11 @@ public class Dict extends Obj {
 	public boolean containsKey(String s) {
 		return containsKey(Variable.encodeString(s));
 	}
-	
+
 	/** Returns true if this dict contains the input key */
-	public boolean containsKey(KeyVariable k) {
-		return containsKey(k.getID());
-	}	
+	public boolean containsKey(Variable v) {
+		return containsKey(v.getID());
+	}
 	
 	/** Return the inner variable set object */
 	public VariableSet getVarSet() {
@@ -225,14 +219,6 @@ public class Dict extends Obj {
 	/////////////
 	// SETTERS //
 	/////////////
-	
-	/** Set a key-value pair.
-	 * If a pair exists, overwrite
-	 * if not, create a new pair
-	 */ 
-	public void set(KeyVariable v, Obj o) {
-		set(v.getID(), o);
-	}
 	
 	/** Set a key-value pair.
 	 * If a pair exists, overwrite
@@ -473,8 +459,8 @@ public class Dict extends Obj {
 	}
 	
 	/** Returns true if the metatable defines a given key */
-	public boolean hasMetaKey(KeyVariable kv) {
-		return _meta != null && _meta.containsKey(kv.getID());
+	public boolean hasMetaKey(Variable v) {
+		return _meta != null && _meta.containsKey(v.getID());
 	}
 
 	/** General getindex */

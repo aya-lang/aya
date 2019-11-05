@@ -8,7 +8,6 @@ package aya.variable;
  */
 public class Variable {
 	protected long id;
-	protected boolean referanceVariable = true;
 	
 	private static final char UNDERSCORE  = 'z' + 1; 
 	private static final char TERMINATION = 'z' + 2;
@@ -34,17 +33,6 @@ public class Variable {
 		return id;
 	}
 	
-	/**Sets the bind flag to true. The variable will be bound
-	 * instead of referenced at runtime */
-	public void flagBind() {
-		referanceVariable = false;
-	}
-	
-	/**Returns true if the variable is should be bound,
-	 * returns false if the variable is a reference */
-	public boolean shouldBind() {
-		return !referanceVariable;
-	}
 	
 	/**
 	 * Converts a long into a string of lower case letters
@@ -125,6 +113,10 @@ public class Variable {
 		return (c >= 'a' && c <= 'z') || c == '_';
 	}
 	
+	public String name() {
+		return decodeLong(id);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return this.id == ((Variable)obj).getID();
@@ -132,12 +124,7 @@ public class Variable {
 	
 	@Override
 	public String toString() {
-		String name = decodeLong(id);
-		if (referanceVariable) {
-			return name;
-		} else {
-			return ":" + name;
-		}
+		return name();
 	}
 
 	public static Long encodeOrNull(String s) {
