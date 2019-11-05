@@ -1,0 +1,23 @@
+.# Implement a function that computes the number of steps
+.# to get to 1 (or total stopping time) using the collatz conjecture
+
+.# https://en.wikipedia.org/wiki/Collatz_conjecture
+
+{
+.# Golfed version of the collatz conjecture (35 chars)
+$1={;0}{0\{n,Bn2%n3*Bn2/.?$1>}W;}.?
+}:collatz;
+
+.# Pure stack (no variables) implementation (36 chars)
+.# { $1={;0}{0\{\B\$$2%\3*B@2/.?$1>}W;}.?  }:collatz;
+
+"Collatz function:" :P
+collatz.` :P "":P
+
+"The first ten values in the 'collatz' sequence" :P
+"https://oeis.org/A006577":P
+[10, collatz] :P
+
+.# Scatter plot of the first 5000 values
+ import::plot
+ 5000R $#collatz plot.scatter.view
