@@ -8,12 +8,12 @@ import java.util.Stack;
 
 import aya.entities.InstructionStack;
 import aya.entities.InterpolateString;
-import aya.entities.Lambda;
 import aya.entities.ListBuilder;
 import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
+import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -137,11 +137,6 @@ public class Block extends Obj {
 		
 			else if (current instanceof InterpolateString) {
 				stack.push(new Str(((InterpolateString) current).evalString()));
-			}
-			
-			//Lambda: Execute the block
-			else if (current instanceof Lambda){
-				instructions.addAll(((Lambda)current).getInstructions().getInstrucionList());
 			}
 			
 			//Tuple: Execute the statements
@@ -284,7 +279,7 @@ public class Block extends Obj {
 	/** Adds a block to this block (does not duplicate the block) */
 	public void addBlock(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.push(new Lambda(b.getInstructions()));
+			this.instructions.push(new LambdaInstruction(b.getInstructions()));
 		} else {
 			this.instructions.addAll(b.getInstructions().getInstrucionList());
 		}
@@ -292,7 +287,7 @@ public class Block extends Obj {
 	
 	public void addBlockBack(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.insert(0, new Lambda(b.getInstructions()));
+			this.instructions.insert(0, new LambdaInstruction(b.getInstructions()));
 		} else {
 			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
 		}
