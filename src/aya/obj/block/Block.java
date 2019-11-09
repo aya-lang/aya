@@ -7,12 +7,12 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import aya.entities.InstructionStack;
-import aya.entities.InterpolateString;
 import aya.entities.ListBuilder;
 import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
+import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
@@ -135,10 +135,6 @@ public class Block extends Obj {
 				}
 			}
 		
-			else if (current instanceof InterpolateString) {
-				stack.push(new Str(((InterpolateString) current).evalString()));
-			}
-			
 			//Tuple: Execute the statements
 			else if (current instanceof Tuple) {
 				stack.addAll(((Tuple)current).evalToResults());

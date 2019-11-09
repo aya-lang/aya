@@ -1,22 +1,24 @@
-package aya.entities;
+package aya.instruction;
+
+import java.util.LinkedList;
 
 import aya.Aya;
+import aya.entities.InstructionStack;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
 import aya.variable.Variable;
 
-public class InterpolateString  {
+public class InterpolateStringInstruction extends Instruction  {
 	String orig; // For printing
 	InstructionStack instructions;
 	
-	public InterpolateString(String orig, InstructionStack is) {
+	public InterpolateStringInstruction(String orig, InstructionStack is) {
 		this.orig = orig;
 		instructions = is;
 	}
 	
-	public InterpolateString duplicate() {
-		InterpolateString is = new InterpolateString(this.orig, this.instructions);
-		return is;
+	public InterpolateStringInstruction duplicate() {
+		return new InterpolateStringInstruction(orig, instructions);
 	}
 	
 	public String evalString() {
@@ -47,6 +49,17 @@ public class InterpolateString  {
 	}
 	
 	public String toString() {
+		return "\"" + orig + "\"";
+	}
+
+	@Override
+	public void execute(Block b) {
+		b.push(new Str(evalString()));
+		
+	}
+
+	@Override
+	protected String repr(LinkedList<Long> visited) {
 		return "\"" + orig + "\"";
 	}
 }

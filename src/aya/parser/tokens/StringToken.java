@@ -2,8 +2,8 @@ package aya.parser.tokens;
 
 import aya.Aya;
 import aya.entities.InstructionStack;
-import aya.entities.InterpolateString;
 import aya.exceptions.SyntaxError;
+import aya.instruction.InterpolateStringInstruction;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
 import aya.parser.Parser;
@@ -31,7 +31,7 @@ public class StringToken extends StdToken {
 		return new Str(data);
 	}
 
-	private InterpolateString parseInterpolateStr(String data) {
+	private InterpolateStringInstruction parseInterpolateStr(String data) {
 		ParserString in = new ParserString(data);
 		StringBuilder sb = new StringBuilder();
 		//ArrayList<Object> instrs = new ArrayList<Object>();
@@ -126,7 +126,7 @@ public class StringToken extends StdToken {
 		}
 		
 		instrs.insert(0, new Str(sb.toString()));
-		return new InterpolateString(data, instrs);
+		return new InterpolateStringInstruction(data, instrs);
 	}
 
 	@Override
