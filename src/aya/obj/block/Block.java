@@ -140,14 +140,6 @@ public class Block extends Obj {
 				}
 			}
 			
-			// Variable Set: Push it to Aya's variable data
-			else if (current instanceof VariableSet) {
-				VariableSet vars = ((VariableSet)current).clone();
-				vars.setArgs(this);
-				vars.copyExplicitLocals();
-				Aya.getInstance().getVars().add(vars);
-			}
-			
 			else if (current instanceof DictFactory) {
 				DictFactory df = (DictFactory)current;
 				Queue<Obj> q = null;
