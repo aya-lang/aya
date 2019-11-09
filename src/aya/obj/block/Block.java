@@ -8,10 +8,10 @@ import java.util.Stack;
 
 import aya.entities.InstructionStack;
 import aya.entities.ListBuilder;
-import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
 import aya.instruction.LambdaInstruction;
+import aya.instruction.TupleInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -132,11 +132,6 @@ public class Block extends Obj {
 				}
 			}
 		
-			//Tuple: Execute the statements
-			else if (current instanceof Tuple) {
-				stack.addAll(((Tuple)current).evalToResults());
-			}
-			
 			//ListBuilder: Build the list
 			else if (current instanceof ListBuilder) {
 				stack.push(((ListBuilder)current).createList(stack));

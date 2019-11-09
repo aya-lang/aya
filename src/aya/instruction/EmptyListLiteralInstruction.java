@@ -1,19 +1,19 @@
-package aya.entities;
+package aya.instruction;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
-import aya.instruction.ListLiteralInstruction;
+import aya.entities.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 
 /** Specialization of a list literal which always returns an empty list */
-public class EmptyListLiteral extends ListLiteralInstruction {
+public class EmptyListLiteralInstruction extends ListLiteralInstruction {
 	
-	public static final EmptyListLiteral INSTANCE = new EmptyListLiteral();
+	public static final EmptyListLiteralInstruction INSTANCE = new EmptyListLiteralInstruction();
 	
-	protected EmptyListLiteral() {
+	protected EmptyListLiteralInstruction() {
 		super(new InstructionStack(), 0);
 	}
 
@@ -33,7 +33,7 @@ public class EmptyListLiteral extends ListLiteralInstruction {
 	}
 	
 	@Override
-	public EmptyListLiteral duplicate() {
+	public EmptyListLiteralInstruction duplicate() {
 		// State is never modified, okay to return self
 		return this;
 	}

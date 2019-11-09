@@ -3,12 +3,12 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.entities.EmptyListLiteral;
 import aya.entities.InstructionStack;
-import aya.entities.Tuple;
 import aya.instruction.EmptyDictLiteralInstruction;
+import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.ListLiteralInstruction;
+import aya.instruction.TupleInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
@@ -71,7 +71,7 @@ public class LambdaToken extends CollectionToken {
 			for (int k = 0; k < elements.length; k++) {
 				elements[k] = new Block(Parser.generate(lambdaData.get(k)));
 			}
-			return new Tuple(elements);
+			return new TupleInstruction(elements);
 		}
 	}
 	
@@ -93,8 +93,8 @@ public class LambdaToken extends CollectionToken {
 
 		final Object o = is.pop();
 		
-		if (o instanceof EmptyListLiteral) {
-			return new Pair<Boolean, Obj>(true, EmptyListLiteral.INSTANCE.getListCopy());
+		if (o instanceof EmptyListLiteralInstruction) {
+			return new Pair<Boolean, Obj>(true, EmptyListLiteralInstruction.INSTANCE.getListCopy());
 		} else if (o instanceof EmptyDictLiteralInstruction) {
 			return new Pair<Boolean, Obj>(true, EmptyDictLiteralInstruction.INSTANCE.getDict());
 		} else if (o instanceof Variable) {

@@ -1,20 +1,21 @@
-package aya.entities;
+package aya.instruction;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.LinkedList;
 
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
-public class Tuple {	
+public class TupleInstruction extends Instruction {	
 	Block[] elements;
 	
 	/** 
 	 * Tuples will not need to be resized during runtime
 	 * @param blocks
 	 */
-	public Tuple(Block[] blocks) {
+	public TupleInstruction(Block[] blocks) {
 		elements = blocks;
 	}
 	
@@ -37,7 +38,13 @@ public class Tuple {
 		return out;
 	}
 	
-	public String toString() {
+	@Override
+	public void execute(Block b) {
+		b.getStack().addAll(evalToResults());
+	}
+
+	@Override
+	protected String repr(LinkedList<Long> visited) {
 		String s = "(";
 		for(int i = 0; i < elements.length; i++) {
 			if(i!=0) {

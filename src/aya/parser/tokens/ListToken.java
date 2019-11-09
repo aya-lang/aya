@@ -2,9 +2,9 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.entities.EmptyListLiteral;
 import aya.entities.ListBuilder;
 import aya.exceptions.SyntaxError;
+import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.obj.number.Number;
@@ -21,7 +21,7 @@ public class ListToken extends CollectionToken {
 	@Override
 	public Object getAyaObj() {
 		if (col.size() == 0) {
-			return EmptyListLiteral.INSTANCE;
+			return EmptyListLiteralInstruction.INSTANCE;
 		}
 
 		//Split Tokens where there are commas
