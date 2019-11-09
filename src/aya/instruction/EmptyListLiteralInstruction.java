@@ -3,12 +3,13 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import aya.instruction.ListLiteralInstruction;
 import aya.obj.Obj;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 
 /** Specialization of a list literal which always returns an empty list */
-public class EmptyListLiteral extends ListLiteral {
+public class EmptyListLiteral extends ListLiteralInstruction {
 	
 	public static final EmptyListLiteral INSTANCE = new EmptyListLiteral();
 	

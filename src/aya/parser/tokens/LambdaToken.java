@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import aya.Aya;
 import aya.entities.EmptyListLiteral;
 import aya.entities.InstructionStack;
-import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.LambdaInstruction;
+import aya.instruction.ListLiteralInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
@@ -60,7 +60,7 @@ public class LambdaToken extends CollectionToken {
 			//If contains only block, dump instructions
 			if(lambdaIL.size() == 1
 					&& lambdaIL.peek(0) instanceof Block
-					&& ! (lambdaIL.peek(0) instanceof ListLiteral) ) {
+					&& ! (lambdaIL.peek(0) instanceof ListLiteralInstruction) ) {
 				outLambda = new LambdaInstruction(((Block)(lambdaIL.peek(0))).getInstructions());
 			} else {
 				outLambda = new LambdaInstruction(lambdaIL);

@@ -2,11 +2,11 @@ package aya.parser;
 
 import aya.Aya;
 import aya.entities.InstructionStack;
-import aya.entities.ListLiteral;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
+import aya.instruction.ListLiteralInstruction;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
@@ -583,9 +583,9 @@ public class Parser {
 				}
 				Object next = is.pop();
 				
-				if (next instanceof ListLiteral) {
+				if (next instanceof ListLiteralInstruction) {
 					is.push(Ops.GETINDEX);
-					List l = ((ListLiteral) next).toList();
+					List l = ((ListLiteralInstruction) next).toList();
 					if (l != null) {
 						if (l.length() == 1) {
 							is.push(l.get(0));
@@ -610,9 +610,9 @@ public class Parser {
 				}
 				
 				// Index assignment
-				else if (next instanceof ListLiteral) {
+				else if (next instanceof ListLiteralInstruction) {
 					is.push(Ops.SETINDEX);
-					List l = ((ListLiteral) next).toList();
+					List l = ((ListLiteralInstruction) next).toList();
 					if (l != null) {
 						if (l.length() == 1) {
 							is.push(l.get(0));

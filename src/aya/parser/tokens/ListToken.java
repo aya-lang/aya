@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import aya.entities.EmptyListLiteral;
 import aya.entities.ListBuilder;
-import aya.entities.ListLiteral;
 import aya.exceptions.SyntaxError;
+import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.obj.number.Number;
 import aya.parser.Parser;
@@ -32,7 +32,7 @@ public class ListToken extends CollectionToken {
 		
 		switch(listData.size()) {
 		case 1:			
-			ListLiteral ll = new ListLiteral(Parser.generate(listData.get(0)), pops);
+			ListLiteralInstruction ll = new ListLiteralInstruction(Parser.generate(listData.get(0)), pops);
 			return ll;
 		case 2:
 		{

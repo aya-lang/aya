@@ -8,18 +8,15 @@ import java.util.Stack;
 
 import aya.entities.InstructionStack;
 import aya.entities.ListBuilder;
-import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
-import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
@@ -143,11 +140,6 @@ public class Block extends Obj {
 			//ListBuilder: Build the list
 			else if (current instanceof ListBuilder) {
 				stack.push(((ListBuilder)current).createList(stack));
-			}
-			
-			//ListFactory
-			else if (current instanceof ListLiteral) {				
-				stack.push(((ListLiteral)current).getListCopy(stack));
 			}
 			
 			//Literal
