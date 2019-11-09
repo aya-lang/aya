@@ -1,13 +1,13 @@
 package test;
 
-import aya.entities.Operation;
+import aya.instruction.op.OpInstruction;
 
 public class TestCase {
 	String input;
 	String expected;
-	Operation caller;
+	OpInstruction caller;
 	
-	public TestCase(String input, String expected, Operation caller) {
+	public TestCase(String input, String expected, OpInstruction caller) {
 		this.input = input;
 		this.expected = expected;
 		this.caller = caller;
@@ -27,7 +27,7 @@ public class TestCase {
 		return expected;
 	}
 
-	public Operation getOp() {
+	public OpInstruction getOp() {
 		return caller;
 	}
 }

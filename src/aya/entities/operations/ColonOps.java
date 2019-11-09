@@ -15,10 +15,10 @@ import java.util.Collections;
 
 import aya.Aya;
 import aya.OperationDocs;
-import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -43,7 +43,7 @@ public class ColonOps {
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static Operation[] COLON_OPS = {
+	public static OpInstruction[] COLON_OPS = {
 		/* 33 !  */ null,
 		/* 34 "  */ null,
 		/* 35 #  */ new OP_Colon_Pound(),
@@ -155,7 +155,7 @@ public class ColonOps {
 	
 	
 	/** Returns the operation bound to the character */
-	public static Operation getOp(char op) {
+	public static OpInstruction getOp(char op) {
 		if(op >= 33 && op <= 126) {
 			return COLON_OPS[op-FIRST_OP];
 		} else {
@@ -177,7 +177,7 @@ public class ColonOps {
 }
 
 // # - 35
-class OP_Colon_Pound extends Operation {
+class OP_Colon_Pound extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":#");
@@ -212,7 +212,7 @@ class OP_Colon_Pound extends Operation {
 }
 
 // $ - 36
-class OP_Colon_Duplicate extends Operation {
+class OP_Colon_Duplicate extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":$");
@@ -254,7 +254,7 @@ class OP_Colon_Duplicate extends Operation {
 }
 
 // & - 39
-class OP_Colon_And extends Operation {
+class OP_Colon_And extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":&");
@@ -273,7 +273,7 @@ class OP_Colon_And extends Operation {
 }
 
 // ' - 39
-class OP_Colon_Quote extends Operation {
+class OP_Colon_Quote extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":'");
@@ -309,7 +309,7 @@ class OP_Colon_Quote extends Operation {
 }
 
 //* - 42
-class OP_Colon_Times extends Operation {
+class OP_Colon_Times extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":*");
@@ -361,7 +361,7 @@ class OP_Colon_Times extends Operation {
 }
 
 // / - 47
-class OP_Colon_Promote extends Operation {
+class OP_Colon_Promote extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":/");
@@ -388,7 +388,7 @@ class OP_Colon_Promote extends Operation {
 }
 
 // < - 60
-class OP_Colon_LessThan extends Operation {
+class OP_Colon_LessThan extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":<");
@@ -431,7 +431,7 @@ class OP_Colon_LessThan extends Operation {
 }
 
 // = - 61
-class OP_Colon_Equals extends Operation {
+class OP_Colon_Equals extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":=");
@@ -463,7 +463,7 @@ class OP_Colon_Equals extends Operation {
 }
 
 // > - 62
-class OP_Colon_GreaterThan extends Operation {
+class OP_Colon_GreaterThan extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":>");
@@ -507,7 +507,7 @@ class OP_Colon_GreaterThan extends Operation {
 }
 
 // A - 65
-class OP_Colon_A extends Operation {
+class OP_Colon_A extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":A");
@@ -539,7 +539,7 @@ class OP_Colon_A extends Operation {
 }
 
 // C - 67
-class OP_Colon_C extends Operation {
+class OP_Colon_C extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":C");
@@ -564,7 +564,7 @@ class OP_Colon_C extends Operation {
 }
 
 // D - 68
-class OP_Colon_D extends Operation {
+class OP_Colon_D extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":D");
@@ -596,7 +596,7 @@ class OP_Colon_D extends Operation {
 }
 
 // E - 69
-class OP_Colon_E extends Operation {
+class OP_Colon_E extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":E");
@@ -620,7 +620,7 @@ class OP_Colon_E extends Operation {
 }
 
 // I - 73  
-class OP_Colon_I extends Operation {
+class OP_Colon_I extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":I");
@@ -678,7 +678,7 @@ class OP_Colon_I extends Operation {
 }
 
 // K - 75
-class OP_Colon_K extends Operation {
+class OP_Colon_K extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":K");
@@ -707,7 +707,7 @@ class OP_Colon_K extends Operation {
 }
 
 // M - 77
-class OP_Colon_M extends Operation {
+class OP_Colon_M extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":M");
@@ -738,7 +738,7 @@ class OP_Colon_M extends Operation {
 
 
 // P - 80
-class OP_Colon_P extends Operation {
+class OP_Colon_P extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":P");
@@ -755,7 +755,7 @@ class OP_Colon_P extends Operation {
 }
 
 //R - 82
-class OP_Colon_R extends Operation {
+class OP_Colon_R extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":R");
@@ -773,7 +773,7 @@ class OP_Colon_R extends Operation {
 
 
 // S - 83
-class OP_Colon_S extends Operation {
+class OP_Colon_S extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":S");
@@ -800,7 +800,7 @@ class OP_Colon_S extends Operation {
 
 
 //T - 84
-class OP_Colon_T extends Operation {
+class OP_Colon_T extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":T");
@@ -835,7 +835,7 @@ class OP_Colon_T extends Operation {
 
 
 //V - 86
-class OP_Colon_V extends Operation {
+class OP_Colon_V extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":V");
@@ -860,7 +860,7 @@ class OP_Colon_V extends Operation {
 
 
 //Z - 90
-class OP_Colon_Zed extends Operation {
+class OP_Colon_Zed extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":Z");
@@ -888,7 +888,7 @@ class OP_Colon_Zed extends Operation {
 
 
 // \ - 92
-class OP_Colon_Demote extends Operation {
+class OP_Colon_Demote extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":\\");
@@ -919,7 +919,7 @@ class OP_Colon_Demote extends Operation {
 
 
 // | - 124
-class OP_SetMinus extends Operation {
+class OP_SetMinus extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":|");
@@ -945,7 +945,7 @@ class OP_SetMinus extends Operation {
 }
 
 // ~ - 126
-class OP_Colon_Tilde extends Operation {
+class OP_Colon_Tilde extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(':', ":~");

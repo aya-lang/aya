@@ -1,11 +1,11 @@
 package aya.parser.tokens;
 
-import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
 import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.SyntaxError;
+import aya.instruction.op.OpInstruction;
 
 public class OperatorToken extends StdToken {
 	
@@ -28,7 +28,7 @@ public class OperatorToken extends StdToken {
 	
 	@Override
 	public Object getAyaObj() {
-		Operation op = null;
+		OpInstruction op = null;
 		switch (op_type) {
 		case STD_OP:
 			op = Ops.getOp(data.charAt(0));

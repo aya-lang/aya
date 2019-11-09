@@ -1,7 +1,7 @@
 package aya.exceptions;
 
 import aya.OperationDocs;
-import aya.entities.Operation;
+import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 
 @SuppressWarnings("serial")
@@ -12,7 +12,7 @@ public class TypeError extends RuntimeException {
 		return msg;
 	}
 	
-	public TypeError(Operation op, Obj... recieved) {
+	public TypeError(OpInstruction op, Obj... recieved) {
 		super("Type error at (" + op.name + "):\n\tExpected (" 
 				+ OperationDocs.get(op.name).typeString() 
 				+ ")\n\tRecieved (" + listStr(recieved));

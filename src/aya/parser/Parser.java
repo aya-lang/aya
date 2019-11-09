@@ -4,11 +4,11 @@ import aya.Aya;
 import aya.entities.Flag;
 import aya.entities.InstructionStack;
 import aya.entities.ListLiteral;
-import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
+import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.instruction.variable.QuoteGetKeyVariableInstruction;
@@ -645,7 +645,7 @@ public class Parser {
 					while (!is.isEmpty()) {
 						Object o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
-						if(o instanceof Operation || o instanceof GetVariableInstruction || o instanceof GetKeyVariableInstruction) {
+						if(o instanceof OpInstruction || o instanceof GetVariableInstruction || o instanceof GetKeyVariableInstruction) {
 							break;
 						}
 					}

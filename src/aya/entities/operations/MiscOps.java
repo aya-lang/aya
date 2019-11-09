@@ -21,9 +21,9 @@ import java.util.Locale;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.OperationDocs;
-import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -53,7 +53,7 @@ public class MiscOps {
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static Operation[] MATH_OPS = {
+	public static OpInstruction[] MATH_OPS = {
 		/* 33 !  */ new OP_Fact(),
 		/* 34 "  */ null,
 		/* 35 #  */ null,
@@ -162,7 +162,7 @@ public class MiscOps {
 //	}
 	
 	/** Returns the operation bound to the character */
-	public static Operation getOp(char op) {
+	public static OpInstruction getOp(char op) {
 		if(op >= 33 && op <= 126) {
 			return MATH_OPS[op-FIRST_OP];
 		} else {
@@ -173,7 +173,7 @@ public class MiscOps {
 }
 
 // ! - 33
-class OP_Fact extends Operation {
+class OP_Fact extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "M!");
@@ -208,7 +208,7 @@ class OP_Fact extends Operation {
 }
 
 // $ - 33
-class OP_SysTime extends Operation {
+class OP_SysTime extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "M$");
@@ -228,7 +228,7 @@ class OP_SysTime extends Operation {
 
 
 // ? - 63
-class OP_Help extends Operation {
+class OP_Help extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "M?");
@@ -291,7 +291,7 @@ class OP_Help extends Operation {
 }
 
 // C - 67
-class OP_Acosine extends Operation {
+class OP_Acosine extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MC");
@@ -325,7 +325,7 @@ class OP_Acosine extends Operation {
 }
 
 // D - 68
-class OP_MDate extends Operation {
+class OP_MDate extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MD");
@@ -365,7 +365,7 @@ class OP_MDate extends Operation {
 
 
 // G - 67
-class OP_Graphics extends Operation {
+class OP_Graphics extends OpInstruction {
 	
 	CanvasInterface canvas;
 	
@@ -406,7 +406,7 @@ class OP_Graphics extends Operation {
 
 
 // H - 68
-class OP_MParse_Date extends Operation {
+class OP_MParse_Date extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MH");
@@ -450,7 +450,7 @@ class OP_MParse_Date extends Operation {
 
 
 // L - 76
-class OP_Log extends Operation {
+class OP_Log extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "ML");
@@ -483,7 +483,7 @@ class OP_Log extends Operation {
 
 
 // S - 83
-class OP_Asine extends Operation {
+class OP_Asine extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MS");
@@ -515,7 +515,7 @@ class OP_Asine extends Operation {
 }
 
 // T - 84
-class OP_Atangent extends Operation {
+class OP_Atangent extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MT");
@@ -548,7 +548,7 @@ class OP_Atangent extends Operation {
 
 
 //V - 86
-class OP_Dialog extends Operation {
+class OP_Dialog extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MV");
@@ -630,7 +630,7 @@ class OP_Dialog extends Operation {
 
 
 //X - 88
-class OP_AdvPlot extends Operation {
+class OP_AdvPlot extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MX");
@@ -667,7 +667,7 @@ class OP_AdvPlot extends Operation {
 }
 
 //Z - 9
-class OP_SysConfig extends Operation {
+class OP_SysConfig extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "MZ");
@@ -796,7 +796,7 @@ class OP_SysConfig extends Operation {
 
 
 // c - 99
-class OP_Cosine extends Operation {
+class OP_Cosine extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mc");
@@ -829,7 +829,7 @@ class OP_Cosine extends Operation {
 }
 
 //d - 100
-class OP_CastDouble extends Operation {
+class OP_CastDouble extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Md");
@@ -867,7 +867,7 @@ class OP_CastDouble extends Operation {
 }
 
 // e - 100
-class OP_Me extends Operation {
+class OP_Me extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Me");
@@ -902,7 +902,7 @@ class OP_Me extends Operation {
 }
 
 // h - 104
-class OP_MShow_Date extends Operation {
+class OP_MShow_Date extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mh");
@@ -946,7 +946,7 @@ class OP_MShow_Date extends Operation {
 
 
 // k - 107
-class OP_AddParserChar extends Operation {
+class OP_AddParserChar extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mk");
@@ -977,7 +977,7 @@ class OP_AddParserChar extends Operation {
 
 
 // l - 108
-class OP_Ln extends Operation {
+class OP_Ln extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Ml");
@@ -1009,7 +1009,7 @@ class OP_Ln extends Operation {
 }
 
 // m - 109
-class OP_HasMeta extends Operation {
+class OP_HasMeta extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mm");
@@ -1033,7 +1033,7 @@ class OP_HasMeta extends Operation {
 }
 
 // p - 112
-class OP_Primes extends Operation {
+class OP_Primes extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mp");
@@ -1062,7 +1062,7 @@ class OP_Primes extends Operation {
 }
 
 // q - 113
-class OP_SquareRoot extends Operation {
+class OP_SquareRoot extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mq");
@@ -1095,7 +1095,7 @@ class OP_SquareRoot extends Operation {
 
 
 // r - 114
-class OP_To_Rat extends Operation {
+class OP_To_Rat extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mr");
@@ -1138,7 +1138,7 @@ class OP_To_Rat extends Operation {
 
 
 // s - 115
-class OP_Sine extends Operation {
+class OP_Sine extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Ms");
@@ -1174,7 +1174,7 @@ class OP_Sine extends Operation {
 
 
 // t - 116
-class OP_Tangent extends Operation {
+class OP_Tangent extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc('M', "Mt");

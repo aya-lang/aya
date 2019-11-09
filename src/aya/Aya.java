@@ -14,7 +14,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.PatternSyntaxException;
 
-import aya.entities.Operation;
 import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
 import aya.entities.operations.MiscOps;
@@ -23,6 +22,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpInstruction;
 import aya.obj.block.Block;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
@@ -155,8 +155,8 @@ public class Aya extends Thread {
 	/* This function does nothing but force java to load
 	 * the operators and call the static blocks
 	 */
-	private void loadOps(Operation[] ops) {
-		for (Operation o : ops) {
+	private void loadOps(OpInstruction[] ops) {
+		for (OpInstruction o : ops) {
 			if (o != null) o.getClass();
 		}
 	}

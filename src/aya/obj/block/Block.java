@@ -15,10 +15,10 @@ import aya.entities.InterpolateString;
 import aya.entities.Lambda;
 import aya.entities.ListBuilder;
 import aya.entities.ListLiteral;
-import aya.entities.Operation;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
+import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
@@ -130,17 +130,13 @@ public class Block extends Obj {
 		while (!instructions.isEmpty()) {
 			Object current = instructions.pop();
 			
-			//Operator: execute the operator on the block
-			if (current instanceof Operation) {
+			if (current instanceof Instruction) {
+				Instruction instr = (Instruction)current;
 				try {
-					((Operation)current).execute(this);  
+					instr.execute(this);
 				} catch (EmptyStackException es) {
-					throw new AyaRuntimeException("Empty stack at operator '" + ((Operation)current).name + "'");
+					throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
 				}
-			}
-			
-			else if (current instanceof Instruction) {
-				((Instruction) current).execute(this);
 			}
 			
 			// Variable Set: Push it to Aya's variable data

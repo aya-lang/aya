@@ -31,9 +31,9 @@ import aya.AyaPrefs;
 import aya.OperationDocs;
 import aya.StreamMgr;
 import aya.entities.ListBuilder;
-import aya.entities.Operation;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -142,7 +142,7 @@ public class Ops {
 	
 	
 	public static final char FIRST_OP = '!';
-	public static final Operation[] OPS = {
+	public static final OpInstruction[] OPS = {
 		/* 33 !  */ new OP_Bang(),
 		/* 34 "  */ null, // String
 		/* 35 #  */ new OP_Pound(),
@@ -203,13 +203,13 @@ public class Ops {
 		/* 96 `  */ null, // Hold Operator
 	};
 	
-	/* 124 | */ public static final Operation BAR = new OP_Bar();
-	/* 126 ~ */ public static final Operation TILDE = new OP_Tilde();
+	/* 124 | */ public static final OpInstruction BAR = new OP_Bar();
+	/* 126 ~ */ public static final OpInstruction TILDE = new OP_Tilde();
 	
 	//Special Ops
 	//public static final Operation APPLY_TO = new OP_ApplyTo();
-	public static final Operation GETINDEX = new OP_GetIndex();
-	public static final Operation SETINDEX = new OP_SetIndex();
+	public static final OpInstruction GETINDEX = new OP_GetIndex();
+	public static final OpInstruction SETINDEX = new OP_SetIndex();
 	
 	/** Returns true if char c is bound to an operator */
 	public static boolean isOp(char c) {
@@ -255,7 +255,7 @@ public class Ops {
 //	}
 
 	
-	public static Operation getOp(char op) {
+	public static OpInstruction getOp(char op) {
 		if ((op >= 33 && op <= 47) || (op >= 59 && op <= 96)) {
 			return OPS[op-FIRST_OP];
 		} else if (op == '~') {
@@ -270,7 +270,7 @@ public class Ops {
 }
 
 // ! - 33
-class OP_Bang extends Operation {
+class OP_Bang extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "!");
@@ -322,7 +322,7 @@ class OP_Bang extends Operation {
 }
 
 //# - 35
-class OP_Pound extends Operation {
+class OP_Pound extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "#");
@@ -365,7 +365,7 @@ class OP_Pound extends Operation {
 }
 
 // $ - 36
-class OP_Duplicate extends Operation {
+class OP_Duplicate extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "$");
@@ -382,7 +382,7 @@ class OP_Duplicate extends Operation {
 }
 
 // % - 37
-class OP_Percent extends Operation {
+class OP_Percent extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "%");
@@ -441,7 +441,7 @@ class OP_Percent extends Operation {
 
 
 // & - 38
-class OP_And extends Operation {
+class OP_And extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "&");
@@ -489,7 +489,7 @@ class OP_And extends Operation {
 }
 
 // * - 42
-class OP_Times extends Operation {
+class OP_Times extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "*");
@@ -546,7 +546,7 @@ class OP_Times extends Operation {
 
 
 // + - 43
-class OP_Plus extends Operation {
+class OP_Plus extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "+");
@@ -604,7 +604,7 @@ class OP_Plus extends Operation {
 }
 
 // - - 44
-class OP_Minus extends Operation {
+class OP_Minus extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "-");
@@ -656,7 +656,7 @@ class OP_Minus extends Operation {
 }
 
 // / - 47
-class OP_Divide extends Operation {
+class OP_Divide extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "/");
@@ -704,7 +704,7 @@ class OP_Divide extends Operation {
 
 
 // ; - 59
-class OP_SemiColon extends Operation {
+class OP_SemiColon extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', ";");
@@ -722,7 +722,7 @@ class OP_SemiColon extends Operation {
 
 
 // < - 60
-class OP_LessThan extends Operation {
+class OP_LessThan extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "<");
@@ -769,7 +769,7 @@ class OP_LessThan extends Operation {
 
 
 // = - 61
-class OP_Equal extends Operation {
+class OP_Equal extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "=");
@@ -811,7 +811,7 @@ class OP_Equal extends Operation {
 }
 
 // > - 62
-class OP_GreaterThan extends Operation {
+class OP_GreaterThan extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', ">");
@@ -855,7 +855,7 @@ class OP_GreaterThan extends Operation {
 }
 
 // ? - 63
-class OP_Conditional extends Operation {
+class OP_Conditional extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "?");
@@ -888,7 +888,7 @@ class OP_Conditional extends Operation {
 
 
 // @ - 64
-class OP_At extends Operation {
+class OP_At extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "@");
@@ -911,7 +911,7 @@ class OP_At extends Operation {
 }
 
 // A - 65
-class OP_A extends Operation {
+class OP_A extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "A");
@@ -930,7 +930,7 @@ class OP_A extends Operation {
 }
 
 // B - 66
-class OP_B extends Operation {
+class OP_B extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "B");
@@ -981,7 +981,7 @@ class OP_B extends Operation {
 }
 
 // C - 67
-class OP_Sort extends Operation {
+class OP_Sort extends OpInstruction {
 	static {
 		OpDoc doc = new OpDoc(' ', "C");
 		doc.desc("S|L", "sort least to greatest");
@@ -1014,7 +1014,7 @@ class OP_Sort extends Operation {
 
 
 // D - 68
-class OP_D extends Operation {
+class OP_D extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "D");
@@ -1048,7 +1048,7 @@ class OP_D extends Operation {
 }
 
 // E - 69
-class OP_E extends Operation {
+class OP_E extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "E");
@@ -1078,7 +1078,7 @@ class OP_E extends Operation {
 }
 
 // F - 70
-class OP_F extends Operation {
+class OP_F extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "F");
@@ -1126,7 +1126,7 @@ class OP_F extends Operation {
 
 
 // G - 71
-class OP_G extends Operation {
+class OP_G extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "G");
@@ -1185,7 +1185,7 @@ class OP_G extends Operation {
 	}
 }
 
-class OP_H extends Operation {
+class OP_H extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "H");
@@ -1316,7 +1316,7 @@ class OP_H extends Operation {
 
 // I - 73
 //NOTE: If updating this operator, also update .I
-class OP_GetIndex extends Operation {
+class OP_GetIndex extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "I");
@@ -1356,7 +1356,7 @@ class OP_GetIndex extends Operation {
 }
 
 // N/A - N/A
-class OP_SetIndex extends Operation {
+class OP_SetIndex extends OpInstruction {
 	
 	public OP_SetIndex() {
 		this.name = ".:";
@@ -1394,7 +1394,7 @@ class OP_SetIndex extends Operation {
 
 
 // J - 74
-class OP_Join extends Operation {
+class OP_Join extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "J");
@@ -1431,7 +1431,7 @@ class OP_Join extends Operation {
 
 
 // L - 76
-class OP_L extends Operation {
+class OP_L extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "L");
@@ -1483,7 +1483,7 @@ class OP_L extends Operation {
 }
 
 // K - 76
-class OP_K extends Operation {
+class OP_K extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "K");
@@ -1525,7 +1525,7 @@ class OP_K extends Operation {
 }
 
 // N - 78
-class OP_N extends Operation {
+class OP_N extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "N");
@@ -1560,7 +1560,7 @@ class OP_N extends Operation {
 }
 
 // O - 79
-class OP_O extends Operation {
+class OP_O extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "O");
@@ -1638,7 +1638,7 @@ class OP_O extends Operation {
 
 
 // P - 80
-class OP_P extends Operation {
+class OP_P extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "P");
@@ -1656,7 +1656,7 @@ class OP_P extends Operation {
 }
 
 // Q - 81
-class OP_Q extends Operation {
+class OP_Q extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "Q");
@@ -1696,7 +1696,7 @@ class OP_Q extends Operation {
 }
 
 // R - 82
-class OP_R extends Operation {
+class OP_R extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "R");
@@ -1726,7 +1726,7 @@ class OP_R extends Operation {
 }
 
 // S - 83
-class OP_S extends Operation {
+class OP_S extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "S");
@@ -1787,7 +1787,7 @@ class OP_S extends Operation {
 }
 
 // T - 84 
-class OP_T extends Operation {
+class OP_T extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "T");
@@ -1818,7 +1818,7 @@ class OP_T extends Operation {
 
 
 //U - 85
-class OP_U extends Operation {
+class OP_U extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "U");
@@ -1848,7 +1848,7 @@ class OP_U extends Operation {
 
 
 // V - 86
-class OP_V extends Operation {
+class OP_V extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "V");
@@ -1895,7 +1895,7 @@ class OP_V extends Operation {
 }
 
 // W - 87
-class OP_W extends Operation {
+class OP_W extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "W");
@@ -1952,7 +1952,7 @@ class OP_W extends Operation {
 
 
 // X - 88
-class OP_X extends Operation {
+class OP_X extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "X");
@@ -1969,7 +1969,7 @@ class OP_X extends Operation {
 }
 
 // Y - 89
-class OP_Y extends Operation {
+class OP_Y extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "Y");
@@ -1986,7 +1986,7 @@ class OP_Y extends Operation {
 }
 
 // Z - 90
-class OP_Z extends Operation {
+class OP_Z extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "Z");
@@ -2016,7 +2016,7 @@ class OP_Z extends Operation {
 }
 
 // \ - 92
-class OP_Backslash extends Operation {
+class OP_Backslash extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "\\");
@@ -2036,7 +2036,7 @@ class OP_Backslash extends Operation {
 }
 
 // ^ - 94
-class OP_Caret extends Operation {
+class OP_Caret extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "^");
@@ -2083,7 +2083,7 @@ class OP_Caret extends Operation {
 }
 
 // | - 124
-class OP_Bar extends Operation {
+class OP_Bar extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "|");
@@ -2146,7 +2146,7 @@ class OP_Bar extends Operation {
 
 
 // ~ - 126
-class OP_Tilde extends Operation {
+class OP_Tilde extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "~");
