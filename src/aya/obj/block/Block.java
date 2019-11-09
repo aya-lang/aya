@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
-import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.InterpolateString;
 import aya.entities.Lambda;
@@ -20,13 +17,11 @@ import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.dict.DictFactory;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
-import aya.variable.VariableSet;
 
 /** 
  * Block contain instructions and the resulting stacks 
@@ -139,20 +134,7 @@ public class Block extends Obj {
 					throw new RuntimeException(npe.toString());
 				}
 			}
-			
-			else if (current instanceof DictFactory) {
-				DictFactory df = (DictFactory)current;
-				Queue<Obj> q = null;
-				int n = df.numCaptures();
-				if (n > 0) {
-					q = new LinkedList<Obj>();
-					for (int i = 0; i < n; i++) {
-						q.add(pop());
-					}
-				}
-				stack.push(df.getDict(q));
-			}
-			
+		
 			else if (current instanceof InterpolateString) {
 				stack.push(new Str(((InterpolateString) current).evalString()));
 			}

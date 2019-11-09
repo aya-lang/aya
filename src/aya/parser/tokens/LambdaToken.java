@@ -8,9 +8,9 @@ import aya.entities.InstructionStack;
 import aya.entities.Lambda;
 import aya.entities.ListLiteral;
 import aya.entities.Tuple;
+import aya.instruction.EmptyDictLiteralInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.dict.EmptyDictFactory;
 import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
@@ -95,8 +95,8 @@ public class LambdaToken extends CollectionToken {
 		
 		if (o instanceof EmptyListLiteral) {
 			return new Pair<Boolean, Obj>(true, EmptyListLiteral.INSTANCE.getListCopy());
-		} else if (o instanceof EmptyDictFactory) {
-			return new Pair<Boolean, Obj>(true, EmptyDictFactory.INSTANCE.getDict());
+		} else if (o instanceof EmptyDictLiteralInstruction) {
+			return new Pair<Boolean, Obj>(true, EmptyDictLiteralInstruction.INSTANCE.getDict());
 		} else if (o instanceof Variable) {
 			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar((Variable)o));
 		} else if (o instanceof Obj) {

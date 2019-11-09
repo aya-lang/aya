@@ -1,19 +1,20 @@
-package aya.obj.dict;
+package aya.instruction;
 
 import java.util.Queue;
 
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.dict.Dict;
 
-/** Specialization of a DictFactory which always returns an empty dict
+/** Specialization of a DictLiteralInstruction which always returns an empty dict
  * @author Nick
  *
  */
-public class EmptyDictFactory extends DictFactory {
+public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	
-	public static final EmptyDictFactory INSTANCE = new EmptyDictFactory();
+	public static final EmptyDictLiteralInstruction INSTANCE = new EmptyDictLiteralInstruction();
 	
-	protected EmptyDictFactory() {
+	protected EmptyDictLiteralInstruction() {
 		super(new Block());
 	}
 	

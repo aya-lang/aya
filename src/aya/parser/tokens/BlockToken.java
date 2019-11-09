@@ -3,13 +3,13 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.exceptions.SyntaxError;
+import aya.instruction.DictLiteralInstruction;
+import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.VariableSetInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.dict.DictFactory;
-import aya.obj.dict.EmptyDictFactory;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
@@ -41,9 +41,9 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				if (b.isEmpty()) {
-					return EmptyDictFactory.INSTANCE;
+					return EmptyDictLiteralInstruction.INSTANCE;
 				} else {
-					return new DictFactory(b);
+					return new DictLiteralInstruction(b);
 				}
 			}
 			// Single number in header, create a dict factory with a capture
@@ -55,9 +55,9 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
 				if (n == 0 && b.isEmpty()) {
-					return EmptyDictFactory.INSTANCE;
+					return EmptyDictLiteralInstruction.INSTANCE;
 				} else {
-					return new DictFactory(b, n);
+					return new DictLiteralInstruction(b, n);
 				}
 			}
 			//Non-empty header, args and local variables
