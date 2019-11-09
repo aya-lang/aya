@@ -1,7 +1,6 @@
 package aya.parser;
 
 import aya.Aya;
-import aya.entities.Flag;
 import aya.entities.InstructionStack;
 import aya.entities.ListLiteral;
 import aya.entities.operations.ColonOps;

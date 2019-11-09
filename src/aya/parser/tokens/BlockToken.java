@@ -2,8 +2,8 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.entities.Flag;
 import aya.exceptions.SyntaxError;
+import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -62,7 +62,7 @@ public class BlockToken extends CollectionToken {
 			//Non-empty header, args and local variables
 			else {
 				Block b = new Block();
-				b.add(Flag.getFlag(Flag.POPVAR)); //Pop the local variables when the block is finished
+				b.add(PopVarFlagInstruction.INSTANCE);
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
 				b.add(parseVariableSet(blockData.get(0).getArrayList()));	//Block arguments
 				return b;

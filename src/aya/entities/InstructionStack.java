@@ -3,6 +3,7 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
@@ -74,7 +75,7 @@ public class InstructionStack {
 		int i = 0;
 		int skip = 0;
 		while (i < ticks) {
-			if(peek(skip) instanceof Flag || peek(skip) instanceof VariableSet) {
+			if(peek(skip) instanceof FlagInstruction || peek(skip) instanceof VariableSet) {
 				i--; //Ignore flags and var sets
 			}
 			skip++;

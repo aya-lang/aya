@@ -9,7 +9,6 @@ import java.util.Queue;
 import java.util.Stack;
 
 import aya.Aya;
-import aya.entities.Flag;
 import aya.entities.InstructionStack;
 import aya.entities.InterpolateString;
 import aya.entities.Lambda;
@@ -18,7 +17,7 @@ import aya.entities.ListLiteral;
 import aya.entities.Tuple;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictFactory;
@@ -116,7 +115,7 @@ public class Block extends Obj {
 	public boolean hasLocals() {
 		if (instructions.isEmpty()) return false;
 		final Object flag = instructions.getInstrucionList().get(0);
-		return flag instanceof Flag && ((Flag)flag).getID() == Flag.POPVAR;
+		return flag instanceof PopVarFlagInstruction;
 	}
 	
 	/** Get a list of args for this block */
@@ -136,6 +135,8 @@ public class Block extends Obj {
 					instr.execute(this);
 				} catch (EmptyStackException es) {
 					throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
+				} catch (NullPointerException npe) {
+					throw new RuntimeException(npe.toString());
 				}
 			}
 			
@@ -146,57 +147,6 @@ public class Block extends Obj {
 				vars.copyExplicitLocals();
 				Aya.getInstance().getVars().add(vars);
 			}
-			
-			// KeyVariable
-			/*
-			else if (current instanceof KeyVariable) {
-				KeyVariable var = ((KeyVariable)current);
-				Obj kv_obj = stack.pop();
-				if (kv_obj.isa(Obj.DICT)) {
-					Dict dict;
-					dict = (Dict)kv_obj;
-					if (var.shouldBind()) {
-						dict.set(var, stack.pop());
-						stack.push(dict);
-					} else {
-						Obj o = dict.get(var);
-						// If user object function, leave it as the first item on the stack
-						if (dict.hasMetaTable() && o.isa(BLOCK)) {
-							stack.push(dict);
-						}
-						addOrDumpVar(o);
-					}
-				} else {
-					Symbol typeSym = Obj.IDToSym(kv_obj.type());
-					Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObject(typeSym.id());
-					if (builtin_dict.isa(Obj.DICT)) {
-						Dict dict = (Dict)builtin_dict;
-						if (!dict.containsKey(var)) {
-							throw new AyaRuntimeException("Built in type " + typeSym + 
-									" does not contain member '" + var + "'");
-						}
-						Obj o = dict.get(var);
-						stack.push(kv_obj);
-						addOrDumpVar(o);
-					} else {
-						throw new AyaRuntimeException("Built in type " + typeSym + " was redefined to " + builtin_dict);
-					}
-					
-				}
-				
-			}
-			*/
-			
-			//Variable: Decide weather to read or write
-			//else if (current instanceof Variable) {
-			//	Variable var = ((Variable)current);
-			//	if(var.shouldBind()) {
-			//		Aya.getInstance().getVars().setVar(var, stack.peek());
-			//	} else {
-			//		Obj o = Aya.getInstance().getVars().getVar(((Variable)current));
-			//		addOrDumpVar(o);
-			//	}
-			//}
 			
 			else if (current instanceof DictFactory) {
 				DictFactory df = (DictFactory)current;
@@ -209,39 +159,6 @@ public class Block extends Obj {
 					}
 				}
 				stack.push(df.getDict(q));
-			}
-			
-			//Flag: Special instructions for the interpreter
-			//Negative valued flags are ticks (`)
-			else if(current instanceof Flag) {
-				byte flagID = ((Flag)current).getID();
-				switch(flagID) {
-				//Pop a variable set from the current variable data
-				//This happens when we exit the scope of a function, etc.
-				case Flag.POPVAR:
-					Aya.getInstance().getVars().pop();
-					break;
-				case Flag.EVAL_BLOCK:
-					if(this.peek().isa(Obj.BLOCK)) {
-						this.addBlock((Block)(this.pop()));
-					} else {
-						System.out.println("Could not add block");
-					}
-					break;
-				case Flag.QUOTE_FUNCTION:
-					throw new AyaRuntimeException("Quote (.`) expected function before operator");
-				default:
-					//Tick operator
-					if (flagID < 0) {
-						try {
-							instructions.holdNext(-1*flagID);
-						} catch (IndexOutOfBoundsException e) {
-							throw new AyaRuntimeException("Tick Operator: Error attempting to move object back " + (-1*flagID) + " instructions");
-						}
-					} else {
-						System.out.println("Unknown flag");
-					}
-				}
 			}
 			
 			else if (current instanceof InterpolateString) {
@@ -428,16 +345,7 @@ public class Block extends Obj {
 	 */
 	public void addOrDumpVar(Obj o) {
 		if (o.isa(Obj.BLOCK)) {
-				// If there is a quote_fn flag 
-			if (instructions.size() >= 1 
-					&& instructions.peek(0) instanceof Flag 
-					&& ((Flag)instructions.peek(0)).getID() == Flag.QUOTE_FUNCTION) {
-				stack.push(o);
-				// Pop the flag
-				instructions.pop();
-			} else {
-				instructions.addAll(((Block)o).getInstructions().getInstrucionList());
-			}
+			instructions.addAll(((Block)o).getInstructions().getInstrucionList());
 		} else {
 			stack.push(o);
 
