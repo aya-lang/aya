@@ -1,8 +1,6 @@
 /versions
 /plots
-/bin/ui
-/bin/aya
-/bin/test
+/bin
 /data/rdatasets
 *.swp
 *.DS_Store
