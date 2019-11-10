@@ -30,7 +30,6 @@ import aya.Aya;
 import aya.AyaPrefs;
 import aya.OperationDocs;
 import aya.StreamMgr;
-import aya.entities.ListBuilder;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpInstruction;
@@ -40,6 +39,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
@@ -1712,11 +1712,11 @@ class OP_R extends OpInstruction {
 	@Override public void execute (final Block block) {
 		final Obj a = block.pop();
 		if(a.isa(LIST)) {
-			block.push( ListBuilder.buildRange((List)a) );
+			block.push( ListRangeUtils.buildRange((List)a) );
 		} else if (a.isa(NUMBER)) {
-			block.push(ListBuilder.buildRange((Number)a));
+			block.push(ListRangeUtils.buildRange((Number)a));
 		} else if (a.isa(CHAR)) {
-			block.push(ListBuilder.buildRange(((Char)a).charValue()));
+			block.push(ListRangeUtils.buildRange(((Char)a).charValue()));
 		} else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_RANGE);
 		} else {

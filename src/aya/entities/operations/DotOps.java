@@ -24,11 +24,11 @@ import java.util.Stack;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.OperationDocs;
-import aya.entities.ListBuilder;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.ListBuilder;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -36,6 +36,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -1323,10 +1324,10 @@ class OP_Dot_R extends OpInstruction {
 				block.push(new GenericList(new ArrayList<Obj>()));
 			} else if (n.compareTo(Num.ZERO) > 0) {
 				// +N .R => [0 1 2 ... N-1]
-				block.push( ListBuilder.buildRange(Num.ZERO, n.dec()) );
+				block.push( ListRangeUtils.buildRange(Num.ZERO, n.dec()) );
 			} else {
 				// -N .R => [N+1 ... -1 0]
-				block.push( ListBuilder.buildRange(n.inc(), Num.ZERO) );
+				block.push( ListRangeUtils.buildRange(n.inc(), Num.ZERO) );
 			}
 		} else {
 			throw new TypeError(this, a);

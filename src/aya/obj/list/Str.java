@@ -28,6 +28,10 @@ public class Str extends List implements Comparable<Str> {
 		_str = s;
 	}
 	
+	public Str(char[] chars) {
+		_str = new String(chars);
+	}
+	
 	/** Create a new string by repeating c n times */
 	public Str(char c, int repeats) {
 		_str = repeat(c, repeats);

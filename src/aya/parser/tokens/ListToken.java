@@ -2,9 +2,9 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.entities.ListBuilder;
 import aya.exceptions.SyntaxError;
 import aya.instruction.EmptyListLiteralInstruction;
+import aya.instruction.ListBuilder;
 import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.obj.number.Number;

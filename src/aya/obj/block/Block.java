@@ -7,11 +7,10 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import aya.entities.InstructionStack;
-import aya.entities.ListBuilder;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.Instruction;
 import aya.instruction.LambdaInstruction;
-import aya.instruction.TupleInstruction;
+import aya.instruction.ListBuilder;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -132,11 +131,6 @@ public class Block extends Obj {
 				}
 			}
 		
-			//ListBuilder: Build the list
-			else if (current instanceof ListBuilder) {
-				stack.push(((ListBuilder)current).createList(stack));
-			}
-			
 			//Literal
 			else {
 				this.push((Obj)current);
