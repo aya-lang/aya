@@ -9,16 +9,13 @@ import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Stack;
 
 import aya.Aya;
@@ -48,7 +45,6 @@ import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.Pair;
 import aya.util.QuickDialog;
-import aya.util.SimplePlot;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -117,7 +113,7 @@ public class DotOps {
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
 		/* 87 W  */ new OP_Dot_W(),
-		/* 88 X  */ new OP_SimplePlot(),
+		/* 88 X  */ null,
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Dot_Zed(),
 		/* 91 [  */ null,
@@ -1467,58 +1463,6 @@ class OP_Dot_W extends OpInstruction {
 		}
 	}
 }
-
-//X - 88
-class OP_SimplePlot extends OpInstruction {
-
-	static {
-		OpDoc doc = new OpDoc('.', ".X");
-		doc.desc("L", "plots a list of numbers to a basic graph and saves the image in the plots folder");
-		OperationDocs.add(doc);
-	}
-
-	public OP_SimplePlot() {
-		this.name = ".X";
-	}
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-
-
-		if(a.isa(LIST)) {
-			List l = (List)a;
-
-			double[] data = l.toNumberList().todoubleArray();
-
-			SimplePlot sp = new SimplePlot(data);
-
-			//Create folder if needed
-			File file = new File("plots\\");
-			if(!file.exists()) {
-				file.mkdir();
-			}
-
-			//Save the file
-			try {
-				sp.save(new File("plots\\" + getCurrentTimeStamp()+".png"));
-			} catch (IOException e) {
-				//Do Nothing
-			}
-			sp.show();
-			return;
-		}
-
-		throw new TypeError(this, a);
-	}
-
-	public static String getCurrentTimeStamp() {
-	    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HHmmss");//dd/MM/yyyy
-	    Date now = new Date();
-	    String strDate = sdfDate.format(now);
-	    return strDate;
-	}
-}
-
 
 
 // Z - 90

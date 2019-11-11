@@ -17,7 +17,6 @@ import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
-import aya.variable.Variable;
 
 public class LambdaToken extends CollectionToken {
 	
