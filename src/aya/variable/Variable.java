@@ -119,7 +119,7 @@ public class Variable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return this.id == ((Variable)obj).getID();
+		return obj instanceof Variable && this.id == ((Variable)obj).getID();
 	}
 	
 	@Override

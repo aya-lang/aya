@@ -28,6 +28,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilder;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
@@ -211,8 +212,9 @@ class OP_Dot_Bang extends OpInstruction {
 
 			if (b != null
 					&& b.getInstructions().getInstrucionList().size() == 1
-					&& b.getInstructions().peek(0) instanceof Number) {
-				block.push((Obj) b.getInstructions().peek(0));
+					&& DataInstruction.isa(b.getInstructions().peek(0), Obj.NUMBER)) {
+				DataInstruction data = (DataInstruction)b.getInstructions().peek(0);
+				block.push(data.getData());
 			} else {
 				block.push(o);
 			}

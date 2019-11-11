@@ -222,6 +222,6 @@ public abstract class Obj {
 	
 	@Override
 	public boolean equals(Object o) {
-		return this.equiv((Obj)o);
+		return o instanceof Obj && this.equiv((Obj)o);
 	}
 }

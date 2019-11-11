@@ -4,9 +4,10 @@ import java.util.LinkedList;
 
 import aya.Aya;
 import aya.entities.InstructionStack;
+import aya.instruction.variable.GetVariableInstruction;
+import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
-import aya.variable.Variable;
 
 public class InterpolateStringInstruction extends Instruction  {
 	String orig; // For printing
@@ -26,26 +27,36 @@ public class InterpolateStringInstruction extends Instruction  {
 		StringBuilder sb = new StringBuilder();
 		
 		while(!is.isEmpty()) {
-			Object current = is.pop();
+			Instruction current = is.pop();
 			
-			if (current instanceof Str) {
-				sb.append(((Str)current).str());
-			} else if (current instanceof Variable) {
-				sb.append(Aya.getInstance().getVars().getVar((Variable)current).str());
-			} else if (current instanceof Block) {
-				Block b = ((Block)current).duplicate();
-				b.eval();
-				if (b.getStack().size() == 1) {
-					sb.append(b.getStack().pop().str());
+			if (current instanceof GetVariableInstruction) {
+				GetVariableInstruction var = (GetVariableInstruction)current;
+				sb.append(Aya.getInstance().getVars().getVar(var.getID()).str());
+			} else if (current instanceof DataInstruction) {
+				Obj data = ((DataInstruction)current).getData();
+				if (data.isa(Obj.BLOCK)) {
+					Block b = ((Block)data).duplicate();
+					b.eval();
+					if (b.getStack().size() == 1) {
+						sb.append(b.getStack().pop().str());
+					} else {
+						sb.append("[ " + b.getPrintOutputState() + "]");
+					}
+				} else if (data.isa(Obj.STR)) {
+					sb.append(data.str());
 				} else {
-					sb.append("[ " + b.getPrintOutputState() + "]");
+					badItemInString(current);
 				}
 			} else {
-				throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + current.toString());
+				badItemInString(current);
 			}
 		}
 		
 		return sb.toString();
+	}
+	
+	private void badItemInString(Instruction item) {
+		throw new RuntimeException("Invalid object in InterpolteString \"" + this.toString() + "\": " + item.toString());
 	}
 	
 	public String toString() {

@@ -3,8 +3,10 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.exceptions.SyntaxError;
+import aya.instruction.DataInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
+import aya.instruction.Instruction;
 import aya.instruction.VariableSetInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
@@ -28,12 +30,12 @@ public class BlockToken extends CollectionToken {
 
 	
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		switch(blockData.size()) {
 		case 1:
-			return new Block(Parser.generate(blockData.get(0)));
+			return new DataInstruction(new Block(Parser.generate(blockData.get(0))));
 		case 2:
 			TokenQueue header = blockData.get(0);
 			//Empty header, dict literal
@@ -48,7 +50,14 @@ public class BlockToken extends CollectionToken {
 			}
 			// Single number in header, create a dict factory with a capture
 			else if (header.size() == 1 && header.peek() instanceof NumberToken) {
-				int n = ((Num)header.peek().getAyaObj()).toInt();
+				NumberToken nt = (NumberToken)header.peek();
+				int n = 0;
+				try {
+					n = nt.numValue().toInt();
+				} catch (NumberFormatException e) {
+					throw new SyntaxError(nt + " is not a valid number in the block header");
+				}
+
 				if (n < 0) {
 					throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
 				}
@@ -67,7 +76,7 @@ public class BlockToken extends CollectionToken {
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
 				VariableSet header_vars = parseVariableSet(blockData.get(0).getArrayList());	//Block arguments
 				b.add(new VariableSetInstruction(header_vars));
-				return b;
+				return new DataInstruction(b);
 			}
 		default:
 			throw new SyntaxError("Block " + data + " contains too many parts");
@@ -87,7 +96,7 @@ public class BlockToken extends CollectionToken {
 			Variable[] args = new Variable[tokens.size()];
 			for (int i = 0; i < args.length; i++) {
 				final Token t = tokens.get(i);
-				final GetVariableInstruction v = (GetVariableInstruction)(t.getAyaObj());
+				final GetVariableInstruction v = (GetVariableInstruction)(t.getInstruction());
 				args[i] = new Variable(v.getID());
 			}
 			return new VariableSet(args,  null, null);

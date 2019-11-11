@@ -133,7 +133,7 @@ public class VariableData {
 	public Obj getVar(long id) {
 		Obj res = null;
 		for(int i = varSets.size()-1; i >= 0; i--) {
-			res = varSets.get(i).getObject(id);
+			res = varSets.get(i).getObj(id);
 			if(res != null) {
 				return res;
 			}

@@ -1,5 +1,8 @@
 package aya.parser.tokens;
 
+import aya.instruction.DataInstruction;
+import aya.instruction.Instruction;
+import aya.obj.Obj;
 import aya.obj.number.Num;
 import aya.parser.SpecialNumberParser;
 
@@ -16,14 +19,30 @@ public class NumberToken extends StdToken {
 	}
 
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		if (isSpecNum) {
-			return (new SpecialNumberParser(data)).toNumber();
+			return new DataInstruction(new SpecialNumberParser(data).toNumber());
+		} else {
+			return new DataInstruction(new Num(Double.parseDouble(data)));
+		}
+	}
+	
+	/** Return the numeric value of this token.
+	 * Throw a {@link NumberFormatException} if the token is a special number that is non-numeric
+	 * @return
+	 */
+	public aya.obj.number.Number numValue() {
+		if (isSpecNum) {
+			Obj o = (new SpecialNumberParser(data)).toNumber();
+			if (o instanceof aya.obj.number.Number) {
+				return (aya.obj.number.Number)o;
+			} else {
+				throw new NumberFormatException();
+			}
 		}
 		else {
 			return new Num(Double.parseDouble(data));
 		}
-	
 	}
 
 	@Override

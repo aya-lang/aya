@@ -33,6 +33,7 @@ import aya.StreamMgr;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpInstruction;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -2175,7 +2176,7 @@ class OP_Tilde extends OpInstruction {
 				if(varname == null) {
 					throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 				}
-				block.add(new Variable(varname));
+				block.add(new GetVariableInstruction(Variable.encodeString(varname)));
 			}
 		} else if (a.isa(LIST)) {
 			List list = (List)a;

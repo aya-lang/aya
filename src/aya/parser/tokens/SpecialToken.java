@@ -1,5 +1,7 @@
 package aya.parser.tokens;
 
+import aya.instruction.Instruction;
+
 public class SpecialToken extends Token {
 	String name;
 		
@@ -126,7 +128,7 @@ public class SpecialToken extends Token {
 	}
 
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		throw new RuntimeException("Cannot generate aya code for special token");
 	}
 }

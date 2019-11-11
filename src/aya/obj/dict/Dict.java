@@ -48,7 +48,7 @@ public class Dict extends Obj {
 	public Dict(VariableSet vars) {
 		_vars = vars;
 		// Check if the VariableSet has a __meta__ key
-		Obj maybe_meta = vars.getObject(META);
+		Obj maybe_meta = vars.getObj(META);
 		if (maybe_meta != null && maybe_meta.isa(DICT)) {
 			_meta = (Dict)(maybe_meta);
 		} else {
@@ -132,7 +132,7 @@ public class Dict extends Obj {
 	
 	/** Returns null if no key found */
 	private Obj _get(long id, ArrayList<Integer> visited) {
-		Obj o = _vars.getObject(id);
+		Obj o = _vars.getObj(id);
 		if (o != null)
 		{
 			return o;
@@ -398,7 +398,7 @@ public class Dict extends Obj {
 			for (Long l : _vars.getMap().keySet()) {
 				if (l != META.getID()) {
 					sb.append(spaces((depth + 1) * width));
-					sb.append(pairString(depth+1, visited, Variable.decodeLong(l), _vars.getObject(l)));
+					sb.append(pairString(depth+1, visited, Variable.decodeLong(l), _vars.getObj(l)));
 					sb.append('\n');
 				}
 			}

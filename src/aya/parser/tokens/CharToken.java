@@ -1,6 +1,7 @@
 package aya.parser.tokens;
 
-import aya.obj.Obj;
+import aya.instruction.DataInstruction;
+import aya.instruction.Instruction;
 import aya.obj.character.Char;
 
 public class CharToken extends StdToken {
@@ -11,8 +12,8 @@ public class CharToken extends StdToken {
 
 	
 	@Override
-	public Obj getAyaObj() {
-		return Char.valueOf(data.charAt(0));
+	public Instruction getInstruction() {
+		return new DataInstruction(Char.valueOf(data.charAt(0)));
 	}
 
 	@Override

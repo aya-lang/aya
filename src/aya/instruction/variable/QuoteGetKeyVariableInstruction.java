@@ -31,7 +31,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 			b.push(o);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObject(typeSym.id());
+			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym.id());
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
 				Obj o;

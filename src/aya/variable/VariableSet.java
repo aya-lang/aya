@@ -106,11 +106,11 @@ public class VariableSet {
 		vars.put(v,o);
 	}
 	
-	public Obj getObject(long id) {
+	public Obj getObj(long id) {
 		return vars.get(id);
 	}
 	
-	public Obj getObject(Variable v) {
+	public Obj getObj(Variable v) {
 		return vars.get(v.getID());
 	}
 	
@@ -293,7 +293,7 @@ public class VariableSet {
 	public void copyExplicitLocals() {
 		if (_copyOnInit != null) {
 			for (Long l : _copyOnInit) {
-				setVar(l, getObject(l).deepcopy());
+				setVar(l, getObj(l).deepcopy());
 			}
 		}
 	}

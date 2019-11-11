@@ -8,9 +8,9 @@ import java.util.Stack;
 
 import aya.entities.InstructionStack;
 import aya.exceptions.AyaRuntimeException;
+import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.LambdaInstruction;
-import aya.instruction.ListBuilder;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -62,7 +62,7 @@ public class Block extends Obj {
 	}
 	
 	/** Pops the next instruction from the instruction list */
-	public Object next() {
+	public Instruction next() {
 		return instructions.pop();
 	}
 	
@@ -78,17 +78,27 @@ public class Block extends Obj {
 	}
 	
 	/** Add an object to the instruction stack */
-	public void add(Object o) {
+	public void add(Instruction o) {
 		instructions.push(o);
 	}
 	
-	/** Adds an instruction to a specified location on the stack */
-	public void add(int i, Object o) {
+	/** Add data to the instruction stack */
+	public void add(Obj data) {
+		add(new DataInstruction(data));
+	}
+	
+	/** Adds an instruction to a specified location on the instruction stack */
+	public void add(int i, Instruction o) {
 		instructions.insert(i, o);
 	}
 	
+	/** Adds data to a specified location on the instruction stack */
+	public void add(int i, Obj o) {
+		add(i, new DataInstruction(o));
+	}
+	
 	/** Adds a collection of objects to the instruction stack */
-	public void addAll(Collection<? extends Object> list) {
+	public void addAll(Collection<? extends Instruction> list) {
 		instructions.addAll(list);
 	}
 	
@@ -105,7 +115,7 @@ public class Block extends Obj {
 	/** Test if this block has a local variable set */
 	public boolean hasLocals() {
 		if (instructions.isEmpty()) return false;
-		final Object flag = instructions.getInstrucionList().get(0);
+		final Instruction flag = instructions.getInstrucionList().get(0);
 		return flag instanceof PopVarFlagInstruction;
 	}
 	
@@ -118,25 +128,16 @@ public class Block extends Obj {
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
 	public void eval() {
 		while (!instructions.isEmpty()) {
-			Object current = instructions.pop();
+			Instruction instr = instructions.pop();
 			
-			if (current instanceof Instruction) {
-				Instruction instr = (Instruction)current;
-				try {
-					instr.execute(this);
-				} catch (EmptyStackException es) {
-					throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
-				} catch (NullPointerException npe) {
-					throw new RuntimeException(npe.toString());
-				}
-			}
-		
-			//Literal
-			else {
-				this.push((Obj)current);
+			try {
+				instr.execute(this);
+			} catch (EmptyStackException es) {
+				throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
+			} catch (NullPointerException npe) {
+				throw new RuntimeException(npe.toString());
 			}
 		}
-		return;
 	}
 	
 	/** Creates a duplicate of a block without interfering with the block */
@@ -157,7 +158,7 @@ public class Block extends Obj {
 		Block b = new Block();
 		for (int i = 0; i < list.length(); i++) {
 			b.addAll(this.instructions.getInstrucionList());
-			b.add(list.get(i));
+			b.add(new DataInstruction(list.get(i)));
 			b.eval();
 			out.addAll(b.stack);
 			b.clear();
@@ -172,7 +173,7 @@ public class Block extends Obj {
 		for (int i = 0; i < list.length(); i++) {
 			b.push(obj.deepcopy());
 			b.addAll(this.instructions.getInstrucionList());
-			b.add(list.get(i));
+			b.add(new DataInstruction(list.get(i)));
 			b.eval();
 			out.addAll(b.stack);
 			b.clear();
@@ -201,7 +202,7 @@ public class Block extends Obj {
 		Block b = new Block();
 		for (int i = 0; i < list.length(); i++) {
 			b.addAll(this.instructions.getInstrucionList());
-			b.add(list.get(i));
+			b.add(new DataInstruction(list.get(i)));
 			b.eval();
 			if(b.peek().bool()) {
 				out.add(list.get(i));
@@ -221,7 +222,7 @@ public class Block extends Obj {
 		Block b = new Block();
 		for (int i = 0; i < list.length(); i++) {
 			b.addAll(this.instructions.getInstrucionList());
-			b.add(list.get(i));
+			b.add(new DataInstruction(list.get(i)));
 			b.eval();
 			out[i] = b.peek().bool();
 			b.clear();
@@ -274,7 +275,7 @@ public class Block extends Obj {
 
 	/** Adds an item to the back of the instruction stack. (opposite of add()) */
 	public void addBack(Obj b) {
-		instructions.insert(0, b);
+		instructions.insert(0, new DataInstruction(b));
 		
 	}
 	

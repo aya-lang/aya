@@ -3,11 +3,13 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.exceptions.SyntaxError;
+import aya.instruction.DataInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
+import aya.instruction.Instruction;
 import aya.instruction.ListBuilder;
 import aya.instruction.ListLiteralInstruction;
+import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.number.Number;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 
@@ -19,7 +21,7 @@ public class ListToken extends CollectionToken {
 
 	
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		if (col.size() == 0) {
 			return EmptyListLiteralInstruction.INSTANCE;
 		}
@@ -45,9 +47,8 @@ public class ListToken extends CollectionToken {
 			
 			//If the map clause only contains a single block (and it is not a list literal), dump its instructions into the map block
 			else if (map.getInstructions().size() == 1 
-					&& map.getInstructions().peek(0) instanceof Block ){
-					//&& !ElemTypes.toBlock(map.getInstructions().peek(0)).isListLiteral()) {
-				map = new Block(( (Block)(map.getInstructions().peek(0)) ).getInstructions() );
+					&& DataInstruction.isa(map.getInstructions().peek(0), Obj.BLOCK)) {
+				map = DataInstruction.getBlock(map.getInstructions().peek(0)).duplicate();
 			}
 			
 		return new ListBuilder(initialList, map, null, pops);
@@ -69,8 +70,9 @@ public class ListToken extends CollectionToken {
 				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
 				
 				//If the filter clause only contains a single block, dump its instructions into the filter block
-				if (tmpFilter.getInstructions().size() == 1 && tmpFilter.getInstructions().peek(0) instanceof Block) {
-					tmpFilter = new Block(((Block)(tmpFilter.getInstructions().peek(0))).getInstructions());
+				if (tmpFilter.getInstructions().size() == 1
+						&& DataInstruction.isa(tmpFilter.getInstructions().peek(0), Obj.BLOCK)) {
+					tmpFilter = DataInstruction.getBlock(tmpFilter.getInstructions().peek(0)).duplicate();
 				}
 				
 				filters[k-2] = tmpFilter;
@@ -87,8 +89,14 @@ public class ListToken extends CollectionToken {
 				&& arr.get(0).isa(Token.NUMERIC)
 				&& arr.get(1).isa(Token.OP)
 				&& arr.get(1).data.equals("|")) {
-			pops = ((Number)arr.get(0).getAyaObj()).toInt();
-			arr.remove(0);
+			NumberToken nt = (NumberToken)arr.get(0);
+			try {
+				pops = nt.numValue().toInt();
+			} catch (NumberFormatException e) {
+				throw new SyntaxError(nt + " is not a valid number in the block header");
+			}
+			
+			arr.remove(0); 
 			arr.remove(0);
 		}
 		return pops;

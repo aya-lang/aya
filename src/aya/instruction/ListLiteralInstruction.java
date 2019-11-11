@@ -45,10 +45,10 @@ public class ListLiteralInstruction extends Instruction {
 	/** Returns null if is not list literal */
 	public List toList() {
 		ArrayList<Obj> items = new ArrayList<Obj>();
-		ArrayList<Object> instrs = block.getInstructions().getInstrucionList();
+		ArrayList<Instruction> instrs = block.getInstructions().getInstrucionList();
 		for (int i = instrs.size()-1; i>=0; i--) {
-			if (instrs.get(i) instanceof Obj) {
-				items.add((Obj)instrs.get(i));
+			if (instrs.get(i) instanceof DataInstruction) {
+				items.add(((DataInstruction)(instrs.get(i))).getData());
 			} else {
 				return null;
 			}

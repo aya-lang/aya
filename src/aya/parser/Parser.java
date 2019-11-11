@@ -6,6 +6,8 @@ import aya.entities.operations.ColonOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
+import aya.instruction.DataInstruction;
+import aya.instruction.Instruction;
 import aya.instruction.ListLiteralInstruction;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetKeyVariableInstruction;
@@ -14,6 +16,7 @@ import aya.instruction.variable.QuoteGetKeyVariableInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
+import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.parser.token.TokenQueue;
@@ -566,7 +569,7 @@ public class Parser {
 				if(is.isEmpty()) {
 					throw new SyntaxError("Expected token after ':' in:\n\t" + tokens_in.toString());
 				}
-				Object next = is.pop();
+				Instruction next = is.pop();
 				//Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction)next);
@@ -581,7 +584,7 @@ public class Parser {
 				if(is.isEmpty()) {
 					throw new SyntaxError("Expected token after '.' in:\n\t" + tokens_in.toString());
 				}
-				Object next = is.pop();
+				Instruction next = is.pop();
 				
 				if (next instanceof ListLiteralInstruction) {
 					is.push(Ops.GETINDEX);
@@ -593,7 +596,7 @@ public class Parser {
 							is.push(l);
 						}
 					} else {
-						is.push(next);
+						is.push((ListLiteralInstruction)next);
 					}
 				}
 			}
@@ -602,7 +605,7 @@ public class Parser {
 				if(is.isEmpty()) {
 					throw new SyntaxError("Expected token after '.:' in:\n\t" + tokens_in.toString());
 				}
-				Object next = is.pop();
+				Instruction next = is.pop();
 				//Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction)next);
@@ -620,7 +623,7 @@ public class Parser {
 							throw new SyntaxError("Expected single element list after '.:' in:\n\t" + tokens_in.toString());
 						}
 					} else {
-						is.push(next);
+						is.push((ListLiteralInstruction)next);
 					}
 				}
 			}
@@ -630,9 +633,9 @@ public class Parser {
 				if(is.isEmpty()) {
 					throw new SyntaxError("Expected token after '#' in:\n\t" + tokens_in.toString());
 				}
-				Object next = is.pop();	
+				Instruction next = is.pop();	
 				//Apply a block to a list
-				if (next instanceof Block) {
+				if (next instanceof DataInstruction && ((DataInstruction)next).objIsa(Obj.BLOCK)) {
 					is.push(Ops.getOp('#'));
 					is.push(next);
 				}
@@ -642,7 +645,7 @@ public class Parser {
 					is.push(next); //Add next back in
 					
 					while (!is.isEmpty()) {
-						Object o = is.pop();
+						Instruction o = is.pop();
 						colonBlock.getInstructions().insert(0, o);
 						if(o instanceof OpInstruction || o instanceof GetVariableInstruction || o instanceof GetKeyVariableInstruction) {
 							break;
@@ -659,7 +662,7 @@ public class Parser {
 				if(is.isEmpty()) {
 					throw new SyntaxError("Expected token after ':#' in:\n\t" + tokens_in.toString());
 				}
-				Object next = is.pop();	
+				Instruction next = is.pop();	
 				//Apply a block to a list or dict
 				is.push(ColonOps.getOp('#'));
 				is.push(next);
@@ -686,7 +689,7 @@ public class Parser {
 			
 			//Std Token
 			else {
-				is.push(((StdToken)current).getAyaObj());
+				is.push(((StdToken)current).getInstruction());
 			}
 			
 		}

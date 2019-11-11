@@ -1,5 +1,6 @@
 package aya.parser.tokens;
 
+import aya.instruction.Instruction;
 import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.variable.Variable;
 
@@ -14,7 +15,7 @@ public class KeyVarToken extends StdToken {
 	}
 
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		return new GetKeyVariableInstruction(getID());
 	}
 

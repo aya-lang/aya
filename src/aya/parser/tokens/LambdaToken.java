@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.entities.InstructionStack;
+import aya.instruction.DataInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
+import aya.instruction.Instruction;
 import aya.instruction.LambdaInstruction;
-import aya.instruction.ListLiteralInstruction;
 import aya.instruction.TupleInstruction;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
@@ -33,7 +35,7 @@ public class LambdaToken extends CollectionToken {
 	}
 	
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		
 		//Is it a negative number?
 		if(col.size() == 2 && col.get(0).isa(Token.OP)){
@@ -44,7 +46,7 @@ public class LambdaToken extends CollectionToken {
 				//Parse the number and negate it
 				Token t = col.get(1);
 				if(t.isa(Token.NUMERIC)) {
-					return new Num(Double.parseDouble(t.getData())*-1);
+					return new DataInstruction(new Num(Double.parseDouble(t.getData())*-1));
 				} 
 			}
 		}
@@ -58,10 +60,11 @@ public class LambdaToken extends CollectionToken {
 			LambdaInstruction outLambda;
 			
 			//If contains only block, dump instructions
-			if(lambdaIL.size() == 1
-					&& lambdaIL.peek(0) instanceof Block
-					&& ! (lambdaIL.peek(0) instanceof ListLiteralInstruction) ) {
-				outLambda = new LambdaInstruction(((Block)(lambdaIL.peek(0))).getInstructions());
+			if (lambdaIL.size() == 1
+					&& lambdaIL.peek(0) instanceof DataInstruction
+					&& (((DataInstruction)lambdaIL.peek(0)).objIsa(Obj.BLOCK))) {
+				DataInstruction data = (DataInstruction)lambdaIL.peek(0);
+				outLambda = new LambdaInstruction(((Block)(data.getData())).getInstructions());
 			} else {
 				outLambda = new LambdaInstruction(lambdaIL);
 			}
@@ -91,16 +94,17 @@ public class LambdaToken extends CollectionToken {
 		InstructionStack is = Parser.generate(lambdaData.get(0));
 		if (is.size() != 1) return null;
 
-		final Object o = is.pop();
+		final Instruction o = is.pop();
 		
 		if (o instanceof EmptyListLiteralInstruction) {
 			return new Pair<Boolean, Obj>(true, EmptyListLiteralInstruction.INSTANCE.getListCopy());
 		} else if (o instanceof EmptyDictLiteralInstruction) {
 			return new Pair<Boolean, Obj>(true, EmptyDictLiteralInstruction.INSTANCE.getDict());
-		} else if (o instanceof Variable) {
-			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar((Variable)o));
-		} else if (o instanceof Obj) {
-			return new Pair<Boolean, Obj>(true, (Obj)o);
+		} else if (o instanceof GetVariableInstruction) {
+			GetVariableInstruction var = (GetVariableInstruction)o;
+			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar(var.getID()));
+		} else if (o instanceof DataInstruction) {
+			return new Pair<Boolean, Obj>(true, ((DataInstruction)o).getData());
 		} else {
 			return new Pair<Boolean, Obj>(false, null);
 		}

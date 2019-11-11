@@ -3,7 +3,10 @@ package aya.parser.tokens;
 import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
+import aya.instruction.DataInstruction;
+import aya.instruction.Instruction;
 import aya.instruction.InterpolateStringInstruction;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
 import aya.parser.Parser;
@@ -25,16 +28,15 @@ public class StringToken extends StdToken {
 	}
 	
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		if (interpolate && data.contains("$"))
 			return parseInterpolateStr(data);
-		return new Str(data);
+		return new DataInstruction(new Str(data));
 	}
 
 	private InterpolateStringInstruction parseInterpolateStr(String data) {
 		ParserString in = new ParserString(data);
 		StringBuilder sb = new StringBuilder();
-		//ArrayList<Object> instrs = new ArrayList<Object>();
 		InstructionStack instrs = new InstructionStack();
 		
 		while(in.hasNext()) {
@@ -62,7 +64,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new Variable(var_name));
+					instrs.insert(0, new GetVariableInstruction(Variable.encodeString(var_name)));
 					
 				}
 				

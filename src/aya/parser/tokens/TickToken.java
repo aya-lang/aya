@@ -1,5 +1,6 @@
 package aya.parser.tokens;
 
+import aya.instruction.Instruction;
 import aya.instruction.flag.TickFlagInstruction;
 
 public class TickToken extends StdToken {
@@ -10,7 +11,7 @@ public class TickToken extends StdToken {
 
 	
 	@Override
-	public Object getAyaObj() {
+	public Instruction getInstruction() {
 		int ticks = Integer.parseInt(data);
 		if (ticks < TickFlagInstruction.TICK_TABLE.length) {
 			return TickFlagInstruction.TICK_TABLE[ticks];
