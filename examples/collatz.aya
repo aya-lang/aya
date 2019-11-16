@@ -19,5 +19,5 @@ collatz.` :P "":P
 [10, collatz] :P
 
 .# Scatter plot of the first 5000 values
- import::plot
- 5000R $#collatz plot.scatter.view
+.# import::plot
+.# 5000R $#collatz plot.scatter.view

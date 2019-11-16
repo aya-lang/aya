@@ -27,3 +27,11 @@
 
 .# Transpose to separate list of x and y values
 .T ~ plot.line.view
+
+
+.# Lorenz attractor golfed (61 chars)
+{
+    import "golf"
+
+    :2E:t:α10*Y3*X{yα-d*t*α+:α28x-α*y-t*y+YJ$~*3x*-t*x+X}4E%.A.T.x
+};

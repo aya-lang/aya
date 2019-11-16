@@ -24,6 +24,14 @@
 
 "\n----[ Running Core Tests ]----":P
 
+.# Tick operator
+
+{`1 2} assert [2 1]
+{``1 2 3} assert [2 3 1]
+{```1 2 3 4} assert [2 3 4 1]
+{````1 2 3 4 5} assert [2 3 4 5 1]
+{`````1 2 3 4 5 6} assert [2 3 4 5 6 1]
+{``````1 2 3 4 5 6 7} assert [2 3 4 5 6 7 1]
 
 .# Parsing and Literals
 

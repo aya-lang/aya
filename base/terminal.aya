@@ -1,0 +1,60 @@
+import ::color
+
+{,
+    {; "\{x1b}[2J".P}:clear;
+    {; "\{x1b}[1K".P}:clearline;
+    {; "\{x1b}[1K\{x1b}[1G".P}:clearline;
+
+
+
+    {c::color meta, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }:setfgstr;
+    {c::color meta, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }:setbgstr;
+
+    {c::color meta,
+        c meta.:fg;
+        c meta.setfgstr .P
+    }:setfg;
+
+    {c::color meta,
+        c meta.:bg;
+        c meta.setbgstr .P
+    }:setbg;
+
+    {; "\{x1b}[1m" "\{x1b}[22m" .? .P}:bold;
+    {; "\{x1b}[3m" "\{x1b}[23m" .? .P}:italic;
+    {; "\{x1b}[4m" "\{x1b}[24m" .? .P}:underline;
+    {; "\{x1b}[9m" "\{x1b}[29m" .? .P}:strike;
+
+    {meta,
+        0 meta.bold
+        0 meta.italic
+        0 meta.underline
+        0 meta.strike
+    }:reset_font;
+
+    {meta,
+        colors.white terminal.setfg
+        colors.black terminal.setbg
+    }:reset_color;
+
+    colors.white :fg;
+    colors.black :bg;
+
+    {c::color meta,
+        [c meta.setfgstr
+         "aya> "
+         colors.white meta.setfgstr]S
+         1 MZ
+    }:replcolor;
+
+    .# Create a __meta__ table so the functions above get access to meta
+    {,
+        .# When terminal is typed into the repl, the contents of the
+        .# above functions are printed and may have adverse effects
+        .# Overload __repr__ to this does not happen
+        "<terminal module>" :__repr__;
+    }:__meta__;
+
+}:terminal;
+
+{n, "\{x1b}[$(n)m" .P}:c;

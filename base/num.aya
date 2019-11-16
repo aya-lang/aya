@@ -15,7 +15,7 @@
 .#? N1 N2 N3 .clip N1 between N2 (lo) and N3 (hi)
 {@.>.<}:clip;
 
-.#? ::num.posneg\n  generate a range from -N to N
+.#? ::num.i\n  generate a range from -N to N
 .{ Example:
     aya> 4.i
     [ -4 -3 -2 -1 0 1 2 3 4 ]

@@ -350,7 +350,8 @@ import ::math
         "\n"+ "\n"\+
     }:__repr__;
 
-    {.rows #.\}:__floor__;
+    {:&.rows :#{.\} \.M !}:__floor__;
+    {:&.rows :#{./} \.M !}:__ceil__;
 
     .#######################
     .# GENERATOR FUNCTIONS #

@@ -12,7 +12,7 @@ import ::list
 .#############
 
 
-:1c :euler;    .#? euler: euler's constant e
+:1c :e;    .#? euler: euler's constant e
 :0c :pi;       .#? pi:  constant \{pi}
 :4c :nan;      .#? nan:  not a number double literal
 :5c :inf;      .#? inf:  infinity double literal
@@ -151,13 +151,18 @@ import ::list
 
 .#? L geomean \n  geometric mean
 .# the nth root of the product of n numbers
-{$E\{*}F1@/^}:geomean;
+.# {$E\{*}F1@/^}:geomean;
+.# compute by summing the logarithms of the values
+{Ml.E\S\/Me}:geomean;
 
 .#? L median \n  median value of a list
 {l,
-    lC$E2/.\               .# Sort the list and get its middle index
-    lE2%0= {$1-KIS2/} {I}  .?  .# If the list has even length, average the middle two
-                          .# The list has odd length, take the middle item
+    lC$E2/.\        .# Sort the list and get its middle index
+    lE2%0= {        .# If the list has even length,
+        $1-KIS2/    .# average the middle two
+    } {
+        I           .# else, take the middle item
+    }  .?
 }:median;
 
 .#? xL xL regression\n  return a block that evaluates to the regression of the sets
@@ -198,6 +203,19 @@ import ::list
      * Mq
     /
 }:pearson;
+
+.#? ::list makepoly\n  generate a polynomial function with the given coefficients
+.{ Examples:
+    aya> [1 0 4 5] makepoly :f
+    {[ 3 2 1 0 ] ^ [ 1 0 4 :-5 ] * S}
+    aya> 5 f
+    140
+    aya> [2 0] makepoly :double
+    {[ 1 0 ] ^ [ 2 0 ] * S}
+    aya> [4,double]
+    [ 2 4 6 8 ]
+.}
+{.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
 
 
 

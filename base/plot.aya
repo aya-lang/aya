@@ -146,22 +146,28 @@ import ::list
         plt.view
     }:showcolors;
 
+    .#? ::list lineplot\n  draw a quick lineplot of the list
+    {
+        .# Generate a plot object
+        :& .ER\plot.line
+        .# Compute 2% margin on top and bottom
+        \:&.max \.min\K :&{-}F0.02*.|[1|$T\]+ \.:yaxis
+        .# Display the plot
+        .view
+    }:lineplot;
 
     {"Plot Instance"}:str:repr;
 
 }:plot;
 
-.#? ::list lineplot\n  draw a quick lineplot of the list
-{
-    .# Generate a plot object
-    :& .ER\plot.line
-    .# Compute 2% margin on top and bottom
-    \:&.max \.min\K :&{-}F0.02*.|[1|$T\]+ \.:yaxis
-    .# Display the plot
-    .view
-}:lineplot;
 
-
+{l::list,
+    l E 2 = {l#:T [::list ::list]= {1} {0} .?} {0} .? {
+        l.[0] l.[1] plot.line.view
+    } {
+        l plot.lineplot
+    } .?
+} list.:x;
 
 .# Basic Plotting
 

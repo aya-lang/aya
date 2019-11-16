@@ -2,7 +2,10 @@
 
 {$"N|U|!"&E2%'!\L\:8RI"isC"\++}:ischecked;
 
-"isChecked()":str; "$str -> $(str ischecked)"  :P
-"!isChecked()":str; "$str -> $(str ischecked)"  :P
-"isNotUnchecked()":str; "$str -> $(str ischecked)"  :P
-"isNotNotUnchecked()":str; "$str -> $(str ischecked)"  :P
+[
+    "isChecked()"
+    "!isChecked()"
+    "isNotUnchecked()"
+    "isNotNotUnchecked()"
+] :# {s, "$s -> $(s ischecked)" :P} ;
+
