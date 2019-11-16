@@ -1205,7 +1205,7 @@ class OP_Dot_M extends OpInstruction {
 	private Dict getBlockMeta(Block b) {
 		Dict d = new Dict();
 		// Arg Names
-		final ArrayList<Pair<Symbol, Symbol>> args_and_types = b.getInstructions().getArgsAndTypes();
+		final ArrayList<Pair<Symbol, Symbol>> args_and_types = b.getArgsAndTypes();
 		ArrayList<Obj> argnames = new ArrayList<>(args_and_types.size());
 		Dict argtypes = new Dict();
 		
@@ -1215,7 +1215,7 @@ class OP_Dot_M extends OpInstruction {
 		}
 		d.set(ARGS, new GenericList(argnames));
 		d.set(ARGTYPES, argtypes);
-		final VariableSet vars = b.getInstructions().getLocals();
+		final VariableSet vars = b.getLocals();
 		if (vars != null) {
 			d.set(LOCALS, new Dict(vars));
 		}

@@ -16,6 +16,10 @@ public class TokenQueue  {
 	public TokenQueue(TokenQueue other) {
 		this.queue = (ArrayList<Token>) other.queue.clone();
 	}
+	
+	public TokenQueue(ArrayList<Token> tokens) {
+		this.queue = tokens;
+	}
 
 	public void add(Token t) {
 		queue.add(t);

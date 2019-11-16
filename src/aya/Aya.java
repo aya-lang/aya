@@ -277,8 +277,6 @@ public class Aya extends Thread {
 			return exToSimpleStr(e);
 		} else if (e instanceof EmptyStackException) {
 			return "Unexpected empty stack";
-		} else if (e instanceof IndexOutOfBoundsException) {
-			return exToSimpleStr(e);
 		} else if (e instanceof AyaUserRuntimeException ) {
 			return ((AyaUserRuntimeException)e).getSimpleMessage();
 		} 

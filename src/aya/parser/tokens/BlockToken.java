@@ -7,18 +7,14 @@ import aya.instruction.DataInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
-import aya.instruction.VariableSetInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
-import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockHeader;
 import aya.obj.number.Num;
-import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
-import aya.variable.Variable;
-import aya.variable.VariableSet;
 
 public class BlockToken extends CollectionToken {
 	
@@ -74,8 +70,8 @@ public class BlockToken extends CollectionToken {
 				Block b = new Block();
 				b.add(PopVarFlagInstruction.INSTANCE);
 				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-				VariableSet header_vars = parseVariableSet(blockData.get(0).getArrayList());	//Block arguments
-				b.add(new VariableSetInstruction(header_vars));
+				BlockHeader block_header = generateBlockHeader(blockData.get(0));
+				b.add(block_header);
 				return new DataInstruction(b);
 			}
 		default:
@@ -83,8 +79,115 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
+	private BlockHeader generateBlockHeader(TokenQueue tokens) {
+		BlockHeader header = new BlockHeader();
+		
+		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
+		TokenQueue arg_tokens = split_tokens.first();
+		TokenQueue default_tokens = split_tokens.second();
+	
+		generateBlockHeaderArgs(header, arg_tokens);
+		generateBlockHeaderDefaults(header, default_tokens);
+		
+		return header;
+	}
+	
+	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) {
+		String orig = tokens.toString(); // For error reporting
+		while (tokens.hasNext()) {
+			Token current = tokens.next();
+			if (current.isa(Token.VAR)) {
+				VarToken var = (VarToken)current;
+				BlockHeader.Arg arg = new BlockHeader.Arg(var.getID());
+				
+				if (tokens.hasNext()) {
+					// Copy?
+					if (tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
+						tokens.next(); // Discard $
+						arg.copy = true;
+					}
+				
+					// Type annotation?
+					if (tokens.peek().isa(Token.SYMBOL)) {
+						SymbolToken sym_token = (SymbolToken)tokens.next();
+						arg.type = sym_token.getID();
+					}
+				}
+				
+				header.addArg(arg);
+			} else {
+				throw new SyntaxError("All arguments should follow the format name[$][::type].\n" +
+									  "Got: " + orig);
+			}
+		}
+	}
+	
+	/** Assumes args have already been set */
+	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens) {
+		String orig = tokens.toString();
+		while (tokens.hasNext()) {
+			Token current = tokens.next();
+			if (current.isa(VAR)) {
+				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
+					VarToken var = (VarToken)current;
+					header.addDefault(var.getID(), Num.ZERO);
+				} else if (tokens.peek().isa(Token.LAMBDA)){
+					VarToken var = (VarToken)current;
+					LambdaToken lambda = (LambdaToken)tokens.next();
+					header.addDefault(var.getID(), lambda.generateInstructionsForFirst());
+				} else {
+					throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
+				}
+			} else {
+				throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
+			}
+		}
+	}
+		
+	
+	
+	/** Split a single tokenQueue into two at the location of the colon
+	 * t1 contains all tokens before the colon
+	 * t2 contains all tokens after the colon
+	 * both may be empty if there was nothing before/after the colon
+	 * the colon is not included in any
+	 * @param tokens
+	 * @return
+	 */
+	private static Pair<TokenQueue, TokenQueue> splitAtColon(TokenQueue tokens) {
+		ArrayList<Token> ts = tokens.getArrayList();
+		int colons = 0;
+		int colon_index = 0;
+		for (int i = 0; i < ts.size(); i++) {
+			if (ts.get(i).isa(Token.COLON)) {
+				colon_index = i;
+				colons++;
+			}
+		}
+		
+		if (colons == 0) {
+			return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
+		} else if (colons > 1) {
+			throw new SyntaxError("Expected only one colon (:) token in block header.\n" +
+								  "Got: " + tokens.toString());
+		} else {
+			ArrayList<Token> t1 = new ArrayList<Token>(colon_index);
+			ArrayList<Token> t2 = new ArrayList<Token>(ts.size()-colon_index);
+			for (int i = 0; i < colon_index; i++) {
+				t1.add(ts.get(i));
+			}
+			// colon_index+1 skip the colon itself
+			for (int i = colon_index+1; i < ts.size(); i++) {
+				t2.add(ts.get(i));
+			}
+			
+			return new Pair<TokenQueue, TokenQueue>(new TokenQueue(t1),
+													new TokenQueue(t2));
+		}
+	}
+	
 	/** Parses variable set */
-	public static VariableSet parseVariableSet(ArrayList<Token> tokens) {
+	/*public static VariableSet parseVariableSet(ArrayList<Token> tokens) {
 		//Validate arguments
 		if(tokens.size() == 0) {
 			throw new SyntaxError("Variable names not found in block");
@@ -197,11 +300,12 @@ public class BlockToken extends CollectionToken {
 			return new VariableSet(argNames.toArray(new Variable[argNames.size()]), types, null);
 		}
 	}
+	*/
 	
 	/** Returns true if there exists a single colon in the header
 	 * Throws a syntax error if there are more than one 
 	 * returns false if there are zero colons in the header */
-	public static boolean blockHeaderHasLocals(ArrayList<Token> tokens) {
+	/*public static boolean blockHeaderHasLocals(ArrayList<Token> tokens) {
 		int colons = 0;
 		for (Token t : tokens) {
 			if (t.isa(Token.COLON)) {
@@ -221,17 +325,17 @@ public class BlockToken extends CollectionToken {
 		else {
 			return colons == 1;
 		}
-	}
+	}*/
 	
 	/** checks if every token is a variable token */
-	public static boolean allVars(ArrayList<Token> tokens) {
+	/*public static boolean allVars(ArrayList<Token> tokens) {
 		for (Token t : tokens) {
 			if (!t.isa(Token.VAR)) {
 				return false;
 			}
 		}
 		return true;
-	}
+	}*/
 
 	@Override
 	public String typeString() {

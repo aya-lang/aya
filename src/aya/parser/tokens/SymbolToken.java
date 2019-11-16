@@ -9,6 +9,10 @@ public class SymbolToken extends StdToken {
 	public SymbolToken(String data) {
 		super(data, Token.SYMBOL);
 	}
+	
+	public long getID() {
+		return Symbol.fromStr(data).id();
+	}
 
 	
 	@Override

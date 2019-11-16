@@ -83,10 +83,15 @@ public class LambdaToken extends CollectionToken {
 	public String typeString() {
 		return "block";
 	}
+	
+	/** Does not generate instructions for sections after the first (if they exist) */
+	public InstructionStack generateInstructionsForFirst() {
+		ArrayList<TokenQueue> lambdaData = getLambdaData();
+		return Parser.generate(lambdaData.get(0));
+	}
 
 	/**
 	 * Should copy in init will only be false if the value is a variable reference
-	 * @return Should copy on init, Aya object
 	 */
 	public Pair<Boolean, Obj> getInnerConstObj() {
 		ArrayList<TokenQueue> lambdaData = getLambdaData();

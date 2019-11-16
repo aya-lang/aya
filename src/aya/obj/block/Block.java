@@ -17,7 +17,9 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
+import aya.util.Pair;
 import aya.variable.Variable;
+import aya.variable.VariableSet;
 
 /** 
  * Block contain instructions and the resulting stacks 
@@ -37,6 +39,12 @@ public class Block extends Obj {
 	
 	/** Create a new block with empty stack */
 	public Block(InstructionStack il) {
+		this.stack = new Stack<Obj>();
+		this.instructions = il;
+	}
+
+	/** Assumes Block header and variable POP_VAR instructions exist in the instructions */
+	public Block(InstructionStack il, BlockHeader header) {
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
 	}
@@ -107,11 +115,22 @@ public class Block extends Obj {
 		return instructions.isEmpty();
 	}
 	
+	/** Get the block's header, return null if it does not have one */
+	public BlockHeader getHeader() {
+		if (instructions.size() > 0) {
+			Instruction i = instructions.peek(0);
+			if (i instanceof BlockHeader) {
+				return (BlockHeader)i;
+			}
+		}
+		return null;
+	}
+	
 	/** Returns true if there are no items remaining in the stack */
 	public boolean stackEmpty() {
 		return stack.isEmpty();
 	}
-	
+
 	/** Test if this block has a local variable set */
 	public boolean hasLocals() {
 		if (instructions.isEmpty()) return false;
@@ -122,6 +141,12 @@ public class Block extends Obj {
 	/** Get a list of args for this block */
 	public ArrayList<Symbol> getArgs() {
 		ArrayList<Symbol> list = new ArrayList<>();
+		BlockHeader header = getHeader();
+		if (header != null) {
+			for (BlockHeader.Arg arg : header.getArgs()) {
+				list.add(Symbol.fromID(arg.var));
+			}
+		}
 		return list;
 	}
 	
@@ -329,6 +354,32 @@ public class Block extends Obj {
 		}
 	}
 	
+	/** Introspection: get all asguments and types from header (if exists) */
+	public ArrayList<Pair<Symbol, Symbol>> getArgsAndTypes() {
+		ArrayList<Pair<Symbol, Symbol>> args_and_types  = new ArrayList<>();
+		BlockHeader header = getHeader();
+		if (header != null) {
+			for (BlockHeader.Arg arg : header.getArgs()) {
+				args_and_types.add(new Pair<Symbol, Symbol>(Symbol.fromID(arg.var),
+															Symbol.fromID(arg.type)));
+			}
+		}
+		return args_and_types;
+	}
+	
+	/** Allow access to modify the block's local variables directly
+	 *  If there are no locals, return null
+	 * @return
+	 */
+	public VariableSet getLocals() {
+		BlockHeader header = getHeader();
+		if (header != null) {
+			return header.getVars();
+		} else {
+			return null;
+		}
+	}
+	
 	public String toString() {
 		return this.toString(true);
 	}
@@ -376,9 +427,5 @@ public class Block extends Obj {
 	public byte type() {
 		return Obj.BLOCK;
 	}
-
-	
-
-	
 
 }

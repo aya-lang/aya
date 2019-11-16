@@ -22,8 +22,6 @@ public class VariableSetInstruction extends Instruction {
 
 	public void execute(Block b) {
 		VariableSet vars = _vars.clone();
-		vars.setArgs(b);
-		vars.copyExplicitLocals();
 		Aya.getInstance().getVars().add(vars);
 	}
 	
@@ -32,6 +30,6 @@ public class VariableSetInstruction extends Instruction {
 	}
 	
 	public String repr(LinkedList<Long> visited) {
-		return _vars.show();
+		return _vars.headerStr();
 	}
 }
