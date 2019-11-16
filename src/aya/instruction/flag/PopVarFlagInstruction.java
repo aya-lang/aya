@@ -22,7 +22,8 @@ public class PopVarFlagInstruction extends Instruction {
 	
 	@Override
 	public String toString() {
-		return "`POPVAR`";
+		//return "`POPVAR`";
+		return "";
 	}
 	
 	@Override
