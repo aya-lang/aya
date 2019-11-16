@@ -1,21 +1,22 @@
 
 [4 0 5 2 7 3 2 5 6 6]:lst;
 
-.# Safe self-contained optimized implementation
-{:q,
-    .# Make a copy of the list so the original is not modified
-    $\;
-
-    {l : x,
+.# Optimized implementation with no global vars
+{l$,
+    .# We define this function this way since the first call must copy the list
+    .# Other calls may use the reference.
+    l q
+}.where{,
+    {l : h,
         .# If the list is more than 1 item long, perform the operation
         .#   otherwise just leave the original list on the stack
         l .E 1 > {
             .# The head from the list
-            V:x;;
-            .# [ sort items less than x, x, sort items larger than x]
-            [l,,x:<]q x [l,,x>]q JJ
+            V:h;;
+            .# [ sort items less than h, h, sort items larger than h]
+            [l,,h:<]q h [l,,h>]q JJ
         } ?
-    }:q ~
+    }:q;
 }:qs;
 
 lst :P

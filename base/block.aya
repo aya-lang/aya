@@ -129,6 +129,8 @@
     .}
     {`.+}:where_const;
 
+    {`(\.makelocals:&.M.locals@.+;)}:where;
+
 
 }:block;
 
