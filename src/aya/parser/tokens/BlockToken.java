@@ -100,18 +100,16 @@ public class BlockToken extends CollectionToken {
 				VarToken var = (VarToken)current;
 				BlockHeader.Arg arg = new BlockHeader.Arg(var.getID());
 				
-				if (tokens.hasNext()) {
-					// Copy?
-					if (tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
-						tokens.next(); // Discard $
-						arg.copy = true;
-					}
-				
-					// Type annotation?
-					if (tokens.peek().isa(Token.SYMBOL)) {
-						SymbolToken sym_token = (SymbolToken)tokens.next();
-						arg.type = sym_token.getID();
-					}
+				// Copy?
+				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
+					tokens.next(); // Discard $
+					arg.copy = true;
+				}
+			
+				// Type annotation?
+				if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
+					SymbolToken sym_token = (SymbolToken)tokens.next();
+					arg.type = sym_token.getID();
 				}
 				
 				header.addArg(arg);

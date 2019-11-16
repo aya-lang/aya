@@ -121,6 +121,19 @@
 {1 {s::str,} ~} assertfail
 {[1 2 3] {s::str,} ~} assertfail
 
+.# argument copying
+
+{[1 2 3]:& {a$, a B ;;}~} assert [[1 2 3]]
+{[1 2 3]:& {a, a B ;;}~}  assert [[1 2]]
+{[1 2 3]:& {a$::list, a B ;;}~} assert [[1 2 3]]
+{[1 2 3]:& {a::list, a B ;;}~}  assert [[1 2]]
+{[1 2 3]:& {a$::num, a B ;;}~} assertfail
+{[1 2 3]:& {a::num, a B ;;}~}  assertfail
+
+{1 ({a: b(a), a b})} assert [1 1]
+{1 ({a: a(a 1 +), a})} assert [2]
+{{: b({,}), b}:x; 1 x.:y; x} assert [{,}]
+
 .# Dictionaries
 
 {{,}}  assert [{,}]
@@ -139,6 +152,7 @@
 {{, 1:a {, 2:b}:__meta__} .a} assert [1]
 {{, 1:a {, 2:b}:__meta__} .b} assert [2]
 {{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
+
 
 
 "Core tests passed!" :P

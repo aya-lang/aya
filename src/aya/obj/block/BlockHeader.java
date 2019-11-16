@@ -136,7 +136,11 @@ public class BlockHeader extends Instruction {
 		for (Arg arg : args) {
 			final Obj o = b.pop();
 			if (checkType(o, arg.type)) {
-				vars.setVar(arg.var, o);
+				if (arg.copy) {
+					vars.setVar(arg.var, o.deepcopy());
+				} else {
+					vars.setVar(arg.var, o);
+				}
 			} else {
 				throw new TypeError("{ARGS}\n\tExpected:" + Symbol.fromID(arg.type).repr()
 							+ "\n\tReceived:" + o);

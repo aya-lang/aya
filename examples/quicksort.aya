@@ -22,9 +22,7 @@ lst :P
 lst qs :P
 
 .# Golfed version of the above algorithm
-.# (V operator modifies original list)
-.# lst $\; q
-.# {l:x,l.E1>{V:x\{x:<}Iq\Jl{x>}IqJ}?}:q;
+.# {l$:x,l.E1>{V:x\{x:<}Iq\Jl{x>}IqJ}?}:q;
 
 .# Stack only version
 {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i qss @@qss JJ} ?}:qss;
