@@ -2,11 +2,14 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
+import aya.entities.InstructionStack;
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.instruction.DataInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
+import aya.instruction.MatchInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -29,54 +32,172 @@ public class BlockToken extends CollectionToken {
 	public Instruction getInstruction() {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
-		switch(blockData.size()) {
-		case 1:
+		if (blockData.size() == 1) {
 			return new DataInstruction(new Block(Parser.generate(blockData.get(0))));
-		case 2:
+		} else {
 			TokenQueue header = blockData.get(0);
-			//Empty header, dict literal
-			if (!header.hasNext()) {
-				Block b = new Block();
-				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				if (b.isEmpty()) {
-					return EmptyDictLiteralInstruction.INSTANCE;
-				} else {
-					return new DictLiteralInstruction(b);
-				}
+			if (isMatchHeader(header)) {
+				return parseMatchInstruction(blockData);
 			}
-			// Single number in header, create a dict factory with a capture
-			else if (header.size() == 1 && header.peek() instanceof NumberToken) {
-				NumberToken nt = (NumberToken)header.peek();
-				int n = 0;
-				try {
-					n = nt.numValue().toInt();
-				} catch (NumberFormatException e) {
-					throw new SyntaxError(nt + " is not a valid number in the block header");
-				}
 
-				if (n < 0) {
-					throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
+			if (blockData.size() == 2) {
+				//Empty header, dict literal
+				if (!header.hasNext()) {
+					Block b = new Block();
+					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
+					if (b.isEmpty()) {
+						return EmptyDictLiteralInstruction.INSTANCE;
+					} else {
+						return new DictLiteralInstruction(b);
+					}
 				}
-				Block b = new Block();
-				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-				if (n == 0 && b.isEmpty()) {
-					return EmptyDictLiteralInstruction.INSTANCE;
-				} else {
-					return new DictLiteralInstruction(b, n);
+				// Single number in header, create a dict factory with a capture
+				else if (header.size() == 1 && header.peek() instanceof NumberToken) {
+					NumberToken nt = (NumberToken)header.peek();
+					int n = 0;
+					try {
+						n = nt.numValue().toInt();
+					} catch (NumberFormatException e) {
+						throw new SyntaxError(nt + " is not a valid number in the block header");
+					}
+
+					if (n < 0) {
+						throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
+					}
+					Block b = new Block();
+					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
+					if (n == 0 && b.isEmpty()) {
+						return EmptyDictLiteralInstruction.INSTANCE;
+					} else {
+						return new DictLiteralInstruction(b, n);
+					}
 				}
+				//Non-empty header, args and local variables
+				else {
+					Block b = new Block();
+					b.add(PopVarFlagInstruction.INSTANCE);
+					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
+					BlockHeader block_header = generateBlockHeader(blockData.get(0));
+					b.add(block_header);
+					return new DataInstruction(b);
+				}
+			} else {
+				throw new SyntaxError("Block " + data + " contains too many parts");
 			}
-			//Non-empty header, args and local variables
-			else {
-				Block b = new Block();
-				b.add(PopVarFlagInstruction.INSTANCE);
-				b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-				BlockHeader block_header = generateBlockHeader(blockData.get(0));
-				b.add(block_header);
-				return new DataInstruction(b);
-			}
-		default:
-			throw new SyntaxError("Block " + data + " contains too many parts");
 		}
+	}
+	
+	private Instruction parseMatchInstruction(ArrayList<TokenQueue> blockData) {
+		TokenQueue header = blockData.get(0);
+		String orig_header = header.toString();
+		
+		// Captures
+		int num_captures = 1; // Default is 1
+		if (header.peek().isa(Token.NUMERIC)) {
+			NumberToken nt = (NumberToken)header.next();
+			try {
+				num_captures = nt.numValue().toInt();
+			} catch (NumberFormatException nfe) {
+				throw new SyntaxError("Invalid numeric token for match statement: " + nt.data);
+			}
+		}
+		
+		// '?' token
+		if (header.peek().isa(Token.OP) && header.peek().data.equals("?") ) {
+			header.next(); // Discard '?'
+		} else {
+			throw new SyntaxError("Expected '?' token in match header. Got " + orig_header);
+		} 
+
+		
+		// Test expr
+		Block test_expr = null;
+		if (header.hasNext() && !header.peek().isa(Token.VAR)) {
+			Token t = header.next();
+			// Single operator?
+			if (t.isa(Token.OP)) {
+				test_expr = new Block();
+				test_expr.add(t.getInstruction());
+			} else if (t.isa(Token.LAMBDA)) {
+				LambdaToken lt = (LambdaToken)t;
+				test_expr = new Block();
+				test_expr.addAll(lt.generateInstructionsForFirst().getInstrucionList());
+			} else if (t.isa(Token.BLOCK)) {
+				BlockToken bt = (BlockToken)t;
+				Instruction instr = bt.getInstruction();
+				if (instr instanceof DataInstruction) {
+					DataInstruction d = (DataInstruction)instr;
+					if (d.objIsa(Obj.BLOCK)) {
+						test_expr = (Block)(d.getData());
+					}
+				}
+			}
+		}
+		
+		// Initializer
+		Block initializer = null;
+		if (header.hasNext()) {
+			initializer = new Block(Parser.generate(header));
+		}
+		
+		MatchInstruction m = new MatchInstruction(num_captures, initializer, test_expr);
+		
+		blockData.remove(0);
+		parseMatchInstructionConditions(m, blockData);
+		return m;
+		
+	}
+
+
+	private void parseMatchInstructionConditions(MatchInstruction m, ArrayList<TokenQueue> blockData) {
+		int condition_count = 0;
+		for (int i = 0; i < blockData.size(); i++) {
+			TokenQueue tokens = blockData.get(i);
+			boolean isLast = i == blockData.size() - 1;
+			
+			// Last
+			if (tokens.size() == 0) {
+				throw new SyntaxError("Empty condition in match expression: {" + data + "}");
+			}
+			else if (tokens.size() == 1) {
+				if (isLast) {
+					Block fb;
+					InstructionStack is = Parser.generate(blockData.get(i));
+					if (is.size() == 1) {
+						fb = new Block();
+						DataInstruction.addOrMergeInstruction(fb, is.pop());
+					} else {
+						fb = new Block(is);
+					}
+					m.setFallback(fb);
+					break;
+				} else {
+					throw new SyntaxError("Match condition with single instruction only permitted as last (fallback) condition."
+							+ "Condition (" + tokens.toString() + ") has one instruction but is not the last contion in the list in block\n{" + data + "}");
+				}
+			}
+		
+			Token last = tokens.popBack();
+			Block res = new Block();
+			DataInstruction.addOrMergeInstruction(res, last.getInstruction());
+			Block cond = new Block(Parser.generate(tokens));
+			
+			m.addCondition(cond, res);
+			condition_count++;
+		}
+		if (condition_count == 0) {
+			throw new SyntaxError("Match expression contains 0 conditions: {" + data + "}");
+		}
+	}
+
+
+	private static boolean isMatchHeader(TokenQueue ts) {
+		for (Token t : ts.getArrayList()) {
+			if (t instanceof OperatorToken && t.data.equals("?")) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private BlockHeader generateBlockHeader(TokenQueue tokens) {

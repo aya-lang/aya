@@ -25,13 +25,18 @@ public class TokenQueue  {
 		queue.add(t);
 	}
 	
-	/** "Removes" and returns the first token in the string */
+	/** Removes and returns the next token in the queue */
 	public Token next() throws EndOfInputError {
 		Token tmp = queue.get(0);
 		queue.remove(0);
 		return tmp;
 	}
 	
+	/** Removes and retuens the last token in the queue */
+	public Token popBack() {
+		return queue.remove(queue.size()-1);	
+	}
+
 	/** Returns the next token without removing it */
 	public Token peek() {
 		return queue.get(0);
@@ -63,6 +68,7 @@ public class TokenQueue  {
 		}
 		return sb.append(">").toString();
 	}
+
 	
 
 }

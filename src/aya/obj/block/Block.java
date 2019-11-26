@@ -54,9 +54,19 @@ public class Block extends Obj {
 		return this.stack;
 	}
 	
+	/** Copy stack */
+	public void addStack(Block other) {
+		stack.addAll(other.getStack());
+	}
+	
+	
 	/** Pushes an object to the output stack */
 	public void push(final Obj o) {
 		stack.push(o);
+	}
+	
+	public void pushBack(final Obj o) {
+		stack.add(0, o);
 	}
 
 	/** pops from the output stack */
