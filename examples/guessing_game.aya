@@ -1,0 +1,30 @@
+.# A simple guessing game
+
+.# Select a random number 0-99 and ask the user to guess
+.# until they get it correct
+
+100 Q :secret;
+.# "The number is $secret" :P
+"A secret number 0-99 has been selected!" :P
+
+{
+    "Please input your guess: " .P
+
+    .# User input
+    :R :guess;
+    .# Parse as number
+    guess .! :guess;
+    .# Check if input was a valid number
+    guess :T ::num = {
+        .# Compare guess to the secret number
+        guess {?,
+            secret < {"Too small" :P 1}, .# 1: continue looping
+            secret > {"Too big"   :P 1},
+                     {"Correct!"  :P 0}  .# 0: stop looping
+        }
+    } {
+        "\"$guess\" is not a valid number. Please input a valid number" :P
+        1 .# continue looping
+    } .?
+} W
+
