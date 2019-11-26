@@ -1,0 +1,9 @@
+{,
+    {
+        "\n"| :# {"," | :#{.rmquote.!}}
+    }:parse;
+
+    {f,
+        fP G parse
+    }.capture[::parse]:open;
+}:csv;

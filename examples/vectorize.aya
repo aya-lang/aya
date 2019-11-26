@@ -4,14 +4,8 @@
 
 {f,
     .# A function which applies __x to each element in a list using :#
-    {:fn,
-        __x:fn; :#{fn}
-    }
+    {:#{f}}.capture[::f]
     .# Substitute __x with the input function 'f'
-    where
-    {,
-        f.`:__x
-    }
 }:vectorize;
 
 .{

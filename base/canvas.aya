@@ -2,15 +2,17 @@ import ::color
 
 class ::canvas
 
-impl canvas::__init__ {params::dict self,
+impl canvas::__init__ {params::dict self ,
 
     .# Default values
     {,
-        400:width
-        400:height
-        "Canvas":name
-        0:autoflush
-        0:show
+        400 :width
+        400 :height
+        "Canvas" :name
+        0 :autoflush
+        0 :show
+        colors.white :bg
+        colors.black :fg
         params W
     }:params;
 
@@ -18,6 +20,8 @@ impl canvas::__init__ {params::dict self,
     params.height self.:height;
 
     ::new params 0 MG self.:id ;
+}.where{,
+    colors :colors
 }
 
 impl canvas::__str__ {self,

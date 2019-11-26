@@ -59,6 +59,33 @@ import ::list
         s
     }:titlecase;
 
+
+    .# aya> "A".rmquote
+    .# "A"
+    .# aya> "\"A\"".rmquote
+    .# "A"
+    .# aya> "\"A\"b".rmquote
+    .# ""A"b"
+    {s,
+        s {?,
+            (E2<) s,
+            (;s.[:1] '"= s.[0] '"= &) {s$\;B;V;},
+            {s}
+        }
+    }:rmquote;
+
+    .# aya> "na".in "name"
+    .# 1
+    .# aya> "red".in "I saw a red fox"
+    .# 1
+    .# aya> "/".in "some/path"
+    .# 1
+    .# aya> "x".in "abc"
+    .# 0
+    {`(
+        \N :1=!\;
+    )}:in;
+
     .#? S.parse\n  If num, return num, else return str (rm surrounding quotes)
     {
         .!

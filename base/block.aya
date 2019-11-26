@@ -90,7 +90,7 @@
         aya> 5 f
         6
     .}
-    {`({\.makelocals :& .M.locals @ .capture_vars dict_update ;})}:capture;
+    {`({\.makelocals :& .M.locals @ .capture_vars .+ ;})}:capture;
 
     .#? ::block .time\n  return the execution time of a block in ms
     .# {M$ \[1|~]; M$ /}:time;

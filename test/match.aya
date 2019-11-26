@@ -1,0 +1,109 @@
+
+.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
+{`({blk::block expected::list,
+  [blk] expected= {
+      .# Do nothing
+    } {
+    .# Throw an error message about the assertation
+      ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
+    } .?
+})}:assert;
+
+
+.# Syntax checks
+.###############
+
+{ 1 {?=, 1 "a", 2 "b", "c"} } assert ["a"]
+{ 2 {?=, 1 "a", 2 "b", "c"} } assert ["b"]
+{ 3 {?=, 1 "a", 2 "b", "c"} } assert ["c"]
+{ 3 {?=, 1 "a", 2 "b"} } assert []
+
+{ 1 {?=, 1 "a"} } assert ["a"]
+{ 3 {?=, 1 "a"} } assert []
+{ 3 {?=, 1 "a"} } assert []
+
+{:x(1), {0? x, 1= "a", 2= "b", "c"}} assert ["a"]
+{:x(2), {0? x, 1= "a", 2= "b", "c"}} assert ["b"]
+{:x(3), {0? x, 1= "a", 2= "b", "c"}} assert ["c"]
+
+{:x(1), {0?= x, 1 "a", 2 "b", "c"}} assert ["a"]
+{:x(2), {0?= x, 1 "a", 2 "b", "c"}} assert ["b"]
+{:x(3), {0?= x, 1 "a", 2 "b", "c"}} assert ["c"]
+
+.# Rule for A {?B, C ...}: {C A B}
+{ 1 {?(1+=),  0 "a", 1 "b", "c"} } assert ["a"]
+{ 1 {?(\1+=), 0 "a", 1 "b", "c"} } assert ["c"]
+{ 1 {?{1+=},  0 "a", 1 "b", "c"} } assert ["a"]
+{ 1 {?{\1+=}, 0 "a", 1 "b", "c"} } assert ["c"]
+
+
+
+
+.# if/else variants
+.##################
+
+{: secret(5) guess f,
+    {
+        {0?, (guess secret >) {"too big"},
+             (guess secret <) {"too small"},
+                              {"correct"}}
+    }:f;
+
+    3 :guess; {f} assert ["too small"]
+    7 :guess; {f} assert ["too big"]
+    5 :guess; {f} assert ["correct"]
+}~
+
+{: secret(5) guess f,
+    {
+        guess {?, (secret >) {"too big"},
+                   secret <  {"too small"},
+                             {"correct"}}
+    }:f;
+
+    3 :guess; {f} assert ["too small"]
+    7 :guess; {f} assert ["too big"]
+    5 :guess; {f} assert ["correct"]
+}~
+
+{: secret(5) guess f,
+    {
+        {0? guess, (secret >) {"too big"},
+                    secret <  {"too small"},
+                              {"correct"}}
+    }:f;
+
+    3 :guess; {f} assert ["too small"]
+    7 :guess; {f} assert ["too big"]
+    5 :guess; {f} assert ["correct"]
+}~
+
+{: secret(5) guess f,
+    {
+        {0? guess secret, > {"too big"},
+                          < {"too small"},
+                            {"correct"}}
+    }:f;
+
+    3 :guess; {f} assert ["too small"]
+    7 :guess; {f} assert ["too big"]
+    5 :guess; {f} assert ["correct"]
+}~
+
+.{ Fail: stack captures are popped in wrong order
+{: secret(5) guess f,
+    {
+        guess secret {2?, > {"too big"},
+                          < {"too small"},
+                            {"correct"}}
+    }:f;
+
+    3 :guess; {f} assert ["too small"]
+    7 :guess; {f} assert ["too big"]
+    5 :guess; {f} assert ["correct"]
+}~
+.}
+
+
+
+
