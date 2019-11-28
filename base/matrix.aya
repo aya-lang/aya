@@ -524,13 +524,13 @@ import ::test
     .# Indexing
     {3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
     {3 m.pascal.[2 2]} [6] ts+
-    {3 m.pascal [[] 2] I .rows} [ [[1][3][6]] ] ts+
-    {3 m.pascal [2 []] I .rows} [ [[1 3 6]] ] ts+
-    {3 m.pascal [[] []] I .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
+    {3 m.pascal ['* 2] I .rows} [ [[1][3][6]] ] ts+
+    {3 m.pascal [2 '*] I .rows} [ [[1 3 6]] ] ts+
+    {3 m.pascal ['* '*] I .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
     {3 m.pascal [0 [0 1]] I .rows} [ [[1 1]] ] ts+
     {3 m.pascal [[0 1] 0] I .rows} [ [[1][1]] ] ts+
-    {3 m.pascal [[0 1] []] I .rows} [ [[1 1 1][1 2 3]] ] ts+
-    {3 m.pascal [[] [0 1]] I .rows} [ [[1 1][1 2][1 3]] ] ts+
+    {3 m.pascal [[0 1] '*] I .rows} [ [[1 1 1][1 2 3]] ] ts+
+    {3 m.pascal ['* [0 1]] I .rows} [ [[1 1][1 2][1 3]] ] ts+
     {3 m.pascal [[0 1][0 1]] I .rows} [ [[1 1][1 2]] ] ts+
 
     {1 [[3]] m! .pad .rows} [ [[0 0 0][0 3 0][0 0 0]] ] ts+

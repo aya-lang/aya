@@ -22,11 +22,13 @@ public abstract class List extends Obj {
 	public static Obj getIndex(List list, Obj index) {
 		if(index.isa(NUMBER)) {
 			return list.get(((Number)index).toInt());
-		} 
+		} else if (index.isa(CHAR) && index.str().equals("*")) {
+			return list.deepcopy();
+		}
 		else if (index.isa(LIST)) {
 			List idx = (List)index;
 			if (idx.length() == 0) {
-				return list.deepcopy();
+				return list.similarEmpty();
 			} 
 			else if (idx.length() == 1) {
 				return List.getIndex(list, idx.get(0));
