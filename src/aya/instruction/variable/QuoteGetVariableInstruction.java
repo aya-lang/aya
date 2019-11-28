@@ -34,6 +34,6 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return Variable.decodeLong(variable_);
+		return Variable.decodeLong(variable_) + ".`";
 	}
 }
