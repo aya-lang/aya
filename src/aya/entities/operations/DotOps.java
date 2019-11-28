@@ -197,6 +197,8 @@ class OP_Dot_Bang extends OpInstruction {
 
 		if (o.isa(NUMBER)) {
 			block.push(((Number)o).signnum());
+		} else if (o.isa(NUMBERLIST)) {
+			block.push(((NumberList)o).signnum());
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
 			Block b;
