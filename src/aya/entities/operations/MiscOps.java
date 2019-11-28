@@ -22,6 +22,7 @@ import aya.Aya;
 import aya.AyaPrefs;
 import aya.OperationDocs;
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
@@ -166,7 +167,7 @@ public class MiscOps {
 		if(op >= 33 && op <= 126) {
 			return MATH_OPS[op-FIRST_OP];
 		} else {
-			throw new AyaRuntimeException("Misc. operator 'M" + op + "' does not exist");
+			throw new SyntaxError("Misc. operator 'M" + op + "' does not exist");
 		}
 	}
 	
