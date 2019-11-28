@@ -211,11 +211,11 @@ public class ChartParams {
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
 			} else {
 				throw new AyaRuntimeException("Axis max/min must have 2 numbers\n"
-						+ "Recieved: " + list.repr());
+						+ "Received: " + list.repr());
 			}
 		} else {
 			throw new AyaRuntimeException("Axis max/min must have both max and min values\n"
-					+ "Recieved: " + list.repr());
+					+ "Received: " + list.repr());
 		}
 	}
 	
@@ -225,7 +225,7 @@ public class ChartParams {
 			return (Number)o;
 		} else if (o != null) {
 			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a number."
-					+ " Recieved " + o.repr());
+					+ " Received " + o.repr());
 		} else {
 			return null;
 		}
@@ -237,7 +237,7 @@ public class ChartParams {
 			return (Symbol)o;
 		} else if (o != null) {
 			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a symbol."
-					+ " Recieved " + o.repr());
+					+ " Received " + o.repr());
 		} else {
 			return (Symbol)dflt;
 		}
@@ -249,7 +249,7 @@ public class ChartParams {
 			return (List)o;
 		} else if (o != null) {
 			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a list."
-					+ " Recieved " + o.repr());
+					+ " Received " + o.repr());
 		} else {
 			return null;
 		}

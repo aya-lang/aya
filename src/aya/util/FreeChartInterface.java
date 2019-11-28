@@ -100,7 +100,7 @@ public class FreeChartInterface extends JFrame
 				   ChartUtilities.saveChartAsJPEG(file, chart, cp.getWidth(), cp.getHeight());
 			   } else {
 				   throw new AyaRuntimeException("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
-						   + "Recieved: " + cp.getFilename());
+						   + "Received: " + cp.getFilename());
 			   }
 		   } catch (IOException e) {
 			   throw new AyaRuntimeException("Unable to save plot to " + path);

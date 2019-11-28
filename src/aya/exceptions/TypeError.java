@@ -15,11 +15,11 @@ public class TypeError extends RuntimeException {
 	public TypeError(OpInstruction op, Obj... recieved) {
 		super("Type error at (" + op.name + "):\n\tExpected (" 
 				+ OperationDocs.get(op.name).typeString() 
-				+ ")\n\tRecieved (" + listStr(recieved));
+				+ ")\n\tReceived (" + listStr(recieved));
 		
 		msg = "Type error at (" + op.name + "):\n\tExpected (" 
 				+ OperationDocs.get(op.name).typeString() 
-				+ ")\n\tRecieved (" + listStr(recieved);
+				+ ")\n\tReceived (" + listStr(recieved);
 	}
 	
 	public TypeError(String s) {

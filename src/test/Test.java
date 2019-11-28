@@ -18,7 +18,7 @@ public abstract class Test {
 	public static void eq(Object input, Object expected, String message) {
 		if (!input.equals(expected)) {
 			message += "\n\tExpected: " + expected.toString() + "\n"
-			+ "\tRecieved: " + input.toString();
+			+ "\tReceived: " + input.toString();
 			throw new RuntimeException(message);
 		}
 	}

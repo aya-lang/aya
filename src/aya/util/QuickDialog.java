@@ -163,7 +163,7 @@ public class QuickDialog {
 		case CHOOSE_FILE:
 			return new Str(chooseFile());
 		default:
-			throw new RuntimeException("dialogType is invalid. Recieved " +  dialogType);
+			throw new RuntimeException("dialogType is invalid. Received " +  dialogType);
 		}
 	}
 	

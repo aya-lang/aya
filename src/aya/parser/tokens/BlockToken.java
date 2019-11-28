@@ -364,7 +364,7 @@ public class BlockToken extends CollectionToken {
 					last = null;
 				} else if(!t.isa(VAR)) {
 					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
-							+ " initializers. Recieved:\n" + t.data);
+							+ " initializers. Received:\n" + t.data);
 				} else {
 					last = new Variable(t.getData());
 					args.setVar(last, DEFAULT_LOCAL_VAR);
@@ -393,11 +393,11 @@ public class BlockToken extends CollectionToken {
 						argTypes.add(Obj.SYM_ANY.id());
 					} else {
 						//Should always be a VAR or an SYMBOL
-						throw new SyntaxError("All arguments must be names or type assertions. Recieved " + tokens.get(i).data);
+						throw new SyntaxError("All arguments must be names or type assertions. Received " + tokens.get(i).data);
 					}
 				} else {
 					//Should always be a VAR or an SYMBOL
-					throw new SyntaxError("All arguments must be names or type assertions. Recieved " + tokens.get(i).data );
+					throw new SyntaxError("All arguments must be names or type assertions. Received " + tokens.get(i).data );
 				}
 			}
 			
