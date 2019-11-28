@@ -2090,6 +2090,7 @@ class OP_Bar extends OpInstruction {
 		OpDoc doc = new OpDoc(' ', "|");
 		doc.desc("NN", "logical or");
 		doc.desc("SS", "split S1 using regex S2");
+		doc.desc("LN", "cut L at index N");
 		doc.ovrld(Ops.KEYVAR_OR.name(), Ops.KEYVAR_ROR.name());
 		OperationDocs.add(doc);
 	}
@@ -2117,7 +2118,14 @@ class OP_Bar extends OpInstruction {
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
 			int index = ((Number)a).toInt();
 			List l = (List)b;
-			if(index >= l.length() || index*-1 >= l.length()){
+			if (index == 0) {
+				block.push(l.similarEmpty());
+				block.push(l);
+			} else if(index >= l.length()) {
+				block.push(l);
+				block.push(l.similarEmpty());
+			} else if  (index*-1 >= l.length()) {
+				block.push(l.similarEmpty());
 				block.push(l);
 			} else if (index > 0) {
 				block.push(l.slice(0, index));

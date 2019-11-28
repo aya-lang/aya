@@ -273,6 +273,11 @@ public class StrList extends List {
 	public boolean canInsert(Obj o) {
 		return o.isa(STR);
 	}
+
+	@Override
+	public StrList similarEmpty() {
+		return new StrList(new ArrayList<Str>());
+	}
 	
 	///////////////////
 	// OBJ OVERRIDES //

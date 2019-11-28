@@ -346,6 +346,11 @@ public class Str extends List implements Comparable<Str> {
 	public boolean canInsert(Obj o) {
 		return o.isa(Obj.CHAR);
 	}
+
+	@Override
+	public Str similarEmpty() {
+		return EMPTY;
+	}
 	
 	
 	///////////////////

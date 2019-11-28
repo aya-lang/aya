@@ -344,6 +344,11 @@ public class GenericList extends List {
 	public boolean canInsert(Obj o) {
 		return true;
 	}
+	
+	@Override
+	public GenericList similarEmpty() {
+		return new GenericList(new ArrayList<Obj>());
+	}
 
 	
 	

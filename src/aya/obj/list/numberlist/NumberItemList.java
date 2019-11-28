@@ -670,6 +670,11 @@ public class NumberItemList extends NumberList {
 	public boolean canInsert(Obj o) {
 		return o.isa(NUMBER);
 	}
+
+	@Override
+	public NumberItemList similarEmpty() {
+		return new NumberItemList(new ArrayList<Number>());
+	}
 	
 	
 	///////////////////

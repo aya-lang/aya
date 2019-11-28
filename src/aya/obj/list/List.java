@@ -426,8 +426,11 @@ public abstract class List extends Obj {
 	/** Return a list containing the unique elements of the original list */
 	public abstract List unique();
 	
-	/** Return true if the input object can be a vaild member of the list */
+	/** Return true if the input object can be a valid member of the list */
 	public abstract boolean canInsert(Obj o);
+	
+	/** Return an empty list that is the same type as the callee */
+	public abstract List similarEmpty();
 	
 	////////////////////////
 	// LIST MODIFICATIONS //
