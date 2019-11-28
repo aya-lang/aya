@@ -1957,15 +1957,18 @@ class OP_X extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "X");
-		doc.desc("A", "assign to global variable x and pop from stack");
+		doc.desc("A", "assign to variable x and pop from stack");
 		OperationDocs.add(doc);
 	}
 	
 	public OP_X() {
 		this.name = "X";
 	}
+	
+	private static final long X = Variable.encodeString("x");
+
 	@Override public void execute (final Block block) {
-		Aya.getInstance().getVars().setGlobalVar(new Variable("x"), block.pop());
+		Aya.getInstance().getVars().setVar(X, block.pop());
 	}
 }
 
@@ -1974,15 +1977,18 @@ class OP_Y extends OpInstruction {
 	
 	static {
 		OpDoc doc = new OpDoc(' ', "Y");
-		doc.desc("A", "assign to global variable y and leave on stack");
+		doc.desc("A", "assign to variable y and leave on stack");
 		OperationDocs.add(doc);
 	}
 	
 	public OP_Y() {
 		this.name = "Y";
 	}
+	
+	private static final long Y = Variable.encodeString("y");
+	
 	@Override public void execute (final Block block) {
-		Aya.getInstance().getVars().setGlobalVar(new Variable("y"), block.peek());
+		Aya.getInstance().getVars().setGlobalVar(Y, block.peek());
 	}
 }
 
