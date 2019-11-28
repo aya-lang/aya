@@ -791,7 +791,8 @@ public class NumberItemList extends NumberList {
 
 	private void boundsCheck(NumberList a, NumberList b) {
 		if (a.length() != b.length())
-			throw new IllegalArgumentException("List length mismatch");
+			throw new AyaRuntimeException("List length mismatch\n"
+					+ "  " + a.str() + "\n  " + b.str());
 	}
 	
 	@Override
