@@ -3,12 +3,14 @@ package aya.obj.dict;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.util.Pair;
 import aya.variable.Variable;
@@ -188,7 +190,11 @@ public class Dict extends Obj {
 	
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(String s) {
-		return containsKey(Variable.encodeString(s));
+		if (Variable.isValidStr(s)) {
+			return containsKey(Variable.encodeString(s));
+		} else {
+			return _string_vars.containsKey(s);
+		}
 	}
 
 	/** Returns true if this dict contains the input key */
@@ -203,17 +209,34 @@ public class Dict extends Obj {
 
 	/** The number of items in this dict */
 	public int size() {
-		return _vars.getMap().size();
+		return _vars.getMap().size() + _string_vars.size();
 	}
 	
 	/** A list of keys */
-	public ArrayList<Long> keys() {
+	public ArrayList<Long> symKeys() {
 		return _vars.keys();
 	}
 	
+	/** List of string keys */
+	public Set<String> strKeys() {
+		return _string_vars.keySet();
+	}
+	
+	public ArrayList<Obj> keys() {
+		ArrayList<Obj> out = new ArrayList<Obj>(size());
+		for (Long l   : symKeys()) { out.add(Symbol.fromID(l)); }
+		for (String s : strKeys()) { out.add(new Str(s)); }
+		return out;
+	}
+	
+	
+	
 	/** A list of values */
 	public ArrayList<Obj> values() {
-		return _vars.values();
+		ArrayList<Obj> out = new ArrayList<Obj>(size());
+		out.addAll(_vars.values());
+		out.addAll(_string_vars.values());
+		return out;
 	}
 	
 	/////////////

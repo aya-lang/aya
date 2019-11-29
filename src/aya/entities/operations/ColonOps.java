@@ -694,12 +694,7 @@ class OP_Colon_K extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			ArrayList<Long> keys = ((Dict)a).keys();
-			ArrayList<Obj> keyNames = new ArrayList<Obj>(keys.size());
-			for (Long l : keys) {
-				keyNames.add(Symbol.fromID(l));
-			}
-			block.push(new GenericList(keyNames));
+			block.push(new GenericList(((Dict)a).keys()));
 		} else {
 			throw new TypeError(this, a);
 		}
