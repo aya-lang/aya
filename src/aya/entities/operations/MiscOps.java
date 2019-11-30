@@ -44,6 +44,7 @@ import aya.util.ChartParams;
 import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
+import aya.util.interfaces.JSONDecoder;
 
 public class MiscOps {	
 
@@ -96,7 +97,7 @@ public class MiscOps {
 		/* 71 G  */ new OP_Graphics(),
 		/* 72 H  */ new OP_MParse_Date(),
 		/* 73 I  */ null,
-		/* 74 J  */ null,
+		/* 74 J  */ new OP_JSON(),
 		/* 75 K  */ null,
 		/* 76 L  */ new OP_Log(),
 		/* 77 M  */ null,
@@ -447,6 +448,57 @@ class OP_MParse_Date extends OpInstruction {
 		}
 		
 	}
+}
+
+
+// J - 74
+class OP_JSON extends OpInstruction {
+	
+	static {
+		OpDoc doc = new OpDoc('M', "MJ");
+		doc.desc("N", "base-10 logarithm");
+		doc.ovrld(Ops.KEYVAR_LOG.name());
+		doc.vect();
+		OperationDocs.add(doc);
+	}
+
+	public OP_JSON() {
+		this.name = "ML";
+	}
+	@Override
+	public void execute(Block block) {
+		Obj cmd_obj = block.pop();
+		Obj obj = block.pop();
+		
+		String cmd = getCmd(cmd_obj);
+
+		if (cmd.equals("decode") || cmd.equals("decode_json")) {
+			if (obj.isa(STR)) {
+				block.push(JSONDecoder.decodeJSON(obj.str()));
+			} else {
+				throw new TypeError(this, cmd_obj, obj);
+			}
+		} else if (cmd.equals("decode_xml")) {
+			if (obj.isa(STR)) {
+				block.push(JSONDecoder.decodeXML(obj.str()));
+			} else {
+				throw new TypeError(this, cmd_obj, obj);
+			}
+		} else {
+			throw new AyaRuntimeException("MJ: " + cmd + " is not a valid command");
+		}
+	}
+	
+	private String getCmd(Obj o) {
+		if (o.isa(STR)) {
+			return o.str();
+		} else if (o.isa(SYMBOL)) {
+			return ((Symbol)o).name();
+		} else {
+			throw new AyaRuntimeException("MJ: " + o.repr() + " is not a valid command");
+		}
+	}
+	
 }
 
 
