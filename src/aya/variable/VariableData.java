@@ -3,15 +3,21 @@ package aya.variable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Map.Entry;
 
 import aya.Aya;
 import aya.InteractiveAya;
+import aya.entities.InstructionStack;
+import aya.entities.operations.ColonOps;
+import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
+import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 
 /**
@@ -34,8 +40,22 @@ public class VariableData {
 	private final Dict OBJ_CHAR = new Dict();
 	private final Dict OBJ_BLOCK = new Dict();
 
+	public final Dict OBJ_NIL = new Dict();
+
 	public VariableData(Aya aya) {
 		initGlobals(aya);
+	}
+	
+	private void initNil(Aya aya) {
+		Dict nil_meta = new Dict();
+		nil_meta.set("__type__", Symbol.fromStr("__nil"));
+		Str nil_str = new Str("nil");
+		nil_meta.set("__str__", nil_str);
+		nil_meta.set("__repr__", nil_str);
+
+		nil_meta.set("__eq__", Parser.compile("; :T ::__nil =", aya));
+		
+		OBJ_NIL.setMetaTable(nil_meta);
 	}
 	
 	public void initGlobals(Aya aya) {
@@ -54,6 +74,9 @@ public class VariableData {
 		globals.setVar(new Variable("num"), OBJ_NUM);
 		globals.setVar(new Variable("char"), OBJ_CHAR);
 		globals.setVar(new Variable("str"), OBJ_STR);
+		
+		initNil(aya);
+		globals.setVar(Variable.encodeString("nil"), OBJ_NIL);
 
 		varSets.add(globals);
 	}

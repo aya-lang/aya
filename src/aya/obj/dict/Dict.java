@@ -309,21 +309,6 @@ public class Dict extends Obj {
 
 	@Override
 	public String repr() {
-		if (_meta != null) {
-			Obj repr = _meta._get(Ops.KEYVAR_REPR.getID());
-			if (repr != null) {
-				if (repr.isa(Obj.BLOCK)) {
-					Block blk_repr = ((Block)repr).duplicate();
-					blk_repr.push(this);
-					blk_repr.eval();
-					Obj obj_res = blk_repr.pop();
-					return obj_res.str();
-				} else {
-					return repr.repr();
-				}
-			}
-		}
-		
 		return dictRepr();
 	}
 		
@@ -404,19 +389,42 @@ public class Dict extends Obj {
 	
 	/** Return a string representation of the dict */
 	private String dictRepr() {
-		LinkedList<Dict> visited = new LinkedList<Dict>();
+		LinkedList<Integer> visited = new LinkedList<Integer>();
 		return dictRepr(0, visited);
 	}
 	
-	private String dictRepr(int depth, LinkedList<Dict> visited) {
+	private String dictRepr(int depth, LinkedList<Integer> visited) {
+		// Metatable?
+		if (_meta != null) {
+			Obj repr = _meta._get(Ops.KEYVAR_REPR.getID());
+			if (repr != null) {
+				if (repr.isa(Obj.BLOCK)) {
+					Block blk_repr = ((Block)repr).duplicate();
+					blk_repr.push(this);
+					blk_repr.eval();
+					Obj obj_res = blk_repr.pop();
+					if (obj_res.isa(Obj.STR)) {
+						return obj_res.str();
+					} else {
+						return obj_res.repr();
+					}
+				} else if (repr.isa(Obj.STR)) {
+					return repr.str();
+				} else {
+					return repr.repr();
+				}
+			}
+		}
+	
+		// Normal repr
 		final int width = 2;
 		if (_vars.size() == 0 && _string_vars.size() == 0) {
 			return "{,}";
 		}
-		else if (visited.contains(this)) {
+		else if (visited.contains(this.hashCode())) {
 			return "{, ...}";
 		} else {
-			visited.add(this);
+			visited.add(this.hashCode());
 			StringBuilder sb = new StringBuilder("{,\n");
 			for (Long l : _vars.getMap().keySet()) {
 				if (l != META.getID()) {
@@ -437,12 +445,11 @@ public class Dict extends Obj {
 		}
 	}
 	
-	private String pairString(int depth, LinkedList<Dict> visited, String key, Obj o) {
+	private String pairString(int depth, LinkedList<Integer> visited, String key, Obj o) {
 		String object;
 		if (o.isa(DICT)) {
 			object = ((Dict)o).dictRepr(depth, visited);
 		} else {
-	
 			object = o.repr();
 		}
 		
