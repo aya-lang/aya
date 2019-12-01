@@ -304,6 +304,19 @@ public class Dict extends Obj {
 
 	@Override
 	public boolean bool() {
+		if (_meta != null) {
+			Obj bool = get(Ops.KEYVAR_BOOL);
+			if (bool.isa(Obj.BLOCK)) {
+				Block blk_bool = ((Block)bool).duplicate();
+				blk_bool.push(this);
+				blk_bool.eval();
+				Obj obj_res = blk_bool.pop();
+				return obj_res.bool();
+			} else {
+				return bool.bool();
+			}
+		}
+
 		return true;
 	}
 

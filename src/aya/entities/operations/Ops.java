@@ -130,16 +130,17 @@ public class Ops {
 	
 	// Misc.
 	public static final Variable KEYVAR_AND		= new Variable("__and__");
-	public static final Variable KEYVAR_RAND		= new Variable("__rand__");
+	public static final Variable KEYVAR_RAND	= new Variable("__rand__");
 	public static final Variable KEYVAR_OR		= new Variable("__or__");
 	public static final Variable KEYVAR_ROR		= new Variable("__ror__");
 	public static final Variable KEYVAR_RANDOM 	= new Variable("__random__");
 	public static final Variable KEYVAR_RANGE 	= new Variable("__range__");
-	public static final Variable KEYVAR_NEW 		= new Variable("__new__");
+	public static final Variable KEYVAR_NEW 	= new Variable("__new__");
 	public static final Variable KEYVAR_FLOAT 	= new Variable("__float__");
 	public static final Variable KEYVAR_EACH 	= new Variable("__each__");
-	public static final Variable KEYVAR_STR 		= new Variable("__str__");
+	public static final Variable KEYVAR_STR 	= new Variable("__str__");
 	public static final Variable KEYVAR_REPR 	= new Variable("__repr__");
+	public static final Variable KEYVAR_BOOL    = new Variable("__bool__");
 	
 	
 	public static final char FIRST_OP = '!';

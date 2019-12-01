@@ -74,7 +74,7 @@ public class ColonOps {
 		/* 60 <  */ new OP_Colon_LessThan(),
 		/* 61 =  */ new OP_Colon_Equals(),
 		/* 62 >  */ new OP_Colon_GreaterThan(),
-		/* 63 ?  */ null,
+		/* 63 ?  */ new OP_Colon_Bool(),
 		/* 64 @  */ null,
 		/* 65 A  */ new OP_Colon_A(),
 		/* 66 B  */ null,
@@ -505,6 +505,25 @@ class OP_Colon_GreaterThan extends OpInstruction {
 		}
 	}
 }
+
+// ? - 63
+class OP_Colon_Bool extends OpInstruction {
+	
+	static {
+		OpDoc doc = new OpDoc(':', ":?");
+		doc.desc("A", "convert to boolean");
+		OperationDocs.add(doc);
+	}
+	
+	public OP_Colon_Bool() {
+		this.name = ":?";
+	}
+	@Override public void execute (Block block) {		
+		block.push(block.pop().bool() ? Num.ONE : Num.ZERO);
+	}
+}
+
+
 
 // A - 65
 class OP_Colon_A extends OpInstruction {
