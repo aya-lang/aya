@@ -1,10 +1,7 @@
 package aya.util.interfaces;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.apfloat.Apfloat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +53,7 @@ public class JSONDecoder {
 				if (jarr.isNull(i)) {
 					arr.add(Aya.getInstance().getVars().OBJ_NIL);
 				} else {
-					arr.add(toObj(arr.get(i)));
+					arr.add(toObj(jarr.get(i)));
 				}
 			}
 			return new GenericList(arr).promote();
@@ -98,20 +95,20 @@ public class JSONDecoder {
 	public static void main(String args[]) {
 		String example = "{\n"
 				+ "  \"id\": \"file\",\n"
-//				+ "  \"value\": \"File\",\n"
-//				+ "  \"popup\": {\n"
-//				+ "    \"menuitem\": [\n"
-//				+ "      {\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},\n"
-//				+ "      {\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},\n"
-//				+ "      {\"value\": \"Close\", \"onclick\": \"CloseDoc()\"}\n"
-//				+ "    ]\n"
-//				+ "  },\n"
-//				+ "  \"width\": 500,\n"
-//				+ "  \"Hello world!\": 200,\n"
-//				+ "  \"hash\": 1234567898765432345679876,\n"
-//				+ "  \"deci\": 23789456789987545678987654.4567896434567897654345678865456789,\n"
-//				+ "  \"arr\": [1,2,3,4],\n"
-//				+ "  \"isgood\": false,\n"
+				+ "  \"value\": \"File\",\n"
+				+ "  \"popup\": {\n"
+				+ "    \"menuitem\": [\n"
+				+ "      {\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},\n"
+				+ "      {\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},\n"
+				+ "      {\"value\": \"Close\", \"onclick\": \"CloseDoc()\"}\n"
+				+ "    ]\n"
+				+ "  },\n"
+				+ "  \"width\": 500,\n"
+				+ "  \"Hello world!\": 200,\n"
+				+ "  \"hash\": 1234567898765432345679876,\n"
+				+ "  \"deci\": 23789456789987545678987654.4567896434567897654345678865456789,\n"
+				+ "  \"arr\": [1,2,3,4],\n"
+				+ "  \"isgood\": false,\n"
 				+ "  \"other\": null\n"
 				+ "}";
 		

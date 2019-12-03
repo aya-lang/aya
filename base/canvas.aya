@@ -2,7 +2,7 @@ import ::color
 
 class ::canvas
 
-impl canvas::__init__ {params::dict self ,
+impl canvas::__init__ ({params::dict self ,
 
     .# Default values
     {,
@@ -20,9 +20,7 @@ impl canvas::__init__ {params::dict self ,
     params.height self.:height;
 
     ::new params 0 MG self.:id ;
-}.where{,
-    colors :colors
-}
+}.capture[::colors])
 
 impl canvas::__str__ {self,
     "<canvas($(self.id))>"

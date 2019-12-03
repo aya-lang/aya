@@ -255,8 +255,14 @@ public class Aya extends Thread {
 			}
 		} catch (Exception e) {
 			_instance._err.println(exToString(e));
-			_instance._err.println("stack:\n\t" + b.getPrintOutputState());
-			_instance._err.println("just before:\n\t" + b.getInstructions().toString());
+			try {
+				_instance._err.println("stack:\n\t" + b.getPrintOutputState());
+				_instance._err.println("just before:\n\t" + b.getInstructions().toString());
+			} catch (Exception e2) {
+				_instance._err.println("An additional error was thrown when attempting to print the stack state:");
+				_instance._err.println(exToString(e2));
+				_instance._err.println("This is likely caused by an error in an overloaded __str__ or __repr__ block.");
+			}
 		} finally {
 			_instance._variables.reset();
 		}
@@ -279,7 +285,9 @@ public class Aya extends Thread {
 			return "Unexpected empty stack";
 		} else if (e instanceof AyaUserRuntimeException ) {
 			return ((AyaUserRuntimeException)e).getSimpleMessage();
-		} 
+		} else if (e instanceof IndexOutOfBoundsException) {
+			return ((IndexOutOfBoundsException)e).getMessage();
+		}
 		else {
 			if(PRINT_LARGE_ERRORS) {
 				StringWriter sw = new StringWriter();

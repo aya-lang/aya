@@ -162,6 +162,22 @@
 {{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
 
 
+({:d,
+
+.# Create dict with strings
+{, 1:x 2:y } :d;
+3 d.:["Hello!"]
+4 d.:["foo bar"]
+5 d.:["var"]
+
+{d "Hello!" N \; } assert [1]
+{d "var" N \; } assert [1]
+{d ::var N \; } assert [1]
+{d "foo bar" N \; } assert [1]
+{d :E} assert [5]
+{d :V :/ C [1 2 3 4 5] =} assert [1]
+})
+
 
 "Core tests passed!" :P
 

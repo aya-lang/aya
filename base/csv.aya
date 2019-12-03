@@ -1,9 +1,38 @@
 {,
-    {
-        "\n"| :# {"," | :#{.rmquote.!}}
+    {dlm,
+        "\n"| :# {dlm | :#{.rmquote.!}}
     }:parse;
 
     {f,
-        fP G parse
+        fP G "," parse
     }.capture[::parse]:open;
+
+    {kwargs : clabel(1) rlabel(0) filename(nil) csv_str(nil) dlm(",")
+              data colnames(nil) rownames(nil),
+        kwargs .W
+
+        (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
+
+        .# Open the file and read into data
+        filename nil =! {filenameP G :csv_str;} ?
+
+        csv_str dlm parse :data;
+
+        .# CSV has column headers
+        clabel {
+            data V :colnames; ;
+            .# If there are row labels, the first entry is for the index colum
+            rlabel {colnamesV;:colnames;} ?
+        } ?
+
+        rlabel {
+            data :#{V\;} :rownames;
+        } ?
+
+        {,
+            data:data
+            colnames:colnames
+            rownames:rownames
+        }
+    }.capture[::parse] :read;
 }:csv;

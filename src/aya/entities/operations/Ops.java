@@ -967,9 +967,13 @@ class OP_B extends OpInstruction {
 			}
 		} else if (a.isa(LIST)) {
 			List l = (List)a;
-			Obj popped = l.popBack();
-			block.push(l);
-			block.push(popped);
+			if (l.length() > 0) {
+				Obj popped = l.popBack();
+				block.push(l);
+				block.push(popped);
+			} else {
+				throw new AyaRuntimeException("B: unable to remove element from empty list");
+			}
 		} 
 		
 		else if (a.isa(DICT)) {
@@ -1885,9 +1889,13 @@ class OP_V extends OpInstruction {
 			}
 		} else if (a.isa(LIST)) {
 			List l = (List)a;
-			Obj popped = l.pop();
-			block.push(l);
-			block.push(popped);
+			if (l.length() > 0) {
+				Obj popped = l.pop();
+				block.push(l);
+				block.push(popped);
+			} else {
+				throw new AyaRuntimeException("V: unable to remove element from empty list");
+			}
 		} else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_DEC);
 		} else {

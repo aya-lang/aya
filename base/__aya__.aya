@@ -288,16 +288,6 @@ static point::static_fn {
 
 .}
 
-.# -------
-.#   NIL
-.# -------
-
-{, } {,
-    ::__nil:__type__;
-    {"nil"}:__str__:__repr__;
-    {; :T ::__nil =}:__eq__;
-} :M :nil;
-
 
 .###########
 .# CONTROL #

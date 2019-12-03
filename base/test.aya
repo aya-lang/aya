@@ -27,7 +27,7 @@
     res expected = ! {
         ["Test failed: $blk\n"
          "\tExpected: $expected\n"
-         "\tRecieved: $res" ]S
+         "\tReceived: $res" ]S
     } { "" } .?
 
     }:run;
