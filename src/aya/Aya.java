@@ -22,6 +22,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
 import aya.obj.block.Block;
 import aya.parser.CharacterParser;
@@ -130,7 +131,7 @@ public class Aya extends Thread {
 				e.printStackTrace();
 			}
 			ArrayList<String> searchList = new ArrayList<String>();
-			searchList.addAll(OperationDocs.getAllOpDescriptions());
+			searchList.addAll(OpDocReader.getAllOpDescriptions());
 			// Add additional help data
 			searchList.add(AyaPrefs.CONSTANTS_HELP);
 			searchList.add(SpecialNumberParser.STR_CONSTANTS_HELP);

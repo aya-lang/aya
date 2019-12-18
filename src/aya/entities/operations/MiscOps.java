@@ -25,11 +25,13 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpDoc;
+import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
+import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
@@ -268,24 +270,7 @@ class OP_Help extends OpInstruction {
 			block.push(new StrList(items));
 			
 		} else if (s.isa(NUMBER)) {
-			int n = ((Number)s).toInt();
-			switch (n) {
-			case 0:
-				block.push(OperationDocs.asDicts(OpDoc.STD));
-				break;
-			case 1:
-				block.push(OperationDocs.asDicts(OpDoc.DOT));
-				break;
-			case 2:
-				block.push(OperationDocs.asDicts(OpDoc.COLON));
-				break;
-			case 3:
-				block.push(OperationDocs.asDicts(OpDoc.MISC));
-				break;
-
-			default:
-				throw new AyaRuntimeException("M?: Invalid index: " + n);
-			}
+			block.push(new GenericList(OpDocReader.getAllOpDicts()));
 		}
 		else {
 			throw new TypeError(this, s);

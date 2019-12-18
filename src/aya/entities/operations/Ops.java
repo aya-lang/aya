@@ -373,15 +373,11 @@ class OP_Pound extends OpInstruction {
 // $ - 36
 class OP_Duplicate extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(' ', "$");
-		doc.desc("A", "deepcopy (duplicate)");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Duplicate() {
-		this.name = "$";
+		init("$");
+		arg("A", "deepcopy (duplicate)");
 	}
+
 	@Override public void execute (final Block block) {
 		block.push(block.peek().deepcopy());
 	}

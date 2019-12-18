@@ -1,6 +1,5 @@
 package aya.exceptions;
 
-import aya.OperationDocs;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 
@@ -14,11 +13,11 @@ public class TypeError extends RuntimeException {
 	
 	public TypeError(OpInstruction op, Obj... recieved) {
 		super("Type error at (" + op.name + "):\n\tExpected (" 
-				+ OperationDocs.get(op.name).typeString() 
+				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved));
 		
 		msg = "Type error at (" + op.name + "):\n\tExpected (" 
-				+ OperationDocs.get(op.name).typeString() 
+				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved);
 	}
 	
