@@ -37,6 +37,7 @@ import aya.instruction.op.OpInstruction;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
 import aya.instruction.op.overload.OpOverload2Arg;
+import aya.instruction.op.overload.OpOverloadNoOp;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -278,18 +279,14 @@ public class Ops {
 // ! - 33
 class OP_Bang extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(' ', "!");
-		doc.desc("N", "1-N (logical not, complementary probability)");
-		doc.desc("C", "swap case");
-		doc.ovrld(Ops.KEYVAR_NEW.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Bang() {
-		this.name = "!";
+		init("!");
+		arg("N", "1-N (logical not, complementary probability)");
+		arg("C", "swap case");
+		vect();
+		setOverload(new OpOverloadNoOp("new"));
 	}
+
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
 		

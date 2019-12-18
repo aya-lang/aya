@@ -43,6 +43,10 @@ public abstract class OpInstruction extends Instruction {
 		return name;
 	}
 	
+	public void vect() {
+		_doc.vect();
+	}
+	
 	public void init(String name) {
 		this.name = name;
 		if (name.length() == 1) {
