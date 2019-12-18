@@ -27,6 +27,7 @@ import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilder;
+import aya.instruction.op.OpDoc;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;

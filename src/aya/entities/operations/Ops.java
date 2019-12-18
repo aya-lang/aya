@@ -32,6 +32,7 @@ import aya.OperationDocs;
 import aya.StreamMgr;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
+import aya.instruction.op.OpDoc;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;

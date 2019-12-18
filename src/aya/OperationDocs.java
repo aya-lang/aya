@@ -3,7 +3,7 @@ package aya;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import aya.entities.operations.OpDoc;
+import aya.instruction.op.OpDoc;
 import aya.obj.Obj;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;

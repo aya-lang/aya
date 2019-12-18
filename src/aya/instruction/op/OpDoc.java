@@ -1,4 +1,4 @@
-package aya.entities.operations;
+package aya.instruction.op;
 
 import java.util.ArrayList;
 
