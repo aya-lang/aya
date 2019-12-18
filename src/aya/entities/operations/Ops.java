@@ -386,24 +386,19 @@ class OP_Duplicate extends OpInstruction {
 // % - 37
 class OP_Percent extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(' ', "%");
-		doc.desc("NN", "mod");
-		doc.desc("BN", "repeat B N times");
-		doc.ovrld(Ops.KEYVAR_MOD.name(), Ops.KEYVAR_RMOD.name());
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Percent() {
-		this.name = "%";
-		this.overload = new OpOverload2Arg("mod");
+		init("%");
+		arg("NN", "mod");
+		arg("BN", "repeat B N times");
+		setOverload(new OpOverload2Arg("mod"));
 	}
+
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		
-		if (this.overload.execute(block, a, b)) return;
+		if (overload().execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
@@ -1822,21 +1817,14 @@ class OP_T extends OpInstruction {
 
 //U - 85
 class OP_U extends OpInstruction {
-	
-	static {
-		OpDoc doc = new OpDoc(' ', "U");
-		doc.desc("L", "reverse");
-		doc.ovrld(Ops.KEYVAR_REVERSE.name());
-		OperationDocs.add(doc);
-	}
-	
 	public OP_U() {
-		this.name = "U";
-		this.overload = new OpOverload1Arg("reverse");
+		init("U");
+		arg("L", "reverse");
+		setOverload(new OpOverload1Arg("reverse"));
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
-		if (this.overload.execute(block, o)) return;
+		if (overload().execute(block, o)) return;
 		
 		if (o.isa(LIST)) {
 			((List)o).reverse();

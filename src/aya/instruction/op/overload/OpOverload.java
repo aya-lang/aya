@@ -1,15 +1,15 @@
 package aya.instruction.op.overload;
 
+import java.util.ArrayList;
+
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
-public class OpOverload {
+public abstract class OpOverload {
 	
-	private String _name;
+	protected String _name;
 	
-	public OpOverload(String name) {
-		_name = name;
-	}
+	abstract public ArrayList<String> getNames();
 
 	public boolean execute(Block block, Obj a, Obj b) {
 		throw new UnsupportedOperationException("Op overload '" + _name + "' does not support using two arguments");

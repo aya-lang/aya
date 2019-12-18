@@ -74,6 +74,14 @@ public class OpDoc {
 		// Remove the trailing '|'
 		return s.substring(0, s.length()-1) + ")";
 	}
+
+	public void setOverloadNames(ArrayList<String> names) {
+		_overload = "";
+		for (String s : names) {
+			_overload += s + "/";
+		}
+		_overload = _overload.substring(0, _overload.length()-1);
+	}
 	
 	public String infoString(String frontPad) {
 		StringBuilder sb =  new StringBuilder();
@@ -122,5 +130,6 @@ public class OpDoc {
 	public String opName() {
 		return _name;
 	}
+
 }
 	

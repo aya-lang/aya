@@ -17,7 +17,7 @@ import aya.instruction.op.overload.OpOverload;
 public abstract class OpInstruction extends Instruction {
 
 	public String name;
-	public OpOverload overload;
+	private OpOverload _overload;
 	public OpDoc _doc;
 	
 	public String getDocTypeStr() {
@@ -27,6 +27,15 @@ public abstract class OpInstruction extends Instruction {
 			return _doc.typeString();
 		}
 		
+	}
+	
+	public void setOverload(OpOverload overload) {
+		this._overload = overload;
+		this._doc.setOverloadNames(overload.getNames());
+	}
+	
+	public OpOverload overload() {
+		return this._overload;
 	}
 	
 
