@@ -3,6 +3,7 @@ package aya.instruction.op;
 import java.util.LinkedList;
 
 import aya.instruction.Instruction;
+import aya.instruction.op.overload.OpOverload;
 
 /**
  * The Operation Class
@@ -15,7 +16,8 @@ import aya.instruction.Instruction;
  */
 public abstract class OpInstruction extends Instruction {
 	public String name;
-
+	public OpOverload overload = null;
+	
 	@Override
 	public String toString() {
 		return name;

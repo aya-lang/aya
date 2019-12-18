@@ -34,6 +34,9 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpDoc;
 import aya.instruction.op.OpInstruction;
+import aya.instruction.op.overload.OpOverload;
+import aya.instruction.op.overload.OpOverload1Arg;
+import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -397,11 +400,14 @@ class OP_Percent extends OpInstruction {
 	
 	public OP_Percent() {
 		this.name = "%";
+		this.overload = new OpOverload2Arg("mod");
 	}
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
+		
+		if (this.overload.execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
@@ -429,12 +435,6 @@ class OP_Percent extends OpInstruction {
 			}
 			return;
 		} 
-		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_MOD);
-		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_RMOD, a);
-		}
 		else {
 			throw new TypeError(this, a,b);
 		}
@@ -1836,16 +1836,16 @@ class OP_U extends OpInstruction {
 	
 	public OP_U() {
 		this.name = "U";
+		this.overload = new OpOverload1Arg("reverse");
 	}
 	@Override public void execute(final Block block) {
 		Obj o = block.pop();
+		if (this.overload.execute(block, o)) return;
 		
 		if (o.isa(LIST)) {
 			((List)o).reverse();
 			block.push(o);
-		} else if (o.isa(DICT)) {
-			block.callVariable((Dict)o, Ops.KEYVAR_REVERSE);
-		}
+		} 
 		else {
 			throw new TypeError(this,o);
 		}
