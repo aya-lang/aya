@@ -4,6 +4,9 @@ import java.util.LinkedList;
 
 import aya.instruction.Instruction;
 import aya.instruction.op.overload.OpOverload;
+import aya.instruction.op.overload.OpOverload1Arg;
+import aya.instruction.op.overload.OpOverload2Arg;
+import aya.instruction.op.overload.OpOverloadNoOp;
 
 /**
  * The Operation Class
@@ -29,9 +32,18 @@ public abstract class OpInstruction extends Instruction {
 		
 	}
 	
-	public void setOverload(OpOverload overload) {
-		this._overload = overload;
-		this._doc.setOverloadNames(overload.getNames());
+	public void setOverload(int num, String name) {
+		if (num == -1) {
+			this._overload = new OpOverloadNoOp(name);
+		} else if (num == 1) {
+			this._overload = new OpOverload1Arg(name);
+		} else if (num == 2) {
+			this._overload = new OpOverload2Arg(name);
+		} else {
+			throw new IllegalArgumentException("Overload must be -1, 1, or 2");
+		}
+
+		this._doc.setOverloadNames(_overload.getNames());
 	}
 	
 	public OpOverload overload() {
