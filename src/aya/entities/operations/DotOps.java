@@ -182,19 +182,20 @@ public class DotOps {
 // ! - 33
 class OP_Dot_Bang extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".!");
-		doc.desc("N", "signum");
-		doc.desc("S", "parse if number");
-		doc.ovrld(Ops.KEYVAR_SIGNUM.name());
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_Bang() {
 		this.name = ".!";
+		init(".!");
+		arg("N", "signum");
+		arg("S", "parse if number");
+		setOverload(1, "signum");
+		vect();
 	}
-	@Override public void execute(final Block block) {
+
+	@Override
+	public void execute(final Block block) {
 		Obj o = block.pop();
+
+		if (overload().execute(block, o)) return;
 
 		if (o.isa(NUMBER)) {
 			block.push(((Number)o).signnum());
@@ -217,11 +218,7 @@ class OP_Dot_Bang extends OpInstruction {
 			} else {
 				block.push(o);
 			}
-		}
-		else if (o.isa(DICT)) {
-			block.callVariable((Dict)o, Ops.KEYVAR_SIGNUM);
-		}
-		else {
+		} else {
 			throw new TypeError(this,o);
 		}
 	}
@@ -230,16 +227,13 @@ class OP_Dot_Bang extends OpInstruction {
 // $ - 36
 class OP_Dot_Duplicate extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".$");
-		doc.desc("..AN", "copies the Nth item on the stack to the top (not including N)");
-		OperationDocs.add(doc);
+	public OP_Dot_Duplicate() {
+		init(".$");
+		arg("..AN", "copies the Nth item on the stack to the top (not including N)");
 	}
 
-	public OP_Dot_Duplicate() {
-		this.name = "._";
-	}
-	@Override public void execute (final Block block) {
+	@Override
+	public void execute (final Block block) {
 		final Obj a = block.pop();
 
 		if (a.isa(NUMBER)) {
@@ -267,19 +261,18 @@ class OP_Dot_Duplicate extends OpInstruction {
 // % - 37
 class OP_Dot_Percent extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".%");
-		doc.desc("NN", "integer division");
-		doc.ovrld(Ops.KEYVAR_IDIV.name(), Ops.KEYVAR_RIDIV.name());
-		OperationDocs.add(doc);
+	public OP_Dot_Percent() {
+		init(".%");
+		arg("NN", "integer division");
+		setOverload(2, "idiv");
 	}
 
-	public OP_Dot_Percent() {
-		this.name = ".%";
-	}
-	@Override public void execute(final Block block) {
+	@Override
+	public void execute(final Block block) {
 		Obj a = block.pop();
 		Obj b = block.pop();
+
+		if (overload().execute(block, a, b)) return;
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
@@ -288,25 +281,13 @@ class OP_Dot_Percent extends OpInstruction {
 			} catch (ArithmeticException e) {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
-		}
-		else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( ((NumberList)a).idivFrom((Number)b) );
-		}
-
-		else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
+		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).idiv((Number)a) );
-		}
-		else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).idiv((NumberList)a) );
-		}
-
-		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_IDIV);
-		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_RIDIV, a);
-		}
-		else {
+		} else {
 			throw new TypeError(this, a,b);
 		}
 	}
@@ -317,17 +298,14 @@ class OP_Dot_Percent extends OpInstruction {
 // & - 38
 class OP_Dot_And extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".&");
-		doc.desc("SSS", "replace all occurances of the regex S1 with S2 in S3");
-		doc.desc("LLB", "zip with");
-		OperationDocs.add(doc);
+	public OP_Dot_And() {
+		init(".&");
+		arg("SSS", "replace all occurances of the regex S1 with S2 in S3");
+		arg("LLB", "zip with");
 	}
 
-	public OP_Dot_And() {
-		this.name = ".&";
-	}
-	@Override public void execute(final Block block) {
+	@Override
+	public void execute(final Block block) {
 		Obj a = block.pop();  // str
 		Obj b = block.pop();  // replace
 		Obj c = block.pop();  // find
@@ -340,7 +318,6 @@ class OP_Dot_And extends OpInstruction {
 			initial.push(b);
 			ListBuilder lb = new ListBuilder(initial, (Block)a, null, 0);
 			block.add(lb);
-
 		} else {
 			throw new TypeError(this,a,b,c);
 		}
@@ -350,17 +327,14 @@ class OP_Dot_And extends OpInstruction {
 // ' - 39
 class OP_Dot_CastChar extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".'");
-		doc.desc("N|S", "cast to char");
-		doc.desc("L", "convert number list to string using UTF-8 encoding");
-		OperationDocs.add(doc);
+	public OP_Dot_CastChar() {
+		init(".'");
+		arg("N|S", "cast to char");
+		arg("L", "convert number list to string using UTF-8 encoding");
 	}
 
-	public OP_Dot_CastChar() {
-		this.name = ".'";
-	}
-	@Override public void execute(final Block block) {
+	@Override
+	public void execute(final Block block) {
 		Obj o = block.pop();
 
 		if (o.isa(NUMBER)) {
@@ -381,15 +355,11 @@ class OP_Dot_CastChar extends OpInstruction {
 // ( - 40
 class OP_Dot_OParen extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".(");
-		doc.desc("NN", "left bitwise shift");
-		OperationDocs.add(doc);
+	public OP_Dot_OParen() {
+		init(".(");
+		arg("NN", "left bitwise shift");
 	}
 
-	public OP_Dot_OParen() {
-		this.name = ".(";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -407,15 +377,12 @@ class OP_Dot_OParen extends OpInstruction {
 // ) - 41
 class OP_Dot_CParen extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".)");
-		doc.desc("NN", "signed right bitwise shift");
-		OperationDocs.add(doc);
-	}
 
 	public OP_Dot_CParen() {
-		this.name = ".)";
+		init(".)");
+		arg("NN", "signed right bitwise shift");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -434,23 +401,20 @@ class OP_Dot_CParen extends OpInstruction {
 // + - 43
 class OP_Dot_Plus extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".+");
-		doc.desc("NN", "gdc");
-		doc.desc("BD", "swap vars in a copy of B for values defined in D");
-		doc.desc("BJ", "constant capture variable from outer scope");
-		doc.desc("BL<J>", "constant capture variables from outer scope");
-		doc.desc("DD", "update D1 with the values from D2 (modify D1)");
-		OperationDocs.add(doc);
+	public OP_Dot_Plus() {
+		init(".+");
+		arg("NN", "gdc");
+		arg("BD", "swap vars in a copy of B for values defined in D");
+		arg("BJ", "constant capture variable from outer scope");
+		arg("BL<J>", "constant capture variables from outer scope");
+		arg("DD", "update D1 with the values from D2 (modify D1)");
 	}
 
-	public OP_Dot_Plus() {
-		this.name = ".+";
-	}
 	private void capture(Block b, Symbol s) {
 		Obj o = Aya.getInstance().getVars().getVar(s.id());
 		b.getInstructions().assignVarValue(s.id(), o);
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -459,8 +423,7 @@ class OP_Dot_Plus extends OpInstruction {
 		// GCD
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.gcd((Number)a, (Number)b));
-		}
-		else if (b.isa(BLOCK)) {
+		} else if (b.isa(BLOCK)) {
 			Block blk = (Block)(b.deepcopy());
 			// Constant capture from dict
 			if (a.isa(DICT)) {
@@ -484,14 +447,10 @@ class OP_Dot_Plus extends OpInstruction {
 			}
 			
 			block.push(blk);
-		}
-		else if (a.isa(DICT) && b.isa(DICT)) {
+		} else if (a.isa(DICT) && b.isa(DICT)) {
 			((Dict)b).update((Dict)a);
 			block.push(b);
-		}
-		
-		
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -500,18 +459,13 @@ class OP_Dot_Plus extends OpInstruction {
 // - - 45
 class OP_Dot_Minus extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".-");
-		doc.desc("NN", "lcm");
-		doc.desc("LN", "remove item at index N from L");
-		doc.desc("LL", "remove items at indices L1 from L2");
-		doc.desc("DJ", "remove key from dict");
-		doc.desc("DS", "remove key from dict");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_Minus() {
-		this.name = ".-";
+		init(".-");
+		arg("NN", "lcm");
+		arg("LN", "remove item at index N from L");
+		arg("LL", "remove items at indices L1 from L2");
+		arg("DJ", "remove key from dict");
+		arg("DS", "remove key from dict");
 	}
 
 	public boolean rmFromDict(Dict d, Obj idx) {
@@ -561,33 +515,23 @@ class OP_Dot_Minus extends OpInstruction {
 // / - 47
 class OP_Dot_FwdSlash extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', "./");
-		doc.desc("N", "ceiling");
-		doc.ovrld(Ops.KEYVAR_CEIL.name());
-		OperationDocs.add(doc);
+	public OP_Dot_FwdSlash() {
+		init("./");
+		arg("N", "ceiling");
+		setOverload(1, "ceil");
 	}
 
-	public OP_Dot_FwdSlash() {
-		this.name = "./";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj a = block.pop();
 
+		if (overload().execute(block, a)) return;
+
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).ceil());
-		}
-
-		else if (a.isa(NUMBERLIST)) {
+		} else if (a.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).ceil() );
-		}
-
-		else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_CEIL);
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -596,15 +540,11 @@ class OP_Dot_FwdSlash extends OpInstruction {
 // ; - 59
 class OP_Dot_ClearAll extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".;");
-		doc.desc("..A", "clear the entire stack");
-		OperationDocs.add(doc);
+	public OP_Dot_ClearAll() {
+		init(".;");
+		arg("..A", "clear the entire stack");
 	}
 
-	public OP_Dot_ClearAll() {
-		this.name = ".;";
-	}
 	@Override
 	public void execute(Block block) {
 		block.clearStack();
@@ -614,57 +554,42 @@ class OP_Dot_ClearAll extends OpInstruction {
 // < - 60
 class OP_Dot_LessThan extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".<");
-		doc.desc("LN", "head / pad 0");
-		doc.desc("SN", "head / pad ' '");
-		doc.desc("NN|SS|CC", "lesser of");
-		doc.ovrld(Ops.KEYVAR_HEAD.name());
-		OperationDocs.add(doc);
+	public OP_Dot_LessThan() {
+		init(".<");
+		arg("LN", "head / pad 0");
+		arg("SN", "head / pad ' '");
+		arg("NN|SS|CC", "lesser of");
+		setOverload(-1, "head");
 	}
 
-	public OP_Dot_LessThan() {
-		this.name = ".<";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj b = block.pop();			// Popped in Reverse Order
 		Obj a = block.pop();
 
-
 		if (b.isa(NUMBER) && a.isa(LIST)) {
 			block.push(((List)a).head(((Number)b).toInt()));
-		}
-
-		else if (a.isa(NUMBER) && b.isa(NUMBER)) {
+		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) > 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(STR) && b.isa(STR)) {
+		} else if (a.isa(STR) && b.isa(STR)) {
 			if ( ((Str)a).compareTo((Str)b) > 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(CHAR) && b.isa(CHAR)) {
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
 			if ( ((Char)a).compareTo((Char)b) > 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(DICT)) {
+		} else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_HEAD, b);
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -674,56 +599,44 @@ class OP_Dot_LessThan extends OpInstruction {
 // > - 62
 class OP_Dot_GreaterThan extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".>");
-		doc.desc("LN", "tail / pad 0");
-		doc.desc("SN", "tail / pad ' '");
-		doc.desc("NN|CC|SS", "greater of");
-		doc.ovrld(Ops.KEYVAR_TAIL.name());
-		OperationDocs.add(doc);
+	public OP_Dot_GreaterThan() {
+		init(".>");
+		arg("LN", "tail / pad 0");
+		arg("SN", "tail / pad ' '");
+		arg("NN|CC|SS", "greater of");
+		setOverload(-1, "tail");
+
 	}
 
-	public OP_Dot_GreaterThan() {
-		this.name = ".>";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj b = block.pop();			// Popped in Reverse Order
 		Obj a = block.pop();
 
-		if (b.isa(NUMBER) && a.isa(LIST)) {
-		block.push( ((List)a).tail(((Number)b).toInt()) );
-		}
 
-		else if (a.isa(NUMBER) && b.isa(NUMBER)) {
+		if (b.isa(NUMBER) && a.isa(LIST)) {
+			block.push( ((List)a).tail(((Number)b).toInt()) );
+		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) < 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(STR) && b.isa(STR)) {
+		} else if (a.isa(STR) && b.isa(STR)) {
 			if ( ((Str)a).compareTo((Str)b) < 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(CHAR) && b.isa(CHAR)) {
+		} else if (a.isa(CHAR) && b.isa(CHAR)) {
 			if ( ((Char)a).compareTo((Char)b) < 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
-		}
-
-		else if (a.isa(DICT)) {
+		} else if (a.isa(DICT)) {
 			block.callVariable((Dict)a, Ops.KEYVAR_TAIL, b);
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 
@@ -733,14 +646,9 @@ class OP_Dot_GreaterThan extends OpInstruction {
 // = 61 new OP_Dot_Equals(),
 class OP_Dot_Equals extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".=");
-		doc.desc("LL|AL|LA", "element-wise equivalence");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_Equals() {
-		this.name = ".=";
+		init(".=");
+		arg("LL|AL|LA", "element-wise equivalence");
 	}
 
 	@Override
@@ -750,21 +658,13 @@ class OP_Dot_Equals extends OpInstruction {
 
 		if (a.isa(DICT) && b.isa(DICT)) {
 			block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
-		}
-
-		else if (a.isa(LIST) && b.isa(LIST)) {
+		} else if (a.isa(LIST) && b.isa(LIST)) {
 			block.push( List.equalsElementwise((List)a, (List)b) );
-		}
-
-		else if ( a.isa(LIST) ) {
+		} else if ( a.isa(LIST) ) {
 			block.push( List.equalsElementwise((List)a, b) );
-		}
-
-		else if ( b.isa(LIST) ) {
+		} else if ( b.isa(LIST) ) {
 			block.push( List.equalsElementwise((List)b, a) );
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -775,14 +675,9 @@ class OP_Dot_Equals extends OpInstruction {
 // ? - 63
 class OP_Dot_Conditional extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".?");
-		doc.desc("AAA", "if A1 then A2, else A3. If A2/A3 are blocks, execute");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_Conditional() {
-		this.name = ".?";
+		init(".?");
+		arg("AAA", "if A1 then A2, else A3. If A2/A3 are blocks, execute");
 	}
 
 	@Override
@@ -813,16 +708,13 @@ class OP_Dot_Conditional extends OpInstruction {
 // @ - 64
 class OP_Dot_At extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".@");
-		doc.desc("..AN", "moves the Nth item on the stack (not including N) to the top");
-		OperationDocs.add(doc);
+	public OP_Dot_At() {
+		init(".@");
+		arg("..AN", "moves the Nth item on the stack (not including N) to the top");
 	}
 
-	public OP_Dot_At() {
-		this.name = ".@";
-	}
-	@Override public void execute (final Block block) {
+	@Override
+	public void execute (final Block block) {
 		final Obj a = block.pop();
 
 		if (a.isa(NUMBER)) {
@@ -846,15 +738,11 @@ class OP_Dot_At extends OpInstruction {
 // A - 65
 class OP_Dot_ArrayAll extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".A");
-		doc.desc("..A", "wrap entire stack in a list");
-		OperationDocs.add(doc);
+	public OP_Dot_ArrayAll() {
+		init(".A");
+		arg("..A", "wrap entire stack in a list");
 	}
 
-	public OP_Dot_ArrayAll() {
-		this.name = ".A";
-	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Block block) {
@@ -868,15 +756,11 @@ class OP_Dot_ArrayAll extends OpInstruction {
 // B - 66
 class OP_Dot_Append extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".B");
-		doc.desc("AL", "append item to the back of a list");
-		OperationDocs.add(doc);
+	public OP_Dot_Append() {
+		init(".B");
+		arg("AL", "append item to the back of a list");
 	}
 
-	public OP_Dot_Append() {
-		this.name = ".B";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -894,19 +778,15 @@ class OP_Dot_Append extends OpInstruction {
 // C - 67
 class OP_Dot_SortUsing extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".C");
-		doc.desc("LB", "sort least to greatest by applying B to L");
-		doc.desc("NN", "xor");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_SortUsing() {
-		this.name = ".C";
+		init(".C");
+		arg("LB", "sort least to greatest by applying B to L");
+		arg("NN", "xor");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override public void execute(Block block) {
+	@Override
+	public void execute(Block block) {
 		Obj a = block.pop();
 		Obj b = block.pop();
 
@@ -967,16 +847,13 @@ class OP_Dot_SortUsing extends OpInstruction {
 // D - 68
 class OP_Dot_Error extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".D");
-		doc.desc("S", "interrupts the program and throws an error message");
-		OperationDocs.add(doc);
+	public OP_Dot_Error() {
+		init(".D");
+		arg("S", "interrupts the program and throws an error message");
 	}
 
-	public OP_Dot_Error() {
-		this.name = ".D";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		Obj a = block.pop();
 
 		if(a.isa(STR)) {
@@ -990,16 +867,12 @@ class OP_Dot_Error extends OpInstruction {
 //E - 69
 class OP_Dot_Len extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".E");
-		doc.desc("L", "length, keep list on stack");
-		doc.ovrld(Ops.KEYVAR_LEN.name());
-		OperationDocs.add(doc);
+	public OP_Dot_Len() {
+		init(".E");
+		arg("L", "length, keep list on stack");
+		setOverload(-1, "len");
 	}
 
-	public OP_Dot_Len() {
-		this.name = ".E";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj n = block.pop();
@@ -1007,12 +880,10 @@ class OP_Dot_Len extends OpInstruction {
 		if (n.isa(LIST)) {
 			block.push(n);
 			block.push( new Num(((List)n).length()) );
-		}
-		else if (n.isa(DICT)) {
+		} else if (n.isa(DICT)) {
 			block.push(n);
 			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -1023,15 +894,11 @@ class OP_Dot_Len extends OpInstruction {
 //F - 70
 class OP_Dot_Flatten extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".F");
-		doc.desc("L", "flatten nested list");
-		OperationDocs.add(doc);
+	public OP_Dot_Flatten() {
+		init(".F");
+		arg("L", "flatten nested list");
 	}
 
-	public OP_Dot_Flatten() {
-		this.name = ".F";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj n = block.pop();
@@ -1054,15 +921,11 @@ class OP_Dot_Flatten extends OpInstruction {
 // G - 71
 class OP_Dot_Write extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".G");
-		doc.desc("ASN", "write A as a string to file located at S. N = 0, overwrite. N = 1, append");
-		OperationDocs.add(doc);
+	public OP_Dot_Write() {
+		init(".G");
+		arg("ASN", "write A as a string to file located at S. N = 0, overwrite. N = 1, append");
 	}
 
-	public OP_Dot_Write() {
-		this.name = ".G";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj n = block.pop();
@@ -1109,38 +972,32 @@ class OP_Dot_Write extends OpInstruction {
 //NOTE: If updating this operator, also update I
 class OP_Dot_I extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".I");
-		doc.desc("LN|LL", "index, keep list on stack");
-		doc.desc("LB", "filter, keep list on stack");
-		OperationDocs.add(doc);
+	public OP_Dot_I() {
+		init(".I");
+		arg("LN|LL", "index, keep list on stack");
+		arg("LB", "filter, keep list on stack");
+		setOverload(-1, "getindex");
 	}
 
-	public OP_Dot_I() {
-		this.name = ".I";
-	}
-	@Override public void execute (final Block block) {
+	@Override
+	public void execute (final Block block) {
 		Obj index = block.pop();
 		final Obj list = block.pop();
 		block.push(list); //.I keeps the list on the stack
 
 		if(list.isa(LIST)) {		
 			block.push(List.getIndex((List)list, index));
-		}else if (list.isa(DICT)) {
+		} else if (list.isa(DICT)) {
 			if (index.isa(LIST) && !index.isa(STR)) {
 				List l = (List)index;
-				if (l.length() == 1)
-					index = l.get(0);
-			}
-			
-			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
+				if (l.length() == 1) index = l.get(0);
+			} if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
 				block.push(index);
 				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX);
 			} else {
 				block.push(Dict.getIndex((Dict)list, index));
 			}
-		}
-		else {
+		} else {
 			throw new TypeError(this, index, list);
 		}
 	}
@@ -1149,16 +1006,13 @@ class OP_Dot_I extends OpInstruction {
 //K - 75
 class OP_Dot_TryCatch extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".K");
-		doc.desc("BB", "try B1, if error, execute B2. Neither block has access to the global stack");
-		OperationDocs.add(doc);
+	public OP_Dot_TryCatch() {
+		init(".K");
+		arg("BB", "try B1, if error, execute B2. Neither block has access to the global stack");
 	}
 
-	public OP_Dot_TryCatch() {
-		this.name = ".K";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		Obj catchBlock = block.pop();
 		Obj tryBlock = block.pop();
 
@@ -1181,21 +1035,17 @@ class OP_Dot_TryCatch extends OpInstruction {
 //M- 77
 class OP_Dot_M extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".M");
-		doc.desc("D", "get D's meta, create one if it does not exist");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_M() {
-		this.name = ".M";
+		init(".M");
+		arg("D", "get D's meta, create one if it does not exist");
 	}
 	
 	public static final long ARGS = Variable.encodeString("args");
 	public static final long ARGTYPES = Variable.encodeString("argtypes");
 	public static final long LOCALS = Variable.encodeString("locals");
 	
-	@Override public void execute (final Block block) {
+	@Override
+	public void execute (final Block block) {
 		Obj a = block.pop();
 		 if (a.isa(DICT)) {
 			block.push(((Dict)a).getMetaDict());
@@ -1205,6 +1055,7 @@ class OP_Dot_M extends OpInstruction {
 			throw new TypeError(this, a);
 		}
 	}
+
 	private Dict getBlockMeta(Block b) {
 		Dict d = new Dict();
 		// Arg Names
@@ -1230,16 +1081,13 @@ class OP_Dot_M extends OpInstruction {
 // N - 78
 class OP_Dot_N extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".N");
-		doc.desc("LB", "return the index of the first element of L that satifies E");
-		OperationDocs.add(doc);
+	public OP_Dot_N() {
+		init(".N");
+		arg("LB", "return the index of the first element of L that satifies E");
 	}
 
-	public OP_Dot_N() {
-		this.name = ".N";
-	}
-	@Override public void execute (final Block block) {
+	@Override
+	public void execute (final Block block) {
 		final Obj a = block.pop(); //Block
 		final Obj b = block.pop(); //List
 
@@ -1272,16 +1120,13 @@ class OP_Dot_N extends OpInstruction {
 // P - 80
 class OP_Dot_Print extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".P");
-		doc.desc("A", "print to stdout");
-		OperationDocs.add(doc);
+	public OP_Dot_Print() {
+		init(".P");
+		arg("A", "print to stdout");
 	}
 
-	public OP_Dot_Print() {
-		this.name = ".P";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		Aya.getInstance().print(block.pop().str());
 	}
 }
@@ -1289,16 +1134,13 @@ class OP_Dot_Print extends OpInstruction {
 // Q - 81
 class OP_Dot_Rand extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".Q");
-		doc.desc("-", "return a random decimal from 0 to 1");
-		OperationDocs.add(doc);
+	public OP_Dot_Rand() {
+		init(".Q");
+		arg("-", "return a random decimal from 0 to 1");
 	}
 
-	public OP_Dot_Rand() {
-		this.name = ".Q";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		block.push(new Num(Ops.RAND.nextDouble()));
 	}
 }
@@ -1306,16 +1148,13 @@ class OP_Dot_Rand extends OpInstruction {
 // R - 82
 class OP_Dot_R extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".R");
-		doc.desc("N", "range [0, 1, .., N-1]");
-		OperationDocs.add(doc);
+	public OP_Dot_R() {
+		init(".Q");
+		arg("N", "range [0, 1, .., N-1]");
 	}
 
-	public OP_Dot_R() {
-		this.name = ".R";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		final Obj a = block.pop();
 
 		if (a.isa(NUMBER)) {
@@ -1340,16 +1179,13 @@ class OP_Dot_R extends OpInstruction {
 // S - 83
 class OP_Dot_Case extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".S");
-		doc.desc(".S", "returns the first element of a list. if the first element is a block, evaluate");
-		OperationDocs.add(doc);
+	public OP_Dot_Case() {
+		init(".S");
+		arg(".S", "returns the first element of a list. if the first element is a block, evaluate");
 	}
 
-	public OP_Dot_Case() {
-		this.name = ".S";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		Obj a = block.pop();
 
 		//Return the first element of a list
@@ -1374,23 +1210,18 @@ class OP_Dot_Case extends OpInstruction {
 //T - 84
 class OP_Dot_T extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".T");
-		doc.desc("L", "transpose a 2d list");
-		OperationDocs.add(doc);
+	public OP_Dot_T() {
+		init(".T");
+		arg("L", "transpose a 2d list");
 	}
 
-	public OP_Dot_T() {
-		this.name = ".T";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute (Block block) {
 		final Obj a = block.pop();
 
 		if (a.isa(LIST)) {
 			block.push( List.transpose((List)a) );
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -1399,35 +1230,25 @@ class OP_Dot_T extends OpInstruction {
 // U - 85
 class OP_RequestString extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".U");
-		doc.desc("S", "requests a string using a ui dialog, S is the prompt text");
-		OperationDocs.add(doc);
+	public OP_RequestString() {
+		init(".U");
+		arg("S", "requests a string using a ui dialog, S is the prompt text");
 	}
 
-	public OP_RequestString() {
-		this.name = ".U";
-	}
 	@Override
 	public void execute(Block block) {
-
 		block.push(new Str(QuickDialog.requestString(block.pop().str())));
-
 	}
 }
 
 // V - 86
 class OP_Dot_AppendBack extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".V");
-		doc.desc("AL", "append item to back of list");
-		OperationDocs.add(doc);
+	public OP_Dot_AppendBack() {
+		init(".V");
+		arg("AL", "append item to back of list");
 	}
 
-	public OP_Dot_AppendBack() {
-		this.name = ".V";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -1445,15 +1266,11 @@ class OP_Dot_AppendBack extends OpInstruction {
 // W - 87
 class OP_Dot_W extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".W");
-		doc.desc("D", "export variables only if they exist in the most local scope");
-		OperationDocs.add(doc);
+	public OP_Dot_W() {
+		init(".W");
+		arg("D", "export variables only if they exist in the most local scope");
 	}
 
-	public OP_Dot_W() {
-		this.name = ".W";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj a = block.pop();
@@ -1471,16 +1288,13 @@ class OP_Dot_W extends OpInstruction {
 // Z - 90
 class OP_Dot_Zed extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".Z");
-		doc.desc("S|C|J", "dereference variable");
-		OperationDocs.add(doc);
+	public OP_Dot_Zed() {
+		init(".Z");
+		arg("S|C|J", "dereference variable");
 	}
 
-	public OP_Dot_Zed() {
-		this.name = ".Z";
-	}
-	@Override public void execute (Block block) {
+	@Override
+	public void execute(Block block) {
 		Obj s = block.pop();
 
 		if(s.isa(STR) || s.isa(CHAR)) {
@@ -1504,29 +1318,24 @@ class OP_Dot_Zed extends OpInstruction {
 // \ - 92
 class OP_Dot_BackSlash extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".\\");
-		doc.desc("N", "floor");
-		doc.ovrld(Ops.KEYVAR_FLOOR.name());
-		OperationDocs.add(doc);
+	public OP_Dot_BackSlash() {
+		init(".\\");
+		arg("N", "floor");
+		setOverload(1, "floor");
+		vect();
 	}
 
-	public OP_Dot_BackSlash() {
-		this.name = ".\\";
-	}
 	@Override
 	public void execute(Block block) {
 		final Obj a = block.pop();
+		
+		if (overload().execute(block, a)) return;
 
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).floor());
-		}
-
-		else if (a.isa(NUMBERLIST)) {
+		} else if (a.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).floor() );
-		}
-
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -1535,14 +1344,9 @@ class OP_Dot_BackSlash extends OpInstruction {
 // ^ - 94
 class OP_Dot_Pow extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".^");
-		doc.desc("L", "compile");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Dot_Pow() {
-		this.name = ".^";
+		init(".^");
+		arg("L", "compile");
 	}
 	
 	@Override
@@ -1561,8 +1365,7 @@ class OP_Dot_Pow extends OpInstruction {
 				}
 			}
 			block.push(b);
-		}
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -1576,27 +1379,22 @@ class OP_Dot_Pow extends OpInstruction {
 // | - 124
 class OP_Dot_Bar extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".|");
-		doc.desc("N", "absolute value");
-		doc.ovrld(Ops.KEYVAR_ABS.name());
-		doc.vect();
-		OperationDocs.add(doc);
+	public OP_Dot_Bar() {
+		init(".|");
+		arg("N", "absolute value");
+		setOverload(1, "abs");
 	}
 
-	public OP_Dot_Bar() {
-		this.name = ".|";
-	}
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
+		
+		if (overload().execute(block, a)) return;
 
 		if (a.isa(NUMBER)) {
 			block.push( ((Number)a).abs() );
 		} else if (a.isa(NUMBERLIST)) {
 			block.push( ((NumberList)a).abs() );
-		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_ABS);
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1609,16 +1407,12 @@ class OP_Dot_Bar extends OpInstruction {
 // ~ - 126
 class OP_Dot_Tilde extends OpInstruction {
 
-	static {
-		OpDoc doc = new OpDoc('.', ".~");
-		doc.desc("S", "parse contents to a block");
-		doc.desc("J|C", "deref variable; if not a block, put contents in block");
-		OperationDocs.add(doc);
+	public OP_Dot_Tilde() {
+		init(".~");
+		arg("S", "parse contents to a block");
+		arg("J|C", "deref variable; if not a block, put contents in block");
 	}
 
-	public OP_Dot_Tilde() {
-		this.name = ".~";
-	}
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
