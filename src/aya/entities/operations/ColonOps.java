@@ -14,11 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
-import aya.OperationDocs;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
-import aya.instruction.op.OpDoc;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -180,17 +178,13 @@ public class ColonOps {
 // # - 35
 class OP_Colon_Pound extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":#");
-		doc.desc("L:#B", "map");
-		doc.desc("D:#B", "map over key value pairs");
-		doc.ovrld(Ops.KEYVAR_EACH.name());
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Pound() {
-		this.name = ":#";
+		init(":#");
+		arg("L:#B", "map");
+		arg("D:#B", "map over key value pairs");
+		setOverload(-1, "each");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj blk = block.pop();
@@ -215,16 +209,13 @@ class OP_Colon_Pound extends OpInstruction {
 // $ - 36
 class OP_Colon_Duplicate extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":$");
-		doc.desc("..AN", "copies the first N items on the stack (not including N)");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Duplicate() {
-		this.name = ":_";
+		init(":_");
+		arg("..AN", "copies the first N items on the stack (not including N)");
 	}
-	@Override public void execute (final Block block) {
+
+	@Override
+	public void execute (final Block block) {
 		final Obj a = block.pop();
 		
 		if (a.isa(NUMBER)) {
@@ -257,15 +248,11 @@ class OP_Colon_Duplicate extends OpInstruction {
 // & - 39
 class OP_Colon_And extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":&");
-		doc.desc("A", "duplicate reference (same as $ but does not make a copy)");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_And() {
-		this.name = ":&";
+		init(":&");
+		arg("A", "duplicate reference (same as $ but does not make a copy)");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.peek();
@@ -275,18 +262,14 @@ class OP_Colon_And extends OpInstruction {
 
 // ' - 39
 class OP_Colon_Quote extends OpInstruction {
-	
-	static {
-		OpDoc doc = new OpDoc(':', ":'");
-		doc.desc("C", "ord (cast to int)");
-		doc.desc("S", "convert a string to bytes using UTF-8 encoding");
-		doc.desc("N", "identity; return N");
-		OperationDocs.add(doc);
-	}
-	
+
 	public OP_Colon_Quote() {
-		this.name = ":'";
+		init(":'");
+		arg("C", "ord (cast to int)");
+		arg("S", "convert a string to bytes using UTF-8 encoding");
+		arg("N", "identity; return N");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -312,15 +295,11 @@ class OP_Colon_Quote extends OpInstruction {
 //* - 42
 class OP_Colon_Times extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":*");
-		doc.desc("LLB", "outer product of two lists using B");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Times() {
-		this.name = ":*";
+		init(":*");
+		arg("LLB", "outer product of two lists using B");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj blk = block.pop();
@@ -364,15 +343,11 @@ class OP_Colon_Times extends OpInstruction {
 // / - 47
 class OP_Colon_Promote extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":/");
-		doc.desc("L", "promote list to more specific type if possible");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Promote() {
-		this.name = ":/";
+		init(":/");
+		arg("L", "promote list to more specific type if possible");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -381,8 +356,7 @@ class OP_Colon_Promote extends OpInstruction {
 			block.push(((GenericList)a).promote());
 		} else if (a.isa(LIST)) {
 			block.push(a);
-		}
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -391,23 +365,19 @@ class OP_Colon_Promote extends OpInstruction {
 // < - 60
 class OP_Colon_LessThan extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":<");
-		doc.desc("NN|CC|SS", "less then or equal to");
-		doc.ovrld(Ops.KEYVAR_LEQ.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_LessThan() {
-		this.name = ":<";
+		init(":<");
+		arg("NN|CC|SS", "less then or equal to");
+		vect();
+		setOverload(2, "leq");
 	}
+
 	@Override
 	public void execute(final Block block) {
 		final Obj b = block.pop();			// Popped in Reverse Order
 		final Obj a = block.pop();
-		
-		
+
+		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( new Num(((Number)a).compareTo((Number)b) <= 0) );
@@ -421,11 +391,7 @@ class OP_Colon_LessThan extends OpInstruction {
 			block.push( ((NumberList)a).leq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).leq((NumberList)b) ); 
-		} else if (b.isa(DICT)) {
-			block.push(a);
-			block.callVariable((Dict)b, Ops.KEYVAR_LEQ);
-		} 
-		else {
+		} else {
 			throw new TypeError(this, a,b);
 		}
 	}
@@ -434,15 +400,11 @@ class OP_Colon_LessThan extends OpInstruction {
 // = - 61
 class OP_Colon_Equals extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":=");
-		doc.desc("AJ|AC|AS", "assign A to variable");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Equals() {
-		this.name = ":=";
+		init(":=");
+		arg("AJ|AC|AS", "assign A to variable");
 	}
+
 	@Override
 	public void execute(final Block block) {
 		final Obj sym = block.pop();
@@ -466,22 +428,19 @@ class OP_Colon_Equals extends OpInstruction {
 // > - 62
 class OP_Colon_GreaterThan extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":>");
-		doc.desc("NN|CC|SS", "greater than or equal to");
-		doc.vect();
-		doc.ovrld(Ops.KEYVAR_GEQ.name());
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_GreaterThan() {
-		this.name = ":>";
-
+		init(":>");
+		arg("NN|CC|SS", "greater than or equal to");
+		setOverload(2, "geq");
+		vect();
 	}
+
 	@Override
 	public void execute(final Block block) {
 		final Obj b = block.pop();			// Popped in Reverse Order
 		final Obj a = block.pop();
+
+		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( new Num(((Number)a).compareTo((Number)b) >= 0) );
@@ -495,13 +454,7 @@ class OP_Colon_GreaterThan extends OpInstruction {
 			block.push( ((NumberList)a).geq((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
 			block.push( ((NumberList)a).geq((NumberList)b) ); 
-		} else if (b.isa(DICT)) {
-			block.push(a);
-			block.callVariable((Dict)b, Ops.KEYVAR_GEQ);
-		} 
-		
-		
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 	}
@@ -510,16 +463,13 @@ class OP_Colon_GreaterThan extends OpInstruction {
 // ? - 63
 class OP_Colon_Bool extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":?");
-		doc.desc("A", "convert to boolean");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Bool() {
-		this.name = ":?";
+		init(":?");
+		arg("A", "convert to boolean");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		block.push(block.pop().bool() ? Num.ONE : Num.ZERO);
 	}
 }
@@ -529,30 +479,24 @@ class OP_Colon_Bool extends OpInstruction {
 // A - 65
 class OP_Colon_A extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":A");
-		doc.desc("..AN", "collect N items from stack into list");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_A() {
-		this.name = ":A";
+		init(":A");
+		arg("..AN", "collect N items from stack into list");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		final Obj n = block.pop();
 		
 		if (n.isa(NUMBER)) {
 			int N = ((Number)n).toInt();
 			ArrayList<Obj> arr = new ArrayList<>();
-			for (int i = 0; i < N; i++)
-			{
+			for (int i = 0; i < N; i++) {
 				arr.add(block.pop());
 			}
 			Collections.reverse(arr);
 			block.push((new GenericList(arr)).promote());
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -561,23 +505,18 @@ class OP_Colon_A extends OpInstruction {
 // C - 67
 class OP_Colon_C extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":C");
-		doc.desc("J", "convert symbol to string name");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_C() {
-		this.name = ":C";
+		init(":C");
+		arg("J", "convert symbol to string name");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		final Obj a = block.pop();
 		
 		if (a.isa(SYMBOL)) {
 			block.push( new Str(((Symbol)a).name()) );
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -586,23 +525,17 @@ class OP_Colon_C extends OpInstruction {
 // D - 68
 class OP_Colon_D extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":D");
-		doc.desc("ASD|AJD", "set dict index");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_D() {
-		this.name = ":D";
+		init(":D");
+		arg("ASD|AJD", "set dict index");
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj dict = block.pop();
 		final Obj index = block.pop();
 		final Obj item = block.pop();
 
-
-		
 		if (dict.isa(DICT) && index.isa(SYMBOL)) {
 			((Dict)dict).set(((Symbol)index).id(), item);
 			block.push(dict);
@@ -618,15 +551,11 @@ class OP_Colon_D extends OpInstruction {
 // E - 69
 class OP_Colon_E extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":E");
-		doc.desc("D", "number or items in a dict");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_E() {
-		this.name = ":E";
+		init(":E");
+		arg("D", "number or items in a dict");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -642,15 +571,11 @@ class OP_Colon_E extends OpInstruction {
 // I - 73  
 class OP_Colon_I extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":I");
-		doc.desc("DS|DJ", "get dict item from key");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_I() {
-		this.name = ":I";
+		init(":I");
+		arg("DS|DJ", "get dict item from key");
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj index = block.pop();
@@ -658,7 +583,6 @@ class OP_Colon_I extends OpInstruction {
 		
 		
 		if (list.isa(DICT)) {
-			
 			Obj out = null;
 			final Dict d = ((Dict)list);
 			
@@ -700,15 +624,11 @@ class OP_Colon_I extends OpInstruction {
 // K - 75
 class OP_Colon_K extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":K");
-		doc.desc("D", "return a list of keys as symbols");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_K() {
-		this.name = ":K";
+		init(":K");
+		arg("D", "return a list of keys as symbols");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -724,20 +644,15 @@ class OP_Colon_K extends OpInstruction {
 // M - 77
 class OP_Colon_M extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":M");
-		doc.desc("DD", "set D1's meta to D2 leave D1 on stack");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_M() {
-		this.name = ":M";
+		init(":M");
+		arg("DD", "set D1's meta to D2 leave D1 on stack");
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj meta = block.pop();
 		final Obj dict = block.pop();
-
 
 		if(dict.isa(DICT) && meta.isa(DICT)) {
 			((Dict)dict).setMetaTable((Dict)meta);
@@ -755,16 +670,13 @@ class OP_Colon_M extends OpInstruction {
 // P - 80
 class OP_Colon_P extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":P");
-		doc.desc("A", "println to stdout");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_P() {
-		this.name = ":P";
+		init(":P");
+		arg("A", "println to stdout");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		Aya.getInstance().println(block.pop().str());
 	}
 }
@@ -772,16 +684,13 @@ class OP_Colon_P extends OpInstruction {
 //R - 82
 class OP_Colon_R extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":R");
-		doc.desc("-", "readline from stdin");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_R() {
-		this.name = ":R";
+		init(":R");
+		arg("-", "readline from stdin");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		block.push(new Str(Aya.getInstance().nextLine()));
 	}
 }
@@ -790,23 +699,18 @@ class OP_Colon_R extends OpInstruction {
 // S - 83
 class OP_Colon_S extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":S");
-		doc.desc("S|C", "convert to symbol");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_S() {
-		this.name = ":S";
+		init(":S");
+		arg("S|C", "convert to symbol");
 	}
-	@Override public void execute (Block block) {		
+
+	@Override
+	public void execute (Block block) {		
 		final Obj a = block.pop();
 		
 		if (a.isa(STR) || a.isa(CHAR)) {
 			block.push(Symbol.convToSymbol(a.str()));
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -817,14 +721,9 @@ class OP_Colon_S extends OpInstruction {
 //T - 84
 class OP_Colon_T extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":T");
-		doc.desc("A", "type of (returns a symbol)");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_T() {
-		this.name = ":T";
+		init(":T");
+		arg("A", "type of (returns a symbol)");
 	}
 	
 	private static final long TYPE_ID = Variable.encodeString("__type__");
@@ -852,15 +751,11 @@ class OP_Colon_T extends OpInstruction {
 //V - 86
 class OP_Colon_V extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":V");
-		doc.desc("D", "return a list of values");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_V() {
-		this.name = ":V";
+		init(":V");
+		arg("D", "return a list of values");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -877,16 +772,13 @@ class OP_Colon_V extends OpInstruction {
 //Z - 90
 class OP_Colon_Zed extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":Z");
-		doc.desc("N", "sleep (milliseconds)");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Zed() {
-		this.name = ":Z";
+		init(":Z");
+		arg("N", "sleep (milliseconds)");
 	}
-	@Override public void execute (Block block) {
+
+	@Override
+	public void execute (Block block) {
 		Obj a = block.pop();
 		
 		if(a.isa(NUMBER)) {
@@ -905,15 +797,11 @@ class OP_Colon_Zed extends OpInstruction {
 // \ - 92
 class OP_Colon_Demote extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":\\");
-		doc.desc("L", "copy list as generic list");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Demote() {
-		this.name = ":\\";
+		init(":\\");
+		arg("L", "copy list as generic list");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -936,15 +824,11 @@ class OP_Colon_Demote extends OpInstruction {
 // | - 124
 class OP_SetMinus extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":|");
-		doc.desc("LL", "remove all elements in L2 from L1");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_SetMinus() {
-		this.name = ":|";
+		init(":|");
+		arg("LL", "remove all elements in L2 from L1");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -962,15 +846,11 @@ class OP_SetMinus extends OpInstruction {
 // ~ - 126
 class OP_Colon_Tilde extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc(':', ":~");
-		doc.desc("L", "remove duplicates");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Colon_Tilde() {
-		this.name = ":~";
+		init(":~");
+		arg("L", "remove duplicates");
 	}
+
 	@Override
 	public void execute(final Block block) {
 		final Obj a = block.pop();
