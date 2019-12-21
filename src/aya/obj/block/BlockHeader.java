@@ -157,7 +157,7 @@ public class BlockHeader extends Instruction {
 			sb.append(" ");
 		}
 		
-		if (_vars.size() > 0 || _defaults.size() > 0) {
+		if (_vars != null || _defaults != null) {
 			sb.append(": ");
 		}
 		
@@ -169,7 +169,13 @@ public class BlockHeader extends Instruction {
 		}
 
 		// Trim off the final space
-		return sb.substring(0, sb.length()-1) + ",";
+		String out = sb.toString();
+
+		if (sb.length() > 0) {
+			out = out.substring(0, sb.length()-1);
+		}
+		
+		return out + ",";
 	}
 	
 	public ArrayList<Arg> getArgs() {
