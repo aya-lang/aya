@@ -1,5 +1,6 @@
 package aya.instruction.flag;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import aya.exceptions.AyaRuntimeException;
@@ -15,6 +16,7 @@ public class TickFlagInstruction extends Instruction {
 
 	// Pre-create a few of the most common uses
 	public static final TickFlagInstruction[] TICK_TABLE = new TickFlagInstruction[6];
+	public static final String[] REPR_TABLE = new String[6];
 
 	static {
 		TICK_TABLE[0] = null;
@@ -23,6 +25,13 @@ public class TickFlagInstruction extends Instruction {
 		TICK_TABLE[3] = new TickFlagInstruction(3);
 		TICK_TABLE[4] = new TickFlagInstruction(4);
 		TICK_TABLE[5] = new TickFlagInstruction(5);
+		
+		REPR_TABLE[0] = null;
+		REPR_TABLE[1] = "`";
+		REPR_TABLE[2] = "``";
+		REPR_TABLE[3] = "```";
+		REPR_TABLE[4] = "````";
+		REPR_TABLE[5] = "`````";
 	}
 	
 	public TickFlagInstruction(int amount) {
@@ -40,8 +49,15 @@ public class TickFlagInstruction extends Instruction {
 	
 	@Override
 	public String toString() {
-		return "`EVALBLOCK`";
+		if (amount <= 5) {
+			return REPR_TABLE[amount];
+		} else {
+			char[] exmarks = new char[amount];
+			Arrays.fill(exmarks, '`');
+			return new String(exmarks);
+		}
 	}
+
 	
 	@Override
 	public String repr(LinkedList<Long> visited) {
