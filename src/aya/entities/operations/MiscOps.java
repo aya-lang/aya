@@ -59,7 +59,7 @@ public class MiscOps {
 	public static OpInstruction[] MATH_OPS = {
 		/* 33 !  */ new OP_Fact(),
 		/* 34 "  */ null,
-		/* 35 #  */ null,
+		/* 35 #  */ new OP_HashCode(),
 		/* 36 $  */ new OP_SysTime(),
 		/* 37 %  */ null,
 		/* 38 &  */ null,
@@ -199,7 +199,21 @@ class OP_Fact extends OpInstruction {
 	}
 }
 
-// $ - 33
+// # - 35
+class OP_HashCode extends OpInstruction {
+	
+	public OP_HashCode() {
+		init("M#");
+		arg("A", "hash code of the object");
+	}
+	
+	@Override
+	public void execute(Block block) {
+		block.push(new Num(block.pop().hashCode()));
+	}
+}
+
+// $ - 36
 class OP_SysTime extends OpInstruction {
 	
 	public OP_SysTime() {
