@@ -94,4 +94,12 @@ public abstract class OpInstruction extends Instruction {
 	protected String repr(LinkedList<Long> visited) {
 		return name;
 	}
+
+	public String getSymName() {
+		if (_overload != null) {
+			return _overload.getSymName();
+		} else {
+			return null;
+		}
+	}
 }

@@ -153,25 +153,21 @@ public class DotOps {
 		/* 126 ~ */ new OP_Dot_Tilde(),
 	};
 
-
-//	/** Returns a list of all the op descriptions **/
-//	public static ArrayList<String> getAllOpDescriptions() {
-//		ArrayList<String> out = new ArrayList<String>();
-//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-//			if(DOT_OPS[i] != null) {
-//				out.add(DOT_OPS[i].getDocStr() + "\n(extended operator)");
-//			}
-//		}
-//		return out;
-//	}
-
-
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char op) {
+	public static OpInstruction getOp(char c) {
+		OpInstruction op = getOpOrNull(c);
+		if (op == null) {
+			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+		} else {
+			return op;
+		}
+	}
+	
+	public static OpInstruction getOpOrNull(char op) {
 		if(op >= 33 && op <= 126) {
 			return DOT_OPS[op-FIRST_OP];
 		} else {
-			throw new SyntaxError("Dot operator '." + op + "' does not exist");
+			return null;
 		}
 	}
 

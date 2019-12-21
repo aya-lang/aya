@@ -154,11 +154,20 @@ public class MiscOps {
 	};
 	
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char op) {
+	public static OpInstruction getOp(char c) {
+		OpInstruction op = getOpOrNull(c);
+		if (op == null) {
+			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+		} else {
+			return op;
+		}
+	}
+	
+	public static OpInstruction getOpOrNull(char op) {
 		if(op >= 33 && op <= 126) {
 			return MATH_OPS[op-FIRST_OP];
 		} else {
-			throw new SyntaxError("Misc. operator 'M" + op + "' does not exist");
+			return null;
 		}
 	}
 	

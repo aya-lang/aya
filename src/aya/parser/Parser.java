@@ -3,6 +3,8 @@ package aya.parser;
 import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.entities.operations.ColonOps;
+import aya.entities.operations.DotOps;
+import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
@@ -408,7 +410,45 @@ public class Parser {
 					}
 					
 					if (sym.equals("")) {
-						throw new SyntaxError("Expected symbol name");
+						if (in.hasNext()) {
+							String opstr = "" + in.peek(); // For printing error message
+							OpInstruction op = null;
+							char opchar = in.next();
+
+							if (opchar == '.') {
+								if (in.hasNext()) {
+									opstr += in.peek();
+									op = DotOps.getOpOrNull(in.next());
+								}
+							} else if (opchar == 'M') {
+								if (in.hasNext()) {
+									opstr += in.peek();
+									op = MiscOps.getOpOrNull(in.next());
+								}
+							} else if (opchar == ':') {
+								if (in.hasNext()) {
+									opstr += in.peek();
+									if (ColonOps.isColonOpChar(in.peek())) {
+										op = ColonOps.getOpOrNull(in.next());
+									}
+								}
+							} else if (Ops.isOpChar(opchar)) {
+								op = Ops.getOp(opchar);
+							}
+							
+							if (op == null) {
+								throw new SyntaxError("No symbol name asociated with ::" + opstr);
+							} else {
+								sym = op.getSymName();
+
+								if (sym == null) {
+									throw new SyntaxError("No symbol name asociated with ::" + opstr);
+								}
+							}
+
+						} else {
+							throw new SyntaxError("Expected symbol name");
+						}
 					}
 					
 					tokens.add(new SymbolToken(sym));

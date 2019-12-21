@@ -18,4 +18,6 @@ public abstract class OpOverload {
 	public boolean execute(Block block, Obj a) {
 		throw new UnsupportedOperationException("Op overload '" + _name + "' does not support using one argument");
 	}
+
+	public abstract String getSymName();
 }

@@ -44,4 +44,9 @@ public class OpOverload2Arg extends OpOverload {
 		}
 	}
 
+	@Override
+	public String getSymName() {
+		return _var.name();
+	}
+
 }

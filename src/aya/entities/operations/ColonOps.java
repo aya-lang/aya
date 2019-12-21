@@ -139,29 +139,6 @@ public class ColonOps {
 		/* 126 ~ */ new OP_Colon_Tilde()
 	};
 	
-	
-//	/** Returns a list of all the op descriptions **/
-//	public static ArrayList<String> getAllOpDescriptions() {
-//		ArrayList<String> out = new ArrayList<String>();
-//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-//			if(COLON_OPS[i] != null) {
-//				out.add(COLON_OPS[i].getDocStr() + "\n(colon operator)");
-//			}
-//		}
-//		return out;
-//		
-//	}
-	
-	
-	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char op) {
-		if(op >= 33 && op <= 126) {
-			return COLON_OPS[op-FIRST_OP];
-		} else {
-			throw new SyntaxError("Colon operator ':" + op + "' does not exist");
-		}
-	}
-	
 	public static boolean isColonOpChar(char c) {
 		//A char is a colonOp if it is not a lowercase letter or a '('
 		return (c >= '!' && c <= '~') 		 //Char bounds
@@ -173,6 +150,25 @@ public class ColonOps {
 	private static boolean isDigit(char c) {
 		return c >= '0' && c <= '9';
 	}
+
+	/** Returns the operation bound to the character */
+	public static OpInstruction getOp(char c) {
+		OpInstruction op = getOpOrNull(c);
+		if (op == null) {
+			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+		} else {
+			return op;
+		}
+	}
+	
+	public static OpInstruction getOpOrNull(char op) {
+		if(op >= 33 && op <= 126) {
+			return COLON_OPS[op-FIRST_OP];
+		} else {
+			return null;
+		}
+	}
+
 }
 
 // # - 35

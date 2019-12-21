@@ -15,4 +15,11 @@ public class OpOverloadNoOp extends OpOverload {
 		return out;
 	}
 
+	@Override
+	public String getSymName() {
+		return "__" + _name + "__";
+	}
+	
+	
+
 }
