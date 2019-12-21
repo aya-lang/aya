@@ -155,17 +155,6 @@ public class MiscOps {
 		/* 126 ~ */ null,
 	};
 	
-//	/** Returns a list of all the op descriptions **/
-//	public static ArrayList<String> getAllOpDescriptions() {
-//		ArrayList<String> out = new ArrayList<String>();
-//		for (char i = 0; i <= 126-Ops.FIRST_OP; i++) {
-//			if(MATH_OPS[i] != null) {
-//				out.add(MATH_OPS[i].getDocStr() + "\n(misc. operator)");
-//			}
-//		}
-//		return out;
-//	}
-	
 	/** Returns the operation bound to the character */
 	public static OpInstruction getOp(char op) {
 		if(op >= 33 && op <= 126) {
@@ -180,33 +169,24 @@ public class MiscOps {
 // ! - 33
 class OP_Fact extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "M!");
-		doc.desc("N", "factorial");
-		doc.ovrld(Ops.KEYVAR_FACT.name());
-		doc.vect();
-		OperationDocs.add(doc);
+	public OP_Fact() {
+		init("M!");
+		arg("N", "factorial");
+		setOverload(1, "fact");
+		vect();
 	}
 	
-	public OP_Fact() {
-		this.name = "M!";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)){
 			block.push(((Number)n).factorial());
-		}
-		
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push( ((NumberList)n).factorial() );
-		}
-		
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_FACT);
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -215,15 +195,11 @@ class OP_Fact extends OpInstruction {
 // $ - 33
 class OP_SysTime extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "M$");
-		doc.desc("-", "system time in milliseconds");
-		OperationDocs.add(doc);
+	public OP_SysTime() {
+		init("M$");
+		arg("-", "system time in milliseconds");
 	}
 	
-	public OP_SysTime() {
-		this.name = "M$";
-	}
 	@Override
 	public void execute(Block block) {
 		block.push(new Num(System.currentTimeMillis()));
@@ -235,16 +211,12 @@ class OP_SysTime extends OpInstruction {
 // ? - 63
 class OP_Help extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "M?");
-		doc.desc("N", "list op descriptions where N=[0:std, 1:dot, 2:colon, 3:misc]");
-		doc.desc("S", "search all help data");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Help() {
-		this.name = "M?";
+		init("M?");
+		arg("N", "list op descriptions where N=[0:std, 1:dot, 2:colon, 3:misc]");
+		arg("S", "search all help data");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj s = block.pop();
@@ -281,32 +253,24 @@ class OP_Help extends OpInstruction {
 // C - 67
 class OP_Acosine extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MC");
-		doc.desc("N", "inverse cosine");
-		doc.ovrld(Ops.KEYVAR_ACOS.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Acosine() {
-		this.name = "MC";
+		init("MC");
+		arg("N", "inverse cosine");
+		setOverload(1, "acos");
+		vect();
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).acos());
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).acos());
-		}
-		
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_ACOS);
-		}
-		
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -314,21 +278,19 @@ class OP_Acosine extends OpInstruction {
 
 // D - 68
 class OP_MDate extends OpInstruction {
-	
-	static {
-		OpDoc doc = new OpDoc('M', "MD");
-		doc.desc("N", "given time in ms, return date params [day_of_week, year, month, day_of_month, hour, min, s]");
-		OperationDocs.add(doc);
-	}
-	
-	private Calendar cal = Calendar.getInstance();
+
+	private Calendar cal; 
 
 	public OP_MDate() {
-		this.name = "MD";
+		init("MD");
+		arg("N", "given time in ms, return date params [day_of_week, year, month, day_of_month, hour, min, s]");
+		cal = Calendar.getInstance();
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
+
 		if (a.isa(NUMBER)) {
 			long timeStamp = ((Number)a).toLong();
 			cal.setTimeInMillis(timeStamp);
@@ -347,7 +309,6 @@ class OP_MDate extends OpInstruction {
 		} else {
 			throw new TypeError(this, a);
 		}
-		
 	}
 }
 
@@ -355,20 +316,14 @@ class OP_MDate extends OpInstruction {
 // G - 67
 class OP_Graphics extends OpInstruction {
 	
-	CanvasInterface canvas;
+	private CanvasInterface canvas;
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MG");
-		doc.desc("JDN", "2D graphics interface");
-		OperationDocs.add(doc);
-	}
-
 	public OP_Graphics() {
-		this.name = "MG";
+		init("MG");
+		arg("JDN", "2D graphics interface");
+
 		this.canvas = new CanvasInterface();
 	}
-	
-	
 	
 	@Override
 	public void execute(Block block) {
@@ -396,15 +351,11 @@ class OP_Graphics extends OpInstruction {
 // H - 68
 class OP_MParse_Date extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MH");
-		doc.desc("SS", "parse a date using a given format and return the time in ms");
-		OperationDocs.add(doc);
+	public OP_MParse_Date() {
+		init("MH");
+		arg("SS", "parse a date using a given format and return the time in ms");
 	}
 
-	public OP_MParse_Date() {
-		this.name = "MH";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -439,18 +390,12 @@ class OP_MParse_Date extends OpInstruction {
 
 // J - 74
 class OP_JSON extends OpInstruction {
-	
-	static {
-		OpDoc doc = new OpDoc('M', "MJ");
-		doc.desc("N", "base-10 logarithm");
-		doc.ovrld(Ops.KEYVAR_LOG.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
 
 	public OP_JSON() {
-		this.name = "ML";
+		init("MJ");
+		arg("AA", "json interface");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj cmd_obj = block.pop();
@@ -491,30 +436,24 @@ class OP_JSON extends OpInstruction {
 // L - 76
 class OP_Log extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "ML");
-		doc.desc("N", "base-10 logarithm");
-		doc.ovrld(Ops.KEYVAR_LOG.name());
-		doc.vect();
-		OperationDocs.add(doc);
+	public OP_Log() {
+		init("ML");
+		arg("N", "base-10 logarithm");
+		setOverload(1, "log");
+		vect();
 	}
 
-	public OP_Log() {
-		this.name = "ML";
-	}
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
+		
+		if (overload().execute(block, a)) return;
+		
 		if(a.isa(NUMBER)) {
 			block.push(((Number)a).log());
-		}
-		else if (a.isa(NUMBERLIST)) {
+		} else if (a.isa(NUMBERLIST)) {
 			block.push(((NumberList)a).log());
-		}
-		else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_LOG);
-		}
-		else {
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -524,30 +463,24 @@ class OP_Log extends OpInstruction {
 // S - 83
 class OP_Asine extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MS");
-		doc.desc("N", "inverse sine");
-		doc.ovrld(Ops.KEYVAR_ASIN.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Asine() {
-		this.name = "MS";
+		init("MS");
+		arg("N", "inverse sine");
+		vect();
+		setOverload(1, "asin");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).asin());
-		}		
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).asin());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_ASIN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -556,30 +489,24 @@ class OP_Asine extends OpInstruction {
 // T - 84
 class OP_Atangent extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MT");
-		doc.desc("N", "inverse tangent");
-		doc.ovrld(Ops.KEYVAR_ATAN.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Atangent() {
-		this.name = "MT";
+		init("MT");
+		arg("N", "inverse tangent");
+		vect();
+		setOverload(1, "atan");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+	
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).atan());
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).atan());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_ATAN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -589,9 +516,9 @@ class OP_Atangent extends OpInstruction {
 //V - 86
 class OP_Dialog extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MV");
-		doc.desc("LSSNN", "options title windowhdr msgtype dialogtype MV\n"
+	public OP_Dialog() {
+		init("MV");
+		arg("LSSNN", "options title windowhdr msgtype dialogtype MV\n"
 				+ "  msgtype:\n"
 				+ "    1: plain\n"
 				+ "    2: question\n"
@@ -606,12 +533,8 @@ class OP_Dialog extends OpInstruction {
 				+ "    6: option dropdown\n"
 				+ "    7: choose file\n"
 );
-		OperationDocs.add(doc);
 	}
-	
-	public OP_Dialog() {
-		this.name = "MV";
-	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj _dialogType = block.pop();
@@ -671,9 +594,9 @@ class OP_Dialog extends OpInstruction {
 //X - 88
 class OP_AdvPlot extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MX");
-		doc.desc("D", "plot\n"
+	public OP_AdvPlot() {
+		init("MX");
+		arg("D", "plot\n"
 				+ "  parameters:\n"
 				+ "    plottype (::line ::scatter)\n"
 				+ "    title S\n"
@@ -689,12 +612,8 @@ class OP_AdvPlot extends OpInstruction {
 				+ "    legend B\n"
 				+ "    horizontal B\n"
 				+ "    filename S\n");
-		OperationDocs.add(doc);
 	}
-	
-	public OP_AdvPlot() {
-		this.name = "MX";
-	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -708,9 +627,9 @@ class OP_AdvPlot extends OpInstruction {
 //Z - 9
 class OP_SysConfig extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "MZ");
-		doc.desc("AN",  "system functions\n"
+	public OP_SysConfig() {
+		init("MZ");
+		arg("AN",  "system functions\n"
 				+ "  S1: change prompt text\n"
 				+ "  A2: get working dir\n"
 				+ "  S3: set working dir\n"
@@ -719,12 +638,8 @@ class OP_SysConfig extends OpInstruction {
 				+ "  S5: create dir in working dir + S\n"
 				+ "  S6: delete file or dir"
 				+ "  S7: get home dir + S");
-		OperationDocs.add(doc);
 	}
-	
-	public OP_SysConfig() {
-		this.name = "MZ";
-	}
+
 	@Override
 	public void execute(Block block) {
 		Obj cmd = block.pop();
@@ -837,31 +752,25 @@ class OP_SysConfig extends OpInstruction {
 // c - 99
 class OP_Cosine extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mc");
-		doc.desc("N", "cosine");
-		doc.ovrld(Ops.KEYVAR_COS.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Cosine() {
-		this.name = "Mc";
+		init("Mc");
+		arg("N", "cosine");
+		vect();
+		setOverload(1, "cos");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if(overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).cos());
 			return;
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).cos());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_COS);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -870,21 +779,19 @@ class OP_Cosine extends OpInstruction {
 //d - 100
 class OP_CastDouble extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Md");
-		doc.desc("N", "cast to double");
-		doc.desc("S", "parse double, if invalid, return 0.0");
-		doc.ovrld(Ops.KEYVAR_FLOAT.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_CastDouble() {
-		this.name = "Md";
+		init("Md");
+		arg("N", "cast to double");
+		arg("S", "parse double, if invalid, return 0.0");
+		setOverload(1, "float");
+		vect();
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj a = block.pop();
+		
+		if (overload().execute(block, a)) return;
 		
 		if(a.isa(STR)) {
 			try {
@@ -908,33 +815,24 @@ class OP_CastDouble extends OpInstruction {
 // e - 100
 class OP_Me extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Me");
-		doc.desc("N", "exponential function");
-		doc.ovrld(Ops.KEYVAR_EXP.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Me() {
-		this.name = "Me";
+		init("Me");
+		arg("N", "exponential function");
+		vect();
+		setOverload(1, "exp");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+	
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).exp());
-			return;
-		}
-		
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).exp());
-		}
-		
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_EXP);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -943,16 +841,11 @@ class OP_Me extends OpInstruction {
 // h - 104
 class OP_MShow_Date extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mh");
-		doc.desc("NS", "convert the time in ms to a date string according to a given format");
-		OperationDocs.add(doc);
-	}
-	
-
 	public OP_MShow_Date() {
-		this.name = "Mh";
+		init("Mh");
+		arg("NS", "convert the time in ms to a date string according to a given format");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -987,15 +880,11 @@ class OP_MShow_Date extends OpInstruction {
 // k - 107
 class OP_AddParserChar extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mk");
-		doc.desc("CS", "add special character");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_AddParserChar() {
-		this.name = "Mk";
+		init("Mk");
+		arg("CS", "add special character");
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj obj_name = block.pop();
@@ -1018,30 +907,24 @@ class OP_AddParserChar extends OpInstruction {
 // l - 108
 class OP_Ln extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Ml");
-		doc.desc("N", "natural logarithm");
-		doc.ovrld(Ops.KEYVAR_LN.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Ln() {
-		this.name = "Ml";
+		init("Ml");
+		arg("N", "natural logarithm");
+		vect();
+		setOverload(1, "ln");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).ln());
-		} 
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).ln());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_LN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -1050,22 +933,18 @@ class OP_Ln extends OpInstruction {
 // m - 109
 class OP_HasMeta extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mm");
-		doc.desc("D", "true if the dict has a metatable, leave D on stack");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_HasMeta() {
-		this.name = "Mm";
+		init("Mm");
+		arg("D", "true if the dict has a metatable, leave D on stack");
 	}
+
 	@Override
 	public void execute(Block block) {
 		final Obj d = block.pop();
+
 		if (d.isa(DICT)) {
 			block.push(((Dict)d).hasMetaTable() ? Num.ONE : Num.ZERO);
-		}
-		else {
+		} else {
 			throw new TypeError(this, d);
 		}
 	}
@@ -1074,19 +953,15 @@ class OP_HasMeta extends OpInstruction {
 // p - 112
 class OP_Primes extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mp");
-		doc.desc("N", "list primes up to N");
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Primes() {
-		this.name = "Mp";
+		init("Mp");
+		arg("N", "list primes up to N");
 	}
 
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
+
 		if (a.isa(NUMBER)) {
 			int i = ((Number)a).toInt();
 			if (i < 0) {
@@ -1103,30 +978,24 @@ class OP_Primes extends OpInstruction {
 // q - 113
 class OP_SquareRoot extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mq");
-		doc.desc("N", "square root");
-		doc.ovrld(Ops.KEYVAR_SQRT.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_SquareRoot() {
-		this.name = "Mq";
+		init("Mq");
+		arg("N", "square root");
+		setOverload(1, "sqrt");
+		vect();
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sqrt());
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).sqrt());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_SQRT);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -1136,16 +1005,12 @@ class OP_SquareRoot extends OpInstruction {
 // r - 114
 class OP_To_Rat extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mr");
-		doc.desc("N", "convert to rational number");
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_To_Rat() {
-		this.name = "Mr";
+		init("Mr");
+		arg("N", "convert to rational number");
+		vect();
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
@@ -1156,8 +1021,7 @@ class OP_To_Rat extends OpInstruction {
 			} else {
 				block.push( new RationalNum(((Number)n).toDouble()) );
 			}
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			ArrayList<Number> nl = ((NumberList)n).toArrayList();
 			ArrayList<Number> ns = new ArrayList<Number>(nl.size());
 			for (Number j : nl) {
@@ -1168,8 +1032,7 @@ class OP_To_Rat extends OpInstruction {
 				}
 			}
 			block.push(new NumberItemList(ns));
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -1179,31 +1042,24 @@ class OP_To_Rat extends OpInstruction {
 // s - 115
 class OP_Sine extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Ms");
-		doc.desc("N", "sine");
-		doc.ovrld(Ops.KEYVAR_SIN.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Sine() {
-		this.name = "Ms";
+		init("Ms");
+		arg("N", "sine");
+		vect();
+		setOverload(1, "sin");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
 		
+		if (overload().execute(block, n)) return;
+		
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sin());
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).sin());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_SIN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
@@ -1215,31 +1071,24 @@ class OP_Sine extends OpInstruction {
 // t - 116
 class OP_Tangent extends OpInstruction {
 	
-	static {
-		OpDoc doc = new OpDoc('M', "Mt");
-		doc.desc("N", "tangent");
-		doc.ovrld(Ops.KEYVAR_TAN.name());
-		doc.vect();
-		OperationDocs.add(doc);
-	}
-	
 	public OP_Tangent() {
-		this.name = "Mt";
+		init("Mt");
+		arg("N", "tangent");
+		vect();
+		setOverload(1, "tan");
 	}
+
 	@Override
 	public void execute(Block block) {
 		Obj n = block.pop();
 		
-		if(n.isa(NUMBER)) {
+		if (overload().execute(block, n)) return;
+		
+		if (n.isa(NUMBER)) {
 			block.push(((Number)n).tan());
-		}
-		else if (n.isa(NUMBERLIST)) {
+		} else if (n.isa(NUMBERLIST)) {
 			block.push(((NumberList)n).tan());
-		}
-		else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_TAN);
-		}
-		else {
+		} else {
 			throw new TypeError(this, n);
 		}
 	}
