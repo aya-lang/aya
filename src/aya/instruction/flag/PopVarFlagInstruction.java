@@ -3,7 +3,6 @@ package aya.instruction.flag;
 import java.util.LinkedList;
 
 import aya.Aya;
-import aya.instruction.Instruction;
 import aya.obj.block.Block;
 
 /**

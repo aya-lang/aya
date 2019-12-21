@@ -3,7 +3,6 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.entities.InstructionStack;
-import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.instruction.DataInstruction;
 import aya.instruction.DictLiteralInstruction;

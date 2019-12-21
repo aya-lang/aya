@@ -20,11 +20,9 @@ import java.util.Locale;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.OperationDocs;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
-import aya.instruction.op.OpDoc;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;

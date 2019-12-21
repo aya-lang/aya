@@ -3,17 +3,12 @@ package aya.variable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Map.Entry;
 
 import aya.Aya;
 import aya.InteractiveAya;
-import aya.entities.InstructionStack;
-import aya.entities.operations.ColonOps;
-import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.Str;
 import aya.obj.number.Num;

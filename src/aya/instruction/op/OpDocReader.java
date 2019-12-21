@@ -29,7 +29,7 @@ public class OpDocReader {
 				if (op.hasDocs()) {
 					out.add(op.getDoc().toString());
 				} else {
-					System.out.println("Warning: Operator " + op.getName() + " has no docs");
+					//System.out.println("Warning: Operator " + op.getName() + " has no docs");
 				}
 			}
 		}
