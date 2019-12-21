@@ -25,6 +25,10 @@ public class RationalNum extends Number {
 	/////////////////
 	
 	public RationalNum(long num, long den) {
+		int sign = Long.signum(num) * Long.signum(den);
+		num = Math.abs(num);
+		den = Math.abs(den);
+
 		if (num == 0L)	{
 			_num = 0L;
 			_den = 1L;
@@ -32,12 +36,16 @@ public class RationalNum extends Number {
 			throw new AyaRuntimeException("RationalNum: Division by zero");
 		} else {
 			long gcd = NumberMath.gcd(num, den);
-			_num = num / gcd;
+			_num = sign * (num / gcd);
 			_den = den / gcd;
 		}
 	}
 	
 	public RationalNum(int num, int den) {
+		int sign = Integer.signum(num) * Integer.signum(den);
+		num = Math.abs(num);
+		den = Math.abs(den);
+
 		if (num == 0)	{
 			_num = 0;
 			_den = 1;
@@ -45,7 +53,7 @@ public class RationalNum extends Number {
 			throw new AyaRuntimeException("RationalNum: Division by zero");
 		} else {
 			int gcd = NumberMath.gcd(num, den);
-			_num = num / gcd;
+			_num = sign * (num / gcd);
 			_den = den / gcd;
 		}
 	}
@@ -75,7 +83,6 @@ public class RationalNum extends Number {
 			    number = -number;
 			    sign = -1;
 			}
-
 			
 			long firstMultiplier = 1;
 			long secondMultiplier = 1;
@@ -110,8 +117,11 @@ public class RationalNum extends Number {
 	}
 
 	public void simplify() {
+		int sign = Long.signum(_num) * Long.signum(_den);
+		_num = Math.abs(_num); 
+		_den = Math.abs(_den);
 		long gcd = NumberMath.gcd(_num, _den);
-		_num = _num / gcd;
+		_num = sign * (_num / gcd);
 		_den = _den / gcd;
 	}
 	
