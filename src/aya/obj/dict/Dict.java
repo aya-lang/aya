@@ -248,16 +248,11 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(Long id, Obj o) {
-		if (o.equals(this)) {
-			throw new AyaRuntimeException("Error assigning '" + (new Variable(id)).toString() + "': "
-					+ "Cannot assign dict as member of itself");
-		} else {
-			_vars.setVar(id, o);
-			
-			if (id == META.getID() && o.isa(Obj.DICT))
-			{
-				_meta = (Dict)o;
-			}
+		_vars.setVar(id, o);
+		
+		if (id == META.getID() && o.isa(Obj.DICT))
+		{
+			_meta = (Dict)o;
 		}
 	}
 	
