@@ -63,58 +63,8 @@ public class Ops {
 	////////////////////////
 	// OPERATOR OVERLOADS //
 	////////////////////////
-	
-	// NUMERIC - Binary
-	// mod
-	public static final Variable KEYVAR_MOD	= new Variable("__mod__");
-	public static final Variable KEYVAR_RMOD	= new Variable("__rmod__");
-	// mul
-	public static final Variable KEYVAR_MUL	= new Variable("__mul__");
-	public static final Variable KEYVAR_RMUL	= new Variable("__rmul__");
-	// add
-	public static final Variable KEYVAR_ADD	= new Variable("__add__");
-	public static final Variable KEYVAR_RADD	= new Variable("__radd__");
-	// sub
-	public static final Variable KEYVAR_SUB	= new Variable("__sub__");
-	public static final Variable KEYVAR_RSUB	= new Variable("__rsub__");
-	// div 
-	public static final Variable KEYVAR_DIV	= new Variable("__div__");
-	public static final Variable KEYVAR_RDIV	= new Variable("__rdiv__");
-	// idiv
-	public static final Variable KEYVAR_IDIV	= new Variable("__idiv__");
-	public static final Variable KEYVAR_RIDIV= new Variable("__ridiv__");
-	// pow
-	public static final Variable KEYVAR_POW	= new Variable("__pow__");
-	public static final Variable KEYVAR_RPOW	= new Variable("__rpow__");
-	
-	// NUMERIC - Comparison
-	public static final Variable KEYVAR_LT = new Variable("__lt__");
-	public static final Variable KEYVAR_GT = new Variable("__gt__");
-	public static final Variable KEYVAR_LEQ = new Variable("__leq__");
-	public static final Variable KEYVAR_GEQ = new Variable("__geq__");
+
 	public static final Variable KEYVAR_EQ	= new Variable("__eq__");
-	
-	// Numeric - Monads
-	public static final Variable KEYVAR_NEGATE = new Variable("__negate__");
-	public static final Variable KEYVAR_CEIL = new Variable("__ceil__");
-	public static final Variable KEYVAR_FLOOR = new Variable("__floor__");
-	public static final Variable KEYVAR_ABS = new Variable("__abs__");
-	public static final Variable KEYVAR_SIGNUM = new Variable("__signum__");
-	public static final Variable KEYVAR_INC = new Variable("__inc__");
-	public static final Variable KEYVAR_DEC = new Variable("__dec__");
-	
-	// Numeric - Math
-	public static final Variable KEYVAR_SIN = new Variable("__sin__");
-	public static final Variable KEYVAR_ASIN = new Variable("__asin__");
-	public static final Variable KEYVAR_COS = new Variable("__cos__");
-	public static final Variable KEYVAR_ACOS = new Variable("__acos__");
-	public static final Variable KEYVAR_TAN = new Variable("__tan__");
-	public static final Variable KEYVAR_ATAN = new Variable("__atan__");
-	public static final Variable KEYVAR_LN = new Variable("__ln__");
-	public static final Variable KEYVAR_LOG = new Variable("__log__");
-	public static final Variable KEYVAR_EXP = new Variable("__exp__");
-	public static final Variable KEYVAR_FACT = new Variable("__fact__");
-	public static final Variable KEYVAR_SQRT = new Variable("__sqrt__");
 	
 	// List
 	public static final Variable KEYVAR_GETINDEX = new Variable("__getindex__");
@@ -123,17 +73,10 @@ public class Ops {
 	public static final Variable KEYVAR_TAIL = new Variable("__tail__");
 	public static final Variable KEYVAR_MAP = new Variable("__map__");
 	public static final Variable KEYVAR_LEN = new Variable("__len__");
-	public static final Variable KEYVAR_REVERSE = new Variable("__reverse__");
-	public static final Variable KEYVAR_SORT = new Variable("__sort__");
-
 	
 	// Misc.
-	public static final Variable KEYVAR_AND		= new Variable("__and__");
-	public static final Variable KEYVAR_RAND	= new Variable("__rand__");
 	public static final Variable KEYVAR_OR		= new Variable("__or__");
 	public static final Variable KEYVAR_ROR		= new Variable("__ror__");
-	public static final Variable KEYVAR_RANDOM 	= new Variable("__random__");
-	public static final Variable KEYVAR_RANGE 	= new Variable("__range__");
 	public static final Variable KEYVAR_NEW 	= new Variable("__new__");
 	public static final Variable KEYVAR_FLOAT 	= new Variable("__float__");
 	public static final Variable KEYVAR_EACH 	= new Variable("__each__");
@@ -1878,14 +1821,7 @@ class OP_Bar extends OpInstruction {
 			} else {
 				throw new TypeError(this, a, b);
 			}
-		}
-		else if (a.isa(DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, Ops.KEYVAR_OR);
-		} else if (b.isa(DICT)) {
-			block.callVariable((Dict)b, Ops.KEYVAR_ROR, a);
-		}
-		else {
+		} else {
 			throw new TypeError(this, a, b);
 		}
 
