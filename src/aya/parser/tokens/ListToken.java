@@ -3,12 +3,11 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.exceptions.SyntaxError;
-import aya.instruction.DataInstruction;
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.ListBuilder;
 import aya.instruction.ListLiteralInstruction;
-import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
@@ -39,16 +38,19 @@ public class ListToken extends CollectionToken {
 		case 2:
 		{
 			Block initialList = new Block(Parser.generate(listData.get(0)));			
-			
 			Block map = new Block(Parser.generate(listData.get(1)));
+			BlockLiteralInstruction bli = map.getInstructions().getIfSingleBlockInstruction();
+
 			if (map.getInstructions().isEmpty()) {
 				map = null;
 			} 
 			
-			//If the map clause only contains a single block (and it is not a list literal), dump its instructions into the map block
-			else if (map.getInstructions().size() == 1 
-					&& DataInstruction.isa(map.getInstructions().peek(0), Obj.BLOCK)) {
-				map = DataInstruction.getBlock(map.getInstructions().peek(0)).duplicate();
+			if (bli != null) {
+				if (!bli.isRawBlock()) {
+					throw new SyntaxError("List comprehension literal cannot contain a block with captures:\n" + data);
+				} else {
+					bli.setAutoEval();
+				}
 			}
 			
 		return new ListBuilder(initialList, map, null, pops);
@@ -69,10 +71,14 @@ public class ListToken extends CollectionToken {
 				//filters[k-2] = new Block(generate(listData.get(k)));
 				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
 				
-				//If the filter clause only contains a single block, dump its instructions into the filter block
-				if (tmpFilter.getInstructions().size() == 1
-						&& DataInstruction.isa(tmpFilter.getInstructions().peek(0), Obj.BLOCK)) {
-					tmpFilter = DataInstruction.getBlock(tmpFilter.getInstructions().peek(0)).duplicate();
+				//If the filter clause only contains a single block, set them to auto eval
+				BlockLiteralInstruction bli = tmpFilter.getInstructions().getIfSingleBlockInstruction();
+				if (bli != null) {
+					if (!bli.isRawBlock()) {
+						throw new SyntaxError("List comprehension literal cannot contain a block with captures:\n[" + data + "]");
+					} else {
+						bli.setAutoEval();
+					}
 				}
 				
 				filters[k-2] = tmpFilter;

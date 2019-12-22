@@ -147,9 +147,19 @@ public class BlockHeader extends Instruction {
 			}
 		}	
 	}
+	
+	
 
 	@Override
 	protected String repr(LinkedList<Long> visited) {
+		return toStringOrRepr(visited, null);
+	}
+	
+	public String repr(ArrayList<Variable> captures) {
+		return toStringOrRepr(new LinkedList<Long>(), captures);
+	}
+
+	private String toStringOrRepr(LinkedList<Long> visited, ArrayList<Variable> captures) {
 		StringBuilder sb = new StringBuilder("");
 		
 		for (int i = _args.size()-1; i >= 0; i--) {
@@ -167,6 +177,12 @@ public class BlockHeader extends Instruction {
 			sb.append(Variable.decodeLong(d.getKey()));
 			sb.append("(").append(d.getValue().toString()).append(") ");
 		}
+	
+		if (captures != null) {
+			for (Variable v : captures) {
+				sb.append(v.name() + "^ ");
+			}
+		}
 
 		// Trim off the final space
 		String out = sb.toString();
@@ -177,6 +193,7 @@ public class BlockHeader extends Instruction {
 		
 		return out + ",";
 	}
+
 	
 	public ArrayList<Arg> getArgs() {
 		return _args;
@@ -185,6 +202,7 @@ public class BlockHeader extends Instruction {
 	public VariableSet getVars() {
 		return _vars;
 	}
+
 	
 
 }

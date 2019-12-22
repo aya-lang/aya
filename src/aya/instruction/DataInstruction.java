@@ -13,21 +13,16 @@ public class DataInstruction extends Instruction {
 		return i instanceof DataInstruction && ((DataInstruction)i).objIsa(type);
 	}
 	
-	/** Assumes that this instruction has already been checked with isBlock */
-	public static Block getBlock(Instruction i) {
-		return  (Block)( ((DataInstruction)i).getData() );
-	}
-
 	/** If i is a DataInstruction with a single block, add the block instructions,
 	 * otherwise add the instruction
 	 */
-	public static void addOrMergeInstruction(Block b, Instruction i) {
+	/*public static void addOrMergeInstruction(Block b, Instruction i) {
 		if (i instanceof DataInstruction && ((DataInstruction)i).objIsa(Obj.BLOCK)) {
 			b.addAll(DataInstruction.getBlock(i).getInstructions().getInstrucionList());
 		} else {
 			b.add(i);
 		}
-	}
+	}*/
 	
 	public DataInstruction(Obj data) {
 		_data = data;

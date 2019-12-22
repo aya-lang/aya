@@ -3,12 +3,15 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.VariableSetInstruction;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
+import aya.obj.block.BlockHeader;
+import aya.variable.Variable;
 
 /**
  *  Used by the aya.Block class to hold and manage instructions
@@ -91,12 +94,54 @@ public class InstructionStack {
 		instructions.add(instructions.size()-skip, o);
 	}
 	
+	/** Return true if this instruction stack is a single block */
+//	public boolean isSingleBlock() {
+//		return size() == 1
+//					&& peek(0) instanceof DataInstruction
+//					&& (((DataInstruction)peek(0)).objIsa(Obj.BLOCK));
+//	}
+	
+//	public boolean isSingleBlockInstruction() {
+//		return size() == 1 && peek(0) instanceof BlockLiteralInstruction;
+//	}
+	
+	/** If the instruction stack consists of a single block instruction, return it. Else return null */
+	public BlockLiteralInstruction getIfSingleBlockInstruction() {
+		if (size() == 1 && peek(0) instanceof BlockLiteralInstruction) {
+			return (BlockLiteralInstruction)peek(0);
+		} else {
+			return null;
+		}
+	}
+	
 	@Override public String toString() {
 		StringBuilder sb = new StringBuilder("");
 		for(int i = instructions.size()-1; i >= 0; i--) {
 			sb.append(instructions.get(i).toString());
 			sb.append(" ");
 		}
+		if(sb.length() >1){
+			sb.setLength(sb.length()-1);
+		}
+		return sb.toString();
+	}
+
+	/** Called from a block literal instruction */
+	public String toStringWithCaptures(ArrayList<Variable> _captures) {
+		if (instructions.size() == 0) return "";
+
+		StringBuilder sb = new StringBuilder("");
+		Instruction inst = instructions.get(instructions.size()-1);
+		if (inst instanceof BlockHeader) {
+			sb.append(((BlockHeader)inst).repr(_captures));
+			sb.append(" ");
+		}
+
+		for(int i = instructions.size()-2; i >= 0; i--) {
+			sb.append(instructions.get(i).toString());
+			sb.append(" ");
+		}
+
 		if(sb.length() >1){
 			sb.setLength(sb.length()-1);
 		}
@@ -122,4 +167,5 @@ public class InstructionStack {
 			}
 		}
 	}
+
 }

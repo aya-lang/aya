@@ -8,6 +8,7 @@ import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.EndOfInputError;
 import aya.exceptions.SyntaxError;
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.ListLiteralInstruction;
@@ -676,9 +677,13 @@ public class Parser {
 				Instruction next = is.pop();	
 				//Apply a block to a list
 				if (next instanceof DataInstruction && ((DataInstruction)next).objIsa(Obj.BLOCK)) {
+					throw new SyntaxError("Assertion Failed!!");
+				}
+				else if (next instanceof BlockLiteralInstruction) {
 					is.push(Ops.getOp('#'));
 					is.push(next);
 				}
+				
 				//Create a block and apply it to a list
 				else {
 					Block colonBlock = new Block();

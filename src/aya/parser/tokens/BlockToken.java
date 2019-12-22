@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
-import aya.instruction.DataInstruction;
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
@@ -17,6 +17,7 @@ import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
+import aya.variable.Variable;
 
 public class BlockToken extends CollectionToken {
 	
@@ -32,7 +33,7 @@ public class BlockToken extends CollectionToken {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
-			return new DataInstruction(new Block(Parser.generate(blockData.get(0))));
+			return new BlockLiteralInstruction(new Block(Parser.generate(blockData.get(0))));
 		} else {
 			TokenQueue header = blockData.get(0);
 			if (isMatchHeader(header)) {
@@ -76,9 +77,11 @@ public class BlockToken extends CollectionToken {
 					Block b = new Block();
 					b.add(PopVarFlagInstruction.INSTANCE);
 					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-					BlockHeader block_header = generateBlockHeader(blockData.get(0));
+					Pair<BlockHeader, ArrayList<Variable>> p = generateBlockHeader(blockData.get(0));
+					BlockHeader block_header = p.first();
+					ArrayList<Variable> captures = p.second();
 					b.add(block_header);
-					return new DataInstruction(b);
+					return new BlockLiteralInstruction(b, captures);
 				}
 			} else {
 				throw new SyntaxError("Block " + data + " contains too many parts");
@@ -124,11 +127,15 @@ public class BlockToken extends CollectionToken {
 			} else if (t.isa(Token.BLOCK)) {
 				BlockToken bt = (BlockToken)t;
 				Instruction instr = bt.getInstruction();
-				if (instr instanceof DataInstruction) {
-					DataInstruction d = (DataInstruction)instr;
-					if (d.objIsa(Obj.BLOCK)) {
-						test_expr = (Block)(d.getData());
+				if (instr instanceof BlockLiteralInstruction) {
+					BlockLiteralInstruction bli = (BlockLiteralInstruction)instr;
+					if (bli.isRawBlock()) {
+						test_expr = bli.getRawBlock();
+					} else {
+						throw new SyntaxError("Match instruction may not contain blocks with captures");
 					}
+				} else {
+					throw new SyntaxError("Invalid test ecpression: " + instr.repr());
 				}
 			}
 		}
@@ -153,22 +160,26 @@ public class BlockToken extends CollectionToken {
 		for (int i = 0; i < blockData.size(); i++) {
 			TokenQueue tokens = blockData.get(i);
 			boolean isLast = i == blockData.size() - 1;
-			
-			// Last
+		
+			// Special cases:
+			// There are no tokens in this section
 			if (tokens.size() == 0) {
 				throw new SyntaxError("Empty condition in match expression: {" + data + "}");
 			}
+			// There is exactly one token in this section
 			else if (tokens.size() == 1) {
 				if (isLast) {
-					Block fb;
 					InstructionStack is = Parser.generate(blockData.get(i));
-					if (is.size() == 1) {
-						fb = new Block();
-						DataInstruction.addOrMergeInstruction(fb, is.pop());
+					if (is.size() == 1 && is.peek(0) instanceof BlockLiteralInstruction) {
+						BlockLiteralInstruction bli = (BlockLiteralInstruction)is.peek(0);
+						if (bli.isRawBlock()) {
+							m.setFallback(bli.getRawBlock());
+						} else {
+							throw new SyntaxError("A block in a match expression may not contain captures");
+						}
 					} else {
-						fb = new Block(is);
+						m.setFallback(new Block(is));
 					}
-					m.setFallback(fb);
 					break;
 				} else {
 					throw new SyntaxError("Match condition with single instruction only permitted as last (fallback) condition."
@@ -177,11 +188,23 @@ public class BlockToken extends CollectionToken {
 			}
 		
 			Token last = tokens.popBack();
-			Block res = new Block();
-			DataInstruction.addOrMergeInstruction(res, last.getInstruction());
+			Instruction result = last.getInstruction();
+			Block result_block = null;
+			if (result instanceof BlockLiteralInstruction) {
+				BlockLiteralInstruction bli = (BlockLiteralInstruction)result;
+				if (bli.isRawBlock()) {
+					result_block = bli.getRawBlock();
+				} else {
+					throw new SyntaxError("Blocks in match expressions may not contain captures");
+				}
+			} else {
+				result_block = new Block();
+				result_block.add(result);
+			}
+
 			Block cond = new Block(Parser.generate(tokens));
 			
-			m.addCondition(cond, res);
+			m.addCondition(cond, result_block);
 			condition_count++;
 		}
 		if (condition_count == 0) {
@@ -199,17 +222,18 @@ public class BlockToken extends CollectionToken {
 		return false;
 	}
 	
-	private BlockHeader generateBlockHeader(TokenQueue tokens) {
+	private Pair<BlockHeader, ArrayList<Variable>> generateBlockHeader(TokenQueue tokens) {
 		BlockHeader header = new BlockHeader();
 		
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
 		TokenQueue default_tokens = split_tokens.second();
+		ArrayList<Variable> captures = new ArrayList<Variable>();
 	
 		generateBlockHeaderArgs(header, arg_tokens);
-		generateBlockHeaderDefaults(header, default_tokens);
+		generateBlockHeaderDefaults(header, default_tokens, captures);
 		
-		return header;
+		return new Pair<BlockHeader, ArrayList<Variable>>(header, captures);
 	}
 	
 	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) {
@@ -240,26 +264,37 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
-	/** Assumes args have already been set */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens) {
+	/** Assumes args have already been set 
+	 * @param captures */
+	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Variable> captures) {
 		String orig = tokens.toString();
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
 			if (current.isa(VAR)) {
+				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					VarToken var = (VarToken)current;
 					header.addDefault(var.getID(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
-					VarToken var = (VarToken)current;
 					LambdaToken lambda = (LambdaToken)tokens.next();
 					header.addDefault(var.getID(), lambda.generateInstructionsForFirst());
+				} else if (tokens.peek().isa(Token.OP)) {
+					OperatorToken opt = (OperatorToken)tokens.next();
+					if (opt.data.equals("^")) {
+						captures.add(new Variable(var.getID()));
+					} else {
+						generateBlockHeaderDefaultsError(orig);
+					}
 				} else {
-					throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
+					generateBlockHeaderDefaultsError(orig);
 				}
 			} else {
-				throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
+				generateBlockHeaderDefaultsError(orig);
 			}
 		}
+	}
+	
+	private static void generateBlockHeaderDefaultsError(String orig) {
+		throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
 	}
 		
 	

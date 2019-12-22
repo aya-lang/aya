@@ -183,6 +183,13 @@ public class Block extends Obj {
 		out.stack.addAll(this.stack);
 		return out;
 	}
+	
+	/** This function should only be called if the block does not already have a header */
+	public Block duplicate(BlockHeader bh) {
+		Block out = new Block(this.instructions.duplicate(), bh);
+		out.stack.addAll(this.stack);
+		return out;
+	}
 
 	/** Sets the stack */
 	public void setStack(Stack<Obj> dupStack) {
@@ -373,6 +380,10 @@ public class Block extends Obj {
 			return instructions.toString();
 		}
 	}
+
+	public String strWithCaptures(ArrayList<Variable> _captures) {
+		return "{" + instructions.toStringWithCaptures(_captures) + "}";
+	}
 	
 	/** Introspection: get all asguments and types from header (if exists) */
 	public ArrayList<Pair<Symbol, Symbol>> getArgsAndTypes() {
@@ -447,5 +458,7 @@ public class Block extends Obj {
 	public byte type() {
 		return Obj.BLOCK;
 	}
+
+
 
 }

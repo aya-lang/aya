@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.entities.InstructionStack;
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
@@ -56,18 +57,14 @@ public class LambdaToken extends CollectionToken {
 		if(lambdaData.size() == 1) {
 			InstructionStack lambdaIL = Parser.generate(lambdaData.get(0));
 			
-			LambdaInstruction outLambda;
-			
-			//If contains only block, dump instructions
-			if (lambdaIL.size() == 1
-					&& lambdaIL.peek(0) instanceof DataInstruction
-					&& (((DataInstruction)lambdaIL.peek(0)).objIsa(Obj.BLOCK))) {
-				DataInstruction data = (DataInstruction)lambdaIL.peek(0);
-				outLambda = new LambdaInstruction(((Block)(data.getData())).getInstructions());
+			//If contains only block, set to auto eval
+			BlockLiteralInstruction bli = lambdaIL.getIfSingleBlockInstruction();
+			if (bli != null) {
+				bli.setAutoEval();
+				return bli;
 			} else {
-				outLambda = new LambdaInstruction(lambdaIL);
+				return new LambdaInstruction(lambdaIL);
 			}
-			return outLambda;
 		} else {
 			Block[] elements = new Block[lambdaData.size()];
 			for (int k = 0; k < elements.length; k++) {
@@ -76,7 +73,6 @@ public class LambdaToken extends CollectionToken {
 			return new TupleInstruction(elements);
 		}
 	}
-	
 	
 
 	@Override
