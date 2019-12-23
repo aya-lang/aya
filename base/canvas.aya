@@ -62,7 +62,7 @@ impl canvas::set_grad {start ca end cb cycle self,
                    cycle:cycle ::grad:type } self.id MG ;
 }
 
-impl canvas::set_bg {color self, 
+impl canvas::set_bg {color self,
     ::set_bg {, color.r:r color.g:g color.b:b } self.id MG ;
 }
 
@@ -71,7 +71,7 @@ impl canvas::save {filename self,
         .# Convert to string (in case it is a path object)
         filename P
         .# Add file extension if it does not exist
-        :&"\\.png"&E{}{".png"+}.?
+        ".png" `in filename ! {".png"+} ?
         .# use as path
         :file
     } self.id MG ;

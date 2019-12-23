@@ -41,7 +41,7 @@
             f.`
         } {
             .# f does not have locals, wrap it in a block that does
-            {: , f~} {, f.`:f} .+
+            {: , f~} [::f] .+
         } .?
     }:makelocals;
 

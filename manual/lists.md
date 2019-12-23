@@ -272,7 +272,7 @@ aya> [1 2 3] 3 # +
 aya> [1 2 3] 3 :# {+}
 TYPE ERROR: Type error at (:#):
 	Expected ((L:#B|D:#B))
-	Recieved ({+} 3 )
+	Received ({+} 3 )
 stack:
 	[ 1 2 3 ]
 just before:

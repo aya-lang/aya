@@ -163,6 +163,147 @@
 .#? using dict\n  import variables from a dict into the current scope
 {`W}:using;
 
+.# -------
+.# OPT_MOD
+.# -------
+
+.{
+    Macro for creating a macro which runs a different block
+    depending on whether or not a module is present as an argument
+
+    .# Example:
+
+    opt_mod (
+        {block name mod,
+            "with_mod!" :P [block.` name mod]
+        }
+
+        {block name,
+            "no mod!":P [block.` name]
+        }
+    )
+
+    aya> f {,} ::foo {"a"}
+    with_mod!
+    [ {"a"} ::foo {,} ]
+
+    aya> f ::foo {"a"}
+    no mod!
+    [ {"a"} ::foo ]
+.}
+
+{with_mod no_mod,
+
+    {:with_mod no_mod,
+
+        .# Use constant substitution until var^ syntax is introduced
+        _with_mod:with_mod;
+        _no_mod:no_mod;
+
+        .# Store functions on stack so they can be retrieved later
+        {,
+            no_mod.` :no_mod
+            with_mod.` :with_mod
+        }
+
+        ```(
+            .# Variable argument prefix operator
+            .# aya> {mod name block, mod ::_fn =! {;} ? [mod name block.`]} :f
+
+            .# Jump ahead 3 items
+            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   {,} ::foo {+}
+            .# [ {,} ::foo {+} ]
+
+            .# Jump ahead 2 items
+            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
+            .# [ ::_fn ::foo {+} ]
+
+            \:&:T ::sym=! {\`}{\}.?
+
+
+            ( {mod name obj : is_module with_mod no_mod,
+
+                .# True if this function is being defined in a module
+                .# fn foo::bar {...}
+                .# False if defined in outer scope
+                .# fn ::bar {...}
+                mod ::_opt_mod =! :is_module;
+
+                .# If a module was provided, remove the ::_opt_mod symbol from the stack
+                is_module {;} ?
+
+                W .# Capture with_mod and no_mod from outer dict
+
+                .# Quote obj in case it is a block
+                is_module {
+                    obj.` name mod with_mod
+                } {
+                    obj.` name no_mod
+                }
+                .?
+            } )
+
+        )
+        ::_opt_mod
+    }
+
+    .# Use constant substitution until var^ syntax is introduced
+    {, no_mod.`:_no_mod with_mod.`:_with_mod} .+
+
+} __aya__.:opt_mod;
+
+{`(__aya__.opt_mod)}:opt_mod;
+
+
+
+.# ----
+.#  FN
+.# ----
+
+
+.{
+    `fn` macro
+    Universal verbose syntax for defining functions
+
+    Define a function in the current scope:
+
+        aya> fn ::double {2*}
+        aya> 3 double
+        6
+
+    Define a function in a module scope:
+
+        aya> {,}:math;
+        aya> fn math::sq {2^}
+        aya> 5 math.sq
+        25
+
+    Define a function in a class/struct scope:
+
+        aya> struct ::point [::x ::y]
+        aya> fn point::sum {self, self.x self.y +}
+        aya> 2 3 point! :p
+        ( 2 3 ) point!
+        aya> p.sum
+        5
+
+    Define a function in a submodule:
+
+        aya> {, {,}:stats; }:math;
+        aya> fn (math.stats)::mean {.E\S\/}
+        aya> [1 2 3 4] math.stats.mean
+        2.5
+.}
+
+opt_mod (
+    {block name mod,
+        block.` name mod :D ;
+    }
+    {block name,
+        block.` name := ;
+    }
+) :fn:def;
+
 
 
 .# ------
@@ -270,6 +411,8 @@ impl point::__str__ {self,
 .# Instance function alias
 (point.__str__.`, 0); point.:__repr__;
 
+fn point::__repr__ ( point.__str__.`)
+
 impl point::sum {self,
     self.x self.y +
 }
@@ -292,40 +435,6 @@ static point::static_fn {
 .###########
 .# CONTROL #
 .###########
-
-{__l : __n __e __i(0) __done(0),
-    __lE:__n 2/.\:__e ;
-
-    .# Loop over indices 0, 2, 4 ... to check condition
-    .# if condition passes, return the next block and break the loop
-    {
-        .# Load and run condition
-        (__l __i2* I ~, 0); {
-            __l __i2* 1+ I
-            ::__done B .# set true
-            __e :__i; .# exit loop
-        } ?
-
-        .# Loop condition
-        ::__i B __i __e <
-    } W
-
-    .# Was a condition chosen?
-    __done ! {
-        .# Was there an else?
-        __n 2 % {
-            .# else
-            __l :1 I
-        } {
-            .# no else
-            {}
-        } .?
-    } ?
-
-    .# Evaluate the final block
-    ~
-
-} :ifelse;
 
 
 .#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
@@ -387,6 +496,11 @@ static point::static_fn {
 
 
 .# Helper function for `with` keyword which generates wrapper code
+.{
+    with {"foo.txt" file!} ::f {
+      f.lines #:P
+    }
+.}
 {init::block var::sym code::block: try catch close,
     {init~ var := ; code~}.use[::init ::code ::var] :try ;
     {var.Z .close .D}.use[::var] :catch ;
@@ -394,6 +508,7 @@ static point::static_fn {
     {try catch .K close~}.use[::try ::catch ::close]
     .setlocals[var]
 }__aya__.:with_;
+
 
 .################
 .# import types #

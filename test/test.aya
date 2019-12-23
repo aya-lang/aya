@@ -161,21 +161,64 @@
 {{, 1:a {, 2:b}:__meta__} .b} assert [2]
 {{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
 
+.# Lambdas
+{({1})} assert [1]
+{({:a(10), a})} assert [10]
+{3 ({a, a})} assert [3]
+{3 ({a : b(0), a b})} assert [3 0]
+
+.# Captures
+({:a b c f g h,
+
+    1:a;
+    {:a^, a}:f;
+    0:a;
+    {f} assert [1]
+
+    1:a;
+    {x : a^, x a}:f;
+    0:a;
+    {100 f} assert [100 1]
+
+    1:a;
+    {x : a^ b(9), x a b}:f;
+    0:a;
+    0:b;
+    {100 f} assert [100 1 9]
+
+    .# Argument takes precedence
+    1:a;
+    {a : a^, a}:f;
+    0:a;
+    {100 f} assert [100]
+
+    {, 1:a 2:b }:b;
+    {:b^, b.a b.b b.c}:g;
+    3 b.:c;
+    20 b.:b;
+    0:b;
+    {g} assert [1 20 3]
+
+    3:a;
+    {`({:a^, a})}:h;
+
+})
+
 
 ({:d,
 
-.# Create dict with strings
-{, 1:x 2:y } :d;
-3 d.:["Hello!"]
-4 d.:["foo bar"]
-5 d.:["var"]
+    .# Create dict with strings
+    {, 1:x 2:y } :d;
+    3 d.:["Hello!"]
+    4 d.:["foo bar"]
+    5 d.:["var"]
 
-{d "Hello!" N \; } assert [1]
-{d "var" N \; } assert [1]
-{d ::var N \; } assert [1]
-{d "foo bar" N \; } assert [1]
-{d :E} assert [5]
-{d :V :/ C [1 2 3 4 5] =} assert [1]
+    {d "Hello!" N \; } assert [1]
+    {d "var" N \; } assert [1]
+    {d ::var N \; } assert [1]
+    {d "foo bar" N \; } assert [1]
+    {d :E} assert [5]
+    {d :V :/ C [1 2 3 4 5] =} assert [1]
 })
 
 

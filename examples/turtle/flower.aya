@@ -3,12 +3,11 @@
 import ::turtle
 import ::math
 
-turtle!:t;
+{, } turtle!:t;
 {
-  {
-    1 t.fwd
-    30 deg t.right
-  } 12 %
-    30 deg t.right
+    {
+        20 t.fd
+        30 t.right
+    } 12 %
+    30 t.right
 } 12 %
-t.draw

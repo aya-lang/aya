@@ -100,6 +100,11 @@ static color::multigrad {l n,
     [l {a b, n a b .grad B} F ; ].F
 }
 
+.#? N ::color.hueshift\n  shift hue by N degrees
+impl color::hueshift {n self,
+    self.hsv $\; V n + 360 % \J ~ self.M.newhsv
+}
+
 
 .#
 .# Static conversion utilities
@@ -113,7 +118,7 @@ static color::hsvtorgb {h s v : hi p q t ff,
     } {
         .# Compute hue index
         .# floor -> mod 360 -> /60 (hh) -> floor (hi)
-        h .\ 360 % 60 /:hh;
+        h 360 % 60 /:hh;
         hh .\ :hi;
 
         hh hi - :ff; .# fractional part

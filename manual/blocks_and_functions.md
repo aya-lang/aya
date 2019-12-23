@@ -77,7 +77,7 @@ Arguments may have type assertions. Write a variable name followed by a symbol c
 1 2 {a::num b::num, a b +}~    .# => 3
 "1" 2 {a::num b::num, a b +}~   .# TYPE ERROR: Type error at ({ARGS}):
                              Expected (::num)
-                             Recieved ("1" )
+                             Received ("1" )
 ```
 
 If a user defined type defines a `__type__` key as a symbol, the symbol will be used for type assertions.
@@ -104,7 +104,7 @@ aya> v printvec
 aya> 3 printvec
 TYPE ERROR: Type error at ({ARGS}):
 	Expected (::vec)
-	Recieved (3 )
+	Received (3 )
 ```
 
 

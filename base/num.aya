@@ -1,7 +1,7 @@
 
 {,
 
-{R:#{;.Q}}:rand;     .#? I randset\n  generate a set of random nums (0 to 1) of length i
+{R:#{;.Q}}:rand;     .#? ::num.rand\n  generate a set of random nums (0 to 1) of length i
 
 .#? N digits\n  convert a number into a list of digits
 .# '0 = 48
@@ -23,6 +23,23 @@
     [ 1 0 -1 ]
 .}
 {.|$TR\R0\KK}:i;
+
+.#? ::num.fractional\n  the fractional part of the number
+{ 1% }:fractional;
+
+.#? ::num.s\n  split a decimal into two numbers
+.{ Example:
+    aya> 4.6 .s
+    4 6
+    aya> 0.3 .s
+    0 3
+    aya> 5 .s
+    5 0
+.}
+{
+    $1%P$.[0]'.={V;}?~ \.\ \
+}:s;
+
 
 }:num;
 

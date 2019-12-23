@@ -1,3 +1,41 @@
+.{
+    asciiart
+
+    A small toy library for drawing ascii art
+
+    asciiart makes heavy use of operator overloading to allow programs
+    to be as short and concise as possible.
+
+    Examples:
+
+      - A simple train:
+
+        aya> " 6_`|6 |` ()--()"_ 3L"  ~"_T*
+        asciiart:
+         ______   ______   ______
+        |      | |      | |      |
+         ()--() ~ ()--() ~ ()--()
+
+
+      - Order N Serpinski triangle:
+
+        aya> 3 "##`#"_\L{I}F
+        asciiart:
+        ########
+        # # # #
+        ##  ##
+        #   #
+        ####
+        # #
+        ##
+        #
+
+https://codegolf.stackexchange.com/questions/101684/all-aboard-the-ascii-train
+"hello"
+({
+.E"3 3_`  | # |`  |3_|`_|5\"|"_ "\"`-0-0-'"/\L\{'#\JI}.&S"4 o O O`3 o`  TS__[O]` {6=|" _"./o--000'"/\+
+})
+.}
 
 class ::asciiart
 
@@ -12,12 +50,21 @@ impl asciiart::__init__ {str self,
     } .?
 }
 
+impl asciiart::__eq__ {self c::char,
+    self.list :# { :# {; c}} self.M!
+}
+
 impl asciiart::__str__ {self,
     self.list "\n" *
 }
 
 impl asciiart::__repr__ {self,
     "asciiart:\n$(self.__str__)\n"
+}
+
+
+impl asciiart::__negate__ {self,
+    self.list.T self.M!
 }
 
 
@@ -87,7 +134,8 @@ impl asciiart::h {self,
     self.list E
 }
 
-.{ Example:
+.{ Horizontal stack
+   Example:
     aya> "3#`3.`#.."_ $ /
     asciiart:
     ###
@@ -101,8 +149,13 @@ impl asciiart::__div__ {other self,
     other.list $\; self.list $\; K self.M!
 }
 
+impl asciiart::__rdiv__ {self other,
+    self other self.M! /
+}
 
-.{ Example:
+
+.{ Reverse along vertical axis
+   Example:
     aya> "3#`3.`#.."_ $ U
     asciiart:
     ###
@@ -113,8 +166,14 @@ impl asciiart::__div__ {other self,
     ...
     ..#
 .}
-impl asciiart::__reverse__ {self,
-    self.list $\; :#{U} self.M!
+impl asciiart::__reverse__ {self$,
+    self.list :#{U};
+    self
+}
+
+impl asciiart::__dec__ {self$,
+    self.list U ;
+    self
 }
 
 impl asciiart::__mul__ {list self,
@@ -125,25 +184,105 @@ impl asciiart::__rpow__ {self num,
     self {self +} numV %
 }
 
-
 .{ Example:
-    aya> "3x``x"_ " *" I
+    aya>  "aba`bad" _ '# I
+    ::char
     asciiart:
-    xxx
-    ***
-    x**
+    ###
+    ###
 
-    aya> "3x``x"_ " *" I "xxx`---" I
+    aya>  "aba`bad" _ "a#" I
+    ::str
     asciiart:
-    ---
-    ***
-    x**
+    #b#
+    b#d
+
+    aya> "# ` #"_ "abc`def"_ I
+    asciiart:
+    abc
+    def
+       abc
+       def
 .}
 impl asciiart::__getindex__ {index self,
-    index "`" | .E1={~}? :index ;
-    index V:from ; V:to ; ;
+    index :T {?=,
+        ::str {
+            index self.replace
+        },
+        ::char {
+            index self.fill
+        },
+        ::asciiart {
+            index self.replace_aa
+        },
+        { "asciiart::__getindex__ invalid index type" .D}
+    }
+}
+
+.{ Example:
+    aya> '@ "abc`def" _ .fill
+    asciiart:
+    @@@
+    @@@
+
+    aya> "#" "abc`def" _ .fill
+    asciiart:
+    ###
+    ###
+.}
+
+impl asciiart::fill {c self,
+    c :T ::str = {c.[0] :c;} ?
+    self.list :# { :# {; c}} self.M!
+}
+
+
+.{ Example:
+    aya> "#-" "###`# ` # "_ .replace
+    asciiart:
+    ---
+    -
+     -
+
+    aya> "###`***" "###`# ` # "_ .replace
+    asciiart:
+    ***
+    #
+     #
+.}
+impl asciiart::replace {s::str self,
+    s "`" | .E1={~}? :s ;
+    s V:from ; V:to ; ;
     self.list :# {from to @ .&}
     self.M!
+}
+
+.{ Example:
+    aya> "3#`# #`3#"_
+    asciiart:
+    ###
+    # #
+    ###
+
+    aya> "3#`# #`3#"_ $.replace_aa
+    asciiart:
+    #########
+    # ## ## #
+    #########
+    ###   ###
+    # #   # #
+    ###   ###
+    #########
+    # ## ## #
+    #########
+.}
+impl asciiart::replace_aa {a::asciiart self : l,
+    a $ ' I \ J :l;    .# List of aa and empty version of aa
+    self.list ' #.= #! .# Mask of filled/empty
+    :#{
+        :#{ l \ I }    .# Use the mask to index into the list
+        S              .# Concat each aa in the row
+    } {/}F             .# Concat each row
 }
 
 static asciiart::rle {s,
@@ -176,3 +315,14 @@ static asciiart::rle {s,
 asciiart:aa;
 
 {asciiart.rle "`"| asciiart!}:_;
+
+.{ Example:
+    Generate a Sierpinski carpet:
+    "3#`# #`3#"_$I$I
+    .. or triangle
+    "##` #"_ $I$I
+
+    ".:.` ."_$I$I
+
+    "##`#"_$I $U\+ $V\/ $I
+.}

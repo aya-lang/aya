@@ -1,59 +1,161 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+    .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
-.# turtle.aya
-.# Defines the turtle type
+.{
+    turtle
 
-import ::list
-import ::plot
-import ::math
+    A simple turtle graphics library
+    The API is modeled after python's built-in turtle library
 
-.{? type: turtle
-    A turtle. Used for drawing patterns on a plot grid.
+    Examples:
+        .# Offset nested balls
+        {, 200:width 200:height} turtle!:t
+        10R :# {n, {0.1 t.right n t.fd 2:Z} 100 %} ;
+
+        .# A small colorful star
+        colors.red {10\.hueshift $ t.pencolor 40 t.fd 124 t.right} 36 %
 .}
+
+import ::canvas
+import ::color
+
+class ::turtle
+
+impl turtle::__init__ {params::dict self,
+
+    .# Default values
+    {,
+        0:x
+        0:y
+        0:r
+        400:width;
+        300:height;
+        ::deg:units;
+        1 :autodraw;
+    }
+    .# Merge user defined
+    params .+ :params;
+
+    params.x self.:_x;
+    params.y self.:_y;
+    params.r self.:_r;
+
+    params.units `in [::deg ::degrees] self.:_use_deg;
+
+    params.width self.:_w;
+    params.height self.:_h;
+    {, self._w:width self._h:height} canvas! self.:_cvs;
+
+    1 self.:_pen_down
+    params.autodraw self.:_autodraw;
+}
+
+impl turtle::__repr__ {self,
+    "turtle: pos=($(self._x), $(self._y)) dir=$(self._r)"
+}
+
+.#################
+.# Turtle Motion #
+.#################
+
+impl turtle::fd {n self : px(self._x) py(self._y),
+    self._x self._r Mc n * + self.:_x;
+    self._y self._r Ms n * + self.:_y;
+    px py self._step_from
+}
+
+impl turtle::right {amount self,
+    self._r amount self._to_rad + self.:_r;
+}
+
+impl turtle::left {amount self,
+    self._r amount self._to_rad - self.:_r;
+}
+
+impl turtle::goto {x y self : px(self._x) py(self._y),
+    x self.:_x;
+    y self.:_y;
+    px py self._step_from
+}
+
+impl turtle::pos {self,
+    self._x self._y
+}
+
+impl turtle::draw {self,
+    self._cvs.show
+}
+
+.###############
+.# Pen Control #
+.###############
+
+impl turtle::pendown {self,
+    1 self.:_pen_down
+}
+
+impl turtle::penup {self,
+    0 self.:_pen_up
+}
+
+impl turtle::isdown {self,
+    self._pen_down
+}
+
+impl turtle::pencolor {c::color self,
+    c self._cvs.set_color
+}
+
+
+.####################
+.# Helper Functions #
+.####################
+
+
+.# This function maps the turtle
+.# coordinate space to the canvas coordinate space
+.# The turtle lives in a coordinate frame where (0,0) is
+.# at the center of the canvas.
+impl turtle::_tf {x y self,
+    x self._w 2/ +
+    y self._h 2/ +
+}
+
+.# Convert the input value to radians if units is degrees
+impl turtle::_to_rad {val self,
+    self._use_deg
+        val :1p1 180 / *
+        val
+    .?
+}
+
+
+.# Callback function for after the turtle steps
+.# Assumes the turtle's position has already been updated
+.# px and py are the turtles previous location
+impl turtle::_step_from {px py self,
+    self._pen_down {
+        px py self._tf
+        self._x self._y self._tf
+        self._cvs.line
+        self._autodraw {
+            self._cvs.show
+        } ?
+    } ?
+}
+
+.#############
+.# Overloads #
+.#############
+
+impl turtle::__rpow__ {self val,
+  val self.fd
+  self
+}
+
+
+.# For testing
 {,
-
-    ::turtle :__type__;
-
-    {{,0:x 0:y pi2/:r [[0 0]]:path} \ :M}:__new__;
-
-
-    {self,
-        "turtle: pos=($(self.x), $(self.y)) dir=$(self.r)"
-    }:__repr__:__str__;
-
-
-    .#? N turtle.fwd\n  move the turtle forward N units
-    {len self,
-        self.x self.r Mc len* + self.:x;
-        self.y self.r Ms len* + self.:y;
-        [self.x self.y] self.path .V;
-    }:fwd;
-
-    .#? N turtle.left\n  turn the turtle left N radians
-    {rads self,
-        self.r rads + self.:r;
-    }:left;
-
-    .#? N turtle.right\n  turn the turtle right N radians
-    {rads self,
-        self.r rads - self.:r;
-    }:right;
-
-    .#? turtle.draw\n  draw the turtle's path
-    {self : x y p small big margin,
-        plot!:p;
-        self.path .T ~\ :x;:y;
-        x p.domain
-        y p.addline
-
-        x.max y.max .< :big;
-        x.min y.min .> :small;
-        big 0.1* :margin;
-
-        [small margin- big margin+] p.:xaxis;
-        [small margin- big margin+] p.:yaxis;
-
-        p.view
-
-    }:draw;
-}:turtle;
+    100 :width
+    100 :height
+    ::deg :units
+} turtle! :t

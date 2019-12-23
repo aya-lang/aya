@@ -1,44 +1,43 @@
 .# A basic account object
 
-{,
+class ::account
 
-  {name,
-    {, 0:balance name:name} account MO
-  }:__new__;
+def account::__init__ {name self,
+    name self.:name;
+    0 self.:balance;
+}
 
-  {amnt self,
+def account::deposit {amnt self,
     self.balance amnt + self.:balance ;
-  }:deposit;
+}
 
-  {amnt self,
+def account::withdrawl {amnt self,
     amnt self.balance > {
-      "insufficient funds on account $(self.name)" .D
+      "Cannot withdrawl: Insufficient funds in account $(self.name)" .D
     } ?
     self.balance amnt - self.:balance ;
-  }:withdrawl;
+}
 
-  {self,
+def account::__repr__ {self,
     "$(self.name): \$$(self.balance)"
-  }:__repr__:__str__;
+}
 
-}:account;
 
 
 .{ EXAMPLE USAGE
 
-aya> "demo" account! :demo
-demo: $0
-aya> 100 demo.deposit
-aya> demo
-demo: $100
-aya> 50 demo.withdrawl
-aya> demo
-demo: $50
-aya> 70 demo.withdrawl
-insufficient funds on account demo
-stack:
+    aya> "demo" account! :demo
+    demo: $0
+    aya> 100 demo.deposit
+    aya> demo
+    demo: $100
+    aya> 50 demo.withdrawl
+    aya> demo
+    demo: $50
+    aya> 70 demo.withdrawl
+    Cannot withdrawl: Insufficient funds in account demo
+    stack:
 
-just before:
-	self .balance amnt - self .:balance ;
-
+    just before:
+        self .balance amnt - self .:balance ;
 .}
