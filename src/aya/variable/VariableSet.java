@@ -95,7 +95,8 @@ public class VariableSet {
 			}
 			
 			if (print) {
-				sb.append("(" + pair.getValue().str() + ") ");
+				//sb.append("(" + pair.getValue().str() + ") ");
+				sb.append("(..) ");
 			} else {
 				sb.append(" ");
 			}

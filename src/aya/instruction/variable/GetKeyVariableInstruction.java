@@ -25,7 +25,7 @@ public class GetKeyVariableInstruction extends VariableInstruction {
 			dict = (Dict)kv_obj;
 			Obj o = dict.get(variable_);
 			// If user object function, leave it as the first item on the stack
-			if (dict.hasMetaTable() && o.isa(Obj.BLOCK)) {
+			if (dict.pushSelf() && o.isa(Obj.BLOCK)) {
 				b.push(dict);
 			}
 			GetVariableInstruction.addOrDumpVar(o, b);

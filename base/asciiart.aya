@@ -285,7 +285,7 @@ impl asciiart::replace_aa {a::asciiart self : l,
     } {/}F             .# Concat each row
 }
 
-static asciiart::rle {s,
+impl asciiart::rle {s,
     s $ "\\d+"| \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
     .E 0 = {;;s}            .# If no rle to do, just return the string

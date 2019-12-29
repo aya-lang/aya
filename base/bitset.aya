@@ -13,8 +13,8 @@ impl bitset::__new__ {s meta,
     } .?
 }
 
-impl_static bitset::fromlist {l::list meta,
-    {, lE:size l:bits } meta :M
+impl bitset::fromlist {l::list : bitset^,
+    {, lE:size l:bits } bitset :M
 }
 
 

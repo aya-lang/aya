@@ -47,6 +47,7 @@ public class VariableData {
 		Str nil_str = new Str("nil");
 		nil_meta.set("__str__", nil_str);
 		nil_meta.set("__repr__", nil_str);
+		nil_meta.set("__pushself__", Num.ONE);
 
 		nil_meta.set("__eq__", Parser.compile("; :T ::__nil =", aya));
 		

@@ -190,7 +190,7 @@ class OP_Colon_Pound extends OpInstruction {
 			block.push( ((Block)blk).mapTo((List)col) );
 		} else if (blk.isa(BLOCK) && col.isa(DICT)) {
 			Dict d = (Dict)col;
-			if (d.hasMetaTable()) {
+			if (d.pushSelf()) {
 				block.push(blk);
 				block.callVariable(d, Ops.KEYVAR_EACH);
 			} else {

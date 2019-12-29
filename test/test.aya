@@ -24,6 +24,10 @@
 
 "\n----[ Running Core Tests ]----":P
 
+
+{1} assert [1]
+{ {1} assert [2] } assertfail
+
 .# Tick operator
 
 {`1 2} assert [2 1]
@@ -202,6 +206,48 @@
     3:a;
     {`({:a^, a})}:h;
 
+})
+
+.# push self
+({:d x y m,
+
+    {, 1:x 2:y {1+}:inc }:d;
+    {d.x d.y} assert [1 2]
+    {d.y d.inc} assert [3]
+
+
+    {self, self.x self.y +} d.:foo;
+    {a b self, a b self.x self.y} d.:bar;
+
+    { {d.foo} assert [3] } assertfail
+    { {10 20 d.bar} assert [10 20 1 2] } assertfail
+
+    1 d.M.:__pushself__;
+
+    {d.foo} assert [3]
+    {10 20 d.bar} assert [10 20 1 2]
+
+    d.M ::__pushself__ .-
+
+    { {d.foo} assert [3] } assertfail
+
+    1 d.M.:__pushself__;
+
+    {d.foo} assert [3]
+    {10 20 d.bar} assert [10 20 1 2]
+
+    {, {other self, other.a self.a + other.b self.b +}:__add__ }:m;
+    {, 1:a 2:b m:__meta__ }:x;
+    {, 3:a 4:b m:__meta__ }:y;
+
+    .# if self is not pushed, should have an empty stack
+    { x y + } assertfail
+    .# if self is not pushed, should operate on the first x and y
+    { x y y + } assert [4 6]
+
+    1 m.:__pushself__;
+
+    {x y +} assert [4 6]
 })
 
 

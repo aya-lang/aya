@@ -14,6 +14,7 @@
 {,
 
     ::stack :__type__;
+    1 :__pushself__;
 
     .#? L stack.new\n  convert a list into a stack
     {l meta, {, l:list} meta :M}:__new__;

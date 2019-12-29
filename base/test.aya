@@ -6,6 +6,7 @@
 .# Test object
 {,
     ::test :__type__;
+    1 :__pushself__;
 
     .# Create a new test
     .#   blk:      the stack to be evauated
@@ -37,6 +38,7 @@
 
 {,
     ::testset :__type__;
+    1 :__pushself__;
 
     .# Create a new test set
     {name::str meta,
@@ -52,11 +54,12 @@
 
     .# Evaluate all tests, if any failed, report
     {self,
+        "testing $(self.name)... " .P
         self.tests #{.run} [""] :|
         .E 0 = {
-            ; "testset '$(self.name)': All tests passed!" :P
+            ; "All tests passed!" :P
         } {
-            "testset '$(self.name)': Tests failed!\n" :P
+            "Tests failed!\n" :P
             #{:P}
         } .?
     }:run;

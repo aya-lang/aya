@@ -175,7 +175,8 @@ public class BlockHeader extends Instruction {
 		
 		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
 			sb.append(Variable.decodeLong(d.getKey()));
-			sb.append("(").append(d.getValue().toString()).append(") ");
+			//sb.append("(").append(d.getValue().toString()).append(") ");
+			sb.append("(..)");
 		}
 	
 		if (captures != null) {

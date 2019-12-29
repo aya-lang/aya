@@ -61,13 +61,13 @@ impl path::__dec__ {self,
 }
 
 .#? ::str path.readdir\n  list of file/dir names in the given path
-static path::readdir {
+impl path::readdir {
     P""4MZ
 }
 
 .#? path.working\n  working directory
-impl_static path::working {meta,
-    ""2MZ meta!
+impl path::working {:path^,
+    ""2MZ path!
 }
 
 
@@ -78,9 +78,9 @@ impl_static path::working {meta,
 
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
-impl_static path::_split {dir::str meta,
+impl path::_split {dir::str : path^,
     .# Split using system sep
-    dir A :# {meta.filesplit |~}
+    dir A :# {path.filesplit |~}
     .# Split using "/"
     :# {"/"|~}
     .# Remove empties
@@ -90,7 +90,7 @@ impl_static path::_split {dir::str meta,
 .# dirs::list path._fixhome
 .# If the path list contains a "~"
 .#   find the last "~" and take all directories after it
-impl_static path::_fixhome {dirs::list meta,
+impl path::_fixhome {dirs::list : path^,
     dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
 
     .# Does the path contain a "~" ?
@@ -98,7 +98,7 @@ impl_static path::_fixhome {dirs::list meta,
         .< U .# Take all directories before the "~" and reverse
 
         .# Append the home dir to the front
-        meta.home.dirs $\;  .# Copy home.dirs
+        path.home.dirs $\;  .# Copy home.dirs
         \K                  .# Append to front
     } {
         ;U .# Pop the -1 and put the list back
@@ -106,17 +106,17 @@ impl_static path::_fixhome {dirs::list meta,
 }
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
-impl_static path::_isabs {p::str meta,
+impl path::_isabs {p::str : path^,
     p "/" N 0 = \;
-    p meta.root :9c + N 0 = \;
-    p meta.root "/" + N 0 = \;
+    p path.root :9c + N 0 = \;
+    p path.root "/" + N 0 = \;
     | |
 }
 
 .# Remove all ".." by traversing the directories
-impl_static path::_clean {dirs::list meta : i(0),
+impl path::_clean {dirs::list : path^ i(0),
     .# Remove root and self refs (".")
-    dirs [meta.root "."] :| ;
+    dirs [path.root "."] :| ;
 
     .# If there is a ".." remove the dir before it
     {{

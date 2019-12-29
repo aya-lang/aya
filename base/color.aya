@@ -22,13 +22,13 @@ impl color::__init__ {r::num g::num b::num self,
 }
 
 
-impl_static color::newhex {meta,
-    16 2 H 24 .> [3 8] L #{2 10 H} ~ meta!
+impl color::newhex { : color^ ,
+    16 2 H 24 .> [3 8] L #{2 10 H} ~ color!
 }
 
 
-impl_static color::newhsv {meta,
-    meta.hsvtorgb~ meta!
+impl color::newhsv { : color^ ,
+    color.hsvtorgb~ color!
 }
 
 
@@ -96,7 +96,7 @@ impl color::mid {3@@\.grad 1I}
 
 
 .#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
-static color::multigrad {l n,
+impl color::multigrad {l n,
     [l {a b, n a b .grad B} F ; ].F
 }
 
@@ -111,7 +111,7 @@ impl color::hueshift {n self,
 .#
 
 .#? NNN color.hsvtorgb\n  convert h s v (0-360,0-1,0-1) color to hsv
-static color::hsvtorgb {h s v : hi p q t ff,
+impl color::hsvtorgb {h s v : hi p q t ff,
     .# no saturation, just greyscale
     s 0 = {
         [v v v]
@@ -142,7 +142,7 @@ static color::hsvtorgb {h s v : hi p q t ff,
 
 
 .#? NNN color.rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
-static color::rgbtohsv {r g b : h s v delta maxv minv,
+impl color::rgbtohsv {r g b : h s v delta maxv minv,
     [r g b].min:minv;
     [r g b].max:maxv;
     maxv:v;

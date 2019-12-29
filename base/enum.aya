@@ -9,6 +9,7 @@
     .# The metatable for each enum member
     {,
         class :__type__;
+        1 :__pushself__;
         {self, "$(self.__type__:C).$(self.name:C)"}:__str__:__repr__;
         {other self,
             other.__type__ self.__type__ =
@@ -26,6 +27,7 @@
 
     .# Create and add the metatable for the enum
     dict {,
+        1 :__pushself__;
         ::enum :__type__;
         {.name:C}:__repr__:__str__;
     } :M

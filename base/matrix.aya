@@ -14,6 +14,7 @@ import ::math
 {,
 
     ::matrix :__type__;
+    1:__pushself__;
 
     .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
     {m,

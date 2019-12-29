@@ -235,6 +235,7 @@ impl docstr::__repr__ {self,
     } ?
 })}:help;
 
+.{
 struct ::example [::a ::b]
 
 doc [example::variable] """
@@ -266,3 +267,4 @@ doc [example::variable] """
     more text that will end up in the above key
 """
 impl example::variable {a b::num, }
+.}

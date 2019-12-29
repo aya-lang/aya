@@ -317,6 +317,7 @@ opt_mod (
     .# Metatable
     {,
         name:__type__;
+        1 :__pushself__;
 
         .# Constructor
         {meta : self,
@@ -358,6 +359,7 @@ opt_mod (
 {`({sym,
     {,
         sym:__type__;
+        1 :__pushself__;
 
         {meta : self,
             .# Create a new dict and set its metatable
@@ -382,9 +384,9 @@ opt_mod (
 .#? impl\n  implement instance functions\n  impl class_name::function_name {self, body}
 {```(\@:D ;)}:impl;
 .#? impl_static\n  static class function which get the class dict as the first argument\n  impl_static class_name::function_name {meta, body}
-{```(\@.M:D ;)}:impl_static;
+.# {```(\@.M:D ;)}:impl_static;
 .#? static\n  static class function\n  static class_name::function_name {body}
-{```( {f, {;f~}.use[::f]}~ \@.M:D ;)}:static;
+.# {```( {f, {;f~}.use[::f]}~ \@.M:D ;)}:static;
 
 .{ class Example:
 

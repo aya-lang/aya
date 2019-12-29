@@ -78,8 +78,8 @@ impl map::__each__ {blk self,
 }
 
 
-impl_static map::fromlist {list meta: m,
-    meta!:m;
+impl map::fromlist {list : map^ m,
+    map!:m;
     list # {~ \m.put};
     m
 }

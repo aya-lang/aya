@@ -355,7 +355,9 @@ public class Block extends Obj {
 	/** Calls the variable and dumps the result to the stack existing in the input block */
 	public void callVariable(Dict dict, Variable keyVar, Obj... push_first) {
 		//Push self
-		stack.push(dict);
+		if (dict.pushSelf()) {
+			stack.push(dict);
+		}
 		
 		//push others
 		for (Obj o : push_first) {

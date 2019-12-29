@@ -22,6 +22,8 @@ import aya.variable.VariableSet;
  *
  */
 public class Dict extends Obj {
+
+	private Variable PUSH_SELF = new Variable("__pushself__");
 	
 	public static Variable META = new Variable("__meta__");
 	
@@ -90,6 +92,10 @@ public class Dict extends Obj {
 	/////////////
 	// GETTERS //
 	/////////////
+	
+	public boolean pushSelf() {
+		return hasMetaKey(PUSH_SELF);
+	}
 	
 	/** Get the object assigned to key whos name is {@code s} 
 	 * If the string is not a valid symbol, look it up in the string dict

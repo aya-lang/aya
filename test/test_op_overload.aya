@@ -4,6 +4,7 @@
 {,
 
   ::vec :__type__;
+  1 :__pushself__;
 
   {l meta, {, l:l} meta :M}:__new__;
   {self, "<" self.lPB;V; ">" ++}:__str__:__repr__;
