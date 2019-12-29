@@ -16,18 +16,18 @@ class ::color
 .# Constructors
 .#
 
-impl color::__init__ {r::num g::num b::num self,
+def color::__init__ {r::num g::num b::num self,
     [[r g b], .round 0 255 .clip] ~
     self .:b .:g .:r ;
 }
 
 
-impl color::newhex { : color^ ,
+def color::newhex { : color^ ,
     16 2 H 24 .> [3 8] L #{2 10 H} ~ color!
 }
 
 
-impl color::newhsv { : color^ ,
+def color::newhsv { : color^ ,
     color.hsvtorgb~ color!
 }
 
@@ -36,12 +36,12 @@ impl color::newhsv { : color^ ,
 .# Overloads
 .#
 
-impl color::__repr__ {self,
+def color::__repr__ {self,
     "($(self.r) $(self.g) $(self.b)) color!"
 }
 
 
-impl color::__str__ {self,
+def color::__str__ {self,
     "($(self.r) $(self.g) $(self.b)) color!"
 }
 
@@ -51,13 +51,13 @@ impl color::__str__ {self,
 .#
 
 .#? ::color ::color *\n  multiply two colors
-impl color::__mul__ {other self
+def color::__mul__ {other self
     other.rgbf self.rgbf * 255* ~ self.M!
 }
 
 
 .# ::color N *\n  multiply a color by a value
-impl color::__rmul__ {self n,
+def color::__rmul__ {self n,
     self.rgbf n * 255* :#{0 255 .clip} ~ self.M!
 }
 
@@ -67,19 +67,19 @@ impl color::__rmul__ {self n,
 .#
 
 .#? ::color.rgbf\n  return a list of RGB values represented as floats from 0.0 to 1.0
-impl color::rgbf {self, [self.r self.g self.b] 255 / }
+def color::rgbf {self, [self.r self.g self.b] 255 / }
 
 
 .#? ::color.rgb\n  return a list containing red, green, and blue values respectively
-impl color::rgb {self, [self.r self.g self.b]}
+def color::rgb {self, [self.r self.g self.b]}
 
 
 .#? ::color.hex\n  return a hexadecimal string representation of the color
-impl color::hex {.rgb #{10 16 H 2 '0 @.leftpad}S}
+def color::hex {.rgb #{10 16 H 2 '0 @.leftpad}S}
 
 
 .#? ::color.hsv\n  return a list containing hue, sat, and val respectively
-impl color::hsv {self, self.rgb255/~ self.M.rgbtohsv}
+def color::hsv {self, self.rgb255/~ self.M.rgbtohsv}
 
 
 .#
@@ -87,21 +87,21 @@ impl color::hsv {self, self.rgb255/~ self.M.rgbtohsv}
 .#
 
 .#? ::num ::color ::color.grad\n  creates a gradient of rgb lists from color1 to color2
-impl color::grad {n::num begin::color self,
+def color::grad {n::num begin::color self,
     [ [begin.rgb self.rgb, n intspace]~, self.M!]
 }
 
 .#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb
-impl color::mid {3@@\.grad 1I}
+def color::mid {3@@\.grad 1I}
 
 
 .#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
-impl color::multigrad {l n,
+def color::multigrad {l n,
     [l {a b, n a b .grad B} F ; ].F
 }
 
 .#? N ::color.hueshift\n  shift hue by N degrees
-impl color::hueshift {n self,
+def color::hueshift {n self,
     self.hsv $\; V n + 360 % \J ~ self.M.newhsv
 }
 
@@ -111,7 +111,7 @@ impl color::hueshift {n self,
 .#
 
 .#? NNN color.hsvtorgb\n  convert h s v (0-360,0-1,0-1) color to hsv
-impl color::hsvtorgb {h s v : hi p q t ff,
+def color::hsvtorgb {h s v : hi p q t ff,
     .# no saturation, just greyscale
     s 0 = {
         [v v v]
@@ -142,7 +142,7 @@ impl color::hsvtorgb {h s v : hi p q t ff,
 
 
 .#? NNN color.rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
-impl color::rgbtohsv {r g b : h s v delta maxv minv,
+def color::rgbtohsv {r g b : h s v delta maxv minv,
     [r g b].min:minv;
     [r g b].max:maxv;
     maxv:v;

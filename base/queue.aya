@@ -15,13 +15,13 @@ class ::queue
 
 
 .#? ::list ::queue.__init__\n  convert a list into a queue
-impl queue::__init__ {l self,
+def queue::__init__ {l self,
     l self.:list ;
 }
 
 
 .# str and repr overloads
-impl queue::__str__ {self,
+def queue::__str__ {self,
     self.isempty {
         "queue: <- -<"
     } {
@@ -33,38 +33,38 @@ impl queue::__str__ {self,
 
 
 .#? ::queue.next\n  return the next item in the queue
-impl queue::next {self,
+def queue::next {self,
     "queue obj is empty" self.list E 0 = conderr
     self.list V \ ;
 }
 
 
 .#? ::queue.peek\n  return the next item in the queue without removing it from the queue
-impl queue::peek {self,
+def queue::peek {self,
     "queue obj is empty" self.list E 0 = conderr
     self.list 0 I
 }
 
 .#? ::queue.__len__\n  return the number of elements in the queue
-impl queue::__len__ { .list E }
+def queue::__len__ { .list E }
 
 
 .#? ::queue.isempty\n  tests if the queue is empty
-impl queue::isempty { .list E 0 = }
+def queue::isempty { .list E 0 = }
 
 
 .#? ::any ::queue.add\n  add an item to the queue
-impl queue::__add__ {self,
+def queue::__add__ {self,
     self.list.B ; self
 }
 
 
 .#? ::queue.clear\n  clear the queue
-impl queue::clear {self,
+def queue::clear {self,
     [] self.:list
 }
 
-impl queue::__each__ {blk self,
+def queue::__each__ {blk self,
     self.list :# {blk}
 }
 

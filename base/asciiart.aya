@@ -39,7 +39,7 @@ https://codegolf.stackexchange.com/questions/101684/all-aboard-the-ascii-train
 
 class ::asciiart
 
-impl asciiart::__init__ {str self,
+def asciiart::__init__ {str self,
     str :T ::str = {
         [str] self.:list ;
     } {
@@ -50,20 +50,20 @@ impl asciiart::__init__ {str self,
     } .?
 }
 
-impl asciiart::__eq__ {self c::char,
+def asciiart::__eq__ {self c::char,
     self.list :# { :# {; c}} self.M!
 }
 
-impl asciiart::__str__ {self,
+def asciiart::__str__ {self,
     self.list "\n" *
 }
 
-impl asciiart::__repr__ {self,
+def asciiart::__repr__ {self,
     "asciiart:\n$(self.__str__)\n"
 }
 
 
-impl asciiart::__negate__ {self,
+def asciiart::__negate__ {self,
     self.list.T self.M!
 }
 
@@ -81,7 +81,7 @@ impl asciiart::__negate__ {self,
     ##.
     ###
 .}
-impl asciiart::__negate__ {self,
+def asciiart::__negate__ {self,
     self.list.T self.M!
 }
 
@@ -112,7 +112,7 @@ impl asciiart::__negate__ {self,
     ...~...
     #..~#..
 .}
-impl asciiart::__add__ {other self,
+def asciiart::__add__ {other self,
     other :T ::char = other :T ::str = | {
         self.list #{other \+} self.M!
     } {
@@ -121,16 +121,16 @@ impl asciiart::__add__ {other self,
 }
 
 
-impl asciiart::__radd__ {self other,
+def asciiart::__radd__ {self other,
     self.list #{other +} self.M!
 }
 
 
-impl asciiart::w {self,
+def asciiart::w {self,
     self.list.T E
 }
 
-impl asciiart::h {self,
+def asciiart::h {self,
     self.list E
 }
 
@@ -145,11 +145,11 @@ impl asciiart::h {self,
     ...
     #..
 .}
-impl asciiart::__div__ {other self,
+def asciiart::__div__ {other self,
     other.list $\; self.list $\; K self.M!
 }
 
-impl asciiart::__rdiv__ {self other,
+def asciiart::__rdiv__ {self other,
     self other self.M! /
 }
 
@@ -166,21 +166,21 @@ impl asciiart::__rdiv__ {self other,
     ...
     ..#
 .}
-impl asciiart::__reverse__ {self$,
+def asciiart::__reverse__ {self$,
     self.list :#{U};
     self
 }
 
-impl asciiart::__dec__ {self$,
+def asciiart::__dec__ {self$,
     self.list U ;
     self
 }
 
-impl asciiart::__mul__ {list self,
+def asciiart::__mul__ {list self,
     list :#{self} B; S
 }
 
-impl asciiart::__rpow__ {self num,
+def asciiart::__rpow__ {self num,
     self {self +} numV %
 }
 
@@ -204,7 +204,7 @@ impl asciiart::__rpow__ {self num,
        abc
        def
 .}
-impl asciiart::__getindex__ {index self,
+def asciiart::__getindex__ {index self,
     index :T {?=,
         ::str {
             index self.replace
@@ -231,7 +231,7 @@ impl asciiart::__getindex__ {index self,
     ###
 .}
 
-impl asciiart::fill {c self,
+def asciiart::fill {c self,
     c :T ::str = {c.[0] :c;} ?
     self.list :# { :# {; c}} self.M!
 }
@@ -250,7 +250,7 @@ impl asciiart::fill {c self,
     #
      #
 .}
-impl asciiart::replace {s::str self,
+def asciiart::replace {s::str self,
     s "`" | .E1={~}? :s ;
     s V:from ; V:to ; ;
     self.list :# {from to @ .&}
@@ -276,7 +276,7 @@ impl asciiart::replace {s::str self,
     # ## ## #
     #########
 .}
-impl asciiart::replace_aa {a::asciiart self : l,
+def asciiart::replace_aa {a::asciiart self : l,
     a $ ' I \ J :l;    .# List of aa and empty version of aa
     self.list ' #.= #! .# Mask of filled/empty
     :#{
@@ -285,7 +285,7 @@ impl asciiart::replace_aa {a::asciiart self : l,
     } {/}F             .# Concat each row
 }
 
-impl asciiart::rle {s,
+def asciiart::rle {s,
     s $ "\\d+"| \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
     .E 0 = {;;s}            .# If no rle to do, just return the string

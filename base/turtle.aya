@@ -20,7 +20,7 @@ import ::color
 
 class ::turtle
 
-impl turtle::__init__ {params::dict self,
+def turtle::__init__ {params::dict self,
 
     .# Default values
     {,
@@ -49,7 +49,7 @@ impl turtle::__init__ {params::dict self,
     params.autodraw self.:_autodraw;
 }
 
-impl turtle::__repr__ {self,
+def turtle::__repr__ {self,
     "turtle: pos=($(self._x), $(self._y)) dir=$(self._r)"
 }
 
@@ -57,31 +57,31 @@ impl turtle::__repr__ {self,
 .# Turtle Motion #
 .#################
 
-impl turtle::fd {n self : px(self._x) py(self._y),
+def turtle::fd {n self : px(self._x) py(self._y),
     self._x self._r Mc n * + self.:_x;
     self._y self._r Ms n * + self.:_y;
     px py self._step_from
 }
 
-impl turtle::right {amount self,
+def turtle::right {amount self,
     self._r amount self._to_rad + self.:_r;
 }
 
-impl turtle::left {amount self,
+def turtle::left {amount self,
     self._r amount self._to_rad - self.:_r;
 }
 
-impl turtle::goto {x y self : px(self._x) py(self._y),
+def turtle::goto {x y self : px(self._x) py(self._y),
     x self.:_x;
     y self.:_y;
     px py self._step_from
 }
 
-impl turtle::pos {self,
+def turtle::pos {self,
     self._x self._y
 }
 
-impl turtle::draw {self,
+def turtle::draw {self,
     self._cvs.show
 }
 
@@ -89,19 +89,19 @@ impl turtle::draw {self,
 .# Pen Control #
 .###############
 
-impl turtle::pendown {self,
+def turtle::pendown {self,
     1 self.:_pen_down
 }
 
-impl turtle::penup {self,
+def turtle::penup {self,
     0 self.:_pen_up
 }
 
-impl turtle::isdown {self,
+def turtle::isdown {self,
     self._pen_down
 }
 
-impl turtle::pencolor {c::color self,
+def turtle::pencolor {c::color self,
     c self._cvs.set_color
 }
 
@@ -115,13 +115,13 @@ impl turtle::pencolor {c::color self,
 .# coordinate space to the canvas coordinate space
 .# The turtle lives in a coordinate frame where (0,0) is
 .# at the center of the canvas.
-impl turtle::_tf {x y self,
+def turtle::_tf {x y self,
     x self._w 2/ +
     y self._h 2/ +
 }
 
 .# Convert the input value to radians if units is degrees
-impl turtle::_to_rad {val self,
+def turtle::_to_rad {val self,
     self._use_deg
         val :1p1 180 / *
         val
@@ -132,7 +132,7 @@ impl turtle::_to_rad {val self,
 .# Callback function for after the turtle steps
 .# Assumes the turtle's position has already been updated
 .# px and py are the turtles previous location
-impl turtle::_step_from {px py self,
+def turtle::_step_from {px py self,
     self._pen_down {
         px py self._tf
         self._x self._y self._tf
@@ -147,7 +147,7 @@ impl turtle::_step_from {px py self,
 .# Overloads #
 .#############
 
-impl turtle::__rpow__ {self val,
+def turtle::__rpow__ {self val,
   val self.fd
   self
 }

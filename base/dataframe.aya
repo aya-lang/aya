@@ -2,7 +2,7 @@ import ::csv
 
 class ::dataframe
 
-impl dataframe::__init__ {kwargs::dict self :
+def dataframe::__init__ {kwargs::dict self :
         data(nil)
         colnames(nil)
         index(nil),
@@ -37,7 +37,7 @@ impl dataframe::__init__ {kwargs::dict self :
     self._check_size
 }
 
-impl dataframe::_check_size {self,
+def dataframe::_check_size {self,
     self._dataE self._indexE = ! {
         "dataframe!: data size ($(self._dataE)) and index length ($(self._indexE)) do not match" .D
     } ?
@@ -47,7 +47,7 @@ impl dataframe::_check_size {self,
     } ?
 }
 
-impl dataframe::_gen_colnames {n::num,
+def dataframe::_gen_colnames {n::num,
     n 26 :< {
         ['a $nV+] R#P
     } {
@@ -60,7 +60,7 @@ impl dataframe::_gen_colnames {n::num,
 .# CSV Utils
 .###########
 
-impl dataframe::from_csv {csv_dict,
+def dataframe::from_csv {csv_dict,
     {,
         csv_dict.data :data;
         csv_dict.rownames :index;
@@ -68,14 +68,14 @@ impl dataframe::from_csv {csv_dict,
     } dataframe!
 }
 
-impl dataframe::read_csv {kwargs : dataframe^ ,
+def dataframe::read_csv {kwargs : dataframe^ ,
     kwargs csv.read dataframe.from_csv
 }
 
 .# Serialization / Output
 .########################
 
-impl dataframe::__repr__ {self,
+def dataframe::__repr__ {self,
     [""] (self._colnames$\;) K A
     self._index #{P" |"K}
     self._data

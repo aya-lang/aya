@@ -2,7 +2,7 @@ import ::color
 
 class ::canvas
 
-impl canvas::__init__ ({params::dict self ,
+def canvas::__init__ ({params::dict self ,
 
     .# Default values
     {,
@@ -22,51 +22,51 @@ impl canvas::__init__ ({params::dict self ,
     ::new params 0 MG self.:id ;
 }.capture[::colors])
 
-impl canvas::__str__ {self,
+def canvas::__str__ {self,
     "<canvas($(self.id))>"
 }
 
 (canvas.__str__.`,0); canvas.:__repr__;
 
-impl canvas::delay {self,
+def canvas::delay {self,
     self._delay_ms 0 > {self._delay_ms$:P :Z} ?
 }
 
-impl canvas::line {xa ya xb yb self,
+def canvas::line {xa ya xb yb self,
     ::line {, xa:xa ya:ya xb:xb yb:yb } self.id MG ;
 }
 
-impl canvas::point {x y self,
+def canvas::point {x y self,
     ::line {, x:xa:xb y:ya:yb} self.id MG ;
 }
 
-impl canvas::circle {x y r self,
+def canvas::circle {x y r self,
     ::ellipse {, x:x y:y r2*:w:h } self.id MG ;
 }
 
-impl canvas::fillcircle {x y r self,
+def canvas::fillcircle {x y r self,
     ::ellipse {, 1:fill x:x y:y r2*:w:h } self.id MG ;
 }
 
-impl canvas::set_color {color self,
+def canvas::set_color {color self,
     ::set_color {, color.r:r color.g:g color.b:b } self.id MG ;
 }
 
-impl canvas::set_alpha {a self,
+def canvas::set_alpha {a self,
     ::set_alpha {, a:a } self.id MG ;
 }
 
-impl canvas::set_grad {start ca end cb cycle self,
+def canvas::set_grad {start ca end cb cycle self,
     ::set_paint {, start.[0]:xa start.[1]:ya ca:start
                    end.[0]:xb   end.[1]:yb   cb:end
                    cycle:cycle ::grad:type } self.id MG ;
 }
 
-impl canvas::set_bg {color self,
+def canvas::set_bg {color self,
     ::set_bg {, color.r:r color.g:g color.b:b } self.id MG ;
 }
 
-impl canvas::save {filename self,
+def canvas::save {filename self,
     ::save {,
         .# Convert to string (in case it is a path object)
         filename P
@@ -77,27 +77,27 @@ impl canvas::save {filename self,
     } self.id MG ;
 }
 
-impl canvas::close {self,
+def canvas::close {self,
     ::close {,} self.id MG ;
 }
 
-impl canvas::show {self,
+def canvas::show {self,
     ::show {,} self.id MG ;
 }
 
-impl canvas::isopen {self,
+def canvas::isopen {self,
     ::isopen {,} self.id MG
 }
 
-impl canvas::rect {x y w h self,
+def canvas::rect {x y w h self,
 
     ::rect {, x:x y:y w:w h:h } self.id MG ;
 }
 
-impl canvas::fillrect {x y w h self,
+def canvas::fillrect {x y w h self,
     ::rect {, x:x y:y w:w h:h 1:fill} self.id MG ;
 }
 
-impl canvas::clear {self,
+def canvas::clear {self,
     ::clear {,} self.id MG ;
 }

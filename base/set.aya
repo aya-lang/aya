@@ -11,7 +11,7 @@
 
 class ::set
 
-impl set::__init__ {l::list self,
+def set::__init__ {l::list self,
     l self.:list ;
 }
 
@@ -21,12 +21,12 @@ impl set::__init__ {l::list self,
 .#
 
 .#? ::any ::set.__add__\n  add an item to a set
-impl set::__add__ {item self,
+def set::__add__ {item self,
     item self.in ! {self.list [item] K;} ? self
 }
 
 .#? ::any ::set.__sub__\n  remove an item from a set
-impl set::__sub__ {item self,
+def set::__sub__ {item self,
     self.list [item] :| self.:list
 }
 
@@ -37,48 +37,48 @@ impl set::__sub__ {item self,
 .#
 
 .#? ::set ::set.__or__\n  set union
-impl set::__or__ {other::set self,
+def set::__or__ {other::set self,
     other.list $ \; self.list K :~ self.M!
 }
 
 .#? ::set ::set.__and__\n  set intersection
-impl set::__and__ {other::set self : l,
+def set::__and__ {other::set self : l,
     self.list :l;
     other.list # {l \N$ 0:> {I} {;;} .?} self.M!
 }
 
 
 .#? ::set ::set.__div__\n  set difference
-impl set::__div__ {other::set self,
+def set::__div__ {other::set self,
     other.list $\; self.list :| self.M!
 }
 
 
 .#? ::set ::set.__eq__\n test if two sets are the same
-impl set::__eq__ {other::set self,
+def set::__eq__ {other::set self,
     other.list self.list =
 }
 
 
 .#? ::set ::set.__lt__\n  proper subset
-impl set::__lt__ {other::set self,
+def set::__lt__ {other::set self,
     other self.__leq__            .# subset
     other.list self.list = !  .# proper subset
     &
 }
 
 .#? ::set ::set.__gt__\n  proper subset
-impl set::__gt__ {\.__lt__}
+def set::__gt__ {\.__lt__}
 
 
 .#? ::set ::set.__leq__\n subset
-impl set::__leq__ {other::set self : l,
+def set::__leq__ {other::set self : l,
     other.list :l;
     self.list # { l \ N \; 0 :>} {*}F
 }
 
 .#? ::set ::set.__geq__\n subset
-impl set::__geq__ {\.__leq__}
+def set::__geq__ {\.__leq__}
 
 
 
@@ -87,22 +87,22 @@ impl set::__geq__ {\.__leq__}
 .#
 
 .#? ::any ::set.in\n  tests if an item is in a set
-impl set::in {item self,
+def set::in {item self,
     self.list item N\; :1 =!
 }
 
 
 .#? ::set.__len__\n  returns the number of elements in the set
-impl set::__len__ { .list E }
+def set::__len__ { .list E }
 
 
 .#? ::set.clear\n  clear the contents of a set
-impl set::clear {[]\ .:list}
+def set::clear {[]\ .:list}
 
-impl set::__repr__ {.listP"s"\+}
-impl set::__str__  {.listP"s"\+}
+def set::__repr__ {.listP"s"\+}
+def set::__str__  {.listP"s"\+}
 
-impl set::__each__ {blk self,
+def set::__each__ {blk self,
     self.list :# {blk}
 }
 

@@ -11,7 +11,7 @@
 
 class ::docstr
 
-impl docstr::__init__ {name string::str self,
+def docstr::__init__ {name string::str self,
     .# If single item in a list, unwrap the list
     name :T ::list = {
         name E 1 = {
@@ -48,7 +48,7 @@ impl docstr::__init__ {name string::str self,
     } ?
 }
 
-impl docstr::_parse {self : m("@.+:\n") d keys vals,
+def docstr::_parse {self : m("@.+:\n") d keys vals,
     self._full_str m & #{.trim B; V;} "desc" \J :keys;
     self._full_str "@.+:\n" | :# {.trim.lines :# {.trim"\n"+}S.trim}:vals;
 
@@ -61,7 +61,7 @@ impl docstr::_parse {self : m("@.+:\n") d keys vals,
 .# Inner class
 docstr {, class ::arg} .+;
 
-impl (docstr.arg)::__init__ {name desc self,
+def (docstr.arg)::__init__ {name desc self,
     name.[0] ': = self.:is_stack_arg;
 
     self.is_stack_arg {
@@ -75,11 +75,11 @@ impl (docstr.arg)::__init__ {name desc self,
     desc.trim self.:desc;
 }
 
-impl (docstr.arg)::__repr__ {self : n l,
+def (docstr.arg)::__repr__ {self : n l,
     0 self.show
 }
 
-impl (docstr.arg)::show {margin self : n l pad,
+def (docstr.arg)::show {margin self : n l pad,
     self.is_stack_arg {
         "$(self.type): "
     } {
@@ -97,7 +97,7 @@ impl (docstr.arg)::show {margin self : n l pad,
     }S.trim + pad \+
 }
 
-impl docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
+def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     .# Names
     self.sections.args matcher & :#{B;}
     .# Desc
@@ -106,7 +106,7 @@ impl docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     {J}.& :# {~ self.M.arg!}
 }
 
-impl docstr::owner {self,
+def docstr::owner {self,
     self._module nil = {
         {
             self._name ~
@@ -123,7 +123,7 @@ impl docstr::owner {self,
 }
 
 
-impl docstr::_getargtypes {self : at f,
+def docstr::_getargtypes {self : at f,
     .# Get arg types from block
     self.owner:f;
 
@@ -143,11 +143,11 @@ impl docstr::_getargtypes {self : at f,
     } ?
 }
 
-impl docstr::finalize {self,
+def docstr::finalize {self,
     self._getargtypes
 }
 
-impl docstr::_module_name {self,
+def docstr::_module_name {self,
     .# Try to get the name of the module
     self._module ::__type__ N\; {
         self._module.__type__ :C
@@ -156,7 +156,7 @@ impl docstr::_module_name {self,
     } .?
 }
 
-impl docstr::_get_name {self,
+def docstr::_get_name {self,
     self._module ::__type__ N\; {
         self._module.__type__ :C "." self._name :C ++
     } {
@@ -164,7 +164,7 @@ impl docstr::_get_name {self,
     } .?
 }
 
-impl docstr::_get__doc__ {self,
+def docstr::_get__doc__ {self,
     d._module nil = {
         .# Access from scope
         {__doc__;} {;{,}:__doc__;} .K
@@ -178,7 +178,7 @@ impl docstr::_get__doc__ {self,
     } .?
 }
 
-impl docstr::show {self : builtin,
+def docstr::show {self : builtin,
     [::desc ::args ::example]:builtin;
 
     [
@@ -199,11 +199,11 @@ impl docstr::show {self : builtin,
 }
 
 
-impl docstr::add_to_help {self,
+def docstr::add_to_help {self,
     [".{?" self.show ".}"]S~
 }
 
-impl docstr::to_html {self,
+def docstr::to_html {self,
     [
         "<h2>$(self._get_name)</h2>"
         "<br />"
@@ -224,7 +224,7 @@ impl docstr::to_html {self,
     d.add_to_help
 })}:doc;
 
-impl docstr::__repr__ {self,
+def docstr::__repr__ {self,
     "<docstr for $(self._name :C)>"
 }
 
@@ -266,5 +266,5 @@ doc [example::variable] """
 @other_key:
     more text that will end up in the above key
 """
-impl example::variable {a b::num, }
+def example::variable {a b::num, }
 .}

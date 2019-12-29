@@ -26,13 +26,13 @@ class ::path
 
 
 .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
-impl path::isfile {self, 
+def path::isfile {self, 
     self.dirs.[:1] "." N :1 =! \;
 }
 
 
 .#? ::str ::path.add\n  append file or dir to path, if path is file, don't change
-impl path::__add__ {dir::str self,
+def path::__add__ {dir::str self,
     .# Modify a copy of this path
     self $ :self; ;
     .# Can only join if the path is not a file
@@ -43,11 +43,11 @@ impl path::__add__ {dir::str self,
     self
 }
 
-impl path::__radd__ {\.__add__}
+def path::__radd__ {\.__add__}
 
 
 .# String representation of the path
-impl path::__str__ {self,
+def path::__str__ {self,
     self.dirs :9c * self.M.root :9c + \+
     self.isfile ! {:9c +} ?
 }
@@ -56,17 +56,17 @@ impl path::__str__ {self,
 
 
 .#? ::path.dec\n  Go up a directory
-impl path::__dec__ {self,
+def path::__dec__ {self,
     self.dirs B;; self
 }
 
 .#? ::str path.readdir\n  list of file/dir names in the given path
-impl path::readdir {
+def path::readdir {
     P""4MZ
 }
 
 .#? path.working\n  working directory
-impl path::working {:path^,
+def path::working {:path^,
     ""2MZ path!
 }
 
@@ -78,7 +78,7 @@ impl path::working {:path^,
 
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
-impl path::_split {dir::str : path^,
+def path::_split {dir::str : path^,
     .# Split using system sep
     dir A :# {path.filesplit |~}
     .# Split using "/"
@@ -90,7 +90,7 @@ impl path::_split {dir::str : path^,
 .# dirs::list path._fixhome
 .# If the path list contains a "~"
 .#   find the last "~" and take all directories after it
-impl path::_fixhome {dirs::list : path^,
+def path::_fixhome {dirs::list : path^,
     dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
 
     .# Does the path contain a "~" ?
@@ -106,7 +106,7 @@ impl path::_fixhome {dirs::list : path^,
 }
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
-impl path::_isabs {p::str : path^,
+def path::_isabs {p::str : path^,
     p "/" N 0 = \;
     p path.root :9c + N 0 = \;
     p path.root "/" + N 0 = \;
@@ -114,7 +114,7 @@ impl path::_isabs {p::str : path^,
 }
 
 .# Remove all ".." by traversing the directories
-impl path::_clean {dirs::list : path^ i(0),
+def path::_clean {dirs::list : path^ i(0),
     .# Remove root and self refs (".")
     dirs [path.root "."] :| ;
 
@@ -189,7 +189,7 @@ import ::test
 
 class ::file
 
-impl file::__init__ {filepath type::char  self,
+def file::__init__ {filepath type::char  self,
     .# save a copy of the path
     filepath path!      self.:path ;
     .# open the stream
@@ -197,61 +197,61 @@ impl file::__init__ {filepath type::char  self,
 }
 
 .#? ::file.close\n  close a file. return 1 is success
-impl file::close {self,
+def file::close {self,
     self.id 'c O
 }
 
 .#? ::file.isopen\n  test if a file stream is open
-impl file::isopen {self,
+def file::isopen {self,
     self.id 'i O 0 =!
 }
 
 .#? ::file.isread\n  return 1 if file is an input stream
-impl file::isinput {self,
+def file::isinput {self,
     self.id 'i O 1 =
 }
 
 .#? ::file.iswrite\n  return 1 if file is an output stream
-impl file::isoutput {self,
+def file::isoutput {self,
     self.id 'i O 2 =
 }
 
 .#? ::file.print\n  print to a file if it is an input stream
-impl file::print {s self,
+def file::print {s self,
     sP self.id O
 }
 
 .#? ::file.println\n  print string followed by a newline tp a file
-impl file::println {s self,
+def file::println {s self,
     sP "\n" + self.id O
 }
 
 .#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
-impl file::readchar {self,
+def file::readchar {self,
     self.id 'b O
 }
 
 .#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
-impl file::readline {self,
+def file::readline {self,
     self.id 'l O
 }
 
 .#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
-impl file::readall {self,
+def file::readall {self,
     self.id 'a O
 }
 
 .#? ::file.lines\n  return a list containing the lines in the file
-impl file::lines {self,
+def file::lines {self,
     self.id 'a O "\n" |
 }
 
 .#? ::file.flush\n  flush an output stream
-impl file::flush {self,
+def file::flush {self,
     self.id 'f O
 }
 
-impl file::__repr__ {self,
+def file::__repr__ {self,
     [
         self.isopen
             {"<stream(" self.isinput {"R"} {"W"} .? "):"}
@@ -292,16 +292,16 @@ impl file::__repr__ {self,
 
 class ::dummyfile
 
-impl dummyfile::__init__ {name self,
+def dummyfile::__init__ {name self,
     "opened dummy file '$name'" :P
     name self.:name;
 }
 
-impl dummyfile::__repr__ {self,
+def dummyfile::__repr__ {self,
     "<dummyfile: $(self.name)>"
 }
 
-impl dummyfile::close {self,
+def dummyfile::close {self,
     "closed dummy file '$(self.name)'" :P
 }
 

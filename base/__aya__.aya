@@ -379,14 +379,6 @@ opt_mod (
 })}:class;
 
 
-.# Variables for implementing class functions
-
-.#? impl\n  implement instance functions\n  impl class_name::function_name {self, body}
-{```(\@:D ;)}:impl;
-.#? impl_static\n  static class function which get the class dict as the first argument\n  impl_static class_name::function_name {meta, body}
-.# {```(\@.M:D ;)}:impl_static;
-.#? static\n  static class function\n  static class_name::function_name {body}
-.# {```( {f, {;f~}.use[::f]}~ \@.M:D ;)}:static;
 
 .{ class Example:
 
@@ -397,7 +389,7 @@ class ::point
 
 .# Cass constructor uses __init__ instead of __new__
 .# and gets the object as the first argument
-impl point::__init__ {x y self : meta,
+def point::__init__ {x y self : meta,
     self .M :meta ;
     meta.counter 1 + meta.:counter ;
     x 10 * self.:x ;
@@ -406,16 +398,16 @@ impl point::__init__ {x y self : meta,
 
 .# Instance functions get an instance of the class as the first arg
 
-impl point::__str__ {self,
+def point::__str__ {self,
     "( $(self.x) $(self.y) ) point!"
 }
 
 .# Instance function alias
 (point.__str__.`, 0); point.:__repr__;
 
-fn point::__repr__ ( point.__str__.`)
+def point::__repr__ ( point.__str__.`)
 
-impl point::sum {self,
+def point::sum {self,
     self.x self.y +
 }
 

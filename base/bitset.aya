@@ -5,7 +5,7 @@
 
 class ::bitset
 
-impl bitset::__new__ {s meta,
+def bitset::__new__ {s meta,
     s :T ::num = {
         {, s:size 0sL:bits } meta :M
     } {
@@ -13,12 +13,12 @@ impl bitset::__new__ {s meta,
     } .?
 }
 
-impl bitset::fromlist {l::list : bitset^,
+def bitset::fromlist {l::list : bitset^,
     {, lE:size l:bits } bitset :M
 }
 
 
-impl bitset::__str__ {
+def bitset::__str__ {
     .bits P "bitset!" +
 }
 
@@ -38,7 +38,7 @@ impl bitset::__str__ {
     aya> b
     [ 1 1 0 1 ]
 .}
-impl bitset::set {n self,
+def bitset::set {n self,
     1 self.bits.:[n]
 }
 
@@ -51,7 +51,7 @@ impl bitset::set {n self,
     aya> b
     [ 0 0 1 0 ]bitset!
 .}
-impl bitset::reset {n self,
+def bitset::reset {n self,
     0 self.bits.:[n]
 }
 
@@ -64,7 +64,7 @@ impl bitset::reset {n self,
     aya> b.[0 2]
     [ 1 1 ]
 .}
-impl bitset::__getindex__ {n self,
+def bitset::__getindex__ {n self,
     self.bits.[n]
 }
 
@@ -76,7 +76,7 @@ impl bitset::__getindex__ {n self,
     aya> [1 1 1 1] bitset! .count
     4
 .}
-impl bitset::count {
+def bitset::count {
     .bits S
 }
 
@@ -85,7 +85,7 @@ impl bitset::count {
     aya> [1 0 1 0] bitset! .!
     [ 0 1 0 1 ]bitset!
 .}
-impl bitset::__signum__ {self,
+def bitset::__signum__ {self,
     self.bits #! self.M.fromlist
 }
 
@@ -95,7 +95,7 @@ impl bitset::__signum__ {self,
     aya> [0 0 0 1] bitset! [1 1 0 0] bitset! |
     [ 1 1 0 1 ]bitset!
 .}
-impl bitset::__or__ {other self,
+def bitset::__or__ {other self,
     other.bits self.bits {|}.&
     self.M.fromlist
 }
@@ -106,7 +106,7 @@ impl bitset::__or__ {other self,
     aya> [1 0 0 1] bitset! [1 1 0 0] bitset! &
     [ 1 0 0 0 ]bitset!
 .}
-impl bitset::__and__ {other self,
+def bitset::__and__ {other self,
     other.bits self.bits {&}.&
     self.M.fromlist
 }
@@ -119,6 +119,6 @@ impl bitset::__and__ {other self,
     aya> [1 1 0 0 1 1 0 0] bitset! E
     8
 .}
-impl bitset::__len__ {
+def bitset::__len__ {
     .bits E
 }
