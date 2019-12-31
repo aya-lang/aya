@@ -1,38 +1,44 @@
-{,
-    {dlm,
-        "\n"| :# {dlm | :#{.rmquote.!}}
-    }:parse;
+module ::csv
 
-    {f,
-        fP G "," parse
-    }.capture[::parse]:open;
+def csv::parse {dlm,
+    "\n"| :# {dlm | :#{.rmquote.!}}
+}
 
-    {kwargs : clabel(1) rlabel(0) filename(nil) csv_str(nil) dlm(",")
-              data colnames(nil) rownames(nil),
-        kwargs .W
+def csv::open {f : csv^,
+    fP G "," csv.parse
+}
 
-        (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
+def csv::read {kwargs : csv^
+                        clabel(1)
+                        rlabel(0)
+                        filename(nil)
+                        csv_str(nil) dlm(",")
+                        data
+                        colnames(nil)
+                        rownames(nil),
+    kwargs .W
 
-        .# Open the file and read into data
-        filename nil =! {filenameP G :csv_str;} ?
+    (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
 
-        csv_str dlm parse :data;
+    .# Open the file and read into data
+    filename nil =! {filenameP G :csv_str;} ?
 
-        .# CSV has column headers
-        clabel {
-            data V :colnames; ;
-            .# If there are row labels, the first entry is for the index colum
-            rlabel {colnamesV;:colnames;} ?
-        } ?
+    csv_str dlm csv.parse :data;
 
-        rlabel {
-            data :#{V\;} :rownames;
-        } ?
+    .# CSV has column headers
+    clabel {
+        data V :colnames; ;
+        .# If there are row labels, the first entry is for the index colum
+        rlabel {colnamesV;:colnames;} ?
+    } ?
 
-        {,
-            data:data
-            colnames:colnames
-            rownames:rownames
-        }
-    }.capture[::parse] :read;
-}:csv;
+    rlabel {
+        data :#{V\;} :rownames;
+    } ?
+
+    {,
+        data:data
+        colnames:colnames
+        rownames:rownames
+    }
+}
