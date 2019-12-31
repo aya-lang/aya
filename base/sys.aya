@@ -1,19 +1,20 @@
-{,
-    .#? sys.iswindows\n  returns true if system is windows
-    {:9c"\\"=}:iswindows;
+module ::sys
 
-    .# str sys.cd
-    {dirname,
-        dirname
-        .# If it is a string, conv to path
-        dirname :T ::str = { path! } ?
-        P 3MZ
-    }:cd;
 
-    .#? sys.mkdir S\n  create a new directory
-    {dir::str,
-        dir 5MZ
-    }:mkdir;
+.#? sys.iswindows\n  returns true if system is windows
+def sys::iswindows {:9c"\\"=}
 
-}:sys;
 
+.# ::str sys.cd\n  set working directory
+def sys::cd {dirname,
+    dirname
+    .# If it is a string, conv to path
+    dirname :T ::str = { path! } ?
+    P 3MZ
+}
+
+
+.#? ::str sys.mkdir\n  create a new directory
+def sys::mkdir {dir::str,
+    dir 5MZ
+}
