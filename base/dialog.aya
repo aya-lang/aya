@@ -8,36 +8,55 @@
     all functions in this module are shortcuts for the MV operator
 .}
 
-{,
+module ::dialog
 
-    .#? S dialog.requeststr\n  request a string from the user
-    {question, [] questionP "" 1 1 MV}:requeststr;
 
-    .#? S dialog.requestnum\n  request a number from the user
-    {question, [] questionP "" 1 2 MV}:requestnum;
+.#? ::str dialog.requeststr\n  request a string from the user
+def dialog::requeststr {question,
+    [] questionP "" 1 1 MV
+}
 
-    .#? S dialog.alert\n  display a dialog box with a given message
-    {text, [] text "Aya" 1 3 MV}:alert;
+.#? ::str dialog.requestnum\n  request a number from the user
+def dialog::requestnum {question,
+    [] questionP "" 1 2 MV
+}
 
-    .#? S dialog.warning\n  display a warning message with the given message
-    {text, [] text "Aya" 3 3 MV}:warn;
+.#? ::str dialog.alert\n  display a dialog box with a given message
+def dialog::alert {text,
+    [] text "Aya" 1 3 MV
+}
 
-    .#? S dialog.error\n  display an error message with the given message
-    {text, [] text "Aya" 4 3 MV}:error;
+.#? ::str dialog.warning\n  display a warning message with the given message
+def dialog::warning {text,
+    [] text "Aya" 3 3 MV
+}
 
-    .#? SSS dialog.yesno\n  display a dialog box with the question S1. S2 and S3 return true and false respectively
-    {question yes no, [yes no] question "Aya" 2 4 MV}:yesno;
+.#? ::str dialog.error\n  display an error message with the given message
+def dialog::error {text,
+    [] text "Aya" 4 3 MV
+}
 
-    .#? SL<S> dialog.buttons\n  display a dialog box with buttons for each of the options in L
-    {question options::list, options question "Aya" 2 5 MV}:buttons;
+.#? ::str ::str ::str dialog.yesno\n  display a dialog box with the question ::str1. ::str2 and ::str3 return true and false respectively
+def dialog::yesno {question yes no,
+    [yes no] question "Aya" 2 4 MV
+}
 
-    .#? SL<S> dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
-    {question options::list, options question "Aya" 2 6 MV}:dropdown;
+.#? ::str ::list dialog.buttons\n  display a dialog box with buttons for each of the options in L. Returns the item in the list as a string.
+def dialog::buttons {question options::list,
+    options#P question "Aya" 2 5 MV
+}
 
-    .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
-    {[] "" "" 1 7 MV}:choosefile;
+.#? ::str ::list dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
+def dialog::dropdown {question options::list,
+    options#P question "Aya" 2 6 MV
+}
 
-    .#? ::str dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
-    {["Ok" "Cancel"] "Confirm" $ 1 4 MV}:confirm;
+.#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
+def dialog::choosefile {
+    [] "" "" 1 7 MV
+}
 
-}:dialog;
+.#? dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
+def dialog::confirm {
+    ["Ok" "Cancel"] "Confirm" $ 1 4 MV
+}
