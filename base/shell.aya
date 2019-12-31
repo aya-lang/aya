@@ -6,42 +6,51 @@ import ::io
 
 
 .#? ls\n  print a list of files in the working dir
-{
+def ::ls {
     ""4MZ
     .E 0 = {
         ; "  <no files>" println
     } {
         C # {"  " \ + println} ;
     } .?
-}:ls;
+}
+
 
 .#? pwd\n  print working directory
-{path.working:P}:pwd;
+def ::pwd {path.working:P}
+
 
 .#? cd dir\n  change directory
-{`(sys.cd)}:cd;
+def ::cd {`(sys.cd)}
+
 
 .#? mkdir S\n  create a new directory
-{`(sys.mkdir)}:mkdir;
+def ::mkdir {`(sys.mkdir)}
+
 
 .#? cat S\n  print a file to the console
-{`({filename::str,
+def ::cat {`({filename::str,
     filename G println
-})}:cat;
+})}
 
-{`:P}:echo;
 
-{`({s::str,"" s 1.G})}:touch;
+def ::echo {`:P}
 
-{`(6MZ)}:rm;
 
-{`(".aya"+G~)}:run;
+def ::touch {`({s::str,"" s 1.G})}
 
-{str : cmd args,
+
+def ::rm {`(6MZ)}
+
+
+def ::run {`(".aya"+G~)}
+
+
+def (__aya__.interpreter)::shell {str : cmd args,
     str ' N $ :1 = {
         ;; str~
     } {
         | trim :args; :cmd;
         cmd~ args
     } .?
-} __aya__.interpreter.:shell;
+}
