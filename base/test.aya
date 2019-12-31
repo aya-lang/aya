@@ -3,68 +3,56 @@
 .# test.aya
 .# Defines an interface for testing aya code
 
-.# Test object
-{,
-    ::test :__type__;
-    1 :__pushself__;
+class ::test
 
-    .# Create a new test
-    .#   blk:      the stack to be evauated
-    .#   expected: the state of the stack after evaluation
-    .#             ex: {1 2 + 3 [4]} => [3 3 [4]]
-    {blk::block expected::list meta,
-        {, "blk".Z:blk expected:expected } meta :M
-    }:__new__;
+def test::__init__ {blk::block expected::list self,
+    blk.`    self.:blk;
+    expected self.:expected;
+}
 
-    .# Run the test. If passed, return "", else return error message
-    {self : res blk expected,
-        self.W
+def test::__str__ {self,
+    "(test $(self.blk.`) ?= $(self.expected))"
+}
 
-        {[blk $\;] :res;} {e,
-        "Exception in test $blk:\n\t$e" .D
+def test::__repr__ (test.__str__.`)
+
+def test::run {self : result,
+    {[self.blk.` ~] :result;} {e,
+        "Exception in test $(self.blk.`):\n\t$e" .D
     } .K
 
-
-    res expected = ! {
-        ["Test failed: $blk\n"
-         "\tExpected: $expected\n"
-         "\tReceived: $res" ]S
+    result self.expected = ! {
+        ["Test failed: $(self.blk.`)\n"
+         "\tExpected: $(self.expected)\n"
+         "\tReceived: $result" ]S
     } { "" } .?
-
-    }:run;
-}:test;
+}
 
 
 
-{,
-    ::testset :__type__;
-    1 :__pushself__;
 
-    .# Create a new test set
-    {name::str meta,
-        {, name:name []:tests} meta :M
-    }:__new__;
+class ::testset
 
-    .# Add a new test to the test set
-    {blk::block expected::list self,
-        "blk".Z expected test!
-        self.tests
-        K ;
-    }:__add__;
+def testset::__init__ {name::str self,
+    name self.:name;
+    []   self.:tests;
+}
 
-    .# Evaluate all tests, if any failed, report
-    {self,
-        "testing $(self.name)... " .P
-        self.tests #{.run} [""] :|
-        .E 0 = {
-            ; "All tests passed!" :P
-        } {
-            "Tests failed!\n" :P
-            #{:P}
-        } .?
-    }:run;
-}:testset;
+def testset::+ {blk::block expected::list self : test^,
+    blk.` expected test!
+    self.tests K ;
+}
 
+def testset::run {self,
+    "testing $(self.name)... " .P
+    self.tests #{.run} [""] :|
+    .E 0 = {
+        ; "All tests passed!" :P
+    } {
+        "Tests failed!\n" :P
+        #{:P}
+    } .?
+}
 
 
 .# Add functions to the aya namespace
