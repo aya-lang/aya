@@ -105,6 +105,8 @@
 
 }:__aya__;
 
+1 nil.M.:__pushself__;
+
 
 
 
@@ -346,6 +348,12 @@ opt_mod (
             ::members
         ]:__str__:__repr__;
 
+        {,
+            ::struct :__type__;
+            "(struct $name $members)":__repr__;
+            members :fields;
+        }:__meta__;
+
 
     } name {,}:DW
 })}:struct;
@@ -373,8 +381,16 @@ opt_mod (
             .# return the new object
             self
         } :__new__;
+
+        {self,
+            "($(self.__type__ :C) 0x$(self M# 10 16 H))"
+        }:__repr__:__str__;
+
+        {,
+            ::class :__type__;
+            "(class $sym)":__repr__;
+        }:__meta__;
     }
-    {,} :M .# add empty metatable
     sym := ; .# assign variable
 })}:class;
 
@@ -424,6 +440,28 @@ static point::static_fn {
 }
 
 .}
+
+.# ------
+.# MODULE
+.# ------
+
+.#? module ::sym\n  declare a new module
+{`({name,
+    {,
+        name :__modname__;
+
+        {meta : name^,
+            "Cannot create new instance of module $name" .D
+        } :__new__;
+
+        {,
+            ::module :__type__;
+            "(modue $name)":__repr__;
+        }:__meta__;
+    }
+    name := ; .# assign variable
+})}:module;
+
 
 
 .###########
