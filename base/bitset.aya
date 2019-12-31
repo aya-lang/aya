@@ -18,12 +18,9 @@ def bitset::fromlist {l::list : bitset^,
 }
 
 
-def bitset::__str__ {
-    .bits P "bitset!" +
-}
+def bitset::__str__ { .bits P "bitset!" + }
 
-(bitset.__str__.`,0); bitset.:__repr__;
-
+def bitset::__repr__ (bitset.__str__.`)
 
 
 
@@ -76,9 +73,7 @@ def bitset::__getindex__ {n self,
     aya> [1 1 1 1] bitset! .count
     4
 .}
-def bitset::count {
-    .bits S
-}
+def bitset::count { .bits S }
 
 .#? ::bitset.__signum__\n  not each bit
 .{ Example:
@@ -119,6 +114,4 @@ def bitset::__and__ {other self,
     aya> [1 1 0 0 1 1 0 0] bitset! E
     8
 .}
-def bitset::__len__ {
-    .bits E
-}
+def bitset::__len__ { .bits E }

@@ -8,6 +8,7 @@ import ::list
 {, .# plot
 
     ::plot :__type__;
+    1 :__pushself__;
 
     {, .# axis
         {min::num max::num,
