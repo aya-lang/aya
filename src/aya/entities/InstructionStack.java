@@ -3,6 +3,7 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.exceptions.AyaRuntimeException;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -153,6 +154,16 @@ public class InstructionStack {
 		InstructionStack is = new InstructionStack();
 		is.addAll(this.instructions);
 		return is;
+	}
+	
+	/** Set the header of the instructions */
+	public void replaceHeader(BlockHeader bh) {
+		int i = instructions.size() - 1;
+		if (instructions.get(i) instanceof BlockHeader) {
+			instructions.set(i, bh);
+		} else {
+			throw new RuntimeException("Cannot replace block header, block does not already contain one");
+		}
 	}
 
 	

@@ -48,7 +48,9 @@ public class BlockLiteralInstruction extends Instruction {
 			return _block;
 		} else {
 			Block b = _block.duplicate();
-			BlockHeader bh = _block.getHeader();
+			// Create a copy of the block header
+			BlockHeader bh = b.getHeader().copy();
+			b.getInstructions().replaceHeader(bh);
 
 			VariableData vars = Aya.getInstance().getVars();
 			for (Variable v : _captures) {

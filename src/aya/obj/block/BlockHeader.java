@@ -195,6 +195,15 @@ public class BlockHeader extends Instruction {
 		return out + ",";
 	}
 
+	public BlockHeader copy() {
+		BlockHeader b = new BlockHeader();
+		b._args = _args;
+		b._vars = _vars.deepcopy();
+		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
+			b._defaults.put(d.getKey(), d.getValue());
+		}
+		return b;
+	}
 	
 	public ArrayList<Arg> getArgs() {
 		return _args;
