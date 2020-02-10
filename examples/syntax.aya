@@ -15,6 +15,21 @@ A .A :A
 
 aM4a aMZa aMza aM+a
 
+::+
+::.+
+::M+
+::+m
+::foo
+:::+
+
+
+def foo::bar { }
+def foo::+ { }
+def foo::.+ { }
+def foo:::+ { }
+def foo::M+ { }
+
+class ::point [::x ::y]
 
 ." :" "str"
 .' :' 'c 'b
@@ -81,6 +96,7 @@ _ a._ a:_
         other.x self.x +:x other.y self.y + point!
     }:add;
 }
+
 
 'd 'b 
 

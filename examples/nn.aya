@@ -1,0 +1,58 @@
+import ::matrix
+
+{:1 * Me 1+ 1\/}:sigmoid;
+{sigmoid :& 1\- *}:dsigmoid;
+
+
+class ::nn
+
+def nn::__init__ {x y self,
+    x self.:input;
+    y self.:y;
+    [xE1I 4] matrixQ self.:weights_a;
+    [4    1] matrixQ self.:weights_b;
+    yE matrix.zeros self.:output;
+}
+
+def nn::feedforward {self,
+    self.input   self.weights_a .dot sigmoid self.:layer_a;
+    self.layer_a self.weights_b .dot sigmoid self.:output;
+}
+
+def nn::backprop {self : d d_weights_a d_weights_b,
+    self.y self.output - 2 * self.output dsigmoid * :d;
+
+    self.layer_a.t d .dot :d_weights_b;
+
+    self.input.t
+    d self.weights_b.t .dot self.layer_a dsigmoid *
+    .dot :d_weights_a;
+
+    self.weights_a d_weights_a + self.:weights_a;
+    self.weights_b d_weights_b + self.:weights_b;
+}
+
+def nn::mean_abs {self,
+    self.y self.output -.|  .# absolute value of difference
+    .E{*}F\.sum\/           .# mean
+}
+
+.# Train
+{
+    import ::plot
+
+    .# Data
+    [[0 0 1][0 1 1][1 0 1][1 1 1]] matrix! :x;
+    [[0][1][1][0]] matrix!:y;
+
+    x y nn! :net;
+    []:mean_abs;
+
+    {
+        net.feedforward
+        net.backprop
+        net.mean_abs mean_abs .B ;
+    } 4000 %
+
+    mean_abs.x
+} 

@@ -10,7 +10,7 @@ import ::csv
     "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv":url;
 
     {name::str,
-        "/".in name {
+        "/" `in name {
             "$url/$name.csv"
         } {
             "$url/datasets/$name.csv"

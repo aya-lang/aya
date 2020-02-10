@@ -1,6 +1,19 @@
 
 [4 0 5 2 7 3 2 5 6 6]:lst;
 
+.# Standard implementation
+{l$ : h,
+    .# If the list is more than 1 item long, perform the operation
+    .#   otherwise just leave the original list on the stack
+    l .E 1 > {
+        .# The head from the list
+        V:h;;
+        .# [ sort items less than h, h, sort items larger than h]
+        [l,,h:<]qs h [l,,h>]qs JJ
+    } ?
+}:q;
+
+
 .# Optimized implementation with no global vars
 {l$,
     .# We define this function this way since the first call must copy the list
@@ -22,7 +35,7 @@
 lst :P
 lst qs :P
 
-.# Golfed version of the above algorithm
+.# Golfed version of the standard implementation
 .# {l$:x,l.E1>{V:x\{x:<}Iq\Jl{x>}IqJ}?}:q;
 
 .# Stack only version
@@ -32,5 +45,5 @@ lst qs :P
 .# {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i _ @@_ JJ} ?} {1, :_} :+
 
 .# Quicksort benchmark and example output
-.# 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \S\/
-.# [ 608 588 609 585 605 582 586 607 621 620 ] 601.1
+.# aya> 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \S\/
+.# [ 497 496 504 518 502 495 525 508 498 521 ] 506.4 
