@@ -1,60 +1,58 @@
 import ::color
 
-{,
-    {; "\{x1b}[2J".P}:clear;
-    {; "\{x1b}[1K".P}:clearline;
-    {; "\{x1b}[1K\{x1b}[1G".P}:clearline;
+module ::terminal
 
+def terminal::fg (colors.white)
+def terminal::bg (colors.black)
 
+def terminal::clear {"\{x1b}[2J".P}
+def terminal::clearline {"\{x1b}[1K\{x1b}[1G".P}
 
-    {c::color meta, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }:setfgstr;
-    {c::color meta, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }:setbgstr;
+def terminal::_setfgstr {c::color, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }
+def terminal::_setbgstr {c::color, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }
 
-    {c::color meta,
-        c meta.:fg;
-        c meta.setfgstr .P
-    }:setfg;
+def terminal::setfg {c::color : terminal^,
+    c terminal.:fg;
+    c terminal._setfgstr .P
+}
 
-    {c::color meta,
-        c meta.:bg;
-        c meta.setbgstr .P
-    }:setbg;
+def terminal::setbg {c::color : terminal^,
+    c terminal.:bg;
+    c terminal._setbgstr .P
+}
 
-    {; "\{x1b}[1m" "\{x1b}[22m" .? .P}:bold;
-    {; "\{x1b}[3m" "\{x1b}[23m" .? .P}:italic;
-    {; "\{x1b}[4m" "\{x1b}[24m" .? .P}:underline;
-    {; "\{x1b}[9m" "\{x1b}[29m" .? .P}:strike;
+def terminal::bold      { "\{x1b}[1m" "\{x1b}[22m" .? .P}
+def terminal::italic    { "\{x1b}[3m" "\{x1b}[23m" .? .P}
+def terminal::underline { "\{x1b}[4m" "\{x1b}[24m" .? .P}
+def terminal::strike    { "\{x1b}[9m" "\{x1b}[29m" .? .P}
 
-    {meta,
-        0 meta.bold
-        0 meta.italic
-        0 meta.underline
-        0 meta.strike
-    }:reset_font;
+def terminal::reset_font {: terminal^ ,
+    0 terminal.bold
+    0 terminal.italic
+    0 terminal.underline
+    0 terminal.strike
+}
 
-    {meta,
-        colors.white terminal.setfg
-        colors.black terminal.setbg
-    }:reset_color;
+def terminal::reset_color {: colors^ terminal^ ,
+    colors.white terminal.setfg
+    colors.black terminal.setbg
+}
 
-    colors.white :fg;
-    colors.black :bg;
+def terminal::replcolor {c::color : colors^ terminal^ ,
+    [c terminal._setfgstr
+     "aya> "
+     colors.white terminal._setfgstr]S
+     1 MZ
+}
 
-    {c::color meta,
-        [c meta.setfgstr
-         "aya> "
-         colors.white meta.setfgstr]S
-         1 MZ
-    }:replcolor;
+def terminal::print_color {value c::color : terminal^ prev_fg,
+    terminal.fg :prev_fg;
+    c terminal.setfg
+    value P .P
+    prev_fg terminal.setfg
+}
 
-    .# Create a __meta__ table so the functions above get access to meta
-    {,
-        .# When terminal is typed into the repl, the contents of the
-        .# above functions are printed and may have adverse effects
-        .# Overload __repr__ to this does not happen
-        "<terminal module>" :__repr__;
-    }:__meta__;
-
-}:terminal;
-
-{n, "\{x1b}[$(n)m" .P}:c;
+def terminal::println_color {value c::color : terminal^,
+    value c terminal.print_color
+    "" :P
+}

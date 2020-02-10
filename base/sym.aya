@@ -1,0 +1,5 @@
+{,
+
+    {s, {__aya__.overloads s I} {; s :C.~ } .K }:op;
+
+}:sym;

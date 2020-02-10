@@ -74,6 +74,7 @@ import ::list
 {:& :T ::num = {.+}{{.+}F} .?}:gcd;
 
 .#? L<N> cumsum\n  cumulative summation of a list
+.{
 {list : sum outlist,
     .# Allocate output list
     0 listE L :outlist;
@@ -85,8 +86,13 @@ import ::list
 
     outlist
 }:cumsum;
+.}
+{l,lER:#{l\.<S}}:cumsum;
+
+
 
 .#? L<N> cumprod\n  cumulative product of a list
+.{
 {list : prod outlist,
     .# Initialize prod
     1:prod;
@@ -101,6 +107,8 @@ import ::list
 
   outlist
 }:cumprod;
+.}
+{l,lER:#{l\.<{*}F}}:cumprod;
 
 
 
@@ -125,12 +133,13 @@ import ::list
 {1\/MC}:asec;               .#? N asec \n  inverse secant
 {1\/MT}:acot;               .#? N acot \n  inverse cotangent
 
-{$exp\Texp-2/}:sinh;        .#? N sinh \n  hyperbolic sine
-{$exp\Texp+2/}:cosh;        .#? N cosh \n  hyperbolic cosine
-{$sinh\cosh/}:tanh;         .#? N tanh \n  hyperbolic tangent
-{sinh1\/}:csch;             .#? N csch \n  hyperbolic cosecant
-{cosh1\/}:sech;             .#? N sech \n  hyperbolic secant
-{tanh1\/}:coth;             .#? N coth \n  hyperbolic cotangent
+{$Me\TMe-2/}:sinh;          .#? N sinh \n  hyperbolic sine
+{$Me\TMe+2/}:cosh;          .#? N cosh \n  hyperbolic cosine
+[{$} sinh.` {\}
+     cosh.` {/}].^ :tanh;   .#? N tanh \n  hyperbolic tangent
+[sinh.` {1\/}].^ :csch;     .#? N csch \n  hyperbolic cosecant
+[cosh.` {1\/}].^ :sech;     .#? N sech \n  hyperbolic secant
+[tanh.` {1\/}].^ :coth;     .#? N coth \n  hyperbolic cotangent
 
 {$2^1+Mq+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
 {$$1-Mq\1+Mq*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
@@ -152,7 +161,8 @@ import ::list
     aya> [4,double]
     [ 2 4 6 8 ]
 .}
-{.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
+.# {.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
+{ [1| .E .R U {^} \ {*S} ].^ }:makepoly;
 
 
 
@@ -214,15 +224,20 @@ import ::list
 
 import ::test
 
-`~ {:ts,
+`~ {:ts _rnd,
 
     "math" testset! :ts;
 
+    .# Verify to_fixed does what it is supposed to
     {:1p1 4.to_fixed} [3.1415] ts+
     {0.00012345 5.to_fixed} [0.00012] ts+
     {9218731923.0012387087 4 .to_fixed} [9218731923.0012 ] ts+
-    {3.141 0 .to_fixed} [3] ts+
+    {3.141 0.to_fixed} [3] ts+
+
     {[3 5][4 12] hypot} [[5 13]] ts+
+
+    .# Trig
+    {3.4 acoth 3.to_fixed} [0.303] ts+
 
     .# List operations
     {10R normal $S/S .\} [1] ts+
@@ -250,3 +265,5 @@ import ::test
 
     ts __aya__.addtest
 }
+
+__aya__.doruntests

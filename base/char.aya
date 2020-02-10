@@ -28,6 +28,9 @@
     .#? C.isalpha\n  test if character is alphabetical
     {$ $ 'a :> \ 'z :< & \ $ 'A :> \ 'Z :< & |}:isalpha;
 
+    {s c,
+        s cP | :1| \:#{c+}\J
+    }:split;
 }:char;
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character

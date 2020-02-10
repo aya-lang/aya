@@ -91,9 +91,9 @@ import ::list
 
     .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
     {x::list y::list : reg,
-        x y regression :reg;
+        x y stats.regression :reg;
         x y plot.scatter.view
-        x [x,reg] plot.line.view
+        x x#reg plot.line.view
         "Regression: y= $(1reg0reg-)x + ($(0reg))".P
     }:scatterreg;
 
@@ -163,13 +163,13 @@ import ::list
 }:plot;
 
 
-{l::list,
+def list::x {l::list,
     l E 2 = {l#:T [::list ::list]= {1} {0} .?} {0} .? {
         l.[0] l.[1] plot.line.view
     } {
         l plot.lineplot
     } .?
-} list.:x;
+}
 
 .# Basic Plotting
 

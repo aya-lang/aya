@@ -1,497 +1,422 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
-.# matrix.aya
-.# Defines the matrix type
+import ::list .# all
 
-import ::str
-import ::list
-import ::math
+class ::matrix
 
-.{? type: matrix
-    Matrix manipulations and representations
+.# Test if a list is a valid matrix
+def matrix::_is_valid_list {m::list,
+    .# Both of the following must be true:
+    m#:T {::list=} all .# The list is made up of only other lists
+    {
+        m#E {m0IE=} all           .# All of the list lengths are the same
+    } 0 .?
+}
+
+def matrix::__init__ {input::list self,
+    input self.M._is_valid_list {
+        input self.:rows;
+    } {
+        "$input is not a valid matrix" .D
+    } .?
+}
+
+.{ Example:
+    aya> [3 3] matrixR 10^
+    [[ 1         1024       59049      ]
+     [ 1048576   9765625    60466176   ]
+     [ 282475249 1073741824 3486784401 ]]
 .}
+def matrix::__repr__ {self,
+    "\n" " ]\n [ " self.rows matstr .& "[[ " \+ " ]]"+
+}
+
+
+.# Vectorized Operator Overloads
+.###############################
+
+.# Binary
+.# ------
 
 {,
+    ::* :__rmul__
+    ::/ :__rdiv__
+    ::+ :__radd__
+    ::- :__rsub__
+    ::^ :__rpow__
+    ::< :__rlt__
+    ::> :__rgt__
+    :::< :__rleq__
+    :::> :__rgeq__
+    ::% :__rmod__
+    ::.% :__ridiv__
+} :# {rop_sym op_sym : op_to_n([::n op_sym].blk)
+                       op(op_sym.op)
+                       rop([::other {\} op_sym].blk),
 
-    ::matrix :__type__;
-    1:__pushself__;
+    def matrix op_sym {other self : op^ rop^,
+        other :T {?=,
+            ::matrix {
+                other.rows self.rows op.` .& self.M!
+            },
+            ::num {
+                self.rows :# rop.` self.M!
+            },
+            { "TypeError: Invalid operation $(other:T) $(self:T) *" .D }
+        }
+    }
 
-    .#? L<L> matrix.is\n  returns true if the list contains lists that are the same length and only contain numbers
-    {m,
-        .# Both of the following must be true:
-        m#:T{::list=}all .# The list is made up of only other lists
-        {
-            m#E{m0IE=}all           .# All of the list lengths are the same
-        } 0 .?
-    }:is;
+    def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M!}
+}
 
-    .# matrix constructor: first test if it is a valid matrix
-    {in::list meta,
-        in meta.is {
-            {,in:rows} meta :M
+
+.# Unary
+.# -----
+[
+    ::.\ ::./ ::T ::.| ::.!
+    ::Mq ::Me ::Ml ::ML
+    ::Ms ::MS ::Mc ::MC ::Mt ::MT
+] :# {sym : op(sym.op),
+    def matrix sym ({
+        :& .rows op #~ \.M!
+        } {, op.`:op } .+
+    )
+}
+
+.# Other Overloads
+.# ---------------
+
+
+def matrix::_eq_num {n self,
+    self.rows n .= matrix!
+}
+
+def matrix::_eq_list {l self,
+    self.rows :# {
+        .# Test if the current item is in the list
+        :# {l \N0:>\;}
+    } matrix!
+}
+
+def matrix::_eq_mat {a b,
+    aE bE =! 0 {[a.rows b.rows,.=]{&}F} .?
+}
+
+.#? ::matrix ::matrix =\n  test if two matrices are equal
+.#? ::list ::matrix =\n  return a matrix of booleans where true if the corresponding element is in the input list
+.#? ::num ::matrix =\n  return a matrix of booleans there true if the corresponding element is equal to the input number
+def matrix::__eq__ ({a b,
+    a b
+    .# swap args if b is not a matrix
+    b :T ::matrix =! {\} ?
+    __fn 3.$ :T I ~
+} {,
+    {,
+        matrix._eq_list.` :list;
+        matrix._eq_num.`  :num;
+        matrix._eq_mat.`  :matrix;
+    }:__fn
+} .+)
+
+
+.#? ::matrix ::matrix &\n  element-wise and
+def matrix::__and__ {:matrix^, .rows\.rows {{&}.&}.& matrix!}
+
+.#? ::matrix ::matrix |\n  element-wise or
+def matrix::__or__  {:matrix^, .rows\.rows {{|}.&}.& matrix!}
+
+
+
+
+.#####################
+.# Matrix Operations #
+.#####################
+
+.#? ::matrix ::matrix.sq\n  square each value in the matrix
+def matrix::sq { :& * }
+
+
+.#? ::matrix matrix.issq\n  returns true if the list is a square matrix
+def matrix::issq {self, self.rowsE self.rows#E\#= {|}F}
+
+.#? ::matrix matrix.tr\n  trace of a matrix as a list
+def matrix::tr {[1|.rows$ER,VI]}
+
+.#? ::matrix matrix.t\n  transpose a matrix
+def matrix::t {.rows .T matrix!}
+
+.#? ::matrix.max\n  the max value of a matrix
+def matrix::max {.rows#.max.max}
+
+.#? ::matrix.min\n  the min value of a matrix
+def matrix::min {.rows#.min.min}
+
+.#? ::matrix.norm\n  normalize the matrix
+def matrix::norm {:& .sq .sum Mq /}
+
+.#? ::matrix.sum\n  the sum of all values in the matrix
+def matrix::sum {.rows #SS}
+
+def matrix::dot {o self : t matrix^,
+    o.c self.r =! {
+        "matrix.mul: shape mismatch $(o.c) != $(self.r)".D
+    } ?
+    .# (*S) is the dot product
+    self.t.rows :t;
+    o.rows  :# {r, t :#{r *S}}
+    matrix!
+}
+
+.#? ::matrix.r\n  number of rows
+def matrix::r {.rowsE}
+
+.#? ::matrix.c\n  number of cols
+def matrix::c {.rows.[0] E}
+
+.###################
+.# Transformations #
+.###################
+
+.#? ::matrix ::matrix.hcat\n  concatenate horizontally
+def matrix::hcat {a::matrix b::matrix,
+    a.rows b.rows {J} .& a.M!
+}
+
+.#? ::matrix ::matrix.vcat\n  concatenate vertically
+def matrix::vcat {a::matrix b::matrix,
+    a.rows b.rows J a.M!
+}
+
+.#? ::num ::matrix.rotate_cols\n  shift columns of a matrix right N times
+.#? ::num ::matrix.rotate_rows\n  shift rows of a matrix down N times
+.{ Example:
+    aya> [3 3]matrixR
+    [[ 1 2 3 ]
+     [ 4 5 6 ]
+     [ 7 8 9 ]]
+
+    aya> 1 [3 3]matrixR.rotate_rows
+    [[ 7 8 9 ]
+     [ 1 2 3 ]
+     [ 4 5 6 ]]
+
+    aya> 1 [3 3]matrixR.rotate_cols
+    [[ 3 1 2 ]
+     [ 6 4 5 ]
+     [ 9 7 8 ]]
+.}
+def matrix::rotate_cols {
+    .rows \ #{\.rotate} matrix!
+}
+
+def matrix::rotate_rows {
+    .rows .rotate matrix!
+}
+
+.#? [rows cols] ::matrix .<\n  cut or pad the matrix to the given size from the upper left corner
+.{? Example:
+
+    aya> [2 2] matrixR [3 3] .<
+    [[ 1 2 0 ]
+     [ 3 4 0 ]
+     [ 0 0 0 ]]
+
+    aya> [2 2] matrixR [3 2] .<
+    [[ 1 2 ]
+     [ 3 4 ]
+     [ 0 0 ]]
+
+    aya> [2 2] matrixR [3 1] .<
+    [[ 1 ]
+     [ 3 ]
+     [ 0 ]]
+
+    aya> [2 2] matrixR [2 3] .<
+    [[ 1 2 0 ]
+     [ 3 4 0 ]]
+
+    aya> [2 2] matrixR [1 3] .<
+    [[ 1 2 0 ]]
+.}
+def matrix::__head__ {self n::list : d,
+    n E 2 = "dimension of take must be 2" assert
+
+    .# rows
+    self.rows n.[1] #.<
+
+    .# cols
+    .# Pad the list with 0s
+    n.[0] .<
+    .# create empty list equal to the length of the first element
+    .# ex: cols=5 then create [0 0 0 0 0]
+    0 .I E 0\L :d;
+    .# Replace 0s with the empty list
+    :# {$ 0 = {;d} ?}
+
+    self.M!
+
+}
+
+
+.#? [rows cols] ::matrix .<\n  cut or pad the matrix to the given size from the bottom right corner
+def matrix::__tail__ {self n::list : d,
+    n E 2 = "dimension of take must be 2" assert
+
+    .# rows
+    self.rows n.[1] #.>
+
+    .# cols
+    .# Pad the list with 0s
+    n.[0] .>
+    .# create empty list equal to the length of the last element
+    .# ex: cols=5 then create [0 0 0 0 0]
+    :1 .I E 0 \L :d;
+    .# Replace 0s with the empty list
+    :# {$ 0 = {;d} ?}
+
+    self.M!
+}
+
+
+.#? ::num ::matrix.pad\n  insert N outer cols and rows of zeros
+.{ Example:
+    aya> 1 4R [2 2]L matrix!.pad
+    [[ 0 0 0 0 ]
+     [ 0 1 2 0 ]
+     [ 0 3 4 0 ]
+     [ 0 0 0 0 ]]
+.}
+def matrix::pad {n::num self : r c,
+    self.r :r;
+    self.c :c;
+
+    self [r n + c n +] .<
+    [r n2* + c n2* +] .>
+}
+
+
+
+
+.#############
+.# Overloads #
+.#############
+
+.#? ::matrix U\n  reverse the rows of a matrix
+def matrix::__reverse__ {.rows U matrix!}
+
+.#? ::matrix E\n  the shape of the matrix
+def matrix::E {.rows.E\0IEJ}
+
+
+.#############
+.# Iteration #
+.#############
+
+
+.#? ::block ::matrix matrix.apply\n  apply an expression to each element of the matrix in place
+def matrix::apply {expr::block self,
+    self.rows # {#expr} self.:rows; self
+}
+
+.#? ::block ::matrix matrix.map\n  apply an expression to each element of a matrix, return nothing
+def matrix::map {expr::block self,
+    self.rows #{#expr};
+}:map;
+
+.#? ::matrix :# ::block \n  make a copy of the matrix and apply an expression to each element
+def matrix::__each__ {expr::block self,
+    self.rows$ :#{:#{expr}} self.M! \;
+}
+
+
+
+.############
+.# Indexing #
+.############
+
+
+.# value row column matrix::_set
+.# Set the value of a location in a matrix
+def matrix::_set {value r::num c::num self,
+    value self.rows.[r].:[c]
+}
+
+.#? matrix::cols\n  return a copy of the matrix columns
+def matrix::cols {.rows .T}
+
+.#? ::matrix [rows cols] I\n get an item or a submatrix
+def matrix::__getindex__ {ix mat : r c matrix^,
+    ix0I :r;
+    ix1I :c;
+
+    .# Get the data
+    mat.rows r I
+    r :T ::num = {A} ?
+    #{cI}
+
+    .# Transform the data based on input type
+    .# Return a new matrix if possible
+    c :T ::num = {
+        r :T ::num = {
+            .# `r` and `c` both nums, return a single item
+            0I
         } {
-            in P " is not a valid matrix" K .D
+            .# Only columns returned, wrap each in a list
+            #A matrix!
         } .?
-    }:__new__;
-
-    .#? ::matrix matrix.dim\n  return the dimention of the matrix\n  [#rows #cols]
-    {.rows.E\0IEK}:dim;
-
-    .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
-    {m, m.rowsE m.rows#E\#= {|}F}:issq;
-
-    .#? ::matrix matrix.tr\n  trace of a matrix as a list
-    {m, [m.rows$ER,VI]}:tr;
-
-    .#? ::matrix matrix.t\n  transpose a matrix
-    {m, m.rows .T matrix!}:t;
-
-    .#? ::matrix.max\n  the max value of a matrix
-    {.rows#.max.max}:max;
-
-    .#? ::matrix.min\n  the min value of a matrix
-    {.rows#.min.min}:min;
-
-    .#? ::matrix.norm\n  normalize the matrix
-    {:& .vsq .sum Mq /}:norm;
-
-    .#? ::matrix.sum\n  the sum of all values in the matrix
-    {.rows #SS}:sum;
-
-    .#? ::matrix U\n  reverse the rows of a matrix
-    {.rows U matrix!}:__reverse__;
-
-
-
-    .# Elementary row operations
-
-    .#? NN::matrix rowmul\n  multiply row N2 by a scalar N1
-    {n rn mat,
-        mat.rows.[rn] n *  .# Multuply the rnth row by N
-        mat.rows.:[rn]     .# and assign the rnth row of mat
-        mat
-    }:rowmul;
-
-    .#? NN ::matrix matrix.rowswap\n swap rows N1 and N2 of the matrix
-    {ra rb mat : tmp matrows,
-        mat.rows :matrows;
-        matrows.[ra] :tmp;            .# Store row N1 in a tmp var
-        matrows.[rb] matrows.:[ra]   .# row N1 = row N2
-        tmp matrows.:[rb]             .# row N2 = tmp
-        mat
-    }:rowswap;
-
-
-    .#? NNN ::matrix matrix.rowadd\n  add a N1*(N2nd row) to the N3rd row
-    {add ra rb mat : tmp matrows,
-        mat.rows :matrows;
-        matrows.[ra] add #*:tmp;              .# Multiply the N2 row by N1
-        [matrows.[rb] tmp, +] matrows.:[rb]    .# Add the N2 row to N3
-        mat
-    }:rowadd;
-
-
-
-    .############
-    .# INDEXING #
-    .############
-
-    .#? NII ::matrix matrix.set\n  set the item at index I1, I2 to N
-    {n::num i::num j::num m,
-        n m.rows.[i].:[j]
-        m
-    }:set;
-
-    .#? ::matrix matrix.r\n  return the number of rows in the matrix
-    {.rowsE}:r;
-
-    .#? ::matrix matrix.r\n  return the number of cols in the matrix
-    {.rows0IE}:c;
-
-    .#? ::matrix matrix.cols\n  return the columns as a list of lists
-    {.rows .T}:cols;
-
-
-    .{? ::matrix [row col] matrix.getindex\n  return the element at (r,c)
-    r and c may be lists
-    if r is [], use all rows
-    if c is [], use all cols .}
-    {ix mat : r c,
-        ix0I :r;
-        ix1I :c;
-
-        .# Get the data
-        mat.rows r I
-        r :T ::num = {A} ?
-        #{cI}
-
-        .# Transform the data based on input type
-        .# Return a new matrix if possible
-        c :T ::num = {
-            r :T ::num = {
-                .# `r` and `c` both nums, return a single item
-                0I
-            } {
-                .# Only columns returned, wrap each in a list
-                #A matrix!
-            } .?
-        } {
-            .# Only rows returned, convert to matrix
-            matrix!
-        } .?
-    }:__getindex__;
-
-
-
-    {self n::list : d,
-        n E 2 = "dimension of take must be 2" assert
-
-        .# rows
-        self.rows n.[1] #.<
-
-        .# cols
-        .# Pad the list with 0s
-        n.[0] .<
-        .# create empty list equal to the length of the first element
-        .# ex: cols=5 then create [0 0 0 0 0]
-        0 .I E 0\L :d;
-        .# Replace 0s with the empty list
-        :# {$ 0 = {;d} ?}
-
+    } {
+        .# Only rows returned, convert to matrix
         matrix!
-
-    }:__head__;
-
-
-    {self n::list : d,
-        n E 2 = "dimension of take must be 2" assert
-
-        .# rows
-        self.rows n.[1] #.>
-
-        .# cols
-        .# Pad the list with 0s
-        n.[0] .>
-        .# create empty list equal to the length of the last element
-        .# ex: cols=5 then create [0 0 0 0 0]
-        :1 .I E 0 \L :d;
-        .# Replace 0s with the empty list
-        :# {$ 0 = {;d} ?}
-
-        matrix!
-
-    }:__tail__;
-
-
-
-
-    .########################
-    .# ARITHMETIC OVERLOADS #
-    .########################
-
-    .#? N ::matrix (\) matrix.add\n  add a number or another matrix
-    {o self,
-        o:T ::matrix = {
-            [o.rows self.rows, +] matrix!
-        } {
-            self.rows # {o+} matrix!
-        }.?
-    }:__add__;
-
-    {self o,
-        self.rows # {o+} matrix!
-    }:__radd__;
-
-
-    .#? N ::matrix (\) matrix.sub\n  subtract a number or another matrix
-    {o self,
-        o:T ::matrix = {
-            [o.rows self.rows, \-] matrix!
-        } {
-            self.rows # {o\-} matrix!
-        }.?
-    }:__sub__;
-
-    {self o,
-        self.rows # {o-} matrix!
-    }:__rsub__;
-
-
-    .#? ::matrix N (\) matrix.div\n  divide matrix by a number
-    {o self,
-        self.rows # {o\/} matrix!
-    }:__div__;
-
-    {self o,
-        self.rows # {o/} matrix!
-    }:__rdiv__;
-
-
-    .#? N ::matrix (\) matrix.mul\n  multiply a number or another matrix
-    {o self,
-        o:T ::matrix = {
-            o self.matmul
-        } {
-            self.rows # {o\*} matrix!
-        }.?
-    }:__mul__;
-
-    {o self : t,
-        o.c self.r =! {
-            "matrix.mul: dim mismatch $(o.c) != $(self.r)".D
-        } ?
-        .# (*S) is the dot product
-        self.t.rows :t;
-        o.rows  :# {r, t :#{r *S}}
-        matrix!
-    }:matmul;
-
-    {self o,
-        self.rows # {o*} matrix!
-    }:__rmul__;
-
-    .#? ::matrix ::matrix.vmul\n value multiply: multiply adjacent values in each matrix
-    {other self,
-        other.rows self.rows {*} .& self.M!
-    }:vmul;
-
-    .#? ::matrix ::matrix.vsq\n value square: multiply adjacent values in each matrix
-    {self,
-        self :&.vmul
-    }:vsq;
-
-
-
-    .#? ::matrix N matrix.rpow\n  raise matrix to the Nth power
-    {mat exp::num,
-        "matrix.pow: exponent must be positive" exp 1 < conderr
-        mat {$} exp V %
-        {.matmul} exp V %
-    }:__rpow__;
-
-    .#? ::matrix ::matrix &\n  element-wise and
-    {.rows\.rows {{&}.&}.& matrix!}:__and__;
-
-    .#? ::matrix ::matrix |\n  element-wise or
-    {.rows\.rows {{|}.&}.& matrix!}:__or__;
-
-    .#############
-    .# ITERATION #
-    .#############
-
-
-    .#? ::block ::matrix matrix.apply\n  apply an expression to each element of the matrix in place
-    {expr::block mat::matrix,
-        mat.rows # {#expr} mat.:rows; mat
-    }:apply;
-
-    .#? ::block ::matrix matrix.map\n  apply an expression to each element of a matrix, return nothing
-    {expr::block mat::matrix,
-        mat.rows #{#expr};
-    }:map;
-
-
-    .#? ::matrix :# ::block \n  make a copy of the matrix and apply an expression to each element
-    {expr::block mat::matrix,
-        mat.rows$ :#{:#{expr}} matrix! \;
-    }:__each__;
-
-
-
-
-    .###################
-    .# OTHER OVERLOADS #
-    .###################
-
-    .# Math overloads
-    [__aya__.mathoverload $ :K\:V, {k v,
-        "{.rows #{# $v } matrix!} :$(k:C);" .~
-    }] #~
-
-
-    {n self,
-        self.rows n .= matrix!
-    }:_eq_num;
-
-    {l self,
-        self.rows :# {
-            .# Test if the current item is in the list
-            :# {l \N0:>\;}
-        } matrix!
-    }:_eq_list;
-
-    {a b,
-        a.dim b.dim =! 0 {[a.rows b.rows,=]{&}F} .?
-    }:_eq_mat;
-
-    .#? ::matrix ::matrix =\n  test if two matrices are equal
-    .#? ::list ::matrix =\n  return a matrix of booleans where true if the corresponding element is in the input list
-    .#? ::num ::matrix =\n  return a matrix of booleans there true if the corresponding element is equal to the input number
-    {a b,
-        a b
-        .# swap args if b is not a matrix
-        b :T ::matrix =! {\} ?
-        __fn 3.$ :T I ~
-    }.where_const {,
-        {,
-            _eq_list .` :list;
-            _eq_num  .` :num;
-            _eq_mat  .` :matrix;
-        }:__fn
-    }:__eq__;
-
-    .#? ::matrix .!\n  apply signnum to each element of the matrix
-    {.rows #{#.!} matrix!}:__signum__;
-
-    .#? ::matrix matrix.__repr__\n  converts a matrix to a string
-    {
-        .rows matstr
-        "\n"" |\n|"@.&       .# Inside bars
-        " |"K'|\K            .# Outside bars
-        "\n"+ "\n"\+
-    }:__repr__;
-
-    {:&.rows :#{.\} \.M !}:__floor__;
-    {:&.rows :#{./} \.M !}:__ceil__;
-
-    .#######################
-    .# GENERATOR FUNCTIONS #
-    .#######################
-
-    .#? N matrix.eye\n  generate an Nd identity matrix
-    {
-        $0\L1\K\$KL {,}.:rows matrix :M
-    }:eye;
-
-    .# generates the next row of a pascal matrix
-    {prev::list : new len ix,
-        prevE:len;
-        1 0 lenVLK:new;
-        1:ix;
-        {prev ixI new ixVI+ new.:[ix] ::ix B}lenV%
-        new
-    }:nextpascalr;
-
-    .#? I matrix.pascal\n  generate an I by I matrix representation of pascal's triangle
-    {n::num, [1nL{$matrix.nextpascalr}nV%] matrix!}:pascal;
-
-    .#? IIN matrix.newfill\n  create a I1 by I2 matrix filled with N3
-    {\L\Lmatrix!}:newfill;
-
-    .#? N ::matrix matrix.fill\n  fill matrix with N everywhere
-    {n::num m, n m.cL m.rLmatrix!}:fill;
-
-    .#? NN matrix.zeros\n  create a N1 by N2 matrix of zeros
-    {0 matrix.newfill}:zeros;
-
-    .#? NN matrix.ones\n  create a N1 by N2 matrix of ones
-    {1 matrix.newfill}:ones;
-
-    .#? NN matrix.random\n  create a N1 by N2 matrix of random values [0,1]
-    {;K0\L #{#{;.Q}} matrix!}:__random__;
-
-    .#? NNN matrix.randint\n  create a N2 by N3 matrix of random integers from 1 to N1
-    {@@K L #{#Q} matrix!}:randint;
-
-    .#? N matrix.multiptable\n  generate n N by N multiplication table
-    {[1|$R$@L\,#*] matrix!}:multiptable;
-
-    .##################
-    .# INPUT / OUTPUT #
-    .##################
-
-    .{ Save / Load Example:
-        aya> [4 4].r matrix! :mat
-        |   1   2   3   4 |
-        |   5   6   7   8 |
-        |   9  10  11  12 |
-        |  13  14  15  16 |
-
-        aya> mat "my_mat.txt"\.save
-        aya> "my_mat.txt" matrix.load
-        |   1   2   3   4 |
-        |   5   6   7   8 |
-        |   9  10  11  12 |
-        |  13  14  15  16 |
-    .}
-
-    .#? ::str matrix.load\n  open a space-delimited file containing a matrix as a matrix object
-    {G"\n"|#{" "|#~}matrix!}:load;
-
-    .# ::str ::matrix.save\n  write the matrix to a file
-    {.rows:#{#P' *}'\n'* \ 0 .G}:save;
-
-
-    .###################
-    .# TRANSFORMATIONS #
-    .###################
-
-    .# [::matrix] matrix.vstack\n  stack a list of matrices vertically
-    {
-        #{.rows~}matrix!
-    }:vstack;
-
-    .# [::matrix] matrix.hstack\n  concat a list of matrices horizontally
-    {
-        [1|#.rows~,.A.F] matrix!
-    }:hstack;
-
-    .#? ::num ::matrix.pad\n  insert N outer cols and rows of zeros
-    .{ Example:
-        aya> 4R [2 2]L matrix!
-
-        |  1  2 |
-        |  3  4 |
-
-        aya> 1 4R [2 2]L matrix!.pad
-
-        |  0  0  0  0 |
-        |  0  1  2  0 |
-        |  0  3  4  0 |
-        |  0  0  0  0 |
-    .}
-    {n::num self : r c,
-        self.r :r;
-        self.c :c;
-
-        self [r n + c n +] .<
-        [r n2* + c n2* +] .>
-    }:pad;
-
-
-    .#? ::num ::matrix.rotate_cols\n  shift columns of a matrix right N times
-    .#? ::num ::matrix.rotate_rows\n  shift rows of a matrix down N times
-    .{ Example:
-        aya> 9R [3 3]L matrix!:mat
-
-        |  1  2  3 |
-        |  4  5  6 |
-        |  7  8  9 |
-
-        aya> 1 mat.rotate_rows
-
-        |  7  8  9 |
-        |  1  2  3 |
-        |  4  5  6 |
-
-        aya> 1 mat.rotate_cols
-
-        |  3  1  2 |
-        |  6  4  5 |
-        |  9  7  8 |
-    .}
-    {
-        .rows \ #{\.rotate} matrix!
-    }:rotate_cols;
-
-    {
-        .rows .rotate matrix!
-    }:rotate_rows;
-
-
-}:matrix;
-
-matrix:m;
+    } .?
+}
+
+.##############
+.# Generators #
+.##############
+
+.#? N matrix.eye\n  generate an Nd identity matrix
+def matrix::eye {:matrix^,
+    $0\L1\K\$KL  matrix!
+}
+
+.# generates the next row of a pascal matrix
+def matrix::_nextpascal {prev::list : new len ix,
+    prevE:len;
+    1 0 lenVLK:new;
+    1:ix;
+    {prev ixI new ixVI+ new.:[ix] ::ix B}lenV%
+    new
+}
+
+.#? I matrix.pascal\n  generate an I by I matrix representation of pascal's triangle
+.{ Example:
+    aya> 4 matrix.pascal
+    [[ 1 1 1  1  ]
+     [ 1 2 3  4  ]
+     [ 1 3 6  10 ]
+     [ 1 4 10 20 ]]
+.}
+def matrix::pascal {n::num : matrix^,
+    [1 n L {$matrix._nextpascal} n V %] matrix!
+}
+
+.#? [rows cols] matrix::R\n  generate a matrix counting up from 1
+def matrix::R {l::list : matrix^,
+    l~*R l L matrix!
+}
+
+.#? [rows cols] matrix.random\n  create a N1 by N2 matrix of random values [0,1]
+def matrix::__random__ {:matrix^,
+    0\L :#{:#{;.Q}} matrix!
+}
+
+.# rows::num cols::num matrix._newfill\n  create a I1 by I2 matrix filled with N3
+def matrix::_newfill {:matrix^, \L\Lmatrix!}
+
+.#? [rows cols] matrix.ones\n  create a N1 by N2 matrix of ones
+def matrix::ones  ({:_newfill, ~ 1 _newfill} .where {, matrix._newfill.` :_newfill})
+
+.#? [rows cols] matrix.zeros\n  create a N1 by N2 matrix of zeros
+def matrix::zeros ({:_newfill, ~ 0 _newfill} .where {, matrix._newfill.` :_newfill})
 
 
 
@@ -501,84 +426,89 @@ matrix:m;
 
 import ::test
 
+matrix:m;
+
 `~ {:ts,
+
 
     "matrix" testset! :ts;
 
     {[[1 2][3 4]] m! :T} [::matrix] ts+
-    {[[1 2][3 4]] m.is} [1] ts+
-    {[[1][3 4]] m.is} [0] ts+
-    {[[1][2][3]] m! .dim} [[3 1]] ts+
-    {[[1 2 3]] m! .dim} [[1 3]] ts+
+    {[[1 2][3 4]] m._is_valid_list} [1] ts+
+    {[[1][3 4]] m._is_valid_list} [0] ts+
     {[[1 2][3 4]]m! .issq} [1] ts+
     {[[1 2]]m! .issq} [0] ts+
     {[[1 2][3 4]]m! .tr} [[1 4]] ts+
     {[[1 2][3 4]]m! .t .rows} [ [[1 3][2 4]] ] ts+
-    {2 0 [[1 1][2 2]]m! .rowmul .rows} [ [[2 2][2 2]] ] ts+
-    {0 2 [[1 1][2 2][3 3]]m! .rowswap .rows} [ [[3 3][2 2][1 1]] ] ts+
-    {3 0 1 [[1 1][2 2]]m! .rowadd .rows} [ [[1 1][5 5]] ] ts+
-    {10 0 0 [[1 2][3 4]]m! .set .rows} [ [[10 2][3 4]] ] ts+
-    {[[1 2][3 4][5 6]]m! .r} [3] ts+
-    {[[1 2][3 4][5 6]]m! .c} [2] ts+
-    {[[1 2][3 4][5 6]]m! .cols} [ [[1 3 5][2 4 6]] ] ts+
-
-    .# Indexing
-    {3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
-    {3 m.pascal.[2 2]} [6] ts+
-    {3 m.pascal ['* 2] I .rows} [ [[1][3][6]] ] ts+
-    {3 m.pascal [2 '*] I .rows} [ [[1 3 6]] ] ts+
-    {3 m.pascal ['* '*] I .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
-    {3 m.pascal [0 [0 1]] I .rows} [ [[1 1]] ] ts+
-    {3 m.pascal [[0 1] 0] I .rows} [ [[1][1]] ] ts+
-    {3 m.pascal [[0 1] '*] I .rows} [ [[1 1 1][1 2 3]] ] ts+
-    {3 m.pascal ['* [0 1]] I .rows} [ [[1 1][1 2][1 3]] ] ts+
-    {3 m.pascal [[0 1][0 1]] I .rows} [ [[1 1][1 2]] ] ts+
-
-    {1 [[3]] m! .pad .rows} [ [[0 0 0][0 3 0][0 0 0]] ] ts+
-    {[[3]] m! [1 2] .< .rows} [ [[3 0]] ] ts+
-    {[[3]] m! [1 2] .> .rows} [ [[0 3]] ] ts+
-    {[[3]] m! [2 1] .< .rows} [ [[3] [0]] ] ts+
-    {[[3]] m! [2 1] .> .rows} [ [[0] [3]] ] ts+
-
-    .# Arithmetic
-    {[[1 2][3 4]]m! $ + .rows} [ [[2 4][6 8]] ] ts+
-    {[[1 2][3 4]]m! 10 + .rows} [ [[11 12][13 14]] ] ts+
-    {10 [[1 2][3 4]]m! + .rows} [ [[11 12][13 14]] ] ts+
-    {[[1 2][3 4]]m! $ - .rows} [ [[0 0][0 0]] ] ts+
-    {[[1 2][3 4]]m! 10 - .rows} [ [[:9 :8][:7 :6]] ] ts+
-    {10 [[1 2][3 4]]m! - .rows} [ [[9 8][7 6]] ] ts+
-    {[[1 2][3 4]]m! $ * .rows} [ [[7 10][15 22]] ] ts+
-    {[[1 2][3 4]]m! 10 * .rows} [ [[10 20][30 40]] ] ts+
-    {10 [[1 2][3 4]]m! * .rows} [ [[10 20][30 40]] ] ts+
-    {[[1 2][3 4]]m! 10 / .rows} [ [[.1 .2][.3 .4]] ] ts+
-    {12 [[1 2][3 4]]m! / .rows} [ [[12 6][4 3]] ] ts+
-    {[[1 2][3 4]]m! 2 ^ .rows} [ [[7 10][15 22]] ] ts+
-
-    .# Iteration
-    {: a, [[1 2][3 4]]m!:a; {2*} a.apply.rows} [ [[2 4][6 8]] ] ts+
-    {: a, [[1 2][3 4]]m!:a; {2*} a.apply; a.rows} [ [[2 4][6 8]] ] ts+
-    {: a, [[1 2][3 4]]m!:a; {2*} a.map a.rows} [ [[1 2][3 4]] ] ts+
-    {: a, [[1 2][3 4]]m!:a; a :# {2*} .rows} [ [[2 4][6 8]] ] ts+
-2 [1 2 3 4 5] \|
-    .# Other Overloads
-    .# No need to check them all, just check to see if they are loaded
-    {[[1 2][3 4]] m! M! .rows} [ [[1 2][6 24]] ] ts+
-    {[[1 2][3 4]] m! $ =} [1] ts+
-    {[[1 2][3 4]] m! 2 m.pascal =} [0] ts+
-    {[[:4 5][6 0]] m! .! .rows} [ [[:1 1][1 0]] ] ts+
-
-    .# Generators
-    {3 m.eye.rows} [ [[1 0 0][0 1 0][0 0 1]] ] ts+
-    {3 m.pascal.rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
-    {2 2 10 m.newfill.rows} [ [[10 10][10 10]] ] ts+
-    {10 [[1 1][3 3]]m! .fill.rows} [ [[10 10][10 10]] ] ts+
-    {3 2 m.zeros.rows} [ [[0 0][0 0][0 0]] ] ts+
-    {2 3 m.ones.rows} [ [[1 1 1][1 1 1]] ] ts+
-    {3 m.multiptable.rows} [ [[1 2 3][2 4 6][3 6 9]] ] ts+
+    {[[1 2][3 4]]m! .min} [ 1 ] ts+
+    {[[1 2][3 4]]m! .max} [ 4 ] ts+
+    {[[1 2][3 4]]m! .max} [ 4 ] ts+
+    {[[1 2][3 4]]m! .norm 2.to_fixed.rows} [ [[.18 .36][.54 .73]] ] ts+
+    {[[1 2][3 4]]m! .sum} [ 10 ] ts+
+    {[[1 2][3 4][5 6]] m! [[7][8][9]] m! .hcat .rows} [ [[1 2 7][3 4 8][5 6 9]] ] ts+
+    {[[1 2 3][4 5 6]] matrix! [[7 8 9]] matrix! .vcat .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
 
     .# Transformations
-    {[2 m.eye $] m.hstack.rows} [ [[1 0 1 0][0 1 0 1]] ] ts+
-    {[2 m.eye $] m.vstack.rows} [ [[1 0][0 1][1 0][0 1]] ] ts+
+    { 1  [3 2] mR .rotate_rows .rows} [ [[ 5 6 ] [ 1 2 ] [ 3 4 ]] ] ts+
+    { :1 [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    { 2  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    { 8  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    { 1  [2 3] mR .rotate_cols .rows} [ [[ 3 1 2 ] [ 6 4 5 ]] ] ts+
+    { :1 [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    { 2  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    { 8  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    .# __head__/__tail__
+    { [2 2] mR [3 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ] [ 0 0 0 ]] ] ts+
+    { [2 2] mR [3 2].< .rows } [ [[ 1 2 ] [ 3 4 ] [ 0 0 ]] ] ts+
+    { [2 2] mR [3 1].< .rows } [ [[ 1 ] [ 3 ] [ 0 ]] ] ts+
+    { [2 2] mR [2 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ]] ] ts+
+    { [2 2] mR [1 3].< .rows } [ [[ 1 2 0 ]] ] ts+
+    { [2 2] mR [3 3].> .rows } [ [[ 0 0 0 ] [ 0 1 2 ] [ 0 3 4 ]] ] ts+
+    { [2 2] mR [3 2].> .rows } [ [[ 0 0 ] [ 1 2 ] [ 3 4 ]] ] ts+
+    { [2 2] mR [3 1].> .rows } [ [[ 0 ] [ 2 ] [ 4 ]] ] ts+
+    { [2 2] mR [2 3].> .rows } [ [[ 0 1 2 ] [ 0 3 4 ]] ] ts+
+    { [2 2] mR [1 3].> .rows } [ [[ 0 3 4 ]] ] ts+
+    .# pad
+    { 2 [1 1]mR.pad .rows } [ [[ 0 0 0 0 0 ]
+                               [ 0 0 0 0 0 ]
+                               [ 0 0 1 0 0 ]
+                               [ 0 0 0 0 0 ]
+                               [ 0 0 0 0 0 ]] ] ts+
+    { 1 [2 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 0 0 0 ]] ] ts+
+    { 1 [2 3]mR.pad .rows } [ [[ 0 0 0 0 0 ] [ 0 1 2 3 0 ] [ 0 4 5 6 0 ] [ 0 0 0 0 0 ]] ] ts+
+    { 1 [3 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 5 6 0 ] [ 0 0 0 0 ]] ] ts+
+
+
+    .# Generators
+    { [2 3] mR .rows} [ [[1 2 3][4 5 6]] ] ts+
+    { [3 2] mR .rows} [ [[1 2][3 4][5 6]] ] ts+
+    { 1 m.pascal .rows} [ [[1]] ] ts+
+    { 3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
+
+    .# Overloads
+    {[[1 2][3 4]]m! E} [[2 2]] ts+
+    {[[1 2 3][4 5 6]]m! E} [[2 3]] ts+
+    {[[1 2][3 4][3 5]]m! E} [[3 2]] ts+
+
+    .# Indexing
+    {:x, 10 0  0  [[1 2][3 4]]m!:x._set x.rows} [ [[10 2][3 4]] ] ts+
+    {:x, 10 :1 :1 [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][3 10]] ] ts+
+    {:x, 10 0  1  [[1 2][3 4]]m!:x._set x.rows} [ [[1 10][3 4]] ] ts+
+    {:x, 10 1  0  [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][10 4]] ] ts+
+
+    .# __getindex__
+    {[3 3] mR.[2 2]} [9] ts+
+    {[3 3] mR ['* 2] I .rows} [ [[3][6][9]] ] ts+
+    {[3 3] mR [2 '*] I .rows} [ [[7 8 9]] ] ts+
+    {[3 3] mR ['* '*] I .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+    {[3 3] mR [0 [0 1]] I .rows} [ [[1 2]] ] ts+
+    {[3 3] mR [[0 1] 0] I .rows} [ [[1][4]] ] ts+
+    {[3 3] mR [[0 1] '*] I .rows} [ [[1 2 3][4 5 6]] ] ts+
+    {[3 3] mR ['* [0 1]] I .rows} [ [[1 2][4 5][7 8]] ] ts+
+    {[3 3] mR [[0 1][0 1]] I .rows} [ [[1 2][4 5]] ] ts+
+    {[3 3] mR [[0 0][0 1]] I .rows} [ [[1 2][1 2]] ] ts+
+    {[3 3] mR [[0 0][0 0]] I .rows} [ [[1 1][1 1]] ] ts+
+    {[3 3] mR [[0 1][1 0]] I .rows} [ [[2 1][5 4]] ] ts+
 
 
 

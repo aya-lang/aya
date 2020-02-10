@@ -1,4 +1,6 @@
 {,
+    {}:op;
+
     .#? LLE zw\n  zip two lists with a block
     {.&}:zip;
 
@@ -129,7 +131,22 @@
     .}
     {`.+}:where_const;
 
-    {`(\.makelocals:&.M.locals@.+;)}:where;
+    {`(\$\;.makelocals:&.M.locals@.+;)}:where;
+
+
+    {:indent(0),
+        P ';.split :#{',.split~} :#{.trim} :# {s,
+            s "" = {" ":s;} ?
+
+            s.[0] '} =  indent 0 >  & {
+                ::indent V
+            } ?
+
+            " " indent 4 * L S s +
+
+            s.[0] '{ = {::indent B} ?
+        } "\n" * :P
+    }:show;
 
 
 }:block;

@@ -103,6 +103,21 @@
     "Mq" :__sqrt__
 }:mathoverload
 
+{,
+    "overloadable" M? :# {
+        .# Get <name> <op> as strings
+        :& "overloadable:.*$" & .[0] " " |.[:1] \ " " |.[0]
+        .# Lambda to apply to each <name> <op>
+        ({name op,
+            .# If the name is "__add__/__radd__", only use the first one
+            name "/" |.[0]:name;
+            .# Attempt to parse the op ( operator __each__ ":#" will fail)
+            .# And assign the op to its name
+            {op.~ name :=} {;} .K
+        })
+    }
+}:overloads;
+
 }:__aya__;
 
 1 nil.M.:__pushself__;
@@ -450,13 +465,13 @@ static point::static_fn {
     {,
         name :__modname__;
 
-        {meta : name^,
-            "Cannot create new instance of module $name" .D
+        {meta,
+            "Cannot create new instance of module $(meta.__modname__:C)" .D
         } :__new__;
 
         {,
             ::module :__type__;
-            "(modue $name)":__repr__;
+            "(module $name)":__repr__;
         }:__meta__;
     }
     name := ; .# assign variable
@@ -555,5 +570,6 @@ num
 char
 block
 list
+sym
 test
 """

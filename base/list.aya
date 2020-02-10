@@ -6,8 +6,9 @@
 .# Basic functions
 
 .# Operators
-{\N\;:1=!}:in;       .#? AL in\n  tests whether or not item `a` is in list `l`
-{N\;(-1)=!}:ni;        .#? LA ni\n  tests whether or not item `a` is in list `l`
+{\N\;:1=!}:in;      .#? AL in\n  tests whether or not item `a` is in list `l`
+.# {\N0:>}:in;
+{N\;(-1)=!}:ni;     .#? LA ni\n  tests whether or not item `a` is in list `l`
 
 
 
@@ -106,6 +107,10 @@
         {, l__:#{~:=}}
     }:capture_vars;
 
+    {
+        #.op .^
+    }:blk;
+
 }:list;
 
 
@@ -114,7 +119,7 @@
 
 {{&}F}:allt;     .#? <L> allt\n  true if all elements in list are true
 {{|}F!}:allf;    .#? <L> allf\n  true if all elements in list are false
-{\$@IE\E=}:all;  .#? <LE> all\n  tests if all elements of the list meet the condition
+{\:&@IE\E=}:all;  .#? <LE> all\n  tests if all elements of the list meet the condition
 {IE0>}:any;      .#? <LE> any\n  returns true if any elements satisfy the predicate
 
 

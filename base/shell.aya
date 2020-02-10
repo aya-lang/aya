@@ -3,6 +3,7 @@
 import ::sys
 import ::str
 import ::io
+import ::terminal
 
 
 .#? ls\n  print a list of files in the working dir
@@ -44,6 +45,8 @@ def ::rm {`(6MZ)}
 
 
 def ::run {`(".aya"+G~)}
+
+def ::clear {:terminal^, terminal.clear}
 
 
 def (__aya__.interpreter)::shell {str : cmd args,

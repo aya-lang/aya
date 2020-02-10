@@ -75,3 +75,59 @@
 
 .# Regular Version
 .#	{`(\@*\/)}:to;
+
+{,
+    {`({sub super : super_type,
+        super.__type__ :super_type;
+        super ::__type__ .- ;
+        sub super .+ ;
+        super_type super.:__type__;
+    })}:extends
+
+    class ::time
+
+    def time::__init__ {n self,
+        n self._to_sec self.:s;
+    }
+
+    def time::to_sec {self,
+        self.s
+    }
+
+    def time::__str__ {self,
+        self.s self._from_sec " " +
+        self :T :C +
+    }
+
+    def time::__repr__ (time.__str__.`)
+
+    def time::_to_sec {n self,
+        n self.scale_factor *
+    }
+
+    def time::_from_sec {n self,
+        n self.scale_factor /
+    }
+
+    def time::__add__ {a b,
+    }
+
+
+    class ::minute
+
+    minute extends time
+
+    def minute::scale_factor 60
+
+
+    class ::hour
+
+    hour extends time
+
+    def hour::scale_factor (60 60 *)
+
+} :time;
+
+{:time^, time.minute!}:minute;
+{:time^, time.hour!}:hour;
+
