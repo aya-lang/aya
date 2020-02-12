@@ -231,7 +231,7 @@ impl docstr::__repr__ {self,
 
 {`({x,
     x :T ::list = {
-        x.[0].__doc__.[x.[1]]
+        x.[0].__doc__.[x.[1]] .show :P
     } ?
 })}:help;
 

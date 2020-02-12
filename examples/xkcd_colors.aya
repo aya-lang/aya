@@ -1,0 +1,6 @@
+import ::terminal
+import ::color
+
+"data/xkcd_colors.txt" G .lines :# {
+    "\t" |~ color.newhex terminal.println_color
+};

@@ -1,0 +1,57 @@
+import ::csv
+
+
+module ::rdatasets
+
+def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/datasets.csv"
+def rdatasets::_cache_loc "data/rdatasets_index.csv"
+
+.# Load index file
+({:index_str("") data index({,}) packages({,}),
+
+    {
+        rdatasets._cache_loc G :index_str;
+        "Loaded index from cache" :P
+    } {
+        rdatasets._index_csv G :index_str;
+        index_str rdatasets._cache_loc 0 .G
+        "Loaded index from github" :P
+    } .K
+
+    index_str "," csv.parse :data;
+    data V; :data; .# Remove first row
+
+    .# Build index
+    rdatasets._index_csv csv.open :data;
+    data :# {row : pkg(row.[0]) name(row.[1]),
+        .# Add to url index
+        row.[:2] "$pkg/$name" index :D
+
+        .# Add to package index
+        .# Add package list if it does not exist
+        packages pkg N \; ! { [] packages.:[pkg] } ?
+        .# Add name to list
+        name packages.[pkg] .B ;
+
+    };
+
+    def rdatasets::index index
+    def rdatasets::packages packages
+})
+
+def rdatasets::load {id::str : rdatasets^ csv^,
+    "/" `in id {
+        rdatasets.index.[id]
+    } {
+        rdatasets.index.["datasets/$id"]
+    } .?
+
+    csv.open
+}
+
+
+rdatasets:r;
+
+
+
+

@@ -1,9 +1,6 @@
-
-import ::list .# all
-
 class ::matrix
 
-.# Test if a list is a valid matrix
+.# Test if list is a valid matrix
 def matrix::_is_valid_list {m::list,
     .# Both of the following must be true:
     m#:T {::list=} all .# The list is made up of only other lists
@@ -18,6 +15,12 @@ def matrix::__init__ {input::list self,
     } {
         "$input is not a valid matrix" .D
     } .?
+}
+
+.# Use this instead of the constructor to avoid
+.# validating the list
+def matrix::_new {:matrix^,
+    {1, :rows} matrix :M
 }
 
 .{ Example:
@@ -56,16 +59,16 @@ def matrix::__repr__ {self,
     def matrix op_sym {other self : op^ rop^,
         other :T {?=,
             ::matrix {
-                other.rows self.rows op.` .& self.M!
+                other.rows self.rows op.` .& self.M._new
             },
             ::num {
-                self.rows :# rop.` self.M!
+                self.rows :# rop.` self.M._new
             },
             { "TypeError: Invalid operation $(other:T) $(self:T) *" .D }
         }
     }
 
-    def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M!}
+    def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M._new}
 }
 
 
@@ -77,7 +80,7 @@ def matrix::__repr__ {self,
     ::Ms ::MS ::Mc ::MC ::Mt ::MT
 ] :# {sym : op(sym.op),
     def matrix sym ({
-        :& .rows op #~ \.M!
+        :& .rows op #~ \.M._new
         } {, op.`:op } .+
     )
 }
@@ -87,14 +90,14 @@ def matrix::__repr__ {self,
 
 
 def matrix::_eq_num {n self,
-    self.rows n .= matrix!
+    self.rows n .= self.M._new
 }
 
 def matrix::_eq_list {l self,
     self.rows :# {
         .# Test if the current item is in the list
         :# {l \N0:>\;}
-    } matrix!
+    } self.M._new
 }
 
 def matrix::_eq_mat {a b,
@@ -119,10 +122,10 @@ def matrix::__eq__ ({a b,
 
 
 .#? ::matrix ::matrix &\n  element-wise and
-def matrix::__and__ {:matrix^, .rows\.rows {{&}.&}.& matrix!}
+def matrix::__and__ {:matrix^, .rows\.rows {{&}.&}.& matrix._new}
 
 .#? ::matrix ::matrix |\n  element-wise or
-def matrix::__or__  {:matrix^, .rows\.rows {{|}.&}.& matrix!}
+def matrix::__or__  {:matrix^, .rows\.rows {{|}.&}.& matrix._new}
 
 
 
@@ -142,7 +145,7 @@ def matrix::issq {self, self.rowsE self.rows#E\#= {|}F}
 def matrix::tr {[1|.rows$ER,VI]}
 
 .#? ::matrix matrix.t\n  transpose a matrix
-def matrix::t {.rows .T matrix!}
+def matrix::t {:&.rows.T\.M._new}
 
 .#? ::matrix.max\n  the max value of a matrix
 def matrix::max {.rows#.max.max}
@@ -156,14 +159,17 @@ def matrix::norm {:& .sq .sum Mq /}
 .#? ::matrix.sum\n  the sum of all values in the matrix
 def matrix::sum {.rows #SS}
 
+.#? ::matrix.mean\n  the mean of all values in the matrix
+def matrix::mean {.E~* \.sum\/}
+
 def matrix::dot {o self : t matrix^,
     o.c self.r =! {
         "matrix.mul: shape mismatch $(o.c) != $(self.r)".D
     } ?
     .# (*S) is the dot product
-    self.t.rows :t;
+    self.rows.T :t;
     o.rows  :# {r, t :#{r *S}}
-    matrix!
+    matrix._new
 }
 
 .#? ::matrix.r\n  number of rows
@@ -178,12 +184,12 @@ def matrix::c {.rows.[0] E}
 
 .#? ::matrix ::matrix.hcat\n  concatenate horizontally
 def matrix::hcat {a::matrix b::matrix,
-    a.rows b.rows {J} .& a.M!
+    a.rows b.rows {J} .& a.M._new
 }
 
 .#? ::matrix ::matrix.vcat\n  concatenate vertically
 def matrix::vcat {a::matrix b::matrix,
-    a.rows b.rows J a.M!
+    a.rows b.rows J a.M._new
 }
 
 .#? ::num ::matrix.rotate_cols\n  shift columns of a matrix right N times
@@ -205,11 +211,11 @@ def matrix::vcat {a::matrix b::matrix,
      [ 9 7 8 ]]
 .}
 def matrix::rotate_cols {
-    .rows \ #{\.rotate} matrix!
+    .rows \ #{\.rotate} matrix._new
 }
 
 def matrix::rotate_rows {
-    .rows .rotate matrix!
+    .rows .rotate matrix._new
 }
 
 .#? [rows cols] ::matrix .<\n  cut or pad the matrix to the given size from the upper left corner
@@ -252,7 +258,7 @@ def matrix::__head__ {self n::list : d,
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 
-    self.M!
+    self.M._new
 
 }
 
@@ -273,7 +279,7 @@ def matrix::__tail__ {self n::list : d,
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 
-    self.M!
+    self.M._new
 }
 
 
@@ -301,7 +307,7 @@ def matrix::pad {n::num self : r c,
 .#############
 
 .#? ::matrix U\n  reverse the rows of a matrix
-def matrix::__reverse__ {.rows U matrix!}
+def matrix::__reverse__ {:& .rows U \.M._new}
 
 .#? ::matrix E\n  the shape of the matrix
 def matrix::E {.rows.E\0IEJ}
@@ -375,7 +381,7 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 
 .#? N matrix.eye\n  generate an Nd identity matrix
 def matrix::eye {:matrix^,
-    $0\L1\K\$KL  matrix!
+    $0\L1\K\$KL  matrix._new
 }
 
 .# generates the next row of a pascal matrix
@@ -396,7 +402,7 @@ def matrix::_nextpascal {prev::list : new len ix,
      [ 1 4 10 20 ]]
 .}
 def matrix::pascal {n::num : matrix^,
-    [1 n L {$matrix._nextpascal} n V %] matrix!
+    [1 n L {$matrix._nextpascal} n V %] matrix._new
 }
 
 .#? [rows cols] matrix::R\n  generate a matrix counting up from 1
@@ -406,17 +412,21 @@ def matrix::R {l::list : matrix^,
 
 .#? [rows cols] matrix.random\n  create a N1 by N2 matrix of random values [0,1]
 def matrix::__random__ {:matrix^,
-    0\L :#{:#{;.Q}} matrix!
+    0\L :#{:#{;.Q}} matrix._new
 }
 
 .# rows::num cols::num matrix._newfill\n  create a I1 by I2 matrix filled with N3
-def matrix::_newfill {:matrix^, \L\Lmatrix!}
+def matrix::_newfill {:matrix^, \L\Lmatrix._new}
 
 .#? [rows cols] matrix.ones\n  create a N1 by N2 matrix of ones
 def matrix::ones  ({:_newfill, ~ 1 _newfill} .where {, matrix._newfill.` :_newfill})
 
 .#? [rows cols] matrix.zeros\n  create a N1 by N2 matrix of zeros
 def matrix::zeros ({:_newfill, ~ 0 _newfill} .where {, matrix._newfill.` :_newfill})
+
+
+.#? ::matrix.np_str\n  print the matrix in list with comma format
+def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}
 
 
 
@@ -426,89 +436,89 @@ def matrix::zeros ({:_newfill, ~ 0 _newfill} .where {, matrix._newfill.` :_newfi
 
 import ::test
 
-matrix:m;
 
-`~ {:ts,
+`~ {:ts matrix^ m,
 
+    matrix:m;
 
     "matrix" testset! :ts;
 
-    {[[1 2][3 4]] m! :T} [::matrix] ts+
-    {[[1 2][3 4]] m._is_valid_list} [1] ts+
-    {[[1][3 4]] m._is_valid_list} [0] ts+
-    {[[1 2][3 4]]m! .issq} [1] ts+
-    {[[1 2]]m! .issq} [0] ts+
-    {[[1 2][3 4]]m! .tr} [[1 4]] ts+
-    {[[1 2][3 4]]m! .t .rows} [ [[1 3][2 4]] ] ts+
-    {[[1 2][3 4]]m! .min} [ 1 ] ts+
-    {[[1 2][3 4]]m! .max} [ 4 ] ts+
-    {[[1 2][3 4]]m! .max} [ 4 ] ts+
-    {[[1 2][3 4]]m! .norm 2.to_fixed.rows} [ [[.18 .36][.54 .73]] ] ts+
-    {[[1 2][3 4]]m! .sum} [ 10 ] ts+
-    {[[1 2][3 4][5 6]] m! [[7][8][9]] m! .hcat .rows} [ [[1 2 7][3 4 8][5 6 9]] ] ts+
-    {[[1 2 3][4 5 6]] matrix! [[7 8 9]] matrix! .vcat .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+    {:m^, [[1 2][3 4]] m! :T} [::matrix] ts+
+    {:m^, [[1 2][3 4]] m._is_valid_list} [1] ts+
+    {:m^, [[1][3 4]] m._is_valid_list} [0] ts+
+    {:m^, [[1 2][3 4]]m! .issq} [1] ts+
+    {:m^, [[1 2]]m! .issq} [0] ts+
+    {:m^, [[1 2][3 4]]m! .tr} [[1 4]] ts+
+    {:m^, [[1 2][3 4]]m! .t .rows} [ [[1 3][2 4]] ] ts+
+    {:m^, [[1 2][3 4]]m! .min} [ 1 ] ts+
+    {:m^, [[1 2][3 4]]m! .max} [ 4 ] ts+
+    {:m^, [[1 2][3 4]]m! .max} [ 4 ] ts+
+    {:m^, [[1 2][3 4]]m! .norm 2.to_fixed.rows} [ [[.18 .36][.54 .73]] ] ts+
+    {:m^, [[1 2][3 4]]m! .sum} [ 10 ] ts+
+    {:m^, [[1 2][3 4][5 6]] m! [[7][8][9]] m! .hcat .rows} [ [[1 2 7][3 4 8][5 6 9]] ] ts+
+    {:m^, [[1 2 3][4 5 6]] matrix! [[7 8 9]] matrix! .vcat .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
 
     .# Transformations
-    { 1  [3 2] mR .rotate_rows .rows} [ [[ 5 6 ] [ 1 2 ] [ 3 4 ]] ] ts+
-    { :1 [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
-    { 2  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
-    { 8  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
-    { 1  [2 3] mR .rotate_cols .rows} [ [[ 3 1 2 ] [ 6 4 5 ]] ] ts+
-    { :1 [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
-    { 2  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
-    { 8  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    {:m^, 1  [3 2] mR .rotate_rows .rows} [ [[ 5 6 ] [ 1 2 ] [ 3 4 ]] ] ts+
+    {:m^, :1 [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    {:m^, 2  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    {:m^, 8  [3 2] mR .rotate_rows .rows} [ [[ 3 4 ] [ 5 6 ] [ 1 2 ]] ] ts+
+    {:m^, 1  [2 3] mR .rotate_cols .rows} [ [[ 3 1 2 ] [ 6 4 5 ]] ] ts+
+    {:m^, :1 [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    {:m^, 2  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
+    {:m^, 8  [2 3] mR .rotate_cols .rows} [ [[ 2 3 1] [ 5 6 4 ]] ] ts+
     .# __head__/__tail__
-    { [2 2] mR [3 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ] [ 0 0 0 ]] ] ts+
-    { [2 2] mR [3 2].< .rows } [ [[ 1 2 ] [ 3 4 ] [ 0 0 ]] ] ts+
-    { [2 2] mR [3 1].< .rows } [ [[ 1 ] [ 3 ] [ 0 ]] ] ts+
-    { [2 2] mR [2 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ]] ] ts+
-    { [2 2] mR [1 3].< .rows } [ [[ 1 2 0 ]] ] ts+
-    { [2 2] mR [3 3].> .rows } [ [[ 0 0 0 ] [ 0 1 2 ] [ 0 3 4 ]] ] ts+
-    { [2 2] mR [3 2].> .rows } [ [[ 0 0 ] [ 1 2 ] [ 3 4 ]] ] ts+
-    { [2 2] mR [3 1].> .rows } [ [[ 0 ] [ 2 ] [ 4 ]] ] ts+
-    { [2 2] mR [2 3].> .rows } [ [[ 0 1 2 ] [ 0 3 4 ]] ] ts+
-    { [2 2] mR [1 3].> .rows } [ [[ 0 3 4 ]] ] ts+
+    {:m^, [2 2] mR [3 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ] [ 0 0 0 ]] ] ts+
+    {:m^, [2 2] mR [3 2].< .rows } [ [[ 1 2 ] [ 3 4 ] [ 0 0 ]] ] ts+
+    {:m^, [2 2] mR [3 1].< .rows } [ [[ 1 ] [ 3 ] [ 0 ]] ] ts+
+    {:m^, [2 2] mR [2 3].< .rows } [ [[ 1 2 0 ] [ 3 4 0 ]] ] ts+
+    {:m^, [2 2] mR [1 3].< .rows } [ [[ 1 2 0 ]] ] ts+
+    {:m^, [2 2] mR [3 3].> .rows } [ [[ 0 0 0 ] [ 0 1 2 ] [ 0 3 4 ]] ] ts+
+    {:m^, [2 2] mR [3 2].> .rows } [ [[ 0 0 ] [ 1 2 ] [ 3 4 ]] ] ts+
+    {:m^, [2 2] mR [3 1].> .rows } [ [[ 0 ] [ 2 ] [ 4 ]] ] ts+
+    {:m^, [2 2] mR [2 3].> .rows } [ [[ 0 1 2 ] [ 0 3 4 ]] ] ts+
+    {:m^, [2 2] mR [1 3].> .rows } [ [[ 0 3 4 ]] ] ts+
     .# pad
-    { 2 [1 1]mR.pad .rows } [ [[ 0 0 0 0 0 ]
+    {:m^, 2 [1 1]mR.pad .rows } [ [[ 0 0 0 0 0 ]
                                [ 0 0 0 0 0 ]
                                [ 0 0 1 0 0 ]
                                [ 0 0 0 0 0 ]
                                [ 0 0 0 0 0 ]] ] ts+
-    { 1 [2 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 0 0 0 ]] ] ts+
-    { 1 [2 3]mR.pad .rows } [ [[ 0 0 0 0 0 ] [ 0 1 2 3 0 ] [ 0 4 5 6 0 ] [ 0 0 0 0 0 ]] ] ts+
-    { 1 [3 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 5 6 0 ] [ 0 0 0 0 ]] ] ts+
+    {:m^, 1 [2 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 0 0 0 ]] ] ts+
+    {:m^, 1 [2 3]mR.pad .rows } [ [[ 0 0 0 0 0 ] [ 0 1 2 3 0 ] [ 0 4 5 6 0 ] [ 0 0 0 0 0 ]] ] ts+
+    {:m^, 1 [3 2]mR.pad .rows } [ [[ 0 0 0 0 ] [ 0 1 2 0 ] [ 0 3 4 0 ] [ 0 5 6 0 ] [ 0 0 0 0 ]] ] ts+
 
 
     .# Generators
-    { [2 3] mR .rows} [ [[1 2 3][4 5 6]] ] ts+
-    { [3 2] mR .rows} [ [[1 2][3 4][5 6]] ] ts+
-    { 1 m.pascal .rows} [ [[1]] ] ts+
-    { 3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
+    {:m^, [2 3] mR .rows} [ [[1 2 3][4 5 6]] ] ts+
+    {:m^, [3 2] mR .rows} [ [[1 2][3 4][5 6]] ] ts+
+    {:m^, 1 m.pascal .rows} [ [[1]] ] ts+
+    {:m^, 3 m.pascal .rows} [ [[1 1 1][1 2 3][1 3 6]] ] ts+
 
     .# Overloads
-    {[[1 2][3 4]]m! E} [[2 2]] ts+
-    {[[1 2 3][4 5 6]]m! E} [[2 3]] ts+
-    {[[1 2][3 4][3 5]]m! E} [[3 2]] ts+
+    {:m^, [[1 2][3 4]]m! E} [[2 2]] ts+
+    {:m^, [[1 2 3][4 5 6]]m! E} [[2 3]] ts+
+    {:m^, [[1 2][3 4][3 5]]m! E} [[3 2]] ts+
 
     .# Indexing
-    {:x, 10 0  0  [[1 2][3 4]]m!:x._set x.rows} [ [[10 2][3 4]] ] ts+
-    {:x, 10 :1 :1 [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][3 10]] ] ts+
-    {:x, 10 0  1  [[1 2][3 4]]m!:x._set x.rows} [ [[1 10][3 4]] ] ts+
-    {:x, 10 1  0  [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][10 4]] ] ts+
+    {:x m^, 10 0  0  [[1 2][3 4]]m!:x._set x.rows} [ [[10 2][3 4]] ] ts+
+    {:x m^, 10 :1 :1 [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][3 10]] ] ts+
+    {:x m^, 10 0  1  [[1 2][3 4]]m!:x._set x.rows} [ [[1 10][3 4]] ] ts+
+    {:x m^, 10 1  0  [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][10 4]] ] ts+
 
     .# __getindex__
-    {[3 3] mR.[2 2]} [9] ts+
-    {[3 3] mR ['* 2] I .rows} [ [[3][6][9]] ] ts+
-    {[3 3] mR [2 '*] I .rows} [ [[7 8 9]] ] ts+
-    {[3 3] mR ['* '*] I .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
-    {[3 3] mR [0 [0 1]] I .rows} [ [[1 2]] ] ts+
-    {[3 3] mR [[0 1] 0] I .rows} [ [[1][4]] ] ts+
-    {[3 3] mR [[0 1] '*] I .rows} [ [[1 2 3][4 5 6]] ] ts+
-    {[3 3] mR ['* [0 1]] I .rows} [ [[1 2][4 5][7 8]] ] ts+
-    {[3 3] mR [[0 1][0 1]] I .rows} [ [[1 2][4 5]] ] ts+
-    {[3 3] mR [[0 0][0 1]] I .rows} [ [[1 2][1 2]] ] ts+
-    {[3 3] mR [[0 0][0 0]] I .rows} [ [[1 1][1 1]] ] ts+
-    {[3 3] mR [[0 1][1 0]] I .rows} [ [[2 1][5 4]] ] ts+
+    {:m^, [3 3] mR.[2 2]} [9] ts+
+    {:m^, [3 3] mR ['* 2] I .rows} [ [[3][6][9]] ] ts+
+    {:m^, [3 3] mR [2 '*] I .rows} [ [[7 8 9]] ] ts+
+    {:m^, [3 3] mR ['* '*] I .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+
+    {:m^, [3 3] mR [0 [0 1]] I .rows} [ [[1 2]] ] ts+
+    {:m^, [3 3] mR [[0 1] 0] I .rows} [ [[1][4]] ] ts+
+    {:m^, [3 3] mR [[0 1] '*] I .rows} [ [[1 2 3][4 5 6]] ] ts+
+    {:m^, [3 3] mR ['* [0 1]] I .rows} [ [[1 2][4 5][7 8]] ] ts+
+    {:m^, [3 3] mR [[0 1][0 1]] I .rows} [ [[1 2][4 5]] ] ts+
+    {:m^, [3 3] mR [[0 0][0 1]] I .rows} [ [[1 2][1 2]] ] ts+
+    {:m^, [3 3] mR [[0 0][0 0]] I .rows} [ [[1 1][1 1]] ] ts+
+    {:m^, [3 3] mR [[0 1][1 0]] I .rows} [ [[2 1][5 4]] ] ts+
 
 
 

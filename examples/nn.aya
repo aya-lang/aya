@@ -1,23 +1,27 @@
 import ::matrix
 
+.# Sigmoid helper functions
 {:1 * Me 1+ 1\/}:sigmoid;
-{sigmoid :& 1\- *}:dsigmoid;
+{:& 1\- *}:dsigmoid;
 
-
+.# Neural Net class
 class ::nn
 
 def nn::__init__ {x y self,
     x self.:input;
     y self.:y;
+    yE matrix.zeros self.:output;
+    .# Randomly initialize weights
     [xE1I 4] matrixQ self.:weights_a;
     [4    1] matrixQ self.:weights_b;
-    yE matrix.zeros self.:output;
 }
+
 
 def nn::feedforward {self,
     self.input   self.weights_a .dot sigmoid self.:layer_a;
     self.layer_a self.weights_b .dot sigmoid self.:output;
 }
+
 
 def nn::backprop {self : d d_weights_a d_weights_b,
     self.y self.output - 2 * self.output dsigmoid * :d;
@@ -32,9 +36,9 @@ def nn::backprop {self : d d_weights_a d_weights_b,
     self.weights_b d_weights_b + self.:weights_b;
 }
 
-def nn::mean_abs {self,
-    self.y self.output -.|  .# absolute value of difference
-    .E{*}F\.sum\/           .# mean
+
+def nn::loss {self,
+    self.y self.output - 2^ .mean
 }
 
 .# Train
@@ -46,13 +50,18 @@ def nn::mean_abs {self,
     [[0][1][1][0]] matrix!:y;
 
     x y nn! :net;
-    []:mean_abs;
+    []:loss;
 
+    .# Train for 1000 steps
     {
         net.feedforward
         net.backprop
-        net.mean_abs mean_abs .B ;
-    } 4000 %
+        net.loss :m loss .B ;
+    } 1000 %
 
-    mean_abs.x
-} 
+    lossER loss plot.line :plt;
+    "Neural Net Example" plt.:title;
+    "Loss" plt.:ylabel;
+    "Iteration" plt.:xlabel;
+    plt.view
+} ~

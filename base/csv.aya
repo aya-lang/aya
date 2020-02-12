@@ -1,7 +1,11 @@
 module ::csv
 
-def csv::parse {dlm,
-    "\n"| :# {dlm | :#{.rmquote.!}}
+def csv::parse {dlm : rgx,
+    "(?<=^|$dlm)(\"(?:[^\"]|\"\")*\"|[^$dlm]*)" :rgx; .#"
+    "\n"| :# {line,
+        line.trim :line;
+        line rgx & :#{.trim .rmquote .!}
+    }
 }
 
 def csv::open {f : csv^,
