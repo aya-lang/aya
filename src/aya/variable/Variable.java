@@ -99,7 +99,7 @@ public class Variable {
 	
 	/** Return true if the string is a valid variable name */
 	public static boolean isValidStr(String varname) {
-		if (varname.length() >= 12) return false;
+		if (varname.length() > 12) return false;
 		
 		char[] chars = varname.toCharArray();
 		for (char c : chars) {

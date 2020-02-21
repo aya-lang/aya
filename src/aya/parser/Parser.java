@@ -141,23 +141,8 @@ public class Parser {
 			
 			//Number Literals
 			else if(Character.isDigit(current)) {
-				StringBuilder num = new StringBuilder(""+current);
-				
-				while(in.hasNext() && Character.isDigit(in.peek())) {
-					num.append(in.next());
-				}
-				
-				//Decimal
-				if(in.hasNext() && in.peek(0) == '.' && in.hasNext(1) && Character.isDigit(in.peek(1)) ) {
-					num.append('.');
-					in.next(); //Skip the '.'
-					while(in.hasNext() && Character.isDigit(in.peek())) {
-						num.append(in.next());
-					}
-				}
-				
-				
-				tokens.add(new NumberToken(num.toString()));
+				in.backup();
+				tokens.add(parseNumber(in));
 			}
 			
 			//Dot (operator/decimal)
@@ -165,11 +150,8 @@ public class Parser {
 				if(in.hasNext()) {
 					//Decimal
 					if (Character.isDigit(in.peek())) {
-						StringBuilder num = new StringBuilder("0.");
-						while(in.hasNext() && Character.isDigit(in.peek())) {
-							num.append(in.next());
-						}
-						tokens.add(new NumberToken(num.toString()));
+						in.backup();
+						tokens.add(parseNumber(in));
 					}
 					
 					//Key Variable
@@ -468,14 +450,8 @@ public class Parser {
 				
 				// Special number
 				else if (in.hasNext() && (isDigit(in.peek()) || in.peek() == '-') ) {
-					//Collect the special number
-					StringBuilder specNum = new StringBuilder();
-					while (in.hasNext() && (isDigit(in.peek()) || isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.') ) {
-						if (in.peek() == '.' && in.hasNext() && !isDigit(in.peek(1)))
-							break;
-						specNum.append(in.next());
-					}
-					tokens.add(new NumberToken(specNum.toString(), true));
+					in.backup();
+					tokens.add(parseNumber(in));
 				}
 				
 				// Normal Colon
@@ -502,6 +478,49 @@ public class Parser {
 		return tokens;
 	}
 	
+
+
+	public static NumberToken parseNumber(ParserString in) {
+		if (!in.hasNext()) {
+			throw new SyntaxError("Attempted to parse empty number string");
+		}
+		char start = in.next();
+		if (start == ':') {
+			if (in.hasNext() && (isDigit(in.peek()) || in.peek() == '-')) {
+				//Collect the special number
+				StringBuilder specNum = new StringBuilder();
+				while (in.hasNext() && (isDigit(in.peek()) || isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.') ) {
+					if (in.peek() == '.' && in.hasNext() && !isDigit(in.peek(1)))
+						break;
+					specNum.append(in.next());
+				}
+				return new NumberToken(specNum.toString(), true);
+			} else {
+				throw new SyntaxError(in.toString() + " is not a valid number");
+			}
+		} else if (isDigit(start) || start == '.') {
+			StringBuilder num = new StringBuilder(""+start);
+			
+			while(in.hasNext() && Character.isDigit(in.peek())) {
+				num.append(in.next());
+			}
+			
+			if (start != '.') { // The start of the number was not a decimal, there may be one now
+				//Decimal
+				if(in.hasNext() && in.peek(0) == '.' && in.hasNext(1) && Character.isDigit(in.peek(1)) ) {
+					num.append('.');
+					in.next(); //Skip the '.'
+					while(in.hasNext() && Character.isDigit(in.peek())) {
+						num.append(in.next());
+					}
+				}
+			}
+			return new NumberToken(num.toString());
+		} else {
+			throw new SyntaxError(in.toString() + " is not a valid number");
+		}
+	}
+
 
 
 	public static TokenQueue assemble(TokenQueue in) {

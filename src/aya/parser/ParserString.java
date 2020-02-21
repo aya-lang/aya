@@ -30,6 +30,12 @@ public class ParserString {
 	public char peek(int i) {
 		return chars[ix + i];
 	}
+
+	/** Set the index back one character */
+	public void backup() {
+		ix--;
+		if (ix < 0) ix = 0;
+	}
 	
 	/** Returns false if there is no more data to be parsed by looking ahead i characters. hasNext() == hasNext(0) */
 	public boolean hasNext(int i) {
@@ -70,4 +76,5 @@ public class ParserString {
 			out += chars[k];
 		return new String(out);
 	}
+
 }

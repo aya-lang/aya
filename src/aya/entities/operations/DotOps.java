@@ -42,6 +42,9 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
+import aya.parser.ParserString;
+import aya.parser.tokens.NumberToken;
+import aya.parser.tokens.Token;
 import aya.util.Pair;
 import aya.util.QuickDialog;
 import aya.variable.Variable;
@@ -197,19 +200,9 @@ class OP_Dot_Bang extends OpInstruction {
 			block.push(((NumberList)o).signnum());
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
-			Block b;
 			try {
-				b = Parser.compile(numStr, Aya.getInstance());
-			} catch (Exception e) {
-				b = null;
-			}
-
-			if (b != null
-					&& b.getInstructions().getInstrucionList().size() == 1
-					&& DataInstruction.isa(b.getInstructions().peek(0), Obj.NUMBER)) {
-				DataInstruction data = (DataInstruction)b.getInstructions().peek(0);
-				block.push(data.getData());
-			} else {
+				block.push(Parser.parseNumber(new ParserString(numStr)).numValue());
+			} catch (SyntaxError e) {
 				block.push(o);
 			}
 		} else {
