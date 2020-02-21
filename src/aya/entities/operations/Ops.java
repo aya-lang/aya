@@ -1562,7 +1562,7 @@ class OP_V extends OpInstruction {
 	
 	public OP_V () {
 		init("V");
-		arg("N|C", "increment");
+		arg("N|C", "decrement");
 		arg("J", "decrement in place");
 		arg("L", "uncons from back");
 		setOverload(1, "dec");
