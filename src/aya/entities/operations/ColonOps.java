@@ -504,6 +504,7 @@ class OP_Colon_C extends OpInstruction {
 	public OP_Colon_C() {
 		init(":C");
 		arg("J", "convert symbol to string name");
+		arg("S", "return S");
 	}
 
 	@Override
@@ -512,6 +513,8 @@ class OP_Colon_C extends OpInstruction {
 		
 		if (a.isa(SYMBOL)) {
 			block.push( new Str(((Symbol)a).name()) );
+		} else if (a.isa(STR)) {
+			block.push(a);
 		} else {
 			throw new TypeError(this, a);
 		}
