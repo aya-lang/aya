@@ -43,5 +43,13 @@ public class FileUtils {
 			return pathAppend(AyaPrefs.getWorkingDir(), dir);
 		}
 	}
+
+	public static boolean isFile(String str) {
+		return new File(str).isFile();
+	}
+	
+	public static String resolveHome(String path) {
+		return path.replaceFirst("^~", System.getProperty("user.home"));
+	}
 	
 }

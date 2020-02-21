@@ -651,14 +651,18 @@ class OP_SysConfig extends OpInstruction {
 	public OP_SysConfig() {
 		init("MZ");
 		arg("AN",  "system functions\n"
-				+ "  S1: change prompt text\n"
-				+ "  A2: get working dir\n"
-				+ "  S3: set working dir\n"
+				+ "  S1:  change prompt text\n"
+				+ "  A2:  get working dir\n"
+				+ "  S3:  set working dir\n"
 				+ "  \"\"3: reset working dir\n"
-				+ "  S4: list files in working dir + S\n"
-				+ "  S5: create dir in working dir + S\n"
-				+ "  S6: delete file or dir"
-				+ "  S7: get home dir + S");
+				+ "  S4:  list files in working dir + S\n"
+				+ "  S5:  create dir in working dir + S\n"
+				+ "  S6:  delete file or dir\n"
+				+ "  S7:  get home dir + S\n"
+				+ "  S8:  test if file exists at S\n"
+				+ "  S9:  System.getProperty(S)\n"
+				+ "  S10: Resolve home in path"
+				);
 	}
 
 	@Override
@@ -736,8 +740,7 @@ class OP_SysConfig extends OpInstruction {
 			} else {
 				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
-
-		break;
+			break;
 		
 		//Delete
 		case 6:
@@ -753,14 +756,30 @@ class OP_SysConfig extends OpInstruction {
 			} else {
 				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
-
-		break;
+			break;
 		
 		case 7:
 			b.push(new Str(FileUtils.pathAppend(AyaPrefs.getHomeDir(), arg.str())));
 			break;
 			
-
+		case 8:
+			b.push(FileUtils.isFile(arg.str()) ? Num.ONE : Num.ZERO);
+			break;
+			
+		case 9:
+			{
+				String val = System.getProperty(arg.str());
+				if (val == null) {
+					b.push(Str.EMPTY);
+				} else {
+					b.push(new Str(val));
+				}
+			}
+			break;
+			
+		case 10:
+			b.push(new Str(FileUtils.resolveHome(arg.str())));
+			break;
 		
 		default:
 			throw new AyaRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
