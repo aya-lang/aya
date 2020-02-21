@@ -3,7 +3,6 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import aya.exceptions.AyaRuntimeException;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;

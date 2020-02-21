@@ -19,12 +19,15 @@ import aya.entities.operations.DotOps;
 import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
+import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.list.Str;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
@@ -321,6 +324,15 @@ public class Aya extends Thread {
 			return _instance._in.available() > 0;
 		} catch (IOException e) {
 			return false;
+		}
+	}
+
+
+	public static Obj exceptionToObj(Exception e) {
+		if (e instanceof AyaUserObjRuntimeException) {
+			return ((AyaUserObjRuntimeException)e).getObj();
+		} else {
+			return new Str(exToString(e));
 		}
 	}
 

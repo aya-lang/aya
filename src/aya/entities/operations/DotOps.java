@@ -1,5 +1,6 @@
 package aya.entities.operations;
 
+
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
@@ -21,7 +22,7 @@ import java.util.Stack;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.AyaUserRuntimeException;
+import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.DataInstruction;
@@ -836,18 +837,12 @@ class OP_Dot_Error extends OpInstruction {
 
 	public OP_Dot_Error() {
 		init(".D");
-		arg("S", "interrupts the program and throws an error message");
+		arg("A", "throw an exception containing A");
 	}
 
 	@Override
 	public void execute (Block block) {
-		Obj a = block.pop();
-
-		if(a.isa(STR)) {
-			throw new AyaUserRuntimeException(a.str());
-		} else {
-			throw new TypeError(this, a);
-		}
+		throw new AyaUserObjRuntimeException(block.pop());
 	}
 }
 
@@ -1010,7 +1005,7 @@ class OP_Dot_TryCatch extends OpInstruction {
 				block.appendToStack(b.getStack());
 			} catch (Exception e) {
 				Block b = ((Block)catchBlock).duplicate();
-				b.push(new Str(Aya.exToString(e)));
+				b.push(Aya.exceptionToObj(e));
 				b.eval();
 				block.appendToStack(b.getStack());
 			}
