@@ -2,27 +2,28 @@ import ::csv
 
 
 module ::rdatasets
+export ::rdatasets
 
 def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/datasets.csv"
 def rdatasets::_cache_loc "data/rdatasets_index.csv"
 
 .# Load index file
-({:index_str("") data index({,}) packages({,}),
+def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
 
     {
         rdatasets._cache_loc G :index_str;
-        "Loaded index from cache" :P
     } {
+        "Downloading dataset from $(rdatasets._index_csv)..." :P
         rdatasets._index_csv G :index_str;
         index_str rdatasets._cache_loc 0 .G
-        "Loaded index from github" :P
     } .K
 
+    "Parsing CSV..." :P
     index_str "," csv.parse :data;
     data V; :data; .# Remove first row
 
     .# Build index
-    rdatasets._index_csv csv.open :data;
+    "Building index..." :P
     data :# {row : pkg(row.[0]) name(row.[1]),
         .# Add to url index
         row.[:2] "$pkg/$name" index :D
@@ -34,12 +35,21 @@ def rdatasets::_cache_loc "data/rdatasets_index.csv"
         name packages.[pkg] .B ;
 
     };
+    "Done." :P
 
     def rdatasets::index index
     def rdatasets::packages packages
-})
+}
+
+
+def rdatasets::index {,}
+def rdatasets::packages {,}
 
 def rdatasets::load {id::str : rdatasets^ csv^,
+    rdatasets.index :E 0 = {
+        rdatasets.load_index
+    } ?
+    
     "/" `in id {
         rdatasets.index.[id]
     } {

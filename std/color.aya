@@ -290,16 +290,16 @@ def color::rgbtohsv {r g b : h s v delta maxv minv,
 .# TESTS #
 .#########
 
-`~ {:ts,
+({:ts,
 
     "color" testset! :ts;
 
-    {0 0 0 color! :T} [::color] ts+
-    {"35C62A" color.newhex.rgb} [[53 198 42]] ts+
-    {"35C62A" color.newhex.hsv 100*./} [[11577 79 78]] ts+
-    {"35C62A" color.newhex.hex} ["35c62a"] ts+
-    {"ff00ff" color.newhex.hex} ["ff00ff"] ts+
-    {colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
+    {: color^, 0 0 0 color! :T} [::color] ts+
+    {: color^, "35C62A" color.newhex.rgb} [[53 198 42]] ts+
+    {: color^, "35C62A" color.newhex.hsv 100*./} [[11577 79 78]] ts+
+    {: color^, "35C62A" color.newhex.hex} ["35c62a"] ts+
+    {: color^, "ff00ff" color.newhex.hex} ["ff00ff"] ts+
+    {: colors^, colors.red colors.blue.mid.rgb} [[127 0 127]] ts+
 
     ts __aya__.addtest
-}
+})

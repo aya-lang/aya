@@ -273,12 +273,9 @@
 load "test/test_range"
 load "test/test_op_overload"
 
-reload
-"":P
-
 .# Import entire standard library
 "Importing standard library..." :P
-"base"4MZ :# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
+"std"4MZ :# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
 

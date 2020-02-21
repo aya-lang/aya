@@ -36,6 +36,14 @@
 { 1 {?{1+=},  0 "a", 1 "b", "c"} } assert ["a"]
 { 1 {?{\1+=}, 0 "a", 1 "b", "c"} } assert ["c"]
 
+.# Capture order
+{:x, 1 2 3 {3?, .A:x0 0} x } assert [[1 2 3]]
+{:x, 1 2   {2?, .A:x0 0} x } assert [[1 2]]
+{:x, 1     {1?, .A:x0 0} x } assert [[1]]
+{:x, 1     { ?, .A:x0 0} x } assert [[1]]
+{:x,       {0?, .A:x0 0} x } assert [[]]
+
+
 
 
 

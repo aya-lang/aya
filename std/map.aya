@@ -9,6 +9,7 @@
 .}
 
 class ::map
+export ::map
 
 def map::__init__ {self,
     [] self.:keys;
@@ -89,19 +90,19 @@ def map::fromlist {list : map^ m,
 .# TESTS #
 .#########
 
-`~ {:ts,
+`~ {:ts map^,
 
     "map" testset! :ts;
 
-    {[[::a"a"]['b::b][2 1]]map.fromlist.[::a]} ["a"] ts+
-    {[[::a"a"]['b::b][2 1]]map.fromlist.['b]} [::b] ts+
-    {[[::a"a"]['b::b][2 1]]map.fromlist.[2]} [1] ts+
-    {::a [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [1] ts+
-    {::c [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [0] ts+
-    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put m.[::c]} ["C"] ts+
-    {:m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put "c" ::c m.put m.[::c]} ["c"] ts+
-    {:m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [2] ts+
-    {:m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [3] ts+
+    {: map^, [[::a"a"]['b::b][2 1]]map.fromlist.[::a]} ["a"] ts+
+    {: map^, [[::a"a"]['b::b][2 1]]map.fromlist.['b]} [::b] ts+
+    {: map^, [[::a"a"]['b::b][2 1]]map.fromlist.[2]} [1] ts+
+    {: map^, ::a [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [1] ts+
+    {: map^, ::c [[::a"a"]['b::b][2 1]]map.fromlist.haskey} [0] ts+
+    {: map^ m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put m.[::c]} ["C"] ts+
+    {: map^ m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put "c" ::c m.put m.[::c]} ["c"] ts+
+    {: map^ m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [2] ts+
+    {: map^ m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E} [3] ts+
 
     ts __aya__.addtest
 

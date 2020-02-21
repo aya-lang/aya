@@ -63,7 +63,7 @@ def __aya__::addtest {ts::testset : __aya__^,
     __aya__.tests ts K ;
 }
 
-def __aya__::doruntests {:__aya__,
+def __aya__::doruntests {:__aya__^,
     __aya__.tests # {ts,
         ts.run
     };
