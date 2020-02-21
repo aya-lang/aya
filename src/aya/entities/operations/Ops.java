@@ -1774,6 +1774,7 @@ class OP_Bar extends OpInstruction {
 		init("|");
 		arg("NN", "logical or");
 		arg("SS", "split S1 using regex S2");
+		arg("SC", "split str using char");
 		arg("LN", "cut L at index N");
 		setOverload(2,  "or");
 	}
@@ -1789,14 +1790,37 @@ class OP_Bar extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.bor((Number)a, (Number)b) );
 		}
+		else if (b.isa(STR)) {
+			if (a.isa(STR)) {
+				String[] list = b.str().split(a.str());
+				ArrayList<Obj> res = new ArrayList<Obj>(list.length);
+				for(String s : list) {
+					res.add(new Str(s));
+				}
+				block.push(new GenericList(res));
+			} else if (a.isa(CHAR)) {
+				char splitter = ((Char)a).charValue();
+				ArrayList<Obj> strs = new ArrayList<Obj>();
+				StringBuilder current_str = new StringBuilder();
+				char[] chars = b.str().toCharArray();
+				for (char c : chars) {
+					if (c == splitter) {
+						strs.add(new Str(current_str.toString()));
+						current_str = new StringBuilder();
+					} else {
+						current_str.append(c);
+					}
+				}
+				if (current_str.length() > 0) {
+					strs.add(new Str(current_str.toString()));
+				}
+				block.push(new GenericList(strs));
+			} else {
+				throw new TypeError(this, a, b);
+			}
+		}
 		// find regex matches
 		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
-			String[] list = b.str().split(a.str());
-			ArrayList<Obj> res = new ArrayList<Obj>(list.length);
-			for(String s : list) {
-				res.add(new Str(s));
-			}
-			block.push(new GenericList(res));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
 			int index = ((Number)a).toInt();
 			List l = (List)b;
