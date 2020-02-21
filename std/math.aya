@@ -3,8 +3,8 @@
 .# math.aya
 .# Essential math functions for Aya
 
-import ::types
-import ::list
+.# Export all variables
+exportall
 
 
 .#############
@@ -222,8 +222,6 @@ import ::list
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts _rnd,
 
     "math" testset! :ts;
@@ -265,5 +263,3 @@ import ::test
 
     ts __aya__.addtest
 }
-
-__aya__.doruntests

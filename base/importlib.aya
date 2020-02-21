@@ -1,0 +1,263 @@
+module ::importlib
+
+def importlib::_debug 0
+
+def importlib::_log_debug {:importlib^,
+     importlib._debug {"importlib: " \+ :P} {;} .?
+}
+
+def importlib::aya_dir (""2MZ)
+
+.# Dictionary of files which have been imported
+def importlib::imported {,}
+
+def importlib::path [
+    importlib.aya_dir "std" :9c + +    .# <aya>/base
+]
+
+.# Return the path with the current directory at the bottom
+def importlib::get_path { : importlib^ ,
+    importlib.path
+    ""2 MZ
+    J
+}
+
+.# Return a dictionary with the file loaded in it
+.# If the file is already loaded, return the item from the dict
+def importlib::load_file {filename : importlib^,
+    "$filename importlib::load_file" importlib._log_debug
+    importlib.imported filename N\; {
+        .# Return from the cache
+        "Loading file $filename from cache" importlib._log_debug
+        importlib.imported.[filename]
+    } {
+        { .# try
+            "Attempting to open file $filename..." importlib._log_debug
+            .# Load the file into a dict scope
+            {,
+                .# If __main__ exists and is 0, `main` will discard its block
+                .# Otherwise it will execute it
+                0:__main__;
+                .# The filename of the file being loaded
+                filename :__file__;
+                .# 1: export all
+                .# 0: left in default state
+                .# []: export nothing
+                .# [syms...] export given names
+                0:__export__;
+                filename G ~
+            } :& importlib.imported.:[filename]
+            "Loaded file $filename" importlib._log_debug
+        } {e,
+            "Error importing '$filename':\n\t$e" .D
+        } .K
+    } .?
+}
+
+
+.# A file is main if `__main__` is undefined or not 0
+def importlib::is_main {
+    { .# try
+        __main__ 0 =!
+    } {;
+        1
+    } .K
+}
+
+.{
+    ::foo => "foo"
+    "foo" => "foo"
+    "foo.bar" => "foo/bar"
+    "foo/bar" => "foo/bar"
+.}
+def importlib::to_path_str {s,
+    "\." "/" s :C .& ".aya" +
+}
+
+.# Import from path
+.{
+    import "foo"
+
+    Use __* variables so exported variables are not shadowed
+.}
+def importlib::from_path {__file : importlib^ __mod,
+    "$__file importlib::from_path" importlib._log_debug
+
+    __file importlib.to_path_str importlib.from_file :__mod;
+
+    __file __mod importlib.do_export
+}
+
+.{
+    Export variables from a module
+    If symbols are defined in the module's __export__ variable,
+        only export those ones,
+    If __export__ is the value 1, export all variables from the module
+    If __export__ does not exist but the import name was a symbol,
+        export the entire module as the name of the symbol
+
+.}
+def importlib::do_export {__importname __module : importlib^,
+    "$__importname <module> importlib::export" importlib._log_debug
+    "  export: $(__module.__export__)" importlib._log_debug
+    {0?,
+        (__module ::__export__ N!) {
+            "__export__ not found in module $__importname. Was it deleted?" .D
+        },
+        (__module.__export__ 1 =) {
+                "Exporting all variables from $__importname..." importlib._log_debug
+                .# Introduce scope to catch any names we never want to export
+                ({: __export__ __main__ __file__,
+                    __module W
+                })
+        },
+        (__module.__export__ 0 =) {
+            (__importname :T ::sym =) {
+                "Exporting entire module as import name: $__importname" importlib._log_debug
+                __module __importname :=;
+            } {
+                "Export in default state but import is not a symbol, not exporting anything" importlib._log_debug
+            } .?
+        },
+        (__module.__export__ :T ::list =) {
+            "Exporting variables from $__importname" importlib._log_debug
+            __module.__export__ :# {var,
+                "  exporting $var..." importlib._log_debug
+                __module var I var :=;
+            };
+        },
+        {
+            "Invalid value for __export__ when importing $__importname: $(__module.__export__)" .D
+        }
+    }
+}
+
+.{
+    Directly append the file to each of the paths and attempt to load
+    Example input:
+    filepath: ("foo.aya", "bar/baz.aya", "/Users/user/foo.aya")
+.}
+def importlib::from_file {filepath : importlib^ all_possible mod,
+    "$filepath importlib::from_file" importlib._log_debug
+
+    importlib.get_path :# { filepath + } :~ :all_possible
+    .# Get only files that exist
+    {8 MZ} I
+    .# If the lists is empty, throw an error
+    .E 0 = {"Import Error: Unable to find any of the following files: $all_possible" .D} ?
+
+    .# Returns a dict containing the imported content
+    .[0] importlib.load_file
+}
+
+.{
+    name may be any of the following:
+    ::foo (symbol)
+    "foo" (single item)
+    "foo bar" (whitespace seperated)
+    "foo\nbar" (whitespace seperated)
+    [::foo ::bar] (list of symbols)
+    ["foo" "bar"]  (list of strings)
+    "foo.baz" (file baz in dir foo)
+
+    Use __* variables so exported variables are not shadowed
+.}
+def importlib::import {__name : importlib^,
+    __name :T {?=,
+        ::sym {__name importlib.from_path},
+        ::str {
+            __name {?,
+                (".aya" N 0 :>) { __name importlib.from_file },
+                (.[0] '/ =)     { __name importlib.load_file },
+                                { __name importlib.from_path }
+            }
+        },
+        ::list {
+            __name :# { importlib.import } ;
+        }
+    }
+}
+
+
+
+def importlib::is_exportall {
+    { .# try
+        __export__ 1 =
+    } {;
+        0
+    } .K
+}
+
+def importlib::export {vars : importlib^,
+    .# Only make any changes if not exporting all already
+    importlib.is_exportall ! {
+        .# Get the currently exported
+        {__export__;} {e, []:__export__;} .K
+        .# If exported is default (0), set it to a list
+        __export__ 0 = {[]:__export__;} ?
+        .# Add new exported
+        vars {?,
+            (1 =) {
+                1 :__export__;
+            },
+            (:T ::sym =) {
+                vars __export__ .B ;
+            },
+            (:T ::list =) {
+                vars __export__ J :__export__;
+            },
+            {
+                "export error: cannot export $vars" .D
+            }
+        }
+    } ?
+}
+
+.# Import certain symbols from a module
+def importlib::from {mod_sym import_vars : meta_mod importlib^,
+    "$mod_sym $import_vars importlib.from" importlib._log_debug
+    {,
+        mod_sym importlib.import
+    }:meta_mod;
+
+    import_vars :T ::sym = {[import_vars]:import_vars;} ?
+
+    import_vars :# {var,
+        { .# try
+            .# Export the variable from the imported module
+            meta_mod.[mod_sym].[var] var := ;
+        } {
+            { .# try
+                .# The variable was exported into the meta module and
+                .# does not exist in the inner module
+                meta_mod.[var] var := ;
+            } {
+                "Import Error: $var does not exist in module $mod_sym" .D
+            } .K
+        } .K
+    };
+}
+
+importlib __aya__.:importlib;
+
+.# If provided a 0 (for example from `from` keyword), do nothing
+{`(:& 0= {;} {__aya__.importlib.import} .?)}:import;
+
+{`(__aya__.importlib.export)}:export;
+{1:__export__;} :exportall;
+
+.# from ::math import [::sin ::cos]
+.# from ::io import ::path
+{
+    ```0        .# Insert a zero just after `import` so it no-ops
+    (````(      .# Insert after import list `::mod import [] ^here`
+        __aya__.importlib.from
+    ))
+}:from;
+
+.# main {do stuff...}
+.# Do not execute this block if the file it is contained in
+.# is being imported as a module
+{`(
+    __aya__.importlib.is_main {~} {;} .?
+)}:main;

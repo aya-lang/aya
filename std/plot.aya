@@ -3,7 +3,7 @@
 .# plot.aya
 .# Defines the plot type
 
-import ::list
+export [::plot]
 
 {, .# plot
 

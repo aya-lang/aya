@@ -73,8 +73,6 @@ def stack::__each__ {blk self,
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "stack" testset! :ts;

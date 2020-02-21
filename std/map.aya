@@ -89,8 +89,6 @@ def map::fromlist {list : map^ m,
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "map" testset! :ts;

@@ -114,8 +114,6 @@ def set::__each__ {blk self,
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "set" testset! :ts;

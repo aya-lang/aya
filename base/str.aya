@@ -3,10 +3,6 @@
 .# string.aya
 .# Defines functions for working with strings and regular expressions
 
-import ::char
-import ::types
-import ::list
-
 {,
     .# Import list variables
     using list
@@ -203,7 +199,7 @@ def ::matstr {m : colmax,
 
         s.[0] '{ = {::indent B} ?
     }
-}
+};
 
 
 
@@ -211,8 +207,6 @@ def ::matstr {m : colmax,
 .#########
 .# TESTS #
 .#########
-
-import ::test
 
 `~ {:ts,
 

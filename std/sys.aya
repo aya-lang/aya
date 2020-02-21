@@ -1,5 +1,5 @@
 module ::sys
-
+export ::sys
 
 .#? sys.iswindows\n  returns true if system is windows
 def sys::iswindows {:9c"\\"=}
@@ -18,3 +18,9 @@ def sys::cd {dirname,
 def sys::mkdir {dir::str,
     dir 5MZ
 }
+
+def sys::readdir {dir::str,
+    dir 4MZ
+}
+
+

@@ -57,17 +57,17 @@ def testset::run {self,
 
 .# Add functions to the aya namespace
 
-[] __aya__.:tests
+def __aya__::tests []
 
-{ts::testset,
+def __aya__::addtest {ts::testset : __aya__^,
     __aya__.tests ts K ;
-} __aya__.:addtest;
+}
 
-{
+def __aya__::doruntests {:__aya__,
     __aya__.tests # {ts,
         ts.run
     };
-} __aya__.:doruntests;
+}
 
 
 .{

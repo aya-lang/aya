@@ -79,8 +79,6 @@ def stats::pearson {x y : n xs ys,
     /
 }
 
-import ::test
-
 ({:ts stats^,
     "stats" testset! :ts;
 

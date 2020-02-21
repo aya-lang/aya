@@ -10,83 +10,10 @@
 
 {, .# begin __aya__ namespace
 
-[
-  "__aya__"  .# This file
-]:imported;
-
-""2MZ "base" :9c + + :basedir;
-""2MZ :homedir;
-
 .#? S __aya__.alterprompt\n  change the prompt text
 {1MZ}:alterprompt;
 
 {,}:interpreter;
-
-.# import name; import dir name
-{importname__ importdirn__,
-
-    .# True if the file is not imported
-    __aya__.imported importname__ N\; :-1 =
-
-    .# If condition is true
-    { .# File not already imported, load it
-
-        .# Add the name to the list
-        importname__ __aya__.imported .B;
-
-        { .# try
-            .# Load the file
-            importdirn__ importname__ + ".aya" + G ~
-        } {e, .# catch
-            .# Remove the file from imported list
-            __aya__.imported importname__ N .- ;
-            "Error importing '$(importname__)':\n\t$e" .D
-        } .K
-
-    }
-
-    .# If condition is false
-    { .# File already imported
-      .# do nothing
-    }
-    .?
-
-}:importfrmdir;
-
-
-.# importbase uses the home dir instead of the
-.# base dir
-{
-  __aya__.basedir __aya__.importfrmdir
-}:importbase;
-
-
-.# importfile uses the home dir instead of the
-.# base dir
-{
-  __aya__.homedir __aya__.importfrmdir
-}:importfile;
-
-{importname__,
-    .# Does the name contain a file sep? (:9c)
-    .# :9c $ "\\"= {;"\\\\"} ? returns an escaped "\" -> "\\" if windows
-    importname__ $ (:9c $ "\\"= {;"\\\\"} ?) | #{"/"|} .F =
-
-    { .# No file sep, import from base
-        importname__ __aya__.importbase
-    }
-
-    { .# input contains a file sep
-        importname__ __aya__.importfile
-    }
-
-    .?
-}:import;
-
-
-{
-    [] __aya__.:imported;
-}:resetimports;
 
 {,
     "M!" :__fact__
@@ -120,47 +47,15 @@
 
 }:__aya__;
 
-1 nil.M.:__pushself__;
+.# 1 nil.M.:__pushself__;
 
 
 
 
 
-.#######################
+.###########################
 .# DEFINE __aya__ KEYWORDS #
-.#######################
-
-
-
-.# ------
-.# IMPORT
-.# ------
-
-.#? import library\n  import a __aya__ file\n  files are only imported once
-{`(
-    $ :T ::sym = {:C} ?
-    .# Split whitespace separated names
-    "\s+" | [""] :| #{__aya__.import};
-)}:import;
-
-
-
-
-.# ------
-.# RELOAD
-.# ------
-
-.#? reload\n  reload imported files
-{:workingdir__,
-    ""2MZ            .# Save the current working dir
-    ""3MZ            .# Reset the working dir
-    __aya__.imported$\;  .# Copy currently imported files
-    __aya__.resetimports .# Clear all imports
-    "ayarc.aya" G ~  .# Load __aya__rc
-    \ 3 MZ           .# Change the working dir back
-    # {__aya__.import};  .# Reimport files
-}:reload;
-
+.###########################
 
 
 
@@ -319,7 +214,7 @@ opt_mod (
     {block name,
         block.` name := ;
     }
-) :fn:def;
+):def;
 
 
 
@@ -488,10 +383,6 @@ static point::static_fn {
 {```.?}:if;
 
 
-.#? B then E\n  evaluates E if B is true
-{`?}:then;
-
-
 .#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
 {``({condition__ loop__,
     {loop__ condition__} W
@@ -512,13 +403,6 @@ static point::static_fn {
 .#? A println\n  convert to string and print to console on its own line
 {:P}:println;
 
-
-.#? getline\n  read input from stdin and return it as a string
-{:R}:getline;
-
-
-.#? SB conderr\n  throw error message if condition is true
-{{.D} {;} .?}:conderr;
 
 .#? BS assert\n throw error if bool is false
 {\! {.D} {;} .?}:assert;
@@ -561,15 +445,21 @@ static point::static_fn {
 .# import types #
 .################
 
-.#"C:/Users/Nick/git/aya-lang/base/" __aya__.:basedir;
+[
+    "test"
+    .# Type extensions
+    "num"
+    "char"
+    "list"
+    "str"
+    "block"
+    "sym"
+    "types"
 
-import """
-types
-str
-num
-char
-block
-list
-sym
-test
-"""
+    .# required libraries
+    "importlib"
+    "enum"
+] :# {f,
+    .# "Loading base/$f..." :P
+    load "base/$f"
+};

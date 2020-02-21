@@ -1,20 +1,41 @@
 .# Shell-like commands for Aya
 
 import ::sys
-import ::str
 import ::io
 import ::terminal
+
+struct ::shellresult [::value]
+
+def shellresult::__repr__ {self,
+    self.value
+}
+
+def shellresult::lines {self,
+    self.value "\n" |
+}
+
+
+exportall
 
 
 .#? ls\n  print a list of files in the working dir
 def ::ls {
     ""4MZ
     .E 0 = {
-        ; "  <no files>" println
+        ; "  <no files>"
     } {
-        C # {"  " \ + println} ;
+        C "\n" *
     } .?
+
+    shellresult!
 }
+
+def ::grep_impl {res::shellresult rgx::str,
+    res.lines {rgx &E0>} I
+    "\n" * shellresult!
+}
+
+def ::grep {`(grep_impl)}
 
 
 .#? pwd\n  print working directory

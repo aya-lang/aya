@@ -2,6 +2,7 @@ import ::sys
 
 
 class ::path
+export ::path
 
 
 .# Create a new path (accepts relative or abs paths)
@@ -166,8 +167,6 @@ sys.iswindows {:9c$+} {:9c} .? path.:filesplit;
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "path" testset! :ts;
@@ -188,6 +187,7 @@ import ::test
 .####################
 
 class ::file
+export ::file
 
 def file::__init__ {filepath type::char  self,
     .# save a copy of the path
@@ -291,6 +291,7 @@ def file::__repr__ {self,
 .# dummyfile for testing opening and closing of input streams
 
 class ::dummyfile
+export ::dummyfile
 
 def dummyfile::__init__ {name self,
     "opened dummy file '$name'" :P

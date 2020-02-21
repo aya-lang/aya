@@ -1,6 +1,7 @@
-import ::color
+from ::color import ::colors
 
 module ::terminal
+export ::terminal
 
 def terminal::fg (colors.white)
 def terminal::bg (colors.black)

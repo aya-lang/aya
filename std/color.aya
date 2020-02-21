@@ -3,9 +3,6 @@
 .# colors.aya
 .# Defines both color and colors types
 
-import ::list
-import ::str
-
 .{? class: color
     A module for manipulating and printing colors in Aya
 .}
@@ -292,8 +289,6 @@ def color::rgbtohsv {r g b : h s v delta maxv minv,
 .#########
 .# TESTS #
 .#########
-
-import ::test
 
 `~ {:ts,
 

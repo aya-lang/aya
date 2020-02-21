@@ -4,6 +4,7 @@
 .# Defines bitset type
 
 class ::bitset
+export ::bitset
 
 def bitset::__new__ {s meta,
     s :T ::num = {

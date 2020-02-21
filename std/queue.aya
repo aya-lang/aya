@@ -74,8 +74,6 @@ def queue::__each__ {blk self,
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "queue" testset! :ts;

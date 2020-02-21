@@ -1,4 +1,5 @@
 class ::matrix
+export ::matrix
 
 .# Test if list is a valid matrix
 def matrix::_is_valid_list {m::list,
@@ -433,8 +434,6 @@ def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}
 .#########
 .# TESTS #
 .#########
-
-import ::test
 
 
 `~ {:ts matrix^ m,

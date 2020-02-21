@@ -42,8 +42,6 @@
 .# TESTS #
 .#########
 
-import ::test
-
 `~ {:ts,
 
     "char" testset! :ts;

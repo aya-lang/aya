@@ -3,21 +3,21 @@
 .# golf.aya
 .# Defines operators and variables useful for golfing
 
-import """
-    list
-    str
-    date
-    math
-    matrix
-    dataframe
-    map
-    set
-    queue
-    sys
-    io
-    shell
-    plot
-"""
+exportall
+
+import [
+    ::date
+    ::math
+    ::matrix
+    ::dataframe
+    ::map
+    ::set
+    ::queue
+    ::sys
+    ::io
+    ::shell
+    ::plot
+]
 
 .# Standard library shortcuts
 num.clip.`   num.:c;
