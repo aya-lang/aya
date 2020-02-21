@@ -22,6 +22,3 @@ import ::csv
     }.capture[::make_url]:load_csv;
 
 }:rdatasets;
-
-
-
