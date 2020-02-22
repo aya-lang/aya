@@ -406,7 +406,7 @@ class OP_Times extends OpInstruction {
 				sb.append(la.get(i).str());
 				sb.append(sep);
 			}
-			sb.append(la.get(-1).str());
+			if (la.length() > 0) sb.append(la.get(-1).str());
 			block.push(new Str(sb.toString()));
 		} else {	
 			throw new TypeError(this, a,b);
