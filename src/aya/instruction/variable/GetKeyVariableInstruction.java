@@ -11,10 +11,10 @@ import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
-public class GetKeyVariableInstruction extends VariableInstruction {
+public class GetKeyVariableInstruction extends GetVariableInstruction {
 
 	public GetKeyVariableInstruction(long id) {
-		this.variable_ = id;
+		super(id);
 	}
 	
 	@Override
@@ -28,7 +28,7 @@ public class GetKeyVariableInstruction extends VariableInstruction {
 			if (dict.pushSelf() && o.isa(Obj.BLOCK)) {
 				b.push(dict);
 			}
-			GetVariableInstruction.addOrDumpVar(o, b);
+			this.addOrDumpVar(o, b);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
 			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym.id());
@@ -38,7 +38,7 @@ public class GetKeyVariableInstruction extends VariableInstruction {
 				try {
 					o = dict.get(variable_);
 					b.push(kv_obj);
-					GetVariableInstruction.addOrDumpVar(o, b);
+					this.addOrDumpVar(o, b);
 				} catch (UndefVarException e) {
 					throw new AyaRuntimeException("Built in type " + typeSym + 
 							" does not contain member '" + varName() + "'");

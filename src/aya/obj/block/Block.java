@@ -291,6 +291,10 @@ public class Block extends Obj {
 		return sb.toString();
 	}
 	
+	public boolean hasOutputState() {
+		return !stack.isEmpty();
+	}
+	
 	/** Returns a string representation of the output stack with type annotations */
 	public String getOutputStateDebug() {
 		StringBuilder sb = new StringBuilder();

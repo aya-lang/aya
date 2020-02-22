@@ -52,7 +52,13 @@ public class Aya extends Thread {
 	private VariableData _variables;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
-
+	
+	private CallStack _callstack = new CallStack();
+	
+	public CallStack getCallStack() {
+		return _callstack;
+	}
+	
 	protected Aya() {
 		//Exists only to defeat instantiation
 	}
@@ -260,8 +266,13 @@ public class Aya extends Thread {
 		} catch (Exception e) {
 			_instance._err.println(exToString(e));
 			try {
-				_instance._err.println("stack:\n\t" + b.getPrintOutputState());
-				_instance._err.println("just before:\n\t" + b.getInstructions().toString());
+				
+				if (b.hasOutputState())
+					_instance._err.println("stack:\n\t" + b.getPrintOutputState());
+				if (b.getInstructions().size() > 0)
+					_instance._err.println("just before:\n\t" + b.getInstructions().toString());
+				if (!_callstack.isEmpty())
+					_instance._err.print(_callstack.toString());
 			} catch (Exception e2) {
 				_instance._err.println("An additional error was thrown when attempting to print the stack state:");
 				_instance._err.println(exToString(e2));
@@ -269,6 +280,7 @@ public class Aya extends Thread {
 			}
 		} finally {
 			_instance._variables.reset();
+			_instance._callstack.reset();
 		}
 	}
 	

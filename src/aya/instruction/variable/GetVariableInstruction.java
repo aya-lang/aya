@@ -3,6 +3,7 @@ package aya.instruction.variable;
 import java.util.LinkedList;
 
 import aya.Aya;
+import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.variable.Variable;
@@ -16,7 +17,7 @@ public class GetVariableInstruction extends VariableInstruction {
 	@Override
 	public void execute(Block b) {
 		Obj o = Aya.getInstance().getVars().getVar(variable_);
-		addOrDumpVar(o, b);
+		this.addOrDumpVar(o, b);
 	}
 	
 	/**
@@ -24,8 +25,10 @@ public class GetVariableInstruction extends VariableInstruction {
 	 * @param o
 	 * @param b
 	 */
-	public static void addOrDumpVar(Obj o, Block b) {
+	public void addOrDumpVar(Obj o, Block b) {
 		if (o.isa(Obj.BLOCK)) {
+			Aya.getInstance().getCallStack().push(this);
+			b.add(PopCallstackInstruction.INSTANCE);
 			b.getInstructions().addAll(((Block)o).getInstructions().getInstrucionList());
 		} else {
 			b.push(o);
