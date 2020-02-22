@@ -41,6 +41,7 @@ public class CallStack {
 			sb.append(l.toString());
 			sb.append("\n  ");
 		}
+		sb.append("\n");
 		return sb.toString();
 	}
 
