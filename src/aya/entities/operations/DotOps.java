@@ -25,7 +25,6 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
-import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilder;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
@@ -44,8 +43,6 @@ import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.parser.tokens.NumberToken;
-import aya.parser.tokens.Token;
 import aya.util.Pair;
 import aya.util.QuickDialog;
 import aya.variable.Variable;
@@ -202,7 +199,14 @@ class OP_Dot_Bang extends OpInstruction {
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
 			try {
-				block.push(Parser.parseNumber(new ParserString(numStr)).numValue());
+				ParserString ps = new ParserString(numStr);
+				Number n = Parser.parseNumber(ps).numValue();
+				if (ps.hasNext()) {
+					// The full string wasn't used, it is not completely a number
+					block.push(o);
+				} else {
+					block.push(n);
+				}
 			} catch (SyntaxError e) {
 				block.push(o);
 			}
