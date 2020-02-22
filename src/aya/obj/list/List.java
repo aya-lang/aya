@@ -161,13 +161,36 @@ public abstract class List extends Obj {
 		return true;	
 	}
 	
-	/** Transpose a 2d list of lists */
-	public static List transpose(List list) {
-		
-		if (!isRect(list)) {
-			throw new AyaRuntimeException("Cannot transpose list, must be rectangular: " + list.repr());
+	public static boolean noInnerLists(List list) {
+		for (int i = 0; i < list.length(); i++) {
+			if (list.get(i).isa(LIST)) return false;
 		}
-		
+		return true;
+	}
+	
+	
+	public static List transpose(List list) {
+		if (list.length() == 0) {
+			return new GenericList(new ArrayList<Obj>());
+		} else if (isRect(list)) {
+			return _transpose2d(list);
+		} else if (noInnerLists(list)) {
+			// Wrap each item in a list
+			ArrayList<Obj> outer_list = new ArrayList<Obj>();
+			for (int i = 0; i < list.length(); i++) {
+				ArrayList<Obj> inner_list = new ArrayList<Obj>();
+				inner_list.add(list.get(i));
+				outer_list.add(new GenericList(inner_list));
+			}
+			return new GenericList(outer_list);
+		} else {
+			throw new AyaRuntimeException("Cannot transpose list: " + list.repr());
+		}
+	}
+	
+	/** Transpose a 2d list of lists
+	 *  input: a rectangular list */
+	public static List _transpose2d(List list) {
 		// Convert to list of lists
 		ArrayList<List> lists = new ArrayList<List>(list.length());
 		for (int i = 0; i < list.length(); i++) {
@@ -175,6 +198,12 @@ public abstract class List extends Obj {
 		}
 		
 		int cols = lists.get(0).length();
+		
+		if (cols == 0) {
+			ArrayList<Obj> outer_list = new ArrayList<Obj>();
+			outer_list.add(new GenericList(new ArrayList<Obj>()));
+			return new GenericList(outer_list);
+		}
 		
 		ArrayList<Obj> out = new ArrayList<Obj>(cols);
 		for (int i = 0; i < cols; i++) {
