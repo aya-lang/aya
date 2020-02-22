@@ -1005,9 +1005,15 @@ class OP_Dot_TryCatch extends OpInstruction {
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
 				Block b = ((Block)tryBlock).duplicate();
+				Aya.getInstance().getCallStack().setCheckpoint();
+				Aya.getInstance().getVars().setCheckpoint();
 				b.eval();
+				Aya.getInstance().getCallStack().popCheckpoint();
+				Aya.getInstance().getVars().popCheckpoint();
 				block.appendToStack(b.getStack());
 			} catch (Exception e) {
+				Aya.getInstance().getCallStack().rollbackCheckpoint();
+				Aya.getInstance().getVars().rollbackChackpoint();
 				Block b = ((Block)catchBlock).duplicate();
 				b.push(Aya.exceptionToObj(e));
 				b.eval();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
 
 import aya.Aya;
 import aya.InteractiveAya;
@@ -27,6 +28,7 @@ import aya.parser.Parser;
  */
 public class VariableData {
 	private ArrayList<VariableSet> varSets = new ArrayList<VariableSet>();
+	private Stack<Integer> _checkpoints = new Stack<Integer>();
 
 	private final Dict OBJ_STR = new Dict();
 	private final Dict OBJ_SYM = new Dict();
@@ -110,6 +112,21 @@ public class VariableData {
 	
 	public void setGlobalVar(long v, Obj o) {
 		varSets.get(0).setVar(v, o);
+	}
+	
+	public void setCheckpoint() {
+		_checkpoints.push(varSets.size());
+	}
+	
+	public void popCheckpoint() {
+		_checkpoints.pop();
+	}
+	
+	public void rollbackChackpoint() {
+		int stack_size = _checkpoints.pop();
+		while (varSets.size() > stack_size) {
+			pop();
+		}
 	}
 	
 	public void pop() {
