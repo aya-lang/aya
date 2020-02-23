@@ -245,7 +245,7 @@ def matrix::rotate_rows {
     [[ 1 2 0 ]]
 .}
 def matrix::__head__ {self n::list : d,
-    n E 2 = "dimension of take must be 2" assert
+    n E 2 =! {"dimension of take must be 2" .D} ?
 
     .# rows
     self.rows n.[1] #.<
@@ -260,13 +260,12 @@ def matrix::__head__ {self n::list : d,
     :# {$ 0 = {;d} ?}
 
     self.M._new
-
 }
 
 
 .#? [rows cols] ::matrix .<\n  cut or pad the matrix to the given size from the bottom right corner
 def matrix::__tail__ {self n::list : d,
-    n E 2 = "dimension of take must be 2" assert
+    n E 2 =! {"dimension of take must be 2" .D} ?
 
     .# rows
     self.rows n.[1] #.>

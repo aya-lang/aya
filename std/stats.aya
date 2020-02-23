@@ -83,14 +83,14 @@ def stats::pearson {x y : n xs ys,
     "stats" testset! :ts;
 
     .# Statistics
-    {10R stats.mean} [5.5] ts+
-    {10R stats.variance} [8.25] ts+
-    {[:5 5]R stats.stdev 2.to_fixed} [3.16] ts+
-    {10R stats.geomean 2.to_fixed} [4.52] ts+
-    {[1 6 3 4 7 8 3 2 2] stats.median} [3] ts+
-    {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.regression 10\~ 3.to_fixed} [8.902]
-    {10R $ stats.pearson} [1] ts+
-    {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.pearson 3.to_fixed} [.902] ts+
+    {:stats^, 10R stats.mean} [5.5] ts+
+    {:stats^, 10R stats.variance} [8.25] ts+
+    {:stats^, [:5 5]R stats.stdev 2.to_fixed} [3.16] ts+
+    {:stats^, 10R stats.geomean 2.to_fixed} [4.52] ts+
+    {:stats^, [1 6 3 4 7 8 3 2 2] stats.median} [3] ts+
+    {:stats^, [ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.regression 10\~ 3.to_fixed} [8.902]
+    {:stats^, 10R $ stats.pearson} [1] ts+
+    {:stats^, [ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.pearson 3.to_fixed} [.902] ts+
 
     ts __aya__.addtest
 })

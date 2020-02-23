@@ -404,10 +404,6 @@ static point::static_fn {
 {:P}:println;
 
 
-.#? BS assert\n throw error if bool is false
-{\! {.D} {;} .?}:assert;
-
-
 .{ Example:
     aya> with {"foo" file.dummyfile!} ::f {"File name is $(f.name)" :P}
     opened dummy file 'foo'

@@ -225,7 +225,7 @@ def ::matstr {m : colmax,
     {"".upper} [""] ts+
     {"".lower} [""] ts+
     {"12.34".isnum} [1] ts+
-    .# {"12..123".isnum} [0] ts+
+    {"12..123".isnum} [0] ts+
     {"".isnum} [0] ts+
     {"to be or not to be".titlecase} ["To Be Or Not To Be"] ts+
     {"1\n2\n\n3\n\n".lines} [["1" "2" "" "3"]] ts+

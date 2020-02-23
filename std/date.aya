@@ -121,20 +121,18 @@ export [::date ::dates]
 .# TESTS #
 .#########
 
-`~ {:ts,
+({:ts,
 
     "date" testset! :ts;
 
-    {"1707-04-15" date! .mmddyy} ["04/15/07"] ts+
-    {"1707-04-15" date! .mmddyyyy} ["04/15/1707"] ts+
-    {"1707-04-15" date! .timestr} ["12:00 AM"] ts+
-    {"1707-04-15" date! 2 dates.month + .month} ["June"] ts+
-    {"1707-04-15" date! 1 dates.day - .dayofmonth} [14] ts+
-    {"1707-04-15" date! 100 dates.year + .year} [1807] ts+
-    {"1707-04-15" date! 2 dates.hour + .hour} [2] ts+
-    {"1707-04-15" date! 2 dates.minute + .min} [2] ts+
-
+    {:date^ dates^ dateunit^, "1707-04-15" date! .mmddyy} ["04/15/07"] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! .mmddyyyy} ["04/15/1707"] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! .timestr} ["12:00 AM"] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.month + .month} ["June"] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! 1 dates.day - .dayofmonth} [14] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! 100 dates.year + .year} [1807] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.hour + .hour} [2] ts+
+    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.minute + .min} [2] ts+
 
     ts __aya__.addtest
-
-}
+})

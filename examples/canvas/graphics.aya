@@ -1,5 +1,10 @@
 {::close {,} g MG;} {;} .K
 
+.{
+    A Demo of all raw graphics calls that can be made
+    Generally, one should use std/canvas for graphics manipulation
+.}
+
 {255Q:r 255Q:g 255Q:b}:col;
 {x y, 
   ::set_stroke {, 1:width } g MG;

@@ -1,4 +1,5 @@
 import ::canvas
+from ::color import ::colors
 
 {c.close} {;} .K
 

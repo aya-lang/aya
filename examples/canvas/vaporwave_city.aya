@@ -1,5 +1,5 @@
 import ::canvas
-import ::color
+from ::color import [::color ::colors]
 
 .# A randomly generated vaporwave style city
 

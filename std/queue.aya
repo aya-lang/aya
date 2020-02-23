@@ -35,14 +35,14 @@ def queue::__str__ {self,
 
 .#? ::queue.next\n  return the next item in the queue
 def queue::next {self,
-    "queue obj is empty" self.list E 0 = conderr
+    self.list E 0 = {"queue obj is empty".D} ?
     self.list V \ ;
 }
 
 
 .#? ::queue.peek\n  return the next item in the queue without removing it from the queue
 def queue::peek {self,
-    "queue obj is empty" self.list E 0 = conderr
+    self.list E 0 = {"queue obj is empty".D} ?
     self.list 0 I
 }
 

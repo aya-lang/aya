@@ -17,13 +17,13 @@ def nn::__init__ {x y self,
 }
 
 
-def nn::feedforward {self,
+def nn::feedforward {self : sigmoid^,
     self.input   self.weights_a .dot sigmoid self.:layer_a;
     self.layer_a self.weights_b .dot sigmoid self.:output;
 }
 
 
-def nn::backprop {self : d d_weights_a d_weights_b,
+def nn::backprop {self : dsigmoid^ d d_weights_a d_weights_b,
     self.y self.output - 2 * self.output dsigmoid * :d;
 
     self.layer_a.t d .dot :d_weights_b;
@@ -41,8 +41,10 @@ def nn::loss {self,
     self.y self.output - 2^ .mean
 }
 
+"**Defined NN class" :P
+
 .# Train
-{
+main {
     import ::plot
 
     .# Data
@@ -64,4 +66,4 @@ def nn::loss {self,
     "Loss" plt.:ylabel;
     "Iteration" plt.:xlabel;
     plt.view
-} ~
+}
