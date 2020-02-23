@@ -311,7 +311,7 @@ abcdefghijklwxyz .# => "hello"
 :1z :2z add
                  .# TYPE ERROR: Type error at ({ARGS}):
     .#        Expected (NUM)
-    .#    Received (2 )
+    .#     Received  (2 )
 
 
 .# See the types section for more information on types

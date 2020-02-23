@@ -13,9 +13,9 @@ cEb*d{B}cB%+
 ```
 {aN bN,
   [
-    {0} a0=b0=&.?			.# Both numbers are 0
-    {aMA} b0=.?			.# b is zero, return abs(a)
-    {bMA aMAbMA% gcd}		.# b is not zero, compute gcd recursively
+    {0} a0=b0=&.?     .# Both numbers are 0
+    {aMA} b0=.?       .# b is zero, return abs(a)
+    {bMA aMAbMA% gcd} .# b is not zero, compute gcd recursively
   ].c
 }:gcd;
 ```
@@ -32,7 +32,7 @@ cEb*d{B}cB%+
 
 ##Project Euler 1  
 ```
-999R{15gcd1=!}IS
+999R{15.+=!}IS
 ```
 
 ##Project Euler 8 (where `list` is the sequence of numbers)  
@@ -42,7 +42,7 @@ list 13R{_@_@I{*}.F\@#B}987%;;.Amax
 
 ##Project Euler 34  
 ```
-[3 5E,,_P#{'0-iM!}S1+i=]S
+[3 5E,,$P:'48-M!S=]S
 ```
 
 ##Project Euler 48  
@@ -58,12 +58,12 @@ kR#{_^}SdE%
 ## Plot a sin wave using its Taylor Series
 
 ```
-[0 0.001 pi2*, {x, x x3^3M!/- x5^5M!/+ x7^7M!/- x9^9M!/+ x11^11M!/- x13^13M!/+ x15^15M!/- x17^17M!/+ x19^19M!/-} ] .p
+[0 0.001 pi2*, {x, x x3^3M!/- x5^5M!/+ x7^7M!/- x9^9M!/+ x11^11M!/- x13^13M!/+ x15^15M!/- x17^17M!/+ x19^19M!/-} ] .x
 ```
 
 ##Pills
 ```
-[1 10,'\in''\ni'@2%0=?]
+[10,['\in''\ni']\2%!I]
 ```
 
 ##Fib w/ Variables
@@ -71,6 +71,12 @@ Ten thousand variable lookups and definitions
 
 ```
 1:a; 10000 0\1{a@+:a}@%; ;
+```
+
+100 thousand lookups:
+```
+{1:a; {a 1+ :a;} 100000 % a;}.time
+31 
 ```
 
 ##Repeat with delim

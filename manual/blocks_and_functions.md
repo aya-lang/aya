@@ -80,37 +80,46 @@ Arguments may have type assertions. Write a variable name followed by a symbol c
                              Received ("1" )
 ```
 
-If a user defined type defines a `__type__` key as a symbol, the symbol will be used for type assertions.
+If a user defined type defines a `__type__` key as a symbol in an objects meta, the symbol will be used for type assertions. This is done by defauld by `class` and `struct`. (See user types for more information).
 
 ```
-{,
-  ::vec :__type__;
+struct ::point [::x ::y]
 
-  ... define vec variables and functions ...
-}:vec;
+{p::point,
+    p.x p.y +
+}:sum_point;
 
-{v::vec,
-  v :P
-}:printvec;
+1 2 point!:p;
 ```
 
-The type checker will use the `.__type__` variable:
+The type of p is `::point`. Check using `:T` or directly accessing `.__type__`.
 
 ```
-aya> 1 2 vec! :v
-<1,2>
-aya> v printvec
-<1,2>
-aya> 3 printvec
-TYPE ERROR: Type error at ({ARGS}):
-	Expected (::vec)
-	Received (3 )
+aya> p.__type__
+::point
+aya> p :T
+::point
 ```
 
+The function `sum_point` can only be used with an object of type `::point`
+
+```
+aya> p sum_point
+3
+
+aya> 1 sum_point
+TYPE ERROR: {ARGS}
+
+aya> {, 2:x 3:y } sum_point
+TYPE ERROR: {ARGS}
+
+aya> {, 2:x 3:y {,::point:__type__}:__meta__ } sum_point
+5
+```
 
 ## Local Declarations
 
-Local declarations introduce a local scope for that variable. Scope is discussed in greater detail in the Variable Scope section of this document. Local declarations can not have type declarations.
+Local declarations create a locally scoped variable for that block. Scope is discussed in greater detail in the Variable Scope section of this document. Local declarations can not have type declarations.
 
 
 ```
@@ -135,28 +144,44 @@ aya> {: a(10) b c("hello") d([1 2]), [a b c d] } ~
 [ 10 0 "hello" [ 1 2 ] ]
 ```
 
-Variables are initialized before run time and therefore can not be variables.
+Initializers may contain variables
 
 ```
 aya> 99 :l
 99
-
-aya> {: a(l), a} ~
-SYNTAX ERROR: Block header: Local Variables Initializer: Must contain only const values
-
-```
-
-Define a local variable as a list or function to capture a variable. The variable is captured in the caller's scope
-
-```
-
-aya> .# define a as a function which evaluates to l
-aya> {: a({l}), a} ~
+aya> {:a(l), a}
+{: a(l), a }
+aya> {:a(l), a}~
 99
+```
 
-aya> .# define a as a list which evaluates to l
-aya> {: a([l]), a} ~
-[ 99 ]
+The variable is captured in the caller's scope not the scope of where the function was defined. For capturing variables in the scope of there the block is defined, see the section below on closures.
+
+```
+aya> 3:a
+3
+aya> {:a(100),
+  "inside foo: a is $a":P  
+  {:b(a),
+    "inside bar: a is $a":P
+  }:bar;
+}:foo;
+aya> foo
+inside foo: a is 100
+aya> bar
+inside bar: a is 3
+```
+
+To capture a variable as a constant value in a block, use the `.use` block function.
+
+```
+{x :
+  double({x, 2 x *})
+  triple({x, 3 x *})
+  square({$*}),
+
+  x double triple square
+}:t
 ```
 
 ## Keyword Arguments
@@ -222,4 +247,15 @@ When used with block arguments, functions can be written in very readable ways. 
 
 aya> [1 2 3 4 5] 0 3 swapitems
 [ 4 2 3 1 5 ]
+```
+
+## Closures
+
+```
+aya> {v, {x, v x +}.capture[::v] }:make_adder
+{v, {x, v x + } capture [::v] }
+aya> 5 make_adder :add_five
+{x : v(5), v x + }
+aya> 6 add_five
+11
 ```
