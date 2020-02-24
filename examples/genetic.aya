@@ -1,0 +1,122 @@
+.# A super simple genetic algorithm for generating
+.# a line of text using random mutations
+
+from ::math import ::cumsum
+
+struct ::dna [::data ::fitness]
+
+.# Random character between 'a and 'z
+{26Q'a+}:new_char;
+
+.# Random dna string
+{R:#{;new_char} 0 dna!}:rand_dna;
+
+.# The fitness is defined as the number of matches
+.# over the length of the array
+def dna::calc_fitness {target::dna self,
+    .# Leave the fitness on the stack
+    target.data self.data .= .E \S\ / $ self.:fitness;
+}
+
+.# Apply a random mutation to the dna
+def dna::mutate {self,
+    self.data :# {.Q 0.01 < {; new_char} ? } self.:data;
+    self
+}
+
+def dna::= {other self,
+    other.data self.data =
+}
+
+.# Take half of one and half of the other
+.# Assume equal length
+{a::dna b::dna : half len,
+    a.data E :len;
+    len 2 .% :half;
+    a.data half .< 
+    b.data len half - .>
+    + 0 dna!
+}:crossover;
+
+
+struct ::population [::pop ::pop_fitness]
+
+.# Generate a random population
+{pop_size dna_size,
+    [pop_size,; dna_size rand_dna] 0.0 population!
+}:rand_pop;
+
+def population::__repr__ {self,
+    self.pop #P "\n" *
+}
+
+.# Calculate the fitness for each dna and
+.# then calculate the overall fitness
+.# Do not leave fitness on stack
+def population::calc_fitness {target::dna self,
+    self.pop #{target \.calc_fitness} ;
+}
+
+{
+    cumsum :&   .# Create a cumultive sum list, create a copy on the stack
+    .[:1] .Q *  .# Generate a random number between 0 and the total sum
+    <           .# All items less than the number become 1, else 0
+    0 N \;      .# Find the first 0
+}:pickweighted;
+
+.# Select a random DNA from the population based on
+.# the fitness of the DNA (higher fitness = more
+.# likely to be picked)
+def population::pick {self : fit_list,
+    self.pop #.fitness :fit_list; .# Fitness list
+    self.pop.[fit_list pickweighted] .# Choose random based on weights
+}
+
+.# Compute the next generation and return a new population
+.#   A new population is created by
+.#   1) Choose two parents from this population
+.#   2) apply the crossover function to create a child
+.#   3) apply a random mutation to the child
+.#   4) repeat for each DNA in the population
+{pop::population,
+    pop.pop ER :# {;
+        pop.pick pop.pick crossover.mutate
+    } 0.0 population!
+}:next_gen;
+
+.# Select the DNA with the highest fithess from
+.#    the population
+def population::best {self,
+    self.pop {.fitness} .C .[:1]
+}
+
+main {
+    "evolution":target_str;
+    30 :pop_size;
+
+    target_str 0.0 dna! :target;
+    target_str E :dna_size;
+    pop_size dna_size rand_pop:pop;
+
+    0 :generations;
+
+    "Target: $target_str" :P
+
+    .# Continue creating generations until we hit a match
+    {
+        target pop.calc_fitness
+        pop.best :best;
+
+        .# Only print every so often
+        generations 100 % 0 = {
+            "generation $generations: $(best.data) ($(best.fitness))" :P
+        } ?
+
+        pop next_gen :pop;
+        ::generations B
+
+        target best = !
+    } W
+
+    "Done! \"$(best.data)\", fitness: $(best.fitness)" :P
+}
