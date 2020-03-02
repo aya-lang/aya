@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
 public class OpOverload1Arg extends OpOverload {
@@ -24,6 +25,12 @@ public class OpOverload1Arg extends OpOverload {
 	public ArrayList<String> getNames() {
 		ArrayList<String> out = new ArrayList<String>();
 		out.add(_var.toString());
+		return out;
+	}
+	
+	public ArrayList<Symbol> getSymbols() {
+		ArrayList<Symbol> out = new ArrayList<Symbol>();
+		out.add(Symbol.fromID(_var.getID()));
 		return out;
 	}
 	

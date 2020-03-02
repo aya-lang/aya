@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
 public class OpOverload2Arg extends OpOverload {
@@ -29,6 +30,14 @@ public class OpOverload2Arg extends OpOverload {
 		out.add(_rvar.toString());
 		return out;
 	}
+
+	public ArrayList<Symbol> getSymbols() {
+		ArrayList<Symbol> out = new ArrayList<Symbol>();
+		out.add(Symbol.fromID(_var.getID()));
+		out.add(Symbol.fromID(_rvar.getID()));
+		return out;
+	}
+	
 
 	@Override
 	public boolean execute(Block block, Obj a, Obj b) {

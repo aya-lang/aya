@@ -120,6 +120,17 @@ public class DictReader {
 			return o.str();
 		}
 	}
+
+	public Symbol getSymbolEx(long key) {
+		Obj o = _dict.getSafe(key);
+		if (o == null) {
+			throw notFound(key);
+		} else if (!o.isa(Obj.SYMBOL)) {
+			throw badType(key, "sym", o);
+		} else {
+			return (Symbol)o;
+		}
+	}
 	
 	public Color getColor(long key) {
 		Obj val = _dict.getSafe(key);
@@ -208,4 +219,23 @@ public class DictReader {
 		}
 	}
 	
+	public Symbol getSymbol(long key, Symbol dflt) {
+		Obj o = _dict.getSafe(key);
+		
+		if (o == null || !o.isa(Obj.SYMBOL)) {
+			return dflt;
+		} else {
+			return (Symbol)o;
+		}
+	}
+
+	public boolean getBool(long key, boolean dflt) {
+		Obj o = _dict.getSafe(key);
+		
+		if (o == null) {
+			return dflt;
+		} else {
+			return o.bool();
+		}
+	}
 }

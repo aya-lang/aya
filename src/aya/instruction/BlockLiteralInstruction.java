@@ -28,9 +28,8 @@ public class BlockLiteralInstruction extends Instruction {
 	
 		// If the block does not have a header but it has captures, create an empty one
 		if (_captures != null) {
-			BlockHeader bh = _block.getHeader();
-			if (bh == null) {
-				_block = _block.duplicate(new BlockHeader());
+			if (_block.getHeader() == null) {
+				_block = _block.duplicateNewHeader(new BlockHeader());
 			}
 		}
 	}

@@ -17,9 +17,13 @@ import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.Instruction;
+import aya.instruction.op.OpInfo;
 import aya.instruction.op.OpInstruction;
+import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
@@ -30,6 +34,9 @@ import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
+import aya.util.DictReader;
+import aya.util.Triple;
+import aya.variable.EncodedVars;
 import aya.variable.Variable;
 
 
@@ -89,7 +96,7 @@ public class ColonOps {
 		/* 76 L  */ null,
 		/* 77 M  */ new OP_Colon_M(),
 		/* 78 N  */ null,
-		/* 79 O  */ null,
+		/* 79 O  */ new OP_Colon_O(),
 		/* 80 P  */ new OP_Colon_P(),
 		/* 81 Q  */ null,
 		/* 82 R  */ new OP_Colon_R(),
@@ -646,22 +653,104 @@ class OP_Colon_M extends OpInstruction {
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
+		arg("BD", "duplicate block with the given metadata");
 	}
 
 	@Override
 	public void execute(Block block) {
 		final Obj meta = block.pop();
-		final Obj dict = block.pop();
+		final Obj obj = block.pop();
 
-		if(dict.isa(DICT) && meta.isa(DICT)) {
-			((Dict)dict).setMetaTable((Dict)meta);
-			block.push(dict);
+		if(obj.isa(DICT) && meta.isa(DICT)) {
+			((Dict)obj).setMetaTable((Dict)meta);
+			block.push(obj);
+		} else if (obj.isa(BLOCK) && meta.isa(DICT)) {
+			block.push(makeBlockWithMeta((Block)obj, (Dict)meta));
 		} else {
-			throw new TypeError(this, meta, dict);
+			throw new TypeError(this, meta, obj);
+		}
+	}
+
+	private Block makeBlockWithMeta(Block b, Dict meta) {
+		BlockHeader header = headerFromDict(meta);
+		return b.duplicateNewHeader(header);
+	}
+	
+	private BlockHeader headerFromDict(Dict meta) {
+		BlockHeader bh;
+
+		if (meta.containsKey(EncodedVars.LOCALS)) {
+			Obj o = meta.get(EncodedVars.LOCALS);
+			if (o.isa(DICT)) {
+				Dict locals = (Dict)o;
+				bh = new BlockHeader(locals.getVarSet());
+			} else {
+				throw new AyaRuntimeException("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
+			}
+		} else {
+			bh = new BlockHeader();
+		}
+		
+		// Args
+		if (meta.containsKey(EncodedVars.ARGS)) {
+			Obj args = meta.get(EncodedVars.ARGS);
+			if (args.isa(LIST)) {
+				List args_list = (List)args;
+				for (int i = 0; i < args_list.length(); i++) {
+					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.get(i));
+					bh.addArg(new BlockHeader.Arg(info.first().id(), info.second().id(), info.third()));
+				}
+			} else {
+				throw new AyaRuntimeException("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
+			}
+		}
+		
+		return bh;
+	}
+		
+	private Triple<Symbol, Symbol, Boolean> argInfo(Obj obj) {
+		if (obj.isa(DICT)) {
+			Dict d = (Dict)obj;
+			DictReader dr = new DictReader(d);
+			dr.setErrorName("::dict ::block .M");
+			return new Triple<Symbol, Symbol, Boolean>(
+					dr.getSymbolEx(EncodedVars.NAME),
+					dr.getSymbol(EncodedVars.TYPE, Symbol.fromID(EncodedVars.ANY)),
+					dr.getBool(EncodedVars.COPY, false));
+			
+		} else if (obj.isa(SYMBOL)) {
+			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, Symbol.fromID(EncodedVars.ANY), false);
+		} else {
+			throw new AyaRuntimeException("::dict ::block .M: key 'args' must be a list of dicts or symbols");
 		}
 	}
 }
 
+
+// O - 80
+class OP_Colon_O extends OpInstruction {
+	
+	public OP_Colon_O() {
+		init(":O");
+		arg("J", "Aya meta information");
+	}
+
+	@Override
+	public void execute (Block block) {		
+		Obj a = block.pop();
+		
+		if (a.isa(SYMBOL)) {
+			Symbol sym = (Symbol)a;
+			if (sym.name().equals("ops")) {
+				block.push(OpInfo.getDict());
+			} else {
+				throw new AyaRuntimeException("':O': Unknown symbol " + sym.name());
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
 
 
 
@@ -701,6 +790,7 @@ class OP_Colon_S extends OpInstruction {
 	public OP_Colon_S() {
 		init(":S");
 		arg("S|C", "convert to symbol");
+		arg("B", "if block has single var or op convert to symbol list, else return empty list");
 	}
 
 	@Override
@@ -709,9 +799,28 @@ class OP_Colon_S extends OpInstruction {
 		
 		if (a.isa(STR) || a.isa(CHAR)) {
 			block.push(Symbol.convToSymbol(a.str()));
+		} else if (a.isa(BLOCK)) {
+			block.push(singleToSymbolList((Block)a));
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+
+	private List singleToSymbolList(Block b) {
+		ArrayList<Obj> out = new ArrayList<Obj>();
+		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
+		if (instructions.size() == 1) {
+			Instruction i = instructions.get(0);
+			if (i instanceof VariableInstruction) {
+				out.add(Symbol.fromID(((VariableInstruction)i).getID()));
+			} else if (i instanceof OpInstruction) {
+				OpInstruction op = (OpInstruction)i;
+				if (op.overload() != null) {
+					out.addAll(op.overload().getSymbols());
+				}
+			}
+		}
+		return new GenericList(out);
 	}
 }
 

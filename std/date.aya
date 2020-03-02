@@ -16,11 +16,19 @@ export [::date ::dates]
 
     {{,M$:ms} date :M}:now;
 
-    {in meta, [
-        in:T ::num = {{,in:ms} meta :M} ?
-        in:T ::str = {{,in "yyyy-MM-dd" MH:ms} meta :M} ?
-        {"Expected S|D, recieved: $in".D}
-    ].S }:__new__;
+    .# {in meta, [
+    .#     in:T ::num = {{,in:ms} meta :M} ?
+    .#     in:T ::str = {{,in "yyyy-MM-dd" MH:ms} meta :M} ?
+    .#     {"Expected S|D, recieved: $in".D}
+    .# ].S }:__new__;
+
+    {in meta,
+        in :T {?=,
+            ::num {{, in:ms} meta :M },
+            ::str {{, in "yyyy-MM-dd" MH:ms} meta :M},
+            {"Expected ::str or ::num. recieved: $in" .D}
+        }
+    }:__new__;
 
     {.ms "MMM dd, yyyy h:mm:ss a" Mh}:__repr__;
     {.__repr__}:__str__;

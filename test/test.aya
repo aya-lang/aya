@@ -267,6 +267,51 @@
     {d :V :/ C [1 2 3 4 5] =} assert [1]
 })
 
+.# get/set block metadata
+({:args,
+    [
+        {,
+          ::any:type;
+          0:copy;
+          ::a:name;
+        } {,
+          ::num:type;
+          1:copy;
+          ::b:name;
+        } {,
+          ::str:type;
+          0:copy;
+          ::c:name;
+        } {,
+          ::any:type;
+          1:copy;
+          ::d:name;
+        }
+    ]:args;
+
+    { {a b$::num c::str d$ : a(1) b(4), } .M.args } assert [args]
+
+    {{} {, args:args } :M .M .args} assert [args]
+})
+
+.# ::block S: duplicate with locals
+{{} S .M ::locals N\;} assert [1]
+{{: ,} S .M ::locals N\;} assert [1]
+
+.# Split into list of blocks
+{{a, b c + [10,] $% {a b} () ``+ 1 2 :k .:k k.`} .^ ""*}
+assert
+["{b}{c}{+}{[10, ]}{$}{%}{{a b}}{()}{``}{+}{1}{2}{:k}{.:k}{k.`}"]
+
+.# Convert block containing var or op into list of symbols
+{ {x} :S }   assert [ [ ::x ] ]
+{ {x y} :S } assert [ [ ] ]
+{ {+} :S }   assert [ [ ::__add__ ::__radd__ ] ]
+{ {"x"} :S } assert [ [ ] ]
+
+.# copy block without header
+{ {a b, } .! P } assert ["{}"]
+{ {a b, a b +} .! P } assert ["{a b +}"]
 
 "Core tests passed!" :P
 

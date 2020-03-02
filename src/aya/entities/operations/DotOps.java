@@ -29,6 +29,7 @@ import aya.instruction.ListBuilder;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
@@ -43,8 +44,8 @@ import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.util.Pair;
 import aya.util.QuickDialog;
+import aya.variable.EncodedVars;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -108,7 +109,7 @@ public class DotOps {
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
 		/* 82 R  */ new OP_Dot_R(),
-		/* 83 S  */ new OP_Dot_Case(),
+		/* 83 S  */ null,
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
@@ -182,6 +183,7 @@ class OP_Dot_Bang extends OpInstruction {
 		init(".!");
 		arg("N", "signum");
 		arg("S", "parse if number");
+		arg("B", "copy block without header");
 		setOverload(1, "signum");
 		vect();
 	}
@@ -210,6 +212,8 @@ class OP_Dot_Bang extends OpInstruction {
 			} catch (SyntaxError e) {
 				block.push(o);
 			}
+		} else if (o.isa(BLOCK)) {
+			block.push(((Block)o).duplicateNoHeader());
 		} else {
 			throw new TypeError(this,o);
 		}
@@ -335,12 +339,13 @@ class OP_Dot_CastChar extends OpInstruction {
 			block.push( Char.valueOf(o.str().charAt(0)) );
 		} else if (o.isa(LIST)) {
 			block.push( Str.fromBytes(((List)o).toNumberList().toByteArray()) );
-		}else if (o.isa(CHAR)) {
+		} else if (o.isa(CHAR)) {
 			block.push(o);
 		} else {
 			throw new TypeError(this,o);
 		}
 	}
+	
 }
 
 
@@ -1013,7 +1018,7 @@ class OP_Dot_TryCatch extends OpInstruction {
 				block.appendToStack(b.getStack());
 			} catch (Exception e) {
 				Aya.getInstance().getCallStack().rollbackCheckpoint();
-				Aya.getInstance().getVars().rollbackChackpoint();
+				Aya.getInstance().getVars().rollbackCheckpoint();
 				Block b = ((Block)catchBlock).duplicate();
 				b.push(Aya.exceptionToObj(e));
 				b.eval();
@@ -1051,16 +1056,18 @@ class OP_Dot_M extends OpInstruction {
 	private Dict getBlockMeta(Block b) {
 		Dict d = new Dict();
 		// Arg Names
-		final ArrayList<Pair<Symbol, Symbol>> args_and_types = b.getArgsAndTypes();
-		ArrayList<Obj> argnames = new ArrayList<>(args_and_types.size());
-		Dict argtypes = new Dict();
-		
-		for (Pair<Symbol, Symbol> p : args_and_types) {
-			argnames.add(p.first());
-			argtypes.set(p.first().id(), p.second());
+		final ArrayList<BlockHeader.Arg> args_and_types = b.getArgsAndTypes();
+
+		ArrayList<Obj> args_list = new ArrayList<Obj>();
+		for (BlockHeader.Arg a : args_and_types) {
+			Dict arg = new Dict();
+			arg.set(EncodedVars.NAME, Symbol.fromID(a.var));
+			arg.set(EncodedVars.TYPE, Symbol.fromID(a.type));
+			arg.set(EncodedVars.COPY, a.copy ? Num.ONE : Num.ZERO);
+			args_list.add(arg);
 		}
-		d.set(ARGS, new GenericList(argnames));
-		d.set(ARGTYPES, argtypes);
+		Collections.reverse(args_list);
+		d.set(ARGS, new GenericList(args_list));
 		final VariableSet vars = b.getLocals();
 		if (vars != null) {
 			d.set(LOCALS, new Dict(vars));
@@ -1068,6 +1075,7 @@ class OP_Dot_M extends OpInstruction {
 				
 		return d;
 	}
+	
 }
 
 // N - 78
@@ -1167,37 +1175,6 @@ class OP_Dot_R extends OpInstruction {
 	}
 }
 
-
-// S - 83
-class OP_Dot_Case extends OpInstruction {
-
-	public OP_Dot_Case() {
-		init(".S");
-		arg(".S", "returns the first element of a list. if the first element is a block, evaluate");
-	}
-
-	@Override
-	public void execute (Block block) {
-		Obj a = block.pop();
-
-		//Return the first element of a list
-		//If block, dump it
-		if(a.isa(LIST)) {
-			List l = (List)a;
-			if(l.length() == 0)
-				throw new AyaRuntimeException(this.name + ": list contains no elements");
-
-			Obj item = l.get(0);
-			if(item.isa(BLOCK)) {
-				block.addAll(((Block)item).getInstructions().getInstrucionList());
-			} else {
-				block.push(item);
-			}
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
 
 //T - 84
 class OP_Dot_T extends OpInstruction {
@@ -1339,6 +1316,7 @@ class OP_Dot_Pow extends OpInstruction {
 	public OP_Dot_Pow() {
 		init(".^");
 		arg("L", "compile");
+		arg("B", "decompile");
 	}
 	
 	@Override
@@ -1357,6 +1335,9 @@ class OP_Dot_Pow extends OpInstruction {
 				}
 			}
 			block.push(b);
+		} else if (a.isa(BLOCK)) {
+			Block b = (Block)a;
+			block.push(b.split());
 		} else {
 			throw new TypeError(this, a);
 		}

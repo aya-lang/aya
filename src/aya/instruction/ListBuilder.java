@@ -112,15 +112,18 @@ public class ListBuilder extends Instruction {
 	protected String repr(LinkedList<Long> visited) {
 		StringBuilder sb = new StringBuilder("[");
 		sb.append(initialList.toString(false) + ", ");
+		boolean has_body = false;
 		if(map != null) {
 			sb.append(map.toString(false) + ", ");
+			has_body = true;
 		}
 		if(filters != null) {
 			for (Block b : filters) {
 				sb.append(b.toString(false) + ", ");
 			}
+			has_body = true;
 		}
-		sb.setLength(sb.length()-2);
+		if (has_body) sb.setLength(sb.length()-2);
 		sb.append("]");
 		return sb.toString();
 	}

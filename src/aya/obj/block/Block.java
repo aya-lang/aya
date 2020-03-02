@@ -14,12 +14,12 @@ import aya.instruction.Instruction;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
+import aya.obj.block.BlockHeader.Arg;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
-import aya.util.Pair;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
 
@@ -45,12 +45,6 @@ public class Block extends Obj {
 		this.instructions = il;
 	}
 
-	/** Assumes Block header and variable POP_VAR instructions exist in the instructions */
-	public Block(InstructionStack il, BlockHeader header) {
-		this.stack = new Stack<Obj>();
-		this.instructions = il;
-	}
-	
 	/** Returns the output stack */
 	public Stack<Obj> getStack() {
 		return this.stack;
@@ -184,11 +178,23 @@ public class Block extends Obj {
 		return out;
 	}
 	
-	/** This function should only be called if the block does not already have a header */
-	public Block duplicate(BlockHeader bh) {
-		Block out = new Block(this.instructions.duplicate(), bh);
-		out.stack.addAll(this.stack);
-		return out;
+	/** Create a new block with the given header */
+	public Block duplicateNewHeader(BlockHeader header) {
+		if (getHeader() == null) {
+			Block dup = duplicate();
+			dup._addHeader(header);
+			return dup;
+		} else {
+			Block dup = duplicateNoHeader();
+			dup._addHeader(header);
+			return dup;
+		}
+	}
+	
+	/** Assumes this block does not already have a header! */
+	private void _addHeader(BlockHeader bh) {
+		add(bh);
+		add(0, PopVarFlagInstruction.INSTANCE);
 	}
 
 	/** Sets the stack */
@@ -392,16 +398,69 @@ public class Block extends Obj {
 	}
 	
 	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<Pair<Symbol, Symbol>> getArgsAndTypes() {
-		ArrayList<Pair<Symbol, Symbol>> args_and_types  = new ArrayList<>();
+	public ArrayList<Arg> getArgsAndTypes() {
 		BlockHeader header = getHeader();
 		if (header != null) {
-			for (BlockHeader.Arg arg : header.getArgs()) {
-				args_and_types.add(new Pair<Symbol, Symbol>(Symbol.fromID(arg.var),
-															Symbol.fromID(arg.type)));
-			}
+			return header.getArgs();
+		} else {
+			return new ArrayList<BlockHeader.Arg>();
 		}
-		return args_and_types;
+	}
+
+	/** Return a list of instructions not including the block header or pop var instruction */
+	public Block duplicateNoHeader() {
+		Block b = duplicate();
+		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
+		// Remove block header
+		int len = instructions.size();
+		if (len > 0) {
+			int last = len-1;
+			Instruction i = instructions.get(last);
+			if (i instanceof BlockHeader) {
+				instructions.remove(last);
+
+				// There was a header, remove popvar flag instruction
+				len = instructions.size();
+				if (len > 0) {
+					i = instructions.get(0);
+					if (i instanceof PopVarFlagInstruction) {
+						instructions.remove(0);
+					} else {
+						throw new RuntimeException("Expected popvar instruction in duplicateNoHeader");
+					}
+				}
+			}
+
+		}
+		
+		return b;
+	}
+
+	/** Return a copy of the block. If the original does not have a block header with local variables
+	 * create an empty local variables in the copy
+	 */
+	public Block duplicateAddLocals() {
+		 Block b = duplicate();
+		 BlockHeader bh = b.getHeader();
+		 if (bh == null) {
+			 bh = new BlockHeader();
+			 b.add(bh);
+			 b.add(0, PopVarFlagInstruction.INSTANCE);
+		 }
+		 return b;
+	}
+	
+	/** Split a block into a list of blocks, 1 per instruction */
+	public List split() {
+		ArrayList<Obj> blocks = new ArrayList<Obj>();
+		ArrayList<Instruction> instructions = duplicateNoHeader().instructions.getInstrucionList();
+		for (Instruction instr : instructions)
+		{
+			Block b = new Block();
+			b.add(instr);
+			blocks.add(0, b);
+		}
+		return new GenericList(blocks);
 	}
 	
 	/** Allow access to modify the block's local variables directly

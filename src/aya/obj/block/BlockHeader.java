@@ -76,6 +76,12 @@ public class BlockHeader extends Instruction {
 		
 	}
 	
+	public BlockHeader(VariableSet vars) {
+		_vars = vars;
+		_defaults = new HashMap<Long, InstructionStack>();
+		_args = new ArrayList<Arg>();
+	}
+
 	public void execute(Block b) {
 		VariableSet vars = _vars.clone();
 		setArgs(_args, vars, b);

@@ -1,5 +1,6 @@
 package aya.instruction.op;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import aya.instruction.Instruction;
@@ -7,6 +8,12 @@ import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
 import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.op.overload.OpOverloadNoOp;
+import aya.obj.Obj;
+import aya.obj.block.Block;
+import aya.obj.dict.Dict;
+import aya.obj.list.GenericList;
+import aya.obj.list.Str;
+import aya.variable.EncodedVars;
 
 /**
  * The Operation Class
@@ -83,6 +90,32 @@ public abstract class OpInstruction extends Instruction {
 	public OpDoc getDoc() {
 		if (_doc == null) throw new RuntimeException("Doc does not exist");
 		return _doc;
+	}
+	
+	
+	public Dict getInfo() {
+		Dict info = new Dict();
+
+		// {op}:call
+		Block call = new Block();
+		call.add(this);
+		info.set(EncodedVars.CALL, call);
+		
+		// [::sym]:symbols;
+		ArrayList<Obj> symbols = new ArrayList<Obj>();
+		if (_overload != null) symbols.addAll(_overload.getSymbols());
+		info.set(EncodedVars.OVERLOAD, new GenericList(symbols));
+		
+		// "":name;
+		info.set(EncodedVars.NAME, new Str(this.getName()));
+		
+		// ::sym:type;
+		info.set(EncodedVars.TYPE, _doc.typeSymbol());
+		
+		// {,}:doc;
+		info.set(EncodedVars.DOC, _doc.toDict());
+		
+		return info;
 	}
 	
 	@Override

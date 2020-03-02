@@ -122,7 +122,7 @@ public class VariableData {
 		_checkpoints.pop();
 	}
 	
-	public void rollbackChackpoint() {
+	public void rollbackCheckpoint() {
 		int stack_size = _checkpoints.pop();
 		while (varSets.size() > stack_size) {
 			pop();

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import javax.management.RuntimeErrorException;
-
 import aya.instruction.variable.GetVariableInstruction;
 
 /**

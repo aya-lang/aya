@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import aya.obj.dict.Dict;
 import aya.obj.list.Str;
-import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
 
 public class OpDoc {
 	
@@ -66,6 +66,22 @@ public class OpDoc {
 		return _type;
 	}
 	
+	private static final Symbol STD_SYM = Symbol.fromStr("std");
+	private static final Symbol DOT_SYM = Symbol.fromStr("dot");
+	private static final Symbol COLON_SYM = Symbol.fromStr("colon");
+	private static final Symbol MISC_SYM = Symbol.fromStr("misc");
+	
+	public Symbol typeSymbol() {
+		switch (_type) {
+		case STD: return STD_SYM;
+		case DOT: return DOT_SYM;
+		case COLON: return COLON_SYM;
+		case MISC: return MISC_SYM;
+		default: throw new RuntimeException("OpDoc.typeSymbol: op type unknown");
+		}
+			
+	}
+	
 	public String typeString() {
 		String s = "(";
 		for (OpDesc d : descs) {
@@ -115,13 +131,11 @@ public class OpDoc {
 	public Dict toDict() {
 		Dict d = new Dict();
 		
-		d.set("name", new Str(_name));
-		d.set("types", new Str(typeString()));
-		d.set("info", new Str(infoString("")));
-		d.set("vect", _vectorized ? Num.ONE : Num.ZERO);
-		
-		if (_overload != null) {
-			d.set("overload", new Str(_overload));
+		for (OpDesc desc : descs) {
+			String[] strs = desc.types.split("\\|");
+			for (String s : strs) {
+				d.set(s, new Str(desc.desc));
+			}
 		}
 		
 		return d;
