@@ -714,7 +714,7 @@ class OP_SysConfig extends OpInstruction {
 		//List files in working directory
 		case 4:
 			if (arg.isa(STR)) {
-				String fstr = AyaPrefs.getWorkingDir() + arg.str();
+				String fstr = arg.str();
 				try {
 					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
 					ArrayList<Str> obj_dirs = new ArrayList<Str>(dirs.size());
@@ -733,7 +733,7 @@ class OP_SysConfig extends OpInstruction {
 		//Create dir
 		case 5:
 			if(arg.isa(STR)) {
-				String fstr = AyaPrefs.getWorkingDir() + arg.str();
+				String fstr = arg.str();
 				if(!AyaPrefs.mkDir(fstr)) {
 					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
 				}
