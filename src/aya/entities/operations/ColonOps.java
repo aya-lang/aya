@@ -213,7 +213,7 @@ class OP_Colon_Pound extends OpInstruction {
 class OP_Colon_Duplicate extends OpInstruction {
 	
 	public OP_Colon_Duplicate() {
-		init(":_");
+		init(":$");
 		arg("..AN", "copies the first N items on the stack (not including N)");
 	}
 

@@ -1451,7 +1451,7 @@ class OP_R extends OpInstruction {
 class OP_S extends OpInstruction {
 	
 	public OP_S() {
-		init("L");
+		init("S");
 		arg("L", "sum (fold using +)");
 		arg("B", "duplicate block, add locals if they do not exist");
 	}
