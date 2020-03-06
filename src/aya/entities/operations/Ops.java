@@ -52,6 +52,7 @@ import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.FileUtils;
+import aya.util.Pair;
 import aya.variable.Variable;
 
 public class Ops {
@@ -1793,67 +1794,19 @@ class OP_Bar extends OpInstruction {
 		//Bitwise or
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.bor((Number)a, (Number)b) );
-		}
-		else if (b.isa(STR)) {
-			if (a.isa(STR)) {
-				String[] list = b.str().split(a.str());
-				ArrayList<Obj> res = new ArrayList<Obj>(list.length);
-				for(String s : list) {
-					res.add(new Str(s));
-				}
-				block.push(new GenericList(res));
-			} else if (a.isa(CHAR)) {
-				char splitter = ((Char)a).charValue();
-				ArrayList<Obj> strs = new ArrayList<Obj>();
-				StringBuilder current_str = new StringBuilder();
-				char[] chars = b.str().toCharArray();
-				for (char c : chars) {
-					if (c == splitter) {
-						strs.add(new Str(current_str.toString()));
-						current_str = new StringBuilder();
-					} else {
-						current_str.append(c);
-					}
-				}
-				if (current_str.length() > 0) {
-					strs.add(new Str(current_str.toString()));
-				}
-				block.push(new GenericList(strs));
-			} else {
-				throw new TypeError(this, a, b);
-			}
-		}
-		// find regex matches
-		else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push(new StrList(b.str().split(a.str())));
+		} else if (a.isa(CHAR) && b.isa(STR)) {
+			block.push(new StrList(new Str(b.str()).splitAtChar(((Char)a).charValue())));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			int index = ((Number)a).toInt();
-			List l = (List)b;
-			if (index == 0) {
-				block.push(l.similarEmpty());
-				block.push(l);
-			} else if(index >= l.length()) {
-				block.push(l);
-				block.push(l.similarEmpty());
-			} else if  (index*-1 >= l.length()) {
-				block.push(l.similarEmpty());
-				block.push(l);
-			} else if (index > 0) {
-				block.push(l.slice(0, index));
-				block.push(l.slice(index, l.length()));
-			} else if (index < 0) {
-				block.push(l.slice(0, l.length()+index));
-				block.push(l.slice(l.length()+index, l.length()));
-			} else if (index == 0) {
-				block.push(new GenericList(new ArrayList<Obj>()));
-				block.push(b);
-			} else {
-				throw new TypeError(this, a, b);
-			}
+			Pair<List, List> lists = ((List)b).splitAt(((Number)a).toInt());
+			block.push(lists.first());
+			block.push(lists.second());
 		} else {
 			throw new TypeError(this, a, b);
 		}
-
 	}
+	
 }
 
 

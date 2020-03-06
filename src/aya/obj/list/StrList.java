@@ -25,6 +25,11 @@ public class StrList extends List {
 		}
 	}
 	
+	public StrList(String[] strs) {
+		_list = new ArrayList<Str>(strs.length);
+		for (String s : strs) _list.add(new Str(s));
+	}
+	
 	
 	////////////////////
 	// LIST OVERRIDES //

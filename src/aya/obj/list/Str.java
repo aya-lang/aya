@@ -81,6 +81,25 @@ public class Str extends List implements Comparable<Str> {
 		return levenshteinDistance(_str, other._str);
 	}
 	
+	/** Split a string at all instances of the given character */
+	public ArrayList<Str> splitAtChar(char splitter) {
+		ArrayList<Str> strs = new ArrayList<Str>();
+		StringBuilder current_str = new StringBuilder();
+		char[] chars = this._str.toCharArray();
+		for (char c : chars) {
+			if (c == splitter) {
+				strs.add(new Str(current_str.toString()));
+				current_str = new StringBuilder();
+			} else {
+				current_str.append(c);
+			}
+		}
+		if (current_str.length() > 0) {
+			strs.add(new Str(current_str.toString()));
+		}
+		return strs;
+	}
+	
 	
 	////////////////////
 	// LIST OVERRIDES //

@@ -9,6 +9,7 @@ import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.util.Pair;
 
 /** List supertype */
 public abstract class List extends Obj {
@@ -380,6 +381,24 @@ public abstract class List extends Obj {
 			return g.promote();
 		}
 	}
+
+	public Pair<List, List> splitAt(int index) {
+		List l = this;
+		if (index == 0) {
+			return new Pair<List, List>(l.similarEmpty(), l);
+		} else if(index >= l.length()) {
+			return new Pair<List, List>(l, l.similarEmpty());
+		} else if  (index*-1 >= l.length()) {
+			return new Pair<List, List>(l.similarEmpty(), l);
+		} else if (index > 0) {
+			return new Pair<List, List>(l.slice(0, index), l.slice(index, l.length()));
+		} else if (index < 0) {
+			return new Pair<List, List>(l.slice(0, l.length()+index), l.slice(l.length()+index, l.length()));
+		} else {
+			return null;
+		}
+	}
+
 	
 	
 	/////////////////////
