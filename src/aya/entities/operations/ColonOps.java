@@ -162,7 +162,7 @@ public class ColonOps {
 	public static OpInstruction getOp(char c) {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+			throw new SyntaxError("Colon operator ':" + c + "' does not exist");
 		} else {
 			return op;
 		}

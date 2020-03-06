@@ -141,7 +141,7 @@ public class MiscOps {
 		/* 114 r */ new OP_To_Rat(),
 		/* 115 s */ new OP_Sine(),
 		/* 116 t */ new OP_Tangent(),
-		/* 117 u */ null,
+		/* 117 u */ new OP_Atan2(),
 		/* 118 v */ null,
 		/* 119 w */ null,
 		/* 120 x */ null,
@@ -157,7 +157,7 @@ public class MiscOps {
 	public static OpInstruction getOp(char c) {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+			throw new SyntaxError("Misc operator 'M" + c + "' does not exist");
 		} else {
 			return op;
 		}
@@ -1133,6 +1133,36 @@ class OP_Tangent extends OpInstruction {
 		}
 	}
 }
+
+
+// u - 117
+class OP_Atan2 extends OpInstruction {
+	
+	public OP_Atan2() {
+		init("Mu");
+		arg("NN", "y x Mu => atan2(y,x)");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj x = block.pop();
+		Obj y = block.pop();
+
+		if (x.isa(NUMBER) && y.isa(NUMBER)) {
+			double ny = ((Num)y).toDouble();
+			double nx = ((Num)x).toDouble();
+			block.push(new Num(Math.atan2(ny, nx)));
+		} else {
+			throw new TypeError(this, x, y);
+		}
+	}
+}
+
+
+
+
+
+
 
 
 
