@@ -30,7 +30,7 @@ def map::put {value key self : idx,
         key self.keys .B;
         value self.values .B;
     } {
-        value self.values.:[idx]
+        value self.values.:[idx];
     } .?
 }
 

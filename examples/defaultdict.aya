@@ -10,7 +10,7 @@
     {index self : t,
         self.dict index N 0 = \; {
             self.dflt $ :t;;
-            t self.dict.:[index]
+            t self.dict.:[index];
             t
         } {
             self.dict.[index]
@@ -22,7 +22,7 @@
         aya> run "examples/defaultdict"
         aya> {, 1:x } 0 defaultdict! :d
         {, 1:x; }
-        aya> 5 d.:[::y]
+        aya> 5 d.:[::y];
         Unexpected empty stack
         stack:
 
@@ -33,7 +33,7 @@
         "index" :P index :P
         "self" :P self :P
         "val" :P val :P
-        .A :P self.dict.:[index]
+        .A :P self.dict.:[index];
     }:__setindex__;
 
     {self,

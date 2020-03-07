@@ -343,7 +343,7 @@ def matrix::__each__ {expr::block self,
 .# value row column matrix::_set
 .# Set the value of a location in a matrix
 def matrix::_set {value r::num c::num self,
-    value self.rows.[r].:[c]
+    value self.rows.[r].:[c];
 }
 
 .#? matrix::cols\n  return a copy of the matrix columns
@@ -389,7 +389,7 @@ def matrix::_nextpascal {prev::list : new len ix,
     prevE:len;
     1 0 lenVLK:new;
     1:ix;
-    {prev ixI new ixVI+ new.:[ix] ::ix B}lenV%
+    {prev ixI new ixVI+ new.:[ix]; ::ix B}lenV%
     new
 }
 

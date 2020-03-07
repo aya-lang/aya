@@ -48,10 +48,10 @@
     {s,
         s ERB; # {i,
             s.[iV] .iswhitespace {
-                s.[i].upper s.:[i]
+                s.[i].upper s.:[i];
             } ?
         };
-        s.[0].upper s.:[0]
+        s.[0].upper s.:[0];
         s
     }:titlecase;
 

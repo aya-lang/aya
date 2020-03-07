@@ -7,7 +7,7 @@
 [100,] # {pass,
   [pass $$+ 100,] # {door,
     .# Swap the state of the door
-    list.[doorV] ! list.:[doorV]
+    list.[doorV] ! list.:[doorV];
   }
 };
 

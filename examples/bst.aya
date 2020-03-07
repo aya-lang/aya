@@ -33,7 +33,7 @@
                 } ?
             } .?
         } {
-            data bst! parent.:[side]
+            data bst! parent.:[side];
         } .?
     }:_insert;
 

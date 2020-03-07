@@ -240,8 +240,8 @@ When used with block arguments, functions can be written in very readable ways. 
 ```
 {l::list i::num j::num : tmp,
     l.[i] :tmp;
-    l.[j] l.:[i]
-    tmp l.:[j]
+    l.[j] l.:[i];
+    tmp l.:[j];
     l
 }:swapitems;
 

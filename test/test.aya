@@ -9,7 +9,7 @@
 	  .# Do nothing
 	} {
     .# Throw an error message about the assertation
-	  ["assert " "blk".Z " = " expectedP  "\n\trecieved: " [blk]P]SP.D
+	  ["assert " ::blk .~ " = " expectedP  "\n\trecieved: " [blk]P]SP.D
 	} .?
 })}:assert;
 
@@ -255,9 +255,9 @@
 
     .# Create dict with strings
     {, 1:x 2:y } :d;
-    3 d.:["Hello!"]
-    4 d.:["foo bar"]
-    5 d.:["var"]
+    3 d.:["Hello!"];
+    4 d.:["foo bar"];
+    5 d.:["var"];
 
     {d "Hello!" N \; } assert [1]
     {d "var" N \; } assert [1]

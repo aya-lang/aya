@@ -1145,6 +1145,8 @@ class OP_SetIndex extends OpInstruction {
 		else {
 			throw new TypeError(this, index, list);
 		}
+		
+		block.push(list);
 	}
 }
 

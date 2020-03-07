@@ -76,7 +76,6 @@ For example:
 ```
 aya> {, 0:x } :dict;
 aya> 1 dict.:[::y]
-aya> dict
 {,
   0:x;
   1:y;

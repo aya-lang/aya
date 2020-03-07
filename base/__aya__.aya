@@ -28,7 +28,9 @@
     "Me" :__exp__
     "Md" :__float__
     "Mq" :__sqrt__
-}:mathoverload
+}:mathoverload;
+
+{,::ops :O :#{o, o.overload:#{sym, o sym :=}}}:ops;
 
 {,
     "overloadable" M? :# {
@@ -427,7 +429,6 @@ static point::static_fn {
     with {"foo.txt" file!} ::f {
       f.lines #:P
     }
-.}
 {init::block var::sym code::block: try catch close,
     {init~ var := ; code~}.use[::init ::code ::var] :try ;
     {var.Z .close .D}.use[::var] :catch ;
@@ -435,6 +436,7 @@ static point::static_fn {
     {try catch .K close~}.use[::try ::catch ::close]
     .setlocals[var]
 }__aya__.:with_;
+.}
 
 
 .################

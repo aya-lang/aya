@@ -37,7 +37,7 @@ def bitset::__repr__ (bitset.__str__.`)
     [ 1 1 0 1 ]
 .}
 def bitset::set {n self,
-    1 self.bits.:[n]
+    1 self.bits.:[n];
 }
 
 
@@ -50,7 +50,7 @@ def bitset::set {n self,
     [ 0 0 1 0 ]bitset!
 .}
 def bitset::reset {n self,
-    0 self.bits.:[n]
+    0 self.bits.:[n];
 }
 
 .#? ::bitset.__getindex__\n  get value of bit at the given index
