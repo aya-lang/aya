@@ -559,11 +559,11 @@ class OP_LessThan extends OpInstruction {
 		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) < 0) );
+			block.push( Num.fromBool(((Number)a).compareTo((Number)b) < 0) );
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) < 0) );
+			block.push( Num.fromBool(((Char)a).compareTo((Char)b) < 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) < 0) );
+			block.push( Num.fromBool(a.str().compareTo(b.str()) < 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).gt((Number)a) ); // gt is opposite of lt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
@@ -632,11 +632,11 @@ class OP_GreaterThan extends OpInstruction {
 		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) > 0) );
+			block.push( Num.fromBool(((Number)a).compareTo((Number)b) > 0) );
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) > 0) );
+			block.push( Num.fromBool(((Char)a).compareTo((Char)b) > 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) > 0) );
+			block.push( Num.fromBool(a.str().compareTo(b.str()) > 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).lt((Number)a) ); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
@@ -830,6 +830,8 @@ class OP_E extends OpInstruction {
 		arg("L|S", "length");
 		setOverload(1, "len");
 	}
+	
+	private static Num TEN = Num.fromInt(10);
 
 	@Override
 	public void execute (final Block block) {
@@ -838,9 +840,9 @@ class OP_E extends OpInstruction {
 		if (overload().execute(block, n)) return;
 
 		if (n.isa(NUMBER)) {
-			block.push( new Num(10).pow((Number)n) );
+			block.push( TEN.pow((Number)n) );
 		} else if (n.isa(LIST)) {
-			block.push( new Num(((List)n).length()) );
+			block.push( Num.fromInt(((List)n).length()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -942,7 +944,7 @@ class OP_G extends OpInstruction {
 			}
 			return;
 		} else if (a.isa(NUMBER)) {
-			block.push( new Num(((Number)a).isPrime()) );
+			block.push( Num.fromBool(((Number)a).isPrime()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1051,11 +1053,7 @@ class OP_H extends OpInstruction {
 					byte[] bytes = out_bi.toByteArray();
 					ArrayList<Number> nums = new ArrayList<>(bytes.length);
 					for (byte b : bytes) {
-						if (b >= 0) {
-							nums.add(Num.BYTES[b]);
-						} else {
-							nums.add(new Num(b));
-						}
+						nums.add(Num.fromByte(b));
 					}
 					block.push(new NumberItemList(nums));
 					return;
@@ -1286,14 +1284,14 @@ class OP_N extends OpInstruction {
 		final Obj b = block.peek(); //List
 		
 		if (a.isa(STR) && b.isa(STR)) {
-			block.push(new Num(b.str().indexOf(a.str())));
+			block.push(Num.fromInt(b.str().indexOf(a.str())));
 		} else if(b.isa(Obj.LIST)) {			
 			List l = (List)b;
-			block.push(new Num(l.find(a)));
+			block.push(Num.fromInt(l.find(a)));
 		} else if (b.isa(DICT) && a.isa(STR)) {
-			block.push( new Num(((Dict)b).containsKey(a.str())) );
+			block.push( Num.fromBool(((Dict)b).containsKey(a.str())) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
-			block.push( new Num(((Dict)b).containsKey(((Symbol)a).id())) );
+			block.push( Num.fromBool(((Dict)b).containsKey(((Symbol)a).id())) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1331,7 +1329,7 @@ class OP_O extends OpInstruction {
 				break;
 			case 'b':
 				// Since 0 is a valid byte, push -1 if invalid
-				block.push(new Num(StreamMgr.read(i)));
+				block.push(Num.fromInt(StreamMgr.read(i)));
 				break;
 			case 'a':
 				// Pushes 0 if invalid
@@ -1352,7 +1350,7 @@ class OP_O extends OpInstruction {
 				break;
 			case 'i':
 				// Info 0:does not exist, 1:input, 2:output
-				block.push(new Num(StreamMgr.info(i)));
+				block.push(Num.fromInt(StreamMgr.info(i)));
 				break;
 			default:
 				throw new AyaRuntimeException("Invalid char for operator 'O': " + c);
@@ -1364,7 +1362,7 @@ class OP_O extends OpInstruction {
 		} else if (a.isa(CHAR)) {
 			char c = ((Char)a).charValue();
 			String filename = b.str();
-			block.push(new Num(StreamMgr.open(filename, c+"")));
+			block.push(Num.fromInt(StreamMgr.open(filename, c+"")));
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1407,11 +1405,11 @@ class OP_Q extends OpInstruction {
 		if(a.isa(Obj.NUMBER)) {
 			int i = ((Number)a).toInt();
 			if (i > 0) {
-				block.push(new Num(Ops.RAND.nextInt(i)));
+				block.push(Num.fromInt(Ops.RAND.nextInt(i)));
 			} else if (i < 0) {
-				block.push(new Num(-1 * Ops.RAND.nextInt(i*-1)));
+				block.push(Num.fromInt(-1 * Ops.RAND.nextInt(i*-1)));
 			} else {
-				block.push(new Num(Ops.RAND.nextInt()));
+				block.push(Num.fromInt(Ops.RAND.nextInt()));
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1759,7 +1757,7 @@ class OP_Caret extends OpInstruction {
 			//Raise b to the ath power
 			block.push( ((Number)b).pow((Number)a) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(new Num( ((Str)a).levDist((Str)b) ));
+			block.push(Num.fromInt( ((Str)a).levDist((Str)b) ));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( ((NumberList)a).powFrom((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {

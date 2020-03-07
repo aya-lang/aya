@@ -23,7 +23,12 @@ public class NumberToken extends StdToken {
 		if (isSpecNum) {
 			return new DataInstruction(new SpecialNumberParser(data).toNumber());
 		} else {
-			return new DataInstruction(new Num(Double.parseDouble(data)));
+			try {
+				int i = Integer.parseInt(data);
+				return new DataInstruction(Num.fromInt(i));
+			} catch (NumberFormatException e) {
+				return new DataInstruction(new Num(Double.parseDouble(data)));
+			}
 		}
 	}
 	
@@ -41,7 +46,12 @@ public class NumberToken extends StdToken {
 			}
 		}
 		else {
-			return new Num(Double.parseDouble(data));
+			try {
+				int i = Integer.parseInt(data);
+				return Num.fromInt(i);
+			} catch (NumberFormatException e) {
+				return new Num(Double.parseDouble(data));
+			}
 		}
 	}
 

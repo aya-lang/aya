@@ -209,7 +209,7 @@ class OP_HashCode extends OpInstruction {
 	
 	@Override
 	public void execute(Block block) {
-		block.push(new Num(block.pop().hashCode()));
+		block.push(Num.fromInt(block.pop().hashCode()));
 	}
 }
 
@@ -318,13 +318,13 @@ class OP_MDate extends OpInstruction {
 			
 			ArrayList<Number> fields = new ArrayList<Number>();
 			
-			fields.add(new Num(cal.get(Calendar.DAY_OF_WEEK)));
-			fields.add(new Num(cal.get(Calendar.YEAR)));
-			fields.add(new Num(cal.get(Calendar.MONTH)));
-			fields.add(new Num(cal.get(Calendar.DAY_OF_MONTH)));
-			fields.add(new Num(cal.get(Calendar.HOUR)));
-			fields.add(new Num(cal.get(Calendar.MINUTE)));
-			fields.add(new Num(cal.get(Calendar.SECOND)));
+			fields.add(Num.fromInt(cal.get(Calendar.DAY_OF_WEEK)));
+			fields.add(Num.fromInt(cal.get(Calendar.YEAR)));
+			fields.add(Num.fromInt(cal.get(Calendar.MONTH)));
+			fields.add(Num.fromInt(cal.get(Calendar.DAY_OF_MONTH)));
+			fields.add(Num.fromInt(cal.get(Calendar.HOUR)));
+			fields.add(Num.fromInt(cal.get(Calendar.MINUTE)));
+			fields.add(Num.fromInt(cal.get(Calendar.SECOND)));
 
 			block.push(new NumberItemList(fields));
 		} else {
@@ -359,7 +359,7 @@ class OP_Graphics extends OpInstruction {
 			Symbol command = (Symbol)o_command;
 			
 			int result = this.canvas.doCommand(id, command, params);
-			block.push(new Num(result));
+			block.push(Num.fromInt(result));
 		} else {
 			throw new TypeError(this, o_id, o_params, o_command);
 		}

@@ -38,21 +38,9 @@ public class Num extends Number {
 	// CONSTRUCTORS //
 	//////////////////
 	
-	public Num(int n) {
-		_val = (double)n;
-	}
-	
 	public Num(double d) {
 		_val = d;
 	}
-	
-	public Num(boolean b) {
-		_val = b ? 1.0 : 0.0;
-	}
-	
-//	public Num(BigNum bn) {
-//		_val = bn.toDouble();
-//	}
 	
 	public Num(String str) {
 		try {
@@ -61,6 +49,26 @@ public class Num extends Number {
 			_val = Double.NaN;
 		}
 	}	
+
+	//////////////
+	// CREATION //
+	//////////////
+	
+	public static Num fromByte(byte b) {
+		return BYTES[b & 0xff];
+	}
+	
+	public static Num fromInt(int i) {
+		if (i >= 0 && i <= 255) {
+			return BYTES[i];
+		} else {
+			return new Num(i);
+		}
+	}
+	
+	public static Num fromBool(boolean b) {
+		return b ? ONE : ZERO;
+	}
 	
 	
 	/////////////////

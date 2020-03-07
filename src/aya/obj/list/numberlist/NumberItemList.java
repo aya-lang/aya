@@ -983,7 +983,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(n) < 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(n) < 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -994,7 +994,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(ns.get(i)) < 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) < 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1004,7 +1004,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(n) <= 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(n) <= 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1015,7 +1015,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(ns.get(i)) <= 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) <= 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1025,7 +1025,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(n) > 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(n) > 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1036,7 +1036,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(ns.get(i)) > 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) > 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1046,7 +1046,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(n) >= 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(n) >= 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1057,7 +1057,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(ns.get(i)) >= 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) >= 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1067,7 +1067,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(n) == 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(n) == 0));
 		}
 		return new NumberItemList(out);
 	}
@@ -1078,7 +1078,7 @@ public class NumberItemList extends NumberList {
 		int len = _list.size();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(new Num(_list.get(i).compareTo(ns.get(i)) == 0));
+			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) == 0));
 		}
 		return new NumberItemList(out);
 	}

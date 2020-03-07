@@ -870,7 +870,7 @@ class OP_Dot_Len extends OpInstruction {
 
 		if (n.isa(LIST)) {
 			block.push(n);
-			block.push( new Num(((List)n).length()) );
+			block.push( Num.fromInt(((List)n).length()) );
 		} else if (n.isa(DICT)) {
 			block.push(n);
 			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
@@ -1104,12 +1104,12 @@ class OP_Dot_N extends OpInstruction {
 				cond.eval();
 				Obj result = cond.pop();
 				if (result.bool()) {
-					block.push(new Num(index)); // ..and the index
+					block.push(Num.fromInt(index)); // ..and the index
 					return;
 				}
 				index++;
 			}
-			block.push(new Num(-1));
+			block.push(Num.NEG_ONE);
 		} else {
 			throw new TypeError(this, a, b);
 		}

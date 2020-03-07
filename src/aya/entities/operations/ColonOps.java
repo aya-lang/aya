@@ -280,13 +280,14 @@ class OP_Colon_Quote extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(a);
 		} else if (a.isa(CHAR)) { 
-			block.push( new Num((int)(((Char)a).charValue())) );
+			int c = ((Char)a).charValue();
+			block.push(Num.fromInt(c & 0xff));
 		} else if (a.isa(STR)) {
 			Str s = (Str)a;
 			ArrayList<Number> nums = new ArrayList<Number>(s.length());
 			byte[] bytes = s.getBytes();
 			for (byte b : bytes) {
-				nums.add(new Num(b));
+				nums.add(Num.fromByte(b));
 			}
 			block.push(new NumberItemList(nums));
 		} else {
@@ -383,11 +384,11 @@ class OP_Colon_LessThan extends OpInstruction {
 		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) <= 0) );
+			block.push( Num.fromBool(((Number)a).compareTo((Number)b) <= 0) );
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) <= 0) );
+			block.push( Num.fromBool(((Char)a).compareTo((Char)b) <= 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) <= 0) );
+			block.push( Num.fromBool(a.str().compareTo(b.str()) <= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).geq((Number)a) ); // geq is opposite of leq
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
@@ -446,11 +447,11 @@ class OP_Colon_GreaterThan extends OpInstruction {
 		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( new Num(((Number)a).compareTo((Number)b) >= 0) );
+			block.push( Num.fromBool(((Number)a).compareTo((Number)b) >= 0) );
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( new Num(((Char)a).compareTo((Char)b) >= 0) );
+			block.push( Num.fromBool(((Char)a).compareTo((Char)b) >= 0) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( new Num(a.str().compareTo(b.str()) >= 0) );
+			block.push( Num.fromBool(a.str().compareTo(b.str()) >= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
 			block.push( ((NumberList)b).leq((Number)a) ); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
@@ -567,7 +568,7 @@ class OP_Colon_E extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			block.push(new Num(((Dict)a).size()));
+			block.push(Num.fromInt( ((Dict)a).size()) );
 		} else {
 			throw new TypeError(this, a);
 		}

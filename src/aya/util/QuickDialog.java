@@ -155,7 +155,7 @@ public class QuickDialog {
 				throw new RuntimeException("Need two options for yes/no dialog.");
 			}
 			//TODO: Change Num to ByteNum
-			return new Num(yesOrNo(title, options[0], options[1], windowHdr, msgType));
+			return Num.fromBool(yesOrNo(title, options[0], options[1], windowHdr, msgType));
 		case OPTION_BUTTONS:
 			return new Str(selectOptionButtons(title, options, windowHdr, msgType));
 		case OPTION_DROPDOWN:
