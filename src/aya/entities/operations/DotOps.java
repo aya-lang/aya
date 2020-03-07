@@ -116,7 +116,7 @@ public class DotOps {
 		/* 87 W  */ new OP_Dot_W(),
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
-		/* 90 Z  */ new OP_Dot_Zed(),
+		/* 90 Z  */ null,
 		/* 91 [  */ null,
 		/* 92 \  */ new OP_Dot_BackSlash(),
 		/* 93 ]  */ new OP_Colon_Demote(),
@@ -1149,7 +1149,7 @@ class OP_Dot_Rand extends OpInstruction {
 class OP_Dot_R extends OpInstruction {
 
 	public OP_Dot_R() {
-		init(".Q");
+		init(".R");
 		arg("N", "range [0, 1, .., N-1]");
 	}
 
@@ -1249,35 +1249,6 @@ class OP_Dot_W extends OpInstruction {
 			Aya.getInstance().getVars().peek().mergeDefined(d.getVarSet());
 		} else {
 			throw new TypeError(this, a);
-		}
-	}
-}
-
-
-// Z - 90
-class OP_Dot_Zed extends OpInstruction {
-
-	public OP_Dot_Zed() {
-		init(".Z");
-		arg("S|C|J", "dereference variable");
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj s = block.pop();
-
-		if(s.isa(STR) || s.isa(CHAR)) {
-			String str = s.str();
-			if(str.contains(".")) {
-				throw new AyaRuntimeException(".Z: Cannot look up dictionary variables");
-			}
-			Variable v = new Variable(str);
-			block.push(Aya.getInstance().getVars().getVar(v));
-			return;
-		} else if (s.isa(SYMBOL)) {
-			block.push(Aya.getInstance().getVars().getVar( ((Symbol)s).id() ));
-		} else {
-			throw new TypeError(this, s);
 		}
 	}
 }

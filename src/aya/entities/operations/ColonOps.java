@@ -615,13 +615,7 @@ class OP_Colon_I extends OpInstruction {
 			}
 			
 			block.push(list);
-		
-			if (out.isa(BLOCK)) {
-				block.addAll( ((Block)out).getInstructions().getInstrucionList() );
-			} else {
-				block.push(out);
-			}
-			
+			block.push(out);
 		} else {
 			throw new TypeError(this, index, list);
 		}
