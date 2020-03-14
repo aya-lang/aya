@@ -45,7 +45,7 @@ import aya.util.ChartParams;
 import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
-import aya.util.interfaces.JSONDecoder;
+import aya.util.interfaces.JSONInterface;
 
 public class MiscOps {	
 
@@ -426,16 +426,18 @@ class OP_JSON extends OpInstruction {
 
 		if (cmd.equals("decode") || cmd.equals("decode_json")) {
 			if (obj.isa(STR)) {
-				block.push(JSONDecoder.decodeJSON(obj.str()));
+				block.push(JSONInterface.decodeJSON(obj.str(), JSONInterface.JSONParams.getDefaultDecode()));
 			} else {
 				throw new TypeError(this, cmd_obj, obj);
 			}
 		} else if (cmd.equals("decode_xml")) {
 			if (obj.isa(STR)) {
-				block.push(JSONDecoder.decodeXML(obj.str()));
+				block.push(JSONInterface.decodeXML(obj.str(), JSONInterface.JSONParams.getDefaultDecode()));
 			} else {
 				throw new TypeError(this, cmd_obj, obj);
 			}
+		} else if (cmd.equals("encode")) {
+			block.push(new Str(JSONInterface.encodeJSON(obj, JSONInterface.JSONParams.getDefaultEncode())));
 		} else {
 			throw new AyaRuntimeException("MJ: " + cmd + " is not a valid command");
 		}

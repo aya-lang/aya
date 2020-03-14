@@ -223,7 +223,7 @@ public class Dict extends Obj {
 		return _vars.keys();
 	}
 	
-	/** List of string keys */
+	/** List of string-only keys */
 	public Set<String> strKeys() {
 		return _string_vars.keySet();
 	}
@@ -233,6 +233,28 @@ public class Dict extends Obj {
 		for (Long l   : symKeys()) { out.add(Symbol.fromID(l)); }
 		for (String s : strKeys()) { out.add(new Str(s)); }
 		return out;
+	}
+	
+	/** All keys (symbols & strings) as a list of strings */
+	public ArrayList<String> allKeysAsStrings() {
+		ArrayList<String> keys = new ArrayList<String>();
+		for (Long l : symKeys()) { keys.add(Variable.decodeLong(l)); }
+		keys.addAll(strKeys());
+		return keys;
+	}
+	
+	/** All key/value pairs */
+	public ArrayList<Pair<String, Obj>> items() {
+		ArrayList<Pair<String, Obj>> pairs = new ArrayList<Pair<String,Obj>>();
+		// String keys
+		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
+			pairs.add(new Pair<String, Obj>(e.getKey(), e.getValue()));
+		}
+		// Symbols
+		for (Pair<Variable, Obj> e : _vars.getAllVars()) {
+			pairs.add(new Pair<String, Obj>(e.first().name(), e.second()));
+		}
+		return pairs;
 	}
 	
 	
@@ -352,10 +374,16 @@ public class Dict extends Obj {
 		
 		if (o instanceof Dict) {
 			Dict other = (Dict)o;
-			if (other.size() == this.size()) {
+			if (other._vars.size() == this._vars.size() && other._string_vars.size() == this._string_vars.size()) {
 				for (Long l : this._vars.getMap().keySet()) {
 					Obj elem = other._vars.getMap().get(l);
 					if (elem == null || !elem.equiv(this._vars.getMap().get(l))) {
+						return false;
+					}
+				}
+				for (String s : this._string_vars.keySet()) {
+					Obj elem = other._string_vars.get(s);
+					if (elem == null || !elem.equiv(this._string_vars.get(s))) {
 						return false;
 					}
 				}
