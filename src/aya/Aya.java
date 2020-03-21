@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,11 +19,13 @@ import aya.entities.operations.ColonOps;
 import aya.entities.operations.DotOps;
 import aya.entities.operations.MiscOps;
 import aya.entities.operations.Ops;
+import aya.exceptions.AyaBuildException;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
-import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
@@ -31,6 +34,7 @@ import aya.obj.list.Str;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
+import aya.plugin.builtins.BuiltinInstructionStore;
 import aya.util.StringSearch;
 import aya.variable.VariableData;
 
@@ -52,6 +56,7 @@ public class Aya extends Thread {
 	private VariableData _variables;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
+	private HashMap<String, NamedInstructionStore> _namedInstructionStores = new HashMap<String, NamedInstructionStore>();
 	
 	private CallStack _callstack = new CallStack();
 	
@@ -72,9 +77,11 @@ public class Aya extends Thread {
 			//instance.out = new AyaStdout();
 			CharacterParser.initMap();
 			AyaPrefs.init();
+			_instance.initNamedInstructions();
 		}
 		return _instance;
 	}
+
 
 	@Override
 	public void run() {
@@ -235,7 +242,7 @@ public class Aya extends Thread {
 	private void run(String str) {
 		try {
 			run(Parser.compile(str, this));
-		} catch (SyntaxError e) {
+		} catch (AyaBuildException e) {
 			_instance._err.println("SYNTAX ERROR: " + e.getSimpleMessage());
 		}
 	}
@@ -249,6 +256,27 @@ public class Aya extends Thread {
 	public void println(Object o) {_instance._out.println(o.toString());}
 	public void printDebug(Object o) {if (DEBUG) _instance._out.println(o.toString());}
 	public void printEx(Object o) {_instance._err.print(o.toString());}
+	
+	////////////////////////
+	// Named Instructions //
+	////////////////////////
+
+	private void initNamedInstructions() {
+		_namedInstructionStores.put("builtin", new BuiltinInstructionStore());
+		
+	}
+	public NamedInstruction getNamedInstruction(String name) {
+		return this.getNamedInstruction("builtin", name);
+	}
+	
+	public NamedInstruction getNamedInstruction(String plugin, String name) {
+		NamedInstructionStore store = _namedInstructionStores.get(plugin);
+		if (plugin != null) {
+			return store.getInstruction(name);
+		} else {
+			return null;
+		}
+	}
 	
 	
 	/////////////////////
@@ -291,8 +319,8 @@ public class Aya extends Thread {
 	public static String exToString(Exception e) {
 		if (e instanceof TypeError) {
 			return "TYPE ERROR: " + ((TypeError)e).getSimpleMessage();
-		} else if (e instanceof SyntaxError) {
-			return "SYNTAX ERROR: " + ((SyntaxError)e).getSimpleMessage();
+		} else if (e instanceof AyaBuildException) {
+			return ((AyaBuildException)e).getSimpleMessage();
 		} else if (e instanceof AyaRuntimeException) {
 			return "ERROR: " + ((AyaRuntimeException)e).getSimpleMessage();
 		} else if (e instanceof PatternSyntaxException) {

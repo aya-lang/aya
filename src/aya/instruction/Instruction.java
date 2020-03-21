@@ -6,7 +6,7 @@ import aya.obj.block.Block;
 
 public abstract class Instruction {
 
-	public abstract void execute(Block b);
+	public abstract void execute(Block block);
 	
 	public final String repr() {
 		LinkedList<Long> visited = new LinkedList<Long>();

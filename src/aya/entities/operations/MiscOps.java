@@ -40,12 +40,12 @@ import aya.obj.number.Number;
 import aya.obj.number.RationalNum;
 import aya.obj.symbol.Symbol;
 import aya.parser.CharacterParser;
+import aya.plugin.json.JSONInterface;
 import aya.util.CanvasInterface;
 import aya.util.ChartParams;
 import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
-import aya.util.interfaces.JSONInterface;
 
 public class MiscOps {	
 

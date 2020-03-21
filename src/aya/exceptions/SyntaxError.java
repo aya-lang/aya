@@ -1,15 +1,9 @@
 package aya.exceptions;
 
 @SuppressWarnings("serial")
-public class SyntaxError extends RuntimeException {
-	String msg;
+public class SyntaxError extends AyaBuildException {
 	
 	public SyntaxError(String msg) {
-		super(msg);
-		this.msg = msg;
-	}
-	
-	public String getSimpleMessage() {
-		return msg;
+		super("Syntax Error: " + msg);
 	}
 }

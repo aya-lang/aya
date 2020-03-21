@@ -29,6 +29,7 @@ import aya.parser.tokens.CharToken;
 import aya.parser.tokens.KeyVarToken;
 import aya.parser.tokens.LambdaToken;
 import aya.parser.tokens.ListToken;
+import aya.parser.tokens.NamedOpToken;
 import aya.parser.tokens.NumberToken;
 import aya.parser.tokens.OperatorToken;
 import aya.parser.tokens.SpecialToken;
@@ -435,6 +436,27 @@ public class Parser {
 					}
 					
 					tokens.add(new SymbolToken(sym));
+				}
+				
+				// Named Operator
+				else if (in.hasNext() && in.peek() == '{') {
+					in.next(); // Skip '{'
+					StringBuilder sb = new StringBuilder();
+					boolean done = false;
+					while(in.hasNext()) {
+						char c = in.next();
+						if (c == '}') {
+							done = true;
+							break;
+						} else {
+							sb.append(c);
+						}
+					}
+					if (done) {
+						tokens.add(new NamedOpToken(sb.toString()));
+					} else {
+						throw new SyntaxError("Expected '}' after :{" + sb.toString());
+					}
 				}
 				
 				// Colon Pound
