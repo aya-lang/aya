@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
+import aya.plugin.json.LoadJSONInstruction;
 import aya.plugin.json.ToJSONInstruction;
 
 public class BuiltinInstructionStore extends NamedInstructionStore {
@@ -27,5 +28,6 @@ public class BuiltinInstructionStore extends NamedInstructionStore {
 	private void init() {
 		// JSON
 		addInstruction(new ToJSONInstruction());
+		addInstruction(new LoadJSONInstruction());
 	}
 }

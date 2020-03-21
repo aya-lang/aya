@@ -1,4 +1,4 @@
-package aya.util.interfaces;
+package aya.plugin.json;
 
 import java.util.ArrayList;
 import java.util.HashSet;
