@@ -7,9 +7,11 @@ import aya.instruction.Instruction;
 public abstract class NamedInstruction extends Instruction {
 	
 	private String _name;
+	protected String _doc;
 	
 	public NamedInstruction(String name) {
 		this._name = name;
+		this._doc = null;
 	}
 	
 	public String getName() {

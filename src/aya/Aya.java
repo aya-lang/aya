@@ -9,7 +9,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,6 +23,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.TypeError;
+import aya.ext.json.JSONInstructionStore;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.op.OpDocReader;
@@ -34,7 +34,6 @@ import aya.obj.list.Str;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
-import aya.plugin.builtins.BuiltinInstructionStore;
 import aya.util.StringSearch;
 import aya.variable.VariableData;
 
@@ -56,7 +55,7 @@ public class Aya extends Thread {
 	private VariableData _variables;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
-	private HashMap<String, NamedInstructionStore> _namedInstructionStores = new HashMap<String, NamedInstructionStore>();
+	private ArrayList<NamedInstructionStore> _namedInstructionStores = new ArrayList<NamedInstructionStore>();
 	
 	private CallStack _callstack = new CallStack();
 	
@@ -262,20 +261,21 @@ public class Aya extends Thread {
 	////////////////////////
 
 	private void initNamedInstructions() {
-		_namedInstructionStores.put("builtin", new BuiltinInstructionStore());
+		_namedInstructionStores.add(new JSONInstructionStore());
+		
+		for (NamedInstructionStore x : _namedInstructionStores) {
+			x.initHelpData(getInstance());
+		}
 		
 	}
 	public NamedInstruction getNamedInstruction(String name) {
-		return this.getNamedInstruction("builtin", name);
-	}
-	
-	public NamedInstruction getNamedInstruction(String plugin, String name) {
-		NamedInstructionStore store = _namedInstructionStores.get(plugin);
-		if (plugin != null) {
-			return store.getInstruction(name);
-		} else {
-			return null;
+		for (NamedInstructionStore x : _namedInstructionStores) {
+			NamedInstruction i = x.getInstruction(name);
+			if (i != null) {
+				return i;
+			}
 		}
+		return null;
 	}
 	
 	
