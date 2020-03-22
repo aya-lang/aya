@@ -23,6 +23,7 @@ import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.TypeError;
+import aya.ext.image.ImageInstructionStore;
 import aya.ext.json.JSONInstructionStore;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
@@ -262,6 +263,7 @@ public class Aya extends Thread {
 
 	private void initNamedInstructions() {
 		_namedInstructionStores.add(new JSONInstructionStore());
+		_namedInstructionStores.add(new ImageInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(getInstance());

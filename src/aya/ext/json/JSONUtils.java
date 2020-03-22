@@ -1,4 +1,4 @@
-package aya.plugin.json;
+package aya.ext.json;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import aya.obj.symbol.Symbol;
 import aya.util.Pair;
 import aya.variable.Variable;
 
-public class JSONInterface {
+public class JSONUtils {
 	
 	public static class JSONParams {
 		private static JSONParams default_encode = null;
@@ -247,7 +247,7 @@ public class JSONInterface {
 		
 		JSONObject json = readJSON(example);
 		try {
-			Obj o  = toObj(json, JSONInterface.JSONParams.getDefaultDecode());
+			Obj o  = toObj(json, JSONUtils.JSONParams.getDefaultDecode());
 			System.out.println(o.repr());
 		} catch (Exception e) {
 			throw new RuntimeException(e);

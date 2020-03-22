@@ -54,6 +54,19 @@ public class NumberItemList extends NumberList {
 			}
 		}
 	}
+	
+	
+	//////////////
+	// Creation //
+	//////////////
+
+	public static NumberItemList fromBytes(byte[] bytes) {
+		ArrayList<Number> out = new ArrayList<Number>(bytes.length);
+		for (int i = 0; i < bytes.length; i++) {
+			out.add(Num.fromByte(bytes[i]));
+		}
+		return new NumberItemList(out);
+	}
 
 	//////////////////////////
 	// NUMBERLIST OVERRIDES //
@@ -126,7 +139,7 @@ public class NumberItemList extends NumberList {
 	public byte[] toByteArray() {
 		byte[] bs = new byte[_list.size()];
 		for (int i = 0; i < _list.size(); i++) {
-			bs[i] = (byte)_list.get(i).toInt();
+			bs[i] = _list.get(i).toByte();
 		}
 		return bs;
 	}
@@ -1082,6 +1095,7 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
+
 
 
 

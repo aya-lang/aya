@@ -36,6 +36,11 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	/** Convert to Apfloat */
 	public abstract Apfloat toApfloat();
 	
+	/** Convert to byte */
+	public byte toByte() {
+		return (byte)toInt();
+	}
+	
 	
 	///////////////////////
 	// BINARY OPERATIONS //

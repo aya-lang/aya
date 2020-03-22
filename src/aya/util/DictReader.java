@@ -3,9 +3,11 @@ package aya.util;
 import java.awt.Color;
 
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
@@ -23,6 +25,11 @@ public class DictReader {
 	public DictReader(Dict dict) {
 		_dict = dict;
 		_err_name = "DictReader";
+	}
+
+	public DictReader(Dict dict, String error_name) {
+		_dict = dict;
+		_err_name = error_name;
 	}
 	
 	public void setErrorName(String message) {
@@ -106,6 +113,26 @@ public class DictReader {
 			throw badType(key, "num", o);
 		} else {
 			return ((Number)o).toInt();
+		}
+	}
+
+	public List getListEx(long key) {
+		try {
+			return (List)_dict.get(key);
+		} catch (ClassCastException e) {
+			throw badType(key, "list", _dict.get(key));
+		} catch (UndefVarException e2) {
+			throw notFound(key);
+		}
+	}
+
+	public NumberList getNumberListEx(long key) {
+		try {
+			return (NumberList)_dict.get(key);
+		} catch (ClassCastException e) {
+			throw badType(key, "list<num>", _dict.get(key));
+		} catch (UndefVarException e2) {
+			throw notFound(key);
 		}
 	}
 	
@@ -238,4 +265,5 @@ public class DictReader {
 			return o.bool();
 		}
 	}
+
 }

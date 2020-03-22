@@ -17,10 +17,14 @@ public abstract class NamedInstruction extends Instruction {
 	public String getName() {
 		return this._name;
 	}
+	
+	public String opName() {
+		return ":{" + _name + "}";
+	}
 
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return ":{" + _name + "}";
+		return opName();
 	}
 
 }

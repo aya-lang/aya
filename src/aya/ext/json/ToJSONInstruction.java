@@ -1,4 +1,4 @@
-package aya.plugin.json;
+package aya.ext.json;
 
 import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
@@ -20,7 +20,7 @@ public class ToJSONInstruction extends NamedInstruction {
 			throw new TypeError(this, "::dict", a);
 		}
 		
-		block.push(new Str(JSONInterface.encodeJSON(a, JSONInterface.JSONParams.getDefaultEncode())));
+		block.push(new Str(JSONUtils.encodeJSON(a, JSONUtils.JSONParams.getDefaultEncode())));
 	}
 
 }
