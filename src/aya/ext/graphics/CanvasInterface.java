@@ -1,4 +1,4 @@
-package aya.util;
+package aya.ext.graphics;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -15,6 +15,8 @@ import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.util.DictReader;
+import aya.util.FileUtils;
 import aya.variable.Variable;
 
 public class CanvasInterface {

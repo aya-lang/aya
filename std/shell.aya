@@ -20,7 +20,7 @@ exportall
 
 .#? ls\n  print a list of files in the working dir
 def ::ls {
-    ""4MZ
+    ""2MZ4MZ
     .E 0 = {
         ; "  <no files>"
     } {

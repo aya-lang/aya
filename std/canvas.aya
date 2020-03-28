@@ -21,7 +21,7 @@ def canvas::__init__ ({params::dict self ,
     params.width self.:width;
     params.height self.:height;
 
-    ::new params 0 MG self.:id ;
+    ::new params 0 :{graphics.MG} self.:id ;
 }.capture[::colors])
 
 def canvas::__str__ {self,
@@ -35,37 +35,37 @@ def canvas::delay {self,
 }
 
 def canvas::line {xa ya xb yb self,
-    ::line {, xa:xa ya:ya xb:xb yb:yb } self.id MG ;
+    ::line {, xa:xa ya:ya xb:xb yb:yb } self.id :{graphics.MG} ;
 }
 
 def canvas::point {x y self,
-    ::line {, x:xa:xb y:ya:yb} self.id MG ;
+    ::line {, x:xa:xb y:ya:yb} self.id :{graphics.MG} ;
 }
 
 def canvas::circle {x y r self,
-    ::ellipse {, x:x y:y r2*:w:h } self.id MG ;
+    ::ellipse {, x:x y:y r2*:w:h } self.id :{graphics.MG} ;
 }
 
 def canvas::fillcircle {x y r self,
-    ::ellipse {, 1:fill x:x y:y r2*:w:h } self.id MG ;
+    ::ellipse {, 1:fill x:x y:y r2*:w:h } self.id :{graphics.MG} ;
 }
 
 def canvas::set_color {color self,
-    ::set_color {, color.r:r color.g:g color.b:b } self.id MG ;
+    ::set_color {, color.r:r color.g:g color.b:b } self.id :{graphics.MG} ;
 }
 
 def canvas::set_alpha {a self,
-    ::set_alpha {, a:a } self.id MG ;
+    ::set_alpha {, a:a } self.id :{graphics.MG} ;
 }
 
 def canvas::set_grad {start ca end cb cycle self,
     ::set_paint {, start.[0]:xa start.[1]:ya ca:start
                    end.[0]:xb   end.[1]:yb   cb:end
-                   cycle:cycle ::grad:type } self.id MG ;
+                   cycle:cycle ::grad:type } self.id :{graphics.MG} ;
 }
 
 def canvas::set_bg {color self,
-    ::set_bg {, color.r:r color.g:g color.b:b } self.id MG ;
+    ::set_bg {, color.r:r color.g:g color.b:b } self.id :{graphics.MG} ;
 }
 
 def canvas::save {filename self,
@@ -76,29 +76,29 @@ def canvas::save {filename self,
         ".png" `in filename ! {".png"+} ?
         .# use as path
         :file
-    } self.id MG ;
+    } self.id :{graphics.MG} ;
 }
 
 def canvas::close {self,
-    ::close {,} self.id MG ;
+    ::close {,} self.id :{graphics.MG} ;
 }
 
 def canvas::show {self,
-    ::show {,} self.id MG ;
+    ::show {,} self.id :{graphics.MG} ;
 }
 
 def canvas::isopen {self,
-    ::isopen {,} self.id MG
+    ::isopen {,} self.id :{graphics.MG}
 }
 
 def canvas::rect {x y w h self,
-    ::rect {, x:x y:y w:w h:h } self.id MG ;
+    ::rect {, x:x y:y w:w h:h } self.id :{graphics.MG} ;
 }
 
 def canvas::fillrect {x y w h self,
-    ::rect {, x:x y:y w:w h:h 1:fill} self.id MG ;
+    ::rect {, x:x y:y w:w h:h 1:fill} self.id :{graphics.MG} ;
 }
 
 def canvas::clear {self,
-    ::clear {,} self.id MG ;
+    ::clear {,} self.id :{graphics.MG} ;
 }

@@ -10,6 +10,7 @@ public class ToJSONInstruction extends NamedInstruction {
 	
 	public ToJSONInstruction() {
 		super("json.dumps");
+		_doc = "Serialize a dict to a json string";
 	}
 
 	@Override

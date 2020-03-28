@@ -1,11 +1,5 @@
 package aya.ext.image;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ComponentSampleModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,7 +19,7 @@ public class WriteImageInstruction extends NamedInstruction {
 	
 	public WriteImageInstruction() {
 		super("image.write");
-		_doc = "write an image to a file";
+		_doc = "Write an image to a file";
 	}
 
 	@Override
@@ -46,12 +40,10 @@ public class WriteImageInstruction extends NamedInstruction {
 			throw new AyaRuntimeException(opName() + ", filename does not have a valid extension");
 		}
 		
+		AyaImage aya_image = AyaImage.fromDict(dr);
+		
 		try {
-			writeImage(filename,
-					   ext,
-					   dr.getNumberListEx(EncodedVars.DATA).toByteArray(),
-					   dr.getIntEx(EncodedVars.WIDTH), 
-					   dr.getIntEx(EncodedVars.HEIGHT));
+			ImageIO.write(aya_image.toBufferedImage(), ext, new File(filename));
 		} catch (IOException e) {
 			e.printStackTrace(Aya.getInstance().getErr());
 			throw new AyaRuntimeException(opName() + ", unable to write image to file'" + filename + "'");
@@ -70,21 +62,5 @@ public class WriteImageInstruction extends NamedInstruction {
 		}
 		return extension;
 	}
-
-	public void writeImage(String filename, String ext, byte[] bytes, int width, int height) throws IOException {
-		if (bytes.length != (width * height * 3)) {
-			throw new AyaRuntimeException(opName() + ", Error when writing file '" + filename + "' data is invalid length. Must be width*height*3");
-		}
-
-		DataBuffer buffer = new DataBufferByte(bytes, bytes.length);
-
-		SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE, width, height, 3, width*3, new int[]{2,1,0});
-
-		Raster raster = Raster.createRaster(sampleModel, buffer, null);
-
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-		image.setData(raster);
-		ImageIO.write(image, ext, new File(filename));
-	}		
 
 }
