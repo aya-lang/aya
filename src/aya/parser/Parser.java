@@ -404,41 +404,13 @@ public class Parser {
 					
 					if (sym.equals("")) {
 						if (in.hasNext()) {
-							String opstr = "" + in.peek(); // For printing error message
-							OpInstruction op = null;
-							char opchar = in.next();
-
-							if (opchar == '.') {
-								if (in.hasNext()) {
-									opstr += in.peek();
-									op = DotOps.getOpOrNull(in.next());
-								}
-							} else if (opchar == 'M') {
-								if (in.hasNext()) {
-									opstr += in.peek();
-									op = MiscOps.getOpOrNull(in.next());
-								}
-							} else if (opchar == ':') {
-								if (in.hasNext()) {
-									opstr += in.peek();
-									if (ColonOps.isColonOpChar(in.peek())) {
-										op = ColonOps.getOpOrNull(in.next());
-									}
-								}
-							} else if (Ops.isOpChar(opchar)) {
-								op = Ops.getOp(opchar);
-							}
-							
-							if (op == null) {
-								throw new SyntaxError("No symbol name asociated with ::" + opstr);
+							char sym_char = in.peek();
+							if (CharacterParser.isSpecialChar(sym_char)) {
+								sym = CharacterParser.getName(sym_char);
+								in.next();
 							} else {
-								sym = op.getSymName();
-
-								if (sym == null) {
-									throw new SyntaxError("No symbol name asociated with ::" + opstr);
-								}
+								sym = parseOpSym(in);
 							}
-
 						} else {
 							throw new SyntaxError("Expected symbol name");
 						}
@@ -904,6 +876,45 @@ public class Parser {
 	/** Compiles a string into instruction stack using input => tokenize => assemble => generate */
 	public static InstructionStack compileIS(String s, Aya aya) {
 		return generate(assemble(tokenize(aya, s)));
+	}
+	
+	private static String parseOpSym(ParserString in) {
+		String opstr = "" + in.peek(); // For printing error message
+		OpInstruction op = null;
+		char opchar = in.next();
+
+		if (opchar == '.') {
+			if (in.hasNext()) {
+				opstr += in.peek();
+				op = DotOps.getOpOrNull(in.next());
+			}
+		} else if (opchar == 'M') {
+			if (in.hasNext()) {
+				opstr += in.peek();
+				op = MiscOps.getOpOrNull(in.next());
+			}
+		} else if (opchar == ':') {
+			if (in.hasNext()) {
+				opstr += in.peek();
+				if (ColonOps.isColonOpChar(in.peek())) {
+					op = ColonOps.getOpOrNull(in.next());
+				}
+			}
+		} else if (Ops.isOpChar(opchar)) {
+			op = Ops.getOp(opchar);
+		}
+		
+		if (op == null) {
+			throw new SyntaxError("No symbol name asociated with ::" + opstr);
+		} else {
+			String sym = op.getSymName();
+
+			if (sym == null) {
+				throw new SyntaxError("No symbol name asociated with ::" + opstr);
+			}
+			
+			return sym;
+		}
 	}
 
 }
