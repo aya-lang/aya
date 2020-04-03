@@ -34,6 +34,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
@@ -793,7 +794,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 		else if (a.isa(BLOCK) && b.isa(LIST)) {
 			final Block blk = ((Block)a).duplicate();
 			List objs = ((List)b);
-			List key_obj = blk.mapTo(objs);
+			List key_obj = ListIndexing.map(objs, blk);
 
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
@@ -965,29 +966,20 @@ class OP_Dot_I extends OpInstruction {
 
 	public OP_Dot_I() {
 		init(".I");
-		arg("LN|LL", "index, keep list on stack");
-		arg("LB", "filter, keep list on stack");
+		arg("LNA|DSA|DJA", "getindex with default value");
 		setOverload(-1, "getindex");
 	}
 
 	@Override
 	public void execute (final Block block) {
+		Obj dflt_val = block.pop();
 		Obj index = block.pop();
 		final Obj list = block.pop();
-		block.push(list); //.I keeps the list on the stack
 
 		if(list.isa(LIST)) {		
-			block.push(List.getIndex((List)list, index));
+			block.push(ListIndexing.getIndex((List)list, index, dflt_val));
 		} else if (list.isa(DICT)) {
-			if (index.isa(LIST) && !index.isa(STR)) {
-				List l = (List)index;
-				if (l.length() == 1) index = l.get(0);
-			} if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
-				block.push(index);
-				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX);
-			} else {
-				block.push(Dict.getIndex((Dict)list, index));
-			}
+			block.push(Dict.getIndex((Dict)list, index, dflt_val));
 		} else {
 			throw new TypeError(this, index, list);
 		}

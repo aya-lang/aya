@@ -28,6 +28,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIndexing;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
@@ -194,7 +195,7 @@ class OP_Colon_Pound extends OpInstruction {
 		Obj col = block.pop();
 		
 		if (blk.isa(BLOCK) && col.isa(LIST)) {
-			block.push( ((Block)blk).mapTo((List)col) );
+			block.push(ListIndexing.map((List)col, (Block)blk));
 		} else if (blk.isa(BLOCK) && col.isa(DICT)) {
 			Dict d = (Dict)col;
 			if (d.pushSelf()) {
@@ -320,7 +321,7 @@ class OP_Colon_Times extends OpInstruction {
 				for (int i = 0; i < l2.length(); i++) {
 					Block e = new Block();
 					e.addAll(expr.getInstructions().getInstrucionList());
-					out.add(e.mapToPushStack(l2.get(i), l1));
+					block.push(ListIndexing.mapToPushStack(l1, e, l2.get(i)));
 				}
 				
 				block.push(new GenericList(out));
@@ -328,13 +329,14 @@ class OP_Colon_Times extends OpInstruction {
 				List l1 = (List)a;
 				Block e = new Block();
 				e.addAll(expr.getInstructions().getInstrucionList());
-				block.push(e.mapToPushStack(b, l1));
+				// block.push(e.mapToPushStack(b, l1));
+				block.push(ListIndexing.mapToPushStack(l1, e, b));
 			} else if (b.isa(LIST)) {
 				List l2 = (List)b;
 				Block e = new Block();
 				e.addAll(expr.getInstructions().getInstrucionList());
 				e.add(a);
-				block.push(e.mapTo(l2));
+				block.push(ListIndexing.map(l2, e));
 			} else {
 				throw new TypeError(this, blk, a, b);
 			}

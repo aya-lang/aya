@@ -255,7 +255,7 @@ def matrix::__head__ {self n::list : d,
     n.[0] .<
     .# create empty list equal to the length of the first element
     .# ex: cols=5 then create [0 0 0 0 0]
-    0 .I E 0\L :d;
+    0 dot_i E 0\L :d;
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 
@@ -275,7 +275,7 @@ def matrix::__tail__ {self n::list : d,
     n.[0] .>
     .# create empty list equal to the length of the last element
     .# ex: cols=5 then create [0 0 0 0 0]
-    :1 .I E 0 \L :d;
+    :1 dot_i E 0 \L :d;
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 
@@ -505,7 +505,7 @@ def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}
     {:x m^, 10 1  0  [[1 2][3 4]]m!:x._set x.rows} [ [[1 2][10 4]] ] ts+
 
     .# __getindex__
-    {:m^, [3 3] mR.[2 2]} [9] ts+
+    {:m^, [3 3] mR.[[2 2]]} [9] ts+
     {:m^, [3 3] mR ['* 2] I .rows} [ [[3][6][9]] ] ts+
     {:m^, [3 3] mR [2 '*] I .rows} [ [[7 8 9]] ] ts+
     {:m^, [3 3] mR ['* '*] I .rows} [ [[1 2 3][4 5 6][7 8 9]] ] ts+

@@ -19,37 +19,6 @@ public abstract class List extends Obj {
 		return i >= 0 ? i : length + i;
 	}
 	
-	/** General list indexing */
-	public static Obj getIndex(List list, Obj index) {
-		if(index.isa(NUMBER)) {
-			return list.get(((Number)index).toInt());
-		} else if (index.isa(CHAR) && index.str().equals("*")) {
-			return list.deepcopy();
-		}
-		else if (index.isa(LIST)) {
-			List idx = (List)index;
-			if (idx.length() == 0) {
-				return list.similarEmpty();
-			} 
-			else if (idx.length() == 1) {
-				return List.getIndex(list, idx.get(0));
-			}
-			else {
-				int[] is = ((List)index).toNumberList().toIntArray();
-				return list.get(is);
-			}
-		} 
-		else if (index.isa(BLOCK)) {
-			return ((Block)index).filter(list);
-		} else {
-			throw new TypeError("Cannot index list using object:\n"
-					+ "list:\t" + list.repr() + "\n"
-					+ "index:\t" + index.repr());
-		}
-	}
-	
-
-	
 	/** General list setting **/
 	public static void setIndex(List list, Obj index, Obj item) {
 		if(index.isa(NUMBER)) {
@@ -89,7 +58,7 @@ public abstract class List extends Obj {
 			
 		} 
 		else if (index.isa(BLOCK)) {
-			boolean[] truthIdxs = ((Block)index).truthIdxs(list);
+			boolean[] truthIdxs = ListIndexing.filterIndex(list, (Block)index);
 			for (int i = 0; i < list.length(); i++) {
 				if (truthIdxs[i]) {
 					list.set(i, item);
@@ -514,6 +483,7 @@ public abstract class List extends Obj {
 	 * if the list contains non-numbers
 	 */
 	public abstract NumberList toNumberList();
+
 
 	
 	

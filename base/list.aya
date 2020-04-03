@@ -113,6 +113,8 @@
 
 }:list;
 
+.# Removing .I, can directly swap for this
+{\:&@I}:dot_i;
 
 
 .# Testing / Conditions

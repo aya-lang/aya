@@ -9,6 +9,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 
 public class ListBuilder extends Instruction {
@@ -90,13 +91,13 @@ public class ListBuilder extends Instruction {
 		} else {
 			outList = ListRangeUtils.buildRange(new GenericList(res));							//Create the initial range
 			if(map != null) {
-				outList = this.map.mapTo(outList);				//Map 'map' to the list
+				outList = ListIndexing.map(outList, this.map);
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
 			for (Block filter : filters) {
-				outList = filter.filter(outList);
+				outList = ListIndexing.filter(outList, filter);
 			}
 		}
 		return outList;

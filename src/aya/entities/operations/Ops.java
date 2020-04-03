@@ -31,6 +31,7 @@ import aya.AyaPrefs;
 import aya.StreamMgr;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
+import aya.instruction.index.AnonGetIndexInstruction;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
@@ -39,6 +40,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
@@ -270,7 +272,7 @@ class OP_Pound extends OpInstruction {
 				}
 			}
 			
-			block.push(map.mapTo((List)popped));
+			block.push(ListIndexing.map((List)popped, map));
 			
 			return;
 		} 	
@@ -1074,40 +1076,21 @@ class OP_H extends OpInstruction {
 }
 
 // I - 73
-//NOTE: If updating this operator, also update .I
 class OP_GetIndex extends OpInstruction {
+	
+	private AnonGetIndexInstruction _instruction;
 	
 	public OP_GetIndex() {
 		init("I");
 		arg("LL|LN", "get index");
 		arg("LB", "filter");
 		setOverload(-1, "getindex");
+		_instruction = new AnonGetIndexInstruction();
 	}
 
 	@Override
 	public void execute (final Block block) {
-		Obj index = block.pop();
-		final Obj list = block.pop();
-				
-		if(list.isa(LIST)) {		
-			block.push(List.getIndex((List)list, index));
-		}else if (list.isa(DICT)) {
-			if (index.isa(LIST) && !index.isa(STR)) {
-				List l = (List)index;
-				if (l.length() == 1)
-					index = l.get(0);
-			}
-			
-			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_GETINDEX) ) {
-				block.push(index);
-				block.callVariable((Dict)list, Ops.KEYVAR_GETINDEX);
-			} else {
-				block.push(Dict.getIndex((Dict)list, index));
-			}
-		}
-		else {
-			throw new TypeError(this, index, list);
-		}
+		this._instruction.execute(block);
 	}
 }
 

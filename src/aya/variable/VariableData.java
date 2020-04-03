@@ -130,6 +130,9 @@ public class VariableData {
 	}
 	
 	public void pop() {
+		if (varSets.size() == 1) {
+			throw new RuntimeException("Variable state error!!");
+		}
 		varSets.remove(varSets.size()-1).clear();
 	}
 	

@@ -4,9 +4,9 @@ import java.util.LinkedList;
 
 import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
@@ -39,7 +39,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 					o = dict.get(variable_);
 					b.push(kv_obj);
 					this.addOrDumpVar(o, b);
-				} catch (UndefVarException e) {
+				} catch (AyaKeyError e) {
 					throw new AyaRuntimeException("Built in type " + typeSym + 
 							" does not contain member '" + varName() + "'");
 				}

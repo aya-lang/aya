@@ -1,5 +1,5 @@
 .# A Sample script that creates a loading
 .# animation in the console for a few seconds
 
-"Loading..." .P "-\|/" {.roll 0.I .P 100:Z '\b'.P} 30 %;
+"Loading..." .P "-\|/" {.roll 0 dot_i .P 100:Z '\b'.P} 30 %;
 " done." :P

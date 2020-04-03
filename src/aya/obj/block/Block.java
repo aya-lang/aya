@@ -202,36 +202,6 @@ public class Block extends Obj {
 		this.stack = dupStack;
 	}
 
-	/** Maps a block to a list and returns the new list. The block is not effected */
-	public List mapTo(List list) {
-		ArrayList<Obj> out = new ArrayList<Obj>(list.length());
-		Block b = new Block();
-		for (int i = 0; i < list.length(); i++) {
-			b.addAll(this.instructions.getInstrucionList());
-			b.add(new DataInstruction(list.get(i)));
-			b.eval();
-			out.addAll(b.stack);
-			b.clear();
-		}
-		return new GenericList(out).promote();
-	}
-	
-	/** Maps a block to a list and returns the new list. The block is not effected */
-	public List mapToPushStack(Obj obj, List list) {
-		ArrayList<Obj> out = new ArrayList<Obj>(list.length());
-		Block b = new Block();
-		for (int i = 0; i < list.length(); i++) {
-			b.push(obj.deepcopy());
-			b.addAll(this.instructions.getInstrucionList());
-			b.add(new DataInstruction(list.get(i)));
-			b.eval();
-			out.addAll(b.stack);
-			b.clear();
-		}
-		return new GenericList(out).promote();
-	}
-	
-	
 	
 	/** Maps a block to a dictionary and returns nothing. Neither the block nor the dict is effected */
 	public void mapTo(Dict dict) {
@@ -254,39 +224,6 @@ public class Block extends Obj {
 		}
 	}
 	
-	/** Applies this block as a filter to a list */
-	public List filter(List list) {
-		ArrayList<Obj> out = new ArrayList<Obj>();
-		Block b = new Block();
-		for (int i = 0; i < list.length(); i++) {
-			b.addAll(this.instructions.getInstrucionList());
-			b.add(new DataInstruction(list.get(i)));
-			b.eval();
-			if(b.peek().bool()) {
-				out.add(list.get(i));
-			}
-			b.clear();
-		}
-		return new GenericList(out).promote();
-	}
-	
-	/** Like filter but returns a list of true/false values representing
-	 * the outcome of each applying the block to each item in the list
-	 * @param list
-	 * @return
-	 */
-	public boolean[] truthIdxs(List list) {
-		boolean[] out = new boolean[list.length()];
-		Block b = new Block();
-		for (int i = 0; i < list.length(); i++) {
-			b.addAll(this.instructions.getInstrucionList());
-			b.add(new DataInstruction(list.get(i)));
-			b.eval();
-			out[i] = b.peek().bool();
-			b.clear();
-		}
-		return out;
-	}
 	
 	/** Returns a string representation of the output stack */
 	public String getPrintOutputState() {

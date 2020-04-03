@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import aya.entities.operations.Ops;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.list.GenericList;
+import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.util.Pair;
@@ -82,7 +82,7 @@ public class Dict extends Obj {
 	private Obj strGet(String s) {
 		final Obj o = _string_vars.get(s);
 		if (o == null) {
-			throw new UndefVarException("Dict does not contain string key \"" + s + "\"");
+			throw new AyaKeyError(this, s);
 		} else {
 			return o;
 		}
@@ -115,7 +115,7 @@ public class Dict extends Obj {
 		Obj o = _get(id, null);
 		
 		if (o == null) {
-			throw new UndefVarException("Dict does not contain key '" + Variable.decodeLong(id) + "'");
+			throw new AyaKeyError(this, id);
 		} else {
 			return o;
 		}
@@ -535,16 +535,6 @@ public class Dict extends Obj {
 		return _meta != null && _meta.containsKey(v.getID());
 	}
 
-	/** General getindex */
-	public static Obj getIndex(Dict dict, Obj index) {
-		if (index.isa(Obj.STR)) {
-			return dict.get(index.str());
-		} else if (index.isa(Obj.SYMBOL)) {
-			return dict.get(((Symbol)index).id());
-		} else {
-			throw new AyaRuntimeException("Cannot access dict at index " + index.repr() + "\n" + dict.repr());
-		}
-	}
 	
 	/** General setindex */
 	public static void setIndex(Dict dict, Obj index, Obj value) {
@@ -553,7 +543,7 @@ public class Dict extends Obj {
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set(((Symbol)index).id(), value);
 		} else {
-			throw new AyaRuntimeException("Cannot set value of dict at index " + index.repr() + "\n" + dict.repr());
+			throw new AyaKeyError(dict, index);
 		}
 	}
 
@@ -569,6 +559,42 @@ public class Dict extends Obj {
 		}
 	}
 
+	/**
+	 * Generic getindex interface
+	 * @param dict
+	 * @param index
+	 */
+	public static Obj getIndex(Dict dict, Obj index) {
+		if (dict.hasMetaKey(Ops.KEYVAR_GETINDEX)) {
+			Block b = new Block();
+			b.push(index);
+			b.callVariable(dict, Ops.KEYVAR_GETINDEX);
+			b.eval();
+			return b.pop();
+		} else if (index.isa(Obj.STR)) {
+			return dict.get(index.str());
+		} else if (index.isa(Obj.SYMBOL)) {
+			return dict.get(((Symbol)index).id());
+		} else if (index.isa(Obj.LIST)) {
+			List l = (List)index;
+			ArrayList<Obj> out = new ArrayList<Obj>(l.length());
+			for (int i = 0; i < l.length(); i++) {
+				Obj idx = l.get(i);
+				out.add(Dict.getIndex(dict, idx));
+			}
+			return new GenericList(out).promote();
+		} else {
+			throw new AyaKeyError(dict, index, true);
+		}
+	}
+
+	public static Obj getIndex(Dict list, Obj index, Obj dflt_val) {
+		try {
+			return Dict.getIndex(list, index);
+		} catch (AyaKeyError e) {
+			return dflt_val;
+		}
+	}
 	
 
 

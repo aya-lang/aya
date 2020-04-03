@@ -1,4 +1,4 @@
-package aya.util;
+package aya.ext.graphics;
 
 import java.awt.Color;
 import java.awt.Component;
