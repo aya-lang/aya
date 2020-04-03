@@ -32,6 +32,7 @@ import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
+import aya.obj.dict.DictIndexing;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.ListIndexing;
@@ -979,7 +980,7 @@ class OP_Dot_I extends OpInstruction {
 		if(list.isa(LIST)) {		
 			block.push(ListIndexing.getIndex((List)list, index, dflt_val));
 		} else if (list.isa(DICT)) {
-			block.push(Dict.getIndex((Dict)list, index, dflt_val));
+			block.push(DictIndexing.getIndex((Dict)list, index, dflt_val));
 		} else {
 			throw new TypeError(this, index, list);
 		}

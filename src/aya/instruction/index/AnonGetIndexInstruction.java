@@ -7,6 +7,7 @@ import aya.exceptions.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
 import aya.obj.list.ListIndexing;
 
@@ -20,7 +21,7 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 		if(list.isa(Obj.LIST)) {		
 			block.push(ListIndexing.getIndex((List)list, index));
 		} else if (list.isa(Obj.DICT)) {
-			block.push(Dict.getIndex((Dict)list, index));
+			block.push(DictIndexing.getIndex((Dict)list, index));
 		} else {
 			throw new TypeError(Ops.getOp('I'), index, list);
 		}
