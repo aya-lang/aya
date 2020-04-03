@@ -26,6 +26,7 @@ import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
+import aya.obj.dict.DictIndexing;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.ListIndexing;
@@ -202,7 +203,7 @@ class OP_Colon_Pound extends OpInstruction {
 				block.push(blk);
 				block.callVariable(d, Ops.KEYVAR_EACH);
 			} else {
-				((Block)blk).mapTo((Dict)col);
+				block.push(DictIndexing.map((Dict)col, (Block)blk));
 			}
 		} else {
 			throw new TypeError(this, col, blk);

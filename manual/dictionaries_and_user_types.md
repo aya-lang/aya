@@ -81,7 +81,7 @@ aya> 1 dict.:[::y]
   1:y;
 } 
 
-aya> dict :# {k v, v 1 + dict.:[k]}
+aya> dict :# {k v, v 1 +}
 aya> dict
 {,
   1:x;

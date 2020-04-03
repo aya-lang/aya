@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.Set;
 import java.util.Stack;
 
 import aya.entities.InstructionStack;
@@ -18,7 +17,6 @@ import aya.obj.block.BlockHeader.Arg;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 import aya.variable.VariableSet;
@@ -203,26 +201,6 @@ public class Block extends Obj {
 	}
 
 	
-	/** Maps a block to a dictionary and returns nothing. Neither the block nor the dict is effected */
-	public void mapTo(Dict dict) {
-		Block b = new Block();
-		ArrayList<Long> symKeys = dict.symKeys();
-		for (long key : symKeys) {
-			b.addAll(this.instructions.getInstrucionList());
-			b.push(Symbol.fromID(key));
-			b.push(dict.get(key));
-			b.eval();
-			b.clear();
-		}
-		Set<String> strKeys = dict.strKeys();
-		for (String key : strKeys) {
-			b.addAll(this.instructions.getInstrucionList());
-			b.push(new Str(key));
-			b.push(dict.get(key));
-			b.eval();
-			b.clear();
-		}
-	}
 	
 	
 	/** Returns a string representation of the output stack */
