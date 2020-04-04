@@ -754,9 +754,12 @@ public class Parser {
 					} else if (stk.peek().isa(Token.KEY_VAR)) {
 						KeyVarToken t = (KeyVarToken)stk.pop();
 						is.push(new QuoteGetKeyVariableInstruction(t.getID()));
+					} else {
+						throw new SyntaxError("Expected var or keyvar before quote (.`) token");
 					}
+				} else {
+					throw new SyntaxError("Expected var or keyvar before quote (.`) token");
 				}
-					
 			}
 			
 			else if (current.typeString().equals("special")) {
