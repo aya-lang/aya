@@ -24,7 +24,7 @@ Empty dictionaries are created if the block and the header are empty.
 ```
 aya> {,}
 {,
-} 
+}
 ```
 
 ## Accessing Values
@@ -33,34 +33,34 @@ Access variables are used to access variables in dictionaries and user types. To
 
 ```
 aya> numbers .one
-1 
+1
 
 .# whitespace is optional
 aya> numbers.two
 2
 ```
 
-## Assigning / Creating Values 
+## Assigning / Creating Values
 
-Dictionary values can be assigned using the `.:` operator. 
+Dictionary values can be assigned using the `.:` operator.
 
 ```
 aya> {, 1:a 2:b} :d
 {,
   1:a;
   2:b;
-} 
+}
 aya> 4 d.:a
 {,
   4:a;
   2:b;
-} 
+}
 aya> 9 d.:c
 {,
   4:a;
   2:b;
   9:c;
-} 
+}
 ```
 
 They may also be dynamically assigned using the following syntax:
@@ -79,19 +79,19 @@ aya> 1 dict.:[::y]
 {,
   0:x;
   1:y;
-} 
+}
 
 aya> dict :# {k v, v 1 +}
 aya> dict
 {,
   1:x;
   2:y;
-} 
+}
 ```
 
 # Metatables
 
-In Aya, metatables can be used to define custom types with separate functionality and moderate operator overloading. User types are represented internally as an array of objects paired with a dictionary. 
+In Aya, metatables can be used to define custom types with separate functionality and moderate operator overloading. User types are represented internally as an array of objects paired with a dictionary.
 Any dictionary can contain a read-only set of variables as a metatable. Metatables typically contain functions that act on the dictionaries values. For example, if we define the metatable
 
 ```
@@ -119,13 +119,13 @@ We can see that the dict still has the values `x` and `y` but it also now has a 
 
 ```
 aya> dict.sum
-3 
+3
 aya> dict.donothing
 {,
   1:x;
   2:y;
   {}:none;
-} 
+}
 ```
 
 We can still add and access dictionary values normally. If we overwrite a metatable key, it will override the value locally in the dictionary, not the entire metatable.
@@ -135,25 +135,25 @@ aya> {, 1:x 2:y} meta MO :a
 {,
   1:x;
   2:y;
-} 
+}
 aya> {, 3:x 4:y} meta MO :b
 {,
   3:x;
   4:y;
-} 
+}
 aya> {;"Something!":P} a.:donothing
 {,
   1:x;
   2:y;
   {; "Something!" :P}:donothing;
-} 
+}
 aya> a.donothing
 Something!
 aya> b.donothing
 {,
   3:x;
   4:y;
-} 
+}
 ```
 
 # User-Defined Types
@@ -169,12 +169,12 @@ Using metatables, dictionaries, and overloading we can define our own types (or 
 
   .# Member functions
 
-  {self, 
+  {self,
     "<$(self.x),$(self.y)>"
   }:repr:str;
 
   {self,
-    self.x 2^ self.y 2^ + Mq
+    self.x 2^ self.y 2^ + .^
   }:length;
 
   .# Operator Overload (+)

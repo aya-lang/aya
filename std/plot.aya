@@ -191,7 +191,7 @@ def list::x {l::list,
 .}
 
 .{? line plot example
-  10R $#Mq plot.line :p;
+  10R $#.^ plot.line :p;
   3 p.:stroke
   p.view
 .}

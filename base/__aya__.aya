@@ -27,7 +27,7 @@
     "Ml" :__ln__
     "Me" :__exp__
     "Md" :__float__
-    "Mq" :__sqrt__
+    ".^" :__sqrt__
 }:mathoverload;
 
 {,::ops :O :#{o, o.overload:#{sym, o sym :=}}}:ops;

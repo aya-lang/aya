@@ -110,7 +110,7 @@ matrix:m;
 '\xef' "bdiv"       Mk .# 239
 '\xf0' "bmod"       Mk .# 240
 
-{Mq}:sqrt;
+{.^}:sqrt;
 8730.' "sqrt" Mk
 {1 3/^}:cbrt;
 8731.' "cbrt" Mk

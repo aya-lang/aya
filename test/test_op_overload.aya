@@ -58,7 +58,7 @@
   {self, self.l Ml self.M!}:__ln__;
   {self, self.l ML self.M!}:__log__;
   {self, self.l Me self.M!}:__exp__;
-  {self, self.l Mq self.M!}:__sqrt__;
+  {self, self.l .^ self.M!}:__sqrt__;
 
   {self, self.l #Md self.M!}:__float__;
   {self, self.l #.! self.M!}:__signum__;
@@ -278,7 +278,7 @@ v MT P "< 0 .78539816 >" =
 v Ml P "< 0 .69314718 >" =
 v ML P "< 0 .30103 >" =
 v Me P "< 2.71828183 7.3890561 >" =
-v Mq P "< 1 1.41421356 >" =
+v .^ P "< 1 1.41421356 >" =
 
 [:2 1 0 :3.4] vec! :v;
 v .| P "< 2 1 0 3.4 >" =

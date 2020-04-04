@@ -17,7 +17,7 @@ def stats::variance {set : m stats^,
 
 .#? L stats.stdev\n  standard deviation
 def stats::stdev {: stats^,
-    stats.variance Mq
+    stats.variance .^
 }
 
 
@@ -75,7 +75,7 @@ def stats::pearson {x y : n xs ys,
     [x y,*]Sn* xs ys*-
      x2^Sn* xs2^ -
      y2^Sn* ys2^ -
-     * Mq
+     * .^
     /
 }
 
@@ -94,4 +94,3 @@ def stats::pearson {x y : n xs ys,
 
     ts __aya__.addtest
 })
-

@@ -142,7 +142,7 @@ public class ColonOps {
 		/* 120 x */ null, // Assignment
 		/* 121 y */ null, // Assignment
 		/* 122 z */ null, // Assignment
-		/* 123 { */ null,
+		/* 123 { */ null, // Named instructions
 		/* 124 | */ new OP_SetMinus(),
 		/* 125 } */ null,
 		/* 126 ~ */ new OP_Colon_Tilde()

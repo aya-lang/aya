@@ -133,7 +133,7 @@ public class MiscOps {
 		/* 110 n */ null,
 		/* 111 o */ null,
 		/* 112 p */ new OP_Primes(),
-		/* 113 q */ new OP_SquareRoot(),
+		/* 113 q */ null,
 		/* 114 r */ new OP_To_Rat(),
 		/* 115 s */ new OP_Sine(),
 		/* 116 t */ new OP_Tangent(),
@@ -930,33 +930,6 @@ class OP_Primes extends OpInstruction {
 	}
 
 }
-
-// q - 113
-class OP_SquareRoot extends OpInstruction {
-	
-	public OP_SquareRoot() {
-		init("Mq");
-		arg("N", "square root");
-		setOverload(1, "sqrt");
-		vect();
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).sqrt());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(((NumberList)n).sqrt());
-		} else {
-			throw new TypeError(this, n);
-		}
-	}
-}
-
 
 // r - 114
 class OP_To_Rat extends OpInstruction {

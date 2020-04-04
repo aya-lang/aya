@@ -8,8 +8,6 @@ import java.util.Set;
 import aya.entities.operations.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.GenericList;
-import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 import aya.util.Pair;

@@ -70,7 +70,7 @@ public class DotOps {
 		/* 39 '  */ new OP_Dot_CastChar(),
 		/* 40 (  */ new OP_Dot_OParen(),
 		/* 41 )  */ new OP_Dot_CParen(),
-		/* 42 *  */ null,
+		/* 42 *  */ new OP_Dot_Star(),
 		/* 43 +  */ new OP_Dot_Plus(),
 		/* 44 ,  */ null,
 		/* 45 -  */ new OP_Dot_Minus(),
@@ -392,6 +392,40 @@ class OP_Dot_CParen extends OpInstruction {
 			block.push( NumberMath.signedRightShift((Number)b, (Number)a) );
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// * - 42 
+class OP_Dot_Star extends OpInstruction {
+
+	public OP_Dot_Star() {
+		init(".*");
+		arg("L", "compile");
+		arg("B", "decompile");
+	}
+	
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+
+		if (a.isa(LIST)) {
+			ArrayList<Obj> l = ((List)a).getObjAL();
+			Block b = new Block();
+			for (int i = 0; i < l.size(); i++) {
+				final Obj k = l.get(i);
+				if (k.isa(BLOCK)) {
+					b.addBlockBack((Block)k);
+				} else {
+					b.addBack(l.get(i));
+				}
+			}
+			block.push(b);
+		} else if (a.isa(BLOCK)) {
+			Block b = (Block)a;
+			block.push(b.split());
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -1275,38 +1309,32 @@ class OP_Dot_BackSlash extends OpInstruction {
 }
 
 // ^ - 94
+
 class OP_Dot_Pow extends OpInstruction {
 
 	public OP_Dot_Pow() {
 		init(".^");
-		arg("L", "compile");
-		arg("B", "decompile");
+		arg("N", "square root");
+		setOverload(1, "sqrt");
+		vect();
 	}
 	
 	@Override
 	public void execute(Block block) {
-		final Obj a = block.pop();
-
-		if (a.isa(LIST)) {
-			ArrayList<Obj> l = ((List)a).getObjAL();
-			Block b = new Block();
-			for (int i = 0; i < l.size(); i++) {
-				final Obj k = l.get(i);
-				if (k.isa(BLOCK)) {
-					b.addBlockBack((Block)k);
-				} else {
-					b.addBack(l.get(i));
-				}
-			}
-			block.push(b);
-		} else if (a.isa(BLOCK)) {
-			Block b = (Block)a;
-			block.push(b.split());
+		Obj n = block.pop();
+		
+		if (overload().execute(block, n)) return;
+		
+		if(n.isa(NUMBER)) {
+			block.push(((Number)n).sqrt());
+		} else if (n.isa(NUMBERLIST)) {
+			block.push(((NumberList)n).sqrt());
 		} else {
-			throw new TypeError(this, a);
+			throw new TypeError(this, n);
 		}
 	}
 }
+
 
 
 

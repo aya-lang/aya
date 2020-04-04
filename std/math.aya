@@ -48,13 +48,13 @@ exportall
 {%}:mod;            .#? N mod\n  modulo
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
-{Mq}:sqrt;          .#? N sqrt\n  square root
+{.^}:sqrt;          .#? N sqrt\n  square root
 {.%}:div;           .#? <NN> div\n  integer division
 {%}:rem;            .#? <NN> rem\n  remainder after division
 {PE}:numofdigits;   .#? N numofdignts\n  number of digits in N
 
 .# Binary vectorized functions
-{2^\2^+Mq}:hypot;   .#? N hypot\n  hypotenuse function
+{2^\2^+.^}:hypot;   .#? N hypot\n  hypotenuse function
 {ML\ML\/}:logn;     .#? N logn\n  base-n log\n ex: log base 6 of 10 written as (10 6logn)
 
 
@@ -62,7 +62,7 @@ exportall
 .# List Operations #
 .###################
 
-{:&2^SMq/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{:&2^S.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}F}:product;     .#? L product\n  product of a list
 {*S}:dot;           .#? LL dot\n  dot product of a list
 
@@ -136,16 +136,16 @@ exportall
 {$Me\TMe-2/}:sinh;          .#? N sinh \n  hyperbolic sine
 {$Me\TMe+2/}:cosh;          .#? N cosh \n  hyperbolic cosine
 [{$} sinh.` {\}
-     cosh.` {/}].^ :tanh;   .#? N tanh \n  hyperbolic tangent
-[sinh.` {1\/}].^ :csch;     .#? N csch \n  hyperbolic cosecant
-[cosh.` {1\/}].^ :sech;     .#? N sech \n  hyperbolic secant
-[tanh.` {1\/}].^ :coth;     .#? N coth \n  hyperbolic cotangent
+     cosh.` {/}].* :tanh;   .#? N tanh \n  hyperbolic tangent
+[sinh.` {1\/}].* :csch;     .#? N csch \n  hyperbolic cosecant
+[cosh.` {1\/}].* :sech;     .#? N sech \n  hyperbolic secant
+[tanh.` {1\/}].* :coth;     .#? N coth \n  hyperbolic cotangent
 
-{$2^1+Mq+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
-{$$1-Mq\1+Mq*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
+{$2^1+.^+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
+{$$1-.^\1+.^*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
 {$1\+Ml\1\-Ml-0.5*}:atanh;      .#? N atanh \n  inverse hyperbolic tangent
-{$1\/\2^1\/1+Mq+Ml}:acsch;      .#? N acsch \n  inverse hyperbolic cosecant
-{1\/$$1+Mq\1-Mq*+Ml}:asech;     .#? N asech \n  inverse hyperbolic secant
+{$1\/\2^1\/1+.^+Ml}:acsch;      .#? N acsch \n  inverse hyperbolic cosecant
+{1\/$$1+.^\1-.^*+Ml}:asech;     .#? N asech \n  inverse hyperbolic secant
 {1\/$1\-Ml\1+Ml\-0.5*}:acoth;   .#? N acoth \n  inverse hyperbolic cotangent
 
 
@@ -162,7 +162,7 @@ exportall
     [ 2 4 6 8 ]
 .}
 .# {.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
-{ [1| .E .R U {^} \ {*S} ].^ }:makepoly;
+{ [1| .E .R U {^} \ {*S} ].* }:makepoly;
 
 
 
@@ -201,7 +201,7 @@ exportall
     .#   next factor
     {
         .# Range from 2..ceil(sqrt(n))
-        [2nVMq./]R
+        [2nV.^./]R
 
         .# Find the next factor
         {n\%0=}.N

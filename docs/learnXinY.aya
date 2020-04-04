@@ -139,8 +139,8 @@ I .# get nth item from list / filter
 
 .# Any character following a M is an operator
 .# and is usually math related or miscellaneous
-.#       (Ms => sin, M! => factorial, Mq =>sqrt)
-4 Mq .# => 2
+.#       (Ms => sin, M! => factorial, .^ =>sqrt)
+4 .^ .# => 2
 
 
 .###########################

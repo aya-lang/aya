@@ -57,10 +57,10 @@ aya> 9 R [3 3] L #{E 1 +}
 [4 4 4]
 ```
 
-   - Many operators are broadcasted automatically however. For example: the square root (`Mq`), addition (`+`), and multiplication (`*`) operators.
+   - Many operators are broadcasted automatically however. For example: the square root (`.^`), addition (`+`), and multiplication (`*`) operators.
 
 ```
-aya> [4 16 64 ] Mq
+aya> [4 16 64 ] .^
 [ 2 4 8 ]
 aya> [1 2 3] 1 +
 [ 2 3 4 ]

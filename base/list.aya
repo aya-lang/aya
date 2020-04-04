@@ -108,7 +108,7 @@
     }:capture_vars;
 
     {
-        #.op .^
+        #.op .*
     }:blk;
 
 }:list;

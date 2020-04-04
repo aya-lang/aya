@@ -77,7 +77,7 @@ def matrix::__repr__ {self,
 .# -----
 [
     ::.\ ::./ ::T ::.| ::.!
-    ::Mq ::Me ::Ml ::ML
+    ::.^ ::Me ::Ml ::ML
     ::Ms ::MS ::Mc ::MC ::Mt ::MT
 ] :# {sym : op(sym.op),
     def matrix sym ({
@@ -155,7 +155,7 @@ def matrix::max {.rows#.max.max}
 def matrix::min {.rows#.min.min}
 
 .#? ::matrix.norm\n  normalize the matrix
-def matrix::norm {:& .sq .sum Mq /}
+def matrix::norm {:& .sq .sum .^ /}
 
 .#? ::matrix.sum\n  the sum of all values in the matrix
 def matrix::sum {.rows #SS}
