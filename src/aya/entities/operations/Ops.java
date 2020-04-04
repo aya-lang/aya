@@ -1437,6 +1437,7 @@ class OP_S extends OpInstruction {
 		init("S");
 		arg("L", "sum (fold using +)");
 		arg("B", "duplicate block, add locals if they do not exist");
+		arg("J", "is defined");
 	}
 
 	@Override
@@ -1483,6 +1484,9 @@ class OP_S extends OpInstruction {
 				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
 				block.add(list[0]); 
 			}
+		} else if (a.isa(SYMBOL)) {
+			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(((Symbol)a).id())));
+			
 		} else if (a.isa(BLOCK)) {
 			Block b = (Block)a;
 			block.push(b.duplicateAddLocals());

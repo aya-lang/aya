@@ -170,6 +170,15 @@ public class VariableData {
 	}
 	
 	public Obj getVar(long id) {
+		Obj res = getVarOrNull(id);
+		if (res == null) {
+			throw new AyaRuntimeException("Variable " + Variable.decodeLong(id) + " not found");
+		} else {
+			return res;
+		}
+	}
+	
+	private Obj getVarOrNull(long id) {
 		Obj res = null;
 		for(int i = varSets.size()-1; i >= 0; i--) {
 			res = varSets.get(i).getObj(id);
@@ -177,10 +186,14 @@ public class VariableData {
 				return res;
 			}
 		}
-		throw new AyaRuntimeException("Variable " + Variable.decodeLong(id) + " not found");
+		return null;
 	}
 	
 	public void add(VariableSet vs) {
 		varSets.add(vs);
+	}
+
+	public boolean isDefined(long id) {
+		return getVarOrNull(id) != null;
 	}
 }
