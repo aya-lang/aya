@@ -2,7 +2,6 @@ package aya.entities.operations;
 
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
-import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
@@ -27,7 +26,6 @@ import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
-import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
@@ -38,7 +36,6 @@ import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
 import aya.util.ChartParams;
 import aya.util.FreeChartInterface;
-import aya.util.QuickDialog;
 
 public class MiscOps {	
 
@@ -103,7 +100,7 @@ public class MiscOps {
 		/* 83 S  */ new OP_Asine(),
 		/* 84 T  */ new OP_Atangent(),
 		/* 85 U  */ null,
-		/* 86 V  */ new OP_Dialog(),
+		/* 86 V  */ null,
 		/* 87 W  */ null,
 		/* 88 X  */ new OP_AdvPlot(),
 		/* 89 Y  */ null,
@@ -442,83 +439,6 @@ class OP_Atangent extends OpInstruction {
 			block.push(((NumberList)n).atan());
 		} else {
 			throw new TypeError(this, n);
-		}
-	}
-}
-
-
-//V - 86
-class OP_Dialog extends OpInstruction {
-	
-	public OP_Dialog() {
-		init("MV");
-		arg("LSSNN", "options title windowhdr msgtype dialogtype MV\n"
-				+ "  msgtype:\n"
-				+ "    1: plain\n"
-				+ "    2: question\n"
-				+ "    3: warning\n"
-				+ "    4: error"
-				+ "  dialogtype:\n"
-				+ "    1: request string\n"
-				+ "    2: request number\n"
-				+ "    3: alert\n"
-				+ "    4: yes or no\n"
-				+ "    5: option buttons\n"
-				+ "    6: option dropdown\n"
-				+ "    7: choose file\n"
-);
-	}
-
-	@Override
-	public void execute(Block block) {
-		final Obj _dialogType = block.pop();
-		final Obj _msgType = block.pop();
-		final Obj _windowHdr = block.pop();
-		final Obj _title = block.pop();
-		final Obj _options = block.pop();
-		
-		//Check types
-		if(!(	_dialogType.isa(NUMBER)
-				&& _msgType.isa(NUMBER)
-				&& _windowHdr.isa(STR)
-				&& _title.isa(STR)
-				&& _options.isa(LIST)
-				)) {
-			throw new TypeError(this, _dialogType, _msgType, _windowHdr, _title, _options);
-		}
-		
-		//Cast values
-		final int dialogType = ((Number)_dialogType).toInt();
-		final int msgType = ((Number)_msgType).toInt();
-		final String windowHdr = _windowHdr.str();
-		final String title = _title.str();
-		final List options = ((List)_options);
-		
-		//Error checking
-		if (dialogType < QuickDialog.MIN_OPT || dialogType > QuickDialog.MAX_OPT) {
-			throw new AyaRuntimeException("MV: invalid dialog type: " + dialogType);
-		}
-		if (msgType < 1 || msgType > 4) {
-			throw new AyaRuntimeException("MV: invalid message type: " + msgType);
-		}
-		if ((dialogType == QuickDialog.OPTION_BUTTONS || dialogType == QuickDialog.OPTION_DROPDOWN)
-				&& options.length() <= 0) {
-			throw new AyaRuntimeException("MV: options list must not be empty");
-		}
-		if (dialogType == QuickDialog.YES_OR_NO && options.length() != 2) {
-			throw new AyaRuntimeException("MV: yes or no dialog options list length must be 2");
-		}
-
-		//Convert arraylist to string array
-		String[] optionsArr = new String[options.length()];
-		for (int i = 0; i < options.length(); i++) {
-			optionsArr[i] = options.get(i).str();
-		}
-		
-		//show dialog
-		final Obj out = QuickDialog.showDialog(dialogType, title, optionsArr, windowHdr, msgType);
-		if (out != null) {
-			block.push(out);
 		}
 	}
 }
