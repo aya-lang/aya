@@ -320,7 +320,7 @@ load "test/test_op_overload"
 
 .# Import entire standard library
 "Importing standard library..." :P
-"std"4MZ :# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
+"std"4:{sys.MZ}:# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
 

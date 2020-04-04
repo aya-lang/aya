@@ -10,17 +10,15 @@ def sys::cd {dirname,
     dirname
     .# If it is a string, conv to path
     dirname :T ::str = { path! } ?
-    P 3MZ
+    P 3:{sys.MZ}
 }
 
 
 .#? ::str sys.mkdir\n  create a new directory
 def sys::mkdir {dir::str,
-    dir 5MZ
+    dir 5:{sys.MZ}
 }
 
 def sys::readdir {dir::str,
-    dir 4MZ
+    dir 4:{sys.MZ}
 }
-
-

@@ -27,6 +27,7 @@ import aya.ext.fstream.FStreamInstructionStore;
 import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.image.ImageInstructionStore;
 import aya.ext.json.JSONInstructionStore;
+import aya.ext.sys.SystemInstructionStore;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.op.OpDocReader;
@@ -268,6 +269,7 @@ public class Aya extends Thread {
 		_namedInstructionStores.add(new ImageInstructionStore());
 		_namedInstructionStores.add(new GraphicsInstructionStore());
 		_namedInstructionStores.add(new FStreamInstructionStore());
+		_namedInstructionStores.add(new SystemInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(getInstance());

@@ -20,7 +20,7 @@ exportall
 
 .#? ls\n  print a list of files in the working dir
 def ::ls {
-    ""2MZ4MZ
+    ""2:{sys.MZ}4:{sys.MZ}
     .E 0 = {
         ; "  <no files>"
     } {
@@ -62,7 +62,7 @@ def ::echo {`:P}
 def ::touch {`({s::str,"" s 1.G})}
 
 
-def ::rm {`(6MZ)}
+def ::rm {`(6:{sys.MZ})}
 
 
 def ::run {`(".aya"+G~)}

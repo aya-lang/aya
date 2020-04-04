@@ -8,7 +8,6 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +17,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import aya.Aya;
-import aya.AyaPrefs;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
@@ -39,7 +37,6 @@ import aya.obj.number.Number;
 import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
 import aya.util.ChartParams;
-import aya.util.FileUtils;
 import aya.util.FreeChartInterface;
 import aya.util.QuickDialog;
 
@@ -110,7 +107,7 @@ public class MiscOps {
 		/* 87 W  */ null,
 		/* 88 X  */ new OP_AdvPlot(),
 		/* 89 Y  */ null,
-		/* 90 Z  */ new OP_SysConfig(),
+		/* 90 Z  */ null,
 		/* 91 [  */ null, //Matrix Literal
 		/* 92 \  */ null,
 		/* 93 ]  */ null, //No used for matrix literal, but ptobably shouldnt be used for anything
@@ -557,149 +554,6 @@ class OP_AdvPlot extends OpInstruction {
 		if (a.isa(DICT)) {
 			ChartParams cp = ChartParams.parseParams((Dict)a);
 			FreeChartInterface.drawChart(cp);
-		}
-	}
-}
-
-//Z - 9
-class OP_SysConfig extends OpInstruction {
-	
-	public OP_SysConfig() {
-		init("MZ");
-		arg("AN",  "system functions\n"
-				+ "  S1:  change prompt text\n"
-				+ "  A2:  get working dir\n"
-				+ "  S3:  set working dir\n"
-				+ "  \"\"3: reset working dir\n"
-				+ "  S4:  list files in working dir + S\n"
-				+ "  S5:  create dir in working dir + S\n"
-				+ "  S6:  delete file or dir\n"
-				+ "  S7:  get home dir + S\n"
-				+ "  S8:  test if file exists at S\n"
-				+ "  S9:  System.getProperty(S)\n"
-				+ "  S10: Resolve home in path"
-				);
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj cmd = block.pop();
-		Obj arg = block.pop();
-		
-		if(cmd.isa(NUMBER)) {
-			doCommand(((Number)cmd).toInt(), arg, block);
-		} else {	
-			throw new TypeError(this, cmd, arg);
-		}
-	}
-	
-	private void doCommand(int cmdID, Obj arg, Block b) {
-		switch(cmdID) {
-		
-		//Change the prompt
-		case 1:
-			if(arg.isa(STR)) {
-				AyaPrefs.setPrompt(arg.str());
-			} else {
-				throw new AyaRuntimeException("arg 1 MZ: arg must be a string. Received:\n" + arg.repr());
-			}
-			break;
-		
-		//Return working directory
-		case 2:
-			b.push(new Str(AyaPrefs.getWorkingDir()));
-			break;
-			
-		//Set working directory
-		case 3:
-			if (arg.isa(STR)) {
-				String dir = arg.str();
-				if(dir.equals("")) {
-					AyaPrefs.resetWorkingDir();
-				} else {
-					if (!AyaPrefs.setWorkingDir(arg.str())) {
-						throw new AyaRuntimeException("arg 3 MZ: arg is not a valid path."
-								+ " Did you include a '/' or '\' at the end? Received:\n" + arg.repr());
-					}
-				}
-			}else {
-				throw new AyaRuntimeException("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
-			}
-			break;
-		
-		//List files in working directory
-		case 4:
-			if (arg.isa(STR)) {
-				String fstr = arg.str();
-				try {
-					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
-					ArrayList<Str> obj_dirs = new ArrayList<Str>(dirs.size());
-					for (String s : dirs) {
-						obj_dirs.add(new Str(s));
-					}
-					b.push(new StrList(obj_dirs));
-				} catch (NullPointerException e) {
-					throw new AyaRuntimeException("arg 4 MZ: arg is not a valid location. Received:\n" + fstr);
-				}
-			} else {
-				throw new AyaRuntimeException("arg 4 MZ: arg must be a string. Received:\n" + arg.repr());
-			}
-			break;
-			
-		//Create dir
-		case 5:
-			if(arg.isa(STR)) {
-				String fstr = arg.str();
-				if(!AyaPrefs.mkDir(fstr)) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
-				}
-			} else {
-				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
-			}
-			break;
-		
-		//Delete
-		case 6:
-			if(arg.isa(STR)) {
-				String arg_str = arg.str();
-				if(arg_str.equals("")) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + arg_str);
-				}
-				String fstr = AyaPrefs.getWorkingDir() + arg.str();
-				if(!AyaPrefs.deleteFile(fstr)) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
-				}
-			} else {
-				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
-			}
-			break;
-		
-		case 7:
-			b.push(new Str(FileUtils.pathAppend(AyaPrefs.getHomeDir(), arg.str())));
-			break;
-			
-		case 8:
-			b.push(FileUtils.isFile(arg.str()) ? Num.ONE : Num.ZERO);
-			break;
-			
-		case 9:
-			{
-				String val = System.getProperty(arg.str());
-				if (val == null) {
-					b.push(Str.EMPTY);
-				} else {
-					b.push(new Str(val));
-				}
-			}
-			break;
-			
-		case 10:
-			b.push(new Str(FileUtils.resolveHome(arg.str())));
-			break;
-		
-		default:
-			throw new AyaRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
-
 		}
 	}
 }
