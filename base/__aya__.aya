@@ -11,7 +11,7 @@
 {, .# begin __aya__ namespace
 
 .#? S __aya__.alterprompt\n  change the prompt text
-{1MZ}:alterprompt;
+{1:{sys.MZ}}:alterprompt;
 
 {,}:interpreter;
 

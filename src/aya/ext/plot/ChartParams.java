@@ -1,4 +1,4 @@
-package aya.util;
+package aya.ext.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
+import aya.util.Pair;
 
 public class ChartParams {
 	

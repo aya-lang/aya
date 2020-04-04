@@ -1,4 +1,4 @@
-package aya.util;
+package aya.ext.plot;
 import java.awt.BasicStroke;
 import java.io.File;
 import java.io.IOException;

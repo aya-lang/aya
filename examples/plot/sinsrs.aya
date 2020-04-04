@@ -1,7 +1,6 @@
 .# sinsrs: plot a sin series with coefficients
 
 import::plot
-import::list
 
 plot!:plt;
 0 4pi* 100 linspace plt.domain

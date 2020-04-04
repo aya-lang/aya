@@ -1,4 +1,4 @@
-package aya;
+package aya.ext.fstream;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,9 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class StreamMgr {
+import aya.Aya;
+
+public class FStreamManager {
 	
 	public static int NO_FILE = 0;
 	

@@ -7,13 +7,7 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
@@ -72,19 +66,19 @@ public class MiscOps {
 		/* 57 9  */ null,
 		/* 58 :  */ null,
 		/* 59 ;  */ null,
-		/* 60 <  */ null, //new OP_ModSet(),
+		/* 60 <  */ null,
 		/* 61 =  */ null,
-		/* 62 >  */ null, //new OP_ModGet(),
+		/* 62 >  */ null,
 		/* 63 ?  */ new OP_Help(),
 		/* 64 @  */ null,
-		/* 65 A  */ null, //new OP_Abs(),
+		/* 65 A  */ null,
 		/* 66 B  */ null,
 		/* 67 C  */ new OP_Acosine(),
-		/* 68 D  */ new OP_MDate(),
-		/* 69 E  */ null, //new OP_ScientificNotation(),
+		/* 68 D  */ null,
+		/* 69 E  */ null,
 		/* 70 F  */ null,
 		/* 71 G  */ null,
-		/* 72 H  */ new OP_MParse_Date(),
+		/* 72 H  */ null,
 		/* 73 I  */ null,
 		/* 74 J  */ null,
 		/* 75 K  */ null,
@@ -92,7 +86,7 @@ public class MiscOps {
 		/* 77 M  */ null,
 		/* 78 N  */ null,
 		/* 79 O  */ null,
-		/* 80 P  */ null,//new OP_PrintColor(),
+		/* 80 P  */ null,
 		/* 81 Q  */ null,
 		/* 82 R  */ null,
 		/* 83 S  */ new OP_Asine(),
@@ -103,9 +97,9 @@ public class MiscOps {
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
 		/* 90 Z  */ null,
-		/* 91 [  */ null, //Matrix Literal
+		/* 91 [  */ null,
 		/* 92 \  */ null,
-		/* 93 ]  */ null, //No used for matrix literal, but ptobably shouldnt be used for anything
+		/* 93 ]  */ null,
 		/* 94 ^  */ null,
 		/* 95 _  */ null,
 		/* 96 `  */ null,
@@ -116,8 +110,8 @@ public class MiscOps {
 		/* 101 e */ new OP_Me(),
 		/* 102 f */ null,
 		/* 103 g */ null,
-		/* 104 h */ new OP_MShow_Date(),
-		/* 105 i */ null, //new OP_CastInt(),
+		/* 104 h */ null,
+		/* 105 i */ null,
 		/* 106 j */ null,
 		/* 107 k */ new OP_AddParserChar(),
 		/* 108 l */ new OP_Ln(),
@@ -282,82 +276,6 @@ class OP_Acosine extends OpInstruction {
 		} else {
 			throw new TypeError(this, n);
 		}
-	}
-}
-
-// D - 68
-class OP_MDate extends OpInstruction {
-
-	private Calendar cal; 
-
-	public OP_MDate() {
-		init("MD");
-		arg("N", "given time in ms, return date params [day_of_week, year, month, day_of_month, hour, min, s]");
-		cal = Calendar.getInstance();
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-
-		if (a.isa(NUMBER)) {
-			long timeStamp = ((Number)a).toLong();
-			cal.setTimeInMillis(timeStamp);
-			
-			ArrayList<Number> fields = new ArrayList<Number>();
-			
-			fields.add(Num.fromInt(cal.get(Calendar.DAY_OF_WEEK)));
-			fields.add(Num.fromInt(cal.get(Calendar.YEAR)));
-			fields.add(Num.fromInt(cal.get(Calendar.MONTH)));
-			fields.add(Num.fromInt(cal.get(Calendar.DAY_OF_MONTH)));
-			fields.add(Num.fromInt(cal.get(Calendar.HOUR)));
-			fields.add(Num.fromInt(cal.get(Calendar.MINUTE)));
-			fields.add(Num.fromInt(cal.get(Calendar.SECOND)));
-
-			block.push(new NumberItemList(fields));
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
-
-
-// H - 68
-class OP_MParse_Date extends OpInstruction {
-	
-	public OP_MParse_Date() {
-		init("MH");
-		arg("SS", "parse a date using a given format and return the time in ms");
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
-		
-		
-		if (a.isa(STR) && b.isa(STR)) {
-			String df_str = a.str();
-			String date_str = b.str();
-			
-			DateFormat df;
-			try {
-				df = new SimpleDateFormat(df_str, Locale.ENGLISH);
-			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Invalid date format: '" + df_str + "'");
-			}
-			
-			Date date;
-			try {
-				date = df.parse(date_str);
-			} catch (ParseException e) {
-				throw new AyaRuntimeException("Cannot parse date: '" + date_str + "' as '" + df_str + "'");
-			}
-			block.push(new Num(date.getTime()));
-		} else {
-			throw new TypeError(this, a, b);
-		}
-		
 	}
 }
 
@@ -528,44 +446,6 @@ class OP_Me extends OpInstruction {
 		} else {
 			throw new TypeError(this, n);
 		}
-	}
-}
-
-// h - 104
-class OP_MShow_Date extends OpInstruction {
-	
-	public OP_MShow_Date() {
-		init("Mh");
-		arg("NS", "convert the time in ms to a date string according to a given format");
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
-		if (a.isa(STR) && b.isa(NUMBER)) {
-			String df_str = a.str();
-			long time = ((Number)b).toLong();
-			
-			DateFormat df;
-			try {
-				df = new SimpleDateFormat(df_str, Locale.ENGLISH);
-			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Invalid date format: '" + df_str + "'");
-			}
-			
-			Date date = new Date(time);
-			String out;
-			try {
-				out = df.format(date);
-			} catch (Exception e) {
-				throw new AyaRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
-			}
-			block.push(new Str(out));
-		} else {
-			throw new TypeError(this, a, b);
-		}
-		
 	}
 }
 
