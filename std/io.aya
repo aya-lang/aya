@@ -27,7 +27,7 @@ export ::path
 
 
 .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
-def path::isfile {self, 
+def path::isfile {self,
     self.dirs.[:1] "." N :1 =! \;
 }
 
@@ -193,62 +193,62 @@ def file::__init__ {filepath type::char  self,
     .# save a copy of the path
     filepath path!      self.:path ;
     .# open the stream
-    self.path P type O self.:id ;
+    self.path P type :{fstream.O} self.:id ;
 }
 
 .#? ::file.close\n  close a file. return 1 is success
 def file::close {self,
-    self.id 'c O
+    self.id 'c :{fstream.O}
 }
 
 .#? ::file.isopen\n  test if a file stream is open
 def file::isopen {self,
-    self.id 'i O 0 =!
+    self.id 'i :{fstream.O} 0 =!
 }
 
 .#? ::file.isread\n  return 1 if file is an input stream
 def file::isinput {self,
-    self.id 'i O 1 =
+    self.id 'i :{fstream.O} 1 =
 }
 
 .#? ::file.iswrite\n  return 1 if file is an output stream
 def file::isoutput {self,
-    self.id 'i O 2 =
+    self.id 'i :{fstream.O} 2 =
 }
 
 .#? ::file.print\n  print to a file if it is an input stream
 def file::print {s self,
-    sP self.id O
+    sP self.id :{fstream.O}
 }
 
 .#? ::file.println\n  print string followed by a newline tp a file
 def file::println {s self,
-    sP "\n" + self.id O
+    sP "\n" + self.id :{fstream.O}
 }
 
 .#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
 def file::readchar {self,
-    self.id 'b O
+    self.id 'b :{fstream.O}
 }
 
 .#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
 def file::readline {self,
-    self.id 'l O
+    self.id 'l :{fstream.O}
 }
 
 .#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
 def file::readall {self,
-    self.id 'a O
+    self.id 'a :{fstream.O}
 }
 
 .#? ::file.lines\n  return a list containing the lines in the file
 def file::lines {self,
-    self.id 'a O "\n" |
+    self.id 'a :{fstream.O} "\n" |
 }
 
 .#? ::file.flush\n  flush an output stream
 def file::flush {self,
-    self.id 'f O
+    self.id 'f :{fstream.O}
 }
 
 def file::__repr__ {self,

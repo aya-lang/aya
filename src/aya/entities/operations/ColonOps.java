@@ -183,6 +183,8 @@ public class ColonOps {
 // # - 35
 class OP_Colon_Pound extends OpInstruction {
 	
+	private OP_O op = new OP_O();
+	
 	public OP_Colon_Pound() {
 		init(":#");
 		arg("L:#B", "map");
@@ -192,22 +194,7 @@ class OP_Colon_Pound extends OpInstruction {
 
 	@Override
 	public void execute(Block block) {
-		Obj blk = block.pop();
-		Obj col = block.pop();
-		
-		if (blk.isa(BLOCK) && col.isa(LIST)) {
-			block.push(ListIndexing.map((List)col, (Block)blk));
-		} else if (blk.isa(BLOCK) && col.isa(DICT)) {
-			Dict d = (Dict)col;
-			if (d.pushSelf()) {
-				block.push(blk);
-				block.callVariable(d, Ops.KEYVAR_EACH);
-			} else {
-				block.push(DictIndexing.map((Dict)col, (Block)blk));
-			}
-		} else {
-			throw new TypeError(this, col, blk);
-		}
+		this.op.execute(block);
 	}
 }
 
