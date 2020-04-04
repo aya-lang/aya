@@ -1,6 +1,5 @@
 package aya.ext.fstream;
 
-import aya.StreamMgr;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
@@ -34,7 +33,7 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 			switch (c) {
 			case 'l':
 				// Push 0 if invalid
-				String line = StreamMgr.readline(i);
+				String line = FStreamManager.readline(i);
 				if (line == null) {
 					block.push(Num.ZERO);
 				} else {
@@ -43,11 +42,11 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 				break;
 			case 'b':
 				// Since 0 is a valid byte, push -1 if invalid
-				block.push(Num.fromInt(StreamMgr.read(i)));
+				block.push(Num.fromInt(FStreamManager.read(i)));
 				break;
 			case 'a':
 				// Pushes 0 if invalid
-				String all = StreamMgr.readAll(i);
+				String all = FStreamManager.readAll(i);
 				if (all == null) {
 					block.push(Num.ZERO);
 				} else {
@@ -56,15 +55,15 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 				break;
 			case 'c':
 				// Close the file
-				block.push(StreamMgr.close(i) ? Num.ONE : Num.ZERO);
+				block.push(FStreamManager.close(i) ? Num.ONE : Num.ZERO);
 				break;
 			case 'f':
 				// Flush
-				block.push(StreamMgr.flush(i) ? Num.ONE : Num.ZERO);
+				block.push(FStreamManager.flush(i) ? Num.ONE : Num.ZERO);
 				break;
 			case 'i':
 				// Info 0:does not exist, 1:input, 2:output
-				block.push(Num.fromInt(StreamMgr.info(i)));
+				block.push(Num.fromInt(FStreamManager.info(i)));
 				break;
 			default:
 				throw new AyaRuntimeException("Invalid char for operator 'O': " + c);
@@ -72,11 +71,11 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 			
 		} else if (a.isa(Obj.NUMBER)) {
 			int i = ((Num)a).toInt();
-			block.push(StreamMgr.print(i, b.str()) ? Num.ONE : Num.ZERO);
+			block.push(FStreamManager.print(i, b.str()) ? Num.ONE : Num.ZERO);
 		} else if (a.isa(Obj.CHAR)) {
 			char c = ((Char)a).charValue();
 			String filename = b.str();
-			block.push(Num.fromInt(StreamMgr.open(filename, c+"")));
+			block.push(Num.fromInt(FStreamManager.open(filename, c+"")));
 		} else {
 			throw new TypeError(this, "Unexpected values ", a, b);
 		}

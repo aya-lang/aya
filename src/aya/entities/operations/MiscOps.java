@@ -34,8 +34,6 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
-import aya.util.ChartParams;
-import aya.util.FreeChartInterface;
 
 public class MiscOps {	
 
@@ -102,7 +100,7 @@ public class MiscOps {
 		/* 85 U  */ null,
 		/* 86 V  */ null,
 		/* 87 W  */ null,
-		/* 88 X  */ new OP_AdvPlot(),
+		/* 88 X  */ null,
 		/* 89 Y  */ null,
 		/* 90 Z  */ null,
 		/* 91 [  */ null, //Matrix Literal
@@ -439,41 +437,6 @@ class OP_Atangent extends OpInstruction {
 			block.push(((NumberList)n).atan());
 		} else {
 			throw new TypeError(this, n);
-		}
-	}
-}
-
-
-
-//X - 88
-class OP_AdvPlot extends OpInstruction {
-	
-	public OP_AdvPlot() {
-		init("MX");
-		arg("D", "plot\n"
-				+ "  parameters:\n"
-				+ "    plottype (::line ::scatter)\n"
-				+ "    title S\n"
-				+ "    xlabel S\n"
-				+ "    ylabel S\n"
-				+ "    height D\n"
-				+ "    width D\n"
-				+ "    xaxis [minD maxD]\n"
-				+ "    yaxis [minD maxD]\n"
-				+ "    x L<N>\n"
-				+ "    y [[nameS strokeD color[r g b] dataL], ..]\n"
-				+ "    show B\n"
-				+ "    legend B\n"
-				+ "    horizontal B\n"
-				+ "    filename S\n");
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		if (a.isa(DICT)) {
-			ChartParams cp = ChartParams.parseParams((Dict)a);
-			FreeChartInterface.drawChart(cp);
 		}
 	}
 }

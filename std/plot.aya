@@ -37,7 +37,7 @@ export [::plot]
 
     .#? ::plot plot.view\n  view the plot in a new window
     {self::plot,
-        self MX
+        self :{plot.plot}
     }:view;
 
     .#? S ::plot plot.save\n  save the plot as a PNG in the working directory with the name S
@@ -45,7 +45,7 @@ export [::plot]
         self$ :cpy;; .# Create a copy
         0 cpy.:show;
         filename  cpy.:filename;
-        cpy MX
+        cpy :{plot.plot}
     }:save;
 
     .#? L<N> ::plot plot.addline\n  add a dataset to the plot using defaults

@@ -28,7 +28,6 @@ import org.apfloat.Apfloat;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.StreamMgr;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.index.AnonGetIndexInstruction;
