@@ -13,6 +13,11 @@ public abstract class NamedInstruction extends Instruction {
 		this._name = name;
 		this._doc = null;
 	}
+
+	public NamedInstruction(String name, String doc) {
+		this._name = name;
+		this._doc = doc;
+	}
 	
 	public String getName() {
 		return this._name;
