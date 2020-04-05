@@ -13,51 +13,51 @@ export ::dialog
 
 
 .#? ::str dialog.requeststr\n  request a string from the user
-def dialog::requeststr {question,
-    [] questionP "" 1 1 :{dialog.legacy}
+def dialog::getstr {question,
+    question :{dialog.getstr}
 }
 
 .#? ::str dialog.requestnum\n  request a number from the user
-def dialog::requestnum {question,
-    [] questionP "" 1 2 :{dialog.legacy}
+def dialog::getnum {question,
+    question :{dialog.getnum}
 }
 
 .#? ::str dialog.alert\n  display a dialog box with a given message
 def dialog::alert {text,
-    [] text "Aya" 1 3 :{dialog.legacy}
+    text "Aya" ::plain :{dialog.alert}
 }
 
 .#? ::str dialog.warning\n  display a warning message with the given message
 def dialog::warning {text,
-    [] text "Aya" 3 3 :{dialog.legacy}
+    text "Aya" ::warn :{dialog.alert}
 }
 
 .#? ::str dialog.error\n  display an error message with the given message
 def dialog::error {text,
-    [] text "Aya" 4 3 :{dialog.legacy}
+    text "Aya" ::error :{dialog.alert}
 }
 
 .#? ::str ::str ::str dialog.yesno\n  display a dialog box with the question ::str1. ::str2 and ::str3 return true and false respectively
 def dialog::yesno {question yes no,
-    [yes no] question "Aya" 2 4 :{dialog.legacy}
+    question [yes no] "Aya" ::plain :{dialog.confirm}
+}
+
+.#? message::str dialog.confirm\n  Return 1 if the user presses okay and 0 otherwise
+def dialog::confirm {question,
+    question ["Okay" "Cancel"] "Aya" ::plain :{dialog.confirm}
 }
 
 .#? ::str ::list dialog.buttons\n  display a dialog box with buttons for each of the options in L. Returns the item in the list as a string.
 def dialog::buttons {question options::list,
-    options#P question "Aya" 2 5 :{dialog.legacy}
+    question options "Aya" ::question :{dialog.buttons}
 }
 
 .#? ::str ::list dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
 def dialog::dropdown {question options::list,
-    options#P question "Aya" 2 6 :{dialog.legacy}
+    question options "Aya" ::question :{dialog.dropdown}
 }
 
 .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
 def dialog::choosefile {
-    [] "" "" 1 7 :{dialog.legacy}
-}
-
-.#? dialog.confirm\n  Open a prompt with the buttons "ok" and "cancel", return true if "ok"
-def dialog::confirm {
-    ["Ok" "Cancel"] "Confirm" $ 1 4 :{dialog.legacy}
+    :{dialog.choosefile}
 }

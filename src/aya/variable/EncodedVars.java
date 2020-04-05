@@ -10,6 +10,7 @@ public class EncodedVars {
 	public static final Long DAY_OF_MONTH = Variable.encodeString("day_of_month");
 	public static final Long DAY_OF_WEEK  = Variable.encodeString("day_of_week");
 	public static final long DOC 		  = Variable.encodeString("doc");
+	public static final long ERROR 		  = Variable.encodeString("error");
 	public static final long FILENAME 	  = Variable.encodeString("filename");
 	public static final long HEIGHT 	  = Variable.encodeString("height");
 	public static final long HOUR   	  = Variable.encodeString("hour");
@@ -19,9 +20,12 @@ public class EncodedVars {
 	public static final long MS     	  = Variable.encodeString("ms");
 	public static final long NAME 		  = Variable.encodeString("name");
 	public static final long OVERLOAD 	  = Variable.encodeString("overload");
+	public static final long PLAIN  	  = Variable.encodeString("plain");
+	public static final long QUESTION  	  = Variable.encodeString("question");
 	public static final long SECOND 	  = Variable.encodeString("second");
 	public static final long STAMP   	  = Variable.encodeString("stamp");
 	public static final long TYPE 		  = Variable.encodeString("type");
+	public static final long WARN 		  = Variable.encodeString("warn");
 	public static final long WIDTH 		  = Variable.encodeString("width");
 	public static final long YEAR 		  = Variable.encodeString("year");
 
