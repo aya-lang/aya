@@ -189,7 +189,7 @@ sys.iswindows {:9c$+} {:9c} .? path.:filesplit;
 class ::file
 export ::file
 
-def file::__init__ {filepath type::char  self,
+def file::__init__ {filepath type::char  self : path^,
     .# save a copy of the path
     filepath path!      self.:path ;
     .# open the stream
@@ -198,6 +198,7 @@ def file::__init__ {filepath type::char  self,
 
 .#? ::file.close\n  close a file. return 1 is success
 def file::close {self,
+    self.flush;
     self.id 'c :{fstream.O}
 }
 
@@ -261,6 +262,25 @@ def file::__repr__ {self,
     ]S
 }
 
+
+.{ Example:
+
+    "file.txt" 'r file!.do {f,
+        f.readll :P
+    }
+.}
+def file::do {`(\ ._do)}
+
+.# Helper function for file.do
+def file::_do {blk__::block self__,
+    {
+        self__ blk__
+    } {e,
+        self__.close;
+        e .D .# re-throw
+    } .K
+    self__.close;
+}
 
 .#? stdin::file\n  standard input stream
 {,

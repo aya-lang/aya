@@ -1,0 +1,28 @@
+import ::io
+
+module ::json
+export ::json
+
+def json::loads {:{json.loads}}
+
+def json::dumps {:{json.dumps}}
+
+def json::load {json_file : file^ json^,
+    json_file :T ::str = {
+        json_file 'r file! :json_file;
+    } ?
+
+    json_file.do {f,
+        f.readall json.loads
+    }
+}
+
+def json::dump {data json_file : file^ json^,
+    json_file :T ::str = {
+        json_file 'w file! :json_file;
+    } ?
+
+    json_file.do {f,
+        data json.dumps f.print;
+    }
+}

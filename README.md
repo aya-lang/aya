@@ -34,7 +34,7 @@ Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The
 
 ## Installation
 
-Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive. 
+Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive.
 
 Aya requires Java 8. To run the GUI, double click the jar file or run the command:
 
@@ -103,7 +103,7 @@ Type definition:
   {self, "<$(self.x),$(self.y)>"}:repr;
 
   .# Member Function
-  {self, self.x2^ self.y2^ + Mq}:len;
+  {self, self.x2^ self.y2^ + .^}:len;
 
   .# Operator Overload
   {a b, a.x b.x+ a.y b.y+ vec!}:add
@@ -226,7 +226,7 @@ Sample documentation from `math.aya`
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
 {{*}U}:product;     .#? L product\n  product of a list
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
-{Mq}:sqrt;          .#? N sqrt\n  square root
+{.^}:sqrt;          .#? N sqrt\n  square root
 ```
 
 
@@ -241,7 +241,7 @@ Sample documentation from `math.aya`
 
 ## Contributing
 
-If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternively, implement any feature or bugfix yourself and submit a pull request. 
+If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternively, implement any feature or bugfix yourself and submit a pull request.
 
 # Limitations
 
