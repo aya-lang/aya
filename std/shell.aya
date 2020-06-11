@@ -15,12 +15,27 @@ def shellresult::lines {self,
 }
 
 
+module ::shell_impl
+
+def shell_impl::grep {res::shellresult rgx::str : shellresult^ ,
+    res.lines {rgx &E0>} I
+    "\n" * shellresult!
+}
+
+def shell_impl::cat {filename::str : shellresult^ ,
+    filename G shellresult!
+}
+
+def shell_impl::echo {data::str : shellresult^ ,
+    data shellresult!
+}
+
 exportall
 
 
 .#? ls\n  print a list of files in the working dir
 def ::ls {
-    ""2:{sys.MZ}4:{sys.MZ}
+    :{sys.wd} :{sys.readdir}
     .E 0 = {
         ; "  <no files>"
     } {
@@ -29,13 +44,6 @@ def ::ls {
 
     shellresult!
 }
-
-def ::grep_impl {res::shellresult rgx::str,
-    res.lines {rgx &E0>} I
-    "\n" * shellresult!
-}
-
-def ::grep {`(grep_impl)}
 
 
 .#? pwd\n  print working directory
@@ -50,20 +58,13 @@ def ::cd {`(sys.cd)}
 def ::mkdir {`(sys.mkdir)}
 
 
+def ::echo ({```x``~} {, shell_impl.echo.` :x } .+)
 .#? cat S\n  print a file to the console
-def ::cat {`({filename::str,
-    filename G println
-})}
-
-
-def ::echo {`:P}
+def ::cat  ({```x``~} {, shell_impl.cat.`  :x } .+)
+def ::grep  ({```x``~} {, shell_impl.grep.` :x } .+)
 
 
 def ::touch {`({s::str,"" s 1.G})}
-
-
-def ::rm {`(6:{sys.MZ})}
-
 
 def ::run {`(".aya"+G~)}
 

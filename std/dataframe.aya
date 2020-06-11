@@ -1,6 +1,7 @@
 import ::csv
 
 class ::dataframe
+export ::dataframe
 
 def dataframe::__init__ {kwargs::dict self :
         data(nil)
@@ -68,17 +69,48 @@ def dataframe::from_csv {csv_dict,
     } dataframe!
 }
 
-def dataframe::read_csv {kwargs : dataframe^ ,
-    kwargs csv.read dataframe.from_csv
+def dataframe::read_csv {arg : dataframe^ csv^ ,
+    .# csv.read takes a string or a kwargs dict
+    arg csv.read dataframe.from_csv
+}
+
+def dataframe::_get_col {colname self : colindex,
+    colname :T ::sym = {colname :C :colname; } ?
+    self._colnames colname N\; :colindex;
+    colindex :1 = {
+        "Column $colname not found" .D
+    } {
+        self._data :# { colindex I }
+    } .?
+}
+
+def dataframe::__getindex__ { index self : dataframe,
+    index :T {?=, 
+        ::str = {
+            
+        },
+        {"Unsupported index: $index" .D}
+    }
 }
 
 .# Serialization / Output
 .########################
 
+def dataframe::__str__ {self,
+    .# [""] (self._colnames$\;) K A
+    .# self._index #{P" |"K}
+    .# self._data.T
+    .# [2|~,.A]K
+    .# matstr "\n"\+
+
+    self._index :#{P" |"+}          .# Add " |" to each index
+    self._data {J}.&                .# Zip the index and the data along each row
+    :& .[0]E self._colnames#P \.>   .# Make the colnames at least as long as the
+                                    .#    number of columns including the index
+    A\J                             .# Add the colum as the first elemnt in the list
+    matstr                          .# Convert to a pretty matstr
+}
+
 def dataframe::__repr__ {self,
-    [""] (self._colnames$\;) K A
-    self._index #{P" |"K}
-    self._data
-    [2|~,.A]K
-    matstr "\n"\+
+    self.__str__.repr_lines
 }

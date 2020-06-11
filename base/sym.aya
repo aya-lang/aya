@@ -1,5 +1,17 @@
 {,
 
-    {s, {__aya__.overloads s I} {; s :C.~ } .K }:op;
+{s, {__aya__.overloads s I} {; s :C.~ } .K }:op;
+
+.{
+    Return the reverse overload for a symbol
+    - If the symbol is an operator and has a reverse overload, return it
+    - If the symbol is an operator but does not have a reverse overload,
+        return the original operator
+    - If the symbol is not an operator, throw an error
+
+    aya> ::+ .rev
+    ::__radd__
+.}
+{__aya__.ops\I.overload1.>~}:rev;
 
 }:sym;

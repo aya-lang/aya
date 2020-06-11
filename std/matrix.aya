@@ -31,7 +31,11 @@ def matrix::_new {:matrix^,
      [ 282475249 1073741824 3486784401 ]]
 .}
 def matrix::__repr__ {self,
-    "\n" " ]\n [ " self.rows matstr .& "[[ " \+ " ]]"+
+    self.r self.c + 100 > {
+        "($(self.r)x$(self.c) matrix)"
+    } {
+        "\n" " ]\n [ " self.rows matstr .& "[[ " \+ " ]]"+
+    } .?
 }
 
 
@@ -41,21 +45,14 @@ def matrix::__repr__ {self,
 .# Binary
 .# ------
 
-{,
-    ::* :__rmul__
-    ::/ :__rdiv__
-    ::+ :__radd__
-    ::- :__rsub__
-    ::^ :__rpow__
-    ::< :__rlt__
-    ::> :__rgt__
-    :::< :__rleq__
-    :::> :__rgeq__
-    ::% :__rmod__
-    ::.% :__ridiv__
-} :# {rop_sym op_sym : op_to_n([::n op_sym].blk)
-                       op(op_sym.op)
-                       rop([::other {\} op_sym].blk),
+[
+    ::+ ::- ::* ::/
+    ::^ ::< ::> ::%
+    :::< :::> ::.%
+] :# {op_sym : op_to_n([::n op_sym].blk)
+               op(op_sym.op)
+               rop([::other {\} op_sym].blk)
+               rop_sym(op_sym.rev),
 
     def matrix op_sym {other self : op^ rop^,
         other :T {?=,
@@ -217,6 +214,11 @@ def matrix::rotate_cols {
 
 def matrix::rotate_rows {
     .rows .rotate matrix._new
+}
+
+def matrix::circshift {rc self : m,
+    rc.[0] self.rotate_rows :m;
+    rc.[1] m.rotate_cols
 }
 
 .#? [rows cols] ::matrix .<\n  cut or pad the matrix to the given size from the upper left corner

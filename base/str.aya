@@ -124,6 +124,14 @@
         s__
     }:fmt;
 
+    {s : lines(s.lines),
+        lines E 24 > {
+            [lines 10 .<~ "..." lines 10 .>~]"\n"*
+        } {
+            s
+        } .?
+    }:repr_lines;
+
 }:str;
 
 

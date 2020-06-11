@@ -12,6 +12,7 @@
 
 
 class ::stack
+export ::stack
 
 
 .#? ::list stack!\n  convert a list into a stack
@@ -54,9 +55,12 @@ def stack::isempty {.listE0=}
 
 
 .#? A ::stack.add\n  add an item to the stack
-def stack::__add__ {self,
+def stack::push {self,
     self.list.V; self
 }
+
+def stack::+ (stack.push.`)
+def stack::- (stack.pop.`)
 
 .#? ::stack.clear\n  clear the queue
 def stack::clear {self,
@@ -65,7 +69,7 @@ def stack::clear {self,
 
 
 def stack::__each__ {blk self,
-    self.list :# {blk}
+    self.list :# blk.`
 }
 
 

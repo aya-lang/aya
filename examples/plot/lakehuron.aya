@@ -6,10 +6,9 @@ import ::plot
 import ::math
 
 "Downloading file..." :P
-{, "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/LakeHuron.csv"
-:filename
-
-1:csvindex
+{,
+    "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/LakeHuron.csv":filename
+    1:csvindex
 }
 dataframe! :lakehuron;
 

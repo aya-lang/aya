@@ -4,11 +4,11 @@ class ::singleton
 
 nil singleton.:_instance;
 
-impl singleton::__init__ {self,
+def singleton::__init__ {self,
     0 self.:counter ;
 }
 
-impl singleton::add {self,
+def singleton::add {self,
     self.counter 1 + self.:counter;
 }
 
@@ -21,7 +21,7 @@ impl_static singleton::get_instance {meta,
     meta._instance
 }
 
-impl singleton::__new__ {
+def singleton::__new__ {
     "Do not create instance of singleton directly" .D
 }
 

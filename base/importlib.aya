@@ -6,7 +6,7 @@ def importlib::_log_debug {:importlib^,
      importlib._debug {"importlib: " \+ :P} {;} .?
 }
 
-def importlib::aya_dir (""2:{sys.MZ})
+def importlib::aya_dir :{sys.wd}
 
 .# Dictionary of files which have been imported
 def importlib::imported {,}
@@ -18,7 +18,7 @@ def importlib::path [
 .# Return the path with the current directory at the bottom
 def importlib::get_path { : importlib^ ,
     importlib.path
-    ""2 :{sys.MZ}
+    :{sys.wd}
     J
 }
 
@@ -142,7 +142,7 @@ def importlib::from_file {filepath : importlib^ all_possible mod,
 
     importlib.get_path :# { filepath + } :~ :all_possible
     .# Get only files that exist
-    {8 :{sys.MZ}} I
+    { :{sys.file_exists} } I
     .# If the lists is empty, throw an error
     .E 0 = {"Import Error: Unable to find any of the following files: $all_possible" .D} ?
 

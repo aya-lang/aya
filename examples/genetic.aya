@@ -20,10 +20,11 @@ def dna::calc_fitness {target::dna self,
 
 .# Apply a random mutation to the dna
 def dna::mutate {self,
-    self.data :# {.Q 0.01 < {; new_char} ? } self.:data;
+    self.data :# {.Q 0.02 < {; new_char} ? } self.:data;
     self
 }
 
+.# Overload = operator
 def dna::= {other self,
     other.data self.data =
 }
@@ -58,10 +59,10 @@ def population::calc_fitness {target::dna self,
 }
 
 {
-    cumsum :&   .# Create a cumultive sum list, create a copy on the stack
-    .[:1] .Q *  .# Generate a random number between 0 and the total sum
-    <           .# All items less than the number become 1, else 0
-    0 N \;      .# Find the first 0
+    cumsum        .# Create a cumultive sum list
+    :&.[:1] .Q *  .# Generate a random number between 0 and the total sum
+    <             .# All items less than the number become 1, else 0
+    0 N \;        .# Find the first 0
 }:pickweighted;
 
 .# Select a random DNA from the population based on
@@ -118,5 +119,5 @@ main {
         target best = !
     } W
 
-    "Done! \"$(best.data)\", fitness: $(best.fitness)" :P
+    "Done! \"$(best.data)\", fitness: $(best.fitness), samples generated: $(pop_size generations*)" :P
 }

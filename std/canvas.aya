@@ -4,7 +4,7 @@ from ::color import [::color ::colors]
 class ::canvas
 export ::canvas
 
-def canvas::__init__ ({params::dict self ,
+def canvas::__init__ {params::dict self : colors^,
 
     .# Default values
     {,
@@ -22,7 +22,7 @@ def canvas::__init__ ({params::dict self ,
     params.height self.:height;
 
     ::new params 0 :{graphics.MG} self.:id ;
-}.capture[::colors])
+}
 
 def canvas::__str__ {self,
     "<canvas($(self.id))>"

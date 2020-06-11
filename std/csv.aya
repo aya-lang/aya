@@ -13,14 +13,26 @@ def csv::open {f : csv^,
     fP G "," csv.parse
 }
 
-def csv::read {kwargs : csv^
-                        clabel(1)
-                        rlabel(0)
-                        filename(nil)
-                        csv_str(nil) dlm(",")
-                        data
-                        colnames(nil)
-                        rownames(nil),
+def csv::read { arg : csv^ ,
+    arg :T {?=,
+        ::str {, arg:filename },
+        ::dict arg,
+        {
+            "csv.read: Unsupported arg type $(arg:T). Must be ::str or ::dict" .D
+        }
+    }
+    csv._read_kw
+}
+
+def csv::_read_kw {kwargs::dict : csv^
+                                clabel(1)
+                                rlabel(nil)
+                                filename(nil)
+                                csv_str(nil)
+                                dlm(",")
+                                data
+                                colnames(nil)
+                                rownames(nil),
     kwargs .W
 
     (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
@@ -29,6 +41,15 @@ def csv::read {kwargs : csv^
     filename nil =! {filenameP G :csv_str;} ?
 
     csv_str dlm csv.parse :data;
+
+    .# Attempt to auto-detect rlabel if it is not specified
+    rlabel nil = {
+        data.[0].[0] "" = {
+            1 :rlabel;
+        } {
+            0 :rlabel;
+        } .?
+    } ?
 
     .# CSV has column headers
     clabel {

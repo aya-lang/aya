@@ -1,9 +1,14 @@
 import ::sys
 
+export [
+    ::path
+    ::file
+    ::stdout
+    ::stdin
+]
+
 
 class ::path
-export ::path
-
 
 .# Create a new path (accepts relative or abs paths)
 .# Custom constructor
@@ -187,7 +192,6 @@ sys.iswindows {:9c$+} {:9c} .? path.:filesplit;
 .####################
 
 class ::file
-export ::file
 
 def file::__init__ {filepath type::char  self : path^,
     .# save a copy of the path

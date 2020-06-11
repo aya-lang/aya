@@ -95,21 +95,30 @@
         }
         aya> [::a ::b ::c].capture_vars
         ERROR: Variable c not found
-        stack:
-                [ ::a ::b ::c ]
-        just before:
-                \ {J} .& :l__ ; {l__ {~ :=} :#}
     .}
-    {:l__,
-        .# Create a list of key value pairs
-        :&#~\{J}.&:l__;
-        .# Map assignment to each of the pairs inside a dict
-        {, l__:#{~:=}}
-    }:capture_vars;
+    { {1, :# {$~\:=} } }:capture_vars;
 
     {
         #.op .*
     }:blk;
+
+    {.B}:push;
+    {B}:pop;
+
+    .#? ::list.dict_flatten\n  given a list of dicts, flatten the into a single dict
+    {
+        {,}\J{.+}F
+    }:dict_flatten;
+
+    .# ::list ::list.mask\n  select indices with non-false values from list
+    .{
+        aya> [1 2 3 4 5] [0 1 0 0 1].mask
+        [ 2 5 ]
+    .}
+    {
+        .E.R*.[{0=!}]I
+    }:mask;
+
 
 }:list;
 

@@ -289,8 +289,9 @@ def asciiart::replace_aa {a::asciiart self : l,
 def asciiart::rle {s,
     s $ "\\d+"| \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
-    .E 0 = {;;s}            .# If no rle to do, just return the string
-    {                       .# There is rle to do, do this block
+    .E 0 = {
+        ;;s                 .# If no rle to do, just return the string
+    } {                     .# There is rle to do, do this block
         #.!                 .# convert strings to nums => [3 4]
         \V@@                .# Remove the leading string and rearrange
         {
@@ -300,8 +301,7 @@ def asciiart::rle {s,
         }
         .&                  .# Apply the above block to each pair in the list
         S+                  .# Combine everything
-    }
-    .?
+    } .?
 }
 
 
