@@ -30,11 +30,9 @@ def shell_impl::echo {data::str : shellresult^ ,
     data shellresult!
 }
 
-exportall
-
 
 .#? ls\n  print a list of files in the working dir
-def ::ls {
+def ::ls {: shellresult^ ,
     :{sys.wd} :{sys.readdir}
     .E 0 = {
         ; "  <no files>"
@@ -47,7 +45,7 @@ def ::ls {
 
 
 .#? pwd\n  print working directory
-def ::pwd {path.working:P}
+def ::pwd {: path^ , path.working:P}
 
 
 .#? cd dir\n  change directory
@@ -79,3 +77,20 @@ def (__aya__.interpreter)::shell {str : cmd args,
         cmd~ args
     } .?
 }
+
+export [
+    ::sys
+    ::shell_impl
+
+    ::ls
+    ::pwd
+    ::cd
+    ::mkdir
+    ::echo
+    ::cat
+    ::grep
+    ::touch
+    ::run
+    ::clear
+]
+
