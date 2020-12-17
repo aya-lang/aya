@@ -1,0 +1,20 @@
+class ::versionstr
+export [::versionstr ::v]
+
+def versionstr::__init__ {maj min pat self,
+    majP self.:major;
+    minP self.:minor;
+    pat "" = 0 pat .? P self.:patch;
+}
+
+def ::v {`(
+    '.| 3.< ~ versionstr!
+)}
+
+def versionstr::__str__ {self,
+    "v\"$(self.major).$(self.minor).$(self.patch)\""
+}
+
+def versionstr::__repr__ (versionstr.__str__.`)
+
+
