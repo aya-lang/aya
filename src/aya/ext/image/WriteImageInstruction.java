@@ -34,7 +34,7 @@ public class WriteImageInstruction extends NamedInstruction {
 		}
 		
 		DictReader dr = new DictReader(info, opName());
-		String filename = dr.getString(EncodedVars.FILENAME);
+		String filename = dr.getStringEx(EncodedVars.FILENAME);
 		String ext = getExt(filename);
 		if (ext.equals("")) {
 			throw new AyaRuntimeException(opName() + ", filename does not have a valid extension");
