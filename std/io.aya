@@ -1,11 +1,11 @@
-import ::sys
-
 export [
     ::path
     ::file
     ::stdout
     ::stdin
 ]
+
+def ::iswindows {:9c"\\"=}
 
 
 class ::path
@@ -148,7 +148,7 @@ def path::_clean {dirs::list : path^ i(0),
 .#
 
 .#? path.root\n  root dir name
-sys.iswindows {
+iswindows {
     "C:"
 } {
     ""
@@ -158,7 +158,7 @@ sys.iswindows {
 .# Regular expression used for splitting path strings
 .# If :9c is "\", return escaped "\\" otherwise return :9c
 .#? path.filesplit\n  constant "\\" if windows, "/" if unix
-sys.iswindows {:9c$+} {:9c} .? path.:filesplit;
+iswindows {:9c$+} {:9c} .? path.:filesplit;
 
 
 

@@ -1,3 +1,5 @@
+from ::io import ::path
+
 module ::sys
 export ::sys
 
@@ -6,7 +8,7 @@ def sys::iswindows {:9c"\\"=}
 
 
 .# ::str sys.cd\n  set working directory
-def sys::cd {dirname,
+def sys::cd {dirname : path^,
     dirname
     .# If it is a string, conv to path
     dirname :T ::str = { path! } ?
