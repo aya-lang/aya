@@ -15,21 +15,6 @@
 
 {,}:interpreter;
 
-{,
-    "M!" :__fact__
-    "Ms" :__sin__
-    "Mc" :__cos__
-    "Mt" :__tan__
-    "MS" :__asin__
-    "MC" :__acos__
-    "MT" :__atan__
-    "ML" :__log__
-    "Ml" :__ln__
-    "Me" :__exp__
-    "Md" :__float__
-    ".^" :__sqrt__
-}:mathoverload;
-
 {,::ops :O :#{o, o.overload:#{sym, o sym :=}}}:ops;
 
 {,
@@ -306,52 +291,6 @@ opt_mod (
     sym := ; .# assign variable
 })}:class;
 
-
-
-.{ class Example:
-
-class ::point
-
-.# Static class variable
-0 point.:counter;
-
-.# Cass constructor uses __init__ instead of __new__
-.# and gets the object as the first argument
-def point::__init__ {x y self : meta,
-    self .M :meta ;
-    meta.counter 1 + meta.:counter ;
-    x 10 * self.:x ;
-    y 100 * self.:y ;
-}
-
-.# Instance functions get an instance of the class as the first arg
-
-def point::__str__ {self,
-    "( $(self.x) $(self.y) ) point!"
-}
-
-.# Instance function alias
-(point.__str__.`, 0); point.:__repr__;
-
-def point::__repr__ ( point.__str__.`)
-
-def point::sum {self,
-    self.x self.y +
-}
-
-.# impl_static function gets metatable
-
-impl_static point::num_points {meta,
-    meta.counter
-}
-
-.# plain static gets nothing
-
-static point::static_fn {
-    "static" :P
-}
-
-.}
 
 .# ------
 .# MODULE
