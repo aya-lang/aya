@@ -8,7 +8,7 @@ def dataframe::__init__ {kwargs::dict self :
         colnames(nil)
         index(nil),
 
-    kwargs .W
+    kwargs ~
 
     [] self.:_colnames;
     [] self.:_index;
@@ -84,10 +84,14 @@ def dataframe::_get_col {colname self : colindex,
     } .?
 }
 
-def dataframe::__getindex__ { index self : dataframe,
-    index :T {?=, 
-        ::str = {
-            
+def dataframe::__getindex__ { index self : dataframe^,
+    index :T {?=,
+        ::num {
+            "num index!":P
+            {, df._data.[index]A:data
+               df._colnames:colnames
+               [df._index.[index]]:index
+            } dataframe!
         },
         {"Unsupported index: $index" .D}
     }

@@ -33,7 +33,7 @@ def csv::_read_kw {kwargs::dict : csv^
                                 data
                                 colnames(nil)
                                 rownames(nil),
-    kwargs .W
+    kwargs ~
 
     (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
 

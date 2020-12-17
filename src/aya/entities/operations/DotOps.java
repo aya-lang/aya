@@ -1262,28 +1262,6 @@ class OP_Dot_AppendBack extends OpInstruction {
 	}
 }
 
-// W - 87
-class OP_Dot_W extends OpInstruction {
-
-	public OP_Dot_W() {
-		init(".W");
-		arg("D", "export variables only if they exist in the most local scope");
-	}
-
-	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
-
-		if (a.isa(DICT)) {
-			final Dict d = (Dict)a;
-			Aya.getInstance().getVars().peek().mergeDefined(d.getVarSet());
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
-
-
 
 // \ - 92
 class OP_Dot_BackSlash extends OpInstruction {
@@ -1379,6 +1357,7 @@ class OP_Dot_Tilde extends OpInstruction {
 		init(".~");
 		arg("S", "parse contents to a block");
 		arg("J|C", "deref variable; if not a block, put contents in block");
+		arg("D", "set all variables");
 	}
 
 	@Override
@@ -1412,6 +1391,9 @@ class OP_Dot_Tilde extends OpInstruction {
 			} else {
 				block.push(e);
 			}
+		} else if (a.isa(DICT)) {
+			// Set all vars in the dict
+			Aya.getInstance().getVars().setVars(asDict(a).getVarSet());
 		} else {
 			throw new TypeError(this, a);
 		}

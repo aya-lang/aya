@@ -1775,6 +1775,7 @@ class OP_Tilde extends OpInstruction {
 		init("~");
 		arg("B|S|C", "evaluate");
 		arg("L", "dump to stack");
+		arg("D", "set variables if they exist in the local scope");
 	}
 
 	@Override
@@ -1804,6 +1805,9 @@ class OP_Tilde extends OpInstruction {
 			}
 		} else if (a.isa(SYMBOL)) {
 			block.push(Aya.getInstance().getVars().getVar( ((Symbol)a).id() ));
+		} else if (a.isa(DICT)) {
+			// Dump all vars if they exist in the most local scope
+			Aya.getInstance().getVars().peek().mergeDefined(asDict(a).getVarSet());
 		} else {
 			throw new TypeError(this, a);
 		}
