@@ -8,7 +8,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
-import aya.obj.symbol.Symbol;
 import aya.variable.Variable;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
@@ -16,6 +15,8 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	public GetKeyVariableInstruction(long id) {
 		super(id);
 	}
+	
+	private static long META = Variable.encodeString("__meta__");
 	
 	@Override
 	public void execute(Block b) {
@@ -30,21 +31,16 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 			}
 			this.addOrDumpVar(o, b);
 		} else {
-			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym.id());
-			if (builtin_dict.isa(Obj.DICT)) {
-				Dict dict = (Dict)builtin_dict;
-				Obj o;
-				try {
-					o = dict.get(variable_);
-					b.push(kv_obj);
-					this.addOrDumpVar(o, b);
-				} catch (AyaKeyError e) {
-					throw new AyaRuntimeException("Built in type " + typeSym + 
-							" does not contain member '" + varName() + "'");
-				}
-			} else {
-				throw new AyaRuntimeException("Built in type " + typeSym + " was redefined to " + builtin_dict);
+			Dict builtin_dict = Aya.getInstance().getVars().getBuiltinMeta(kv_obj);
+			Dict dict = (Dict)builtin_dict;
+			Obj o;
+			try {
+				o = dict.get(variable_);
+				if (variable_ != META) b.push(kv_obj); // Don't push if we are accessing the meta dict
+				this.addOrDumpVar(o, b);
+			} catch (AyaKeyError e) {
+				throw new AyaRuntimeException("Built in type " + Obj.IDToSym(kv_obj.type()) + 
+						" does not contain member '" + varName() + "'");
 			}
 			
 		}

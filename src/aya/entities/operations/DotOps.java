@@ -118,7 +118,7 @@ public class DotOps {
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
-		/* 87 W  */ new OP_Dot_W(),
+		/* 87 W  */ null,
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
 		/* 90 Z  */ null,
@@ -1064,47 +1064,20 @@ class OP_Dot_M extends OpInstruction {
 
 	public OP_Dot_M() {
 		init(".M");
-		arg("D", "get D's meta, create one if it does not exist");
+		arg("A", "get metatable");
 	}
-	
-	public static final long ARGS = Variable.encodeString("args");
-	public static final long ARGTYPES = Variable.encodeString("argtypes");
-	public static final long LOCALS = Variable.encodeString("locals");
 	
 	@Override
 	public void execute (final Block block) {
 		Obj a = block.pop();
 		 if (a.isa(DICT)) {
 			block.push(((Dict)a).getMetaDict());
-		} else if (a.isa(BLOCK)) {
-			block.push(getBlockMeta((Block)a));
 		} else {
-			throw new TypeError(this, a);
+			block.push(Aya.getInstance().getVars().getBuiltinMeta(a));
 		}
 	}
 
-	private Dict getBlockMeta(Block b) {
-		Dict d = new Dict();
-		// Arg Names
-		final ArrayList<BlockHeader.Arg> args_and_types = b.getArgsAndTypes();
-
-		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (BlockHeader.Arg a : args_and_types) {
-			Dict arg = new Dict();
-			arg.set(EncodedVars.NAME, Symbol.fromID(a.var));
-			arg.set(EncodedVars.TYPE, Symbol.fromID(a.type));
-			arg.set(EncodedVars.COPY, a.copy ? Num.ONE : Num.ZERO);
-			args_list.add(arg);
-		}
-		Collections.reverse(args_list);
-		d.set(ARGS, new GenericList(args_list));
-		final VariableSet vars = b.getLocals();
-		if (vars != null) {
-			d.set(LOCALS, new Dict(vars));
-		}
-				
-		return d;
-	}
+	
 	
 }
 
@@ -1325,9 +1298,15 @@ class OP_Dot_Pow extends OpInstruction {
 // | - 124
 class OP_Dot_Bar extends OpInstruction {
 
+	
+	public static final long ARGS = Variable.encodeString("args");
+	public static final long ARGTYPES = Variable.encodeString("argtypes");
+	public static final long LOCALS = Variable.encodeString("locals");
+
 	public OP_Dot_Bar() {
 		init(".|");
 		arg("N", "absolute value");
+		arg("B", "get meta information for a block");
 		setOverload(1, "abs");
 	}
 
@@ -1340,13 +1319,37 @@ class OP_Dot_Bar extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push( ((Number)a).abs() );
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).abs() );
+			block.push( asNumberList(a).abs() );
+		} else if (a.isa(BLOCK)) {
+			block.push(getBlockMeta((Block)a));
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
-}
 
+	private Dict getBlockMeta(Block b) {
+		Dict d = new Dict();
+		// Arg Names
+		final ArrayList<BlockHeader.Arg> args_and_types = b.getArgsAndTypes();
+
+		ArrayList<Obj> args_list = new ArrayList<Obj>();
+		for (BlockHeader.Arg a : args_and_types) {
+			Dict arg = new Dict();
+			arg.set(EncodedVars.NAME, Symbol.fromID(a.var));
+			arg.set(EncodedVars.TYPE, Symbol.fromID(a.type));
+			arg.set(EncodedVars.COPY, a.copy ? Num.ONE : Num.ZERO);
+			args_list.add(arg);
+		}
+		Collections.reverse(args_list);
+		d.set(ARGS, new GenericList(args_list));
+		final VariableSet vars = b.getLocals();
+		if (vars != null) {
+			d.set(LOCALS, new Dict(vars));
+		}
+				
+		return d;
+	}
+}
 
 
 

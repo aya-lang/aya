@@ -1,15 +1,19 @@
 package aya.variable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
+import static aya.util.Casting.asDict;
+
 import aya.Aya;
 import aya.InteractiveAya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
+import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
@@ -36,6 +40,7 @@ public class VariableData {
 	private final Dict OBJ_NUM = new Dict();
 	private final Dict OBJ_CHAR = new Dict();
 	private final Dict OBJ_BLOCK = new Dict();
+	private final Dict BUILTINS = new Dict();
 
 	public final Dict OBJ_NIL = new Dict();
 
@@ -66,17 +71,29 @@ public class VariableData {
 		globals.setVar(new Variable("e"), Num.E);				
 		globals.setVar(new Variable("pi"), Num.PI);
 		
-		globals.setVar(new Variable("block"), OBJ_BLOCK);
-		globals.setVar(new Variable("sym"), OBJ_SYM);
-		globals.setVar(new Variable("list"), OBJ_LIST);
-		globals.setVar(new Variable("num"), OBJ_NUM);
-		globals.setVar(new Variable("char"), OBJ_CHAR);
-		globals.setVar(new Variable("str"), OBJ_STR);
+		long meta = Variable.encodeString("__meta__");
+		OBJ_CHAR.set(meta,  OBJ_CHAR);
+		OBJ_SYM.set(meta,  OBJ_SYM);
+		OBJ_BLOCK.set(meta,  OBJ_BLOCK);
+		OBJ_LIST.set(meta,  OBJ_LIST);
+		OBJ_NUM.set(meta,  OBJ_NUM);
+		OBJ_STR.set(meta,  OBJ_STR);
+
+		BUILTINS.set(Obj.SYM_CHAR.id(),  OBJ_CHAR);
+		BUILTINS.set(Obj.SYM_SYM.id(),   OBJ_SYM);
+		BUILTINS.set(Obj.SYM_BLOCK.id(), OBJ_BLOCK);
+		BUILTINS.set(Obj.SYM_LIST.id(),  OBJ_LIST);
+		BUILTINS.set(Obj.SYM_NUM.id(),   OBJ_NUM);
+		BUILTINS.set(Obj.SYM_STR.id(),   OBJ_STR);
 		
 		initNil(aya);
 		globals.setVar(Variable.encodeString("nil"), OBJ_NIL);
 
 		varSets.add(globals);
+	}
+	
+	public Dict getBuiltinMeta(Obj o) {
+		return asDict(BUILTINS.get(Obj.IDToSym(o.type()).id()));
 	}
 	
 	/** Returns the set containing the global variables */
@@ -195,5 +212,11 @@ public class VariableData {
 
 	public boolean isDefined(long id) {
 		return getVarOrNull(id) != null;
+	}
+
+	public void setVars(VariableSet varSet) {
+		for (Map.Entry<Long, Obj> p : varSet.getMap().entrySet()) {
+			setVar(p.getKey(), p.getValue());
+		}
 	}
 }

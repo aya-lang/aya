@@ -163,7 +163,8 @@ export [::plot]
 }:plot;
 
 
-def list::x {l::list,
+.# Add a function to the list metatable
+def ([].M)::x {l::list,
     l E 2 = {l#:T [::list ::list]= {1} {0} .?} {0} .? {
         l.[0] l.[1] plot.line.view
     } {

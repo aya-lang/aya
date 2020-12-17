@@ -5,7 +5,7 @@
 
 {,
     .# Import list variables
-    using list
+    using ([].M)
 
     .#? S.trim\n  remove whitespace from start and end of string
     {"^\\s+|\\s+$" |S $0={;""}?}:trim;
@@ -132,7 +132,9 @@
         } .?
     }:repr_lines;
 
-}:str;
+}
+.# Merge with str metatable
+"" .M \.+
 
 
 .{ Example:

@@ -289,14 +289,14 @@
         }
     ]:args;
 
-    { {a b$::num c::str d$ : a(1) b(4), } .M.args } assert [args]
+    { {a b$::num c::str d$ : a(1) b(4), } .|.args } assert [args]
 
-    {{} {, args:args } :M .M .args} assert [args]
+    {{} {, args:args } :M .| .args} assert [args]
 })
 
 .# ::block S: duplicate with locals
-{{} S .M ::locals N\;} assert [1]
-{{: ,} S .M ::locals N\;} assert [1]
+{{} S .| ::locals N\;} assert [1]
+{{: ,} S .| ::locals N\;} assert [1]
 
 .# Split into list of blocks
 {{a, b c + [10,] $% {a b} () ``+ 1 2 :k .:k k.`} .* ""*}

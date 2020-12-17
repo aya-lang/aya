@@ -1,6 +1,6 @@
 {f: argtypes args d,
     {,}:d;
-    f.`.M W
+    f.`.| W
     args :# {k,
         k :C argtypes.[k] "" arg! k d :D
     };
@@ -103,7 +103,7 @@ impl docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     .# Desc
     self.sections.args matcher |V;
     .# Create list of arg objects
-    {J}.& :# {~ self.M.arg!}
+    {J}.& :# {~ self.|.arg!}
 }
 
 impl docstr::owner {self,
@@ -128,7 +128,7 @@ impl docstr::_getargtypes {self : at f,
     self.owner:f;
 
     f.` :T ::block = {
-        f.`.M.argtypes:at;
+        f.`.|.argtypes:at;
         .# If the arg is not a stack arg, copy over its type
         self._args :# {a,
             a.is_stack_arg! {

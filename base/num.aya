@@ -43,7 +43,9 @@
 }:s;
 
 
-}:num;
+}
+.# Merge with num metatable
+0 .M \.+
 
 .#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
 {a b nums,

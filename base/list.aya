@@ -120,7 +120,9 @@
     }:mask;
 
 
-}:list;
+}
+.# Merge with char metatable
+[] .M \.+
 
 .# Removing .I, can directly swap for this
 {\:&@I}:dot_i;

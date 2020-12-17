@@ -31,7 +31,9 @@
     {s c,
         s cP | :1| \:#{c+}\J
     }:split;
-}:char;
+}
+.# Merge with char metatable
+'x .M \.+
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
 {a::str,"\"\\{$a}\""~.'}:spechar;

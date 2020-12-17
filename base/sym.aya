@@ -14,4 +14,6 @@
 .}
 {__aya__.ops\I.overload1.>~}:rev;
 
-}:sym;
+}
+.# Merge with str metatable
+::_ .M \.+

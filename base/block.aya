@@ -28,7 +28,7 @@
 
 
     .#? ::block.haslocals\n  return true if the block has a local variables
-    {.M::localsN\;}:haslocals;
+    {.|::localsN\;}:haslocals;
 
     .#? ::block.makelocals\n  if a block has local variables, return the block, otherwise wrap it in a block that has an empty local variable set
     .# aya> {:a, a 1 +}.makelocals
@@ -92,7 +92,7 @@
         aya> 5 f
         6
     .}
-    {`({\.makelocals :& .M.locals @ .capture_vars .+ ;})}:capture;
+    {`({\.makelocals :& .|.locals @ .capture_vars .+ ;})}:capture;
 
     .#? ::block .time\n  return the execution time of a block in ms
     .# {M$ \[1|~]; M$ /}:time;
@@ -131,7 +131,7 @@
     .}
     {`.+}:where_const;
 
-    {`(\$\;.makelocals:&.M.locals@.+;)}:where;
+    {`(\$\;.makelocals:&.|.locals@.+;)}:where;
 
 
     {:indent(0),
@@ -149,7 +149,9 @@
     }:show;
 
 
-}:block;
+}
+.# Merge with char metatable
+{} .M \.+
 
 {.le}:otimes;
 {.el}:odot;
