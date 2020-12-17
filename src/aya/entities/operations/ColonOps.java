@@ -10,6 +10,9 @@ import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
+import static aya.util.Casting.asNumber;
+import static aya.util.Casting.asNumberList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -31,7 +34,6 @@ import aya.obj.list.List;
 import aya.obj.list.ListIndexing;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
-import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
@@ -379,11 +381,12 @@ class OP_Colon_LessThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) <= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).geq((Number)a) ); // geq is opposite of leq
+			block.push( asNumberList(b).geq(asNumber(a)));
+			block.push( ((List)b).toNumberList().geq((Number)a) ); // geq is opposite of leq
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( ((NumberList)a).leq((Number)b) ); 
+			block.push(asNumberList(a).leq(asNumber(b)));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( ((NumberList)a).leq((NumberList)b) ); 
+			block.push(asNumberList(a).leq(asNumberList(b)));
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -442,11 +445,11 @@ class OP_Colon_GreaterThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) >= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).leq((Number)a) ); // lt is opposite of gt
+			block.push(asNumberList(b).leq(asNumber(a))); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( ((NumberList)a).geq((Number)b) ); 
+			block.push(asNumberList(a).geq(asNumber(b)));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( ((NumberList)a).geq((NumberList)b) ); 
+			block.push(asNumberList(a).geq(asNumberList(b)));
 		} else {
 			throw new TypeError(this, a, b);
 		}

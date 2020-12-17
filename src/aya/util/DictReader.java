@@ -128,7 +128,7 @@ public class DictReader {
 
 	public NumberList getNumberListEx(long key) {
 		try {
-			return (NumberList)_dict.get(key);
+			return Casting.asNumberList(_dict.get(key));
 		} catch (ClassCastException e) {
 			throw badType(key, "list<num>", _dict.get(key));
 		} catch (UndefVarException e2) {

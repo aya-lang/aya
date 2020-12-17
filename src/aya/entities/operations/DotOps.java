@@ -10,6 +10,9 @@ import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 
+import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asDict;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -199,7 +202,7 @@ class OP_Dot_Bang extends OpInstruction {
 		if (o.isa(NUMBER)) {
 			block.push(((Number)o).signnum());
 		} else if (o.isa(NUMBERLIST)) {
-			block.push(((NumberList)o).signnum());
+			block.push(asNumberList(o).signnum());
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
 			try {
@@ -280,11 +283,11 @@ class OP_Dot_Percent extends OpInstruction {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).idivFrom((Number)b) );
+			block.push( asNumberList(a).idivFrom((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).idiv((Number)a) );
+			block.push( asNumberList(b).idiv((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).idiv((NumberList)a) );
+			block.push( asNumberList(b).idiv(asNumberList(b)) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -563,7 +566,7 @@ class OP_Dot_FwdSlash extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).ceil());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).ceil() );
+			block.push( asNumberList(a).ceil() );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1301,7 +1304,7 @@ class OP_Dot_BackSlash extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).floor());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).floor() );
+			block.push( asNumberList(a).floor() );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1328,7 +1331,7 @@ class OP_Dot_Pow extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sqrt());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(((NumberList)n).sqrt());
+			block.push(asNumberList(n).sqrt());
 		} else {
 			throw new TypeError(this, n);
 		}

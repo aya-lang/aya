@@ -430,7 +430,7 @@ public class GenericList extends List {
 
 	@Override
 	public boolean isa(byte type) {
-		return type == Obj.LIST || type == Obj.OBJLIST;
+		return type == Obj.LIST || type == Obj.OBJLIST || (length() == 0 && (type == Obj.NUMBERLIST || type == Obj.NUMBERITEMLIST));
 	}
 
 	@Override

@@ -10,6 +10,10 @@ import static aya.obj.Obj.STR;
 import static aya.obj.Obj.STRLIST;
 import static aya.obj.Obj.SYMBOL;
 
+import static aya.util.Casting.asDict;
+import static aya.util.Casting.asNumber;
+import static aya.util.Casting.asNumberList;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -223,7 +227,7 @@ class OP_Bang extends OpInstruction {
 		} else if(o.isa(Obj.NUMBERLIST)) {
 			//((List)o).reverse();
 			//block.push(o);
-			block.push( ((NumberList)o).subFrom(Num.ONE) );
+			block.push( asNumberList(o).subFrom(Num.ONE) );
 		} else if (o.isa(Obj.CHAR)) {
 			block.push(((Char)o).swapCase());
 		} else if (o.isa(DICT)) {
@@ -318,11 +322,11 @@ class OP_Percent extends OpInstruction {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).modFrom((Number)b) );
+			block.push( asNumberList(a).modFrom((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).mod((Number)a) );
+			block.push( asNumberList(b).mod((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).mod((NumberList)a) );
+			block.push( asNumberList(b).mod(asNumberList(a)) );
 		} else if (a.isa(NUMBER) && b.isa(BLOCK)) {
 			int repeats = ((Number)(a)).toInt();
 			Block blk = ((Block)b);
@@ -396,11 +400,11 @@ class OP_Times extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).mul((Number)b) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).mul((Number)b) );
+			block.push( asNumberList(a).mul((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).mul((Number)a) );
+			block.push( asNumberList(b).mul(asNumber(a)) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).mul((NumberList)b) );
+			block.push( asNumberList(a).mul(asNumberList(b)) );
 		} else if ((a.isa(STR) || a.isa(CHAR)) && b.isa(LIST)) {
 			StringBuilder sb = new StringBuilder();
 			List la = (List)b;
@@ -442,11 +446,11 @@ class OP_Plus extends OpInstruction {
 			//Must reverse order
 			block.push(new Str(b.str() + a.str()));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).add((Number)b) );
+			block.push( asNumberList(a).add((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).add((Number)a) );
+			block.push( asNumberList(b).add((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).add((NumberList)b) );
+			block.push( asNumberList(a).add(asNumberList(b)) );
 		} else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
 			block.push( ((Char)b).add((Number)a) );
 		} else if (a.isa(CHAR) && b.isa(NUMBER)) {
@@ -485,11 +489,11 @@ class OP_Minus extends OpInstruction {
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
 			block.push( ((Char)a).sub((Char)b) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).sub((Number)b) );
+			block.push( asNumberList(a).sub((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).subFrom((Number)a) );
+			block.push( asNumberList(b).subFrom((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)a).sub((NumberList)b) );
+			block.push( asNumberList(a).sub(asNumberList(b)) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -517,11 +521,11 @@ class OP_Divide extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)b).div((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).divFrom((Number)b) );
+			block.push( asNumberList(a).divFrom((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).div((Number)a) );
+			block.push( asNumberList(b).div((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).div((NumberList)a) );
+			block.push( asNumberList(b).div(asNumberList(a)) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -567,11 +571,11 @@ class OP_LessThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) < 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).gt((Number)a) ); // gt is opposite of lt
+			block.push( asNumberList(b).gt((Number)a) ); // gt is opposite of lt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( ((NumberList)a).lt((Number)b) ); 
+			block.push( asNumberList(a).lt((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( ((NumberList)a).lt((NumberList)b) ); 
+			block.push( asNumberList(a).lt(asNumberList(b)) ); 
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -640,11 +644,11 @@ class OP_GreaterThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) > 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).lt((Number)a) ); // lt is opposite of gt
+			block.push( asNumberList(b).lt((Number)a) ); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( ((NumberList)a).gt((Number)b) ); 
+			block.push( asNumberList(a).gt((Number)b) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( ((NumberList)a).gt((NumberList)b) ); 
+			block.push( asNumberList(a).gt(asNumberList(b)) ); 
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -997,7 +1001,7 @@ class OP_H extends OpInstruction {
 				//Assume base 2
 				else if (num.isa(NUMBERLIST)) {
 					if (from_base == 2) {
-						NumberList bin_list = ((NumberList)num);
+						NumberList bin_list = asNumberList(num);
 						StringBuilder sb = new StringBuilder(bin_list.length());
 		
 							for (int i = 0; i < bin_list.length(); i++) {
@@ -1012,7 +1016,7 @@ class OP_H extends OpInstruction {
 							}
 						out_bi = new BigInteger(sb.toString(), 2);
 					} else if (from_base == 0) {
-						NumberList nums = ((NumberList)num);
+						NumberList nums = asNumberList(num);
 						byte[] in_bytes = new byte[nums.length()];
 						for (int i = 0; i < nums.length(); i++) {
 							int c = nums.get(i).toInt();
@@ -1203,15 +1207,15 @@ class OP_L extends OpInstruction {
 		
 		else if (n.isa(NUMBERLIST)) {
 			if (item.isa(LIST)) {
-				block.push( List.reshape((List)item, (NumberList)n) );
+				block.push( List.reshape((List)item, asNumberList(n)) );
 			} else {
 				List l = new GenericList(item, 1).promote();
-				block.push( List.reshape(l, (NumberList)n) );
+				block.push( List.reshape(l, asNumberList(n)) );
 			}
 		}
 		
 		else if (n.isa(NUMBERLIST) && item.isa(LIST)) {
-			block.push( List.reshape((List)item, (NumberList)n) );
+			block.push( List.reshape((List)item, asNumberList(n)) );
 		}
 		
 		else {
@@ -1429,7 +1433,7 @@ class OP_S extends OpInstruction {
 				block.push(Char.valueOf(total));
 			}
 			else if(l.isa(NUMBERLIST)) {
-				block.push( ((NumberList)l).sum() );
+				block.push( asNumberList(l).sum() );
 			} 
 			
 			else if(l.isa(STRLIST)) {
@@ -1482,7 +1486,7 @@ class OP_T extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).negate());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push(((NumberList)a).negate());
+			block.push(asNumberList(a).negate());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1715,11 +1719,11 @@ class OP_Caret extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push(Num.fromInt( ((Str)a).levDist((Str)b) ));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( ((NumberList)a).powFrom((Number)b) );
+			block.push( asNumberList(a).powFrom((Number)b) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).pow((Number)a) );
+			block.push( asNumberList(b).pow((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( ((NumberList)b).pow((NumberList)a) );
+			block.push( asNumberList(b).pow(asNumberList(a)) );
 		} else {
 			throw new TypeError(this, a, b);
 		}

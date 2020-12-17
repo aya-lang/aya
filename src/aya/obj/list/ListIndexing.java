@@ -8,6 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
+import aya.util.Casting;
 
 public class ListIndexing {
 
@@ -36,7 +37,7 @@ public class ListIndexing {
 			} else {
 				// Optimization for numberlist
 				if (index.isa(Obj.NUMBERLIST)) {
-					return list.get( ((NumberList)index).toIntArray() );
+					return list.get( Casting.asNumberList(index).toIntArray() );
 				} else  {
 					List index_list = (List)index;
 					ArrayList<Obj> out = new ArrayList<Obj>(index_list.length());
