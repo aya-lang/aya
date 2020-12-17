@@ -1,0 +1,30 @@
+from ::io import ::path
+
+module ::image
+export ::image
+
+class ::image
+
+def image::__init__ {data width height self,
+    data self.:data;
+    width self.:width;
+    height self.:height;
+}
+
+def image::read {filename : img image^ path^,
+    filename path! P :{image.read} :img;
+    img.data img.width img.height image!
+}
+
+def image::__repr__ {self,
+    "(image $(self.width)x$(self.height))"
+}
+
+def image::write {filename self : path^,
+    {,
+        filename path! P:filename;
+        self.width :width;
+        self.height :height;
+        self.data :data;
+    } :{image.write}
+}
