@@ -13,7 +13,7 @@ import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 import aya.variable.VariableSet;
 
 public class BlockHeader extends Instruction {
@@ -42,9 +42,9 @@ public class BlockHeader extends Instruction {
 		}
 
 		public String str() {
-			String s = Variable.decodeLong(var) + (copy ? "$" : "");
+			String s = SymbolEncoder.decodeLong(var) + (copy ? "$" : "");
 			if (this.type != TYPE_ANY) {
-				s += "::" + Variable.decodeLong(type);
+				s += "::" + SymbolEncoder.decodeLong(type);
 			}
 			return s;
 		}
@@ -161,11 +161,11 @@ public class BlockHeader extends Instruction {
 		return toStringOrRepr(visited, null);
 	}
 	
-	public String repr(ArrayList<Variable> captures) {
+	public String repr(ArrayList<Symbol> captures) {
 		return toStringOrRepr(new LinkedList<Long>(), captures);
 	}
 
-	private String toStringOrRepr(LinkedList<Long> visited, ArrayList<Variable> captures) {
+	private String toStringOrRepr(LinkedList<Long> visited, ArrayList<Symbol> captures) {
 		StringBuilder sb = new StringBuilder("");
 		
 		for (int i = _args.size()-1; i >= 0; i--) {
@@ -180,13 +180,13 @@ public class BlockHeader extends Instruction {
 		sb.append(_vars.headerStr());
 		
 		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
-			sb.append(Variable.decodeLong(d.getKey()));
+			sb.append(SymbolEncoder.decodeLong(d.getKey()));
 			//sb.append("(").append(d.getValue().toString()).append(") ");
 			sb.append("(..)");
 		}
 	
 		if (captures != null) {
-			for (Variable v : captures) {
+			for (Symbol v : captures) {
 				sb.append(v.name() + "^ ");
 			}
 		}

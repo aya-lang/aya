@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import aya.obj.Obj;
+import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.util.Pair;
 
 public class VariableSet {
@@ -15,7 +17,7 @@ public class VariableSet {
 	private boolean captureAllAssignments;
 
 	
-	public VariableSet(Variable[] argNames, long[] argTypes, LinkedList<Long> copyOnInit) {
+	public VariableSet(Symbol[] argNames, long[] argTypes, LinkedList<Long> copyOnInit) {
 		this.vars = new HashMap<Long, Obj>();
 		this.captureAllAssignments = false;
 	}
@@ -34,12 +36,12 @@ public class VariableSet {
 		return vars.size();
 	}
 	
-	public void setVar(Variable v, Obj o) {
-		vars.put(v.getID(),o);
+	public void setVar(Symbol s, Obj o) {
+		vars.put(s.id(),o);
 	}
 	
-	public void unsetVar(Variable v) {
-		vars.remove(v.getID());
+	public void unsetVar(Symbol s) {
+		vars.remove(s.id());
 	}
 	
 	
@@ -51,8 +53,8 @@ public class VariableSet {
 		return vars.get(id);
 	}
 	
-	public Obj getObj(Variable v) {
-		return vars.get(v.getID());
+	public Obj getObj(Symbol s) {
+		return vars.get(s.id());
 	}
 	
 	public HashMap<Long, Obj> getMap() {
@@ -60,8 +62,8 @@ public class VariableSet {
 	}
 	
 	/** Returns true if this set contains a definition for the variable v */
-	public boolean hasVar(Variable v) {
-		return vars.containsKey(v.getID());
+	public boolean hasVar(Symbol s) {
+		return vars.containsKey(s.id());
 	}
 	
 	/** Returns true if this set contains a definition for the variable v */
@@ -84,7 +86,7 @@ public class VariableSet {
 		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
-			sb.append(Variable.decodeLong(pair.getKey()));
+			sb.append(SymbolEncoder.decodeLong(pair.getKey()));
 
 			boolean print = true;
 			if (pair.getValue().isa(Obj.NUM)) {
@@ -140,12 +142,12 @@ public class VariableSet {
 	}
 
 	/** Return all variables as a list of pairs */
-	public ArrayList<Pair<Variable, Obj>> getAllVars() {
-		ArrayList<Pair<Variable,Obj>> out = new ArrayList<Pair<Variable, Obj>>();
+	public ArrayList<Pair<Symbol, Obj>> getAllVars() {
+		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
 		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 	    while (it.hasNext()) {
 	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
-	    	out.add(new Pair<Variable, Obj>(new Variable(pair.getKey()), pair.getValue()));
+	    	out.add(new Pair<Symbol, Obj>(Symbol.fromID(pair.getKey()), pair.getValue()));
 	    }
 	    return out;
 	}

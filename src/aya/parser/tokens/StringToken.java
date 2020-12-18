@@ -9,9 +9,9 @@ import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.block.Block;
 import aya.obj.list.Str;
+import aya.obj.symbol.SymbolEncoder;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.variable.Variable;
 
 public class StringToken extends StdToken {
 		
@@ -53,9 +53,9 @@ public class StringToken extends StdToken {
 				c = in.next();
 				
 				//Normal Var
-				if (Variable.isValidChar(c)) {
+				if (SymbolEncoder.isValidChar(c)) {
 					String var_name = ""+c;
-					while (in.hasNext() && Variable.isValidChar(in.peek())) {
+					while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
 						var_name += in.next();
 					}
 					
@@ -64,7 +64,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new GetVariableInstruction(Variable.encodeString(var_name)));
+					instrs.insert(0, new GetVariableInstruction(SymbolEncoder.encodeString(var_name)));
 					
 				}
 				

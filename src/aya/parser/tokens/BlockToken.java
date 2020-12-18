@@ -17,7 +17,7 @@ import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
-import aya.variable.Variable;
+import aya.obj.symbol.Symbol;
 
 public class BlockToken extends CollectionToken {
 	
@@ -77,9 +77,9 @@ public class BlockToken extends CollectionToken {
 					Block b = new Block();
 					b.add(PopVarFlagInstruction.INSTANCE);
 					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-					Pair<BlockHeader, ArrayList<Variable>> p = generateBlockHeader(blockData.get(0));
+					Pair<BlockHeader, ArrayList<Symbol>> p = generateBlockHeader(blockData.get(0));
 					BlockHeader block_header = p.first();
-					ArrayList<Variable> captures = p.second();
+					ArrayList<Symbol> captures = p.second();
 					b.add(block_header);
 					return new BlockLiteralInstruction(b, captures);
 				}
@@ -222,18 +222,18 @@ public class BlockToken extends CollectionToken {
 		return false;
 	}
 	
-	private Pair<BlockHeader, ArrayList<Variable>> generateBlockHeader(TokenQueue tokens) {
+	private Pair<BlockHeader, ArrayList<Symbol>> generateBlockHeader(TokenQueue tokens) {
 		BlockHeader header = new BlockHeader();
 		
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
 		TokenQueue default_tokens = split_tokens.second();
-		ArrayList<Variable> captures = new ArrayList<Variable>();
+		ArrayList<Symbol> captures = new ArrayList<Symbol>();
 	
 		generateBlockHeaderArgs(header, arg_tokens);
 		generateBlockHeaderDefaults(header, default_tokens, captures);
 		
-		return new Pair<BlockHeader, ArrayList<Variable>>(header, captures);
+		return new Pair<BlockHeader, ArrayList<Symbol>>(header, captures);
 	}
 	
 	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) {
@@ -242,7 +242,7 @@ public class BlockToken extends CollectionToken {
 			Token current = tokens.next();
 			if (current.isa(Token.VAR)) {
 				VarToken var = (VarToken)current;
-				BlockHeader.Arg arg = new BlockHeader.Arg(var.getID());
+				BlockHeader.Arg arg = new BlockHeader.Arg(var.id());
 				
 				// Copy?
 				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
@@ -266,21 +266,21 @@ public class BlockToken extends CollectionToken {
 	
 	/** Assumes args have already been set 
 	 * @param captures */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Variable> captures) {
+	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Symbol> captures) {
 		String orig = tokens.toString();
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
 			if (current.isa(VAR)) {
 				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					header.addDefault(var.getID(), Num.ZERO);
+					header.addDefault(var.id(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					header.addDefault(var.getID(), lambda.generateInstructionsForFirst());
+					header.addDefault(var.id(), lambda.generateInstructionsForFirst());
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
-						captures.add(new Variable(var.getID()));
+						captures.add(Symbol.fromID(var.id()));
 					} else {
 						generateBlockHeaderDefaultsError(orig);
 					}
@@ -353,7 +353,7 @@ public class BlockToken extends CollectionToken {
 			for (int i = 0; i < args.length; i++) {
 				final Token t = tokens.get(i);
 				final GetVariableInstruction v = (GetVariableInstruction)(t.getInstruction());
-				args[i] = new Variable(v.getID());
+				args[i] = Symbol.fromID(v.id());
 			}
 			return new VariableSet(args,  null, null);
 		} 
@@ -383,7 +383,7 @@ public class BlockToken extends CollectionToken {
 			}
 			
 			//Initialize local variables in the set
-			Variable last = null;
+			Symbol last = null;
 			for (Token t : tokens) {
 
 				if (t.isa(Token.LAMBDA) && last != null) {
@@ -400,7 +400,7 @@ public class BlockToken extends CollectionToken {
 					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
 							+ " initializers. Received:\n" + t.data);
 				} else {
-					last = new Variable(t.getData());
+					last = Symbol.fromStr(t.getData());
 					args.setVar(last, DEFAULT_LOCAL_VAR);
 					// Note: Variables without an explicit item will not be added to the copyOnInit list
 				}
@@ -410,20 +410,20 @@ public class BlockToken extends CollectionToken {
 		
 		//Things other than vars exist, check if they are type assertions
 		else {
-			ArrayList<Variable> argNames = new ArrayList<Variable>();
+			ArrayList<Symbol> argNames = new ArrayList<Symbol>();
 			ArrayList<Long> argTypes = new ArrayList<Long>();
 			for (int i = 0; i < tokens.size(); i++) {
 				if (tokens.get(i).getType() == Token.VAR) {
 					if (i+1 > tokens.size()-1) {
-						argNames.add(new Variable(tokens.get(i).getData()));
+						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
 						argTypes.add(Obj.SYM_ANY.id());
 					} else if (tokens.get(i+1).getType() == Token.SYMBOL) {
-						argNames.add(new Variable(tokens.get(i).getData()));
+						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
 						Symbol s = Symbol.fromStr(tokens.get(i+1).getData());
 						argTypes.add(s.id());
 						i++; //Skip the symbol on the next iteration
 					} else if (tokens.get(i).getType() == Token.VAR) {
-						argNames.add(new Variable(tokens.get(i).getData()));
+						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
 						argTypes.add(Obj.SYM_ANY.id());
 					} else {
 						//Should always be a VAR or an SYMBOL

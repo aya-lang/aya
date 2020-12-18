@@ -20,8 +20,8 @@ import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.util.Pair;
-import aya.variable.Variable;
 
 public class JSONUtils {
 	
@@ -131,7 +131,7 @@ public class JSONUtils {
 			String str = (String)object;
 			if (params.parse_symbol && str.startsWith("::")) {
 				String name = str.substring(2);
-				if (Variable.isValidStr(name)) {
+				if (SymbolEncoder.isValidStr(name)) {
 					return Symbol.fromStr(name);
 				} else {
 					return new Str(str);

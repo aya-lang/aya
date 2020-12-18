@@ -3,7 +3,6 @@ package aya.obj.symbol;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.util.LRUCache;
-import aya.variable.Variable;
 
 public class Symbol extends Obj {
 	
@@ -13,7 +12,7 @@ public class Symbol extends Obj {
 
 	
 	private Symbol(String name) {
-		_id = Variable.encodeString(name);
+		_id = SymbolEncoder.encodeString(name);
 	}
 	
 	private Symbol(long id) {
@@ -29,7 +28,7 @@ public class Symbol extends Obj {
 		String sym = "";
 		
 		for (char c : str.toCharArray()) {
-			if (Variable.isValidChar(c)) {
+			if (SymbolEncoder.isValidChar(c)) {
 				sym += c;
 			} else if (c >= 'A' && c <= 'Z') {
 				sym += Character.toLowerCase(c); // Make lowercase
@@ -52,13 +51,13 @@ public class Symbol extends Obj {
 	
 	/** Convert a symbol string to a symbol */
 	public static Symbol fromStr(String data) {
-		long id = Variable.encodeString(data);
+		long id = SymbolEncoder.encodeString(data);
 		return fromID(id);
 		
 	}	
 	
 	public String name() {
-		return Variable.decodeLong(_id);
+		return SymbolEncoder.decodeLong(_id);
 	}
 	
 	
@@ -86,12 +85,12 @@ public class Symbol extends Obj {
 
 	@Override
 	public String repr() {
-		return "::" + Variable.decodeLong(_id);
+		return "::" + SymbolEncoder.decodeLong(_id);
 	}
 
 	@Override
 	public String str() {
-		return "::" + Variable.decodeLong(_id);
+		return "::" + SymbolEncoder.decodeLong(_id);
 	}
 
 	@Override

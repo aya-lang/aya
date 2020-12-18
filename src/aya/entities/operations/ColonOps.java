@@ -9,7 +9,6 @@ import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 
@@ -37,10 +36,10 @@ import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.util.DictReader;
 import aya.util.Triple;
 import aya.variable.EncodedVars;
-import aya.variable.Variable;
 
 
 public class ColonOps {	
@@ -152,7 +151,7 @@ public class ColonOps {
 	public static boolean isColonOpChar(char c) {
 		//A char is a colonOp if it is not a lowercase letter or a '('
 		return (c >= '!' && c <= '~') 		 //Char bounds
-				&& !Variable.isValidChar(c)  //Not variable char
+				&& !SymbolEncoder.isValidChar(c)  //Not variable char
 				&& !isDigit(c) 		         //Not digit
 				&& c != '(' && c != ' ' && c != '-'; //Special cases
 	}
@@ -410,8 +409,8 @@ class OP_Colon_Equals extends OpInstruction {
 			Aya.getInstance().getVars().setVar(((Symbol)sym).id(), obj);
 		} else if (sym.isa(CHAR) || sym.isa(STR)) {
 			String s = sym.str();
-			if (Variable.isValidStr(s)) {
-				Aya.getInstance().getVars().setVar(Variable.encodeString(s), obj);
+			if (SymbolEncoder.isValidStr(s)) {
+				Aya.getInstance().getVars().setVar(SymbolEncoder.encodeString(s), obj);
 			} else {
 				throw new AyaRuntimeException(":= Invalid identifier: '" + s + "'");
 			}
@@ -799,7 +798,7 @@ class OP_Colon_S extends OpInstruction {
 		if (instructions.size() == 1) {
 			Instruction i = instructions.get(0);
 			if (i instanceof VariableInstruction) {
-				out.add(Symbol.fromID(((VariableInstruction)i).getID()));
+				out.add(Symbol.fromID(((VariableInstruction)i).id()));
 			} else if (i instanceof OpInstruction) {
 				OpInstruction op = (OpInstruction)i;
 				if (op.overload() != null) {
@@ -821,7 +820,7 @@ class OP_Colon_T extends OpInstruction {
 		arg("A", "type of (returns a symbol)");
 	}
 	
-	private static final long TYPE_ID = Variable.encodeString("__type__");
+	private static final long TYPE_ID = SymbolEncoder.encodeString("__type__");
 	
 	@Override
 	public void execute(Block block) {

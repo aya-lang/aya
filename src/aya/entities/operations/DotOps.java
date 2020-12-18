@@ -9,9 +9,8 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-
-import static aya.util.Casting.asNumberList;
 import static aya.util.Casting.asDict;
+import static aya.util.Casting.asNumberList;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,11 +46,11 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.variable.EncodedVars;
-import aya.variable.Variable;
 import aya.variable.VariableSet;
 
 public class DotOps {
@@ -1299,9 +1298,9 @@ class OP_Dot_Pow extends OpInstruction {
 class OP_Dot_Bar extends OpInstruction {
 
 	
-	public static final long ARGS = Variable.encodeString("args");
-	public static final long ARGTYPES = Variable.encodeString("argtypes");
-	public static final long LOCALS = Variable.encodeString("locals");
+	public static final long ARGS = SymbolEncoder.encodeString("args");
+	public static final long ARGTYPES = SymbolEncoder.encodeString("argtypes");
+	public static final long LOCALS = SymbolEncoder.encodeString("locals");
 
 	public OP_Dot_Bar() {
 		init(".|");
@@ -1377,7 +1376,7 @@ class OP_Dot_Tilde extends OpInstruction {
 				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
 
-			Obj e = Aya.getInstance().getVars().getVar(Variable.encodeString(varname));
+			Obj e = Aya.getInstance().getVars().getVar(SymbolEncoder.encodeString(varname));
 			if (!e.isa(BLOCK)) {
 				Block b = new Block();
 				b.add(e);

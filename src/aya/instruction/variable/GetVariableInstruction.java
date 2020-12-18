@@ -6,7 +6,7 @@ import aya.Aya;
 import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class GetVariableInstruction extends VariableInstruction {
 
@@ -37,6 +37,6 @@ public class GetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return Variable.decodeLong(variable_);
+		return SymbolEncoder.decodeLong(variable_);
 	}
 }

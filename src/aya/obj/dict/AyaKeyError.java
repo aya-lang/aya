@@ -3,16 +3,12 @@ package aya.obj.dict;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 @SuppressWarnings("serial")
 public class AyaKeyError extends AyaRuntimeException {
 
 	public AyaKeyError(Dict dict, Symbol key) {
-		super("Unable to access dict at key ::" + key.name() + ":\n" + dict.repr());
-	}
-
-	public AyaKeyError(Dict dict, Variable key) {
 		super("Unable to access dict at key '" + key.name() + "':\n" + dict.repr());
 	}
 
@@ -21,7 +17,7 @@ public class AyaKeyError extends AyaRuntimeException {
 	}
 
 	public AyaKeyError(Dict dict, Long key) {
-		super("Unable to access dict at key '" + Variable.decodeLong(key) + "':\n" + dict.repr());
+		super("Unable to access dict at key '" + SymbolEncoder.decodeLong(key) + "':\n" + dict.repr());
 	}
 	
 	public AyaKeyError(Dict dict, Obj key, boolean invalid_type) {

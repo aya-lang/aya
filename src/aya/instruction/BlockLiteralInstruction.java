@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import aya.Aya;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
-import aya.variable.Variable;
+import aya.obj.symbol.Symbol;
 import aya.variable.VariableData;
 
 /** DictFactories sit on the instruction stack. When evoked, they generate a dict
@@ -17,10 +17,10 @@ import aya.variable.VariableData;
 public class BlockLiteralInstruction extends Instruction {
 	
 	Block _block;
-	ArrayList<Variable> _captures;
+	ArrayList<Symbol> _captures;
 	boolean _auto_eval;
 	
-	public BlockLiteralInstruction(Block b, ArrayList<Variable> captures) {
+	public BlockLiteralInstruction(Block b, ArrayList<Symbol> captures) {
 		if (captures.size() == 0) captures = null;
 		_block = b;
 		_captures = captures;
@@ -52,8 +52,8 @@ public class BlockLiteralInstruction extends Instruction {
 			b.getInstructions().replaceHeader(bh);
 
 			VariableData vars = Aya.getInstance().getVars();
-			for (Variable v : _captures) {
-				bh.addDefault(v.getID(), vars.getVar(v.getID()));
+			for (Symbol v : _captures) {
+				bh.addDefault(v.id(), vars.getVar(v.id()));
 			}
 			
 			return b;

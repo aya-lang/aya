@@ -11,7 +11,7 @@ import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.BlockHeader;
-import aya.variable.Variable;
+import aya.obj.symbol.Symbol;
 
 /**
  *  Used by the aya.Block class to hold and manage instructions
@@ -127,7 +127,7 @@ public class InstructionStack {
 	}
 
 	/** Called from a block literal instruction */
-	public String toStringWithCaptures(ArrayList<Variable> _captures) {
+	public String toStringWithCaptures(ArrayList<Symbol> _captures) {
 		if (instructions.size() == 0) return "";
 
 		StringBuilder sb = new StringBuilder("");
@@ -172,7 +172,7 @@ public class InstructionStack {
 	public void assignVarValue(long varid, Obj item) {
 		for (int i = 0; i < instructions.size(); i++) {
 			final Instruction o = instructions.get(i);
-			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getID() == varid) {
+			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).id() == varid) {
 				instructions.set(i, new DataInstruction(item));
 			}
 		}

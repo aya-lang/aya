@@ -6,12 +6,11 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
 
 public class OpOverload2Arg extends OpOverload {
 	
-	private Variable _var;
-	private Variable _rvar;
+	private Symbol _var;
+	private Symbol _rvar;
 
 	public OpOverload2Arg(String name) {
 		_name = name;
@@ -20,8 +19,8 @@ public class OpOverload2Arg extends OpOverload {
 			throw new IllegalArgumentException();
 		}
 		
-		_var  =  new Variable("__"  + name + "__");
-		_rvar =  new Variable("__r" + name + "__");
+		_var  =  Symbol.fromStr("__"  + name + "__");
+		_rvar =  Symbol.fromStr("__r" + name + "__");
 	}
 
 	public ArrayList<String> getNames() {
@@ -33,8 +32,8 @@ public class OpOverload2Arg extends OpOverload {
 
 	public ArrayList<Symbol> getSymbols() {
 		ArrayList<Symbol> out = new ArrayList<Symbol>();
-		out.add(Symbol.fromID(_var.getID()));
-		out.add(Symbol.fromID(_rvar.getID()));
+		out.add(Symbol.fromID(_var.id()));
+		out.add(Symbol.fromID(_rvar.id()));
 		return out;
 	}
 	

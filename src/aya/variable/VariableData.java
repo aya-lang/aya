@@ -1,23 +1,22 @@
 package aya.variable;
 
+import static aya.util.Casting.asDict;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import static aya.util.Casting.asDict;
-
 import aya.Aya;
 import aya.InteractiveAya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.parser.Parser;
 
 /**
@@ -64,14 +63,14 @@ public class VariableData {
 	public void initGlobals(Aya aya) {
 		VariableSet globals = new VariableSet(null, null, null);
 		
-		globals.setVar(new Variable("import"), Parser.compile("`(\".aya\"+G~)", aya));
-		globals.setVar(new Variable("version"), new Str(Aya.VERSION_NAME));
-		globals.setVar(new Variable("help"), new Str(InteractiveAya.HELP_TEXT));
+		globals.setVar(Symbol.fromStr("import"), Parser.compile("`(\".aya\"+G~)", aya));
+		globals.setVar(Symbol.fromStr("version"), new Str(Aya.VERSION_NAME));
+		globals.setVar(Symbol.fromStr("help"), new Str(InteractiveAya.HELP_TEXT));
 
-		globals.setVar(new Variable("e"), Num.E);				
-		globals.setVar(new Variable("pi"), Num.PI);
+		globals.setVar(Symbol.fromStr("e"), Num.E);				
+		globals.setVar(Symbol.fromStr("pi"), Num.PI);
 		
-		long meta = Variable.encodeString("__meta__");
+		long meta = SymbolEncoder.encodeString("__meta__");
 		OBJ_CHAR.set(meta,  OBJ_CHAR);
 		OBJ_SYM.set(meta,  OBJ_SYM);
 		OBJ_BLOCK.set(meta,  OBJ_BLOCK);
@@ -87,7 +86,7 @@ public class VariableData {
 		BUILTINS.set(Obj.SYM_STR.id(),   OBJ_STR);
 		
 		initNil(aya);
-		globals.setVar(Variable.encodeString("nil"), OBJ_NIL);
+		globals.setVar(SymbolEncoder.encodeString("nil"), OBJ_NIL);
 
 		varSets.add(globals);
 	}
@@ -111,7 +110,7 @@ public class VariableData {
 		Iterator<Map.Entry<Long, Obj>> entries = varSets.get(0).getMap().entrySet().iterator();
 		while (entries.hasNext()) {
 		  Entry<Long, Obj> thisEntry = (Entry<Long, Obj>) entries.next();
-		  out.add(Variable.decodeLong(thisEntry.getKey()) + " = " + thisEntry.getValue().repr() + "\n(default variable)");
+		  out.add(SymbolEncoder.decodeLong(thisEntry.getKey()) + " = " + thisEntry.getValue().repr() + "\n(default variable)");
 		}
 		return out;
 	}
@@ -123,7 +122,7 @@ public class VariableData {
 		}
 	}
 	
-	public void setGlobalVar(Variable v, Obj o) {
+	public void setGlobalVar(Symbol v, Obj o) {
 		varSets.get(0).setVar(v, o);
 	}
 	
@@ -161,8 +160,8 @@ public class VariableData {
 		return varSets.remove(varSets.size()-1);
 	}
 	
-	public void setVar(Variable v, Obj o) {
-		setVar(v.getID(), o);
+	public void setVar(Symbol v, Obj o) {
+		setVar(v.id(), o);
 	}
 	
 	public void setVar(long v, Obj o) {
@@ -182,14 +181,14 @@ public class VariableData {
 		setGlobalVar(v, o);
 	}
 	
-	public Obj getVar(Variable v) {
-		return getVar(v.getID());
+	public Obj getVar(Symbol v) {
+		return getVar(v.id());
 	}
 	
 	public Obj getVar(long id) {
 		Obj res = getVarOrNull(id);
 		if (res == null) {
-			throw new AyaRuntimeException("Variable " + Variable.decodeLong(id) + " not found");
+			throw new AyaRuntimeException("Variable " + SymbolEncoder.decodeLong(id) + " not found");
 		} else {
 			return res;
 		}

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import aya.Aya;
 import aya.obj.Obj;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class GetVarIndexInstruction extends GetIndexInstruction {
 	
@@ -21,6 +21,6 @@ public class GetVarIndexInstruction extends GetIndexInstruction {
 
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return ".[" + Variable.decodeLong(_var) + "]";
+		return ".[" + SymbolEncoder.decodeLong(_var) + "]";
 	}
 }

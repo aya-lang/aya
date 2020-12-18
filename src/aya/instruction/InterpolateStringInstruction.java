@@ -31,7 +31,7 @@ public class InterpolateStringInstruction extends Instruction  {
 			
 			if (current instanceof GetVariableInstruction) {
 				GetVariableInstruction var = (GetVariableInstruction)current;
-				sb.append(Aya.getInstance().getVars().getVar(var.getID()).str());
+				sb.append(Aya.getInstance().getVars().getVar(var.id()).str());
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {

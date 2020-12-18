@@ -9,7 +9,6 @@ import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.STRLIST;
 import static aya.obj.Obj.SYMBOL;
-
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
@@ -55,11 +54,11 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolEncoder;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.FileUtils;
 import aya.util.Pair;
-import aya.variable.Variable;
 
 public class Ops {
 	
@@ -71,25 +70,25 @@ public class Ops {
 	// OPERATOR OVERLOADS //
 	////////////////////////
 
-	public static final Variable KEYVAR_EQ	= new Variable("__eq__");
+	public static final Symbol KEYVAR_EQ	= Symbol.fromStr("__eq__");
 	
 	// List
-	public static final Variable KEYVAR_GETINDEX = new Variable("__getindex__");
-	public static final Variable KEYVAR_SETINDEX = new Variable("__setindex__");
-	public static final Variable KEYVAR_HEAD = new Variable("__head__");
-	public static final Variable KEYVAR_TAIL = new Variable("__tail__");
-	public static final Variable KEYVAR_MAP = new Variable("__map__");
-	public static final Variable KEYVAR_LEN = new Variable("__len__");
+	public static final Symbol KEYVAR_GETINDEX = Symbol.fromStr("__getindex__");
+	public static final Symbol KEYVAR_SETINDEX = Symbol.fromStr("__setindex__");
+	public static final Symbol KEYVAR_HEAD = Symbol.fromStr("__head__");
+	public static final Symbol KEYVAR_TAIL = Symbol.fromStr("__tail__");
+	public static final Symbol KEYVAR_MAP = Symbol.fromStr("__map__");
+	public static final Symbol KEYVAR_LEN = Symbol.fromStr("__len__");
 	
 	// Misc.
-	public static final Variable KEYVAR_OR		= new Variable("__or__");
-	public static final Variable KEYVAR_ROR		= new Variable("__ror__");
-	public static final Variable KEYVAR_NEW 	= new Variable("__new__");
-	public static final Variable KEYVAR_FLOAT 	= new Variable("__float__");
-	public static final Variable KEYVAR_EACH 	= new Variable("__each__");
-	public static final Variable KEYVAR_STR 	= new Variable("__str__");
-	public static final Variable KEYVAR_REPR 	= new Variable("__repr__");
-	public static final Variable KEYVAR_BOOL    = new Variable("__bool__");
+	public static final Symbol KEYVAR_OR		= Symbol.fromStr("__or__");
+	public static final Symbol KEYVAR_ROR		= Symbol.fromStr("__ror__");
+	public static final Symbol KEYVAR_NEW 	= Symbol.fromStr("__new__");
+	public static final Symbol KEYVAR_FLOAT 	= Symbol.fromStr("__float__");
+	public static final Symbol KEYVAR_EACH 	= Symbol.fromStr("__each__");
+	public static final Symbol KEYVAR_STR 	= Symbol.fromStr("__str__");
+	public static final Symbol KEYVAR_REPR 	= Symbol.fromStr("__repr__");
+	public static final Symbol KEYVAR_BOOL    = Symbol.fromStr("__bool__");
 	
 	
 	public static final char FIRST_OP = '!';
@@ -1628,7 +1627,7 @@ class OP_X extends OpInstruction {
 		arg("A", "assign to variable x and pop from stack");
 	}
 	
-	private static final long X = Variable.encodeString("x");
+	private static final long X = SymbolEncoder.encodeString("x");
 
 	@Override
 	public void execute (final Block block) {
@@ -1644,7 +1643,7 @@ class OP_Y extends OpInstruction {
 		arg("A", "assign to variable y and leave on stack");
 	}
 	
-	private static final long Y = Variable.encodeString("y");
+	private static final long Y = SymbolEncoder.encodeString("y");
 	
 	@Override
 	public void execute (final Block block) {
@@ -1795,7 +1794,7 @@ class OP_Tilde extends OpInstruction {
 				if(varname == null) {
 					throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 				}
-				block.add(new GetVariableInstruction(Variable.encodeString(varname)));
+				block.add(new GetVariableInstruction(SymbolEncoder.encodeString(varname)));
 			}
 		} else if (a.isa(LIST)) {
 			List list = (List)a;

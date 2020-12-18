@@ -10,14 +10,14 @@ import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class DictReader {
 	
-	private final long R = Variable.encodeString("r");
-	private final long G = Variable.encodeString("g");
-	private final long B = Variable.encodeString("b");
-	private final long A = Variable.encodeString("a");
+	private final long R = SymbolEncoder.encodeString("r");
+	private final long G = SymbolEncoder.encodeString("g");
+	private final long B = SymbolEncoder.encodeString("b");
+	private final long A = SymbolEncoder.encodeString("a");
 	
 	private Dict _dict;
 	private String _err_name;
@@ -37,12 +37,12 @@ public class DictReader {
 	}
 	
 	public AyaRuntimeException notFound(long key) throws AyaRuntimeException {
-		String key_name = Variable.decodeLong(key);
+		String key_name = SymbolEncoder.decodeLong(key);
 		return new AyaRuntimeException(_err_name + ": Key '" + key_name + "' does not exist");
 	}
 	
 	public AyaRuntimeException badType(long key, String type_expected, Obj got) throws AyaRuntimeException {
-		String key_name = Variable.decodeLong(key);
+		String key_name = SymbolEncoder.decodeLong(key);
 		return new AyaRuntimeException(_err_name + ": Expected type ::" + type_expected +" for key '" + key_name + "' but got " + got.repr());
 	}
 	

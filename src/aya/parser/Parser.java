@@ -31,6 +31,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Number;
+import aya.obj.symbol.SymbolEncoder;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
@@ -48,7 +49,6 @@ import aya.parser.tokens.SymbolToken;
 import aya.parser.tokens.TickToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
-import aya.variable.Variable;
 
 /**
  * 0. Input String 1. tokenize: Converts characters and character sets to tokens
@@ -162,9 +162,9 @@ public class Parser {
 					}
 
 					// Key Variable
-					else if (Variable.isValidChar(in.peek())) {
+					else if (SymbolEncoder.isValidChar(in.peek())) {
 						String varname = "" + in.next();
-						while (in.hasNext() && Variable.isValidChar(in.peek())) {
+						while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
 							varname += in.next();
 						}
 						tokens.add(new KeyVarToken(varname));
@@ -371,9 +371,9 @@ public class Parser {
 			}
 
 			// Variable Name
-			else if (Variable.isValidChar(current)) {
+			else if (SymbolEncoder.isValidChar(current)) {
 				StringBuilder sb = new StringBuilder("" + current);
-				while (in.hasNext() && Variable.isValidChar(in.peek())) {
+				while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
 					sb.append(in.next());
 				}
 				if (sb.length() > 12) {
@@ -396,7 +396,7 @@ public class Parser {
 				if (in.hasNext() && in.peek() == ':') {
 					in.next(); // Move to the next colon
 					String sym = "";
-					while (in.hasNext() && Variable.isValidChar(in.peek())) {
+					while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
 						sym += in.next();
 					}
 
@@ -633,7 +633,7 @@ public class Parser {
 				// Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetVariableInstruction(v.getID()));
+					is.push(new SetVariableInstruction(v.id()));
 				} else {
 					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
 				}
@@ -663,7 +663,7 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getID()));
+							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).id()));
 						} else {
 							is.push(new GetExprIndexInstruction(new Block(lli.getInstructions())));
 						}
@@ -679,7 +679,7 @@ public class Parser {
 				// Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetKeyVariableInstruction(v.getID()));
+					is.push(new SetKeyVariableInstruction(v.id()));
 				}
 
 				// Index assignment
@@ -746,7 +746,7 @@ public class Parser {
 				if (stk.hasNext()) {
 					if (stk.peek().isa(Token.VAR)) {
 						VarToken t = (VarToken) stk.pop();
-						is.push(new QuoteGetVariableInstruction(t.getID()));
+						is.push(new QuoteGetVariableInstruction(t.id()));
 					} else if (stk.peek().isa(Token.KEY_VAR)) {
 						KeyVarToken t = (KeyVarToken) stk.pop();
 						is.push(new QuoteGetKeyVariableInstruction(t.getID()));

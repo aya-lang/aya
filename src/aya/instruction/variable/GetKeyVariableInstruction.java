@@ -8,7 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
 
@@ -16,7 +16,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 		super(id);
 	}
 	
-	private static long META = Variable.encodeString("__meta__");
+	private static long META = SymbolEncoder.encodeString("__meta__");
 	
 	@Override
 	public void execute(Block b) {
@@ -48,6 +48,6 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return "." + Variable.decodeLong(variable_);
+		return "." + SymbolEncoder.decodeLong(variable_);
 	}
 }

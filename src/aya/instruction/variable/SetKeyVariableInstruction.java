@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class SetKeyVariableInstruction extends VariableInstruction {
 
@@ -26,6 +26,6 @@ public class SetKeyVariableInstruction extends VariableInstruction {
 	
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return ".:" + Variable.decodeLong(variable_);
+		return ".:" + SymbolEncoder.decodeLong(variable_);
 	}
 }

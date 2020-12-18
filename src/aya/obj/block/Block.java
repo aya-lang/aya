@@ -18,7 +18,6 @@ import aya.obj.dict.Dict;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
 import aya.variable.VariableSet;
 
 /** 
@@ -278,7 +277,7 @@ public class Block extends Obj {
 	}
 	
 	/** Calls the variable and dumps the result to the stack existing in the input block */
-	public void callVariable(Dict dict, Variable keyVar, Obj... push_first) {
+	public void callVariable(Dict dict, Symbol keyVar, Obj... push_first) {
 		//Push self
 		if (dict.pushSelf()) {
 			stack.push(dict);
@@ -308,7 +307,7 @@ public class Block extends Obj {
 		}
 	}
 
-	public String strWithCaptures(ArrayList<Variable> _captures) {
+	public String strWithCaptures(ArrayList<Symbol> _captures) {
 		return "{" + instructions.toStringWithCaptures(_captures) + "}";
 	}
 	

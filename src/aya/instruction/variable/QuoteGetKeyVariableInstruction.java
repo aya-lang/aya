@@ -9,7 +9,7 @@ import aya.obj.block.Block;
 import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
-import aya.variable.Variable;
+import aya.obj.symbol.SymbolEncoder;
 
 public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
@@ -52,6 +52,6 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 	
 	@Override
 	protected String repr(LinkedList<Long> visited) {
-		return "." + Variable.decodeLong(variable_) + ".`";
+		return "." + SymbolEncoder.decodeLong(variable_) + ".`";
 	}
 }
