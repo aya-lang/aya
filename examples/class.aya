@@ -7,33 +7,33 @@
 class ::point
 
 .# constructor
-impl point::__init__ {x y self,
+def point::__init__ {x y self,
     x self.:x ;
     y self.:y ;
 }
 
 .# print overload
-impl point::__repr__ {self,
+def point::__repr__ {self,
     "($(self.x), $(self.y))"
 }
 
 .# operator overload
-impl point::__add__ {other self,
+def point::__add__ {other self,
     other.x self.x +
     other.y self.y +
-    self Mo !
+    self .M !
 }
 
 .# static class variable
 0 point.:my_value;
 
 .# static class function
-impl_static point::inc_my_value {meta,
+def point::inc_my_value {self : meta(self.M),
     meta.my_value 1 + meta.:my_value ;
 }
 
-impl_static point::get_my_value {meta,
-    meta.my_value
+impl_static point::get_my_value {self,
+    self.M.my_value
 }
 
 .# Plain static function

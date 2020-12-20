@@ -30,6 +30,9 @@
     .#? ::block.haslocals\n  return true if the block has a local variables
     {.|::localsN\;}:haslocals;
 
+    {.|.locals}:locals;
+    {.|.args}:args;
+
     .#? ::block.makelocals\n  if a block has local variables, return the block, otherwise wrap it in a block that has an empty local variable set
     .# aya> {:a, a 1 +}.makelocals
     .# {: a , a 1 + }
@@ -55,11 +58,13 @@
     .# "x is 4"
     .# aya> x
     .# ERROR: Variable x not found
-    {`({code syms::list,
-        syms #:C " " *      .# [::x ::y ::z] -> "x y z"
-        "{:" \ ",__~}"++~     .# {x y z, __~}
-        {, code.`:__} .+    .# {x y z, {...}~ }
-    })}:setlocals;
+    {syms code,
+        {: ,_~} {, code.` :_ } .+ :code;
+        0 syms code.`.locals :D;
+        code .`
+    }:_setlocals;
+
+    {: _setlocals^, _setlocals.` `(\@\~)}:setlocals;
 
 
     .#? ::block .use ::list\n  evaulate the variables (given by a list of symbols) in the block in the current scope

@@ -216,16 +216,19 @@ def importlib::export {vars : importlib^,
 .# Import certain symbols from a module
 def importlib::from {mod_sym import_vars : meta_mod importlib^,
     "$mod_sym $import_vars importlib.from" importlib._log_debug
+    "from: Capturing all imported vars..." importlib._log_debug
     {,
         mod_sym importlib.import
     }:meta_mod;
 
     import_vars :T ::sym = {[import_vars]:import_vars;} ?
 
+    "from: exporting variables..." importlib._log_debug
     import_vars :# {var,
         { .# try
             .# Export the variable from the imported module
             meta_mod.[mod_sym].[var] var := ;
+            "from:   exporting '$var'..." importlib._log_debug
         } {
             { .# try
                 .# The variable was exported into the meta module and
