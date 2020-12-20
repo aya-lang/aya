@@ -25,8 +25,8 @@ public class OpOverload2Arg extends OpOverload {
 
 	public ArrayList<String> getNames() {
 		ArrayList<String> out = new ArrayList<String>();
-		out.add(_var.toString());
-		out.add(_rvar.toString());
+		out.add(_var.name());
+		out.add(_rvar.name());
 		return out;
 	}
 

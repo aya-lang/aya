@@ -23,7 +23,7 @@ public class OpOverload1Arg extends OpOverload {
 	
 	public ArrayList<String> getNames() {
 		ArrayList<String> out = new ArrayList<String>();
-		out.add(_var.toString());
+		out.add(_var.name());
 		return out;
 	}
 	

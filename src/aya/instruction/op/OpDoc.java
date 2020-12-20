@@ -50,14 +50,6 @@ public class OpDoc {
 	}
 	
 	
-	public void ovrld(String... o) {
-		_overload = "";
-		for (String s : o) {
-			_overload += s + "/";
-		}
-		_overload = _overload.substring(0, _overload.length()-1);
-	}
-	
 	public void desc(String type, String desc) {
 		descs.add(new OpDesc(type, desc));
 	}
