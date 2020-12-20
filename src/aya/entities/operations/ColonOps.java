@@ -527,6 +527,16 @@ class OP_Colon_D extends OpInstruction {
 		init(":D");
 		arg("ASD|AJD", "set dict index");
 	}
+	
+	private void set(Dict d, Obj key, Obj value) {
+		if (key.isa(SYMBOL)) {
+			d.set(((Symbol)key).id(), value);
+		} else if (key.isa(STR)) {
+			d.set(key.str(), value);
+		} else {
+			throw new TypeError(this, value, key, d);
+		}
+	}
 
 	@Override
 	public void execute(Block block) {
@@ -534,12 +544,17 @@ class OP_Colon_D extends OpInstruction {
 		final Obj index = block.pop();
 		final Obj item = block.pop();
 
-		if (dict.isa(DICT) && index.isa(SYMBOL)) {
-			((Dict)dict).set(((Symbol)index).id(), item);
-			block.push(dict);
-		} else if (dict.isa(DICT) && index.isa(STR)) {
-			((Dict)dict).set(index.str(), item);
-			block.push(dict);
+		if (dict.isa(DICT)) {
+			Dict d = (Dict)dict;
+			if (index.isa(LIST)) {
+				ArrayList<Obj> list = ((List)index).getObjAL();
+				for (Obj o : list) {
+					set(d, o, item);
+				}
+			} else {
+				set(d, index, item);
+			}
+			block.push(d);
 		} else {
 			throw new TypeError(this, item, index, dict);
 		}
