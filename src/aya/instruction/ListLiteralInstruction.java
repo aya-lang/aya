@@ -7,7 +7,6 @@ import java.util.Stack;
 import aya.entities.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
 
 public class ListLiteralInstruction extends Instruction {
@@ -39,7 +38,7 @@ public class ListLiteralInstruction extends Instruction {
 		}
 		
 		b.eval();
-		return new GenericList(new ArrayList<Obj>(b.getStack())).promote();
+		return new List(new ArrayList<Obj>(b.getStack()));
 	}
 	
 	/** Returns null if is not list literal */
@@ -53,7 +52,7 @@ public class ListLiteralInstruction extends Instruction {
 				return null;
 			}
 		}
-		return new GenericList(items).promote();
+		return new List(items);
 	}
 	
 	public ListLiteralInstruction duplicate() {

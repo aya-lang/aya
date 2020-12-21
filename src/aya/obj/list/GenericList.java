@@ -1,5 +1,7 @@
 package aya.obj.list;
 
+import static aya.util.Casting.asList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -11,18 +13,16 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 
 /** List of objects of any type */
-public class GenericList extends List {
+public class GenericList extends ListImpl {
 		
 	private ArrayList<Obj> _list;
 	private int _chars;
 	private int _nums;
-	private int _strs;
 	
 	public GenericList(ArrayList<Obj> list) {
 		_list = list;
 		_chars = 0;
 		_nums = 0;
-		_strs = 0;
 		
 		for (Obj o : _list) {
 			incCharNumCounter(o);
@@ -40,7 +40,7 @@ public class GenericList extends List {
 		
 		if (item.isa(Obj.CHAR)) {
 			_chars = repeats;
-		} else if (item.isa(NUMBER)) {
+		} else if (item.isa(Obj.NUMBER)) {
 			_nums = repeats;
 		}
 	}
@@ -58,12 +58,6 @@ public class GenericList extends List {
 	private boolean isNumericList() {
 		return _list.size() != 0 && _nums == _list.size();
 	}
-	
-	/** Return true if all elements are of type String */
-	private boolean isStringList() {
-		return _list.size() != 0 && _strs == _list.size();
-	}
-	
 	
 	/** Convert to string assuming all items are Char */
 	private Str asStr() {
@@ -86,28 +80,18 @@ public class GenericList extends List {
 		}
 		return new NumberItemList(out);
 	}
-	
-	public StrList toStringList() {
-		ArrayList<Str> out = new ArrayList<Str>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add((Str)(_list.get(i)));
-		}
-		return new StrList(out);
-	}
-	
+
 	/** If all items in the list are a Number, convert this list to a
 	 * NumericItemList, if all items in the list are a Char, convert
 	 * to a Str, otherwise, return <code>this</code>.
 	 * 
 	 * @return
 	 */
-	public List promote() {
+	public ListImpl promote() {
 		if (isStr()) {
 			return asStr();
 		} else if (isNumericList()) {
 			return toNumberList();
-		} else if (isStringList()) {
-			return toStringList();
 		} else {
 			return this;
 		}
@@ -126,38 +110,13 @@ public class GenericList extends List {
 	}
 
 	@Override
-	public List head(int n) {
-		n = List.index(n, _list.size());
-		ArrayList<Obj> out = new ArrayList<Obj>(n);
-		
-		if (n <= _list.size()) {
-			for (int i = 0; i < n; i++) {
-				out.add(_list.get(i));
-			}
-		} else {
-			out.addAll(_list);
-			for (int i = _list.size(); i < n; i++) {
-				out.add(Num.ZERO); //Pad with 0s
-			}
-		}
-		return new GenericList(out);
+	public ListImpl head(int n) {
+		return new GenericList(ListAlgorithms.head(_list, n, Num.ZERO)).promote();
 	}
 
 	@Override
-	public List tail(int n) {
-		n = List.index(n, _list.size());
-		ArrayList<Obj> out = new ArrayList<Obj>(n);
-		if (n <= _list.size()) {
-			for (int i = _list.size()-n; i < _list.size(); i++) {
-				out.add(_list.get(i));
-			}
-		} else {
-			for (int i = 0; i < n-_list.size(); i++) {
-				out.add(Num.ZERO); //Pad with 0s
-			}
-			out.addAll(_list);
-		}	
-		return new GenericList(out);
+	public ListImpl tail(int n) {
+		return new GenericList(ListAlgorithms.tail(_list, n, Num.ZERO)).promote();
 	}
 
 	@Override
@@ -190,83 +149,47 @@ public class GenericList extends List {
 	}
 
 	@Override
-	public List slice(int i, int j) {
-		if (i >= j) {
-			throw new AyaRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
-		}
-		ArrayList<Obj> out = new ArrayList<Obj>(j - i);
-		for (int x = i; x < j; x++) {
-			out.add(_list.get(x));
-		}
-		return new GenericList(out);
+	public ListImpl slice(int i, int j) {
+		return new GenericList(ListAlgorithms.slice(_list, i, j)).promote();
 	}
 
 	@Override
 	public Obj get(int i) {
-		return _list.get(List.index(i, _list.size()));
+		return _list.get(i);
 	}
 	
 	@Override
-	public List get(int[] is) {
-		ArrayList<Obj> out = new ArrayList<Obj>(is.length);
+	public ListImpl get(int[] is) {
+		GenericList out = new GenericList(new ArrayList<Obj>(is.length));
 		for (int i : is) {
-			out.add( _list.get(List.index(i, _list.size())) );
+			out.addItem( _list.get(i));
 		}
-		return new GenericList(out).promote();
+		return out.promote();
 	}
 	
 	@Override
 	public Obj remove(int i) {
-		return _list.remove(List.index(i, _list.size()));
+		return _list.remove(i);
 	}
 	
 	@Override
-	public void removeAll(Integer[] ixs) {
-		int size = _list.size();
-		
-		for (int i = 0; i < ixs.length; i++) {
-			_list.set(List.index(ixs[i], size), null);
-		}
-		
-		for (int i = 0; i < _list.size(); i++) {
-			if (_list.get(i) == null) {
-				_list.remove(i);
-				i--;
-			}
-		}
+	public void removeAll(int[] ixs) {
+		ListAlgorithms.removeAll(_list, ixs);
 	}
-	
-
 
 	@Override
 	public int find(Obj o) {
-		int ix;
-		for (ix = 0; ix < _list.size(); ix++) {
-			if (o.equiv(_list.get(ix))) {
-				return ix;
-			}
-		}
-		return -1;
+		return ListAlgorithms.find(_list, o);
 	}
 
 	@Override
 	public int findBack(Obj o) {
-		int ix;
-		for (ix = _list.size() - 1; ix >= 0; ix--) {
-			if (o.equiv(_list.get(ix))) {
-				return ix;
-			}
-		}
-		return -1;
+		return ListAlgorithms.findBack(_list, o);
 	}
 
 	@Override
 	public int count(Obj o) {
-		int count = 0;
-		for (int i = 0; i < _list.size(); i++) {
-			count += _list.get(i).equiv(o) ? 1 : 0;
-		}
-		return count;
+		return ListAlgorithms.count(_list, o);
 	}
 
 	@Override
@@ -281,13 +204,13 @@ public class GenericList extends List {
 			throw new AyaRuntimeException("Cannot set list as member of itself");
 		}
 		// Decrement the _char / _num counter
-		Obj old = _list.get(List.index(i, _list.size()));
+		Obj old = _list.get(i);
 		decCharNumCounter(old);
 		
 		// Increment the _char / _num counter
 		incCharNumCounter(o);
 		
-		_list.set(List.index(i, _list.size()), o);
+		_list.set(i, o);
 	}
 	
 	@Override
@@ -296,21 +219,8 @@ public class GenericList extends List {
 	}
 	
 	@Override
-	public GenericList unique() {
-		ArrayList<Obj> unique = new ArrayList<Obj>();
-		for (Obj l : _list) {
-			boolean alreadyContains = false;
-			for (Obj u : unique) {
-				if (l.equiv(u)) {
-					alreadyContains = true;
-					break;
-				}
-			}
-			if (!alreadyContains) {
-				unique.add(l);
-			}
-		}
-		return new GenericList(unique);
+	public ListImpl unique() {
+		return new GenericList(ListAlgorithms.unique(_list)).promote();
 	}
 	
 	@Override
@@ -322,11 +232,11 @@ public class GenericList extends List {
 	@Override
 	public void addItem(int i, Obj o) {
 		incCharNumCounter(o);
-		_list.add(List.index(i, _list.size()), o);
+		_list.add(i, o);
 	}
 
 	@Override
-	public void addAll(List l) {
+	public void addAll(ListImpl l) {
 		for (int i = 0; i < l.length(); i++) {
 			incCharNumCounter(l.get(i));
 			_list.add(l.get(i));
@@ -334,7 +244,7 @@ public class GenericList extends List {
 	}
 	
 	@Override
-	public List copy() {
+	public ListImpl copy() {
 		ArrayList<Obj> out = new ArrayList<>(_list.size());
 		out.addAll(_list);
 		return new GenericList(out);
@@ -350,14 +260,28 @@ public class GenericList extends List {
 		return new GenericList(new ArrayList<Obj>());
 	}
 
+	@Override
+	protected ListImpl flatten() {
+		GenericList out = new GenericList(new ArrayList<Obj>());
+		for (int i = 0; i < length(); i++) {
+			Obj o = get(i);
+			if (o.isa(Obj.LIST)) {
+				out.addAll(asList(o).impl().flatten());
+			} else {
+				out.addItem(o);
+			}
+		}
+		return out.promote();
+	}
+
 	
 	
-	///////////////////
-	// OBJ OVERRIDES //
-	///////////////////
+	////////////////////
+	// List OVERRIDES //
+	////////////////////
 	
 	@Override
-	public Obj deepcopy() {
+	public ListImpl deepcopy() {
 		ArrayList<Obj> out = new ArrayList<Obj>(_list.size());
 		for (Obj o : _list) {
 			out.add(o.deepcopy());
@@ -372,58 +296,26 @@ public class GenericList extends List {
 
 	@Override
 	public String repr() {
-		StringBuilder sb = new StringBuilder("[ ");
-		
-		
-		if (_list.size() < 50) {
-			//Output the whole list
-			for (Obj o : _list) {
-				sb.append(o.repr() + " ");
-			}
-		} else {
-			// Output 10 front
-			for (int i = 0; i < 10; i++) {
-				sb.append(_list.get(i).repr() + " ");
-			}
-			
-			sb.append(" ... ");
-			
-			// Output 10 back
-			for (int i = _list.size() - 11; i < _list.size(); i++) {
-				sb.append(_list.get(i).repr() + " ");
-			}
-		}
-		
-		return sb.append(']').toString();
+		return ListAlgorithms.repr(_list);
 	}
 
 	@Override
 	public String str() {
-		StringBuilder sb = new StringBuilder("[ ");
-		for (Obj o : _list) {
-			sb.append(o.repr() + " ");
-		}
-		return sb.append(']').toString();
+		return ListAlgorithms.str(_list);
 	}
 
 	@Override
-	public boolean equiv(Obj o) {
-		// Must be a list
-		if (o instanceof List) {
-			List list = (List)o;
-			// Must have the same length
-			if (list.length() == this.length()) {
-				// Every corresponding item must be equivalent
-				for (int i = 0; i < this.length(); i++) {
-					if (!list.get(i).equiv(_list.get(i))) {
-						return false;
-					}
+	public boolean equiv(ListImpl list) {
+		// Must have the same length
+		if (list.length() == this.length()) {
+			// Every corresponding item must be equivalent
+			for (int i = 0; i < this.length(); i++) {
+				if (!list.get(i).equiv(_list.get(i))) {
+					return false;
 				}
-				return true;
-			} else { 
-				return false;
 			}
-		} else {
+			return true;
+		} else { 
 			return false;
 		}
 	}
@@ -446,21 +338,23 @@ public class GenericList extends List {
 	private void incCharNumCounter(Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			_chars += 1;
-		} else if (o.isa(NUMBER)) {
+		} else if (o.isa(Obj.NUMBER)) {
 			_nums += 1;
-		} else if (o.isa(STR)) {
-			_strs += 1;
-		}
+		} 
 	}
 	
 	private void decCharNumCounter(Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			_chars -= 1;
-		} else if (o.isa(NUMBER)) {
+		} else if (o.isa(Obj.NUMBER)) {
 			_nums -= 1;
-		} else if (o.isa(STR)) {
-			_strs -= 1;
-		}
+		} 
 	}
+	
+	public ArrayList<Obj> similarEmptyAL() {
+		return new ArrayList<Obj>(_list.size());
+	}
+
+
 
 }

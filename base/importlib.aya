@@ -12,7 +12,7 @@ def importlib::aya_dir :{sys.wd}
 def importlib::imported {,}
 
 def importlib::path [
-    importlib.aya_dir "std" :9c + +    .# <aya>/base
+    importlib.aya_dir "std" :9s + +    .# <aya>/base
 ]
 
 .# Return the path with the current directory at the bottom

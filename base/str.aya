@@ -179,7 +179,7 @@ def ::matstr {m : colmax,
 {, .# begin regex module
 
     .# Returns all URLs in a string
-    {"http[|s]://[^ |>|<]+"&}:geturls;
+    {"http[|s]/[^ |>|<]+"&}:geturls;
 
     .# Return the first match of a regular expression
     {&0I}:firstmatch;

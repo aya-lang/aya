@@ -37,7 +37,7 @@ import aya.instruction.op.OpDocReader;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
@@ -386,7 +386,7 @@ public class Aya extends Thread {
 		if (e instanceof AyaUserObjRuntimeException) {
 			return ((AyaUserObjRuntimeException)e).getObj();
 		} else {
-			return new Str(exToString(e));
+			return List.fromString(exToString(e));
 		}
 	}
 

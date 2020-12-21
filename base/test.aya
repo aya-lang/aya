@@ -3,6 +3,21 @@
 .# test.aya
 .# Defines an interface for testing aya code
 
+.# New simpler test function
+{blk,
+    {
+        blk :!
+    } {ex,
+        ex :T ::dict = {
+            ["Test Failed: $blk"
+             "\tExpected: $(ex.expected)"
+             "\tReceived: $(ex.received)"] "\n"* :P
+        } {
+            "Error while evaluating test $blk\n$ex" .D
+        } .?
+    } .K
+}:test_;
+
 class ::test
 
 def test::__init__ {blk::block expected::list self,

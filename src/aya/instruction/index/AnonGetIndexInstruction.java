@@ -8,8 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
-import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
+import aya.util.Casting;
 
 public class AnonGetIndexInstruction extends GetIndexInstruction {
 	
@@ -19,7 +18,7 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 		final Obj list = block.pop();
 				
 		if(list.isa(Obj.LIST)) {		
-			block.push(ListIndexing.getIndex((List)list, index));
+			block.push(Casting.asList(list).getIndexed(index));
 		} else if (list.isa(Obj.DICT)) {
 			block.push(DictIndexing.getIndex((Dict)list, index));
 		} else {

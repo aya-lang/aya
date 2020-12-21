@@ -3,7 +3,7 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.obj.dict.Dict;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 
 public class OpDoc {
@@ -126,7 +126,7 @@ public class OpDoc {
 		for (OpDesc desc : descs) {
 			String[] strs = desc.types.split("\\|");
 			for (String s : strs) {
-				d.set(s, new Str(desc.desc));
+				d.set(s, List.fromString(desc.desc));
 			}
 		}
 		

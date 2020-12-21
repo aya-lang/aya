@@ -7,8 +7,7 @@ import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
-import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
+import aya.util.Casting;
 
 public abstract class SetIndexInstruction extends Instruction {
 	
@@ -21,7 +20,7 @@ public abstract class SetIndexInstruction extends Instruction {
 		Obj index = getIndex();
 		
 		if (container.isa(Obj.LIST)) {
-			ListIndexing.setIndex((List)container, index, value);
+			Casting.asList(container).mutSetIndexed(index, value);
 		} else if (container.isa(Obj.DICT)) {
 			Dict.setIndex((Dict)container, index, value);
 		} else {

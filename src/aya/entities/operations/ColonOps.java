@@ -6,17 +6,21 @@ import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
-import static aya.obj.Obj.OBJLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
+import static aya.util.Casting.asDict;
+import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStr;
+import static aya.util.Casting.asSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.instruction.Instruction;
@@ -28,9 +32,7 @@ import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
@@ -52,7 +54,7 @@ public class ColonOps {
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
 	public static OpInstruction[] COLON_OPS = {
-		/* 33 !  */ null,
+		/* 33 !  */ new OP_Colon_Bang(),
 		/* 34 "  */ null,
 		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ new OP_Colon_Duplicate(),
@@ -66,7 +68,7 @@ public class ColonOps {
 		/* 44 ,  */ null,
 		/* 45 -  */ null, //Special number literals
 		/* 46 .  */ null,
-		/* 47 /  */ new OP_Colon_Promote(),
+		/* 47 /  */ null,
 		/* 48 0  */ null, //Number Literal
 		/* 49 1  */ null, //Number Literal
 		/* 50 2  */ null, //Number Literal
@@ -111,7 +113,7 @@ public class ColonOps {
 		/* 89 Y  */ null,
 		/* 90 Z  */ new OP_Colon_Zed(),
 		/* 91 [  */ null,
-		/* 92 \  */ new OP_Colon_Demote(),
+		/* 92 \  */ null,
 		/* 93 ]  */ null,
 		/* 94 ^  */ null,
 		/* 95 _  */ null, // Assignment
@@ -180,6 +182,28 @@ public class ColonOps {
 
 }
 
+// ! - 33
+class OP_Colon_Bang extends OpInstruction {
+	
+	public OP_Colon_Bang() {
+		init(":!");
+		arg("AA", "assert equal");
+	}
+
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		if (!a.equiv(b)) {
+			Dict error = new Dict();
+			error.set("message", List.fromString("AssertionError"));
+			error.set("expected", a);
+			error.set("received", b);
+			throw new AyaUserObjRuntimeException(error);
+		}
+	}
+}
+
 // # - 35
 class OP_Colon_Pound extends OpInstruction {
 	
@@ -217,18 +241,11 @@ class OP_Colon_Duplicate extends OpInstruction {
 			if (i > size || i <= 0) {
 				throw new AyaRuntimeException(i + " :$ stack index out of bounds");
 			} else {
-				
 				while (i > 0) {
 					final Obj cp = block.getStack().get(size - i);
-					
-					if(cp.isa(LIST)) {
-						block.push( ((List)cp).deepcopy() );
-					} else {
-						block.push(cp);
-					}
-				i--;
+					block.push(cp.deepcopy());
+					i--;
 				}
-				
 			}
 			
 		} else {
@@ -272,13 +289,13 @@ class OP_Colon_Quote extends OpInstruction {
 			int c = ((Char)a).charValue();
 			block.push(Num.fromInt(c & 0xff));
 		} else if (a.isa(STR)) {
-			Str s = (Str)a;
+			Str s = asStr(a);
 			ArrayList<Number> nums = new ArrayList<Number>(s.length());
 			byte[] bytes = s.getBytes();
 			for (byte b : bytes) {
 				nums.add(Num.fromByte(b));
 			}
-			block.push(new NumberItemList(nums));
+			block.push(new List(new NumberItemList(nums)));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -302,29 +319,22 @@ class OP_Colon_Times extends OpInstruction {
 		if (blk.isa(BLOCK)) {
 			Block expr = (Block)blk;
 			if (a.isa(LIST) && b.isa(LIST)) {
-				List l1 = (List)a;
-				List l2 = (List)b;
-				ArrayList<Obj> out = new ArrayList<Obj>(l1.length());
-				
+				List l1 = asList(a);
+				List l2 = asList(b);
+
+				ArrayList<Obj> out = new ArrayList<Obj>(l2.length());
 				for (int i = 0; i < l2.length(); i++) {
-					Block e = new Block();
-					e.addAll(expr.getInstructions().getInstrucionList());
-					block.push(ListIndexing.mapToPushStack(l1, e, l2.get(i)));
+					out.add(l1.map1arg(expr, l2.getExact(i)));
 				}
 				
-				block.push(new GenericList(out));
+				block.push(new List(out));
 			} else if (a.isa(LIST)) {
-				List l1 = (List)a;
-				Block e = new Block();
-				e.addAll(expr.getInstructions().getInstrucionList());
-				// block.push(e.mapToPushStack(b, l1));
-				block.push(ListIndexing.mapToPushStack(l1, e, b));
+				block.push(asList(a).map1arg(expr, b));
 			} else if (b.isa(LIST)) {
-				List l2 = (List)b;
 				Block e = new Block();
 				e.addAll(expr.getInstructions().getInstrucionList());
 				e.add(a);
-				block.push(ListIndexing.map(l2, e));
+				block.push(asList(b).map(e));
 			} else {
 				throw new TypeError(this, blk, a, b);
 			}
@@ -335,26 +345,7 @@ class OP_Colon_Times extends OpInstruction {
 }
 
 // / - 47
-class OP_Colon_Promote extends OpInstruction {
-	
-	public OP_Colon_Promote() {
-		init(":/");
-		arg("L", "promote list to more specific type if possible");
-	}
 
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if (a.isa(OBJLIST)) {
-			block.push(((GenericList)a).promote());
-		} else if (a.isa(LIST)) {
-			block.push(a);
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
 
 // < - 60
 class OP_Colon_LessThan extends OpInstruction {
@@ -380,12 +371,11 @@ class OP_Colon_LessThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) <= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).geq(asNumber(a)));
-			block.push( ((List)b).toNumberList().geq((Number)a) ); // geq is opposite of leq
+			block.push( new List(asNumberList(b).geq(asNumber(a))) ); // geq is opposite of leq
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push(asNumberList(a).leq(asNumber(b)));
+			block.push( new List(asNumberList(a).leq(asNumber(b))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push(asNumberList(a).leq(asNumberList(b)));
+			block.push( new List(asNumberList(a).leq(asNumberList(b))) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -444,11 +434,11 @@ class OP_Colon_GreaterThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) >= 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push(asNumberList(b).leq(asNumber(a))); // lt is opposite of gt
+			block.push(new List(asNumberList(b).leq(asNumber(a)))); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push(asNumberList(a).geq(asNumber(b)));
+			block.push(new List(asNumberList(a).geq(asNumber(b))));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push(asNumberList(a).geq(asNumberList(b)));
+			block.push(new List(asNumberList(a).geq(asNumberList(b))));
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -490,7 +480,7 @@ class OP_Colon_A extends OpInstruction {
 				arr.add(block.pop());
 			}
 			Collections.reverse(arr);
-			block.push((new GenericList(arr)).promote());
+			block.push(new List(arr));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -511,7 +501,7 @@ class OP_Colon_C extends OpInstruction {
 		final Obj a = block.pop();
 		
 		if (a.isa(SYMBOL)) {
-			block.push( new Str(((Symbol)a).name()) );
+			block.push(List.fromString(asSymbol(a).name()));
 		} else if (a.isa(STR)) {
 			block.push(a);
 		} else {
@@ -547,9 +537,9 @@ class OP_Colon_D extends OpInstruction {
 		if (dict.isa(DICT)) {
 			Dict d = (Dict)dict;
 			if (index.isa(LIST)) {
-				ArrayList<Obj> list = ((List)index).getObjAL();
-				for (Obj o : list) {
-					set(d, o, item);
+				List list = asList(index);
+				for (int i = 0; i < list.length(); i++) {
+					set(d, list.getExact(i), item);
 				}
 			} else {
 				set(d, index, item);
@@ -604,16 +594,16 @@ class OP_Colon_I extends OpInstruction {
 			} else if (index.isa(SYMBOL)) {
 				out = d.get( ((Symbol)index).id() );
 			} else if (index.isa(LIST)) {
-				List l = (List)index;
-				if (l.length() != 2 || !l.get(0).isa(SYMBOL)) {
+				List l = asList(index);
+				if (l.length() != 2 || !l.getExact(0).isa(SYMBOL)) {
 					throw new TypeError(this, index, list);
 				}
 				
-				Symbol key = (Symbol)(l.get(0));
+				Symbol key = asSymbol(l.getExact(0));
 				if (d.containsKey(key.id())) {
 					out = d.get(key.id());
 				} else {
-					out = l.get(1);
+					out = l.getExact(1);
 				}
 				
 			} else {
@@ -641,7 +631,7 @@ class OP_Colon_K extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			block.push(new GenericList(((Dict)a).keys()));
+			block.push(new List(asDict(a).keys()));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -696,9 +686,9 @@ class OP_Colon_M extends OpInstruction {
 		if (meta.containsKey(EncodedVars.ARGS)) {
 			Obj args = meta.get(EncodedVars.ARGS);
 			if (args.isa(LIST)) {
-				List args_list = (List)args;
+				List args_list = asList(args);
 				for (int i = 0; i < args_list.length(); i++) {
-					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.get(i));
+					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.getExact(i));
 					bh.addArg(new BlockHeader.Arg(info.first().id(), info.second().id(), info.third()));
 				}
 			} else {
@@ -780,7 +770,7 @@ class OP_Colon_R extends OpInstruction {
 
 	@Override
 	public void execute (Block block) {		
-		block.push(new Str(Aya.getInstance().nextLine()));
+		block.push(List.fromString(Aya.getInstance().nextLine()));
 	}
 }
 
@@ -821,7 +811,7 @@ class OP_Colon_S extends OpInstruction {
 				}
 			}
 		}
-		return new GenericList(out);
+		return new List(out);
 	}
 }
 
@@ -870,7 +860,7 @@ class OP_Colon_V extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			block.push( new GenericList(((Dict)a).values()) );
+			block.push( new List(asDict(a).values()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -904,28 +894,7 @@ class OP_Colon_Zed extends OpInstruction {
 
 
 // \ - 92
-class OP_Colon_Demote extends OpInstruction {
-	
-	public OP_Colon_Demote() {
-		init(":\\");
-		arg("L", "copy list as generic list");
-	}
 
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if(a.isa(LIST)) {
-			if (a.isa(OBJLIST)) {
-				block.push(a.deepcopy());
-			} else {
-				block.push( new GenericList(((List)a).getObjAL()) );
-			}
-		} else {
-			throw new TypeError(this, a);
-		}
-	}
-}
 
 //_ - 95
 
@@ -944,8 +913,7 @@ class OP_SetMinus extends OpInstruction {
 		Obj b = block.pop();
 		
 		if (a.isa(LIST) && b.isa(LIST)) {
-			List.removeAllOccurances((List)b, (List)a);
-			block.push(b);
+			block.push(asList(b).removeAllOccurances(asList(a)));
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -965,7 +933,7 @@ class OP_Colon_Tilde extends OpInstruction {
 		final Obj a = block.pop();
 		
 		if (a.isa(LIST)) {
-			block.push( ((List)a).unique() );
+			block.push( asList(a).unique() );
 		} else {
 			throw new TypeError(this, a);
 		}

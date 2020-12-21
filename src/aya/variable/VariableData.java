@@ -13,7 +13,7 @@ import aya.InteractiveAya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolEncoder;
@@ -50,7 +50,7 @@ public class VariableData {
 	private void initNil(Aya aya) {
 		Dict nil_meta = new Dict();
 		nil_meta.set("__type__", Symbol.fromStr("__nil"));
-		Str nil_str = new Str("nil");
+		List nil_str = List.fromString("nil");
 		nil_meta.set("__str__", nil_str);
 		nil_meta.set("__repr__", nil_str);
 		nil_meta.set("__pushself__", Num.ONE);
@@ -64,8 +64,8 @@ public class VariableData {
 		VariableSet globals = new VariableSet(null, null, null);
 		
 		globals.setVar(Symbol.fromStr("import"), Parser.compile("`(\".aya\"+G~)", aya));
-		globals.setVar(Symbol.fromStr("version"), new Str(Aya.VERSION_NAME));
-		globals.setVar(Symbol.fromStr("help"), new Str(InteractiveAya.HELP_TEXT));
+		globals.setVar(Symbol.fromStr("version"), List.fromString(Aya.VERSION_NAME));
+		globals.setVar(Symbol.fromStr("help"), List.fromString(InteractiveAya.HELP_TEXT));
 
 		globals.setVar(Symbol.fromStr("e"), Num.E);				
 		globals.setVar(Symbol.fromStr("pi"), Num.PI);

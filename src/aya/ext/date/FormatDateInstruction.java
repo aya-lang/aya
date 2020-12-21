@@ -10,7 +10,7 @@ import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.number.Number;
 
 public class FormatDateInstruction extends NamedInstruction {
@@ -42,7 +42,7 @@ public class FormatDateInstruction extends NamedInstruction {
 			} catch (Exception e) {
 				throw new AyaRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
 			}
-			block.push(new Str(out));
+			block.push(List.fromString(out));
 		} else {
 			throw new TypeError(this, "NS", a, b);
 		}

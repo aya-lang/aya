@@ -9,8 +9,7 @@ import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
-import aya.obj.list.StrList;
+import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.util.FileUtils;
 
@@ -30,11 +29,11 @@ public class SystemInstructionStore extends NamedInstructionStore {
 					String fstr = arg.str();
 					try {
 						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
-						ArrayList<Str> obj_dirs = new ArrayList<Str>(dirs.size());
+						ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
 						for (String s : dirs) {
-							obj_dirs.add(new Str(s));
+							obj_dirs.add(List.fromString(s));
 						}
-						block.push(new StrList(obj_dirs));
+						block.push(new List(obj_dirs));
 					} catch (NullPointerException e) {
 						throw new AyaRuntimeException(":{sys.readdir} : arg is not a valid location. Received:\n" + fstr);
 					}
@@ -48,7 +47,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		addInstruction(new NamedInstruction("sys.wd", "get absolute path of working dir") {
 			@Override
 			public void execute(Block block) {
-				block.push(new Str(AyaPrefs.getWorkingDir()));
+				block.push(List.fromString(AyaPrefs.getWorkingDir()));
 			}
 		});
 		
@@ -100,9 +99,9 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				final Obj arg = block.pop();
 				String val = System.getProperty(arg.str());
 				if (val == null) {
-					block.push(Str.EMPTY);
+					block.push(List.fromString(""));
 				} else {
-					block.push(new Str(val));
+					block.push(List.fromString(val));
 				}
 			}
 		});
@@ -142,7 +141,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
-				block.push(new Str(FileUtils.resolveHome(arg.str())));
+				block.push(List.fromString(FileUtils.resolveHome(arg.str())));
 			}
 		});
 	}

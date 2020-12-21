@@ -1,11 +1,9 @@
 package aya.instruction;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.entities.InstructionStack;
 import aya.obj.Obj;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
 
 /** Specialization of a list literal which always returns an empty list */
@@ -24,12 +22,12 @@ public class EmptyListLiteralInstruction extends ListLiteralInstruction {
 	
 	@Override
 	public List getListCopy(Stack<Obj> outerStack) {
-		return new GenericList(new ArrayList<Obj>());
+		return new List();
 	}
 	
 	@Override
 	public List toList() {
-		return new GenericList(new ArrayList<Obj>());
+		return new List();
 	}
 	
 	@Override
@@ -44,6 +42,6 @@ public class EmptyListLiteralInstruction extends ListLiteralInstruction {
 	}
 
 	public Obj getListCopy() {
-		return new GenericList(new ArrayList<Obj>());
+		return new List();
 	}
 }

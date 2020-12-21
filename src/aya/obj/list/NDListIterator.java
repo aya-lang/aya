@@ -1,11 +1,6 @@
 package aya.obj.list;
 
-import java.util.ArrayList;
-
 import aya.obj.Obj;
-import aya.obj.list.numberlist.NumberItemList;
-import aya.obj.number.Num;
-import aya.obj.number.Number;
 
 public class NDListIterator <O extends Obj> {
 	List _list;
@@ -13,8 +8,8 @@ public class NDListIterator <O extends Obj> {
 	NDListIterator<O> _sub = null;
 	boolean _loop = false;
 	
-	public NDListIterator(List l) {
-		_list = l;
+	public NDListIterator(List out) {
+		_list = out;
 		start();
 	}
 	
@@ -49,8 +44,8 @@ public class NDListIterator <O extends Obj> {
 			return n;
 		}
 		
-		else if (_list.get(_ix).isa(Obj.LIST)) {
-			_sub = new NDListIterator<O>((List)(_list.get(_ix)));
+		else if (_list.getExact(_ix).isa(Obj.LIST)) {
+			_sub = new NDListIterator<O>((List)(_list.getExact(_ix)));
 			if (_sub.done()) {
 				// list was empty
 				_ix++;
@@ -61,7 +56,7 @@ public class NDListIterator <O extends Obj> {
 		}
 		
 		else {
-			return (O)(_list.get(_ix++));
+			return (O)(_list.getExact(_ix++));
 		}
 	}
 	
@@ -79,8 +74,8 @@ public class NDListIterator <O extends Obj> {
 			return;
 		}
 		
-		else if (_list.get(_ix).isa(Obj.LIST)) {
-			_sub = new NDListIterator<O>((List)(_list.get(_ix)));
+		else if (_list.getExact(_ix).isa(Obj.LIST)) {
+			_sub = new NDListIterator<O>((List)(_list.getExact(_ix)));
 			if (_sub.done()) {
 				// list was empty
 				_ix++;
@@ -93,62 +88,11 @@ public class NDListIterator <O extends Obj> {
 		}
 		
 		else {
-			_list.set(_ix++, item);
+			_list.mutSetExact(_ix++, item);
 		}
-	}
-	
-	public static void test() {
-		
-		ArrayList<Number> ns = new ArrayList<Number>();
-		for (int i = 0; i < 3; i++) {
-			ns.add(new Num(i));
-		}
-		
-		NumberItemList nil = new NumberItemList(ns);
-		
-		System.out.println(nil.repr());
-		
-		NDListIterator<Number> iter = new NDListIterator<>(nil);
-		
-		//while (!iter.done()) {
-			//System.out.println(iter.next());
-		//}
-		
-		ArrayList<Obj> os = new ArrayList<>();
-		for (int i = 0; i < 3; i++) {
-			os.add(nil.mul(new Num(i+1)).deepcopy());
-		}
-		
-		GenericList gl = new GenericList(os);
-		
-		System.out.println(gl.repr());
-		
-		iter = new NDListIterator<>(gl);
-		
-		while (!iter.done()) {
-			System.out.println(iter.next());
-		}
-		
-		gl.set(1, gl.deepcopy());
-		System.out.println(gl.repr());
-
-		iter = new NDListIterator<>(gl);
-		while (!iter.done()) {
-			System.out.println(iter.next());
-		}
-		
-		System.out.println(nil);
-		iter = new NDListIterator<Number>(nil);
-		iter.setLoop(true);
-		for (int i = 0; i < 10; i++) {
-			System.out.println(iter.next());
-		}
-		
-		
 	}
 	
 	public static void main(String[] args) {
-		test();
 		System.out.println("done!");
 	}
 

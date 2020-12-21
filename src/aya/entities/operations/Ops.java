@@ -7,11 +7,13 @@ import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
-import static aya.obj.Obj.STRLIST;
 import static aya.obj.Obj.SYMBOL;
+import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
+import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStr;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +45,8 @@ import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
-import aya.obj.list.StrList;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.BigNum;
@@ -218,17 +218,13 @@ class OP_Bang extends OpInstruction {
 		Obj o = block.pop();
 		
 		if (o.isa(Obj.NUMBER)) {
-			block.push(Num.ONE.sub((Number)o));
-		} else if (o.isa(Obj.STR)) {
-			//((Str)o).reverse();
-			//block.push(o);
-			block.push( ((Str)o).swapCase() );
-		} else if(o.isa(Obj.NUMBERLIST)) {
-			//((List)o).reverse();
-			//block.push(o);
-			block.push( asNumberList(o).subFrom(Num.ONE) );
+			block.push(Num.ONE.sub(asNumber(o)));
 		} else if (o.isa(Obj.CHAR)) {
 			block.push(((Char)o).swapCase());
+		} else if (o.isa(STR)) {
+				block.push(new List(asStr(o).swapCase()));
+		} else if (o.isa(Obj.NUMBERLIST)) {
+			block.push( new List(asNumberList(o).subFrom(Num.ONE)) );
 		} else if (o.isa(DICT)) {
 			Dict d = (Dict)o;
 			if (d.containsKey(Ops.KEYVAR_NEW)) {
@@ -275,7 +271,7 @@ class OP_Pound extends OpInstruction {
 				}
 			}
 			
-			block.push(ListIndexing.map((List)popped, map));
+			block.push(asList(popped).map(map));
 			
 			return;
 		} 	
@@ -321,11 +317,11 @@ class OP_Percent extends OpInstruction {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).modFrom((Number)b) );
+			block.push( new List(asNumberList(a).modFrom((Number)b)) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).mod((Number)a) );
+			block.push( new List(asNumberList(b).mod((Number)a)) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).mod(asNumberList(a)) );
+			block.push( new List(asNumberList(b).mod(asNumberList(a))) );
 		} else if (a.isa(NUMBER) && b.isa(BLOCK)) {
 			int repeats = ((Number)(a)).toInt();
 			Block blk = ((Block)b);
@@ -368,9 +364,9 @@ class OP_And extends OpInstruction {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
 			Matcher m = Pattern.compile(a.str()).matcher(b.str());
 			while (m.find()) {
-				 allMatches.add(new Str(m.group()));
+				 allMatches.add(List.fromString(m.group()));
 			}
-			block.push(new GenericList(allMatches));
+			block.push(new List(allMatches));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -399,21 +395,21 @@ class OP_Times extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)a).mul((Number)b) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).mul((Number)b) );
+			block.push( new List(asNumberList(a).mul((Number)b)) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).mul(asNumber(a)) );
+			block.push( new List(asNumberList(b).mul(asNumber(a))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).mul(asNumberList(b)) );
+			block.push( new List(asNumberList(a).mul(asNumberList(b))) );
 		} else if ((a.isa(STR) || a.isa(CHAR)) && b.isa(LIST)) {
 			StringBuilder sb = new StringBuilder();
-			List la = (List)b;
+			List lb = asList(b);
 			String sep = a.str();
-			for (int i = 0; i < la.length()-1; i++) {
-				sb.append(la.get(i).str());
+			for (int i = 0; i < lb.length()-1; i++) {
+				sb.append(lb.getExact(i).str());
 				sb.append(sep);
 			}
-			if (la.length() > 0) sb.append(la.get(-1).str());
-			block.push(new Str(sb.toString()));
+			if (lb.length() > 0) sb.append(lb.tail().str());
+			block.push(List.fromString(sb.toString()));
 		} else {	
 			throw new TypeError(this, a,b);
 		}
@@ -443,13 +439,13 @@ class OP_Plus extends OpInstruction {
 			block.push( ((Number)a).add((Number)b) );
 		} else if (a.isa(STR) || b.isa(STR)) {
 			//Must reverse order
-			block.push(new Str(b.str() + a.str()));
+			block.push(List.fromString(b.str() + a.str()));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).add((Number)b) );
+			block.push( new List(asNumberList(a).add(asNumber(b))) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).add((Number)a) );
+			block.push( new List(asNumberList(b).add(asNumber(a))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).add(asNumberList(b)) );
+			block.push( new List(asNumberList(a).add(asNumberList(b))) );
 		} else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
 			block.push( ((Char)b).add((Number)a) );
 		} else if (a.isa(CHAR) && b.isa(NUMBER)) {
@@ -488,11 +484,11 @@ class OP_Minus extends OpInstruction {
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
 			block.push( ((Char)a).sub((Char)b) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).sub((Number)b) );
+			block.push( new List(asNumberList(a).sub(asNumber(b))) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).subFrom((Number)a) );
+			block.push( new List(asNumberList(b).subFrom(asNumber(a))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).sub(asNumberList(b)) );
+			block.push( new List(asNumberList(a).sub(asNumberList(b))) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -520,11 +516,11 @@ class OP_Divide extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( ((Number)b).div((Number)a) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).divFrom((Number)b) );
+			block.push( new List(asNumberList(a).divFrom(asNumber(b))) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).div((Number)a) );
+			block.push( new List(asNumberList(b).div(asNumber(a))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).div(asNumberList(a)) );
+			block.push( new List(asNumberList(b).div(asNumberList(a))) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -570,11 +566,11 @@ class OP_LessThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) < 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).gt((Number)a) ); // gt is opposite of lt
+			block.push( new List(asNumberList(b).gt(asNumber(a))) ); // gt is opposite of lt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( asNumberList(a).lt((Number)b) ); 
+			block.push( new List(asNumberList(a).lt(asNumber(b))) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( asNumberList(a).lt(asNumberList(b)) ); 
+			block.push( new List(asNumberList(a).lt(asNumberList(b))) ); 
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -643,11 +639,11 @@ class OP_GreaterThan extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push( Num.fromBool(a.str().compareTo(b.str()) > 0) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).lt((Number)a) ); // lt is opposite of gt
+			block.push( new List(asNumberList(b).lt((Number)a)) ); // lt is opposite of gt
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( asNumberList(a).gt((Number)b) ); 
+			block.push( new List(asNumberList(a).gt((Number)b)) ); 
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( asNumberList(a).gt(asNumberList(b)) ); 
+			block.push( new List(asNumberList(a).gt(asNumberList(b))) ); 
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -713,7 +709,7 @@ class OP_A extends OpInstruction {
 	public void execute (final Block block) {
 		final ArrayList<Obj> al = new ArrayList<Obj>();
 		al.add(block.pop());
-		block.push(new GenericList(al));
+		block.push(new List(al));
 	}
 }
 
@@ -750,9 +746,9 @@ class OP_B extends OpInstruction {
 				+ " in place in call " + a.repr() + " V");
 			}
 		} else if (a.isa(LIST)) {
-			List l = (List)a;
+			List l = asList(a);
 			if (l.length() > 0) {
-				Obj popped = l.popBack();
+				Obj popped = l.mutPopBack();
 				block.push(l);
 				block.push(popped);
 			} else {
@@ -783,7 +779,7 @@ class OP_Sort extends OpInstruction {
 		if (a.isa(Obj.NUMBER)) {
 			block.push( NumberMath.bnot((Number)a) );
 		} else if(a.isa(LIST)) {
-			((List)a).sort();
+			asList(a).mutSort();
 			block.push(a);
 		} else {
 			throw new TypeError(this,a);
@@ -815,7 +811,7 @@ class OP_D extends OpInstruction {
 			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
 		}
 		else if (b.isa(LIST)) {
-			List.setIndex((List)b, a, o);
+			asList(b).mutSetIndexed(a, o);
 			block.push(b);
 		}
 		else {		
@@ -847,7 +843,7 @@ class OP_E extends OpInstruction {
 		if (n.isa(NUMBER)) {
 			block.push( TEN.pow((Number)n) );
 		} else if (n.isa(LIST)) {
-			block.push( Num.fromInt(((List)n).length()) );
+			block.push( Num.fromInt(asList(n).length()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -872,7 +868,7 @@ class OP_F extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
 		} else if(a.isa(BLOCK) && b.isa(LIST)) {
-			List blist = (List)b;
+			List blist = asList(b);
 			
 			int length = blist.length();
 			if(length == 0) {
@@ -886,11 +882,11 @@ class OP_F extends OpInstruction {
 			//for(int i = 0; i < list.size()-1; i++) {
 			for(int i = length-1; i > 0; i--) {
 				block.addAll(foldBlock.getInstructions().getInstrucionList());
-				block.add(blist.get(i));
+				block.add(blist.getExact(i));
 			}
 			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
 			//block.add(list.get(list.size()-1));
-			block.add(blist.get(0));
+			block.add(blist.getExact(0));
 			return;
 		} else {
 			throw new TypeError(this, a, b);
@@ -926,7 +922,7 @@ class OP_G extends OpInstruction {
 					while(scnr.hasNext()) {
 						sb.append(scnr.nextLine()).append('\n');
 					}
-					block.push(new Str(sb.toString()));
+					block.push(List.fromString(sb.toString()));
 				}
 				catch(IOException ex) {
 					throw new AyaRuntimeException("Cannot read URL: " + name);
@@ -942,7 +938,7 @@ class OP_G extends OpInstruction {
 					path = AyaPrefs.getWorkingDir() + name;
 				}
 				try {
-					block.push( new Str(FileUtils.readAllText(path)) );
+					block.push( List.fromString(FileUtils.readAllText(path)) );
 				} catch (IOException e) {
 					throw new AyaRuntimeException("Cannot open file: " + new File(path).getAbsolutePath());
 				} 
@@ -1051,7 +1047,7 @@ class OP_H extends OpInstruction {
 					for (char c : bin_str.toCharArray()) {
 						out_list.add(new Num(c-'0'));
 					}
-					block.push(new NumberItemList(out_list));
+					block.push(new List(new NumberItemList(out_list)));
 					return;
 				} else if (to_base == 0) {
 					// Special case: byte list
@@ -1060,10 +1056,10 @@ class OP_H extends OpInstruction {
 					for (byte b : bytes) {
 						nums.add(Num.fromByte(b));
 					}
-					block.push(new NumberItemList(nums));
+					block.push(new List(new NumberItemList(nums)));
 					return;
 				} else {
-					block.push(new Str(out_bi.toString(to_base)));
+					block.push(List.fromString(out_bi.toString(to_base)));
 					return;
 				}
 			}
@@ -1109,14 +1105,14 @@ class OP_SetIndex extends OpInstruction {
 		final Obj item = block.pop();
 		
 		if (index.isa(LIST) && !index.isa(STR)) {
-			List l = (List)index;
+			List l = asList(index);
 			if (l.length() == 1)
-				index = l.get(0);
+				index = l.getExact(0);
 		}
 		
 		// If it is a list, run the standard setindex method
 		if(list.isa(LIST)) {		
-			List.setIndex((List)list, index, item);
+			asList(list).mutSetIndexed(index, item);
 		}
 		
 		// If it is a dictionary check to see if has a metamethod first
@@ -1156,16 +1152,16 @@ class OP_Join extends OpInstruction {
 		final boolean b_is_list = b.isa(LIST) && !b.isa(STR);
 		
 		if (a_is_list && b_is_list) {
-			block.push(List.joinLists((List)b, (List)a));
+			block.push(asList(b).copyAddAll(asList(a)));
 		} else if (a_is_list) {
-			block.push(List.joinFront(b, (List)a));
+			block.push(asList(a).copyAddItemExact(0, b));
 		} else if (b_is_list) {
-			block.push(List.joinBack((List)b, a));
+			block.push(asList(b).copyAddItem(a));
 		} else {
 			final ArrayList<Obj> list = new ArrayList<Obj>();
 			list.add(b);  //Stack - Add in reverse order
 			list.add(a);
-			block.push(new GenericList(list).promote());
+			block.push(new List(list));
 		}
 	}
 }
@@ -1193,28 +1189,17 @@ class OP_L extends OpInstruction {
 			}
 
 			if (item.isa(CHAR)) {
-				block.push( new Str( ((Char)item).charValue(), repeats) );
+				block.push( new List(new Str( ((Char)item).charValue(), repeats)) );
 			} else if (item.isa(NUMBER)) {
-				block.push( new NumberItemList((Number)item, repeats) );
+				block.push( new List(new NumberItemList((Number)item, repeats)) );
 			} else if (item.isa(STR)) {
-				block.push( new StrList((Str)item, repeats) );
-			} else {
-				block.push( new GenericList(item, repeats) );
+				block.push( new List(new GenericList(item, repeats)) );
 			}
 
 		} 
 		
-		else if (n.isa(NUMBERLIST)) {
-			if (item.isa(LIST)) {
-				block.push( List.reshape((List)item, asNumberList(n)) );
-			} else {
-				List l = new GenericList(item, 1).promote();
-				block.push( List.reshape(l, asNumberList(n)) );
-			}
-		}
-		
 		else if (n.isa(NUMBERLIST) && item.isa(LIST)) {
-			block.push( List.reshape((List)item, asNumberList(n)) );
+			block.push( asList(item).reshape(asNumberList(n)) );
 		}
 		
 		else {
@@ -1240,19 +1225,19 @@ class OP_K extends OpInstruction {
 
 		
 		if (a.isa(LIST) && b.isa(LIST)) {
-			((List)b).addAll((List)a);
+			asList(b).mutAddAll(asList(a));
 			block.push(b);
 		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {			
-			((List)a).addItem(0, b);
+			asList(a).mutAddExact(0, b);
 			block.push(a);
 		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
-			((List)b).addItem(a);
+			asList(b).mutAdd(a);
 			block.push(b);
 		} else {
 			final ArrayList<Obj> list = new ArrayList<Obj>();
 			list.add(b);  //Stack - Add in reverse order
 			list.add(a);
-			block.push(new GenericList(list).promote());
+			block.push(new List(list));
 		}
 	}
 }
@@ -1274,8 +1259,7 @@ class OP_N extends OpInstruction {
 		if (a.isa(STR) && b.isa(STR)) {
 			block.push(Num.fromInt(b.str().indexOf(a.str())));
 		} else if(b.isa(Obj.LIST)) {			
-			List l = (List)b;
-			block.push(Num.fromInt(l.find(a)));
+			block.push(Num.fromInt(asList(b).find(a)));
 		} else if (b.isa(DICT) && a.isa(STR)) {
 			block.push( Num.fromBool(((Dict)b).containsKey(a.str())) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
@@ -1309,7 +1293,7 @@ class OP_O extends OpInstruction {
 		}
 		
 		if (container.isa(Obj.LIST)) {
-			block.push(ListIndexing.map((List)container, blk));
+			block.push(asList(container).map(blk));
 		} else if (container.isa(Obj.DICT)) {
 			Dict d = (Dict)container;
 			if (d.pushSelf()) {
@@ -1337,7 +1321,7 @@ class OP_P extends OpInstruction {
 
 	@Override
 	public void execute (final Block block) {
-		block.push(new Str(block.pop().str()));
+		block.push(List.fromString(block.pop().str()));
 	}
 }
 
@@ -1389,11 +1373,11 @@ class OP_R extends OpInstruction {
 		if (overload().execute(block, a)) return;
 
 		if(a.isa(LIST)) {
-			block.push( ListRangeUtils.buildRange((List)a) );
+			block.push( new List(ListRangeUtils.buildRange(asList(a))) );
 		} else if (a.isa(NUMBER)) {
-			block.push(ListRangeUtils.buildRange((Number)a));
+			block.push( new List(ListRangeUtils.buildRange((Number)a)) );
 		} else if (a.isa(CHAR)) {
-			block.push(ListRangeUtils.buildRange(((Char)a).charValue()));
+			block.push( new List(ListRangeUtils.buildRange(((Char)a).charValue())) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1416,43 +1400,30 @@ class OP_S extends OpInstruction {
 		
 		if (a.isa(LIST)) {
 			
-			// Attempt to promote the list
-			List l = (List)a;
-			if (l.isa(Obj.OBJLIST)) {
-				l = ((GenericList)l).promote();
-			}
-			
 			//Using the new Promoted list, use Str, NumberList, or ObjList
-			if (l.isa(STR)) {
+			if (a.isa(STR)) {
 				char total = 0;
-				char[] chars = ((Str)l).str().toCharArray();
+				char[] chars = a.str().toCharArray();
 				for (char c : chars) {
 					total += c;
 				}
 				block.push(Char.valueOf(total));
-			}
-			else if(l.isa(NUMBERLIST)) {
-				block.push( asNumberList(l).sum() );
-			} 
-			
-			else if(l.isa(STRLIST)) {
-				block.push( ((StrList)l).sum() );
-			} 
-			else {
-				
+			} else if(a.isa(NUMBERLIST)) {
+				block.push( asNumberList(a).sum() );
+			} else {
 				// If a normal list, fold using '+'
-				Obj[] list = l.getObjAL().toArray(new Obj[l.length()]);
-				if(list.length == 0) {
+				List list = asList(a);
+				if(list.length() == 0) {
 					block.push(Num.ZERO);
 					return;
 				}
 				//Push all but the last item
-				for(int i = list.length-1; i > 0; i--) {
+				for(int i = list.length()-1; i > 0; i--) {
 					block.add(Ops.getOp('+'));
-					block.add(list[i]);
+					block.add(list.getExact(i));
 				}
 				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-				block.add(list[0]); 
+				block.add(list.getExact(0)); 
 			}
 		} else if (a.isa(SYMBOL)) {
 			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(((Symbol)a).id())));
@@ -1485,7 +1456,7 @@ class OP_T extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).negate());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push(asNumberList(a).negate());
+			block.push( new List(asNumberList(a).negate()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1509,7 +1480,7 @@ class OP_U extends OpInstruction {
 		if (overload().execute(block, o)) return;
 		
 		if (o.isa(LIST)) {
-			((List)o).reverse();
+			asList(o).mutReverse();
 			block.push(o);
 		} else {
 			throw new TypeError(this,o);
@@ -1552,9 +1523,9 @@ class OP_V extends OpInstruction {
 						+ " in place in call " + a.repr() + " V");
 			}
 		} else if (a.isa(LIST)) {
-			List l = (List)a;
+			List l = asList(a);
 			if (l.length() > 0) {
-				Obj popped = l.pop();
+				Obj popped = l.mutPop();
 				block.push(l);
 				block.push(popped);
 			} else {
@@ -1596,7 +1567,7 @@ class OP_W extends OpInstruction {
 				if (cond.isa(NUMBER)) {
 					condition = cond.bool();
 				} else {
-					throw new TypeError(this, new Str("While condition must be a boolean or a number"), cond);
+					throw new TypeError(this, "While condition must be a boolean or a number", cond);
 				}
 			
 			} while (condition);
@@ -1716,13 +1687,13 @@ class OP_Caret extends OpInstruction {
 			//Raise b to the ath power
 			block.push( ((Number)b).pow((Number)a) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(Num.fromInt( ((Str)a).levDist((Str)b) ));
+			block.push(Num.fromInt( (asStr(a)).levDist(asStr(b)) ));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).powFrom((Number)b) );
+			block.push( new List(asNumberList(a).powFrom((Number)b)) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).pow((Number)a) );
+			block.push( new List(asNumberList(b).pow((Number)a)) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).pow(asNumberList(a)) );
+			block.push( new List(asNumberList(b).pow(asNumberList(a))) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1740,6 +1711,17 @@ class OP_Bar extends OpInstruction {
 		arg("LN", "cut L at index N");
 		setOverload(2,  "or");
 	}
+	
+	private static List strsToList(String[] strs) {
+		ArrayList<Obj> out = new ArrayList<Obj>(strs.length);
+		for (String s : strs) out.add(List.fromString(s));
+		return new List(out);
+	}
+	private static List strsToList(ArrayList<Str> strs) {
+		ArrayList<Obj> out = new ArrayList<Obj>(strs.size());
+		for (Str s : strs) out.add(new List(s));
+		return new List(out);
+	}
 
 	@Override
 	public void execute(final Block block) {
@@ -1752,11 +1734,11 @@ class OP_Bar extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.bor((Number)a, (Number)b) );
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(new StrList(b.str().split(a.str())));
+			block.push(strsToList(b.str().split(a.str())));
 		} else if (a.isa(CHAR) && b.isa(STR)) {
-			block.push(new StrList(new Str(b.str()).splitAtChar(((Char)a).charValue())));
+			block.push(strsToList(asStr(b).splitAtChar(asChar(a).charValue())));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			Pair<List, List> lists = ((List)b).splitAt(((Number)a).toInt());
+			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
 			block.push(lists.first());
 			block.push(lists.second());
 		} else {
@@ -1797,10 +1779,10 @@ class OP_Tilde extends OpInstruction {
 				block.add(new GetVariableInstruction(SymbolEncoder.encodeString(varname)));
 			}
 		} else if (a.isa(LIST)) {
-			List list = (List)a;
+			List list = asList(a);
 			//Collections.reverse(list);
 			for (int i = list.length()-1; i >= 0; i--) {
-				block.add(list.get(i));
+				block.add(list.getExact(i));
 			}
 		} else if (a.isa(SYMBOL)) {
 			block.push(Aya.getInstance().getVars().getVar( ((Symbol)a).id() ));

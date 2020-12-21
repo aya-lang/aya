@@ -5,8 +5,8 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
-import aya.obj.list.List;
 import aya.obj.number.Num;
+import aya.util.Casting;
 
 public class GetNumberIndexInstruction extends GetIndexInstruction {
 	
@@ -26,7 +26,7 @@ public class GetNumberIndexInstruction extends GetIndexInstruction {
 		final Obj o = block.pop();
 		try {
 			// Most likely a list, attempt to index it
-			block.push(((List)o).get(_index));
+			block.push(Casting.asList(o).getIndexed(_index));
 		} catch (ClassCastException e) {
 			// Not a list, is it a dict?
 			if (o.isa(Obj.DICT)) {

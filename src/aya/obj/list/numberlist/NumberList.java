@@ -2,11 +2,11 @@ package aya.obj.list.numberlist;
 
 import java.util.ArrayList;
 
-import aya.obj.list.List;
+import aya.obj.list.ListImpl;
 import aya.obj.number.Number;
 
 /** Supertype for all lists containing only numbers */
-public abstract class NumberList extends List {
+public abstract class NumberList extends ListImpl {
 
 	/////////////////////
 	// LIST OPERATIONS //

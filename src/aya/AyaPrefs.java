@@ -142,9 +142,7 @@ public class AyaPrefs {
 		workingDir = defaultWorkingDir;
 	}
 	
-	public static final Str FILE_SEPARATOR = new Str(File.separator);
-	public static final Str FILE_PATH_SEPARATOR = new Str(File.pathSeparator);
-	public static final Str SYS_LINE_SEPARATOR = new Str(System.lineSeparator());
+
 	
 	
 	public static String CONSTANTS_HELP = "constants follow the format :Nc where N is:\n"
@@ -157,10 +155,7 @@ public class AyaPrefs {
 			+ "   6: -inf\n"
 			+ "   7: int max\n"
 			+ "   8: int min\n"
-			+ "   9: system file separator\n"
-			+ "  10: system path separator\n"
-			+ "  11: char max\n"
-			+ "  12: system line sepatator\n";
+			+ "   9: char max\n";
 
 	
 	public static final Obj[] CONSTS = {
@@ -173,10 +168,7 @@ public class AyaPrefs {
 			/* 06 */ Num.DOUBLE_NINF,
 			/* 07 */ Num.INT_MAX,
 			/* 08 */ Num.INT_MIN,
-			/* 09 */ FILE_SEPARATOR,
-			/* 10 */ FILE_PATH_SEPARATOR,
-			/* 11 */ Char.MAX_VALUE,
-			/* 12 */ SYS_LINE_SEPARATOR
+			/* 09 */ Char.MAX_VALUE,
 	};
 
 	public static final String SYS_HOME_DIR = System.getProperty("user.home");

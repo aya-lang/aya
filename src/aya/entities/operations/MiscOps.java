@@ -6,9 +6,8 @@ import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
-
-import static aya.util.Casting.asNumberList;
 import static aya.util.Casting.asNumber;
+import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
 
@@ -22,9 +21,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
-import aya.obj.list.Str;
-import aya.obj.list.StrList;
+import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -176,7 +173,7 @@ class OP_Fact extends OpInstruction {
 		if(n.isa(NUMBER)){
 			block.push(((Number)n).factorial());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push( asNumberList(n).factorial() );
+			block.push( new List(asNumberList(n).factorial()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -228,26 +225,23 @@ class OP_Help extends OpInstruction {
 		
 		if(s.isa(STR)) {
 			String str = s.str();
-			ArrayList<Str> items;
+			List items = new List();
 			
 			if (str.length() == 0) {
 				String[] ss = Aya.getInstance().getHelpData().getAllItems();
-				items = new ArrayList<Str>(ss.length);
 				for (String a : ss) {
-					items.add(new Str(a));
+					items.mutAdd(List.fromString(a));
 				}
 			} else {
 				ArrayList<String> ss = Aya.getInstance().getHelpData().staticSearch(s.str());
-				items = new ArrayList<Str>(ss.size());
 				for (String a : ss) {
-					items.add(new Str(a));
+					items.mutAdd(List.fromString(a));
 				}
 			}
 			
-			block.push(new StrList(items));
-			
+			block.push(items);
 		} else if (s.isa(NUMBER)) {
-			block.push(new GenericList(OpDocReader.getAllOpDicts()));
+			block.push(new List(OpDocReader.getAllOpDicts()));
 		}
 		else {
 			throw new TypeError(this, s);
@@ -274,7 +268,7 @@ class OP_Acosine extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).acos());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).acos());
+			block.push( new List(asNumberList(n).acos()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -301,7 +295,7 @@ class OP_Log extends OpInstruction {
 		if(a.isa(NUMBER)) {
 			block.push(((Number)a).log());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push(asNumberList(a).log());
+			block.push(new List(asNumberList(a).log()));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -328,7 +322,7 @@ class OP_Asine extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).asin());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).asin());
+			block.push(new List(asNumberList(n).asin()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -354,7 +348,7 @@ class OP_Atangent extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).atan());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).atan());
+			block.push(new List(asNumberList(n).atan()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -382,7 +376,7 @@ class OP_Cosine extends OpInstruction {
 			block.push(((Number)n).cos());
 			return;
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).cos());
+			block.push(new List(asNumberList(n).cos()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -444,7 +438,7 @@ class OP_Me extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).exp());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).exp());
+			block.push(new List(asNumberList(n).exp()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -498,7 +492,7 @@ class OP_Ln extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).ln());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).ln());
+			block.push(new List(asNumberList(n).ln()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -542,7 +536,7 @@ class OP_Primes extends OpInstruction {
 			if (i < 0) {
 				throw new AyaRuntimeException("Mp: Input must be positive");
 			}
-			block.push(NumberItemList.primes(i));
+			block.push(new List(NumberItemList.primes(i)));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -579,7 +573,7 @@ class OP_To_Rat extends OpInstruction {
 					ns.add( new RationalNum(((Number)j).toDouble()) );
 				}
 			}
-			block.push(new NumberItemList(ns));
+			block.push(new List(new NumberItemList(ns)));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -606,7 +600,7 @@ class OP_Sine extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sin());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).sin());
+			block.push(new List(asNumberList(n).sin()));
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -635,7 +629,7 @@ class OP_Tangent extends OpInstruction {
 		if (n.isa(NUMBER)) {
 			block.push(asNumber(n).tan());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).tan());
+			block.push(new List(asNumberList(n).tan()));
 		} else {
 			throw new TypeError(this, n);
 		}

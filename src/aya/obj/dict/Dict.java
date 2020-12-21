@@ -8,7 +8,7 @@ import java.util.Set;
 import aya.entities.operations.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolEncoder;
 import aya.util.Pair;
@@ -229,7 +229,7 @@ public class Dict extends Obj {
 	public ArrayList<Obj> keys() {
 		ArrayList<Obj> out = new ArrayList<Obj>(size());
 		for (Long l   : symKeys()) { out.add(Symbol.fromID(l)); }
-		for (String s : strKeys()) { out.add(new Str(s)); }
+		for (String s : strKeys()) { out.add(List.fromString(s)); }
 		return out;
 	}
 	

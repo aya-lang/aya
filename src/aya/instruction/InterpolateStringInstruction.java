@@ -7,7 +7,7 @@ import aya.entities.InstructionStack;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 
 public class InterpolateStringInstruction extends Instruction  {
 	String orig; // For printing
@@ -65,7 +65,7 @@ public class InterpolateStringInstruction extends Instruction  {
 
 	@Override
 	public void execute(Block b) {
-		b.push(new Str(evalString()));
+		b.push(List.fromString(evalString()));
 		
 	}
 

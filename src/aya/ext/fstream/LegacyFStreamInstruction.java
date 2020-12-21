@@ -6,7 +6,7 @@ import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.number.Num;
 
 public class LegacyFStreamInstruction extends NamedInstruction {
@@ -37,7 +37,7 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 				if (line == null) {
 					block.push(Num.ZERO);
 				} else {
-					block.push(new Str(line));
+					block.push(List.fromString(line));
 				}
 				break;
 			case 'b':
@@ -50,7 +50,7 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 				if (all == null) {
 					block.push(Num.ZERO);
 				} else {
-					block.push(new Str(all));
+					block.push(List.fromString(all));
 				}
 				break;
 			case 'c':

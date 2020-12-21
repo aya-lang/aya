@@ -1,0 +1,284 @@
+.# Tick operator
+
+{`1 2} assert [2 1]
+{``1 2 3} assert [2 3 1]
+{```1 2 3 4} assert [2 3 4 1]
+{````1 2 3 4 5} assert [2 3 4 5 1]
+{`````1 2 3 4 5 6} assert [2 3 4 5 6 1]
+{``````1 2 3 4 5 6 7} assert [2 3 4 5 6 7 1]
+
+.# Parsing and Literals
+
+{1} assert [1]
+{[1]} assert [[1]]
+{['h'i]} assert ["hi"]
+
+.# Basic Binary Math
+{1 1 +} assert [2]
+{5 4 *} assert [20]
+{3 4 /} assert [0.75]
+{1 1 -} assert [0]
+{37 2%} assert [1]
+
+.# Math Functions
+{0.5 Mc} assert [(0.8775825618903728)]
+{0.5 Ms} assert [(0.479425538604203)]
+{0.5 Mt} assert [(0.5463024898437905)]
+{0.5 MC} assert [(1.0471975511965979)]
+{0.5 MS} assert [(0.5235987755982989)]
+{0.5 MT} assert [(0.4636476090008061)]
+{0.5 ML} assert [(-0.3010299956639812)]
+{0.5 Ml} assert [(-0.6931471805599453)]
+{0.5 .^} assert [(0.7071067811865476)]
+
+.# List
+
+{6R} assert [[1 2 3 4 5 6]]
+{3R#1+} assert [[2 3 4]]
+
+
+.# Vectorized functions
+
+{3R1+} assert [[2 3 4]]
+{3R1-} assert [[0 1 2]]
+{3R2*} assert [[2 4 6]]
+{3R2/} assert [[0.5 1 1.5]]
+{3R2^} assert [[1 4 9]]
+{3R2%} assert [[1 0 1]]
+{1 3R+} assert [[2 3 4]]
+{1 3R-} assert [[0 (-1) (-2)]]
+{2 3R*} assert [[2 4 6]]
+{2 3R/} assert [[2 1 (2 3/)]]
+{2 3R^} assert [[2 4 8]]
+{2 3R%} assert [[0 0 2]]
+{[0.5] Mc} assert [[(0.8775825618903728) ]]
+{[0.5] Ms} assert [[(0.479425538604203)  ]]
+{[0.5] Mt} assert [[(0.5463024898437905) ]]
+{[0.5] MC} assert [[(1.0471975511965979) ]]
+{[0.5] MS} assert [[(0.5235987755982989) ]]
+{[0.5] MT} assert [[(0.4636476090008061) ]]
+{[0.5] ML} assert [[(-0.3010299956639812)]]
+{[0.5] Ml} assert [[(-0.6931471805599453)]]
+{[0.5] .^} assert [[(0.7071067811865476) ]]
+
+.# List Builder
+
+{[3,]} assert [[1 2 3]]
+{[3,1+]} assert [[2 3 4]]
+{[4 6,]} assert [[4 5 6]]
+{[0 0.5 2,]} assert [[0 0.5 1 1.5 2]]
+{[10,,2%0=]} assert [[2 4 6 8 10]]
+{[[1 2] [3 4], *]} assert [[3 8]]
+
+.# Character
+
+{'c!} assert ['C]
+{'C!} assert ['c]
+{'?!} assert ['?]
+{'A 1 +} assert ['B]
+{'B 1 -} assert ['A]
+{1 'A +} assert ['B]
+{100 'A -} assert ['\#']
+
+.# String
+
+{"abcde"!} assert ["ABCDE"]
+{"abcde"U} assert ["edcba"]
+
+.# InterpolateString
+
+{:a, 0:a; "$a"} assert ["0"]
+
+.# Argument Types
+
+{1  {s::num ,s} ~} assert [1]
+{[] {s::list,s} ~} assert [[]]
+{"" {s::list,s} ~} assert [""]
+{"" {s::str ,s} ~} assert [""]
+{"hi" {s::str,s} ~} assert ["hi"]
+{"hi" {s::list,s} ~} assert ["hi"]
+{'C {s::char,s} ~} assert ['C]
+{1 'C "C" {a::any b::any c::any, a b c} ~} assert [1 'C "C"]
+{ {,} {d::dict,d}~} assert [{,}]
+{1 {s::str,} ~} assertfail
+{[1 2 3] {s::str,} ~} assertfail
+
+.# argument copying
+
+{[1 2 3]:& {a$, a B ;;}~} assert [[1 2 3]]
+{[1 2 3]:& {a, a B ;;}~}  assert [[1 2]]
+{[1 2 3]:& {a$::list, a B ;;}~} assert [[1 2 3]]
+{[1 2 3]:& {a::list, a B ;;}~}  assert [[1 2]]
+{[1 2 3]:& {a$::num, a B ;;}~} assertfail
+{[1 2 3]:& {a::num, a B ;;}~}  assertfail
+
+{1 ({a: b(a), a b})} assert [1 1]
+{1 ({a: a(a 1 +), a})} assert [2]
+{{: b({,}), b}:x; 1 x.:y; x} assert [{,}]
+
+.# Dictionaries
+
+{{,}}  assert [{,}]
+{{,5 "hi" 'C}}  assert [{,}]
+{{, 5:x}.x} assert [5]
+{5 {,}.:x.x} assert [5]
+{ {,{,5:x}:x;}.x.x} assert [5]
+{ {,5:x} "x" N \;} assert [1]
+{ {,5:x} "y" N \;} assert [0]
+
+.# Meta dictionaries
+
+{{, 1:a} {, 2:b} :M .a} assert [1]
+{{, 1:a} {, 2:b} :M .b} assert [2]
+{{, 1:a} {, 2:b 10:a} :M .a} assert [1]
+{{, 1:a {, 2:b}:__meta__} .a} assert [1]
+{{, 1:a {, 2:b}:__meta__} .b} assert [2]
+{{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
+
+.# Lambdas
+{({1})} assert [1]
+{({:a(10), a})} assert [10]
+{3 ({a, a})} assert [3]
+{3 ({a : b(0), a b})} assert [3 0]
+
+.# Captures
+({:a b c f g h,
+
+    1:a;
+    {:a^, a}:f;
+    0:a;
+    {f} assert [1]
+
+    1:a;
+    {x : a^, x a}:f;
+    0:a;
+    {100 f} assert [100 1]
+
+    1:a;
+    {x : a^ b(9), x a b}:f;
+    0:a;
+    0:b;
+    {100 f} assert [100 1 9]
+
+    .# Argument takes precedence
+    1:a;
+    {a : a^, a}:f;
+    0:a;
+    {100 f} assert [100]
+
+    {, 1:a 2:b }:b;
+    {:b^, b.a b.b b.c}:g;
+    3 b.:c;
+    20 b.:b;
+    0:b;
+    {g} assert [1 20 3]
+
+    3:a;
+    {`({:a^, a})}:h;
+
+})
+
+.# push self
+({:d x y m,
+
+    {, 1:x 2:y {1+}:inc }:d;
+    {d.x d.y} assert [1 2]
+    {d.y d.inc} assert [3]
+
+
+    {self, self.x self.y +} d.:foo;
+    {a b self, a b self.x self.y} d.:bar;
+
+    { {d.foo} assert [3] } assertfail
+    { {10 20 d.bar} assert [10 20 1 2] } assertfail
+
+    1 d.M.:__pushself__;
+
+    {d.foo} assert [3]
+    {10 20 d.bar} assert [10 20 1 2]
+
+    d.M ::__pushself__ .-
+
+    { {d.foo} assert [3] } assertfail
+
+    1 d.M.:__pushself__;
+
+    {d.foo} assert [3]
+    {10 20 d.bar} assert [10 20 1 2]
+
+    {, {other self, other.a self.a + other.b self.b +}:__add__ }:m;
+    {, 1:a 2:b m:__meta__ }:x;
+    {, 3:a 4:b m:__meta__ }:y;
+
+    .# if self is not pushed, should have an empty stack
+    { x y + } assertfail
+    .# if self is not pushed, should operate on the first x and y
+    { x y y + } assert [4 6]
+
+    1 m.:__pushself__;
+
+    {x y +} assert [4 6]
+})
+
+
+({:d,
+
+    .# Create dict with strings
+    {, 1:x 2:y } :d;
+    3 d.:["Hello!"];
+    4 d.:["foo bar"];
+    5 d.:["var"];
+
+    {d "Hello!" N \; } assert [1]
+    {d "var" N \; } assert [1]
+    {d ::var N \; } assert [1]
+    {d "foo bar" N \; } assert [1]
+    {d :E} assert [5]
+    {d :V C [1 2 3 4 5] =} assert [1]
+})
+
+.# get/set block metadata
+({:args,
+    [
+        {,
+          ::any:type;
+          0:copy;
+          ::a:name;
+        } {,
+          ::num:type;
+          1:copy;
+          ::b:name;
+        } {,
+          ::str:type;
+          0:copy;
+          ::c:name;
+        } {,
+          ::any:type;
+          1:copy;
+          ::d:name;
+        }
+    ]:args;
+
+    { {a b$::num c::str d$ : a(1) b(4), } .|.args } assert [args]
+
+    {{} {, args:args } :M .| .args} assert [args]
+})
+
+.# ::block S: duplicate with locals
+{{} S .| ::locals N\;} assert [1]
+{{: ,} S .| ::locals N\;} assert [1]
+
+.# Split into list of blocks
+{{a, b c + [10,] $% {a b} () ``+ 1 2 :k .:k k.`} .* ""*}
+assert
+["{b}{c}{+}{[10, ]}{$}{%}{{a b}}{()}{``}{+}{1}{2}{:k}{.:k}{k.`}"]
+
+.# Convert block containing var or op into list of symbols
+{ {x} :S }   assert [ [ ::x ] ]
+{ {x y} :S } assert [ [ ] ]
+{ {+} :S }   assert [ [ ::__add__ ::__radd__ ] ]
+{ {"x"} :S } assert [ [ ] ]
+
+.# copy block without header
+{ {a b, } .! P } assert ["{}"]
+{ {a b, a b +} .! P } assert ["{a b +}"]

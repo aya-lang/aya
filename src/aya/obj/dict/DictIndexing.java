@@ -1,14 +1,14 @@
 package aya.obj.dict;
 
+import static aya.util.Casting.asList;
+
 import java.util.ArrayList;
 import java.util.Set;
 
 import aya.entities.operations.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.symbol.Symbol;
 
 public class DictIndexing {
@@ -30,13 +30,13 @@ public class DictIndexing {
 		} else if (index.isa(Obj.SYMBOL)) {
 			return dict.get(((Symbol)index).id());
 		} else if (index.isa(Obj.LIST)) {
-			List l = (List)index;
+			List l = asList(index);
 			ArrayList<Obj> out = new ArrayList<Obj>(l.length());
 			for (int i = 0; i < l.length(); i++) {
-				Obj idx = l.get(i);
+				Obj idx = l.getExact(i);
 				out.add(getIndex(dict, idx));
 			}
-			return new GenericList(out).promote();
+			return new List(out);
 		} else if (index.isa(Obj.BLOCK)) {
 			return filter(dict, (Block)index);
 		} else {
@@ -71,7 +71,7 @@ public class DictIndexing {
 		Set<String> strKeys = dict.strKeys();
 		for (String key : strKeys) {
 			b.addAll(block.getInstructions().getInstrucionList());
-			b.push(new Str(key));
+			b.push(List.fromString(key));
 			b.push(dict.get(key));
 			b.eval();
 			if (!b.stackEmpty()) {
@@ -101,7 +101,7 @@ public class DictIndexing {
 		Set<String> strKeys = dict.strKeys();
 		for (String key : strKeys) {
 			b.addAll(block.getInstructions().getInstrucionList());
-			b.push(new Str(key));
+			b.push(List.fromString(key));
 			b.push(dict.get(key));
 			b.eval();
 			if (b.pop().bool()) {

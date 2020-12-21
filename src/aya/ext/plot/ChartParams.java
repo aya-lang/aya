@@ -1,5 +1,7 @@
 package aya.ext.plot;
 
+import static aya.util.Casting.asList;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
@@ -8,7 +10,6 @@ import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
@@ -20,7 +21,6 @@ public class ChartParams {
 	public static final int DEFAULT_HEIGHT = 367;
 	public static final int DEFAULT_WIDTH = 560;
 	public static final String NONE = "";
-	public static final Str STRNONE = new Str(NONE);
 	
 	public static final Symbol PLOTTYPE_LINE = Symbol.fromStr("line");
 	public static final Symbol PLOTTYPE_SCATTER = Symbol.fromStr("scatter");
@@ -102,10 +102,10 @@ public class ChartParams {
 		cp.setWidth(getNumber("width", params, null));
 		cp.setHeight(getNumber("height", params, null));
 		cp.setStroke(getNumber("stroke", params, null));
-		cp.setTitle(getParam("title", params, STRNONE).str());
-		cp.setXlabel(getParam("xlabel", params, STRNONE).str());
-		cp.setYlabel(getParam("ylabel", params, STRNONE).str());
-		cp.setFilename(getParam("filename", params, STRNONE).str());
+		cp.setTitle(getParam("title", params, List.fromString("")).str());
+		cp.setXlabel(getParam("xlabel", params, List.fromString("")).str());
+		cp.setYlabel(getParam("ylabel", params, List.fromString("")).str());
+		cp.setFilename(getParam("filename", params, List.fromString("")).str());
 		cp.setShow(getParam("show", params, Num.ONE).bool());
 		cp.setLegend(getParam("legend", params, Num.ZERO).bool());
 		cp.setHorizontal(getParam("horizontal", params, Num.ZERO).bool());
@@ -138,10 +138,10 @@ public class ChartParams {
 		//Parse the series (must be the last step)
 		for (int i = 0; i < series.length(); i++) {
 			//Every item in y must be a list of params
-			if (series.get(i).isa(Obj.DICT)) {
-				Dict dict = (Dict)(series.get(i));
+			if (series.getExact(i).isa(Obj.DICT)) {
+				Dict dict = (Dict)(series.getExact(i));
 				//Each list must have a name, stroke, color and dataset
-				Obj o_name = getParam("name", dict, Str.EMPTY);
+				Obj o_name = getParam("name", dict, List.fromString(""));
 				String name = o_name.str();
 				
 				Obj o_stroke = getParam("stroke", dict, Num.ONE);
@@ -155,7 +155,7 @@ public class ChartParams {
 				Obj o_color = getParam("color", dict, Num.ZERO);  // Use '0' if not given
 				Color color = Color.BLUE;
 				if (o_color.isa(Obj.LIST)) {
-					color = parseColor((List)o_color);
+					color = parseColor(asList(o_color));
 				} else {
 					throw new AyaRuntimeException("Series key 'color' must be a list of numbers [r g b]");
 				}
@@ -163,7 +163,7 @@ public class ChartParams {
 				Obj o_data = getParam("data", dict, Num.ZERO);  // Use '0' if not given
 				ArrayList<Number> data = null;
 				if (o_data.isa(Obj.LIST)) {
-					data = ((List)o_data).toNumberList().toArrayList();
+					data = asList(o_data).toNumberList().toArrayList();
 				} else {
 					throw new AyaRuntimeException("Series key 'data' must be a list of numbers");
 				}
@@ -177,36 +177,32 @@ public class ChartParams {
 		return cp;
 	}
 	
-	private static Color parseColor(List o_color) {
-		if (o_color.length() == 0) {
+	private static Color parseColor(List list) {
+		if (list.length() == 0) {
 			return null;
-		} else if (o_color.length() == 3
-				&& o_color.get(0).isa(Obj.NUMBER)
-				&& o_color.get(1).isa(Obj.NUMBER)
-				&& o_color.get(2).isa(Obj.NUMBER)) {
+		} else if (list.length() == 3
+				&& list.getExact(0).isa(Obj.NUMBER)
+				&& list.getExact(1).isa(Obj.NUMBER)
+				&& list.getExact(2).isa(Obj.NUMBER)) {
 			return new Color(
-					((Number)(o_color.get(0))).toInt(),
-					((Number)(o_color.get(1))).toInt(),
-					((Number)(o_color.get(2))).toInt()
+					((Number)(list.getExact(0))).toInt(),
+					((Number)(list.getExact(1))).toInt(),
+					((Number)(list.getExact(2))).toInt()
 					);
 		} else {
-			throw new AyaRuntimeException("Invalid color: " + o_color.repr());
+			throw new AyaRuntimeException("Invalid color: " + list.repr());
 		}
 	}
 	
 	private static ArrayList<Number> parseData(List data) {
-		if (!data.isa(Obj.LIST)) {
-			throw new AyaRuntimeException("Invalid datapoints in " + data.repr());
-		} else {
-			return data.toNumberList().toArrayList();
-		}
+		return data.toNumberList().toArrayList();
 	}
 	
 	private static Pair<Double, Double> parseAxis(List list) {
 		if (list.length() == 2) {
-			if (list.get(0).isa(Obj.NUMBER) && list.get(1).isa(Obj.NUMBER)) {
-				Number n_min = (Number) list.get(0);
-				Number n_max = (Number) list.get(1);
+			if (list.getExact(0).isa(Obj.NUMBER) && list.getExact(1).isa(Obj.NUMBER)) {
+				Number n_min = (Number) list.getExact(0);
+				Number n_max = (Number) list.getExact(1);
 
 				
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
@@ -247,7 +243,7 @@ public class ChartParams {
 	private static List getList(String name, Dict params, Obj dflt) {
 		Obj o = getParam(name, params, dflt);
 		if (o instanceof List) {
-			return (List)o;
+			return asList(o);
 		} else if (o != null) {
 			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a list."
 					+ " Received " + o.repr());
@@ -262,7 +258,6 @@ public class ChartParams {
 		} else {
 			return dflt;
 		}
-		
 	}
 	
 	public long getPlotType() {

@@ -9,6 +9,7 @@ import java.awt.image.SampleModel;
 
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.dict.Dict;
+import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.util.DictReader;
@@ -36,7 +37,7 @@ public class AyaImage {
 	
 	public Dict toDict() {
 		Dict d = new Dict();
-		d.set(EncodedVars.DATA, bytes);
+		d.set(EncodedVars.DATA, new List(bytes));
 		d.set(EncodedVars.WIDTH, Num.fromInt(width));
 		d.set(EncodedVars.HEIGHT, Num.fromInt(height));
 		return d;

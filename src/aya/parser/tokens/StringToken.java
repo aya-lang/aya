@@ -3,12 +3,12 @@ package aya.parser.tokens;
 import aya.Aya;
 import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
-import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InterpolateStringInstruction;
+import aya.instruction.StringLiteralInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 import aya.obj.symbol.SymbolEncoder;
 import aya.parser.Parser;
 import aya.parser.ParserString;
@@ -31,7 +31,7 @@ public class StringToken extends StdToken {
 	public Instruction getInstruction() {
 		if (interpolate && data.contains("$"))
 			return parseInterpolateStr(data);
-		return new DataInstruction(new Str(data));
+		return new StringLiteralInstruction(data);
 	}
 
 	private InterpolateStringInstruction parseInterpolateStr(String data) {
@@ -60,7 +60,7 @@ public class StringToken extends StdToken {
 					}
 					
 					//Add and reset the string builder
-					instrs.insert(0, new Str(sb.toString()));
+					instrs.insert(0, List.fromString(sb.toString()));
 					sb.setLength(0);
 					
 					//Add the variable
@@ -107,7 +107,7 @@ public class StringToken extends StdToken {
 					
 					
 					//Add and reset the string builder
-					instrs.insert(0, new Str(sb.toString()));
+					instrs.insert(0, List.fromString(sb.toString()));
 					sb.setLength(0);
 					
 					//Add the block
@@ -127,7 +127,7 @@ public class StringToken extends StdToken {
 			}
 		}
 		
-		instrs.insert(0, new Str(sb.toString()));
+		instrs.insert(0, List.fromString(sb.toString()));
 		return new InterpolateStringInstruction(data, instrs);
 	}
 

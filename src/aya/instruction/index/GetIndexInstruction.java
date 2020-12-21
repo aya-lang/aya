@@ -8,8 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
-import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
+import aya.util.Casting;
 
 public abstract class GetIndexInstruction extends Instruction {
 	
@@ -21,7 +20,7 @@ public abstract class GetIndexInstruction extends Instruction {
 		Obj index = getIndex();
 		
 		if (o.isa(Obj.LIST)) {
-			block.push(ListIndexing.getIndex((List)o, index));
+			block.push(Casting.asList(o).getIndexed(index));
 		} else if (o.isa(Obj.DICT)) {
 			block.push(DictIndexing.getIndex((Dict)o, index));
 		} else {

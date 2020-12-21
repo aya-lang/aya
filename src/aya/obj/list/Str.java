@@ -14,7 +14,7 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 
 /** Wrapper for strings */
-public class Str extends List implements Comparable<Str> {
+public class Str extends ListImpl implements Comparable<Str> {
 	
 	public static final Str EMPTY = new Str("");
 
@@ -112,7 +112,6 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Str head(int n) {
-		n = List.index(n, _str.length());
 		if (n <= _str.length()) {
 			return new Str(_str.substring(0, n));
 		} else {
@@ -122,7 +121,6 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public Str tail(int n) {
-		n = List.index(n, _str.length());
 		if (n <= _str.length()) {
 			return new Str(_str.substring(_str.length() - n, _str.length()));
 		} else {
@@ -160,47 +158,39 @@ public class Str extends List implements Comparable<Str> {
 	}
 
 	@Override
-	public List slice(int i_in, int j_in) {
-		int i = List.index(i_in, _str.length());
-		int j = List.index(j_in, _str.length());
-		
-		//Swap the order if i > j
-		if (i > j) {
-			int t = i;
-			i = j;
-			j = t;
-		}
-		
+	public ListImpl slice(int i, int j) {
 		return new Str(_str.substring(i, j));
 	}
 
 	@Override
 	public Char get(int i) {
-		return Char.valueOf(_str.charAt(List.index(i, _str.length())));
+		return Char.valueOf(_str.charAt(i));
 	}
 	
 	@Override
 	public Str get(int[] is) {
 		char[] chars = new char[is.length];
 		for (int i = 0; i < is.length; i++) {
-			chars[i] = _str.charAt(List.index(is[i], _str.length()));
+			chars[i] = _str.charAt(is[i]);
 		}
 		return new Str(new String(chars));
 	}
 	
 	@Override
 	public Char remove(int i) {
-		int index = List.index(i, _str.length());
-		Char c = Char.valueOf(_str.charAt(index));
-		_str = _str.substring(0, index) + _str.substring(index+1);
+		Char c = Char.valueOf(_str.charAt(i));
+		_str = _str.substring(0, i) + _str.substring(i+1);
 		return c;
 	}
 	
 	@Override
-	public void removeAll(Integer[] ixs) {
+	public void removeAll(int[] ixs) {
 		//Remove all duplicates from ixs
 		Set<Integer> uniqKeys = new TreeSet<Integer>();
-		uniqKeys.addAll(Arrays.asList(ixs));
+		// Create Integer[] array
+		ArrayList<Integer> Ixs = new ArrayList<Integer>(ixs.length);
+		for (int j = 0; j < ixs.length; j++) Ixs.add(ixs[j]);
+		uniqKeys.addAll(Ixs);
 		Integer[] uniqueIxs = uniqKeys.toArray(new Integer[uniqKeys.size()]);
 		
 		//Start from the highest valued index and work down
@@ -254,13 +244,9 @@ public class Str extends List implements Comparable<Str> {
 	
 	@Override
 	public void set(int i, Obj o) {
-		if (o.isa(Obj.CHAR)) {
-			char[] chars = _str.toCharArray();
-			chars[List.index(i, chars.length)] = ((Char)o).charValue();
-			_str = new String(chars);
-		} else {
-			throw new AyaRuntimeException("Cannot set item " + o.repr() + " in string " + this.repr() + ". Item must be a char.");
-		}
+		char[] chars = _str.toCharArray();
+		chars[i] = ((Char)o).charValue();
+		_str = new String(chars);
 	}
 	
 	@Override
@@ -299,32 +285,21 @@ public class Str extends List implements Comparable<Str> {
 
 	@Override
 	public void addItem(Obj o) {
-		if (o.isa(Obj.CHAR)) {
-			_str += ((Char)o).charValue();
-		} else {
-			throw new AyaRuntimeException("Cannot append " + o.repr() + " to string " + repr()
-					+ ". Use + to convert to string and concat or convert string to a generic list");
-		}
+		_str += ((Char)o).charValue();
 	}
 	
 	@Override
 	public void addItem(int i, Obj o) {
-		if (o.isa(Obj.CHAR)) {
-			i = List.index(i, _str.length());
-			// If 0, just append to front
-			if (i == 0) {
-				_str = ((Char)o).charValue() + _str;
-			} else {
-				_str = new StringBuilder(_str).insert(i, ((Char)o).charValue()).toString();
-			}
+		// If 0, just append to front
+		if (i == 0) {
+			_str = ((Char)o).charValue() + _str;
 		} else {
-			throw new AyaRuntimeException("Cannot append " + o.repr() + " to string " + repr()
-					+ ". Use + to convert to string and concat or convert string to a generic list");
+			_str = new StringBuilder(_str).insert(i, ((Char)o).charValue()).toString();
 		}
 	}
 
 	@Override
-	public void addAll(List l) {
+	public void addAll(ListImpl l) {
 		for (int i = 0; i < l.length(); i++) {
 			addItem(l.get(i));
 		}
@@ -370,6 +345,11 @@ public class Str extends List implements Comparable<Str> {
 	public Str similarEmpty() {
 		return EMPTY;
 	}
+
+	@Override
+	protected ListImpl flatten() {
+		return this; // Strs are immutable
+	}
 	
 	
 	///////////////////
@@ -401,7 +381,7 @@ public class Str extends List implements Comparable<Str> {
 	}
 
 	@Override
-	public boolean equiv(Obj o) {
+	public boolean equiv(ListImpl o) {
 		return o instanceof Str && ((Str)o)._str.equals(_str);
 	}
 	
@@ -486,11 +466,6 @@ public class Str extends List implements Comparable<Str> {
 	    return cost[len0 - 1];                                                          
 	}
 
-	
-
-	
-
-	
 
 
 }

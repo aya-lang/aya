@@ -15,7 +15,6 @@ import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.block.BlockHeader.Arg;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 import aya.variable.VariableSet;
@@ -57,7 +56,7 @@ public class Block extends Obj {
 	public void push(final Obj o) {
 		stack.push(o);
 	}
-	
+
 	public void pushBack(final Obj o) {
 		stack.add(0, o);
 	}
@@ -374,7 +373,7 @@ public class Block extends Obj {
 			b.add(instr);
 			blocks.add(0, b);
 		}
-		return new GenericList(blocks);
+		return new List(blocks);
 	}
 	
 	/** Allow access to modify the block's local variables directly
@@ -437,6 +436,7 @@ public class Block extends Obj {
 	public byte type() {
 		return Obj.BLOCK;
 	}
+
 
 
 

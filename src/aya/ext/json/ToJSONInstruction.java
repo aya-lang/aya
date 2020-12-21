@@ -4,7 +4,7 @@ import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
+import aya.obj.list.List;
 
 public class ToJSONInstruction extends NamedInstruction {
 	
@@ -21,7 +21,7 @@ public class ToJSONInstruction extends NamedInstruction {
 			throw new TypeError(this, "::dict", a);
 		}
 		
-		block.push(new Str(JSONUtils.encodeJSON(a, JSONUtils.JSONParams.getDefaultEncode())));
+		block.push(List.fromString(JSONUtils.encodeJSON(a, JSONUtils.JSONParams.getDefaultEncode())));
 	}
 
 }

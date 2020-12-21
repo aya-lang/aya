@@ -4,7 +4,6 @@ import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
 
 public class LoadJSONInstruction extends NamedInstruction {
 	
@@ -17,9 +16,9 @@ public class LoadJSONInstruction extends NamedInstruction {
 	public void execute(Block block) {
 		final Obj a = block.pop();
 		
-		try {
-			block.push(JSONUtils.decodeJSON(((Str)a).str(), JSONUtils.JSONParams.getDefaultDecode()));
-		} catch (ClassCastException e) {
+		if (a.isa(Obj.STR)) {
+			block.push(JSONUtils.decodeJSON(a.str(), JSONUtils.JSONParams.getDefaultDecode()));
+		} else {
 			throw new TypeError(this, "::str", a);
 		}
 	}

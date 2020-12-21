@@ -7,9 +7,7 @@ import java.util.Stack;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 
 public class ListBuilder extends Instruction {
@@ -75,7 +73,7 @@ public class ListBuilder extends Instruction {
 			for(int i = 0; i < size; i++) {
 				Block b = new Block();
 				for (int j = 0; j < listArgs.size(); j++) {
-					b.push(listArgs.get(j).get(i));
+					b.push(listArgs.get(j).getExact(i));
 				}
 				
 				//Apply the map
@@ -86,18 +84,18 @@ public class ListBuilder extends Instruction {
 				list.addAll(b.getStack());
 			}
 			
-			outList = new GenericList(list).promote();
+			outList = new List(list);
 			
 		} else {
-			outList = ListRangeUtils.buildRange(new GenericList(res));							//Create the initial range
+			outList = new List(ListRangeUtils.buildRange(new List(res)));							//Create the initial range
 			if(map != null) {
-				outList = ListIndexing.map(outList, this.map);
+				outList = outList.map(this.map);
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
 			for (Block filter : filters) {
-				outList = ListIndexing.filter(outList, filter);
+				outList = outList.filter(filter);
 			}
 		}
 		return outList;

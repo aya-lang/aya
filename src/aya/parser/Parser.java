@@ -649,10 +649,11 @@ public class Parser {
 					List l = ((ListLiteralInstruction) next).toList();
 					if (l != null) {
 						if (l.length() == 1) {
-							if (l.get(0).isa(Obj.NUMBER)) {
-								is.push(new GetNumberIndexInstruction(((Number) l.get(0)).toInt()));
+							Obj first = l.getExact(0);
+							if (first.isa(Obj.NUMBER)) {
+								is.push(new GetNumberIndexInstruction(((Number)first).toInt()));
 							} else {
-								is.push(new GetObjIndexInstruction(l.get(0)));
+								is.push(new GetObjIndexInstruction(first));
 							}
 						} else {
 							throw new SyntaxError(
@@ -687,7 +688,7 @@ public class Parser {
 					List l = ((ListLiteralInstruction) next).toList();
 					if (l != null) {
 						if (l.length() == 1) {
-							is.push(new SetObjIndexInstruction(l.get(0)));
+							is.push(new SetObjIndexInstruction(l.getExact(0)));
 						} else {
 							throw new SyntaxError(
 									"Expected single element list after '.:' in:\n\t" + tokens_in.toString());

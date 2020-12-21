@@ -5,6 +5,7 @@ import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Number;
+import static aya.util.Casting.*;
 
 public class ListRangeUtils {
 
@@ -65,13 +66,13 @@ public class ListRangeUtils {
 	}
 	
 	
-	public static List buildRange(List args) {
+	public static ListImpl buildRange(List args) {
 		
 		switch(args.length()) {
 		
 		//List range has one argument
 		case 1:
-			Obj o = args.get(0);
+			Obj o = args.getExact(0);
 			if (o.isa(Obj.NUMBER)) {
 				return buildRange((Number)o);
 			}
@@ -79,15 +80,15 @@ public class ListRangeUtils {
 				return new Str(charRange('a', ((Char)o).charValue(), 1));
 			}
 			else if (o.isa(Obj.LIST)) {
-				return ((List)o);
+				return asList(o).impl();
 			} else {
 				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
 			}
 
 		//List range has 2 arguments
 		case 2:
-			Obj a = args.get(0);
-			Obj b = args.get(1);
+			Obj a = args.getExact(0);
+			Obj b = args.getExact(1);
 			if(a.isa(Obj.NUMBER) && b.isa(Obj.NUMBER)) {
 				return buildRange((Number)a, (Number)b);
 			} else if (a.isa(Obj.CHAR) && b.isa(Obj.CHAR)) {
@@ -104,9 +105,9 @@ public class ListRangeUtils {
 			
 		//List range has 3 arguments
 		case 3:
-			Obj x = args.get(0);
-			Obj y = args.get(1);
-			Obj z = args.get(2);
+			Obj x = args.getExact(0);
+			Obj y = args.getExact(1);
+			Obj z = args.getExact(2);
 			if(x.isa(Obj.NUMBER) && y.isa(Obj.NUMBER) && z.isa(Obj.NUMBER)) {
 				Number lo = (Number)x;
 				Number hi = (Number)z;

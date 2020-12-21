@@ -9,8 +9,13 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
+import static aya.util.Casting.asBlock;
+import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
+import static aya.util.Casting.asList;
+import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStr;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,12 +41,9 @@ import aya.obj.block.BlockHeader;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.ListIndexing;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
@@ -123,7 +125,7 @@ public class DotOps {
 		/* 90 Z  */ null,
 		/* 91 [  */ null,
 		/* 92 \  */ new OP_Dot_BackSlash(),
-		/* 93 ]  */ new OP_Colon_Demote(),
+		/* 93 ]  */ null,
 		/* 94 ^  */ new OP_Dot_Pow(),
 		/* 95 _  */ null, // Member Variable
 		/* 96 `  */ null, // Block variable escape
@@ -201,7 +203,7 @@ class OP_Dot_Bang extends OpInstruction {
 		if (o.isa(NUMBER)) {
 			block.push(((Number)o).signnum());
 		} else if (o.isa(NUMBERLIST)) {
-			block.push(asNumberList(o).signnum());
+			block.push( new List(asNumberList(o).signnum()) );
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
 			try {
@@ -241,15 +243,10 @@ class OP_Dot_Duplicate extends OpInstruction {
 			int i = ((Number)a).toInt();
 
 			if (i > size || i <= 0) {
-				throw new AyaRuntimeException(i + " ._ stack index out of bounds");
+				throw new AyaRuntimeException(i + " .$ stack index out of bounds");
 			} else {
 				final Obj cp = block.getStack().get(size - i);
-
-				if(cp.isa(LIST)) {
-					block.push(((List)cp).deepcopy());
-				} else {
-					block.push(cp);
-				}
+				block.push(cp.deepcopy());
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -282,11 +279,11 @@ class OP_Dot_Percent extends OpInstruction {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( asNumberList(a).idivFrom((Number)b) );
+			block.push( new List(asNumberList(a).idivFrom((Number)b)) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).idiv((Number)a) );
+			block.push( new List(asNumberList(b).idiv((Number)a)) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( asNumberList(b).idiv(asNumberList(b)) );
+			block.push( new List(asNumberList(b).idiv(asNumberList(a))) );
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -311,7 +308,7 @@ class OP_Dot_And extends OpInstruction {
 		Obj c = block.pop();  // find
 
 		if ( a.isa(STR) && (b.isa(STR) || b.isa(CHAR)) && (c.isa(STR) || c.isa(CHAR))) {
-			block.push(new Str( a.str().replaceAll(c.str(), b.str()) ));
+			block.push(List.fromString( a.str().replaceAll(c.str(), b.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
 			Block initial = new Block();
 			initial.push(c);
@@ -342,7 +339,7 @@ class OP_Dot_CastChar extends OpInstruction {
 		} else if (o.isa(STR)) {
 			block.push( Char.valueOf(o.str().charAt(0)) );
 		} else if (o.isa(LIST)) {
-			block.push( Str.fromBytes(((List)o).toNumberList().toByteArray()) );
+			block.push( new List(Str.fromBytes(asNumberList(o).toByteArray())) );
 		} else if (o.isa(CHAR)) {
 			block.push(o);
 		} else {
@@ -412,20 +409,19 @@ class OP_Dot_Star extends OpInstruction {
 		final Obj a = block.pop();
 
 		if (a.isa(LIST)) {
-			ArrayList<Obj> l = ((List)a).getObjAL();
+			List l = asList(a);
 			Block b = new Block();
-			for (int i = 0; i < l.size(); i++) {
-				final Obj k = l.get(i);
+			for (int i = 0; i < l.length(); i++) {
+				final Obj k = l.getExact(i);
 				if (k.isa(BLOCK)) {
 					b.addBlockBack((Block)k);
 				} else {
-					b.addBack(l.get(i));
+					b.addBack(k);
 				}
 			}
 			block.push(b);
 		} else if (a.isa(BLOCK)) {
-			Block b = (Block)a;
-			block.push(b.split());
+			block.push(asBlock(a).split());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -470,9 +466,9 @@ class OP_Dot_Plus extends OpInstruction {
 			}
 			// Constant capture from scope (list)
 			else if (a.isa(LIST)) {
-				List l = (List)a;
+				List l = asList(a);
 				for (int i = 0; i < l.length(); i++) {
-					final Obj s = l.get(i);
+					final Obj s = l.getExact(i);
 					if (s.isa(SYMBOL)) {
 						capture(blk, (Symbol)s);
 					} else {
@@ -509,9 +505,9 @@ class OP_Dot_Minus extends OpInstruction {
 		} else if (idx.isa(STR)) {
 			d.remove(idx.str());
 		} else if (idx.isa(LIST)) {
-			List l = (List)idx;
+			List l = asList(idx);
 			for (int i = 0; i < l.length(); i++) {
-				if (!rmFromDict(d, l.get(i))) return false;
+				if (!rmFromDict(d, l.getExact(i))) return false;
 			}
 		} else {
 			return false;
@@ -528,12 +524,10 @@ class OP_Dot_Minus extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.lcm((Number)a, (Number)b));
 		} else if (b.isa(LIST) && a.isa(NUMBER)) {
-			((List)b).remove( ((Number)a).toInt() );
+			asList(b).mutRemoveIndexed(asNumber(a).toInt());
 			block.push(b);
 		} else if (a.isa(LIST) && b.isa(LIST)) {
-			List l = (List)a;
-			NumberList ns = l.toNumberList();
-			((List)b).removeAll(ns.toIntegerArray());
+			asList(b).mutRemoveAllIndexed(asNumberList(a).toIntArray());
 			block.push(b);
 		} else if (b.isa(DICT)) {
 			Dict d = (Dict)b;
@@ -565,7 +559,7 @@ class OP_Dot_FwdSlash extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).ceil());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).ceil() );
+			block.push( new List(asNumberList(a).ceil()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -603,7 +597,7 @@ class OP_Dot_LessThan extends OpInstruction {
 		Obj a = block.pop();
 
 		if (b.isa(NUMBER) && a.isa(LIST)) {
-			block.push(((List)a).head(((Number)b).toInt()));
+			block.push(asList(a).headIndexed(asNumber(b).toInt()));
 		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) > 0) {
 				block.push(a);
@@ -611,13 +605,13 @@ class OP_Dot_LessThan extends OpInstruction {
 				block.push(b);
 			}
 		} else if (a.isa(STR) && b.isa(STR)) {
-			if ( ((Str)a).compareTo((Str)b) > 0) {
+			if ( asStr(a).compareTo(asStr(b)) > 0) {
 				block.push(a);
 			} else {
 				block.push(b);
 			}
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			if ( ((Char)a).compareTo((Char)b) > 0) {
+			if (asChar(a).compareTo(asChar(b)) > 0) {
 				block.push(a);
 			} else {
 				block.push(b);
@@ -650,7 +644,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 
 
 		if (b.isa(NUMBER) && a.isa(LIST)) {
-			block.push( ((List)a).tail(((Number)b).toInt()) );
+			block.push(asList(a).tailIndexed(asNumber(b).toInt()));
 		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			if ( ((Number)a).compareTo((Number)b) < 0) {
 				block.push(a);
@@ -658,7 +652,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 				block.push(b);
 			}
 		} else if (a.isa(STR) && b.isa(STR)) {
-			if ( ((Str)a).compareTo((Str)b) < 0) {
+			if (asStr(a).compareTo(asStr(b)) < 0) {
 				block.push(a);
 			} else {
 				block.push(b);
@@ -694,11 +688,11 @@ class OP_Dot_Equals extends OpInstruction {
 		if (a.isa(DICT) && b.isa(DICT)) {
 			block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
 		} else if (a.isa(LIST) && b.isa(LIST)) {
-			block.push( List.equalsElementwise((List)a, (List)b) );
+			block.push(asList(a).equalsElementwise(asList(b)));
 		} else if ( a.isa(LIST) ) {
-			block.push( List.equalsElementwise((List)a, b) );
+			block.push(asList(a).equalsElementwise(b));
 		} else if ( b.isa(LIST) ) {
-			block.push( List.equalsElementwise((List)b, a) );
+			block.push(asList(b).equalsElementwise(a));
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -784,7 +778,7 @@ class OP_Dot_ArrayAll extends OpInstruction {
 		ArrayList<Obj> list = new ArrayList<Obj>();
 		list.addAll((Stack<Obj>)block.getStack().clone());
 		block.clearStack();
-		block.push(new GenericList(list));
+		block.push(new List(list));
 	}
 }
 
@@ -802,7 +796,7 @@ class OP_Dot_Append extends OpInstruction {
 		Obj b = block.pop();
 
 		if (a.isa(LIST)) {
-			((List)a).addItem(b);
+			asList(a).mutAdd(b);
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
@@ -830,15 +824,15 @@ class OP_Dot_SortUsing extends OpInstruction {
 		}
 		else if (a.isa(BLOCK) && b.isa(LIST)) {
 			final Block blk = ((Block)a).duplicate();
-			List objs = ((List)b);
-			List key_obj = ListIndexing.map(objs, blk);
+			List objs = asList(b);
+			List key_obj = objs.map(blk);
 
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
 			try {
 
 				for (int i = 0; i < objs.length(); i++) {
-					items.add(new SUItem(objs.get(i), (Comparable) key_obj.get(i)));
+					items.add(new SUItem(objs.getExact(i), (Comparable) key_obj.getExact(i)));
 				}
 				Collections.sort(items);
 
@@ -853,7 +847,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 				out.add(i.o);
 			}
 
-			block.push(new GenericList(out).promote());
+			block.push(new List(out));
 
 		}
 		else {
@@ -904,13 +898,11 @@ class OP_Dot_Len extends OpInstruction {
 
 	@Override
 	public void execute(Block block) {
-		final Obj n = block.pop();
+		final Obj n = block.peek();
 
 		if (n.isa(LIST)) {
-			block.push(n);
-			block.push( Num.fromInt(((List)n).length()) );
+			block.push(Num.fromInt(asList(n).length()));
 		} else if (n.isa(DICT)) {
-			block.push(n);
 			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
 		} else {
 			throw new TypeError(this, n);
@@ -933,11 +925,7 @@ class OP_Dot_Flatten extends OpInstruction {
 		final Obj n = block.pop();
 
 		if (n.isa(LIST)) {
-			if (n.isa(STR) || n.isa(NUMBERLIST)) {
-				block.push(n.deepcopy());
-			} else {
-				block.push(List.flatten((GenericList)n));
-			}
+			block.push(asList(n).flatten());
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -1014,9 +1002,9 @@ class OP_Dot_I extends OpInstruction {
 		final Obj list = block.pop();
 
 		if(list.isa(LIST)) {		
-			block.push(ListIndexing.getIndex((List)list, index, dflt_val));
+			block.push(asList(list).getIndexed(index, dflt_val));
 		} else if (list.isa(DICT)) {
-			block.push(DictIndexing.getIndex((Dict)list, index, dflt_val));
+			block.push(DictIndexing.getIndex(asDict(list), index, dflt_val));
 		} else {
 			throw new TypeError(this, index, list);
 		}
@@ -1099,10 +1087,10 @@ class OP_Dot_N extends OpInstruction {
 			block.push(b); //Push the list
 
 			final Block blk = (Block)a;
-			List l = (List)b;
+			List l = asList(b);
 			for (int i = 0; i < l.length(); i++) {
 				Block cond = blk.duplicate();
-				cond.push(l.get(i));
+				cond.push(l.getExact(i));
 				cond.eval();
 				Obj result = cond.pop();
 				if (result.bool()) {
@@ -1163,13 +1151,13 @@ class OP_Dot_R extends OpInstruction {
 			final Number n = (Number)a;
 			if (n.compareTo(Num.ZERO) == 0) {
 				// 0 .R => [ ]
-				block.push(new GenericList(new ArrayList<Obj>()));
+				block.push(new List());
 			} else if (n.compareTo(Num.ZERO) > 0) {
 				// +N .R => [0 1 2 ... N-1]
-				block.push( ListRangeUtils.buildRange(Num.ZERO, n.dec()) );
+				block.push( new List(ListRangeUtils.buildRange(Num.ZERO, n.dec())) );
 			} else {
 				// -N .R => [N+1 ... -1 0]
-				block.push( ListRangeUtils.buildRange(n.inc(), Num.ZERO) );
+				block.push( new List(ListRangeUtils.buildRange(n.inc(), Num.ZERO)) );
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1191,7 +1179,7 @@ class OP_Dot_T extends OpInstruction {
 		final Obj a = block.pop();
 
 		if (a.isa(LIST)) {
-			block.push( List.transpose((List)a) );
+			block.push(asList(a).transpose());
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1208,7 +1196,7 @@ class OP_RequestString extends OpInstruction {
 
 	@Override
 	public void execute(Block block) {
-		block.push(new Str(QuickDialog.requestString(block.pop().str())));
+		block.push(List.fromString(QuickDialog.requestString(block.pop().str())));
 	}
 }
 
@@ -1226,7 +1214,7 @@ class OP_Dot_AppendBack extends OpInstruction {
 		Obj b = block.pop();
 
 		if (a.isa(LIST)) {
-			((List)a).addItem(0, b);
+			asList(a).mutAddExact(0, b);
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
@@ -1254,7 +1242,7 @@ class OP_Dot_BackSlash extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push(((Number)a).floor());
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).floor() );
+			block.push( new List(asNumberList(a).floor()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1281,7 +1269,7 @@ class OP_Dot_Pow extends OpInstruction {
 		if(n.isa(NUMBER)) {
 			block.push(((Number)n).sqrt());
 		} else if (n.isa(NUMBERLIST)) {
-			block.push(asNumberList(n).sqrt());
+			block.push( new List(asNumberList(n).sqrt()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -1318,7 +1306,7 @@ class OP_Dot_Bar extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			block.push( ((Number)a).abs() );
 		} else if (a.isa(NUMBERLIST)) {
-			block.push( asNumberList(a).abs() );
+			block.push( new List(asNumberList(a).abs()) );
 		} else if (a.isa(BLOCK)) {
 			block.push(getBlockMeta((Block)a));
 		} else {
@@ -1340,7 +1328,7 @@ class OP_Dot_Bar extends OpInstruction {
 			args_list.add(arg);
 		}
 		Collections.reverse(args_list);
-		d.set(ARGS, new GenericList(args_list));
+		d.set(ARGS, new List(args_list));
 		final VariableSet vars = b.getLocals();
 		if (vars != null) {
 			d.set(LOCALS, new Dict(vars));

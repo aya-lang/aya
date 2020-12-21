@@ -4,7 +4,7 @@ module ::sys
 export ::sys
 
 .#? sys.iswindows\n  returns true if system is windows
-def sys::iswindows {:9c"\\"=}
+def sys::iswindows {:9s"\\"=}
 
 
 .# ::str sys.cd\n  set working directory

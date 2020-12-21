@@ -1,5 +1,6 @@
 package aya.parser;
 
+import java.io.File;
 import java.math.BigInteger;
 
 import org.apfloat.Apfloat;
@@ -7,6 +8,7 @@ import org.apfloat.Apfloat;
 import aya.AyaPrefs;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
+import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
@@ -123,7 +125,7 @@ public class SpecialNumberParser {
 			case CONST:
 				return toConstVal();
 			case STR:
-				return toStrVal();
+				return List.fromString(toStrVal());
 			default:
 				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
 			}
@@ -233,24 +235,28 @@ public class SpecialNumberParser {
 			+ "  6/-6: 0-9 / 9-0\n"
 			+ "  7/-7: ascii (0-255) / printable ascii (23-128)\n";
 	
-	/* 0*/ public static final Str S_HW = new Str("Hello, world!");
-	/* 1*/ public static final Str S_AZ = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZ");
-	/*-1*/ public static final Str S_az = new Str("abcdefghijklmnopqrstuvwxyz");
-	/* 2*/ public static final Str S_azAZ = new Str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ");
-	/*-2*/ public static final Str S_AZaz = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-	/* 3*/ public static final Str S_azAZ09 = new Str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ0123456789");
-	/*-3*/ public static final Str S_AZaz09 = new Str("ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
-	/* 4*/ public static final Str S_CTSY = new Str("bcdfghjklmnpqrstvwxyz");
-	/*-4*/ public static final Str S_VOWEL = new Str("aeiou");
-	/* 5*/ public static final Str S_CTS = new Str("bcdfghjklmnpqrstvwxz");
-	/*-5*/ public static final Str S_VOWELY = new Str("aeiouy");
-	/* 6*/ public static final Str S_09 = new Str("0123456789");
-	/*-6*/ public static final Str S_90= new Str("9876543210");
-	/* 7*/ public static final Str S_ASCII = new Str((char)0,(char)255);
-	/*-7*/ public static final Str S_ASCIIP = new Str((char)32,(char)128);
-	/* ?*/ public static final Str S_EMPTY = new Str("");
+	/* 0*/ public static final String S_HW = "Hello, world!";
+	/* 1*/ public static final String S_AZ = "ABCDEFGHIJKLMONPQRSTUVWXYZ";
+	/*-1*/ public static final String S_az = "abcdefghijklmnopqrstuvwxyz";
+	/* 2*/ public static final String S_azAZ = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ";
+	/*-2*/ public static final String S_AZaz = "ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	/* 3*/ public static final String S_azAZ09 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMONPQRSTUVWXYZ0123456789";
+	/*-3*/ public static final String S_AZaz09 = "ABCDEFGHIJKLMONPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	/* 4*/ public static final String S_CTSY = "bcdfghjklmnpqrstvwxyz";
+	/*-4*/ public static final String S_VOWEL = "aeiou";
+	/* 5*/ public static final String S_CTS = "bcdfghjklmnpqrstvwxz";
+	/*-5*/ public static final String S_VOWELY = "aeiouy";
+	/* 6*/ public static final String S_09 = "0123456789";
+	/*-6*/ public static final String S_90= "9876543210";
+	/* 7*/ public static final String S_ASCII = new Str((char)0,(char)255).str();
+	/*-7*/ public static final String S_ASCIIP = new Str((char)32,(char)128).str();
+	/* 8*/ public static final String S_SYS_LINE_SEPARATOR = System.lineSeparator();
+	/*-8*/ public static final String S_FILE_PATH_SEPARATOR = File.pathSeparator;
+	/* 9*/ public static final String S_FILE_SEPARATOR = File.separator;
+	/* ?*/ public static final String S_EMPTY = "";
 	
-	private Str toStrVal() {
+	
+	private String toStrVal() {
 		if (_snd.equals("")) {
 			int id = 0;
 			try {
@@ -260,26 +266,30 @@ public class SpecialNumberParser {
 			}
 			
 			switch (id) {
-			case 0: return S_HW;
-			case 1: return S_AZ;
+			case  0: return S_HW;
+			case  1: return S_AZ;
 			case -1: return S_az;
-			case 2: return S_azAZ;
+			case  2: return S_azAZ;
 			case -2: return S_AZaz;
-			case 3: return S_azAZ09;
+			case  3: return S_azAZ09;
 			case -3: return S_AZaz09;
-			case 4: return S_CTSY;
+			case  4: return S_CTSY;
 			case -4: return S_VOWEL;
-			case 5: return S_CTS;
+			case  5: return S_CTS;
 			case -5: return S_VOWELY;
-			case 6: return S_09;
+			case  6: return S_09;
 			case -6: return S_90;
-			case 7: return S_ASCII;
+			case  7: return S_ASCII;
 			case -7: return S_ASCIIP;
+			case  8: return S_SYS_LINE_SEPARATOR;
+			case -8: return S_FILE_PATH_SEPARATOR;
+			case  9: return S_FILE_SEPARATOR;
+			
 			default: return S_EMPTY;
 			}
 		}
 		else {
-			return Str.EMPTY;
+			return "";
 		}
 	}
 }

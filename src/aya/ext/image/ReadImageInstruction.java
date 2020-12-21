@@ -13,7 +13,6 @@ import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
 
 public class ReadImageInstruction extends NamedInstruction {
@@ -28,9 +27,9 @@ public class ReadImageInstruction extends NamedInstruction {
 		final Obj a = block.pop();
 		String filename = null;
 		
-		try {
-			filename = ((Str)a).getStr();
-		} catch (ClassCastException e) {
+		if (a.isa(Obj.STR)) {
+			filename = a.str();
+		} else {
 			throw new TypeError(this, "::str", a);
 		}
 		

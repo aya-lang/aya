@@ -6,10 +6,13 @@ import java.util.Collections;
 
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
-import aya.obj.list.List;
+import aya.obj.list.ListAlgorithms;
+import aya.obj.list.ListImpl;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+
+import static aya.util.Casting.asNumber;
 
 /** List containing a list of Number objects */
 public class NumberItemList extends NumberList {
@@ -461,37 +464,12 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberItemList head(int n) {	
-		n = List.index(n, _list.size());
-		ArrayList<Number> out = new ArrayList<Number>(n);
-		
-		if (n <= _list.size()) {
-			for (int i = 0; i < n; i++) {
-				out.add(_list.get(i));
-			}
-		} else {
-			out.addAll(_list);
-			for (int i = _list.size(); i < n; i++) {
-				out.add(Num.ZERO); //Pad with 0s
-			}
-		}
-		return new NumberItemList(out);
+		return new NumberItemList(ListAlgorithms.head(_list, n, Num.ZERO));
 	}
 
 	@Override
 	public NumberItemList tail(int n) {
-		n = List.index(n, _list.size());
-		ArrayList<Number> out = new ArrayList<Number>(n);
-		if (n <= _list.size()) {
-			for (int i = _list.size()-n; i < _list.size(); i++) {
-				out.add(_list.get(i));
-			}
-		} else {
-			for (int i = 0; i < n-_list.size(); i++) {
-				out.add(Num.ZERO); //Pad with 0s
-			}
-			out.addAll(_list);
-		}	
-		return new NumberItemList(out);
+		return new NumberItemList(ListAlgorithms.tail(_list, n, Num.ZERO));
 	}
 
 	@Override
@@ -521,80 +499,46 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public NumberItemList slice(int i, int j) {
-		if (i >= j) {
-			throw new AyaRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
-		}
-		ArrayList<Number> out = new ArrayList<Number>(j - i);
-		for (int x = i; x < j; x++) {
-			out.add(_list.get(x));
-		}
-		return new NumberItemList(out);
+		return new NumberItemList(ListAlgorithms.slice(_list, i, j));
 	}
 
 	@Override
 	public Number get(int i) {
-		return _list.get(List.index(i, _list.size()));
+		return _list.get(i);
 	}
 	
 	@Override
 	public NumberItemList get(int[] is) {
 		ArrayList<Number> out = new ArrayList<Number>(is.length);
 		for (int i : is) {
-			out.add( _list.get(List.index(i, _list.size())) );
+			out.add(_list.get(i));
 		}
 		return new NumberItemList(out);
 	}
 	
 	@Override
 	public Number remove(int i) {
-		return _list.remove(List.index(i, _list.size()));
+		return _list.remove(i);
 	}
 	
 	@Override
-	public void removeAll(Integer[] ixs) {
-		int size = _list.size();
-		
-		for (int i = 0; i < ixs.length; i++) {
-			_list.set(List.index(ixs[i], size), null);
-		}
-		
-		for (int i = 0; i < _list.size(); i++) {
-			if (_list.get(i) == null) {
-				_list.remove(i);
-				i--;
-			}
-		}
+	public void removeAll(int[] ixs) {
+		ListAlgorithms.removeAll(_list, ixs);
 	}
 
 	@Override
 	public int find(Obj o) {
-		int ix;
-		for (ix = 0; ix < _list.size(); ix++) {
-			if (o.equiv(_list.get(ix))) {
-				return ix;
-			}
-		}
-		return -1;
+		return ListAlgorithms.find(_list, o);
 	}
 
 	@Override
 	public int findBack(Obj o) {
-		int ix;
-		for (ix = _list.size() - 1; ix >= 0; ix--) {
-			if (o.equiv(_list.get(ix))) {
-				return ix;
-			}
-		}
-		return -1;
+		return ListAlgorithms.findBack(_list, o);
 	}
 
 	@Override
 	public int count(Obj o) {
-		int count = 0;
-		for (int i = 0; i < _list.size(); i++) {
-			count += _list.get(i).equiv(o) ? 1 : 0;
-		}
-		return count;
+		return ListAlgorithms.count(_list, o);
 	}
 	
 	@Override
@@ -604,11 +548,7 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public void set(int i, Obj o) {
-		if (o.isa(Obj.NUMBER)) {
-			_list.set(List.index(i, _list.size()), (Number)o);
-		} else {
-			throw new AyaRuntimeException("Cannot set item " + o.repr() + " in numeric list " + this.repr() + ". Item must be a number.");
-		}
+		_list.set(i, asNumber(o));
 	}
 	
 	@Override
@@ -622,20 +562,7 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public NumberItemList unique() {
-		ArrayList<Number> unique = new ArrayList<Number>();
-		for (Number l : _list) {
-			boolean alreadyContains = false;
-			for (Number u : unique) {
-				if (l.equiv(u)) {
-					alreadyContains = true;
-					break;
-				}
-			}
-			if (!alreadyContains) {
-				unique.add(l);
-			}
-		}
-		return new NumberItemList(unique);
+		return new NumberItemList(ListAlgorithms.unique(_list));
 	}
 	
 	
@@ -647,26 +574,16 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public void addItem(Obj o) {
-		if (o.isa(Obj.NUMBER)) {
-			_list.add((Number)o);
-		} else {
-			throw new AyaRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
-					+ ". Convert the list to a generic list to add the item");
-		}
+		_list.add((Number)o);
 	}
 	
 	@Override
 	public void addItem(int i, Obj o) {
-		if (o.isa(Obj.NUMBER)) {
-			_list.add(List.index(i, _list.size()) , (Number)o);
-		} else {
-			throw new AyaRuntimeException("Cannot append " + o.repr() + " to number list " + repr()
-					+ ". Use convert list to a generic list to add the item");
-		}
+		_list.add(i, (Number)o);
 	}
 
 	@Override
-	public void addAll(List l) {
+	public void addAll(ListImpl l) {
 		for (int i = 0; i < l.length(); i++) {
 			addItem(l.get(i));
 		}
@@ -681,12 +598,17 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public boolean canInsert(Obj o) {
-		return o.isa(NUMBER);
+		return o.isa(Obj.NUMBER);
 	}
 
 	@Override
 	public NumberItemList similarEmpty() {
 		return new NumberItemList(new ArrayList<Number>());
+	}
+
+	@Override
+	protected ListImpl flatten() {
+		return copy();
 	}
 	
 	
@@ -710,58 +632,26 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public String repr() {
-		StringBuilder sb = new StringBuilder("[ ");
-		
-		
-		if (_list.size() < 50) {
-			//Output the whole list
-			for (Obj o : _list) {
-				sb.append(o.repr() + " ");
-			}
-		} else {
-			// Output 10 front
-			for (int i = 0; i < 10; i++) {
-				sb.append(_list.get(i).repr() + " ");
-			}
-			
-			sb.append(" ... ");
-			
-			// Output 10 back
-			for (int i = _list.size() - 11; i < _list.size(); i++) {
-				sb.append(_list.get(i).repr() + " ");
-			}
-		}
-		
-		return sb.append(']').toString();
+		return ListAlgorithms.repr(_list);
 	}
 
 	@Override
 	public String str() {
-		StringBuilder sb = new StringBuilder("[ ");
-		for (Obj o : _list) {
-			sb.append(o.repr() + " ");
-		}
-		return sb.append(']').toString();
+		return ListAlgorithms.str(_list);
 	}
 
 	@Override
-	public boolean equiv(Obj o) {
-		// Must be a numeric list
-		if (o instanceof List) {
-			List list = (List)o;
-			// Must have the same length
-			if (list.length() == this.length()) {
-				// Every corresponding item must be equivalent
-				for (int i = 0; i < this.length(); i++) {
-					if (!list.get(i).equiv(_list.get(i))) {
-						return false;
-					}
+	public boolean equiv(ListImpl list) {
+		// Must have the same length
+		if (list.length() == this.length()) {
+			// Every corresponding item must be equivalent
+			for (int i = 0; i < this.length(); i++) {
+				if (!list.get(i).equiv(_list.get(i))) {
+					return false;
 				}
-				return true;
-			} else { 
-				return false;
 			}
-		} else {
+			return true;
+		} else { 
 			return false;
 		}
 	}
@@ -1095,8 +985,5 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
-
-
-
-
+	
 }

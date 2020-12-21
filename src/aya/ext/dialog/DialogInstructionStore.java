@@ -1,5 +1,7 @@
 package aya.ext.dialog;
 
+import static aya.util.Casting.asList;
+
 import javax.swing.JOptionPane;
 
 import aya.exceptions.AyaRuntimeException;
@@ -9,7 +11,6 @@ import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.variable.EncodedVars;
@@ -23,7 +24,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			@Override
 			public void execute(Block block) {
 				final Obj title = block.pop();
-				block.push(new Str(QuickDialog.requestString(title.str())));
+				block.push(List.fromString(QuickDialog.requestString(title.str())));
 			}
 		});
 
@@ -60,14 +61,14 @@ public class DialogInstructionStore extends NamedInstructionStore {
 				if (!(type_obj.isa(Obj.SYMBOL) && options_obj.isa(Obj.LIST))) throw new TypeError(this, "SSJ", type_obj, title_obj, message_obj);
 
 				int type = symToDialogType((Symbol)type_obj);
-				List options = (List)options_obj;
+				List options = asList(options_obj);
 				
 				if (options.length() != 2) throw new AyaRuntimeException(":{dialog.confirm} : Expected options list of length 2. Got " + options.repr());
 				
 				boolean val = QuickDialog.confirm(
 						message_obj.str(),
-						options.get(0).str(),
-						options.get(1).str(),
+						options.getExact(0).str(),
+						options.getExact(1).str(),
 						title_obj.str(),
 						type);
 						
@@ -87,12 +88,12 @@ public class DialogInstructionStore extends NamedInstructionStore {
 
 				int type = symToDialogType((Symbol)type_obj);
 
-				List options_list = (List)options_obj;
+				List options_list = asList(options_obj);
 				if (options_list.length() <= 0) throw new AyaRuntimeException(":{dialog.buttons} : Expected non-empty options. Got " + options_list.repr());
 
 				String[] options = new String[options_list.length()];
 				for (int i = 0; i < options_list.length(); i++) {
-					options[i] = options_list.get(i).str();
+					options[i] = options_list.getExact(i).str();
 				}
 
 				String selected = QuickDialog.selectOptionButtons(
@@ -101,7 +102,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 						title_obj.str(),
 						type);
 						
-				block.push(new Str(selected));
+				block.push(List.fromString(selected));
 			}
 		});
 
@@ -117,12 +118,12 @@ public class DialogInstructionStore extends NamedInstructionStore {
 
 				int type = symToDialogType((Symbol)type_obj);
 
-				List options_list = (List)options_obj;
+				List options_list = asList(options_obj);
 				if (options_list.length() <= 0) throw new AyaRuntimeException(":{dialog.buttons} : Expected non-empty options. Got " + options_list.repr());
 
 				String[] options = new String[options_list.length()];
 				for (int i = 0; i < options_list.length(); i++) {
-					options[i] = options_list.get(i).str();
+					options[i] = options_list.getExact(i).str();
 				}
 
 				String selected = QuickDialog.selectOptionDropdown(
@@ -131,7 +132,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 						title_obj.str(),
 						type);
 						
-				block.push(new Str(selected));
+				block.push(List.fromString(selected));
 				
 			}
 		});
@@ -139,7 +140,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 		addInstruction(new NamedInstruction("dialog.choosefile") {
 			@Override
 			public void execute(Block block) {
-				block.push(new Str(QuickDialog.chooseFile()));
+				block.push(List.fromString(QuickDialog.chooseFile()));
 			}
 		});
 	}

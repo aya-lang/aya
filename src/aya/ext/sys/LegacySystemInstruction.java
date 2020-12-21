@@ -9,8 +9,7 @@ import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.Str;
-import aya.obj.list.StrList;
+import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.util.FileUtils;
@@ -60,7 +59,7 @@ public class LegacySystemInstruction extends NamedInstruction {
 		
 		//Return working directory
 		case 2:
-			b.push(new Str(AyaPrefs.getWorkingDir()));
+			b.push(List.fromString(AyaPrefs.getWorkingDir()));
 			break;
 			
 		//Set working directory
@@ -86,11 +85,11 @@ public class LegacySystemInstruction extends NamedInstruction {
 				String fstr = arg.str();
 				try {
 					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
-					ArrayList<Str> obj_dirs = new ArrayList<Str>(dirs.size());
+					ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
 					for (String s : dirs) {
-						obj_dirs.add(new Str(s));
+						obj_dirs.add(List.fromString(s));
 					}
-					b.push(new StrList(obj_dirs));
+					b.push(new List(obj_dirs));
 				} catch (NullPointerException e) {
 					throw new AyaRuntimeException("arg 4 MZ: arg is not a valid location. Received:\n" + fstr);
 				}
@@ -128,7 +127,7 @@ public class LegacySystemInstruction extends NamedInstruction {
 			break;
 		
 		case 7:
-			b.push(new Str(FileUtils.pathAppend(AyaPrefs.getHomeDir(), arg.str())));
+			b.push(List.fromString(FileUtils.pathAppend(AyaPrefs.getHomeDir(), arg.str())));
 			break;
 			
 		case 8:
@@ -139,15 +138,15 @@ public class LegacySystemInstruction extends NamedInstruction {
 			{
 				String val = System.getProperty(arg.str());
 				if (val == null) {
-					b.push(Str.EMPTY);
+					b.push(List.fromString(""));
 				} else {
-					b.push(new Str(val));
+					b.push(List.fromString(val));
 				}
 			}
 			break;
 			
 		case 10:
-			b.push(new Str(FileUtils.resolveHome(arg.str())));
+			b.push(List.fromString(FileUtils.resolveHome(arg.str())));
 			break;
 		
 		default:

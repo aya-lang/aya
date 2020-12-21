@@ -15,9 +15,7 @@ import aya.exceptions.AyaException;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.list.GenericList;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolEncoder;
@@ -122,7 +120,7 @@ public class JSONUtils {
 					arr.add(toObj(jarr.get(i), params));
 				}
 			}
-			return new GenericList(arr).promote();
+			return new List(arr);
 		} else if (object instanceof Integer) {
 			return new Num((Integer)object);
 		} else if (object instanceof Double) {
@@ -134,10 +132,10 @@ public class JSONUtils {
 				if (SymbolEncoder.isValidStr(name)) {
 					return Symbol.fromStr(name);
 				} else {
-					return new Str(str);
+					return List.fromString(str);
 				}
 			} else {
-				return new Str(str);
+				return List.fromString(str);
 			}
 		} else if (object instanceof Boolean) {
 			return (Boolean)object ? params.obj_true : params.obj_false;
@@ -172,7 +170,7 @@ public class JSONUtils {
 			List l = (List)o;
 			vc.push(l);
 			for (int i = 0; i < l.length(); i++) {
-				Obj e = l.get(i);
+				Obj e = l.getExact(i);
 				if (vc.hasVisited(e)) {
 					throw new AyaRuntimeException("JSON: Circular reference detected when serializing list at index " + i);
 				} else {
