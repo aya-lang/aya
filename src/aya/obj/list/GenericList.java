@@ -11,6 +11,7 @@ import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.util.Casting;
 
 /** List of objects of any type */
 public class GenericList extends ListImpl {
@@ -194,7 +195,20 @@ public class GenericList extends ListImpl {
 
 	@Override
 	public void sort() {
-		throw new AyaRuntimeException("Cannot sort generic list: " + repr() + " Cast to more specific list first");
+		if (_list.size() == 0) return;
+
+		// Are they all strings?
+		ArrayList<Str> strs = new ArrayList<Str>();
+		for (Obj o : _list) {
+			if (o.isa(Obj.STR)) {
+				strs.add(Casting.asStr(o));
+			} else {
+				throw new AyaRuntimeException("Cannot sort generic list: " + repr());
+			}
+		}
+		Collections.sort(strs);
+		_list.clear();
+		for (Str s : strs) _list.add(List.fromStr(s));
 	}
 
 	@Override
