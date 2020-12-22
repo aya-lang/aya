@@ -686,8 +686,10 @@ public class List extends Obj {
 	 * into a NumberList)
 	 */
 	public void mutAdd(Obj o) {
+		final boolean do_promote = length() == 0;
 		try {
 			_list.addItem(o);
+			if (do_promote) promote();
 		} catch (ClassCastException e) {
 			_list = new GenericList(_list.getObjAL());
 			_list.addItem(o);
@@ -700,8 +702,10 @@ public class List extends Obj {
 	 * into a NumberList)
 	 */
 	public void mutAddExact(int i, Obj o) {
+		final boolean do_promote = length() == 0;
 		try {
 			_list.addItem(i, o);
+			if (do_promote) promote();
 		} catch (ClassCastException e) {
 			_list = new GenericList(_list.getObjAL());
 			_list.addItem(i, o);
@@ -714,8 +718,10 @@ public class List extends Obj {
 	 * ( Ex. {@code [1 2 3].extend(['a 'b 'c])} )
 	 */
 	public void mutAddAll(List l) {
+		final boolean do_promote = length() == 0;
 		try {
 			_list.addAll(l._list);
+			if (do_promote) promote();
 		} catch (ClassCastException e) {
 			_list = new GenericList(_list.getObjAL());
 			_list.addAll(l._list);
