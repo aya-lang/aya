@@ -1192,7 +1192,7 @@ class OP_L extends OpInstruction {
 				block.push( new List(new Str( ((Char)item).charValue(), repeats)) );
 			} else if (item.isa(NUMBER)) {
 				block.push( new List(new NumberItemList((Number)item, repeats)) );
-			} else if (item.isa(STR)) {
+			} else  {
 				block.push( new List(new GenericList(item, repeats)) );
 			}
 
