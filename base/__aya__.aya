@@ -396,6 +396,10 @@ opt_mod (
     .# required libraries
     "importlib"
     "enum"
+
+    .# Interpreter commands
+    "interpreter_t"
+
 ] :# {f,
     .# "Loading base/$f..." :P
     load "base/$f"

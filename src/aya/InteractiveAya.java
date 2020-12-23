@@ -49,7 +49,7 @@ public class InteractiveAya extends Thread {
 			+ "  \\? <help text>\n\tsearch for help text in Aya\n"
 			+ "  \\VERSION or \\V\n\tdisplay Ara version name\n"
 			+ "  \\USERCMD <variable> [.] or \\: <variable> [.]\n"
-			+ "\tInput will be parsed as \"\"\"input\"\"\" aya.interpreter.<variable>\n"
+			+ "\tInput will be parsed as \"\"\"input\"\"\" __aya__.interpreter.<variable>\n"
 			+ "\tUse \"\\USERCMD -\" to return to normal\n"
 			+ "\tUse \"\\USERCMD <variable> .\" to hide message\n";
 	
@@ -65,7 +65,7 @@ public class InteractiveAya extends Thread {
 				_usercmd = null;
 				return SKIP_WAIT;
 			} else {
-				String code = "\"\"\"" + input + "\"\"\" aya.interpreter." + _usercmd;
+				String code = "\"\"\"" + input + "\"\"\" __aya__.interpreter." + _usercmd;
 				_aya.queueInput(code);
 				return NORMAL_INPUT;
 			}
@@ -137,7 +137,7 @@ public class InteractiveAya extends Thread {
 				if (settings.length > 1 && SymbolEncoder.isValidStr(settings[1])) {
 					_usercmd = settings[1];
 					if (!(settings.length > 2 && settings[2].equals("."))) {
-						_aya.getOut().println("Input now being parsed as:\n\t\"\"\"input\"\"\" aya.interpreter." + _usercmd
+						_aya.getOut().println("Input now being parsed as:\n\t\"\"\"input\"\"\" __aya__.interpreter." + _usercmd
 								+ "\nType \"\\" + command + " -\" to return to normal"
 								+ "\nType \"\\" + command + " " + _usercmd + " .\" to hide this message in the future");
 					}
@@ -153,7 +153,7 @@ public class InteractiveAya extends Thread {
 					_aya.getErr().println("No input provided");
 				} else {			
 					// construct [ """ (code) """ varname ]
-					code = "\"\"\"" + code + "\"\"\" aya.interpreter." + command;
+					code = "\"\"\"" + code + "\"\"\" __aya__.interpreter." + command;
 					_aya.queueInput(code);
 					return NORMAL_INPUT;
 				}

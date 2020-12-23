@@ -1,0 +1,11 @@
+.# Defines \t interpreter flag
+
+{
+    .# Create a block from the input and time the execution
+    .~ .time
+    .# Print the results of the block
+    .AB\ #{.P" ".P}; "":P
+    .# Print execution time message
+    "Execution took "\+" ms"+:P
+
+} __aya__.interpreter.:t
