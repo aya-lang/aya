@@ -2,6 +2,7 @@ package aya.instruction.flag;
 
 import java.util.Arrays;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.block.Block;
 
@@ -43,6 +44,12 @@ public class TickFlagInstruction extends FlagInstruction {
 		} catch (IndexOutOfBoundsException e) {
 			throw new AyaRuntimeException("Tick Operator: Error attempting to move object back " + (amount) + " instructions");
 		}
+	}
+
+	@Override
+	public ReprStream repr(ReprStream stream) {
+		stream.print(toString());
+		return stream;
 	}
 	
 	@Override
