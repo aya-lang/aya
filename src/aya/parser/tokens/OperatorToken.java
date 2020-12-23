@@ -1,12 +1,12 @@
 package aya.parser.tokens;
 
-import aya.entities.operations.ColonOps;
-import aya.entities.operations.DotOps;
-import aya.entities.operations.MiscOps;
-import aya.entities.operations.Ops;
 import aya.exceptions.SyntaxError;
 import aya.instruction.Instruction;
+import aya.instruction.op.ColonOps;
+import aya.instruction.op.DotOps;
+import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Ops;
 
 public class OperatorToken extends StdToken {
 	

@@ -2,7 +2,6 @@ package aya.instruction;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.entities.InstructionStack;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;

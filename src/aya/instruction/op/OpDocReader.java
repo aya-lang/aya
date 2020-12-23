@@ -2,10 +2,6 @@ package aya.instruction.op;
 
 import java.util.ArrayList;
 
-import aya.entities.operations.ColonOps;
-import aya.entities.operations.DotOps;
-import aya.entities.operations.MiscOps;
-import aya.entities.operations.Ops;
 import aya.obj.Obj;
 
 public class OpDocReader {

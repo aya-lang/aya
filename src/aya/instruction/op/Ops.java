@@ -1,4 +1,4 @@
-package aya.entities.operations;
+package aya.instruction.op;
 
 import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.CHAR;
@@ -36,7 +36,6 @@ import aya.AyaPrefs;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.index.AnonGetIndexInstruction;
-import aya.instruction.op.OpInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;

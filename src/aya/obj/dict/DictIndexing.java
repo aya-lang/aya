@@ -5,7 +5,7 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 import java.util.Set;
 
-import aya.entities.operations.Ops;
+import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;

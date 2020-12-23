@@ -1,13 +1,9 @@
-package aya.entities; 
+package aya.instruction; 
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import aya.ReprStream;
-import aya.instruction.BlockLiteralInstruction;
-import aya.instruction.DataInstruction;
-import aya.instruction.Instruction;
-import aya.instruction.VariableSetInstruction;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;

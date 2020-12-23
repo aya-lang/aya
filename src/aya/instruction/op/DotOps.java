@@ -1,4 +1,4 @@
-package aya.entities.operations;
+package aya.instruction.op;
 
 
 import static aya.obj.Obj.BLOCK;
@@ -34,7 +34,6 @@ import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.ext.dialog.QuickDialog;
 import aya.instruction.ListBuilderInstruction;
-import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;

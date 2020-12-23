@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.entities.InstructionStack;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;

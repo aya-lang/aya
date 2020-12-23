@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.entities.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;

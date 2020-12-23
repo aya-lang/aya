@@ -1,8 +1,8 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
-import aya.entities.operations.Ops;
 import aya.exceptions.TypeError;
+import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;

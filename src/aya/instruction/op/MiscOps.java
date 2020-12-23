@@ -1,4 +1,4 @@
-package aya.entities.operations;
+package aya.instruction.op;
 
 import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
@@ -15,8 +15,6 @@ import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
-import aya.instruction.op.OpDocReader;
-import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;

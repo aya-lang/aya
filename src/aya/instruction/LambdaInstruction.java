@@ -1,7 +1,6 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.entities.InstructionStack;
 import aya.obj.block.Block;
 
 /**

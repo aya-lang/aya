@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import aya.ReprStream;
-import aya.entities.operations.Ops;
+import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;

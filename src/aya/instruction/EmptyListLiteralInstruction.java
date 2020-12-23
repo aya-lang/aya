@@ -2,7 +2,6 @@ package aya.instruction;
 
 import java.util.Stack;
 
-import aya.entities.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.list.List;
 

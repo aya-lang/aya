@@ -1,9 +1,9 @@
 package aya.parser.tokens;
 
 import aya.Aya;
-import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.StringLiteralInstruction;
 import aya.instruction.variable.GetVariableInstruction;

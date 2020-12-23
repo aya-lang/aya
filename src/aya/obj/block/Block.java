@@ -7,10 +7,10 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.entities.InstructionStack;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;

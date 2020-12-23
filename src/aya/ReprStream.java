@@ -126,7 +126,7 @@ public class ReprStream {
 			sb.append(' ');
 		}
 		sb.append(_current_line.content);
-		return sb.toString().strip();
+		return sb.toString().trim();
 	}
 	
 	private boolean visitedContainsExact(Obj o) {
