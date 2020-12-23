@@ -1,7 +1,6 @@
 package aya.instruction.index;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.exceptions.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
@@ -24,7 +23,7 @@ public abstract class SetIndexInstruction extends Instruction {
 		} else if (container.isa(Obj.DICT)) {
 			Dict.setIndex((Dict)container, index, value);
 		} else {
-			throw new TypeError("Cannot index object:\n  " + container.repr() + repr(new LinkedList<Long>()));
+			throw new TypeError("Cannot index object:\n  " + container.repr() + repr(new ReprStream()));
 		}
 		
 		// Add the container back to the stack
@@ -32,7 +31,10 @@ public abstract class SetIndexInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return ".[" + getIndex().repr() + "]";
+	public ReprStream repr(ReprStream stream) {
+		stream.print(".:[");
+		getIndex().repr(stream);
+		stream.print("]");
+		return stream;
 	}
 }

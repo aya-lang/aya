@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.list.ListAlgorithms;
@@ -39,7 +40,7 @@ public class NumberItemList extends NumberList {
 			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
 			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
-					+ " ["+ lo.repr() +" "+ lo.add(inc).repr() +" "+ hi.repr() +"]" );
+					+ " ["+ lo.repr(new ReprStream()) +" "+ lo.add(inc).repr(new ReprStream()) +" "+ hi.repr(new ReprStream()) +"]" );
 		}
 		
 		_list = new ArrayList<Number>(numOfItems);
@@ -631,8 +632,8 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public String repr() {
-		return ListAlgorithms.repr(_list);
+	public ReprStream repr(ReprStream stream) {
+		return ListAlgorithms.reprCompact(stream, _list);
 	}
 
 	@Override
@@ -985,5 +986,5 @@ public class NumberItemList extends NumberList {
 		}
 		return new NumberItemList(out);
 	}
-	
+
 }

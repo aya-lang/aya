@@ -1,7 +1,6 @@
 package aya.instruction;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 
@@ -19,8 +18,9 @@ public class StringLiteralInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return "\"" + _str + "\"";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("\"" + _str + "\"");
+		return stream;
 	}
 
 }

@@ -1,5 +1,6 @@
 package aya.obj.symbol;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.util.LRUCache;
@@ -84,8 +85,9 @@ public class Symbol extends Obj {
 	}
 
 	@Override
-	public String repr() {
-		return "::" + SymbolEncoder.decodeLong(_id);
+	public ReprStream repr(ReprStream stream) {
+		stream.print("::" + SymbolEncoder.decodeLong(_id));
+		return stream;
 	}
 
 	@Override

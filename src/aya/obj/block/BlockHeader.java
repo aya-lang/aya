@@ -3,9 +3,9 @@ package aya.obj.block;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import aya.Aya;
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
@@ -157,48 +157,40 @@ public class BlockHeader extends Instruction {
 	
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return toStringOrRepr(visited, null);
+	public ReprStream repr(ReprStream stream) {
+		return repr(stream, null);
 	}
 	
-	public String repr(ArrayList<Symbol> captures) {
-		return toStringOrRepr(new LinkedList<Long>(), captures);
-	}
-
-	private String toStringOrRepr(LinkedList<Long> visited, ArrayList<Symbol> captures) {
-		StringBuilder sb = new StringBuilder("");
-		
+	public ReprStream repr(ReprStream stream, ArrayList<Symbol> captures) {
 		for (int i = _args.size()-1; i >= 0; i--) {
-			sb.append(_args.get(i).str());
-			sb.append(" ");
+			stream.print(_args.get(i).str());
+			stream.print(" ");
 		}
 		
-		if (_vars != null || _defaults != null) {
-			sb.append(": ");
+		if (_vars.size() != 0 || _defaults.size() != 0 || captures != null) {
+			stream.print(": ");
 		}
 		
-		sb.append(_vars.headerStr());
+		_vars.reprHeader(stream);
+		stream.print(" ");
 		
 		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
-			sb.append(SymbolEncoder.decodeLong(d.getKey()));
-			//sb.append("(").append(d.getValue().toString()).append(") ");
-			sb.append("(..)");
+			stream.print(SymbolEncoder.decodeLong(d.getKey()));
+			stream.print("(");
+			d.getValue().repr(stream);
+			stream.print(") ");
 		}
 	
 		if (captures != null) {
 			for (Symbol v : captures) {
-				sb.append(v.name() + "^ ");
+				stream.print(v.name() + "^ ");
 			}
 		}
 
 		// Trim off the final space
-		String out = sb.toString();
-
-		if (sb.length() > 0) {
-			out = out.substring(0, sb.length()-1);
-		}
-		
-		return out + ",";
+		stream.delTrailingSpaces();
+		stream.print(",");
+		return stream;
 	}
 
 	public BlockHeader copy() {

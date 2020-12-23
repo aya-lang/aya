@@ -1,7 +1,6 @@
 package aya.instruction;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.obj.block.Block;
 
@@ -30,7 +29,10 @@ public class LambdaInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return "("+instructions.toString()+")";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("(");
+		instructions.repr(stream);
+		stream.print(")");
+		return stream;
 	}
 }

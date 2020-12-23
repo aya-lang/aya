@@ -1,5 +1,6 @@
 package aya.obj.character;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.number.Number;
 
@@ -270,8 +271,9 @@ public class Char extends Obj implements Comparable<Char> {
 	}
 
 	@Override
-	public String repr() {
-		return "'" + _c;
+	public ReprStream repr(ReprStream stream) {
+		stream.print("'" + _c);
+		return stream;
 	}
 
 	@Override

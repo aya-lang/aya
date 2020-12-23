@@ -1,9 +1,9 @@
 package aya.instruction;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import aya.Aya;
+import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
@@ -71,19 +71,15 @@ public class BlockLiteralInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		String s;
+	public ReprStream repr(ReprStream stream) {
+		if (_auto_eval) stream.print("(");
 		if (_captures == null || _captures.size() == 0) {
-			s = _block.str();
+			_block.repr(stream);
 		} else {
-			s = _block.strWithCaptures(_captures);
+			_block.repr(stream, true, _captures);
 		}
-		
-		if (_auto_eval) {
-			s = "(" + s + ")";
-		}
-		
-		return s;
+		if (_auto_eval) stream.print(")");
+		return stream;
 	}
 
 	public void setAutoEval() {

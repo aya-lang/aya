@@ -1,9 +1,9 @@
 package aya.instruction;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Stack;
 
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -69,12 +69,14 @@ public class ListLiteralInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		String captures = "";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("[");
 		if (num_captures > 0) {
-			captures = num_captures + "| ";
+			stream.print(num_captures + "| ");
 		}
-		return "[" + captures + block.getInstructions().toString() + "]";
+		block.getInstructions().repr(stream);
+		stream.print("]");
+		return stream;
 	}
 }
 

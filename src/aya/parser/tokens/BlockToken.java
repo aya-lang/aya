@@ -2,6 +2,7 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.exceptions.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
@@ -135,7 +136,7 @@ public class BlockToken extends CollectionToken {
 						throw new SyntaxError("Match instruction may not contain blocks with captures");
 					}
 				} else {
-					throw new SyntaxError("Invalid test ecpression: " + instr.repr());
+					throw new SyntaxError("Invalid test ecpression: " + instr.repr(new ReprStream()).toStringOneline());
 				}
 			}
 		}

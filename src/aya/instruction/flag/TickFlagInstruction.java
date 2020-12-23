@@ -1,16 +1,14 @@
 package aya.instruction.flag;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import aya.exceptions.AyaRuntimeException;
-import aya.instruction.Instruction;
 import aya.obj.block.Block;
 
 /**
  *  Evaluate the block on the stack
  */
-public class TickFlagInstruction extends Instruction {
+public class TickFlagInstruction extends FlagInstruction {
 	
 	int amount;
 
@@ -56,11 +54,5 @@ public class TickFlagInstruction extends Instruction {
 			Arrays.fill(exmarks, '`');
 			return new String(exmarks);
 		}
-	}
-
-	
-	@Override
-	public String repr(LinkedList<Long> visited) {
-		return "";
 	}
 }

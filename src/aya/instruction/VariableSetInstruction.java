@@ -1,8 +1,7 @@
 package aya.instruction;
 
-import java.util.LinkedList;
-
 import aya.Aya;
+import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.variable.VariableSet;
 
@@ -29,7 +28,8 @@ public class VariableSetInstruction extends Instruction {
 		return _vars;
 	}
 	
-	public String repr(LinkedList<Long> visited) {
-		return _vars.headerStr();
+	public ReprStream repr(ReprStream stream) {
+		_vars.reprHeader(stream);
+		return stream;
 	}
 }

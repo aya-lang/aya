@@ -6,7 +6,7 @@ import aya.exceptions.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
-import aya.instruction.ListBuilder;
+import aya.instruction.ListBuilderInstruction;
 import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.parser.Parser;
@@ -53,7 +53,7 @@ public class ListToken extends CollectionToken {
 				}
 			}
 			
-		return new ListBuilder(initialList, map, null, pops);
+		return new ListBuilderInstruction(initialList, map, null, pops);
 		}
 		default:
 		{ 
@@ -83,7 +83,7 @@ public class ListToken extends CollectionToken {
 				
 				filters[k-2] = tmpFilter;
 			}
-			return new ListBuilder(initialList2, map2, filters, pops);
+			return new ListBuilderInstruction(initialList2, map2, filters, pops);
 		} //End default scope
 		} //End switch
 	}

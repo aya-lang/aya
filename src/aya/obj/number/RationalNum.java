@@ -2,6 +2,7 @@ package aya.obj.number;
 
 import org.apfloat.Apfloat;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 
@@ -399,8 +400,9 @@ public class RationalNum extends Number {
 	}
 
 	@Override
-	public String repr() {
-		return ":" + _num + "r" + _den;
+	public ReprStream repr(ReprStream stream) {
+		stream.print(":" + _num + "r" + _den);
+		return stream;
 	}
 
 	@Override

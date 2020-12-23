@@ -319,7 +319,7 @@ public class Aya extends Thread {
 				_instance._err.println("An additional error was thrown when attempting to print the stack state:");
 				_instance._err.println(exToString(e2));
 				_instance._err.println("This is likely caused by an error in an overloaded __str__ or __repr__ block.");
-			}
+			} 
 		} finally {
 			_instance._variables.reset();
 			_instance._callstack.reset();

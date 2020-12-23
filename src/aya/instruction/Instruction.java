@@ -1,23 +1,17 @@
 package aya.instruction;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.obj.block.Block;
 
 public abstract class Instruction {
 
 	public abstract void execute(Block block);
 	
-	public final String repr() {
-		LinkedList<Long> visited = new LinkedList<Long>();
-		return repr(visited);
-	}
-	
-	protected abstract String repr(LinkedList<Long> visited);
+	public abstract ReprStream repr(ReprStream stream);
 	
 	@Override
 	public String toString() {
-		return repr();
+		return repr(new ReprStream()).toStringOneline();
 	}
 
 }

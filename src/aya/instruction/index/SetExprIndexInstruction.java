@@ -1,7 +1,5 @@
 package aya.instruction.index;
 
-import java.util.LinkedList;
-
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -27,10 +25,5 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 										  + ". Expression returned nothing");
 		}
 		
-	}
-	
-	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return ".[" + _index.toString(false) + "]";
 	}
 }

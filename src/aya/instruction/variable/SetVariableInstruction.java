@@ -1,8 +1,7 @@
 package aya.instruction.variable;
 
-import java.util.LinkedList;
-
 import aya.Aya;
+import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.symbol.SymbolEncoder;
 
@@ -18,7 +17,8 @@ public class SetVariableInstruction extends VariableInstruction {
 	}
 	
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return ":" + SymbolEncoder.decodeLong(variable_);
+	public ReprStream repr(ReprStream stream) {
+		stream.print(":" + SymbolEncoder.decodeLong(variable_));
+		return stream;
 	}
 }

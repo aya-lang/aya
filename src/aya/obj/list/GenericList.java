@@ -5,6 +5,7 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.character.Char;
@@ -309,8 +310,8 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
-	public String repr() {
-		return ListAlgorithms.repr(_list);
+	public ReprStream repr(ReprStream stream) {
+		return ListAlgorithms.repr(stream, _list);
 	}
 
 	@Override

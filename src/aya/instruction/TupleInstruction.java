@@ -2,8 +2,8 @@ package aya.instruction;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
-import java.util.LinkedList;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -44,15 +44,16 @@ public class TupleInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		String s = "(";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("(");
 		for(int i = 0; i < elements.length; i++) {
 			if(i!=0) {
-				s += ", ";
+				stream.print(", ");
 			}
-			s += elements[i].toString(false);
+			elements[i].repr(stream, false);
 		}
-		return s + ")";
+		stream.print(")");
+		return stream;
 	}
 	
 }

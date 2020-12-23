@@ -1,8 +1,8 @@
 package aya.instruction;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -109,44 +109,47 @@ public class MatchInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		StringBuilder sb = new StringBuilder("{");
+	public ReprStream repr(ReprStream stream) {
+		stream.print("{");
 		// Captures
 		if (_num_captures != 1) {
-			sb.append(_num_captures);
+			stream.print(_num_captures);
 		}
-		sb.append("?");
+		stream.print("?");
 		
 		// Test Expr
 		if (_test_expr != null) {
 			if (_test_expr.getInstructions().size() == 1) {
-				sb.append(_test_expr.getInstructions().peek(0).repr());
+				_test_expr.getInstructions().peek(0).repr(stream);
 			} else {
-				sb.append("(" + _test_expr.getInstructions().toString() + ")");
+				stream.print("(");
+				_test_expr.getInstructions().repr(stream);
+				stream.print(")");
 			}
 		}
-		sb.append(" ");
+		stream.print(" ");
 		
 		// Initializer Expr
 		if (_initializer != null) {
-			sb.append(_initializer.getInstructions().toString());
+			_initializer.getInstructions().repr(stream);
 		}
-		sb.append(", ");
+		stream.print(", ");
 		
 		// Conditions
 		for (int i = 0; i < _conditions.size(); i++) {
-			sb.append("(" + _conditions.get(i).getInstructions().toString() + ") ");
-			sb.append(_results.get(i).toString());
-			sb.append(", ");
+			stream.print("(");
+			_conditions.get(i).getInstructions().repr(stream);
+			stream.print(")");
+			_results.get(i).repr(stream);
+			stream.print(", ");
 		}
 		
 		if (_fallback != null) {
-			sb.append(_fallback.toString());
+			_fallback.repr(stream);
 		}
 		
-		sb.append("}");
-		
-		return sb.toString();
+		stream.print("}");
+		return stream;
 	}
 
 }

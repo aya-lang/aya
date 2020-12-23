@@ -4,6 +4,7 @@ import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 import org.apfloat.ApintMath;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 
 /** Contains an ApFloat */
@@ -296,8 +297,9 @@ public class BigNum extends Number {
 	}
 
 	@Override
-	public String repr() {
-		return trimZeros(_val.toString(true));
+	public ReprStream repr(ReprStream stream) {
+		stream.print(trimZeros(_val.toString(true)));
+		return stream;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package aya.obj.list;
 
 import java.util.ArrayList;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 
@@ -108,35 +109,51 @@ public class ListAlgorithms {
 		return out;
 	}
     
-    public static <T extends Obj> String repr(ArrayList<T> list) {
-		StringBuilder sb = new StringBuilder("[ ");
-		
-		if (list.size() < 50) {
-			//Output the whole list
+    public static <T extends Obj> ReprStream repr(ReprStream stream, ArrayList<T> list) {
+    	// Does this list have containers? If not, print compact
+    	if (!hasContainers(list)) {
+    		return reprCompact(stream, list);
+    	} else {
+			stream.println("[");
+			stream.incIndent();
+			stream.currentLineMatchIndent();
+
 			for (T o : list) {
-				sb.append(o.repr() + " ");
+				o.repr(stream);
+				stream.println();
 			}
-		} else {
-			// Output 10 front
-			for (int i = 0; i < 10; i++) {
-				sb.append(list.get(i).repr() + " ");
-			}
+			stream.delTrailingNewline();
 			
-			sb.append(" ... ");
-			
-			// Output 10 back
-			for (int i = list.size() - 11; i < list.size(); i++) {
-				sb.append(list.get(i).repr() + " ");
-			}
+			stream.decIndent();
+			stream.println();
+			stream.print("]");
+			return stream;
 		}
-		
-		return sb.append(']').toString();
+    }
+
+    private static <T extends Obj> boolean hasContainers(ArrayList<T> list) {
+    	for (T o : list) {
+    		if ( (o.isa(Obj.LIST) && !o.isa(Obj.STR)) || o.isa(Obj.DICT) ) {
+    			return true;
+    		}
+    	}
+    	return false;
+	}
+
+	public static <T extends Obj> ReprStream reprCompact(ReprStream stream, ArrayList<T> list) {
+		stream.print("[ ");
+		for (T o : list) {
+			o.repr(stream);
+			stream.print(" ");
+		}
+		stream.print("]");
+		return stream;
     }
 	
 	public static <T extends Obj> String str(ArrayList<T> list) {
 		StringBuilder sb = new StringBuilder("[ ");
 		for (T o : list) {
-			sb.append(o.repr() + " ");
+			sb.append(o.repr(new ReprStream()) + " ");
 		}
 		return sb.append(']').toString();
 	}

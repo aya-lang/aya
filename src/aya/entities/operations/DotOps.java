@@ -33,7 +33,7 @@ import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
 import aya.ext.dialog.QuickDialog;
-import aya.instruction.ListBuilder;
+import aya.instruction.ListBuilderInstruction;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -313,7 +313,7 @@ class OP_Dot_And extends OpInstruction {
 			Block initial = new Block();
 			initial.push(c);
 			initial.push(b);
-			ListBuilder lb = new ListBuilder(initial, (Block)a, null, 0);
+			ListBuilderInstruction lb = new ListBuilderInstruction(initial, (Block)a, null, 0);
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);

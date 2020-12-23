@@ -1,7 +1,6 @@
 package aya.instruction.index;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.entities.operations.Ops;
 import aya.exceptions.TypeError;
 import aya.obj.Obj;
@@ -27,8 +26,9 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return "<AnonGetIndexInstruction>";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("<AnonGetIndexInstruction>");
+		return stream;
 	}
 
 	@Override

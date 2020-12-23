@@ -84,14 +84,26 @@ def dataframe::_get_col {colname self : colindex,
     } .?
 }
 
+def dataframe::_numgetindex {index::num self : dataframe^,
+    {,
+        [self._data.[index]]  :data;
+        [self._index.[index]] :index;
+        self._colnames :colnames;
+    } dataframe!
+}
+
 def dataframe::__getindex__ { index self : dataframe^,
     index :T {?=,
         ::num {
-            "num index!":P
-            {, df._data.[index]A:data
-               df._colnames:colnames
-               [df._index.[index]]:index
-            } dataframe!
+            index self._numgetindex
+        },
+        ::str {
+            self._index index N\; :index_num;
+            index_num :1 = {
+                "dataframe does not contain row '$index'" .D
+            } {
+                index_num self._numgetindex
+            } .?
         },
         {"Unsupported index: $index" .D}
     }
@@ -100,19 +112,19 @@ def dataframe::__getindex__ { index self : dataframe^,
 .# Serialization / Output
 .########################
 
-def dataframe::__str__ {self,
-    .# [""] (self._colnames$\;) K A
-    .# self._index #{P" |"K}
-    .# self._data.T
-    .# [2|~,.A]K
-    .# matstr "\n"\+
-
-    self._index :#{P" |"+}          .# Add " |" to each index
-    self._data {J}.&                .# Zip the index and the data along each row
-    :& .[0]E self._colnames#P \.>   .# Make the colnames at least as long as the
-                                    .#    number of columns including the index
-    A\J                             .# Add the colum as the first elemnt in the list
-    matstr                          .# Convert to a pretty matstr
+def dataframe::__str__ {self : max_idx_len,
+    .# find longest index name
+    self._index #{PE} .max :max_idx_len;
+    .# pad indices to lo
+    self._index :#{P max_idx_len .> " |" +}
+    .# Zip the index and the data along each row
+    self._data {J}.&
+    .# Add a "" to the front for the index column
+    "" self._colnames#P J
+    .# Add the colum as the first elemnt in the list
+    A\J
+    .# Convert to a pretty matstr
+    matstr
 }
 
 def dataframe::__repr__ {self,

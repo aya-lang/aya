@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 
 /** Contains a double */
@@ -376,12 +377,13 @@ public class Num extends Number {
     static {_df.setMaximumFractionDigits(8);}
     
 	@Override
-	public String repr() {
+	public ReprStream repr(ReprStream stream) {
 		if (_val % 1 == 0) {
-			return String.format("%d",(long)_val);
+			stream.print(String.format("%d",(long)_val));
 		} else {
-			return _df.format(_val);
+			stream.print(_df.format(_val));
 		}
+		return stream;
 	}
 
 	@Override

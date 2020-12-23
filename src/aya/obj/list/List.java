@@ -7,6 +7,7 @@ import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.DataInstruction;
@@ -839,8 +840,14 @@ public class List extends Obj {
 	}
 
 	@Override
-	public String repr() {
-		return _list.repr();
+	public ReprStream repr(ReprStream stream) {
+		if (stream.visit(this)) {
+			_list.repr(stream);
+			stream.popVisited(this);
+		} else {
+			stream.print("[...]");
+		}
+		return stream;
 	}
 
 	@Override

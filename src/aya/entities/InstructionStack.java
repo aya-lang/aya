@@ -3,6 +3,7 @@ package aya.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import aya.ReprStream;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -114,39 +115,9 @@ public class InstructionStack {
 		}
 	}
 	
-	@Override public String toString() {
-		StringBuilder sb = new StringBuilder("");
-		for(int i = instructions.size()-1; i >= 0; i--) {
-			sb.append(instructions.get(i).toString());
-			sb.append(" ");
-		}
-		if(sb.length() > 1){
-			sb.setLength(sb.length()-1);
-		}
-		return sb.toString();
-	}
 
-	/** Called from a block literal instruction */
-	public String toStringWithCaptures(ArrayList<Symbol> _captures) {
-		if (instructions.size() == 0) return "";
 
-		StringBuilder sb = new StringBuilder("");
-		Instruction inst = instructions.get(instructions.size()-1);
-		if (inst instanceof BlockHeader) {
-			sb.append(((BlockHeader)inst).repr(_captures));
-			sb.append(" ");
-		}
 
-		for(int i = instructions.size()-2; i >= 0; i--) {
-			sb.append(instructions.get(i).toString());
-			sb.append(" ");
-		}
-
-		if(sb.length() >1){
-			sb.setLength(sb.length()-1);
-		}
-		return sb.toString();
-	}
 	
 	/** Creates a deep copy of the InstructionStack */
 	public InstructionStack duplicate() {
@@ -176,6 +147,53 @@ public class InstructionStack {
 				instructions.set(i, new DataInstruction(item));
 			}
 		}
+	}
+	
+
+	///////////////////////
+	// String Conversion //
+	///////////////////////
+	
+	@Override
+	public String toString() {
+		return repr(new ReprStream()).toStringOneline();
+	}
+
+	public ReprStream repr(ReprStream stream) {
+		return repr(stream, null);
+	}
+	
+	public ReprStream repr(ReprStream stream, ArrayList<Symbol> captures) {
+		if (captures != null) {
+			reprWithCaptures(stream, captures);
+		} else {
+			for(int i = instructions.size()-1; i >= 0; i--) {
+				instructions.get(i).repr(stream);
+				stream.print(" ");
+			}
+		}
+		stream.delTrailingSpaces();
+		return stream;
+	}
+
+	/** Called from a block literal instruction */
+	private ReprStream reprWithCaptures(ReprStream stream, ArrayList<Symbol> captures) {
+		if (instructions.size() == 0) return stream;
+
+		Instruction inst = instructions.get(instructions.size()-1);
+		if (inst instanceof BlockHeader) {
+			((BlockHeader)inst).repr(stream, captures);
+			stream.print(" ");
+		}
+
+		for(int i = instructions.size()-2; i >= 0; i--) {
+			instructions.get(i).repr(stream);
+			stream.print(" ");
+		}
+
+		// Remove trailing space
+		stream.backspace(1);
+		return stream;
 	}
 
 }

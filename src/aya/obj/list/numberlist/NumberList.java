@@ -194,8 +194,6 @@ public abstract class NumberList extends ListImpl {
 	@Override
 	public abstract Number get(int i);
 
-
-
 	
 
 }

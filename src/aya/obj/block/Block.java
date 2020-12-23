@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.DataInstruction;
@@ -205,7 +206,7 @@ public class Block extends Obj {
 	public String getPrintOutputState() {
 		StringBuilder sb = new StringBuilder();
 		for(Obj o : stack) {
-			sb.append(o.repr() + " ");
+			sb.append(o.repr(new ReprStream()) + " ");
 		}
 		return sb.toString();
 	}
@@ -218,7 +219,7 @@ public class Block extends Obj {
 	public String getOutputStateDebug() {
 		StringBuilder sb = new StringBuilder();
 		for(Obj o : stack) {
-			sb.append(o.repr());
+			sb.append(o.repr(new ReprStream()));
 			sb.append(" ");
 		}
 		return sb.toString();
@@ -297,18 +298,8 @@ public class Block extends Obj {
 		}
 	}
 	
-	/** If true, return "{instructions}" else just "instructions" */
-	public String toString(boolean printBraces) {
-		if (printBraces) {
-			return "{" + instructions.toString() + "}";
-		} else {
-			return instructions.toString();
-		}
-	}
 
-	public String strWithCaptures(ArrayList<Symbol> _captures) {
-		return "{" + instructions.toStringWithCaptures(_captures) + "}";
-	}
+
 	
 	/** Introspection: get all asguments and types from header (if exists) */
 	public ArrayList<Arg> getArgsAndTypes() {
@@ -388,13 +379,41 @@ public class Block extends Obj {
 			return null;
 		}
 	}
+
 	
-	public String toString() {
-		return this.toString(true);
+	///////////////////////
+	// String Conversion //
+	///////////////////////
+	
+
+	/** If true, return "{instructions}" else just "instructions" */
+	private ReprStream blockRepr(ReprStream stream, boolean print_braces, ArrayList<Symbol> captures) {
+		if (print_braces) stream.print("{");
+		instructions.repr(stream, captures);
+		if (print_braces) stream.print("}");
+		return stream;
 	}
 	
+	public String toString() {
+		return blockRepr(new ReprStream(), true, null).toStringOneline();
+	}
+
+
+	public ReprStream repr(ReprStream stream, boolean print_braces) {
+		return repr(stream, print_braces, null);
+	}
 	
+	public ReprStream repr(ReprStream stream, boolean print_braces, ArrayList<Symbol> captures) {
+		if (stream.visit(this)) {
+			blockRepr(stream, print_braces, captures);
+			stream.popVisited(this);
+		} else {
+			stream.print("{...}");
+		}
+		return stream;
+	}
 	
+
 
 	///////////////////
 	// OBJ OVERRIDES //
@@ -412,13 +431,13 @@ public class Block extends Obj {
 	}
 
 	@Override
-	public String repr() {
-		return this.toString(true);
+	public ReprStream repr(ReprStream stream) {
+		return repr(stream, true, null);
 	}
 
 	@Override
 	public String str() {
-		return this.toString(true);
+		return repr(new ReprStream(), true).toStringOneline();
 	}
 
 	@Override

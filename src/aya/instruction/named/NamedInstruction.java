@@ -1,7 +1,6 @@
 package aya.instruction.named;
 
-import java.util.LinkedList;
-
+import aya.ReprStream;
 import aya.instruction.Instruction;
 
 public abstract class NamedInstruction extends Instruction {
@@ -28,8 +27,9 @@ public abstract class NamedInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return opName();
+	public ReprStream repr(ReprStream stream) {
+		stream.print(opName());
+		return stream;
 	}
 
 }

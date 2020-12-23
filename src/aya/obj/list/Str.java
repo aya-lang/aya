@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.character.Char;
@@ -367,12 +368,13 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
-	public String repr() {
+	public ReprStream repr(ReprStream stream) {
 		if (_str.length() > 100) {
-			return "\"" + _str.substring(0, 30) + " ... " + _str.substring(_str.length()-30) + "\"";
+			stream.print("\"" + _str.substring(0, 30) + " ... " + _str.substring(_str.length()-30) + "\"");
 		} else {
-			return "\"" + _str + "\"";
+			stream.print("\"" + _str + "\"");
 		}
+		return stream;
 	}
 
 	@Override

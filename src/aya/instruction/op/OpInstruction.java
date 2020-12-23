@@ -1,8 +1,8 @@
 package aya.instruction.op;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
+import aya.ReprStream;
 import aya.instruction.Instruction;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
@@ -123,8 +123,9 @@ public abstract class OpInstruction extends Instruction {
 	}
 	
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return name;
+	public ReprStream repr(ReprStream stream) {
+		stream.print(name);
+		return stream;
 	}
 
 	public String getSymName() {

@@ -1,5 +1,6 @@
 package aya.instruction.flag;
 
+import aya.ReprStream;
 import aya.instruction.Instruction;
 
 /**
@@ -11,4 +12,8 @@ import aya.instruction.Instruction;
  */
 public abstract class FlagInstruction extends Instruction {
 
+	@Override
+	public ReprStream repr(ReprStream stream) {
+		return stream;
+	}
 }

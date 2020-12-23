@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import aya.Aya;
+import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
@@ -72,12 +73,14 @@ public class DictLiteralInstruction extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		String bstr = _block.toString().substring(1);
+	public ReprStream repr(ReprStream stream) {
 		if (num_captures == 0) {
-			return "{," + bstr;
+			stream.print("{,");
 		} else {
-			return "{" + num_captures + "," + bstr;
+			stream.print("{" + num_captures + ",");
 		}
+		_block.repr(stream, false);
+		stream.print("}");
+		return stream;
 	}
 }

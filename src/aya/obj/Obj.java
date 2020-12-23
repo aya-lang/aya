@@ -1,5 +1,6 @@
 package aya.obj;
 
+import aya.ReprStream;
 import aya.obj.symbol.Symbol;
 
 /**
@@ -201,7 +202,11 @@ public abstract class Obj {
 	 * used for printing to the console during interactive
 	 * sessions
 	 */
-	public abstract String repr();
+	public abstract ReprStream repr(ReprStream stream);
+	
+	public String repr() {
+		return repr(new ReprStream()).toStringOneline();
+	}
 	
 	/** Cast the obj to a string */
 	public abstract String str();
@@ -217,7 +222,7 @@ public abstract class Obj {
 	
 	@Override
 	public String toString() {
-		return this.repr();
+		return this.repr(new ReprStream()).toString();
 	}
 	
 	@Override

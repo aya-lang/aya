@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import aya.ReprStream;
 import aya.obj.Obj;
+import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolEncoder;
 import aya.util.Pair;
@@ -72,7 +74,7 @@ public class VariableSet {
 	}
 	
 	public String toString() {
-		return headerStr();
+		return reprHeader(new ReprStream()).toStringOneline();
 	}
 	
 	
@@ -80,31 +82,22 @@ public class VariableSet {
 	 * Output the variable set as a space separated list of name(value) items
 	 * If the value is 0, do not print the value or the parenthesis
 	 */
-	public String headerStr() {
-		StringBuilder sb = new StringBuilder("");
-		
+	public ReprStream reprHeader(ReprStream stream) {
 		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
-			sb.append(SymbolEncoder.decodeLong(pair.getKey()));
+			stream.print(SymbolEncoder.decodeLong(pair.getKey()));
 
-			boolean print = true;
-			if (pair.getValue().isa(Obj.NUM)) {
-				aya.obj.number.Number n = (aya.obj.number.Number)pair.getValue();
-				if (n.toInt() == 0) {
-					print = false;
-				}
-			}
-			
-			if (print) {
-				//sb.append("(" + pair.getValue().str() + ") ");
-				sb.append("(..) ");
+			final Obj obj = pair.getValue();
+			if (obj.equiv(Num.ZERO)) {
+				stream.print(" ");
 			} else {
-				sb.append(" ");
+				stream.print("(");
+				obj.repr(stream);
+				stream.print(")");
 			}
 		}
-		
-		return sb.toString();
+		return stream;
 	}
 	
 	/** Sets all vars in the VariableSet */

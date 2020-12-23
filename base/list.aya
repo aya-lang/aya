@@ -120,6 +120,18 @@
     }:mask;
 
 
+    .# 3 argument version of the .> operator
+    .{ Example:
+        aya> "" 5 ["a" "b" "c"].pad
+        ["a" "b" "c"] ["" ""]
+        aya> "" 2 ["a" "b" "c"].pad
+        ["a" "b" "c"] []
+    .}
+    {
+        :& E@\- 0.< @\L
+    }:pad;
+
+
 }
 .# Merge with char metatable
 [] .M \.+

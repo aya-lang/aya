@@ -1,16 +1,16 @@
 package aya.instruction;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Stack;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 
-public class ListBuilder extends Instruction {
+public class ListBuilderInstruction extends Instruction {
 
 	
 	private Block initialList;
@@ -18,7 +18,7 @@ public class ListBuilder extends Instruction {
 	private Block[] filters;
 	private int num_captures;
 
-	public ListBuilder(Block initial, Block map, Block[] filters, int num_captures) {
+	public ListBuilderInstruction(Block initial, Block map, Block[] filters, int num_captures) {
 		this.initialList = initial;
 		this.map = map;
 		this.filters = filters;
@@ -108,23 +108,32 @@ public class ListBuilder extends Instruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		StringBuilder sb = new StringBuilder("[");
-		sb.append(initialList.toString(false) + ", ");
+	public ReprStream repr(ReprStream stream) {
+		stream.print("[");
+		if (num_captures > 0) {
+			stream.print(num_captures);
+			stream.print("| ");
+		}
+
+		initialList.repr(stream, false);
+		stream.print(", ");
+
 		boolean has_body = false;
 		if(map != null) {
-			sb.append(map.toString(false) + ", ");
+			map.repr(stream, false);
+			stream.print(", ");
 			has_body = true;
 		}
 		if(filters != null) {
 			for (Block b : filters) {
-				sb.append(b.toString(false) + ", ");
+				b.repr(stream, false);
+				stream.print(", ");
 			}
 			has_body = true;
 		}
-		if (has_body) sb.setLength(sb.length()-2);
-		sb.append("]");
-		return sb.toString();
+		if (has_body) stream.backspace(2);
+		stream.print("]");
+		return stream;
 	}
 
 	

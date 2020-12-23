@@ -2,9 +2,9 @@ package aya.obj.dict;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Set;
 
+import aya.ReprStream;
 import aya.entities.operations.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -342,8 +342,14 @@ public class Dict extends Obj {
 	}
 
 	@Override
-	public String repr() {
-		return dictRepr();
+	public ReprStream repr(ReprStream stream) {
+		if (stream.visit(this)) {
+			dictRepr(stream);
+			stream.popVisited(this);
+		} else {
+			stream.print("{, ...}");
+		}
+		return stream;
 	}
 		
 	@Override
@@ -414,26 +420,12 @@ public class Dict extends Obj {
 	
 	/** Return a string representation of the dict */
 	private String dictStr() {
-		StringBuilder sb = new StringBuilder("{, ");
-		for (Long l : _vars.getMap().keySet()) {
-			if (l != META.id()) {
-				sb.append(_vars.getMap().get(l).repr() + ":" + SymbolEncoder.decodeLong(l) + "; ");
-			}
-		}
-		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
-			sb.append(e.getValue().repr() + ":\"" + e.getKey() + "\"; ");
-		}
-		sb.append("}");
-		return sb.toString();
+		return dictRepr(new ReprStream()).toStringOneline();
 	}
 	
-	/** Return a string representation of the dict */
-	private String dictRepr() {
-		LinkedList<Integer> visited = new LinkedList<Integer>();
-		return dictRepr(0, visited);
-	}
-	
-	private String dictRepr(int depth, LinkedList<Integer> visited) {
+	/** Return a string representation of the dict 
+	 * @param stream */
+	private ReprStream dictRepr(ReprStream stream) {
 		// Metatable?
 		if (_meta != null) {
 			Obj repr = _meta._get(Ops.KEYVAR_REPR.id());
@@ -444,62 +436,43 @@ public class Dict extends Obj {
 					blk_repr.eval();
 					Obj obj_res = blk_repr.pop();
 					if (obj_res.isa(Obj.STR)) {
-						return obj_res.str();
+						stream.print(obj_res.str());
+						return stream;
 					} else {
-						return obj_res.repr();
+						return obj_res.repr(stream);
+
 					}
 				} else if (repr.isa(Obj.STR)) {
-					return repr.str();
+					stream.print(repr.str());
+					return stream;
 				} else {
-					return repr.repr();
+					return repr.repr(stream);
 				}
 			}
 		}
 	
 		// Normal repr
-		final int width = 2;
 		if (_vars.size() == 0 && _string_vars.size() == 0) {
-			return "{,}";
-		}
-		else if (visited.contains(this.hashCode())) {
-			return "{, ...}";
+			stream.print("{,}");
 		} else {
-			visited.add(this.hashCode());
-			StringBuilder sb = new StringBuilder("{,\n");
+			stream.println("{,");
+			stream.incIndent();
+			stream.currentLineMatchIndent();
 			for (Long l : _vars.getMap().keySet()) {
 				if (l != META.id()) {
-					sb.append(spaces((depth + 1) * width));
-					sb.append(pairString(depth+1, visited, SymbolEncoder.decodeLong(l), _vars.getObj(l)));
-					sb.append('\n');
+					_vars.getObj(l).repr(stream);
+					stream.println(":" + SymbolEncoder.decodeLong(l) + ";");
 				}
 			}
 			for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
-				sb.append(spaces((depth + 1) * width));
-				sb.append(pairString(depth+1, visited, "\"" + e.getKey() + "\"", e.getValue()));
-				sb.append('\n');
+				e.getValue().repr(stream);
+				stream.println(":\"" + e.getKey() + "\";");
 			}
-			sb.append(spaces(depth*width)).append("}");
-			return sb.toString();
-
-			
+			stream.decIndent();
+			stream.currentLineMatchIndent();
+			stream.print("}");
 		}
-	}
-	
-	private String pairString(int depth, LinkedList<Integer> visited, String key, Obj o) {
-		String object;
-		if (o.isa(DICT)) {
-			object = ((Dict)o).dictRepr(depth, visited);
-		} else {
-			object = o.repr();
-		}
-		
-		return object + ":" + key + ";";
-	}
-	
-	private String spaces(int n) {
-		char[] margin_ch = new char[n];
-		for (int i = 0; i < margin_ch.length; i++) margin_ch[i] = ' ';
-		return new String(margin_ch);	
+		return stream;
 	}
 
 	

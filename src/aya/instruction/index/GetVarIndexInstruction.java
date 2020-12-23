@@ -1,8 +1,7 @@
 package aya.instruction.index;
 
-import java.util.LinkedList;
-
 import aya.Aya;
+import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.symbol.SymbolEncoder;
 
@@ -20,7 +19,10 @@ public class GetVarIndexInstruction extends GetIndexInstruction {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return ".[" + SymbolEncoder.decodeLong(_var) + "]";
+	public ReprStream repr(ReprStream stream) {
+		stream.print(".[");
+		stream.print(SymbolEncoder.decodeLong(_var));
+		stream.print("]");
+		return stream;
 	}
 }

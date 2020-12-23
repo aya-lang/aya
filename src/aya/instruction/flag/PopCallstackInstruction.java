@@ -1,7 +1,5 @@
 package aya.instruction.flag;
 
-import java.util.LinkedList;
-
 import aya.Aya;
 import aya.obj.block.Block;
 
@@ -22,11 +20,6 @@ public class PopCallstackInstruction extends FlagInstruction {
 	@Override
 	public String toString() {
 		//return "`POPVAR`";
-		return "";
-	}
-	
-	@Override
-	public String repr(LinkedList<Long> visited) {
 		return "";
 	}
 }

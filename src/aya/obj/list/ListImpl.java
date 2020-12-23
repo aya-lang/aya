@@ -2,6 +2,7 @@ package aya.obj.list;
 
 import java.util.ArrayList;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.list.numberlist.NumberList;
 import aya.util.Pair;
@@ -154,7 +155,7 @@ public abstract class ListImpl {
 
 	public abstract String str();
 
-	protected abstract String repr();
+	protected abstract ReprStream repr(ReprStream stream);
 
 	protected abstract boolean bool();
 
@@ -162,6 +163,10 @@ public abstract class ListImpl {
 	
 	protected ListImpl promote() { 
 		return this;
+	}
+
+	protected String repr() {
+		return repr(new ReprStream()).toStringOneline();
 	}
 	
 }

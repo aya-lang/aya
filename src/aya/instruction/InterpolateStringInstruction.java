@@ -1,8 +1,7 @@
 package aya.instruction;
 
-import java.util.LinkedList;
-
 import aya.Aya;
+import aya.ReprStream;
 import aya.entities.InstructionStack;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
@@ -70,7 +69,8 @@ public class InterpolateStringInstruction extends Instruction  {
 	}
 
 	@Override
-	protected String repr(LinkedList<Long> visited) {
-		return "\"" + orig + "\"";
+	public ReprStream repr(ReprStream stream) {
+		stream.print("\"" + orig + "\"");
+		return stream;
 	}
 }
