@@ -3,7 +3,6 @@ package aya.obj.number;
 import java.text.DecimalFormat;
 
 import org.apfloat.Apfloat;
-import org.apfloat.ApfloatMath;
 
 import aya.ReprStream;
 import aya.obj.Obj;
@@ -109,109 +108,33 @@ public class Num extends Number {
 	///////////////////////
 	
 	@Override
-	public Number add(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(_val + other.toDouble());
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().add(new Apfloat(_val)));
-		case Obj.RATIONAL_NUMBER:
-			return ((RationalNum)other).r_add(new RationalNum(_val));
-		default:
-			return null;
-		}
-	}
+	public Number add(Number other) { return this.add((Num)other); }
+	public Num add(Num other) { return new Num(_val + other._val); }
 
 	@Override
-	public Number sub(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(_val - other.toDouble());
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().subtract(new Apfloat(_val)));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val).r_sub((RationalNum)other);
-		default:
-			return null;
-		}
-	}
+	public Number sub(Number other) { return this.sub((Num)other); }
+	public Num sub(Num other) { return new Num(_val - other._val); }
 
 	@Override
-	public Number mul(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(_val * other.toDouble());
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().multiply(new Apfloat(_val)));
-		case Obj.RATIONAL_NUMBER:
-			return ((RationalNum)other).r_mul(new RationalNum(_val));
-		default:
-			return null;
-		}
-	}
+	public Number mul(Number other) { return this.mul((Num)other); }
+	public Num mul(Num other) { return new Num(_val * other._val); }
 
 	@Override
-	public Number div(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(_val / other.toDouble());
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().divide(new Apfloat(_val)));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val).r_div((RationalNum)other);
-		default:
-			return null;
-		}
-	}
+	public Number div(Number other) { return this.div((Num)other); }
+	public Num div(Num other) { return new Num(_val / other._val); }
 
 	@Override
-	public Number idiv(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(Math.floor(_val / other.toDouble()));
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().divide(new Apfloat(_val)).floor());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum((long)Math.floor(_val / other.toDouble()), 1L);
-		default:
-			return null;
-		}
-	}
+	public Number idiv(Number other) { return this.idiv((Num)other); }
+	public Num idiv(Num other) { return new Num(Math.floor(_val / other._val)); }
+	
+	@Override
+	public Number mod(Number other) { return this.mod((Num)other); }
+	public Num mod(Num other) { return new Num(_val % other._val); }
 
 	@Override
-	public Number mod(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(_val % other.toDouble());
-		case Obj.BIGNUM:
-			return new BigNum(other.toApfloat().mod(new Apfloat(_val)));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val % other.toDouble());
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public Number pow(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.NUM: 
-			return new Num(Math.pow(_val, other.toDouble()));
-		case Obj.BIGNUM:
-			return new BigNum(ApfloatMath.pow(new Apfloat(_val), other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(Math.pow(_val, other.toDouble()));
-		default:
-			return null;
-		}
-	}	
+	public Number pow(Number other) { return this.pow((Num)other); }
+	public Num pow(Num other) { return new Num(Math.pow(_val, other._val)); }
+	
 	
 	/////////////////////
 	// MATH OPERATIONS //
@@ -318,27 +241,6 @@ public class Num extends Number {
 		return NumberMath.isPrime((long)_val);
 	}
 	
-	//////////////////
-	// TRANSFORMERS //
-	//////////////////
-	
-	
-	@Override
-	public Num subEq(Number v) {
-		_val -= v.toDouble();
-		return this;
-	}
-
-
-	@Override
-	public Num addEq(Number v) {
-		_val += v.toDouble();
-		return this;
-	}
-
-	
-	
-	
 	///////////////
 	// CONSTANTS //
 	///////////////
@@ -362,11 +264,6 @@ public class Num extends Number {
 	///////////////////
 	// OBJ OVERRIDES //
 	///////////////////
-
-	@Override
-	public Num deepcopy() {
-		return new Num(_val);
-	}
 
 	@Override
 	public boolean bool() {
@@ -407,17 +304,19 @@ public class Num extends Number {
 	}
 
 	@Override
-	public byte type() {
-		return Obj.NUM;
-	}
-
-	@Override
 	public int compareTo(Number n) {
 		return Double.compare(_val, n.toDouble()); 
 	}
 
+	@Override
+	protected Num convert(Number to_promote) {
+		return new Num(to_promote.toDouble());
+	}
 
-
+	@Override
+	protected int numType() {
+		return Number.TYPE_NUM;
+	}
 
 
 }

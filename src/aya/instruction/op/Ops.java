@@ -311,7 +311,7 @@ class OP_Percent extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
 				//b mod a
-				block.push(((Number)(b)).mod((Number)(a)));
+				block.push(NumberMath.mod(asNumber(b), asNumber(a)));
 			} catch (ArithmeticException e) {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}
@@ -392,7 +392,7 @@ class OP_Times extends OpInstruction {
 		if (overload().execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).mul((Number)b) );
+			block.push(NumberMath.mul(asNumber(a), asNumber(b)));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( new List(asNumberList(a).mul((Number)b)) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
@@ -435,7 +435,7 @@ class OP_Plus extends OpInstruction {
 		if (overload().execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).add((Number)b) );
+			block.push(NumberMath.add(asNumber(a), asNumber(b)));
 		} else if (a.isa(STR) || b.isa(STR)) {
 			//Must reverse order
 			block.push(List.fromString(b.str() + a.str()));
@@ -475,7 +475,7 @@ class OP_Minus extends OpInstruction {
 		if (overload().execute(block, b, a)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)a).sub((Number)b) );
+			block.push(NumberMath.sub(asNumber(a), asNumber(b)));
 		} else if (a.isa(NUMBER) && b.isa(CHAR)) {
 			block.push(((Char)b).subFrom((Number)a));
 		} else if (a.isa(CHAR) && b.isa(Obj.NUMBER)) {
@@ -513,7 +513,7 @@ class OP_Divide extends OpInstruction {
 		if (overload().execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( ((Number)b).div((Number)a) );
+			block.push(NumberMath.sub(asNumber(b), asNumber(a)));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( new List(asNumberList(a).divFrom(asNumber(b))) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
@@ -1684,7 +1684,7 @@ class OP_Caret extends OpInstruction {
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)){
 			//Raise b to the ath power
-			block.push( ((Number)b).pow((Number)a) );
+			block.push(NumberMath.pow(asNumber(b), asNumber(a)));
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push(Num.fromInt( (asStr(a)).levDist(asStr(b)) ));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {

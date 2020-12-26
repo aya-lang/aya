@@ -5,6 +5,66 @@ import aya.obj.number.Num;
 
 /** Various static functions for doing math on numbers */
 public class NumberMath {
+
+	// Utility class
+	static class NumberPair {
+		NumberPair(Number a, Number b) {
+			this.a = a;
+			this.b = b;
+		}
+		Number a;
+		Number b;
+	}
+	
+	static int compType(Number a, Number b) {
+		return Integer.compare(a.numType(), b.numType());
+	}
+	
+	static NumberPair promote(Number a, Number b) {
+		int comp = compType(a, b);
+		if (comp == 0) {
+			return new NumberPair(a, b);
+		} else if (comp > 0) {
+			return new NumberPair(a, a.convert(b));
+		} else {
+			return new NumberPair(b.convert(a), b);
+		}
+	}
+	
+	public static Number add(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.add(pair.b);
+	}
+
+	public static Number sub(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.sub(pair.b);
+	}
+
+	public static Number mul(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.mul(pair.b);
+	}
+
+	public static Number div(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.div(pair.b);
+	}
+
+	public static Number idiv(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.idiv(pair.b);
+	}
+
+	public static Number mod(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.mod(pair.b);
+	}
+
+	public static Number pow(Number a, Number b) {
+		NumberPair pair = promote(a, b);
+		return pair.a.pow(pair.b);
+	}
 	
 	/** Greatest common denominator */
 	public static Number gcd(Number a, Number b) {

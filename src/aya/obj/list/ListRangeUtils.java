@@ -5,6 +5,8 @@ import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Number;
+import aya.obj.number.NumberMath;
+
 import static aya.util.Casting.*;
 
 public class ListRangeUtils {
@@ -111,7 +113,7 @@ public class ListRangeUtils {
 			if(x.isa(Obj.NUMBER) && y.isa(Obj.NUMBER) && z.isa(Obj.NUMBER)) {
 				Number lo = (Number)x;
 				Number hi = (Number)z;
-				Number inc = ((Number)y).sub(lo);
+				Number inc = NumberMath.sub((Number)y, lo);
 				return new NumberItemList(lo, hi, inc);
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return new Str(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));

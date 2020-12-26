@@ -79,111 +79,35 @@ public class BigNum extends Number {
 	///////////////////////
 	// BINARY OPERATIONS //
 	///////////////////////
+
+	@Override
+	public Number add(Number other) { return this.add((BigNum)other); }
+	public BigNum add(BigNum other) { return new BigNum(_val.add(other._val)); }
+
+	@Override
+	public Number sub(Number other) { return this.sub((BigNum)other); }
+	public BigNum sub(BigNum other) { return new BigNum(_val.subtract(other._val)); }
+
+	@Override
+	public Number mul(Number other) { return this.mul((BigNum)other); }
+	public BigNum mul(BigNum other) { return new BigNum(_val.multiply(other._val)); }
+
+	@Override
+	public Number div(Number other) { return this.div((BigNum)other); }
+	public BigNum div(BigNum other) { return new BigNum(_val.divide(other._val)); }
+
+	@Override
+	public Number idiv(Number other) { return this.idiv((BigNum)other); }
+	public BigNum idiv(BigNum other) { return new BigNum(_val.divide(other._val).floor()); }
 	
 	@Override
-	public Number add(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.add(other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.add(other.toApfloat()).doubleValue());
-		case Obj.NUM:
-			return new BigNum(_val.add(other.toApfloat()));
-		default:
-			return null;
-		}
-	}
+	public Number mod(Number other) { return this.mod((BigNum)other); }
+	public BigNum mod(BigNum other) { return new BigNum(_val.mod(other._val)); }
 
 	@Override
-	public Number sub(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.subtract(other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.subtract(other.toApfloat()).doubleValue());
-		case Obj.NUM:
-			return new BigNum(_val.subtract(other.toApfloat()));
-		default:
-			return null;
-		}
-	}
+	public Number pow(Number other) { return this.pow((BigNum)other); }
+	public BigNum pow(BigNum other) { return new BigNum(ApfloatMath.pow(_val, other._val)); }
 
-	@Override
-	public Number mul(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.multiply(other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.multiply(other.toApfloat()).doubleValue());
-		case Obj.NUM:
-			return new BigNum(_val.multiply(other.toApfloat()));
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public Number div(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.divide(other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.divide(other.toApfloat()).doubleValue());
-		case Obj.NUM:
-			return new BigNum(_val.divide(other.toApfloat()));
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public Number idiv(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.divide(other.toApfloat()).floor());
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.divide(other.toApfloat()).floor().longValue(), 1L);
-		case Obj.NUM:
-			return new BigNum(_val.divide(other.toApfloat()).floor());
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public Number mod(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(_val.mod(other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(_val.mod(other.toApfloat()).longValue(), 1L);
-		case Obj.NUM:
-			return new BigNum(_val.mod(other.toApfloat()));
-		default:
-			return null;
-		}
-	}
-
-	@Override
-	public Number pow(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.BIGNUM:
-			return new BigNum(ApfloatMath.pow(_val, other.toApfloat()));
-		case Obj.RATIONAL_NUMBER:
-			return new RationalNum(ApfloatMath.pow(_val, other.toApfloat()).doubleValue());
-		case Obj.NUM:
-			return new BigNum(ApfloatMath.pow(_val, other.toApfloat()));
-		default:
-			return null;
-		}
-	}
 	
 
 	/////////////////////
@@ -287,11 +211,6 @@ public class BigNum extends Number {
 	}
 
 	@Override
-	public BigNum deepcopy() {
-		return new BigNum(_val.add(ZERO_AP));
-	}
-
-	@Override
 	public boolean bool() {
 		return !(_val.compareTo(ZERO_AP) == 0);
 	}
@@ -329,21 +248,7 @@ public class BigNum extends Number {
 		return _val.compareTo(n.toApfloat()); 
 	}
 	
-	//////////////////
-	// TRANSFORMERS //
-	//////////////////
-	
-	@Override
-	public BigNum subEq(Number v) {
-		_val = _val.subtract(v.toApfloat());
-		return this;
-	}
 
-	@Override
-	public BigNum addEq(Number v) {
-		_val = _val.add(v.toApfloat());
-		return this;
-	}
 
 	
 	///////////////
@@ -387,6 +292,14 @@ public class BigNum extends Number {
 		return s.substring(0, dsi+1);
 	}
 
+	@Override
+	protected Number convert(Number to_promote) {
+		return new BigNum(to_promote.toApfloat());
+	}
 
+	@Override
+	protected int numType() {
+		return Number.TYPE_BIGNUM;
+	}
 
 }

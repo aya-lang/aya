@@ -34,13 +34,13 @@ public class NumberItemList extends NumberList {
 	
 	public NumberItemList(Number lo, Number hi, Number inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
- 		int numOfItems = hi.sub(lo).div(inc).floor().toInt() + 1;
+ 		int numOfItems = NumberMath.div(NumberMath.sub(hi, lo), inc).floor().toInt() + 1;
 	
 		if(numOfItems > 10000000) {
 			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
 			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
-					+ " ["+ lo.repr(new ReprStream()) +" "+ lo.add(inc).repr(new ReprStream()) +" "+ hi.repr(new ReprStream()) +"]" );
+					+ " ["+ lo.repr(new ReprStream()) +" "+ NumberMath.add(lo,inc).repr(new ReprStream()) +" "+ hi.repr(new ReprStream()) +"]" );
 		}
 		
 		_list = new ArrayList<Number>(numOfItems);
@@ -49,11 +49,11 @@ public class NumberItemList extends NumberList {
 		
 		//Increment up or down?
 		if((lo.compareTo(hi) > 0 && inc.compareTo(inc.zero()) > 0) || (lo.compareTo(hi) < 0 && inc.compareTo(inc.zero()) < 0)) {
-			for(int i = 0; i < numOfItems; i++, lo.sub(inc)) {
+			for(int i = 0; i < numOfItems; i++, NumberMath.sub(lo, inc)) {
 				_list.add(lo);
 			}
 		} else {
-			for(int i = 0; i < numOfItems; i++, lo = lo.add(inc)) {
+			for(int i = 0; i < numOfItems; i++, lo = NumberMath.add(lo, inc)) {
 				_list.add(lo);
 			}
 		}
@@ -100,14 +100,14 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number mean() {
-		return _list.size() == 0 ? Num.ZERO : sum().div(new Num(_list.size()));
+		return _list.size() == 0 ? Num.ZERO : NumberMath.div(sum(), Num.fromInt(_list.size()));
 	}
 
 	@Override
 	public Number sum() {
 		Number total = Num.ZERO;
 		for (int i = 0; i < _list.size(); i++) {
-			total = total.add(_list.get(i));
+			total = NumberMath.add(total, _list.get(i));
 		}
 		return total;
 	}
@@ -151,145 +151,113 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public NumberList add(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).add(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.add(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sub(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).sub(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.sub(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList div(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).div(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.div(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mul(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).mul(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.mul(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mod(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).mod(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.mod(b, n));
 		return new NumberItemList(out);
 	}
 	
 	@Override
 	public NumberList idiv(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).idiv(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.idiv(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList pow(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).pow(n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : out) out.add(NumberMath.pow(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList subFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.sub(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.sub(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList divFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.div(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.div(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList modFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.mod(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.mod(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList idivFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.idiv(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.idiv(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList powFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(n.pow(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.pow(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList band(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add( NumberMath.band(_list.get(i), n) );
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.band(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList bandFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add( NumberMath.band(n, _list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.band(n, b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList bor(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add( NumberMath.bor(_list.get(i), n));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.bor(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList borFrom(Number n) {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add( NumberMath.bor(n, _list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.bor(n, b));
 		return new NumberItemList(out);
 	}
 	
@@ -298,160 +266,130 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public NumberList negate() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).negate());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.negate());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList bnot() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add( NumberMath.bnot(_list.get(i)));
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(NumberMath.bnot(b));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList signnum() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).signnum());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.signnum());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList factorial() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).factorial());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.factorial());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList abs() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).abs());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.abs());
 		return new NumberItemList(out);
 	}
 	
 	@Override
 	public NumberList exp() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).exp());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.exp());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sin() {	
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).sin());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.sin());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList cos() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).cos());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.cos());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList tan() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).tan());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.tan());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList asin() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).asin());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.asin());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList acos() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).acos());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.acos());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList atan() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).atan());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.atan());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList log() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).log());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.log());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList ln() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).ln());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.ln());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sqrt() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).sqrt());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.sqrt());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList ceil() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).ceil());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.ceil());
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList floor() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
-		for (int i = 0; i < _list.size(); i++) {
-			out.add(_list.get(i).floor());
-		}
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.floor());
 		return new NumberItemList(out);
 	}
 	
 	@Override
 	public ArrayList<Number> toArrayList() {
 		return _list;
+	}
+	
+	public ArrayList<Number> emptyAL() {
+		return new ArrayList<Number>(_list.size());
 	}
 	
 	////////////////////
@@ -592,7 +530,7 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public NumberItemList copy() {
-		ArrayList<Number> out = new ArrayList<Number>(_list.size());
+		ArrayList<Number> out = emptyAL();
 		out.addAll(_list);
 		return new NumberItemList(out);
 	}
@@ -619,7 +557,7 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public NumberItemList deepcopy() {
-		ArrayList<Number> copy = new ArrayList<Number>(_list.size());
+		ArrayList<Number> copy = emptyAL();
 		for (int i = 0; i < _list.size(); i++) {
 			copy.add(_list.get(i).deepcopy());
 		}
@@ -710,7 +648,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).add(ns.get(i)));
+			out.add(NumberMath.add(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -721,7 +659,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).sub(ns.get(i)));
+			out.add(NumberMath.sub(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -732,7 +670,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).sub(this.get(i)));
+			out.add(NumberMath.sub(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -743,7 +681,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).div(ns.get(i)));
+			out.add(NumberMath.div(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -754,7 +692,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).div(this.get(i)));
+			out.add(NumberMath.div(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -765,7 +703,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).mul(ns.get(i)));
+			out.add(NumberMath.mul(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -776,7 +714,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).mod(ns.get(i)));
+			out.add(NumberMath.mod(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -787,7 +725,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).mod(this.get(i)));
+			out.add(NumberMath.mod(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -798,7 +736,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).idiv(ns.get(i)));
+			out.add(NumberMath.idiv(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -809,7 +747,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).idiv(this.get(i)));
+			out.add(NumberMath.idiv(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -820,7 +758,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(this.get(i).pow(ns.get(i)));
+			out.add(NumberMath.pow(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -831,7 +769,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add(ns.get(i).pow(this.get(i)));
+			out.add(NumberMath.pow(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -842,7 +780,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add( NumberMath.band(this.get(i), ns.get(i)) );
+			out.add(NumberMath.band(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -853,7 +791,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add( NumberMath.band(ns.get(i), this.get(i)) );
+			out.add(NumberMath.band(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -864,7 +802,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add( NumberMath.bor(this.get(i), ns.get(i)) );
+			out.add(NumberMath.bor(this.get(i), ns.get(i)));
 		}
 		return new NumberItemList(out);
 	}
@@ -875,7 +813,7 @@ public class NumberItemList extends NumberList {
 		int len = ns.length();
 		ArrayList<Number> out = new ArrayList<Number>(len);
 		for (int i = 0; i < len; i++) {
-			out.add( NumberMath.bor(ns.get(i), this.get(i)) );
+			out.add(NumberMath.bor(ns.get(i), this.get(i)));
 		}
 		return new NumberItemList(out);
 	}

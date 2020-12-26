@@ -164,65 +164,81 @@ public class RationalNum extends Number {
 	///////////////////////
 	// BINARY OPERATIONS //
 	///////////////////////
-	
+
 	@Override
-	public RationalNum add(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.RATIONAL_NUMBER:
-			return this.r_add((RationalNum)other);
-		default:
-			return this.r_add(new RationalNum(other.toDouble()));
-		}
+	public Number add(Number other) { return this.add((RationalNum)other); }
+
+	RationalNum add(RationalNum n) {
+		if(_den == n._den) {
+            return new RationalNum(n._num + _num, _den);
+        } if (n._num == 0) {
+        	return new RationalNum(_num, _den);
+        } else if (_num == 0) {
+        	return new RationalNum(n._num, n._den);
+        } else {
+          long den = _den * n._den;
+          long num = _num * n._num;
+          num = num * n._den + n._num * _den;
+          return new RationalNum(num, den);
+        }
+	}
+
+
+	@Override
+	public Number sub(Number other) { return this.sub((RationalNum)other); }
+
+	RationalNum sub(RationalNum n) {
+		if(_den == n._den) {
+            return new RationalNum(_num - n._num, _den);
+		} if (n._num == 0) {
+        	return new RationalNum(_num, _den);
+        } else if (_num == 0) {
+        	return new RationalNum(n._num, n._den);
+        } else {
+          long den = _den * n._den;
+          long num = _num * n._num;
+          num = num * n._den - n._num * _den;
+          return new RationalNum(num, den);
+        }
 	}
 	
+
+	@Override
+	public Number mul(Number other) { return this.mul((RationalNum)other); }
+
+	RationalNum mul(RationalNum n) {
+		return new RationalNum(_num * n._num, _den * n._den);
+	}
 	
 
 	@Override
-	public RationalNum sub(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.RATIONAL_NUMBER:
-			return this.r_sub((RationalNum)other);
-		default:
-			return this.r_sub(new RationalNum(other.toDouble()));
-		}
+	public Number div(Number other) { return this.div((RationalNum)other); }
+
+	RationalNum div(RationalNum n) {
+		return new RationalNum(_num * n._den, _den * n._num);
 	}
 
-	@Override
-	public RationalNum mul(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.RATIONAL_NUMBER:
-			return this.r_mul((RationalNum)other);
-		default:
-			return this.r_mul(new RationalNum(other.toDouble()));
-		}
-	}
 
 	@Override
-	public RationalNum div(Number other) {
-		byte type = other.type();
-		switch (type) {
-		case Obj.RATIONAL_NUMBER:
-			return this.r_div((RationalNum)other);
-		default:
-			return this.r_div(new RationalNum(other.toDouble()));
-		}
-	}
+	public Number idiv(Number other) { return this.idiv((RationalNum)other); }
 
-	@Override
-	public RationalNum idiv(Number other) {
+	public RationalNum idiv(RationalNum other) {
 		return new RationalNum(this.toLong() / other.toLong(), 1L);
 	}
+	
 
 	@Override
-	public RationalNum mod(Number other) {
+	public Number mod(Number other) { return this.mod((RationalNum)other); }
+
+	public RationalNum mod(RationalNum other) {
 		return new RationalNum(this.toDouble() % other.toDouble());
 	}
 
+
 	@Override
-	public RationalNum pow(Number other) {
+	public Number pow(Number other) { return this.pow((RationalNum)other); }
+
+	public RationalNum pow(RationalNum other) {
 		double exp = other.toDouble();
 		if (exp > 0) {
 			return new RationalNum((long)Math.pow(_num, exp), (long)Math.pow(_den, exp));
@@ -231,6 +247,7 @@ public class RationalNum extends Number {
 			return new RationalNum(Math.pow(this.toDouble(), other.toDouble()));
 		}
 	}
+
 	
 	
 	/////////////////////
@@ -244,12 +261,12 @@ public class RationalNum extends Number {
 	
 	@Override
 	public Number inc() {
-		return this.r_add(ONE);
+		return this.add(ONE);
 	}
 
 	@Override
 	public Number dec() {
-		return this.r_sub(ONE);
+		return this.sub(ONE);
 	}
 
 	@Override
@@ -339,26 +356,6 @@ public class RationalNum extends Number {
 		return _den == 1 && NumberMath.isPrime(_num);
 	}
 	
-	//////////////////
-	// TRANSFORMERS //
-	//////////////////
-	
-	@Override
-	public RationalNum subEq(Number v) {
-		RationalNum n = this.sub(v);
-		this._den = n._den;
-		this._num = n._num;
-		return this;
-	}
-
-	@Override
-	public RationalNum addEq(Number v) {
-		RationalNum n = this.add(v);
-		this._den = n._den;
-		this._num = n._num;
-		return this;
-	}
-
 
 
 		
@@ -436,53 +433,15 @@ public class RationalNum extends Number {
 		//Ascending
 		return Double.compare(this.toDouble(), n.toDouble()); 
 	}
-	
-	//////////////////////////
-	// RATIONAL NUMBER MATH //
-	//////////////////////////
-	
-	/** Add two rational numbers */
-	RationalNum r_add(RationalNum n) {
-		if(_den == n._den) {
-            return new RationalNum(n._num + _num, _den);
-        } if (n._num == 0) {
-        	return new RationalNum(_num, _den);
-        } else if (_num == 0) {
-        	return new RationalNum(n._num, n._den);
-        } else {
-          long den = _den * n._den;
-          long num = _num * n._num;
-          num = num * n._den + n._num * _den;
-          return new RationalNum(num, den);
-        }
-	}
-	
-	/** Subtract two rational numbers */
-	RationalNum r_sub(RationalNum n) {
-		if(_den == n._den) {
-            return new RationalNum(_num - n._num, _den);
-		} if (n._num == 0) {
-        	return new RationalNum(_num, _den);
-        } else if (_num == 0) {
-        	return new RationalNum(n._num, n._den);
-        } else {
-          long den = _den * n._den;
-          long num = _num * n._num;
-          num = num * n._den - n._num * _den;
-          return new RationalNum(num, den);
-        }
-	}
-	
-	/** Multiply two rational  numbers */
-	RationalNum r_mul(RationalNum n) {
-		return new RationalNum(_num * n._num, _den * n._den);
-	}
-	
-	/** Divide two rational numbers */
-	RationalNum r_div(RationalNum n) {
-		return new RationalNum(_num * n._den, _den * n._num);
+
+	@Override
+	protected Number convert(Number to_promote) {
+		return new RationalNum(to_promote.toDouble());
 	}
 
-
+	@Override
+	protected int numType() {
+		return Number.TYPE_RATIONAL;
+	}
 	
 }

@@ -273,7 +273,7 @@ class OP_Dot_Percent extends OpInstruction {
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
 				//b idiv a
-				block.push(((Number)(b)).idiv((Number)(a)));
+				block.push(NumberMath.idiv(asNumber(b), asNumber(a)));
 			} catch (ArithmeticException e) {
 				throw new AyaRuntimeException("%: Divide by 0");
 			}

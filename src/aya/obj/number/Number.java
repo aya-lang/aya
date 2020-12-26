@@ -5,7 +5,13 @@ import org.apfloat.Apfloat;
 import aya.obj.Obj;
 
 /** Abstract supertype for all numbers */
+
 public abstract class Number extends Obj implements Comparable<Number> {
+
+	public static final int TYPE_NUM = 0;
+	public static final int TYPE_BIGNUM = 1;
+	public static final int TYPE_RATIONAL = 2;
+	public static final int TYPE_COMPLEX = 2;
 	
 	public static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);
 	
@@ -20,6 +26,12 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	//////////////////////////
 	// CONVERSION FUNCTIONS //
 	//////////////////////////
+
+	/** Convert the other number to the same type as this one */
+	protected abstract Number convert(Number to_promote);
+
+	/** Return the number type */
+	protected abstract int numType();
 	
 	/** Convert to int using cast */
 	public abstract int toInt();
@@ -47,25 +59,25 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	///////////////////////
 	
 	/** Add */
-	public abstract Number add(Number other);
+	protected abstract Number add(Number other);
 	
 	/** Subtract */
-	public abstract Number sub(Number other);
+	protected abstract Number sub(Number other);
 	
 	/** Multiply */
-	public abstract Number mul(Number other);
+	protected abstract Number mul(Number other);
 	
 	/** Divide */
-	public abstract Number div(Number other);
+	protected abstract Number div(Number other);
 	
 	/** Integer division */
-	public abstract Number idiv(Number other);
+	protected abstract Number idiv(Number other);
 	
 	/** Modulus */
-	public abstract Number mod(Number other);
+	protected abstract Number mod(Number other);
 	
 	/** Power */
-	public abstract Number pow(Number other);
+	protected abstract Number pow(Number other);
 	
 	
 	/////////////////////////////
@@ -130,13 +142,11 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	public abstract boolean isPrime();
 	
 	@Override
-	public abstract Number deepcopy();
+	public Number deepcopy() { return this; }
 
+	@Override
+	public byte type() { return Obj.NUMBER; }
 
-	// Slight performance improvement for list builders
-	public abstract Number subEq(Number v);
-	public abstract Number addEq(Number v);
-	
 	//Common constants, return the same type
 	public abstract Number one();
 	public abstract Number zero();
