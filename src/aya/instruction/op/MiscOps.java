@@ -21,9 +21,9 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
-import aya.obj.number.RationalNum;
 import aya.parser.CharacterParser;
 
 public class MiscOps {	
@@ -547,7 +547,7 @@ class OP_To_Rat extends OpInstruction {
 	
 	public OP_To_Rat() {
 		init("Mr");
-		arg("N", "convert to rational number");
+		arg("N", "convert to fractional number");
 		vect();
 	}
 
@@ -559,7 +559,7 @@ class OP_To_Rat extends OpInstruction {
 			if (n.isa(Obj.RATIONAL_NUMBER)) {
 				block.push(n);
 			} else {
-				block.push( new RationalNum(((Number)n).toDouble()) );
+				block.push( new FractionNum(((Number)n).toDouble()) );
 			}
 		} else if (n.isa(NUMBERLIST)) {
 			ArrayList<Number> nl = asNumberList(n).toArrayList();
@@ -568,7 +568,7 @@ class OP_To_Rat extends OpInstruction {
 				if (j.isa(Obj.RATIONAL_NUMBER)) {
 					ns.add(j);
 				} else {
-					ns.add( new RationalNum(((Number)j).toDouble()) );
+					ns.add( new FractionNum(((Number)j).toDouble()) );
 				}
 			}
 			block.push(new List(new NumberItemList(ns)));

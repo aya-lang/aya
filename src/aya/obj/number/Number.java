@@ -10,7 +10,7 @@ public abstract class Number extends Obj implements Comparable<Number> {
 
 	public static final int TYPE_NUM = 0;
 	public static final int TYPE_BIGNUM = 1;
-	public static final int TYPE_RATIONAL = 2;
+	public static final int TYPE_FRACTION = 2;
 	public static final int TYPE_COMPLEX = 2;
 	
 	public static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);

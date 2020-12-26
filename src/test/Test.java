@@ -4,7 +4,7 @@ import test.obj.list.StrTest;
 import test.obj.list.numberlist.NumberItemListTest;
 import test.obj.number.NumberBinaryOpsTest;
 import test.obj.number.NumberTest;
-import test.obj.number.RationalNumTest;
+import test.obj.number.FractionNumTest;
 
 public abstract class Test {
 	public abstract void runTests();
@@ -26,7 +26,7 @@ public abstract class Test {
 	public static void main(String[] args) {
 		new NumberItemListTest().runTests();
 		new NumberBinaryOpsTest().runTests();
-		new RationalNumTest().runTests();
+		new FractionNumTest().runTests();
 		new StrTest().runTests();
 		new NumberTest().runTests();
 	}

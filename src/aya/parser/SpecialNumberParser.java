@@ -11,9 +11,9 @@ import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.number.BigNum;
+import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
-import aya.obj.number.RationalNum;
 
 /*
  * 
@@ -113,7 +113,7 @@ public class SpecialNumberParser {
 			case IMAG:
 				return toImagNumber();
 			case RAT:
-				return toRationalNumber();
+				return toFractionNumber();
 			case PI:
 				return toPiNumber();
 			case BIG:
@@ -170,17 +170,17 @@ public class SpecialNumberParser {
 		return new BigNum(new Apfloat(_fst));
 	}
 
-	private RationalNum toRationalNumber() {
+	private FractionNum toFractionNumber() {
 		if (_snd.equals("")) {
 			if (_fst.contains(".")) {
-				return new RationalNum(Double.parseDouble(_fst));
+				return new FractionNum(Double.parseDouble(_fst));
 			} else {
-				return new RationalNum(Long.parseLong(_fst),1);
+				return new FractionNum(Long.parseLong(_fst),1);
 			}
 		} else {
-			long n = Long.parseLong(_fst);
-			long d = Long.parseLong(_snd);
-			return new RationalNum(n, d);
+			BigInteger n = new BigInteger(_fst);
+			BigInteger d = new BigInteger(_snd);
+			return new FractionNum(n, d);
 		}
 	}
 
