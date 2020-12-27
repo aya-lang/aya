@@ -8,7 +8,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.19.jar"/>
-	<classpathentry kind="lib" path="lib/apfloat.jar"/>
 	<classpathentry kind="lib" path="lib/json-20190722.jar"/>
+	<classpathentry kind="lib" path="lib/bigfraction-1.1.0-java7.jar"/>
+	<classpathentry kind="lib" path="lib/big-math-2.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,54 +1,56 @@
 package aya.obj.number;
 
-import org.apfloat.Apfloat;
-import org.apfloat.ApfloatMath;
-import org.apfloat.ApintMath;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import aya.ReprStream;
 import aya.obj.Obj;
+import aya.util.MathUtils;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /** Contains an ApFloat */
 public class BigNum extends Number {
 	
-	private static Apfloat ZERO_AP = new Apfloat(0);
+	public static final MathContext MC = new MathContext(128);
+	public static final BigDecimal BD_NEG_ONE = new BigDecimal(-1);
+	public static final BigNum ZERO = new BigNum(0);
+	public static final BigNum ONE = new BigNum(1);
+	public static final BigNum NEG_ONE = new BigNum(-1);
 	
-	public static BigNum ZERO = new BigNum(0);
-	public static BigNum ONE = new BigNum(1);
-	public static BigNum NEG_ONE = new BigNum(1);
-	
-	private Apfloat _val;
+	private BigDecimal _val;
 	
 	//////////////////
 	// CONSTURCTORS //
 	//////////////////
 	
 	public BigNum(int n) {
-		//Infinite precision
-		_val = new Apfloat(n);
+		_val = new BigDecimal(n, MC);
 	}
 	
 	public BigNum(double d) {
-		//16 digit precision
-		_val = new Apfloat(d);
+		_val = new BigDecimal(d, MC);
 	}
 	
 	public BigNum(String str) {
-		//precision dependent on string
-		try {
-			_val = new Apfloat(str);
-		} catch (NumberFormatException e) {
-			_val = new Apfloat(0.0);
-		}
+		_val = new BigDecimal(str);
 	}
 	
-	public BigNum(Apfloat a) {
-		_val = a;
+	public BigNum(BigDecimal n) {
+		_val = n;
 	}
+
+	public BigNum(BigInteger val) {
+		_val = new BigDecimal(val);
+	}
+	
 	
 	/////////////////
 	// CONVERSIONS //
 	/////////////////
 	
+
 	@Override
 	public int toInt() {
 		return _val.intValue();
@@ -70,11 +72,9 @@ public class BigNum extends Number {
 	}
 
 	@Override
-	public Apfloat toApfloat() {
+	public BigDecimal toBigDecimal() {
 		return _val;
 	}
-
-	
 	
 	///////////////////////
 	// BINARY OPERATIONS //
@@ -98,15 +98,23 @@ public class BigNum extends Number {
 
 	@Override
 	public Number idiv(Number other) { return this.idiv((BigNum)other); }
-	public BigNum idiv(BigNum other) { return new BigNum(_val.divide(other._val).floor()); }
+	public BigNum idiv(BigNum other) { return new BigNum(floor(_val.divide(other._val))); }
 	
 	@Override
 	public Number mod(Number other) { return this.mod((BigNum)other); }
-	public BigNum mod(BigNum other) { return new BigNum(_val.mod(other._val)); }
+	public BigNum mod(BigNum other) { return new BigNum(_val.toBigInteger().mod(other._val.toBigInteger())); }
 
 	@Override
 	public Number pow(Number other) { return this.pow((BigNum)other); }
-	public BigNum pow(BigNum other) { return new BigNum(ApfloatMath.pow(_val, other._val)); }
+	public BigNum pow(BigNum other) { return new BigNum(BigDecimalMath.pow(_val, other._val, MC)); }
+
+	@Override
+	public Number gcd(Number other) { return this.gcd((BigNum)other); }
+	public BigNum gcd(BigNum other) { return new BigNum(MathUtils.gcd(_val, other._val)); }
+
+	@Override
+	public Number lcm(Number other) { return this.lcm((BigNum)other); }
+	public BigNum lcm(BigNum other) { return new BigNum(MathUtils.lcm(_val, other._val)); }
 
 	
 
@@ -121,12 +129,12 @@ public class BigNum extends Number {
 	
 	@Override
 	public Number inc() {
-		return new BigNum(_val.add(Apfloat.ONE));
+		return new BigNum(_val.add(BigDecimal.ONE));
 	}
 
 	@Override
 	public Number dec() {
-		return new BigNum(_val.subtract(Apfloat.ONE));
+		return new BigNum(_val.subtract(BigDecimal.ONE));
 
 	}
 
@@ -137,98 +145,98 @@ public class BigNum extends Number {
 
 	@Override
 	public Number factorial() {
-		return new BigNum(ApintMath.factorial(_val.longValue()));
+		return new BigNum(MathUtils.factorial(_val));
 	}
 
 	@Override
 	public Number abs() {
-		return new BigNum(ApfloatMath.abs(_val));
+		return new BigNum(_val.multiply(_val.signum() >= 0 ? BigDecimal.ONE : BD_NEG_ONE));
 	}
 	
 	@Override
 	public Number exp() {
-		return new BigNum(ApfloatMath.exp(_val));
+		return new BigNum(BigDecimalMath.exp(_val, MC));
 	}
 
 	@Override
 	public Number sin() {
-		return new BigNum(ApfloatMath.sin(_val));
+		return new BigNum(BigDecimalMath.sin(_val, MC));
 	}
 
 	@Override
 	public Number cos() {
-		return new BigNum(ApfloatMath.cos(_val));
+		return new BigNum(BigDecimalMath.cos(_val, MC));
 	}
 
 	@Override
 	public Number tan() {
-		return new BigNum(ApfloatMath.tan(_val));
+		return new BigNum(BigDecimalMath.tan(_val, MC));
 	}
 
 	@Override
 	public Number asin() {
-		return new BigNum(ApfloatMath.asin(_val));
+		return new BigNum(BigDecimalMath.asin(_val, MC));
 	}
 
 	@Override
 	public Number acos() {
-		return new BigNum(ApfloatMath.acos(_val));
+		return new BigNum(BigDecimalMath.acos(_val, MC));
 	}
 
 	@Override
 	public Number atan() {
-		return new BigNum(ApfloatMath.atan(_val));
+		return new BigNum(BigDecimalMath.atan(_val, MC));
 	}
 
 	@Override
 	public Number log() {
-		return new BigNum(ApfloatMath.log(_val, new Apfloat(10)));
+		return new BigNum(BigDecimalMath.log10(_val, MC));
 	}
 
 	@Override
 	public Number ln() {
-		return new BigNum(ApfloatMath.log(_val));
+		return new BigNum(BigDecimalMath.log2(_val, MC));
 	}
 
 	@Override
 	public Number sqrt() {
-		return new BigNum(ApfloatMath.sqrt(_val));
+		return new BigNum(BigDecimalMath.sqrt(_val, MC));
 	}
 
 	@Override
 	public Number ceil() {
-		return new BigNum(_val.ceil());
+		return new BigNum(ceil(_val));
 	}
 
 	@Override
 	public Number floor() {
-		return new BigNum(_val.floor());
+		return new BigNum(floor(_val));
 	}
 
 	@Override
 	public boolean isPrime() {
-		return NumberMath.isPrime(_val.longValue());
+		return MathUtils.isPrime(_val.toBigInteger());
 	}
 
 	@Override
 	public boolean bool() {
-		return !(_val.compareTo(ZERO_AP) == 0);
+		return !(_val.compareTo(BigDecimal.ZERO) == 0);
 	}
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(trimZeros(_val.toString(true)));
+		stream.print(trimZeros(_val.toString()));
 		return stream;
 	}
 
 	@Override
 	public String str() {
-		return trimZeros(_val.toString(true));
+		return trimZeros(_val.toString());
 	}
 
 	@Override
 	public boolean equiv(Obj o) {
-		return o instanceof Number && ((Number)o).toApfloat().compareTo(_val) == 0;
+		return o instanceof Number && ((Number)o).toBigDecimal().compareTo(_val) == 0;
 	}
 	
 	@Override
@@ -245,7 +253,7 @@ public class BigNum extends Number {
 
 	@Override
 	public int compareTo(Number n) {
-		return _val.compareTo(n.toApfloat()); 
+		return _val.compareTo(n.toBigDecimal()); 
 	}
 	
 
@@ -278,6 +286,14 @@ public class BigNum extends Number {
 	// PRIVATE METHODS //
 	/////////////////////
 	
+	private static BigDecimal ceil(BigDecimal val) {
+		return val.setScale(0, RoundingMode.CEILING);
+	}
+	
+	private static BigDecimal floor(BigDecimal val) {
+		return val.setScale(0, RoundingMode.FLOOR);
+	}
+	
 	private static String trimZeros(String s) {
 		if(!s.contains("."))
 			return s;
@@ -294,7 +310,7 @@ public class BigNum extends Number {
 
 	@Override
 	protected Number convert(Number to_promote) {
-		return new BigNum(to_promote.toApfloat());
+		return new BigNum(to_promote.toBigDecimal());
 	}
 
 	@Override

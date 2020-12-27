@@ -1,6 +1,6 @@
 package aya.obj.number;
 
-import org.apfloat.Apfloat;
+import java.math.BigDecimal;
 
 import aya.obj.Obj;
 
@@ -12,8 +12,6 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	public static final int TYPE_BIGNUM = 1;
 	public static final int TYPE_FRACTION = 2;
 	public static final int TYPE_COMPLEX = 2;
-	
-	public static final Apfloat AP_MAX_INT = new Apfloat(Integer.MAX_VALUE);
 	
 	private static int maxPrecision = 50;
 	
@@ -44,9 +42,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	
 	/** Convert to double using cast */
 	public abstract double toDouble();
-	
-	/** Convert to Apfloat */
-	public abstract Apfloat toApfloat();
+
+	/** Convert to BigDecimal using cast */
+	public abstract BigDecimal toBigDecimal();
 	
 	/** Convert to byte */
 	public byte toByte() {
@@ -78,6 +76,13 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	
 	/** Power */
 	protected abstract Number pow(Number other);
+	
+	/** GCD */
+	protected abstract Number gcd(Number other);
+	
+	/** LCM */
+	protected abstract Number lcm(Number other);
+	
 	
 	
 	/////////////////////////////
@@ -151,6 +156,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	public abstract Number one();
 	public abstract Number zero();
 	public abstract Number negOne();
+
+
+
 	
 
 }

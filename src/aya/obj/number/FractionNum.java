@@ -1,13 +1,13 @@
 package aya.obj.number;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import org.apfloat.Apfloat;
 
 import com.github.kiprobinson.bigfraction.BigFraction;
 
 import aya.ReprStream;
 import aya.obj.Obj;
+import aya.util.MathUtils;
 
 /** Represented by two long ints */
 public class FractionNum extends Number {
@@ -44,10 +44,14 @@ public class FractionNum extends Number {
 		_val = new BigFraction(n, d);
 	}
 	
+	public FractionNum(BigDecimal n) {
+		_val = new BigFraction(n);
+	}
+
 	/////////////////
 	// CONVERSIONS //
 	/////////////////
-	
+
 
 	@Override
 	public int toInt() {
@@ -70,9 +74,8 @@ public class FractionNum extends Number {
 	}
 
 	@Override
-	public Apfloat toApfloat() {
-		// Avoid max precision error for now
-		return new Apfloat(this.toDouble());
+	public BigDecimal toBigDecimal() {
+		return _val.toBigDecimal();
 	}
 	
 	
@@ -113,6 +116,14 @@ public class FractionNum extends Number {
 	private static BigFraction EPS = new BigFraction(1e-5);
 	FractionNum pow(FractionNum n) { return new FractionNum(_val.pow(n._val, EPS)); }
 
+	@Override
+	public Number gcd(Number other) { return this.gcd((FractionNum)other); }
+	FractionNum gcd(FractionNum n) { return new FractionNum(MathUtils.gcd(_val.toBigDecimal(), n._val.toBigDecimal())); }
+
+	@Override
+	public Number lcm(Number other) { return this.lcm((FractionNum)other); }
+	FractionNum lcm(FractionNum n) { return new FractionNum(MathUtils.lcm(_val.toBigDecimal(), n._val.toBigDecimal())); }
+
 	
 	
 	/////////////////////
@@ -148,7 +159,7 @@ public class FractionNum extends Number {
 
 	@Override
 	public Number factorial() {
-		return new BigNum(NumberMath.factorial(this.toLong()));
+		return new BigNum(MathUtils.factorial(this.toBigDecimal()));
 	}
 
 	@Override
@@ -218,7 +229,7 @@ public class FractionNum extends Number {
 
 	@Override
 	public boolean isPrime() {
-		return _val.getDenominator().intValue() == 1 && NumberMath.isPrime(_val.getNumerator().longValue());
+		return _val.getDenominator().intValue() == 1 && MathUtils.isPrime(_val.getNumerator());
 	}
 	
 

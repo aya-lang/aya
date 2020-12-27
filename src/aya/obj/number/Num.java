@@ -1,11 +1,11 @@
 package aya.obj.number;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
-
-import org.apfloat.Apfloat;
 
 import aya.ReprStream;
 import aya.obj.Obj;
+import aya.util.MathUtils;
 
 /** Contains a double */
 public class Num extends Number {
@@ -96,8 +96,8 @@ public class Num extends Number {
 	}
 
 	@Override
-	public Apfloat toApfloat() {
-		return new Apfloat(_val);
+	public BigDecimal toBigDecimal() {
+		return new BigDecimal(_val);
 	}
 	
 	
@@ -135,7 +135,14 @@ public class Num extends Number {
 	public Number pow(Number other) { return this.pow((Num)other); }
 	public Num pow(Num other) { return new Num(Math.pow(_val, other._val)); }
 	
+	@Override
+	public Number gcd(Number other) { return this.gcd((Num)other); }
+	public Num gcd(Num other) { return new Num(MathUtils.gcd((long)_val, (long)other._val)); }
 	
+	@Override
+	public Number lcm(Number other) { return this.lcm((Num)other); }
+	public Num lcm(Num other) { return new Num(MathUtils.lcm((long)_val, (long)other._val)); }
+
 	/////////////////////
 	// MATH OPERATIONS //
 	/////////////////////
@@ -168,7 +175,7 @@ public class Num extends Number {
 
 	@Override
 	public Number factorial() {
-		return new Num(NumberMath.factorial((long)_val));
+		return new Num(MathUtils.factorial((long)_val));
 	}
 
 	@Override
@@ -238,7 +245,7 @@ public class Num extends Number {
 
 	@Override
 	public boolean isPrime() {
-		return NumberMath.isPrime((long)_val);
+		return MathUtils.isPrime((long)_val);
 	}
 	
 	///////////////

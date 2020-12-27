@@ -1,8 +1,8 @@
 package aya.ext.dialog;
+import java.math.BigDecimal;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
-import org.apfloat.Apfloat;
 
 import aya.AyaPrefs;
 import aya.obj.number.BigNum;
@@ -34,7 +34,7 @@ public class QuickDialog {
 				out = new Num(Double.parseDouble(s));
 			} catch (NumberFormatException e) {
 				try {
-					out = new BigNum(new Apfloat(s));
+					out = new BigNum(new BigDecimal(s));
 				} catch (NumberFormatException e2) {
 					error = "Number Format Error";
 				}

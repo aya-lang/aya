@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,8 +29,6 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apfloat.Apfloat;
 
 import aya.Aya;
 import aya.AyaPrefs;
@@ -989,7 +988,7 @@ class OP_H extends OpInstruction {
 				
 				//Always base ten
 				else if(num.isa(NUMBER)) {
-					out_bi = ((Number)num).toApfloat().floor().toBigInteger();
+					out_bi = ((Number)num).toBigDecimal().setScale(0, RoundingMode.FLOOR).toBigInteger();
 				} 
 				
 				//Assume base 2
@@ -1032,7 +1031,7 @@ class OP_H extends OpInstruction {
 				if (to_base == 10) {
 					//Larger than an int, return BigDeciaml
 					if (out_bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
-						block.push(new BigNum(new Apfloat(new BigDecimal(out_bi))));
+						block.push(new BigNum(new BigDecimal(out_bi)));
 					}
 					//Smaller than int 
 					else {
@@ -1635,10 +1634,10 @@ class OP_Z extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(Obj.NUMBER)) {
-			block.push(new BigNum(((Number)a).toApfloat()));
+			block.push(new BigNum(((Number)a).toBigDecimal()));
 		} else if (a.isa(Obj.STR)) {
 			try	{
-				block.push(new BigNum(new Apfloat(a.str())));
+				block.push(new BigNum(new BigDecimal(a.str())));
 			} catch (NumberFormatException e) {
 				throw new AyaRuntimeException("Cannot cast " + a.str() + " to bignum");
 			}

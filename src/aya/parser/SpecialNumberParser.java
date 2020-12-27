@@ -3,8 +3,6 @@ package aya.parser;
 import java.io.File;
 import java.math.BigInteger;
 
-import org.apfloat.Apfloat;
-
 import aya.AyaPrefs;
 import aya.exceptions.SyntaxError;
 import aya.obj.Obj;
@@ -167,7 +165,7 @@ public class SpecialNumberParser {
 	}
 	
 	private BigNum toBigNumber() {
-		return new BigNum(new Apfloat(_fst));
+		return new BigNum(_fst);
 	}
 
 	private FractionNum toFractionNumber() {
@@ -193,7 +191,7 @@ public class SpecialNumberParser {
 			return new Num(Integer.parseInt(_snd, 2 ));
 		} catch (NumberFormatException e) {
 			BigInteger bigint = new BigInteger(_snd, 2);
-			return new BigNum(new Apfloat(bigint));
+			return new BigNum(bigint);
 		}
 	}
 
@@ -202,7 +200,7 @@ public class SpecialNumberParser {
 			return new Num(Integer.parseInt(_snd, 16 ));
 		} catch (NumberFormatException e) {
 			BigInteger bigint = new BigInteger(_snd, 16);
-			return new BigNum(new Apfloat(bigint));
+			return new BigNum(bigint);
 		}
 	}
 
