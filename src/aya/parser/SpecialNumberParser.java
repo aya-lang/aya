@@ -9,6 +9,7 @@ import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.number.BigNum;
+import aya.obj.number.ComplexNum;
 import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -183,7 +184,11 @@ public class SpecialNumberParser {
 	}
 
 	private Number toImagNumber() {
-		throw new SyntaxError("Imag numbers not implemented");
+		if (_snd.equals("")) {
+			return new ComplexNum(Double.parseDouble(_fst));
+		} else {
+			return new ComplexNum(Double.parseDouble(_fst), Double.parseDouble(_snd));
+		}
 	}
 
 	private Number toBinNumber() {

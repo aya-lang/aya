@@ -2,6 +2,7 @@ package aya.obj.number;
 
 import java.math.BigDecimal;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 
 /** Abstract supertype for all numbers */
@@ -148,6 +149,12 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	
 	@Override
 	public Number deepcopy() { return this; }
+	
+	@Override
+	public ReprStream repr(ReprStream stream) {
+		stream.print(str());
+		return stream;
+	}
 
 	@Override
 	public byte type() { return Obj.NUMBER; }

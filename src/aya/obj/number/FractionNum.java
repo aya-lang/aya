@@ -5,7 +5,6 @@ import java.math.BigInteger;
 
 import com.github.kiprobinson.bigfraction.BigFraction;
 
-import aya.ReprStream;
 import aya.obj.Obj;
 import aya.util.MathUtils;
 
@@ -265,12 +264,6 @@ public class FractionNum extends Number {
 	@Override
 	public boolean bool() {
 		return _val.getNumerator().longValue() == 0;
-	}
-
-	@Override
-	public ReprStream repr(ReprStream stream) {
-		stream.print(str());
-		return stream;
 	}
 
 	@Override

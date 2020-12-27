@@ -5,9 +5,9 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import aya.ReprStream;
 import aya.obj.Obj;
 import aya.util.MathUtils;
+import aya.util.StringUtils;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /** Contains an ApFloat */
@@ -224,14 +224,8 @@ public class BigNum extends Number {
 	}
 
 	@Override
-	public ReprStream repr(ReprStream stream) {
-		stream.print(trimZeros(_val.toString()));
-		return stream;
-	}
-
-	@Override
 	public String str() {
-		return trimZeros(_val.toString());
+		return ":" + StringUtils.bigDecimalToString(_val) + "z";
 	}
 
 	@Override
@@ -294,19 +288,7 @@ public class BigNum extends Number {
 		return val.setScale(0, RoundingMode.FLOOR);
 	}
 	
-	private static String trimZeros(String s) {
-		if(!s.contains("."))
-			return s;
-		
-		int dsi = s.length()-1;
-		while(s.charAt(dsi) == '0') {
-			dsi--;
-		}
-		if(s.charAt(dsi) == '.') {
-			dsi++;
-		}
-		return s.substring(0, dsi+1);
-	}
+
 
 	@Override
 	protected Number convert(Number to_promote) {

@@ -22,6 +22,7 @@ public abstract class Obj {
 	public static final byte NUM = 11;
 	public static final byte BIGNUM = 12;
 	public static final byte RATIONAL_NUMBER = 13;
+	public static final byte COMPLEXNUM = 14;
 	
 	public static final byte LIST = 2;
 	public static final byte STR = 21;
@@ -56,6 +57,8 @@ public abstract class Obj {
 			return "BIGNUM";
 		case RATIONAL_NUMBER:
 			return "RATIONAL_NUMBER";
+		case COMPLEXNUM:
+			return "COMPLEXNUM";
 		case STR:
 			return "STR";
 		case NUMBERITEMLIST:
@@ -135,6 +138,7 @@ public abstract class Obj {
 	public static final Symbol SYM_UNKNOWN 	= Symbol.fromStr("unknown");
 	public static final Symbol SYM_TYPE 	= Symbol.fromStr("__type__");
 
+
 	
 	/** Converts an ID to a symbol */
 	public static Symbol IDToSym(byte b) {
@@ -155,6 +159,7 @@ public abstract class Obj {
 		case STR : return SYM_STR;
 		case NUMBER : return SYM_NUM;
 		case RATIONAL_NUMBER : return SYM_NUM;
+		case COMPLEXNUM : return SYM_NUM;
 		case DICT : return SYM_DICT;
 		case ANY : return SYM_ANY;
 

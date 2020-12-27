@@ -1,11 +1,10 @@
 package aya.obj.number;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
-import aya.ReprStream;
 import aya.obj.Obj;
 import aya.util.MathUtils;
+import aya.util.StringUtils;
 
 /** Contains a double */
 public class Num extends Number {
@@ -61,6 +60,8 @@ public class Num extends Number {
 	public static Num fromInt(int i) {
 		if (i >= 0 && i <= 255) {
 			return BYTES[i];
+		} else if (i == -1) {
+			return NEG_ONE;
 		} else {
 			return new Num(i);
 		}
@@ -164,13 +165,7 @@ public class Num extends Number {
 
 	@Override
 	public Number signnum() {
-		if (_val == 0.0) {
-			return new Num(0);
-		} else if (_val > 0.0) {
-			return new Num(1);
-		} else {
-			return new Num(-1);
-		}
+		return Num.fromInt(MathUtils.signnum(_val));
 	}
 
 	@Override
@@ -277,26 +272,10 @@ public class Num extends Number {
 		return _val != 0.0;
 	}
 
-	private static final DecimalFormat _df = new DecimalFormat("#");
-    static {_df.setMaximumFractionDigits(8);}
-    
-	@Override
-	public ReprStream repr(ReprStream stream) {
-		if (_val % 1 == 0) {
-			stream.print(String.format("%d",(long)_val));
-		} else {
-			stream.print(_df.format(_val));
-		}
-		return stream;
-	}
 
 	@Override
 	public String str() {
-		if (_val % 1 == 0) {
-			return String.format("%d",(long)_val);
-		} else {
-			return _df.format(_val);
-		}
+		return StringUtils.doubleToString(_val);
 	}
 
 	@Override

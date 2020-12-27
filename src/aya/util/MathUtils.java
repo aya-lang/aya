@@ -14,6 +14,16 @@ public class MathUtils {
 	private static final BigInteger BI_TWO = BigInteger.valueOf(2);
 	private static final BigInteger BI_THREE = BigInteger.valueOf(3);
 	private static final BigInteger BI_SIX = BigInteger.valueOf(6);
+
+	public static int signnum(double val) {
+		if (val == 0.0) {
+			return 0;
+		} else if (val > 0.0) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
 	
 	/** Primality Test */
 	// https://stackoverflow.com/questions/2385909/what-would-be-the-fastest-method-to-test-for-primality-in-java
