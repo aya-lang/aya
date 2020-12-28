@@ -67,6 +67,10 @@
   {self n, self.l n .> self.M!}:__tail__;
 
   {blk self, self.l :# {blk} self.M! }:__each__;
+
+  {ix self, self.l.[ix]}:__getindex__;
+
+  {val ix self, val self.l.:[ix]; self }:__setindex__;
 }:vec;
 
 {v : vec^, vR vec! } vec.:__range__;
@@ -269,6 +273,22 @@ test_.` :test;
     { v 3 .> P "< 3 4 5 >" } test
     { v 3 .< P "< 1 2 3 >" } test
 };
+
+"getindex..." :P
+{,
+    [1 2 3 4 5] vec! :v;
+    { v.[0] 1 } test
+    { v.[:1] 5 } test
+};
+
+"setindex..." :P
+{,
+    [1 2 3 4 5] vec! :v;
+    { 99 v.:[2] P "< 1 2 99 4 5 >" } test
+    0:i;
+    { 100 v.:[i] P "< 100 2 99 4 5 >" } test
+};
+
 
 
 "scope..." :P

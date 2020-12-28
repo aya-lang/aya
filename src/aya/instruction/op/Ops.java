@@ -512,7 +512,7 @@ class OP_Divide extends OpInstruction {
 		if (overload().execute(block, a, b)) return;
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push(NumberMath.sub(asNumber(b), asNumber(a)));
+			block.push(NumberMath.div(asNumber(b), asNumber(a)));
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( new List(asNumberList(a).divFrom(asNumber(b))) );
 		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
@@ -806,7 +806,8 @@ class OP_D extends OpInstruction {
 
 		if (b.isa(DICT)) {
 			block.push(o);
-			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX, a);
+			block.push(a);
+			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX);
 		}
 		else if (b.isa(LIST)) {
 			asList(b).mutSetIndexed(a, o);

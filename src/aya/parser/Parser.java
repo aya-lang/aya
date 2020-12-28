@@ -15,7 +15,9 @@ import aya.instruction.index.GetNumberIndexInstruction;
 import aya.instruction.index.GetObjIndexInstruction;
 import aya.instruction.index.GetVarIndexInstruction;
 import aya.instruction.index.SetExprIndexInstruction;
+import aya.instruction.index.SetNumberIndexInstruction;
 import aya.instruction.index.SetObjIndexInstruction;
+import aya.instruction.index.SetVarIndexInstruction;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
@@ -688,14 +690,25 @@ public class Parser {
 					List l = ((ListLiteralInstruction) next).toList();
 					if (l != null) {
 						if (l.length() == 1) {
-							is.push(new SetObjIndexInstruction(l.getExact(0)));
+							Obj first = l.getExact(0);
+							if (first.isa(Obj.NUMBER)) {
+								is.push(new SetNumberIndexInstruction(((Number)first).toInt()));
+							} else {
+								is.push(new SetObjIndexInstruction(first));
+							}
 						} else {
 							throw new SyntaxError(
-									"Expected single element list after '.:' in:\n\t" + tokens_in.toString());
+									"Invalid index: " + l.repr() + ": Index must contain exactly one element");
 						}
 					} else {
 						ListLiteralInstruction lli = (ListLiteralInstruction) next;
-						is.push(new SetExprIndexInstruction(new Block(lli.getInstructions())));
+						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
+						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
+							// Small optimization for single variable indices
+							is.push(new SetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).id()));
+						} else {
+							is.push(new SetExprIndexInstruction(new Block(lli.getInstructions())));
+						}
 					}
 				}
 			}

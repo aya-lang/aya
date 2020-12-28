@@ -152,49 +152,49 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberList add(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.add(b, n));
+		for (Number b : _list) out.add(NumberMath.add(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList sub(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.sub(b, n));
+		for (Number b : _list) out.add(NumberMath.sub(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList div(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.div(b, n));
+		for (Number b : _list) out.add(NumberMath.div(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mul(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.mul(b, n));
+		for (Number b : _list) out.add(NumberMath.mul(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList mod(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.mod(b, n));
+		for (Number b : _list) out.add(NumberMath.mod(b, n));
 		return new NumberItemList(out);
 	}
 	
 	@Override
 	public NumberList idiv(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.idiv(b, n));
+		for (Number b : _list) out.add(NumberMath.idiv(b, n));
 		return new NumberItemList(out);
 	}
 
 	@Override
 	public NumberList pow(Number n) {
 		ArrayList<Number> out = emptyAL();
-		for (Number b : out) out.add(NumberMath.pow(b, n));
+		for (Number b : _list) out.add(NumberMath.pow(b, n));
 		return new NumberItemList(out);
 	}
 
