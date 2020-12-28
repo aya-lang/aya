@@ -143,6 +143,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	
 	/** Floor */
 	public abstract Number floor();
+
+	/** Imag */
+	public Number imag() { return zero(); }
 	
 	/** Primality test */
 	public abstract boolean isPrime();
@@ -163,6 +166,9 @@ public abstract class Number extends Obj implements Comparable<Number> {
 	public abstract Number one();
 	public abstract Number zero();
 	public abstract Number negOne();
+
+
+
 
 
 

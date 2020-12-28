@@ -21,6 +21,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.number.ComplexNum;
 import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -76,7 +77,7 @@ public class MiscOps {
 		/* 70 F  */ null,
 		/* 71 G  */ null,
 		/* 72 H  */ null,
-		/* 73 I  */ null,
+		/* 73 I  */ new OP_CreateComplex(),
 		/* 74 J  */ null,
 		/* 75 K  */ null,
 		/* 76 L  */ new OP_Log(),
@@ -108,7 +109,7 @@ public class MiscOps {
 		/* 102 f */ null,
 		/* 103 g */ null,
 		/* 104 h */ null,
-		/* 105 i */ null,
+		/* 105 i */ new OP_Mi(),
 		/* 106 j */ null,
 		/* 107 k */ new OP_AddParserChar(),
 		/* 108 l */ new OP_Ln(),
@@ -273,6 +274,26 @@ class OP_Acosine extends OpInstruction {
 	}
 }
 
+// I - 73
+class OP_CreateComplex extends OpInstruction {
+	
+	public OP_CreateComplex() {
+		init("MI");
+		arg("NN", "create complex number");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj im = block.pop();
+		Obj r = block.pop();
+		
+		if(r.isa(NUMBER) && im.isa(NUMBER)) {
+			block.push(new ComplexNum(asNumber(r).toDouble(), asNumber(im).toDouble()));
+		} else {
+			throw new TypeError(this, im, r);
+		}
+	}
+}
 
 // L - 76
 class OP_Log extends OpInstruction {
@@ -442,6 +463,33 @@ class OP_Me extends OpInstruction {
 		}
 	}
 }
+
+// i - 105
+class OP_Mi extends OpInstruction {
+	
+	public OP_Mi() {
+		init("Mi");
+		arg("N", "imag part of complex number");
+		vect();
+		setOverload(1, "imag");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj n = block.pop();
+	
+		if (overload().execute(block, n)) return;
+		
+		if(n.isa(NUMBER)) {
+			block.push(asNumber(n).imag());
+		} else if (n.isa(NUMBERLIST)) {
+			block.push(new List(asNumberList(n).imag()));
+		} else {
+			throw new TypeError(this, n);
+		}
+	}
+}
+
 
 
 // k - 107

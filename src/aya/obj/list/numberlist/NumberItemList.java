@@ -382,6 +382,13 @@ public class NumberItemList extends NumberList {
 		for (Number b : _list) out.add(b.floor());
 		return new NumberItemList(out);
 	}
+
+	@Override
+	public ListImpl imag() {
+		ArrayList<Number> out = emptyAL();
+		for (Number b : _list) out.add(b.imag());
+		return new NumberItemList(out);
+	}
 	
 	@Override
 	public ArrayList<Number> toArrayList() {

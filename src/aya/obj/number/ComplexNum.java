@@ -129,7 +129,11 @@ public class ComplexNum extends Number {
 
 	@Override
 	public Number pow(Number other) { return this.pow((ComplexNum)other); }
-	public ComplexNum pow(ComplexNum other) { return new ComplexNum(_val.pow(other._val)); }
+	public ComplexNum pow(ComplexNum other) { 
+		Complex a = Complex.mul(other._val, _val.ln());
+		a = a.exp();
+		return new ComplexNum(a);
+	}
 
 	@Override
 	public Number gcd(Number other) { return this.gcd((ComplexNum)other); }
@@ -243,6 +247,11 @@ public class ComplexNum extends Number {
 	public Number floor() {
 		return new ComplexNum(floor(_val));
 	}
+	
+	@Override
+	public Number imag() {
+		return new Num(_val.i);
+	}
 
 	@Override
 	public boolean isPrime() {
@@ -327,7 +336,7 @@ public class ComplexNum extends Number {
 	
 	@Override
 	protected Number convert(Number to_promote) {
-		return new ComplexNum(to_promote.toBigDecimal());
+		return new ComplexNum(to_promote.toDouble(), 0);
 	}
 
 	@Override

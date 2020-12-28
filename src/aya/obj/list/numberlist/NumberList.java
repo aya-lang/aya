@@ -160,6 +160,9 @@ public abstract class NumberList extends ListImpl {
 	/** Floor */
 	public abstract NumberList floor();
 
+	/** Imag */
+	public abstract ListImpl imag();
+
 	/** Return the list as an arrayList of numbers */
 	public abstract ArrayList<Number> toArrayList();
 	
@@ -193,6 +196,7 @@ public abstract class NumberList extends ListImpl {
 	
 	@Override
 	public abstract Number get(int i);
+
 
 	
 
