@@ -6,7 +6,11 @@ public class GraphicsInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
+		
+		CanvasInterface canvas_interface = new CanvasInterface();
+		
 		// JSON
-		addInstruction(new LegacyGraphicsInstruction());
+		addInstruction(new LegacyGraphicsInstruction(canvas_interface));
+		addInstruction(new ViewmatGraphicsInstruction(canvas_interface));
 	}
 }

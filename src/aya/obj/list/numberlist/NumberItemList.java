@@ -80,7 +80,7 @@ public class NumberItemList extends NumberList {
 	public Number max() {
 		Number max = Num.MIN_VALUE;
 		for (int i = 0; i < _list.size(); i++) {
-			if (_list.get(i).compareTo(max) > 0) {
+			if (!Double.isNaN(_list.get(i).toDouble()) && _list.get(i).compareTo(max) > 0) {
 				max = _list.get(i);
 			}
 		}

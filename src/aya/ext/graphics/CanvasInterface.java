@@ -66,6 +66,16 @@ public class CanvasInterface {
 		_table = new CanvasTable();
 	}
 	
+	public Canvas getCanvas(int canvas_id) {
+		Canvas cvs = _table.getCanvas(canvas_id);
+		if (cvs == null) {
+			throw new AyaRuntimeException("Canvas with id '" + canvas_id + "' does not exist");
+		} else if (!cvs.isOpen()) {
+			throw new AyaRuntimeException("Canvas with id '" + canvas_id + "' has been closed");
+		}
+		return cvs;
+	}
+	
 	public int doCommand(int canvas_id, Symbol command, Dict d) throws AyaRuntimeException {
 		DictReader params = new DictReader(d);
 		params.setErrorName("MG (command: " + command.str() + ")");
@@ -91,14 +101,7 @@ public class CanvasInterface {
 		}
 		}
 		
-		Canvas cvs = _table.getCanvas(canvas_id);
-		
-		// Initial checks
-		if (cvs == null) {
-			throw new AyaRuntimeException("Canvas with id '" + canvas_id + "' does not exist");
-		} else if (!cvs.isOpen()) {
-			return 0;
-		}
+		Canvas cvs = getCanvas(canvas_id);
 		
 		switch (cmd) {
 		case "clear": return cmdClear(params, cvs);

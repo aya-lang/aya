@@ -102,3 +102,14 @@ def canvas::fillrect {x y w h self,
 def canvas::clear {self,
     ::clear {,} self.id :{graphics.MG} ;
 }
+
+def canvas::viewmat { data : cvs canvas^ ,
+    {,
+        data E :height;
+        data.[0] E :width;
+    } canvas! :cvs;
+
+    data cvs.id :{graphics.viewmat}
+
+    cvs
+}

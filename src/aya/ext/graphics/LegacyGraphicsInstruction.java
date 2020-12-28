@@ -10,13 +10,13 @@ import aya.obj.symbol.Symbol;
 
 public class LegacyGraphicsInstruction extends NamedInstruction {
 
-	private CanvasInterface canvas;
+	private CanvasInterface canvas_interface;
 	
-	public LegacyGraphicsInstruction() {
+	public LegacyGraphicsInstruction(CanvasInterface canvas_interface) {
 		super("graphics.MG");
 		_doc = "JDN 2D graphics interface";
 
-		this.canvas = new CanvasInterface();
+		this.canvas_interface = canvas_interface;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class LegacyGraphicsInstruction extends NamedInstruction {
 			Dict params = (Dict)o_params;
 			Symbol command = (Symbol)o_command;
 			
-			int result = this.canvas.doCommand(id, command, params);
+			int result = this.canvas_interface.doCommand(id, command, params);
 			block.push(Num.fromInt(result));
 		} else {
 			throw new TypeError(this, "JDN", o_id, o_params, o_command);
