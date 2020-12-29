@@ -1,6 +1,7 @@
 package aya.instruction.op;
 
 import static aya.obj.Obj.CHAR;
+import static aya.obj.Obj.BLOCK;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
@@ -15,6 +16,8 @@ import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.SyntaxError;
 import aya.exceptions.TypeError;
+import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -216,6 +219,7 @@ class OP_Help extends OpInstruction {
 		init("M?");
 		arg("N", "list op descriptions where N=[0:std, 1:dot, 2:colon, 3:misc]");
 		arg("S", "search all help data");
+		arg("B", "get help data for operator");
 	}
 
 	@Override
@@ -241,6 +245,19 @@ class OP_Help extends OpInstruction {
 			block.push(items);
 		} else if (s.isa(NUMBER)) {
 			block.push(new List(OpDocReader.getAllOpDicts()));
+		} else if (s.isa(BLOCK)) {
+			InstructionStack instructions = ((Block)s).getInstructions();
+			if (instructions.isEmpty()) {
+				throw new AyaRuntimeException("Empty block");
+			} else {
+				Instruction i = instructions.pop();
+				if (i instanceof OpInstruction) {
+					OpInstruction op = (OpInstruction)i;
+					block.push(op.getDoc().toDict());
+				} else {
+					throw new AyaRuntimeException("No doc found for " + s.str());
+				}
+			}
 		}
 		else {
 			throw new TypeError(this, s);

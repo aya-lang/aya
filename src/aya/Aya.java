@@ -78,9 +78,7 @@ public class Aya extends Thread {
 	public static Aya getInstance() {
 		if(_instance == null) {
 			_instance = new Aya();
-			//_instance._helpData = new StringSearch(getQuickSearchData());
 			_instance._variables = new VariableData(_instance);
-			//instance.out = new AyaStdout();
 			CharacterParser.initMap();
 			AyaPrefs.init();
 			_instance.initNamedInstructions();
@@ -95,7 +93,6 @@ public class Aya extends Thread {
 			try {
 				
 				String input = _input.take();
-				
 				
 				synchronized(this) {
 					if (input.equals(QUIT)) {
