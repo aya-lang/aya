@@ -1,21 +1,19 @@
 import ::canvas
-import ::matrix
-
 
 { a ,
-    0 { 2^ a+ } 25 %
+    0 { 2^ a+ } 30 %
 }:mandl;
 
-0.006 :y_step;
-0.006 :x_step;
+0.008 :y_step;
+0.008 :x_step;
 3 :max_thresh;
 
 [1 $y_step- :1,] :# {y,
     [:2 $x_step+ 0.5,] :# {x,
         x y MI mandl .|
         max_thresh .>
-    } 
-} matrix! :m;
+    }
+}
 
-m .rows canvas.viewmat :c;
+canvas.viewmat :c;
 c.show

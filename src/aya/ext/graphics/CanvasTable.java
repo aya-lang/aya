@@ -11,9 +11,9 @@ public class CanvasTable {
 		_canvas_count = 0;
 	}
 	
-	public int newCanvas(String name, int width, int height) {
+	public int newCanvas(String name, int width, int height, double scale) {
 		_canvas_count++;
-		Canvas c = new Canvas(name, width, height);
+		Canvas c = new Canvas(name, width, height, scale);
 		_canvas_table.put(_canvas_count, c);
 		return _canvas_count;
 	}
@@ -33,8 +33,8 @@ public class CanvasTable {
 	public static void main(String[] args) {
 		CanvasTable ci = new CanvasTable();
 		
-		int id1 = ci.newCanvas("c1", 200, 200);
-		int id2 = ci.newCanvas("c2", 200, 200);
+		int id1 = ci.newCanvas("c1", 200, 200, 1);
+		int id2 = ci.newCanvas("c2", 200, 200, 1);
 		
 		Canvas canvas1 = ci.getCanvas(id1);
 		Canvas canvas2 = ci.getCanvas(id2);

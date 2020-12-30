@@ -107,6 +107,9 @@ def canvas::viewmat { data : cvs canvas^ ,
     {,
         data E :height;
         data.[0] E :width;
+        width height .< 400 :< {
+            2 :scale;
+        } ?
     } canvas! :cvs;
 
     data cvs.id :{graphics.viewmat}

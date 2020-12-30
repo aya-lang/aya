@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,18 +32,24 @@ public class Canvas {
 	private Graphics2D _g2d;
 	private int _width;
 	private int _height;
+	private double _scale;
 	private String _name;
 	private JFrame _frame;
 	private boolean _show_on_refresh; // If true, call show() when refresh() is called, if false no-op
+	private AffineTransform _at;
 	
 	
-	public Canvas(String name, int width, int height) {
+	public Canvas(String name, int width, int height, double scale) {
+
 		_name = name;
 		_width = width;
 		_height = height;
+		_scale = scale;
 		_plotImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		_g2d = _plotImage.createGraphics();
+		_at = new AffineTransform();
+		_at.scale(scale, scale);
 		
+		_g2d = _plotImage.createGraphics();
 		_g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 		RenderingHints.VALUE_ANTIALIAS_ON);
 		_g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
@@ -81,7 +88,7 @@ public class Canvas {
 		
 		if (_frame == null) {
 			_frame = new JFrame(_name);
-			_frame.getContentPane().setPreferredSize(new Dimension(_width, _height));
+			_frame.getContentPane().setPreferredSize(new Dimension((int)(_width * _scale), (int)(_height * _scale)));
 			_frame.add(new ImageView(_plotImage));
 			_frame.setResizable(false);
 			_frame.pack();
@@ -136,6 +143,7 @@ public class Canvas {
 		
 		@Override protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
+			((Graphics2D)g).setTransform(_at);
 			g.drawImage(img, 0, 0, this);
 		}
 	}	
@@ -147,7 +155,7 @@ public class Canvas {
 	public static void main(String[] args) throws IOException {
 		System.out.println("Hello Canvas");
 				
-		Canvas c = new Canvas("Canvas", 200, 200);
+		Canvas c = new Canvas("Canvas", 200, 200, 2);
 		c.show();
 		
 		c.getG2D().setColor(Color.BLACK);

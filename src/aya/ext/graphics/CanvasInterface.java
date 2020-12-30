@@ -33,6 +33,7 @@ public class CanvasInterface {
 	private final Symbol WIDTH;
 	private final Symbol STYLE;
 	private final Symbol START;
+	private final Symbol SCALE;
 	private final Symbol SIZE;
 	private final Symbol NAME;
 	private final Symbol TYPE;
@@ -75,6 +76,7 @@ public class CanvasInterface {
 		WIDTH = syms.getSymbol("width");
 		STYLE = syms.getSymbol("style");
 		START = syms.getSymbol("start");
+		SCALE = syms.getSymbol("scale");
 		SIZE = syms.getSymbol("size");
 		NAME = syms.getSymbol("name");
 		TYPE = syms.getSymbol("type");
@@ -179,7 +181,10 @@ public class CanvasInterface {
 	///////////////////
 	
 	private int cmdNew(DictReader params) {
-		int id = _table.newCanvas(params.getString(NAME, "Canvas"), params.getIntEx(WIDTH), params.getIntEx(HEIGHT));
+		int id = _table.newCanvas(params.getString(NAME, "Canvas"),
+								  params.getIntEx(WIDTH),
+								  params.getIntEx(HEIGHT),
+								  params.getDouble(SCALE, 1.0));
 		Canvas c = _table.getCanvas(id);
 		c.setShowOnRefresh(params.getInt(AUTOFLUSH, 0) != 0);
 		if (params.getInt(SHOW, 1) == 1) {
