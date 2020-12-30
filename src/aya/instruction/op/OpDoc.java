@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 
 public class OpDoc {
 	
@@ -58,17 +59,12 @@ public class OpDoc {
 		return _type;
 	}
 	
-	private static final Symbol STD_SYM = Symbol.fromStr("std");
-	private static final Symbol DOT_SYM = Symbol.fromStr("dot");
-	private static final Symbol COLON_SYM = Symbol.fromStr("colon");
-	private static final Symbol MISC_SYM = Symbol.fromStr("misc");
-	
 	public Symbol typeSymbol() {
 		switch (_type) {
-		case STD: return STD_SYM;
-		case DOT: return DOT_SYM;
-		case COLON: return COLON_SYM;
-		case MISC: return MISC_SYM;
+		case STD: return SymbolConstants.STD;
+		case DOT: return SymbolConstants.DOT;
+		case COLON: return SymbolConstants.COLON;
+		case MISC: return SymbolConstants.MISC;
 		default: throw new RuntimeException("OpDoc.typeSymbol: op type unknown");
 		}
 			

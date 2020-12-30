@@ -3,10 +3,10 @@ package aya.instruction.index;
 import aya.ReprStream;
 import aya.exceptions.TypeError;
 import aya.instruction.Instruction;
-import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
 
 public abstract class SetIndexInstruction extends Instruction {
@@ -24,11 +24,11 @@ public abstract class SetIndexInstruction extends Instruction {
 			Casting.asList(container).mutSetIndexed(index, value);
 		} else if (container.isa(Obj.DICT)) {
 			Dict d = Casting.asDict(container);
-			if (d.hasMetaKey(Ops.KEYVAR_SETINDEX)) {
+			if (d.hasMetaKey(SymbolConstants.KEYVAR_SETINDEX)) {
 				keyvar = true;
 				block.push(value);
 				block.push(index);
-				block.callVariable(d, Ops.KEYVAR_SETINDEX);
+				block.callVariable(d, SymbolConstants.KEYVAR_SETINDEX);
 			} else {
 				Dict.setIndex((Dict)container, index, value);
 			}

@@ -38,6 +38,7 @@ import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
@@ -63,6 +64,7 @@ public class Aya extends Thread {
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
 	private ArrayList<NamedInstructionStore> _namedInstructionStores = new ArrayList<NamedInstructionStore>();
+	private SymbolTable _symbolTable = new SymbolTable();
 	
 	private CallStack _callstack = new CallStack();
 	
@@ -287,6 +289,14 @@ public class Aya extends Thread {
 			}
 		}
 		return null;
+	}
+
+	/////////////////////
+	// SYMBOL TABLE    //
+	/////////////////////
+	
+	public SymbolTable getSymbols() {
+		return _symbolTable;
 	}
 	
 	

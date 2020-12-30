@@ -3,13 +3,13 @@ package aya.instruction.index;
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public class GetVarIndexInstruction extends GetIndexInstruction {
 	
-	private long _var;
+	private Symbol _var;
 
-	public GetVarIndexInstruction(long var) {
+	public GetVarIndexInstruction(Symbol var) {
 		_var = var;
 	}
 	
@@ -21,7 +21,7 @@ public class GetVarIndexInstruction extends GetIndexInstruction {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(".[");
-		stream.print(SymbolEncoder.decodeLong(_var));
+		stream.print(_var.name());
 		stream.print("]");
 		return stream;
 	}

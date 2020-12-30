@@ -102,7 +102,7 @@ public class LambdaToken extends CollectionToken {
 			return new Pair<Boolean, Obj>(true, EmptyDictLiteralInstruction.INSTANCE.getDict());
 		} else if (o instanceof GetVariableInstruction) {
 			GetVariableInstruction var = (GetVariableInstruction)o;
-			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar(var.id()));
+			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar(var.getSymbol()));
 		} else if (o instanceof DataInstruction) {
 			return new Pair<Boolean, Obj>(true, ((DataInstruction)o).getData());
 		} else {

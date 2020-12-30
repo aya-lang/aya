@@ -36,10 +36,10 @@ import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.DictReader;
 import aya.util.Triple;
-import aya.variable.EncodedVars;
 
 
 public class ColonOps {	
@@ -151,7 +151,7 @@ public class ColonOps {
 	public static boolean isColonOpChar(char c) {
 		//A char is a colonOp if it is not a lowercase letter or a '('
 		return (c >= '!' && c <= '~') 		 //Char bounds
-				&& !SymbolEncoder.isValidChar(c)  //Not variable char
+				&& !SymbolTable.isBasicSymbolChar(c)  //Not variable char
 				&& !isDigit(c) 		         //Not digit
 				&& c != '(' && c != ' ' && c != '-'; //Special cases
 	}
@@ -394,11 +394,12 @@ class OP_Colon_Equals extends OpInstruction {
 		final Obj obj = block.peek();
 		
 		if (sym.isa(SYMBOL)) {
-			Aya.getInstance().getVars().setVar(((Symbol)sym).id(), obj);
+			Aya.getInstance().getVars().setVar((Symbol)sym, obj);
 		} else if (sym.isa(CHAR) || sym.isa(STR)) {
 			String s = sym.str();
-			if (SymbolEncoder.isValidStr(s)) {
-				Aya.getInstance().getVars().setVar(SymbolEncoder.encodeString(s), obj);
+			if (SymbolTable.isBasicSymbolString(s)) {
+				Aya aya = Aya.getInstance();
+				aya.getVars().setVar(aya.getSymbols().getSymbol(s), obj);
 			} else {
 				throw new AyaRuntimeException(":= Invalid identifier: '" + s + "'");
 			}
@@ -518,7 +519,7 @@ class OP_Colon_D extends OpInstruction {
 	
 	private void set(Dict d, Obj key, Obj value) {
 		if (key.isa(SYMBOL)) {
-			d.set(((Symbol)key).id(), value);
+			d.set((Symbol)key, value);
 		} else if (key.isa(STR)) {
 			d.set(key.str(), value);
 		} else {
@@ -590,7 +591,7 @@ class OP_Colon_I extends OpInstruction {
 			if (index.isa(STR)) {
 				out = d.get(index.str());
 			} else if (index.isa(SYMBOL)) {
-				out = d.get( ((Symbol)index).id() );
+				out = d.get( (Symbol)index );
 			} else if (index.isa(LIST)) {
 				List l = asList(index);
 				if (l.length() != 2 || !l.getExact(0).isa(SYMBOL)) {
@@ -598,8 +599,8 @@ class OP_Colon_I extends OpInstruction {
 				}
 				
 				Symbol key = asSymbol(l.getExact(0));
-				if (d.containsKey(key.id())) {
-					out = d.get(key.id());
+				if (d.containsKey(key)) {
+					out = d.get(key);
 				} else {
 					out = l.getExact(1);
 				}
@@ -639,6 +640,13 @@ class OP_Colon_K extends OpInstruction {
 // M - 77
 class OP_Colon_M extends OpInstruction {
 	
+	private final Symbol LOCALS = Aya.getInstance().getSymbols().getSymbol("locals");
+	private final Symbol ARGS = Aya.getInstance().getSymbols().getSymbol("args");
+	private final Symbol NAME = Aya.getInstance().getSymbols().getSymbol("name");
+	private final Symbol TYPE = Aya.getInstance().getSymbols().getSymbol("type");
+	private final Symbol COPY = Aya.getInstance().getSymbols().getSymbol("copy");
+	private final Symbol ANY = Aya.getInstance().getSymbols().getSymbol("any");
+
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
@@ -668,8 +676,8 @@ class OP_Colon_M extends OpInstruction {
 	private BlockHeader headerFromDict(Dict meta) {
 		BlockHeader bh;
 
-		if (meta.containsKey(EncodedVars.LOCALS)) {
-			Obj o = meta.get(EncodedVars.LOCALS);
+		if (meta.containsKey(LOCALS)) {
+			Obj o = meta.get(LOCALS);
 			if (o.isa(DICT)) {
 				Dict locals = (Dict)o;
 				bh = new BlockHeader(locals.getVarSet());
@@ -681,13 +689,13 @@ class OP_Colon_M extends OpInstruction {
 		}
 		
 		// Args
-		if (meta.containsKey(EncodedVars.ARGS)) {
-			Obj args = meta.get(EncodedVars.ARGS);
+		if (meta.containsKey(ARGS)) {
+			Obj args = meta.get(ARGS);
 			if (args.isa(LIST)) {
 				List args_list = asList(args);
 				for (int i = 0; i < args_list.length(); i++) {
 					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.getExact(i));
-					bh.addArg(new BlockHeader.Arg(info.first().id(), info.second().id(), info.third()));
+					bh.addArg(new BlockHeader.Arg(info.first(), info.second(), info.third()));
 				}
 			} else {
 				throw new AyaRuntimeException("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
@@ -703,12 +711,12 @@ class OP_Colon_M extends OpInstruction {
 			DictReader dr = new DictReader(d);
 			dr.setErrorName("::dict ::block .M");
 			return new Triple<Symbol, Symbol, Boolean>(
-					dr.getSymbolEx(EncodedVars.NAME),
-					dr.getSymbol(EncodedVars.TYPE, Symbol.fromID(EncodedVars.ANY)),
-					dr.getBool(EncodedVars.COPY, false));
+					dr.getSymbolEx(NAME),
+					dr.getSymbol(TYPE, ANY),
+					dr.getBool(COPY, false));
 			
 		} else if (obj.isa(SYMBOL)) {
-			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, Symbol.fromID(EncodedVars.ANY), false);
+			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, ANY, false);
 		} else {
 			throw new AyaRuntimeException("::dict ::block .M: key 'args' must be a list of dicts or symbols");
 		}
@@ -787,7 +795,7 @@ class OP_Colon_S extends OpInstruction {
 		final Obj a = block.pop();
 		
 		if (a.isa(STR) || a.isa(CHAR)) {
-			block.push(Symbol.convToSymbol(a.str()));
+			block.push(Aya.getInstance().getSymbols().getSymbol(SymbolTable.toBasicSymbolName(a.str())));
 		} else if (a.isa(BLOCK)) {
 			block.push(singleToSymbolList((Block)a));
 		} else {
@@ -801,7 +809,7 @@ class OP_Colon_S extends OpInstruction {
 		if (instructions.size() == 1) {
 			Instruction i = instructions.get(0);
 			if (i instanceof VariableInstruction) {
-				out.add(Symbol.fromID(((VariableInstruction)i).id()));
+				out.add( ((VariableInstruction)i).getSymbol() );
 			} else if (i instanceof OpInstruction) {
 				OpInstruction op = (OpInstruction)i;
 				if (op.overload() != null) {
@@ -823,7 +831,7 @@ class OP_Colon_T extends OpInstruction {
 		arg("A", "type of (returns a symbol)");
 	}
 	
-	private static final long TYPE_ID = SymbolEncoder.encodeString("__type__");
+	private static final Symbol TYPE_ID = Aya.getInstance().getSymbols().getSymbol("__type__");
 	
 	@Override
 	public void execute(Block block) {
@@ -833,7 +841,7 @@ class OP_Colon_T extends OpInstruction {
 		if (a.isa(DICT)) {
 			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
 			if (type == null || !type.isa(Obj.SYMBOL)) {
-				type = Obj.SYM_DICT;
+				type = SymbolConstants.DICT;
 			}
 		} else {
 			type = Obj.IDToSym(a.type());

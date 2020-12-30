@@ -243,7 +243,7 @@ public class BlockToken extends CollectionToken {
 			Token current = tokens.next();
 			if (current.isa(Token.VAR)) {
 				VarToken var = (VarToken)current;
-				BlockHeader.Arg arg = new BlockHeader.Arg(var.id());
+				BlockHeader.Arg arg = new BlockHeader.Arg(var.getSymbol());
 				
 				// Copy?
 				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
@@ -254,7 +254,7 @@ public class BlockToken extends CollectionToken {
 				// Type annotation?
 				if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
 					SymbolToken sym_token = (SymbolToken)tokens.next();
-					arg.type = sym_token.getID();
+					arg.type = sym_token.getSymbol();
 				}
 				
 				header.addArg(arg);
@@ -274,14 +274,14 @@ public class BlockToken extends CollectionToken {
 			if (current.isa(VAR)) {
 				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					header.addDefault(var.id(), Num.ZERO);
+					header.addDefault(var.getSymbol(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					header.addDefault(var.id(), lambda.generateInstructionsForFirst());
+					header.addDefault(var.getSymbol(), lambda.generateInstructionsForFirst());
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
-						captures.add(Symbol.fromID(var.id()));
+						captures.add(var.getSymbol());
 					} else {
 						generateBlockHeaderDefaultsError(orig);
 					}

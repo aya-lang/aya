@@ -1,17 +1,21 @@
 package aya.instruction.variable;
 
 import aya.instruction.Instruction;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public abstract class VariableInstruction extends Instruction {
 
-	protected long variable_;
+	protected Symbol variable_;
 	
-	public String varName() {
-		return SymbolEncoder.decodeLong(variable_);
+	protected VariableInstruction(Symbol var) {
+		variable_ = var;
 	}
 	
-	public long id() {
+	public String varName() {
+		return variable_.name();
+	}
+	
+	public Symbol getSymbol() {
 		return variable_;
 	}
 

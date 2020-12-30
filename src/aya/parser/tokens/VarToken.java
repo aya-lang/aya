@@ -1,8 +1,9 @@
 package aya.parser.tokens;
 
+import aya.Aya;
 import aya.instruction.Instruction;
 import aya.instruction.variable.GetVariableInstruction;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public class VarToken extends StdToken {
 		
@@ -10,13 +11,13 @@ public class VarToken extends StdToken {
 		super(data, Token.VAR);
 	}
 	
-	public long id() {
-		return SymbolEncoder.encodeString(data);
+	public Symbol getSymbol() {
+		return Aya.getInstance().getSymbols().getSymbol(data);
 	}
 
 	@Override
 	public Instruction getInstruction() {
-		return new GetVariableInstruction(id());
+		return new GetVariableInstruction(getSymbol());
 	}
 
 	@Override

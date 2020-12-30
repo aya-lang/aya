@@ -4,12 +4,12 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public class QuoteGetVariableInstruction extends VariableInstruction {
 
-	public QuoteGetVariableInstruction(long id) {
-		this.variable_ = id;
+	public QuoteGetVariableInstruction(Symbol var) {
+		super(var);
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(SymbolEncoder.decodeLong(variable_) + ".`");
+		stream.print(variable_.name() + ".`");
 		return stream;
 	}
 }

@@ -147,7 +147,7 @@ public class Block extends Obj {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			for (BlockHeader.Arg arg : header.getArgs()) {
-				list.add(Symbol.fromID(arg.var));
+				list.add(arg.var);
 			}
 		}
 		return list;

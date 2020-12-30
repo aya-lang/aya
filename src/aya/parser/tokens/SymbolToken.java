@@ -1,5 +1,6 @@
 package aya.parser.tokens;
 
+import aya.Aya;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.symbol.Symbol;
@@ -10,14 +11,14 @@ public class SymbolToken extends StdToken {
 		super(data, Token.SYMBOL);
 	}
 	
-	public long getID() {
-		return Symbol.fromStr(data).id();
+	public Symbol getSymbol() {
+		return Aya.getInstance().getSymbols().getSymbol(data);
 	}
 
 	
 	@Override
 	public Instruction getInstruction() {
-		return new DataInstruction(Symbol.fromStr(data));
+		return new DataInstruction(getSymbol());
 	}
 
 	@Override

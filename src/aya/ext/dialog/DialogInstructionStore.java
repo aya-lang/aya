@@ -13,7 +13,7 @@ import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
-import aya.variable.EncodedVars;
+import aya.obj.symbol.SymbolConstants;
 
 public class DialogInstructionStore extends NamedInstructionStore {
 	
@@ -147,10 +147,10 @@ public class DialogInstructionStore extends NamedInstructionStore {
 	
 	private int symToDialogType(Symbol sym) {
 		final long id = sym.id();
-		if (id == EncodedVars.PLAIN) return JOptionPane.PLAIN_MESSAGE;
-		if (id == EncodedVars.QUESTION) return JOptionPane.QUESTION_MESSAGE;
-		if (id == EncodedVars.WARN) return JOptionPane.WARNING_MESSAGE;
-		if (id == EncodedVars.ERROR) return JOptionPane.ERROR_MESSAGE;
+		if (id == SymbolConstants.PLAIN.id()) return JOptionPane.PLAIN_MESSAGE;
+		if (id == SymbolConstants.QUESTION.id()) return JOptionPane.QUESTION_MESSAGE;
+		if (id == SymbolConstants.WARN.id()) return JOptionPane.WARNING_MESSAGE;
+		if (id == SymbolConstants.ERROR.id()) return JOptionPane.ERROR_MESSAGE;
 		else return JOptionPane.PLAIN_MESSAGE;
 	}
 }

@@ -4,12 +4,12 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public class SetKeyVariableInstruction extends VariableInstruction {
 
-	public SetKeyVariableInstruction(long id) {
-		this.variable_ = id;
+	public SetKeyVariableInstruction(Symbol var) {
+		super(var);
 	}
 	
 	@Override
@@ -25,7 +25,7 @@ public class SetKeyVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(".:" + SymbolEncoder.decodeLong(variable_));
+		stream.print(".:" + variable_.name());
 		return stream;
 	}
 }

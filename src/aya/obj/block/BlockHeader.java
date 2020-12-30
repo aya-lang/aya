@@ -13,25 +13,23 @@ import aya.instruction.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolConstants;
 import aya.variable.VariableSet;
 
 public class BlockHeader extends Instruction {
 	
-	public static final long TYPE_ANY = Obj.SYM_ANY.id();
-	
 	public static class Arg {
-		public long var;
-		public long type;
+		public Symbol var;
+		public Symbol type;
 		public boolean copy;
 		
-		public Arg(long var) {
+		public Arg(Symbol var) {
 			this.var = var;
-			this.type = TYPE_ANY;
+			this.type = SymbolConstants.ANY;
 			this.copy = false;
 		}
 		
-		public Arg(long var, long type, boolean copy) {
+		public Arg(Symbol var, Symbol type, boolean copy) {
 			this.var = var;
 			this.type = type;
 			this.copy = copy;
@@ -42,46 +40,47 @@ public class BlockHeader extends Instruction {
 		}
 
 		public String str() {
-			String s = SymbolEncoder.decodeLong(var) + (copy ? "$" : "");
-			if (this.type != TYPE_ANY) {
-				s += "::" + SymbolEncoder.decodeLong(type);
+			String s = var.name() + (copy ? "$" : "");
+			if (this.type.id() != SymbolConstants.ANY.id()) {
+				s += "::" + type.name();
 			}
 			return s;
 		}
 	}
 	
+	private VariableSet _vars;
+	private HashMap<Symbol, InstructionStack> _defaults;
+	private ArrayList<Arg> _args;
+
+	
+	public BlockHeader(VariableSet vars) {
+		_vars = vars;
+		_defaults = new HashMap<Symbol, InstructionStack>();
+		_args = new ArrayList<Arg>();
+	}
+
+
+	public BlockHeader() {
+		this(new VariableSet(false));
+	}
+
 	
 	/** Add an argument to the top of the argument stack */
 	public void addArg(Arg arg) {
 		_args.add(0, arg);
 	}
+
 	
-	public void addDefault(long var, InstructionStack instructions) {
+	public void addDefault(Symbol var, InstructionStack instructions) {
 		_defaults.put(var, instructions);
 	}
+
 	
-	public void addDefault(long var, Obj value) {
+	public void addDefault(Symbol var, Obj value) {
 		_vars.setVar(var, value);
 	}
 	
-	private VariableSet _vars;
-	private HashMap<Long, InstructionStack> _defaults;
-	private ArrayList<Arg> _args;
 	
-	public BlockHeader() {
-		_vars = new VariableSet(false);
-		_defaults = new HashMap<Long, InstructionStack>();
-		_args = new ArrayList<Arg>();
-		//_args.trimToSize();
-		
-	}
-	
-	public BlockHeader(VariableSet vars) {
-		_vars = vars;
-		_defaults = new HashMap<Long, InstructionStack>();
-		_args = new ArrayList<Arg>();
-	}
-
 	public void execute(Block b) {
 		VariableSet vars = _vars.clone();
 		setArgs(_args, vars, b);
@@ -89,9 +88,9 @@ public class BlockHeader extends Instruction {
 		evaluateDefaults(b, vars, _defaults);
 	}
 	
-	private static void evaluateDefaults(Block b, VariableSet vars, HashMap<Long, InstructionStack> defaults) {
+	private static void evaluateDefaults(Block b, VariableSet vars, HashMap<Symbol, InstructionStack> defaults) {
 		Block block = new Block();
-		for (HashMap.Entry<Long, InstructionStack> init : defaults.entrySet()) {
+		for (HashMap.Entry<Symbol, InstructionStack> init : defaults.entrySet()) {
 			block.clear();
 			block.addAll(init.getValue().duplicate().getInstrucionList());
 			block.eval();
@@ -107,22 +106,22 @@ public class BlockHeader extends Instruction {
 	}
 	
 	
-	private static boolean checkType(Obj o, long type) {
+	private static boolean checkType(Obj o, Symbol type) {
 		// Special type "any"
-		if (type == TYPE_ANY) return true;
+		if (type.id() == SymbolConstants.ANY.id()) return true;
 		
 		// Check user defined type 
 		if (o.isa(Obj.DICT)) {
-			long otype = -1;
+			Symbol otype = null;
 
-			Obj dtype = ((Dict)o).getFromMetaTableOrNull(Obj.SYM_TYPE.id());
+			Obj dtype = ((Dict)o).getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
 			if (dtype != null && dtype.isa(Obj.SYMBOL)) {
-				otype = ((Symbol)dtype).id(); 
+				otype = (Symbol)dtype;
 			} else {
-				otype = Obj.SYM_DICT.id();
+				otype = SymbolConstants.DICT;
 			}
 			
-			if (otype == type) {
+			if (otype != null && otype.id() == type.id()) {
 				return true;
 			}
 		}
@@ -148,7 +147,7 @@ public class BlockHeader extends Instruction {
 					vars.setVar(arg.var, o);
 				}
 			} else {
-				throw new TypeError("{ARGS}\n\tExpected:" + Symbol.fromID(arg.type).repr()
+				throw new TypeError("{ARGS}\n\tExpected:" + arg.type.repr()
 							+ "\n\tReceived:" + o);
 			}
 		}	
@@ -174,8 +173,8 @@ public class BlockHeader extends Instruction {
 		_vars.reprHeader(stream);
 		stream.print(" ");
 		
-		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
-			stream.print(SymbolEncoder.decodeLong(d.getKey()));
+		for (HashMap.Entry<Symbol, InstructionStack> d : _defaults.entrySet()) {
+			stream.print(d.getKey().name());
 			stream.print("(");
 			d.getValue().repr(stream);
 			stream.print(") ");
@@ -197,7 +196,7 @@ public class BlockHeader extends Instruction {
 		BlockHeader b = new BlockHeader();
 		b._args = _args;
 		b._vars = _vars.deepcopy();
-		for (HashMap.Entry<Long, InstructionStack> d : _defaults.entrySet()) {
+		for (HashMap.Entry<Symbol, InstructionStack> d : _defaults.entrySet()) {
 			b._defaults.put(d.getKey(), d.getValue());
 		}
 		return b;

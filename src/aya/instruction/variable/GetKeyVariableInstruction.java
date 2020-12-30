@@ -7,15 +7,14 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
 
-	public GetKeyVariableInstruction(long id) {
-		super(id);
+	public GetKeyVariableInstruction(Symbol var) {
+		super(var);
 	}
-	
-	private static long META = SymbolEncoder.encodeString("__meta__");
 	
 	@Override
 	public void execute(Block b) {
@@ -35,7 +34,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 			Obj o;
 			try {
 				o = dict.get(variable_);
-				if (variable_ != META) b.push(kv_obj); // Don't push if we are accessing the meta dict
+				if (variable_ != SymbolConstants.KEYVAR_META) b.push(kv_obj); // Don't push if we are accessing the meta dict
 				this.addOrDumpVar(o, b);
 			} catch (AyaKeyError e) {
 				throw new AyaRuntimeException("Built in type " + Obj.IDToSym(kv_obj.type()) + 
@@ -47,7 +46,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("." + SymbolEncoder.decodeLong(variable_));
+		stream.print("." + variable_.name());
 		return stream;
 	}
 	

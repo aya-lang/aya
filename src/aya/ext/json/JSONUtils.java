@@ -18,7 +18,7 @@ import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Pair;
 
 public class JSONUtils {
@@ -26,8 +26,8 @@ public class JSONUtils {
 	public static class JSONParams {
 		private static JSONParams default_encode = null;
 		private static JSONParams default_decode = null;
-		private static Symbol FALSE_SYM = Symbol.fromStr("__json_false");
-		private static Symbol TRUE_SYM =  Symbol.fromStr("__json_true");
+		private static Symbol FALSE_SYM = Aya.getInstance().getSymbols().getSymbol("__json_false");
+		private static Symbol TRUE_SYM =  Aya.getInstance().getSymbols().getSymbol("__json_true");
 		
 		public JSONParams(Obj obj_null, Obj obj_true, Obj obj_false, boolean parse_symbol) {
 			this.obj_null = obj_null;
@@ -129,8 +129,8 @@ public class JSONUtils {
 			String str = (String)object;
 			if (params.parse_symbol && str.startsWith("::")) {
 				String name = str.substring(2);
-				if (SymbolEncoder.isValidStr(name)) {
-					return Symbol.fromStr(name);
+				if (SymbolTable.isBasicSymbolString(name)) {
+					return Aya.getInstance().getSymbols().getSymbol(name);
 				} else {
 					return List.fromString(str);
 				}

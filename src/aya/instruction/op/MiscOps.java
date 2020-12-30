@@ -28,6 +28,7 @@ import aya.obj.number.ComplexNum;
 import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.symbol.SymbolConstants;
 import aya.parser.CharacterParser;
 
 public class MiscOps {	
@@ -447,7 +448,7 @@ class OP_CastDouble extends OpInstruction {
 		} else if (a.isa(NUMBER)){
 			block.push(new Num(((Number)a).toDouble()));
 		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_FLOAT);
+			block.callVariable((Dict)a, SymbolConstants.KEYVAR_FLOAT);
 		}
 		else {
 			throw new TypeError(this, a);

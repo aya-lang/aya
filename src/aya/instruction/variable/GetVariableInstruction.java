@@ -5,12 +5,12 @@ import aya.ReprStream;
 import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.Symbol;
 
 public class GetVariableInstruction extends VariableInstruction {
 
-	public GetVariableInstruction(long id) {
-		this.variable_ = id;
+	public GetVariableInstruction(Symbol var) {
+		super(var);
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public class GetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(SymbolEncoder.decodeLong(variable_));
+		stream.print(variable_.name());
 		return stream;
 	}
 }

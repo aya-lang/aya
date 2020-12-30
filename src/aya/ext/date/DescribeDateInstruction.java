@@ -9,7 +9,7 @@ import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
-import aya.variable.EncodedVars;
+import aya.obj.symbol.SymbolConstants;
 
 public class DescribeDateInstruction extends NamedInstruction {
 
@@ -31,15 +31,15 @@ public class DescribeDateInstruction extends NamedInstruction {
 			
 			Dict out = new Dict();
 			
-			out.set(EncodedVars.DAY_OF_WEEK,  Num.fromInt(cal.get(Calendar.DAY_OF_WEEK)));
-			out.set(EncodedVars.YEAR,         Num.fromInt(cal.get(Calendar.YEAR)));
-			out.set(EncodedVars.MONTH,        Num.fromInt(cal.get(Calendar.MONTH)));
-			out.set(EncodedVars.DAY_OF_MONTH, Num.fromInt(cal.get(Calendar.DAY_OF_MONTH)));
-			out.set(EncodedVars.HOUR,         Num.fromInt(cal.get(Calendar.HOUR)));
-			out.set(EncodedVars.MINUTE,       Num.fromInt(cal.get(Calendar.MINUTE)));
-			out.set(EncodedVars.SECOND,       Num.fromInt(cal.get(Calendar.SECOND)));
-			out.set(EncodedVars.MS, 		  Num.fromInt(cal.get(Calendar.MILLISECOND)));
-			out.set(EncodedVars.STAMP, 		  a);
+			out.set(SymbolConstants.DAY_OF_WEEK,  Num.fromInt(cal.get(Calendar.DAY_OF_WEEK)));
+			out.set(SymbolConstants.YEAR,         Num.fromInt(cal.get(Calendar.YEAR)));
+			out.set(SymbolConstants.MONTH,        Num.fromInt(cal.get(Calendar.MONTH)));
+			out.set(SymbolConstants.DAY_OF_MONTH, Num.fromInt(cal.get(Calendar.DAY_OF_MONTH)));
+			out.set(SymbolConstants.HOUR,         Num.fromInt(cal.get(Calendar.HOUR)));
+			out.set(SymbolConstants.MINUTE,       Num.fromInt(cal.get(Calendar.MINUTE)));
+			out.set(SymbolConstants.SECOND,       Num.fromInt(cal.get(Calendar.SECOND)));
+			out.set(SymbolConstants.MS, 		  Num.fromInt(cal.get(Calendar.MILLISECOND)));
+			out.set(SymbolConstants.STAMP, 		  a);
 
 			block.push(out);
 

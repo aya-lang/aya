@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolTable;
 import aya.util.FileUtils;
 
 public class InteractiveAya extends Thread {
@@ -134,7 +134,7 @@ public class InteractiveAya extends Thread {
 			
 			//User Command
 			else if (command.equals(":") || command.equals("USERCMD")) {
-				if (settings.length > 1 && SymbolEncoder.isValidStr(settings[1])) {
+				if (settings.length > 1 && SymbolTable.isBasicSymbolString(settings[1])) {
 					_usercmd = settings[1];
 					if (!(settings.length > 2 && settings[2].equals("."))) {
 						_aya.getOut().println("Input now being parsed as:\n\t\"\"\"input\"\"\" __aya__.interpreter." + _usercmd
@@ -147,7 +147,7 @@ public class InteractiveAya extends Thread {
 				return SKIP_WAIT;
 			}
 			
-			else if (SymbolEncoder.isValidStr(command)) {
+			else if (SymbolTable.isBasicSymbolString(command)) {
 				String code = splitAtFirst(' ', input).trim();
 				if(code.equals("")) {
 					_aya.getErr().println("No input provided");

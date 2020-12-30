@@ -12,7 +12,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.variable.EncodedVars;
+import aya.obj.symbol.SymbolConstants;
 
 /**
  * The Operation Class
@@ -98,21 +98,21 @@ public abstract class OpInstruction extends Instruction {
 		// {op}:call
 		Block call = new Block();
 		call.add(this);
-		info.set(EncodedVars.CALL, call);
+		info.set(SymbolConstants.CALL, call);
 		
 		// [::sym]:symbols;
 		ArrayList<Obj> symbols = new ArrayList<Obj>();
 		if (_overload != null) symbols.addAll(_overload.getSymbols());
-		info.set(EncodedVars.OVERLOAD, new List(symbols));
+		info.set(SymbolConstants.OVERLOAD, new List(symbols));
 		
 		// "":name;
-		info.set(EncodedVars.NAME, List.fromString(this.getName()));
+		info.set(SymbolConstants.NAME, List.fromString(this.getName()));
 		
 		// ::sym:type;
-		info.set(EncodedVars.TYPE, _doc.typeSymbol());
+		info.set(SymbolConstants.TYPE, _doc.typeSymbol());
 		
 		// {,}:doc;
-		info.set(EncodedVars.DOC, _doc.toDict());
+		info.set(SymbolConstants.DOC, _doc.toDict());
 		
 		return info;
 	}

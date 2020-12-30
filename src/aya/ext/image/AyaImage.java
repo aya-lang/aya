@@ -7,13 +7,15 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 
+import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 import aya.util.DictReader;
-import aya.variable.EncodedVars;
 
 public class AyaImage {
 	/** Utility class for loading, storing and writing image in Aya */
@@ -21,25 +23,34 @@ public class AyaImage {
 	private NumberList bytes;
 	private int width;
 	private int height;
+	private static Symbol DATA;
+	private static Symbol WIDTH;
+	private static Symbol HEIGHT;
 	
 	public AyaImage(NumberList bytes, int width, int height) {
+		SymbolTable syms = Aya.getInstance().getSymbols();
+		DATA = syms.getSymbol("data");
+		WIDTH = syms.getSymbol("width");
+		HEIGHT = syms.getSymbol("height");
+		
 		this.bytes = bytes;
 		this.width = width;
 		this.height = height;
+
 	}
 	
 	public static AyaImage fromDict(DictReader d) {
 		return new AyaImage(
-			d.getNumberListEx(EncodedVars.DATA),
-			d.getIntEx(EncodedVars.WIDTH),
-			d.getIntEx(EncodedVars.HEIGHT));
+			d.getNumberListEx(DATA),
+			d.getIntEx(WIDTH),
+			d.getIntEx(HEIGHT));
 	}
 	
 	public Dict toDict() {
 		Dict d = new Dict();
-		d.set(EncodedVars.DATA, new List(bytes));
-		d.set(EncodedVars.WIDTH, Num.fromInt(width));
-		d.set(EncodedVars.HEIGHT, Num.fromInt(height));
+		d.set(DATA, new List(bytes));
+		d.set(WIDTH, Num.fromInt(width));
+		d.set(HEIGHT, Num.fromInt(height));
 		return d;
 	}
 	

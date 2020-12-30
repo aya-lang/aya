@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import aya.Aya;
 import aya.ReprStream;
-import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Pair;
 import aya.variable.VariableSet;
 
@@ -21,9 +22,8 @@ import aya.variable.VariableSet;
  */
 public class Dict extends Obj {
 
-	private Symbol PUSH_SELF = Symbol.fromStr("__pushself__");
-	
-	public static Symbol META = Symbol.fromStr("__meta__");
+	private static Symbol PUSH_SELF = Aya.getInstance().getSymbols().getSymbol("__pushself__");
+	public static Symbol META = Aya.getInstance().getSymbols().getSymbol("__meta__");
 	
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
@@ -100,45 +100,38 @@ public class Dict extends Obj {
 	 * If this key is unassigned, throw an error
 	 */
 	public Obj get(String s) {
-		Long id = SymbolEncoder.encodeOrNull(s);
-		if (id == null) {
-			return strGet(s);
+		if (SymbolTable.isBasicSymbolString(s)) {
+			return get(Aya.getInstance().getSymbols().getSymbol(s));
 		} else {
-			return get(id);
+			return strGet(s);
 		}
 	}
 	
 	/** throws exception if key not found */
-	public Obj get(long id) {
-		Obj o = _get(id, null);
+	public Obj get(Symbol key) {
+		Obj o = _get(key, null);
 		
 		if (o == null) {
-			throw new AyaKeyError(this, id);
+			throw new AyaKeyError(this, key);
 		} else {
 			return o;
 		}
 	}
 
 
-	/** throws exception if key not found */
-	public Obj get(Symbol v) {
-		return get(v.id());
-	}
-	
-
 	/** returns null if key not found */
-	private Obj _get(long id) {
-		return _get(id, null);
+	private Obj _get(Symbol typeId) {
+		return _get(typeId, null);
 	}
 	
 	/** Returns null if key not found */
-	public Obj getSafe(long id) {
-		return _get(id, null);
+	public Obj getSafe(Symbol key) {
+		return _get(key, null);
 	}
 	
 	/** Returns null if no key found */
-	private Obj _get(long id, ArrayList<Integer> visited) {
-		Obj o = _vars.getObj(id);
+	private Obj _get(Symbol typeId, ArrayList<Integer> visited) {
+		Obj o = _vars.getObj(typeId);
 		if (o != null)
 		{
 			return o;
@@ -166,7 +159,7 @@ public class Dict extends Obj {
 					return null;
 				} else {
 					// Not visited, search it (and it's metas) for the key
-					o = _meta._get(id, visited);
+					o = _meta._get(typeId, visited);
 					return o;
 				}
 				
@@ -178,32 +171,27 @@ public class Dict extends Obj {
 	}
 	
 	/** Get from metatable. If no such key, return null */
-	public Obj getFromMetaTableOrNull(long id) {
+	public Obj getFromMetaTableOrNull(Symbol typeId) {
 		if (_meta == null) {
 			return null;
 		} else {
-			return _meta._get(id);
+			return _meta._get(typeId);
 
 		}
 	}
 	
 	/** Returns true if this dict contains the input key */
-	public boolean containsKey(long id) {
-		return _get(id) != null;
+	public boolean containsKey(Symbol key) {
+		return _get(key) != null;
 	}
 	
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(String s) {
-		if (SymbolEncoder.isValidStr(s)) {
-			return containsKey(SymbolEncoder.encodeString(s));
+		if (SymbolTable.isBasicSymbolString(s)) {
+			return containsKey(Aya.getInstance().getSymbols().getSymbol(s));
 		} else {
 			return _string_vars.containsKey(s);
 		}
-	}
-
-	/** Returns true if this dict contains the input key */
-	public boolean containsKey(Symbol v) {
-		return containsKey(v.id());
 	}
 	
 	/** Return the inner variable set object */
@@ -217,7 +205,7 @@ public class Dict extends Obj {
 	}
 	
 	/** A list of keys */
-	public ArrayList<Long> symKeys() {
+	public ArrayList<Symbol> symKeys() {
 		return _vars.keys();
 	}
 	
@@ -228,7 +216,7 @@ public class Dict extends Obj {
 	
 	public ArrayList<Obj> keys() {
 		ArrayList<Obj> out = new ArrayList<Obj>(size());
-		for (Long l   : symKeys()) { out.add(Symbol.fromID(l)); }
+		for (Symbol s : symKeys()) { out.add(s); }
 		for (String s : strKeys()) { out.add(List.fromString(s)); }
 		return out;
 	}
@@ -236,7 +224,7 @@ public class Dict extends Obj {
 	/** All keys (symbols & strings) as a list of strings */
 	public ArrayList<String> allKeysAsStrings() {
 		ArrayList<String> keys = new ArrayList<String>();
-		for (Long l : symKeys()) { keys.add(SymbolEncoder.decodeLong(l)); }
+		for (Symbol s : symKeys()) { keys.add(s.name()); }
 		keys.addAll(strKeys());
 		return keys;
 	}
@@ -273,10 +261,10 @@ public class Dict extends Obj {
 	 * If a pair exists, overwrite
 	 * if not, create a new pair
 	 */ 
-	public void set(Long id, Obj o) {
-		_vars.setVar(id, o);
+	public void set(Symbol key, Obj o) {
+		_vars.setVar(key, o);
 		
-		if (id == META.id() && o.isa(Obj.DICT))
+		if (key.id() == META.id() && o.isa(Obj.DICT))
 		{
 			_meta = (Dict)o;
 		}
@@ -287,11 +275,10 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(String s, Obj o) {
-		Long id = SymbolEncoder.encodeOrNull(s);
-		if (id == null) {
-			_string_vars.put(s, o);
+		if (SymbolTable.isBasicSymbolString(s)) {
+			set(Aya.getInstance().getSymbols().getSymbol(s), o);
 		} else {
-			set(id, o);
+			_string_vars.put(s, o);
 		}
 	}
 	
@@ -326,7 +313,7 @@ public class Dict extends Obj {
 	@Override
 	public boolean bool() {
 		if (_meta != null) {
-			Obj bool = get(Ops.KEYVAR_BOOL);
+			Obj bool = get(SymbolConstants.KEYVAR_BOOL);
 			if (bool.isa(Obj.BLOCK)) {
 				Block blk_bool = ((Block)bool).duplicate();
 				blk_bool.push(this);
@@ -355,7 +342,7 @@ public class Dict extends Obj {
 	@Override
 	public String str() {
 		if (_meta != null) {
-			Obj str = _meta._get(Ops.KEYVAR_REPR.id());
+			Obj str = _meta._get(SymbolConstants.KEYVAR_REPR);
 			if (str != null) {
 				if (str.isa(Obj.BLOCK)) {
 					Block blk_str = ((Block)str).duplicate();
@@ -379,9 +366,9 @@ public class Dict extends Obj {
 		if (o instanceof Dict) {
 			Dict other = (Dict)o;
 			if (other._vars.size() == this._vars.size() && other._string_vars.size() == this._string_vars.size()) {
-				for (Long l : this._vars.getMap().keySet()) {
-					Obj elem = other._vars.getMap().get(l);
-					if (elem == null || !elem.equiv(this._vars.getMap().get(l))) {
+				for (Symbol sym : this._vars.getMap().keySet()) {
+					Obj elem = other._vars.getMap().get(sym);
+					if (elem == null || !elem.equiv(this._vars.getMap().get(sym))) {
 						return false;
 					}
 				}
@@ -428,7 +415,7 @@ public class Dict extends Obj {
 	private ReprStream dictRepr(ReprStream stream) {
 		// Metatable?
 		if (_meta != null) {
-			Obj repr = _meta._get(Ops.KEYVAR_REPR.id());
+			Obj repr = _meta._get(SymbolConstants.KEYVAR_REPR);
 			if (repr != null) {
 				if (repr.isa(Obj.BLOCK)) {
 					Block blk_repr = ((Block)repr).duplicate();
@@ -458,10 +445,10 @@ public class Dict extends Obj {
 			stream.println("{,");
 			stream.incIndent();
 			stream.currentLineMatchIndent();
-			for (Long l : _vars.getMap().keySet()) {
-				if (l != META.id()) {
-					_vars.getObj(l).repr(stream);
-					stream.println(":" + SymbolEncoder.decodeLong(l) + ";");
+			for (Symbol sym : _vars.getMap().keySet()) {
+				if (sym.id() != META.id()) {
+					_vars.getObj(sym).repr(stream);
+					stream.println(":" + sym.name() + ";");
 				}
 			}
 			for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
@@ -492,18 +479,18 @@ public class Dict extends Obj {
 	 */
 	public static void assignVarValues(Dict d, Block b) {
 		for (Pair<Symbol, Obj> pair : d._vars.getAllVars()) {
-			b.getInstructions().assignVarValue(pair.first().id(), pair.second());
+			b.getInstructions().assignVarValue(pair.first(), pair.second());
 		}
 	}
 
 	/** Returns true if the metatable defines a given key name */
 	public boolean hasMetaKey(String str) {
-		return _meta != null && _meta.containsKey(SymbolEncoder.encodeString(str));
+		return _meta != null && _meta.containsKey(Aya.getInstance().getSymbols().getSymbol(str));
 	}
 	
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(Symbol v) {
-		return _meta != null && _meta.containsKey(v.id());
+		return _meta != null && _meta.containsKey(v);
 	}
 
 	
@@ -512,23 +499,25 @@ public class Dict extends Obj {
 		if (index.isa(Obj.STR)) {
 			dict.set(index.str(), value);
 		} else if (index.isa(Obj.SYMBOL)) {
-			dict.set(((Symbol)index).id(), value);
+			dict.set((Symbol)index, value);
 		} else {
 			throw new AyaKeyError(dict, index);
 		}
 	}
 
-	public void remove(long id) {
-		_vars.remove(id);
+	public void remove(Symbol key) {
+		_vars.remove(key);
 	}
 	
 	public void remove(String s) {
-		if (SymbolEncoder.isValidStr(s)) {
-			remove(SymbolEncoder.encodeString(s));
+		if (SymbolTable.isBasicSymbolString(s)) {
+			Symbol sym = Aya.getInstance().getSymbols().getSymbol(s);
+			remove(sym);
 		} else {
 			_string_vars.remove(s);
 		}
 	}
+
 
 
 

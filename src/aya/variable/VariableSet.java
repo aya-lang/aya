@@ -11,21 +11,20 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
 import aya.util.Pair;
 
 public class VariableSet {
-	private HashMap<Long, Obj> vars;
+	private HashMap<Symbol, Obj> vars;
 	private boolean captureAllAssignments;
 
 	
-	public VariableSet(Symbol[] argNames, long[] argTypes, LinkedList<Long> copyOnInit) {
-		this.vars = new HashMap<Long, Obj>();
+	public VariableSet(Symbol[] argNames, Symbol[] argTypes, LinkedList<Symbol> copyOnInit) {
+		this.vars = new HashMap<Symbol, Obj>();
 		this.captureAllAssignments = false;
 	}
 	
 	public VariableSet(boolean is_module) {
-		this.vars = new HashMap<Long, Obj>();
+		this.vars = new HashMap<Symbol, Obj>();
 		this.captureAllAssignments = is_module;
 	}
 	
@@ -39,39 +38,26 @@ public class VariableSet {
 	}
 	
 	public void setVar(Symbol s, Obj o) {
-		vars.put(s.id(),o);
+		vars.put(s, o);
 	}
 	
 	public void unsetVar(Symbol s) {
-		vars.remove(s.id());
-	}
-	
-	
-	public void setVar(long v, Obj o) {
-		vars.put(v,o);
-	}
-	
-	public Obj getObj(long id) {
-		return vars.get(id);
+		vars.remove(s);
 	}
 	
 	public Obj getObj(Symbol s) {
-		return vars.get(s.id());
+		return vars.get(s);
 	}
 	
-	public HashMap<Long, Obj> getMap() {
+	public HashMap<Symbol, Obj> getMap() {
 		return vars;
 	}
 	
 	/** Returns true if this set contains a definition for the variable v */
 	public boolean hasVar(Symbol s) {
-		return vars.containsKey(s.id());
+		return vars.containsKey(s);
 	}
 	
-	/** Returns true if this set contains a definition for the variable v */
-	public boolean hasVar(long v) {
-		return vars.containsKey(v);
-	}
 	
 	public String toString() {
 		return reprHeader(new ReprStream()).toStringOneline();
@@ -83,10 +69,10 @@ public class VariableSet {
 	 * If the value is 0, do not print the value or the parenthesis
 	 */
 	public ReprStream reprHeader(ReprStream stream) {
-		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+		Iterator<Entry<Symbol, Obj>> it = vars.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry<Long, Obj> pair = (Map.Entry<Long, Obj>)it.next();
-			stream.print(SymbolEncoder.decodeLong(pair.getKey()));
+			Map.Entry<Symbol, Obj> pair = (Map.Entry<Symbol, Obj>)it.next();
+			stream.print(pair.getKey().name());
 
 			final Obj obj = pair.getValue();
 			if (obj.equiv(Num.ZERO)) {
@@ -101,21 +87,21 @@ public class VariableSet {
 	}
 	
 	/** Sets all vars in the VariableSet */
-	public void setAllVars(HashMap<Long, Obj> map) {
+	public void setAllVars(HashMap<Symbol, Obj> map) {
 		this.vars = map;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override public VariableSet clone() {
 		VariableSet out = new VariableSet(captureAllAssignments);
-		out.setAllVars((HashMap<Long, Obj>)vars.clone());
+		out.setAllVars((HashMap<Symbol, Obj>)vars.clone());
 		return out;
 	}
 	
 	/** Create a deep copy of the variable set */
 	public VariableSet deepcopy() {
 		VariableSet out = new VariableSet(captureAllAssignments);
-		for (Long l : vars.keySet()) {
+		for (Symbol l : vars.keySet()) {
 			out.setVar(l, vars.get(l).deepcopy());
 		}
 		return out;
@@ -127,9 +113,9 @@ public class VariableSet {
 	
 	/** Add all variables from `other` to this var set. Overwrite if needed */
 	public void merge(VariableSet other) {
-		Iterator<Entry<Long, Obj>> it = other.vars.entrySet().iterator();
+		Iterator<Entry<Symbol, Obj>> it = other.vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	Map.Entry<Symbol,Obj> pair = (Map.Entry<Symbol, Obj>)it.next();
 	    	this.setVar(pair.getKey(), pair.getValue());
 	    }
 	}
@@ -137,20 +123,20 @@ public class VariableSet {
 	/** Return all variables as a list of pairs */
 	public ArrayList<Pair<Symbol, Obj>> getAllVars() {
 		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
-		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+		Iterator<Entry<Symbol, Obj>> it = vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
-	    	out.add(new Pair<Symbol, Obj>(Symbol.fromID(pair.getKey()), pair.getValue()));
+	    	Map.Entry<Symbol,Obj> pair = (Map.Entry<Symbol, Obj>)it.next();
+	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
 	    }
 	    return out;
 	}
 
 	/** Return all variables */
-	public ArrayList<Long> keys() {
-		ArrayList<Long> out = new ArrayList<Long>();
-		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+	public ArrayList<Symbol> keys() {
+		ArrayList<Symbol> out = new ArrayList<Symbol>();
+		Iterator<Entry<Symbol, Obj>> it = vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	Map.Entry<Symbol,Obj> pair = (Map.Entry<Symbol, Obj>)it.next();
 	    	out.add(pair.getKey());
 	    }
 	    return out;
@@ -159,9 +145,9 @@ public class VariableSet {
 	/** Return all Objs */
 	public ArrayList<Obj> values() {
 		ArrayList<Obj> out = new ArrayList<Obj>();
-		Iterator<Entry<Long, Obj>> it = vars.entrySet().iterator();
+		Iterator<Entry<Symbol, Obj>> it = vars.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	Map.Entry<Long,Obj> pair = (Map.Entry<Long, Obj>)it.next();
+	    	Map.Entry<Symbol,Obj> pair = (Map.Entry<Symbol, Obj>)it.next();
 	    	out.add(pair.getValue());
 	    }
 	    return out;
@@ -169,7 +155,7 @@ public class VariableSet {
 
 	/** Merge variables fromt he given variable set only if they are defined in this one */
 	public void mergeDefined(VariableSet varSet) {
-		for (Entry<Long, Obj> e : varSet.getMap().entrySet()) {
+		for (Entry<Symbol, Obj> e : varSet.getMap().entrySet()) {
 			if (vars.containsKey(e.getKey())) {
 				vars.put(e.getKey(), e.getValue());
 			}
@@ -179,7 +165,7 @@ public class VariableSet {
 	
 
 	/** Remove the mapping defined by the given id */
-	public void remove(long id) {
+	public void remove(Symbol id) {
 		vars.remove(id);
 	}
 

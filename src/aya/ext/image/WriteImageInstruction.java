@@ -13,7 +13,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.util.DictReader;
-import aya.variable.EncodedVars;
 
 public class WriteImageInstruction extends NamedInstruction {
 	
@@ -34,7 +33,7 @@ public class WriteImageInstruction extends NamedInstruction {
 		}
 		
 		DictReader dr = new DictReader(info, opName());
-		String filename = dr.getStringEx(EncodedVars.FILENAME);
+		String filename = dr.getStringEx(Aya.getInstance().getSymbols().getSymbol("filename"));
 		String ext = getExt(filename);
 		if (ext.equals("")) {
 			throw new AyaRuntimeException(opName() + ", filename does not have a valid extension");

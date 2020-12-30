@@ -16,6 +16,7 @@ import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 import static aya.util.Casting.asStr;
+import static aya.util.Casting.asSymbol;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,11 +48,10 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolConstants;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.variable.EncodedVars;
 import aya.variable.VariableSet;
 
 public class DotOps {
@@ -441,8 +441,8 @@ class OP_Dot_Plus extends OpInstruction {
 	}
 
 	private void capture(Block b, Symbol s) {
-		Obj o = Aya.getInstance().getVars().getVar(s.id());
-		b.getInstructions().assignVarValue(s.id(), o);
+		Obj o = Aya.getInstance().getVars().getVar(s);
+		b.getInstructions().assignVarValue(s, o);
 	}
 
 	@Override
@@ -500,7 +500,7 @@ class OP_Dot_Minus extends OpInstruction {
 
 	public boolean rmFromDict(Dict d, Obj idx) {
 		if (idx.isa(SYMBOL)) {
-			d.remove(((Symbol)idx).id());
+			d.remove((Symbol)idx);
 		} else if (idx.isa(STR)) {
 			d.remove(idx.str());
 		} else if (idx.isa(LIST)) {
@@ -616,7 +616,7 @@ class OP_Dot_LessThan extends OpInstruction {
 				block.push(b);
 			}
 		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_HEAD, b);
+			block.callVariable((Dict)a, SymbolConstants.KEYVAR_HEAD, b);
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -663,7 +663,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 				block.push(b);
 			}
 		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, Ops.KEYVAR_TAIL, b);
+			block.callVariable((Dict)a, SymbolConstants.KEYVAR_TAIL, b);
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -902,7 +902,7 @@ class OP_Dot_Len extends OpInstruction {
 		if (n.isa(LIST)) {
 			block.push(Num.fromInt(asList(n).length()));
 		} else if (n.isa(DICT)) {
-			block.callVariable((Dict)n, Ops.KEYVAR_LEN);
+			block.callVariable((Dict)n, SymbolConstants.KEYVAR_LEN);
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -1285,9 +1285,6 @@ class OP_Dot_Pow extends OpInstruction {
 class OP_Dot_Bar extends OpInstruction {
 
 	
-	public static final long ARGS = SymbolEncoder.encodeString("args");
-	public static final long ARGTYPES = SymbolEncoder.encodeString("argtypes");
-	public static final long LOCALS = SymbolEncoder.encodeString("locals");
 
 	public OP_Dot_Bar() {
 		init(".|");
@@ -1321,16 +1318,16 @@ class OP_Dot_Bar extends OpInstruction {
 		ArrayList<Obj> args_list = new ArrayList<Obj>();
 		for (BlockHeader.Arg a : args_and_types) {
 			Dict arg = new Dict();
-			arg.set(EncodedVars.NAME, Symbol.fromID(a.var));
-			arg.set(EncodedVars.TYPE, Symbol.fromID(a.type));
-			arg.set(EncodedVars.COPY, a.copy ? Num.ONE : Num.ZERO);
+			arg.set(SymbolConstants.NAME, a.var);
+			arg.set(SymbolConstants.TYPE, a.type);
+			arg.set(SymbolConstants.COPY, a.copy ? Num.ONE : Num.ZERO);
 			args_list.add(arg);
 		}
 		Collections.reverse(args_list);
-		d.set(ARGS, new List(args_list));
+		d.set(SymbolConstants.ARGS, new List(args_list));
 		final VariableSet vars = b.getLocals();
 		if (vars != null) {
-			d.set(LOCALS, new Dict(vars));
+			d.set(SymbolConstants.LOCALS, new Dict(vars));
 		}
 				
 		return d;
@@ -1363,7 +1360,7 @@ class OP_Dot_Tilde extends OpInstruction {
 				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 			}
 
-			Obj e = Aya.getInstance().getVars().getVar(SymbolEncoder.encodeString(varname));
+			Obj e = Aya.getInstance().getVars().getVar(Aya.getInstance().getSymbols().getSymbol(varname));
 			if (!e.isa(BLOCK)) {
 				Block b = new Block();
 				b.add(e);
@@ -1372,7 +1369,7 @@ class OP_Dot_Tilde extends OpInstruction {
 				block.push(e);
 			}
 		} else if (a.isa(SYMBOL)) {
-			Obj e = Aya.getInstance().getVars().getVar(((Symbol)a).id());
+			Obj e = Aya.getInstance().getVars().getVar(asSymbol(a));
 			if (!e.isa(BLOCK)) {
 				Block b = new Block();
 				b.add(e);

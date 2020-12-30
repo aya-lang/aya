@@ -2,6 +2,7 @@ package aya.instruction.op.overload;
 
 import java.util.ArrayList;
 
+import aya.Aya;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
@@ -19,8 +20,8 @@ public class OpOverload2Arg extends OpOverload {
 			throw new IllegalArgumentException();
 		}
 		
-		_var  =  Symbol.fromStr("__"  + name + "__");
-		_rvar =  Symbol.fromStr("__r" + name + "__");
+		_var  =  Aya.getInstance().getSymbols().getSymbol("__" + name + "__");
+		_rvar =  Aya.getInstance().getSymbols().getSymbol("__r" + name + "__");
 	}
 
 	public ArrayList<String> getNames() {
@@ -32,8 +33,8 @@ public class OpOverload2Arg extends OpOverload {
 
 	public ArrayList<Symbol> getSymbols() {
 		ArrayList<Symbol> out = new ArrayList<Symbol>();
-		out.add(Symbol.fromID(_var.id()));
-		out.add(Symbol.fromID(_rvar.id()));
+		out.add(_var);
+		out.add(_rvar);
 		return out;
 	}
 	

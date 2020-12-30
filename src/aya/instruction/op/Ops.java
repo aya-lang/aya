@@ -13,6 +13,7 @@ import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asSymbol;
 import static aya.util.Casting.asStr;
 
 import java.io.File;
@@ -52,7 +53,7 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolConstants;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.FileUtils;
@@ -68,25 +69,7 @@ public class Ops {
 	// OPERATOR OVERLOADS //
 	////////////////////////
 
-	public static final Symbol KEYVAR_EQ	= Symbol.fromStr("__eq__");
-	
-	// List
-	public static final Symbol KEYVAR_GETINDEX = Symbol.fromStr("__getindex__");
-	public static final Symbol KEYVAR_SETINDEX = Symbol.fromStr("__setindex__");
-	public static final Symbol KEYVAR_HEAD = Symbol.fromStr("__head__");
-	public static final Symbol KEYVAR_TAIL = Symbol.fromStr("__tail__");
-	public static final Symbol KEYVAR_MAP = Symbol.fromStr("__map__");
-	public static final Symbol KEYVAR_LEN = Symbol.fromStr("__len__");
-	
-	// Misc.
-	public static final Symbol KEYVAR_OR		= Symbol.fromStr("__or__");
-	public static final Symbol KEYVAR_ROR		= Symbol.fromStr("__ror__");
-	public static final Symbol KEYVAR_NEW 	= Symbol.fromStr("__new__");
-	public static final Symbol KEYVAR_FLOAT 	= Symbol.fromStr("__float__");
-	public static final Symbol KEYVAR_EACH 	= Symbol.fromStr("__each__");
-	public static final Symbol KEYVAR_STR 	= Symbol.fromStr("__str__");
-	public static final Symbol KEYVAR_REPR 	= Symbol.fromStr("__repr__");
-	public static final Symbol KEYVAR_BOOL    = Symbol.fromStr("__bool__");
+
 	
 	
 	public static final char FIRST_OP = '!';
@@ -225,9 +208,9 @@ class OP_Bang extends OpInstruction {
 			block.push( new List(asNumberList(o).subFrom(Num.ONE)) );
 		} else if (o.isa(DICT)) {
 			Dict d = (Dict)o;
-			if (d.containsKey(Ops.KEYVAR_NEW)) {
+			if (d.containsKey(SymbolConstants.KEYVAR_NEW)) {
 				block.push(o);
-				block.addOrDumpVar(d.get(Ops.KEYVAR_NEW));
+				block.addOrDumpVar(d.get(SymbolConstants.KEYVAR_NEW));
 			} else {
 				//Create a new empty dict with the input as its metatable
 				//block.push(new Dict((Dict)o));
@@ -355,8 +338,7 @@ class OP_And extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.band((Number)a, (Number)b) );
 		} else if (a.isa(SYMBOL)) {
-			long varid = ((Symbol)a).id();
-			Aya.getInstance().getVars().setVar(varid, b);
+			Aya.getInstance().getVars().setVar(asSymbol(a), b);
 			block.push(b);
 		} else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
@@ -591,9 +573,9 @@ class OP_Equal extends OpInstruction {
 		final Obj b = block.pop();
 		
 		if (a.isa(DICT)) {
-			if (((Dict)a).hasMetaKey(Ops.KEYVAR_EQ)) {
+			if (((Dict)a).hasMetaKey(SymbolConstants.KEYVAR_EQ)) {
 				block.push(b);
-				block.callVariable((Dict)a, Ops.KEYVAR_EQ);
+				block.callVariable((Dict)a, SymbolConstants.KEYVAR_EQ);
 			} else {
 				if (b.isa(DICT)) {
 					block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
@@ -602,8 +584,8 @@ class OP_Equal extends OpInstruction {
 				}
 			}
 		} else if (b.isa(DICT)) {
-			if (((Dict)b).hasMetaKey(Ops.KEYVAR_EQ)) {
-				block.callVariable((Dict)b, Ops.KEYVAR_EQ, a);
+			if (((Dict)b).hasMetaKey(SymbolConstants.KEYVAR_EQ)) {
+				block.callVariable((Dict)b, SymbolConstants.KEYVAR_EQ, a);
 			} else {
 				block.push(Num.ZERO);
 			}
@@ -733,12 +715,12 @@ class OP_B extends OpInstruction {
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).inc() );
 		} else if (a.isa(SYMBOL)) {
-			long varid = ((Symbol)a).id();
-			Obj o = Aya.getInstance().getVars().getVar(varid);
+			Symbol var = asSymbol(a);
+			Obj o = Aya.getInstance().getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(varid, ((Number)o).inc());
+				Aya.getInstance().getVars().setVar(var, ((Number)o).inc());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(varid, ((Char)o).inc());
+				Aya.getInstance().getVars().setVar(var, ((Char)o).inc());
 			}  else {
 				throw new AyaRuntimeException("Cannot increment " + o.repr() 
 				+ " in place in call " + a.repr() + " V");
@@ -807,7 +789,7 @@ class OP_D extends OpInstruction {
 		if (b.isa(DICT)) {
 			block.push(o);
 			block.push(a);
-			block.callVariable((Dict)b, Ops.KEYVAR_SETINDEX);
+			block.callVariable((Dict)b, SymbolConstants.KEYVAR_SETINDEX);
 		}
 		else if (b.isa(LIST)) {
 			asList(b).mutSetIndexed(a, o);
@@ -1116,9 +1098,9 @@ class OP_SetIndex extends OpInstruction {
 		
 		// If it is a dictionary check to see if has a metamethod first
 		else if (list.isa(DICT)) {
-			if ( ((Dict)list).hasMetaKey(Ops.KEYVAR_SETINDEX) ) {
+			if ( ((Dict)list).hasMetaKey(SymbolConstants.KEYVAR_SETINDEX) ) {
 				block.push(index);
-				block.callVariable((Dict)list, Ops.KEYVAR_SETINDEX);
+				block.callVariable((Dict)list, SymbolConstants.KEYVAR_SETINDEX);
 			} else {
 				Dict.setIndex((Dict)list, index, item);
 			}
@@ -1262,7 +1244,7 @@ class OP_N extends OpInstruction {
 		} else if (b.isa(DICT) && a.isa(STR)) {
 			block.push( Num.fromBool(((Dict)b).containsKey(a.str())) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
-			block.push( Num.fromBool(((Dict)b).containsKey(((Symbol)a).id())) );
+			block.push( Num.fromBool(((Dict)b).containsKey(asSymbol(a))) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1297,7 +1279,7 @@ class OP_O extends OpInstruction {
 			Dict d = (Dict)container;
 			if (d.pushSelf()) {
 				block.push(blk);
-				block.callVariable(d, Ops.KEYVAR_EACH);
+				block.callVariable(d, SymbolConstants.KEYVAR_EACH);
 			} else {
 				block.push(DictIndexing.map((Dict)container, (Block)blk));
 			}
@@ -1425,7 +1407,7 @@ class OP_S extends OpInstruction {
 				block.add(list.getExact(0)); 
 			}
 		} else if (a.isa(SYMBOL)) {
-			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(((Symbol)a).id())));
+			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(asSymbol(a))));
 			
 		} else if (a.isa(BLOCK)) {
 			Block b = (Block)a;
@@ -1511,12 +1493,12 @@ class OP_V extends OpInstruction {
 		} else if (a.isa(CHAR)) {
 			block.push( ((Char)a).dec() );
 		} else if (a.isa(SYMBOL)) {
-			long varid = ((Symbol)a).id();
-			Obj o = Aya.getInstance().getVars().getVar(varid);
+			Symbol var = asSymbol(a);
+			Obj o = Aya.getInstance().getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(varid, ((Number)o).dec());
+				Aya.getInstance().getVars().setVar(var, ((Number)o).dec());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(varid, ((Char)o).dec());
+				Aya.getInstance().getVars().setVar(var, ((Char)o).dec());
 			} else {
 				throw new AyaRuntimeException("Cannot decrement " + o.repr() 
 						+ " in place in call " + a.repr() + " V");
@@ -1579,7 +1561,7 @@ class OP_W extends OpInstruction {
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
 			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
-			for (Entry<Long, Obj> e : d.getVarSet().getMap().entrySet()) {
+			for (Entry<Symbol, Obj> e : d.getVarSet().getMap().entrySet()) {
 				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
 			}
 			return;
@@ -1597,11 +1579,9 @@ class OP_X extends OpInstruction {
 		arg("A", "assign to variable x and pop from stack");
 	}
 	
-	private static final long X = SymbolEncoder.encodeString("x");
-
 	@Override
 	public void execute (final Block block) {
-		Aya.getInstance().getVars().setVar(X, block.pop());
+		Aya.getInstance().getVars().setVar(SymbolConstants.X, block.pop());
 	}
 }
 
@@ -1613,11 +1593,9 @@ class OP_Y extends OpInstruction {
 		arg("A", "assign to variable y and leave on stack");
 	}
 	
-	private static final long Y = SymbolEncoder.encodeString("y");
-	
 	@Override
 	public void execute (final Block block) {
-		Aya.getInstance().getVars().setGlobalVar(Y, block.peek());
+		Aya.getInstance().getVars().setGlobalVar(SymbolConstants.Y, block.peek());
 	}
 }
 
@@ -1775,7 +1753,7 @@ class OP_Tilde extends OpInstruction {
 				if(varname == null) {
 					throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
 				}
-				block.add(new GetVariableInstruction(SymbolEncoder.encodeString(varname)));
+				block.add(new GetVariableInstruction(Aya.getInstance().getSymbols().getSymbol(varname)));
 			}
 		} else if (a.isa(LIST)) {
 			List list = asList(a);
@@ -1784,7 +1762,7 @@ class OP_Tilde extends OpInstruction {
 				block.add(list.getExact(i));
 			}
 		} else if (a.isa(SYMBOL)) {
-			block.push(Aya.getInstance().getVars().getVar( ((Symbol)a).id() ));
+			block.push(Aya.getInstance().getVars().getVar(asSymbol(a)));
 		} else if (a.isa(DICT)) {
 			// Dump all vars if they exist in the most local scope
 			Aya.getInstance().getVars().peek().mergeDefined(asDict(a).getVarSet());

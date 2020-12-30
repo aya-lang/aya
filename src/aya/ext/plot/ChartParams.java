@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -22,8 +23,8 @@ public class ChartParams {
 	public static final int DEFAULT_WIDTH = 560;
 	public static final String NONE = "";
 	
-	public static final Symbol PLOTTYPE_LINE = Symbol.fromStr("line");
-	public static final Symbol PLOTTYPE_SCATTER = Symbol.fromStr("scatter");
+	public static final Symbol PLOTTYPE_LINE = Aya.getInstance().getSymbols().getSymbol("line");
+	public static final Symbol PLOTTYPE_SCATTER = Aya.getInstance().getSymbols().getSymbol("scatter");
 	
 	public static Color[] DEFAULT_COLORS = {
 			Color.BLUE,

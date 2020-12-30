@@ -1,78 +1,33 @@
 package aya.obj.symbol;
 
+import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
-import aya.util.LRUCache;
 
 public class Symbol extends Obj {
 	
-	static LRUCache<Long, Symbol> cache = new LRUCache<>(128);	
-	
-	long _id;
+	int _id;
 
-	
-	private Symbol(String name) {
-		_id = SymbolEncoder.encodeString(name);
-	}
-	
-	private Symbol(long id) {
+	protected Symbol(int id) {
 		_id = id;
 	}
 	
-	public long id() {
+	public int id() {
 		return _id;
 	}
 	
-	/** Converts any string to a symbol string by ignoring non alpha chars */
-	public static Symbol convToSymbol(String str) {
-		String sym = "";
-		
-		for (char c : str.toCharArray()) {
-			if (SymbolEncoder.isValidChar(c)) {
-				sym += c;
-			} else if (c >= 'A' && c <= 'Z') {
-				sym += Character.toLowerCase(c); // Make lowercase
-			} else if (c == ' ') {
-				sym += '_';
-			}
-			
-			// Symbols can only be 12 chars
-			if (sym.length() >= 12) {
-				break;
-			}
-		}
-		
-		if (sym.equals("")) {
-			throw new AyaRuntimeException("Can't create symbol from string \"" + str + "\"");
-		}
-		
-		return Symbol.fromStr(sym);
+	public String rawName() {
+		return Aya.getInstance().getSymbols().getName(this);
 	}
-	
-	/** Convert a symbol string to a symbol */
-	public static Symbol fromStr(String data) {
-		long id = SymbolEncoder.encodeString(data);
-		return fromID(id);
 		
-	}	
-	
 	public String name() {
-		return SymbolEncoder.decodeLong(_id);
+		return Aya.getInstance().getSymbols().getName(this);
 	}
 	
-	
-	public static Symbol fromID(long id) {
-		// Check if it is in the cache
-		Symbol s = cache.get(id);
-		if (s == null) {
-			// Not in cache, add it
-			s = new Symbol(id);
-			cache.put(id, s);
-		}
-		return s;
+	@Override
+	public int hashCode() {
+		return _id;
 	}
-
 	
 	@Override
 	public Obj deepcopy() {
@@ -86,13 +41,13 @@ public class Symbol extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("::" + SymbolEncoder.decodeLong(_id));
+		stream.print("::" + name());
 		return stream;
 	}
 
 	@Override
 	public String str() {
-		return "::" + SymbolEncoder.decodeLong(_id);
+		return "::" + name();
 	}
 
 	@Override
@@ -109,8 +64,5 @@ public class Symbol extends Obj {
 	public byte type() {
 		return Obj.SYMBOL;
 	}
-
-
-
 
 }

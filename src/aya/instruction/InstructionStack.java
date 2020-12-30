@@ -136,10 +136,10 @@ public class InstructionStack {
 	/** Finds all vars with id matching varid and swaps them
 	 * with `item`
 	 */
-	public void assignVarValue(long varid, Obj item) {
+	public void assignVarValue(Symbol var, Obj item) {
 		for (int i = 0; i < instructions.size(); i++) {
 			final Instruction o = instructions.get(i);
-			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).id() == varid) {
+			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getSymbol().id() == var.id()) {
 				instructions.set(i, new DataInstruction(item));
 			}
 		}

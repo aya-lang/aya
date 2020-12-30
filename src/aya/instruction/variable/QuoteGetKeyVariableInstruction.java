@@ -8,12 +8,11 @@ import aya.obj.block.Block;
 import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
 
 public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
-	public QuoteGetKeyVariableInstruction(long id) {
-		this.variable_ = id;
+	public QuoteGetKeyVariableInstruction(Symbol var) {
+		super(var);
 	}
 	
 	@Override
@@ -30,7 +29,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 			b.push(o);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym.id());
+			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym);
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
 				Obj o;
@@ -51,7 +50,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("." + SymbolEncoder.decodeLong(variable_) + ".`");
+		stream.print("." + variable_.name() + ".`");
 		return stream;
 	}
 }

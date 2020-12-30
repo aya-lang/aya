@@ -2,6 +2,7 @@ package aya.util;
 
 import java.awt.Color;
 
+import aya.Aya;
 import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.UndefVarException;
 import aya.obj.Obj;
@@ -10,14 +11,14 @@ import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolTable;
 
 public class DictReader {
 	
-	private final long R = SymbolEncoder.encodeString("r");
-	private final long G = SymbolEncoder.encodeString("g");
-	private final long B = SymbolEncoder.encodeString("b");
-	private final long A = SymbolEncoder.encodeString("a");
+	private final Symbol R;
+	private final Symbol G;
+	private final Symbol B;
+	private final Symbol A;
 	
 	private Dict _dict;
 	private String _err_name;
@@ -25,10 +26,15 @@ public class DictReader {
 	public DictReader(Dict dict) {
 		_dict = dict;
 		_err_name = "DictReader";
+		SymbolTable syms = Aya.getInstance().getSymbols();
+		R = syms.getSymbol("r");
+		G = syms.getSymbol("g");
+		B = syms.getSymbol("b");
+		A = syms.getSymbol("a");
 	}
 
 	public DictReader(Dict dict, String error_name) {
-		_dict = dict;
+		this(dict);
 		_err_name = error_name;
 	}
 	
@@ -36,17 +42,15 @@ public class DictReader {
 		_err_name = message;
 	}
 	
-	public AyaRuntimeException notFound(long key) throws AyaRuntimeException {
-		String key_name = SymbolEncoder.decodeLong(key);
-		return new AyaRuntimeException(_err_name + ": Key '" + key_name + "' does not exist");
+	public AyaRuntimeException notFound(Symbol key) throws AyaRuntimeException {
+		return new AyaRuntimeException(_err_name + ": Key '" + key.name() + "' does not exist");
 	}
 	
-	public AyaRuntimeException badType(long key, String type_expected, Obj got) throws AyaRuntimeException {
-		String key_name = SymbolEncoder.decodeLong(key);
-		return new AyaRuntimeException(_err_name + ": Expected type ::" + type_expected +" for key '" + key_name + "' but got " + got.repr());
+	public AyaRuntimeException badType(Symbol key, String type_expected, Obj got) throws AyaRuntimeException {
+		return new AyaRuntimeException(_err_name + ": Expected type ::" + type_expected +" for key '" + key.name() + "' but got " + got.repr());
 	}
 	
-	public double[] getDoubleArrayEx(long key) {
+	public double[] getDoubleArrayEx(Symbol key) {
 		Obj arr = _dict.getSafe(key);
 		
 		if (arr == null) {
@@ -58,7 +62,7 @@ public class DictReader {
 		}
 	}
 	
-	public String getSymStringEx(long key) throws AyaRuntimeException {
+	public String getSymStringEx(Symbol key) throws AyaRuntimeException {
 		Obj val = _dict.getSafe(key);
 		if (val == null) throw notFound(key);
 		
@@ -71,7 +75,7 @@ public class DictReader {
 		}
 	}
 	
-	public Color getColorEx(long key) {
+	public Color getColorEx(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		if (val == null) throw notFound(key);
 		
@@ -91,7 +95,7 @@ public class DictReader {
 		}
 	}
 	
-	public double getDoubleEx(long key) {
+	public double getDoubleEx(Symbol key) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null) {
@@ -104,7 +108,7 @@ public class DictReader {
 	}
 	
 	
-	public int getIntEx(long key) {
+	public int getIntEx(Symbol key) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null) {
@@ -116,7 +120,7 @@ public class DictReader {
 		}
 	}
 
-	public List getListEx(long key) {
+	public List getListEx(Symbol key) {
 		try {
 			return (List)_dict.get(key);
 		} catch (ClassCastException e) {
@@ -126,7 +130,7 @@ public class DictReader {
 		}
 	}
 
-	public NumberList getNumberListEx(long key) {
+	public NumberList getNumberListEx(Symbol key) {
 		try {
 			return Casting.asNumberList(_dict.get(key));
 		} catch (ClassCastException e) {
@@ -136,7 +140,7 @@ public class DictReader {
 		}
 	}
 	
-	public String getStringEx(long key) {
+	public String getStringEx(Symbol key) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null) {
@@ -148,7 +152,7 @@ public class DictReader {
 		}
 	}
 
-	public Symbol getSymbolEx(long key) {
+	public Symbol getSymbolEx(Symbol key) {
 		Obj o = _dict.getSafe(key);
 		if (o == null) {
 			throw notFound(key);
@@ -159,7 +163,7 @@ public class DictReader {
 		}
 	}
 	
-	public Color getColor(long key) {
+	public Color getColor(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		
 		if (val != null && val.isa(Obj.DICT)) {
@@ -179,7 +183,7 @@ public class DictReader {
 	}
 	
 	
-	public String getSymString(long key) {
+	public String getSymString(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		if (val == null) return null;
 		
@@ -192,7 +196,7 @@ public class DictReader {
 		}
 	}
 	
-	public String getSymString(long key, String dflt) {
+	public String getSymString(Symbol key, String dflt) {
 		final String s = getSymString(key);
 		if (s == null) {
 			return dflt;
@@ -201,11 +205,11 @@ public class DictReader {
 		}
 	}
 	
-	public float getFloat(long key, float dflt) {
+	public float getFloat(Symbol key, float dflt) {
 		return (float)(getDouble(key, (double)dflt));
 	}
 	
-	public double getDouble(long key, double dflt) {
+	public double getDouble(Symbol key, double dflt) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null || !o.isa(Obj.NUM)) {
@@ -215,7 +219,7 @@ public class DictReader {
 		}
 	}
 	
-	public int getInt(long key, int dflt) {
+	public int getInt(Symbol key, int dflt) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null || !o.isa(Obj.NUM)) {
@@ -226,7 +230,7 @@ public class DictReader {
 	}
 	
 	
-	public String getString(long key) {
+	public String getString(Symbol key) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null || !o.isa(Obj.STR)) {
@@ -236,7 +240,7 @@ public class DictReader {
 		}
 	}
 	
-	public String getString(long key, String dflt) {
+	public String getString(Symbol key, String dflt) {
 		Obj o = _dict.getSafe(key);
 
 		if (o == null || !o.isa(Obj.STR)) {
@@ -246,7 +250,7 @@ public class DictReader {
 		}
 	}
 	
-	public Symbol getSymbol(long key, Symbol dflt) {
+	public Symbol getSymbol(Symbol key, Symbol dflt) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null || !o.isa(Obj.SYMBOL)) {
@@ -256,7 +260,7 @@ public class DictReader {
 		}
 	}
 
-	public boolean getBool(long key, boolean dflt) {
+	public boolean getBool(Symbol key, boolean dflt) {
 		Obj o = _dict.getSafe(key);
 		
 		if (o == null) {

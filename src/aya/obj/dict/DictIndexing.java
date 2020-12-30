@@ -5,11 +5,11 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 import java.util.Set;
 
-import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 
 public class DictIndexing {
 
@@ -19,16 +19,16 @@ public class DictIndexing {
 	 * @param index
 	 */
 	public static Obj getIndex(Dict dict, Obj index) {
-		if (dict.hasMetaKey(Ops.KEYVAR_GETINDEX)) {
+		if (dict.hasMetaKey(SymbolConstants.KEYVAR_GETINDEX)) {
 			Block b = new Block();
 			b.push(index);
-			b.callVariable(dict, Ops.KEYVAR_GETINDEX);
+			b.callVariable(dict, SymbolConstants.KEYVAR_GETINDEX);
 			b.eval();
 			return b.pop();
 		} else if (index.isa(Obj.STR)) {
 			return dict.get(index.str());
 		} else if (index.isa(Obj.SYMBOL)) {
-			return dict.get(((Symbol)index).id());
+			return dict.get((Symbol)index);
 		} else if (index.isa(Obj.LIST)) {
 			List l = asList(index);
 			ArrayList<Obj> out = new ArrayList<Obj>(l.length());
@@ -57,10 +57,10 @@ public class DictIndexing {
 		Dict out = new Dict();
 		Block b = new Block();
 
-		ArrayList<Long> symKeys = dict.symKeys();
-		for (long key : symKeys) {
+		ArrayList<Symbol> symKeys = dict.symKeys();
+		for (Symbol key : symKeys) {
 			b.addAll(block.getInstructions().getInstrucionList());
-			b.push(Symbol.fromID(key));
+			b.push(key);
 			b.push(dict.get(key));
 			b.eval();
 			if (!b.stackEmpty()) {
@@ -87,10 +87,10 @@ public class DictIndexing {
 		Dict out = new Dict();
 		Block b = new Block();
 
-		ArrayList<Long> symKeys = dict.symKeys();
-		for (long key : symKeys) {
+		ArrayList<Symbol> symKeys = dict.symKeys();
+		for (Symbol key : symKeys) {
 			b.addAll(block.getInstructions().getInstrucionList());
-			b.push(Symbol.fromID(key));
+			b.push(key);
 			b.push(dict.get(key));
 			b.eval();
 			if (b.pop().bool()) {

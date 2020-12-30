@@ -33,7 +33,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Number;
-import aya.obj.symbol.SymbolEncoder;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
@@ -164,9 +164,9 @@ public class Parser {
 					}
 
 					// Key Variable
-					else if (SymbolEncoder.isValidChar(in.peek())) {
+					else if (SymbolTable.isBasicSymbolChar(in.peek())) {
 						String varname = "" + in.next();
-						while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
+						while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 							varname += in.next();
 						}
 						tokens.add(new KeyVarToken(varname));
@@ -373,15 +373,10 @@ public class Parser {
 			}
 
 			// Variable Name
-			else if (SymbolEncoder.isValidChar(current)) {
+			else if (SymbolTable.isBasicSymbolChar(current)) {
 				StringBuilder sb = new StringBuilder("" + current);
-				while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
+				while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 					sb.append(in.next());
-				}
-				if (sb.length() > 12) {
-					Aya.getInstance()
-							.printDebug("Only the first 12 characters of a variable name are used. Ignoring '..."
-									+ sb.toString().substring(12, sb.length()) + "' in " + sb.toString());
 				}
 				tokens.add(new VarToken(sb.toString()));
 			}
@@ -398,7 +393,7 @@ public class Parser {
 				if (in.hasNext() && in.peek() == ':') {
 					in.next(); // Move to the next colon
 					String sym = "";
-					while (in.hasNext() && SymbolEncoder.isValidChar(in.peek())) {
+					while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 						sym += in.next();
 					}
 
@@ -635,7 +630,7 @@ public class Parser {
 				// Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetVariableInstruction(v.id()));
+					is.push(new SetVariableInstruction(v.getSymbol()));
 				} else {
 					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
 				}
@@ -666,7 +661,7 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).id()));
+							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
 							is.push(new GetExprIndexInstruction(new Block(lli.getInstructions())));
 						}
@@ -682,7 +677,7 @@ public class Parser {
 				// Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetKeyVariableInstruction(v.id()));
+					is.push(new SetKeyVariableInstruction(v.getSymbol()));
 				}
 
 				// Index assignment
@@ -705,7 +700,7 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new SetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).id()));
+							is.push(new SetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
 							is.push(new SetExprIndexInstruction(new Block(lli.getInstructions())));
 						}
@@ -760,10 +755,10 @@ public class Parser {
 				if (stk.hasNext()) {
 					if (stk.peek().isa(Token.VAR)) {
 						VarToken t = (VarToken) stk.pop();
-						is.push(new QuoteGetVariableInstruction(t.id()));
+						is.push(new QuoteGetVariableInstruction(t.getSymbol()));
 					} else if (stk.peek().isa(Token.KEY_VAR)) {
 						KeyVarToken t = (KeyVarToken) stk.pop();
-						is.push(new QuoteGetKeyVariableInstruction(t.getID()));
+						is.push(new QuoteGetKeyVariableInstruction(t.getSymbol()));
 					} else {
 						throw new SyntaxError("Expected var or keyvar before quote (.`) token");
 					}

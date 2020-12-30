@@ -2,6 +2,7 @@ package aya.instruction.op.overload;
 
 import java.util.ArrayList;
 
+import aya.Aya;
 import aya.obj.symbol.Symbol;
 
 public class OpOverloadNoOp extends OpOverload {
@@ -20,7 +21,7 @@ public class OpOverloadNoOp extends OpOverload {
 	@Override
 	public ArrayList<Symbol> getSymbols() {
 		ArrayList<Symbol> out = new ArrayList<Symbol>();
-		out.add(Symbol.fromStr("__" + _name + "__"));
+		out.add(Aya.getInstance().getSymbols().getSymbol("__" + _name + "__"));
 		return out;
 	}
 

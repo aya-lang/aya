@@ -2,6 +2,7 @@ package aya.obj;
 
 import aya.ReprStream;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 
 /**
  * Superclass for all runtime objects existing on the stack
@@ -82,120 +83,57 @@ public abstract class Obj {
 		}
 	}
 	
-//	/** Converts an ID to a char abbreviation */
-//	public static char IDToAbbrv(byte b) {
-//		switch(b) {
-//		//case BOOL : return 'B';
-//		case CHAR : return 'C' ;
-//		case NUM : return 'D';
-//		case BLOCK : return 'E';
-//		case BIGNUM : return 'F';
-//		
-//		case LIST : return 'L';
-//		case NUMBERLIST : return 'L';
-//		case NUMBERITEMLIST : return 'L';
-//		case OBJLIST : return 'L';
-//		case STRLIST : return 'L';
-//		
-//		case STR : return 'S';
-//		case NUMBER : return 'N';
-//		case RATIONAL_NUMBER : return 'N';
-//		case DICT : return 'R';
-//		case ANY : return 'A';
-//
-//		default: return '?';
-//		}
-//	}
-	
-//	/** Converts a character abbreviation to its ID */
-//	public static byte abbrvToID(char c) {
-//		switch(c) {
-//			//case 'B': return BOOL;
-//			//case 'C': return CHARACTER;
-//			case 'D': return NUM;
-//			case 'E': return BLOCK;
-//			case 'F': return BIGNUM;
-//			case 'L': return LIST;
-//			case 'S': return STR;
-//			case 'N': return NUMBER;
-//			case 'C': return CHAR;
-//			case 'A': return ANY;
-//			case 'R': return DICT;
-//			//case 'M': return MODULE;
-//			//case 'U': return USER_OBJ;
-//			default: return UNKNOWN;
-//		}
-//	}
-	
-	public static final Symbol SYM_CHAR 	= Symbol.fromStr("char");
-	public static final Symbol SYM_NUM 		= Symbol.fromStr("num");
-	public static final Symbol SYM_BLOCK 	= Symbol.fromStr("block");
-	public static final Symbol SYM_LIST 	= Symbol.fromStr("list");
-	public static final Symbol SYM_STR 		= Symbol.fromStr("str");
-	public static final Symbol SYM_DICT 	= Symbol.fromStr("dict");
-	public static final Symbol SYM_SYM	 	= Symbol.fromStr("sym");
-	public static final Symbol SYM_ANY 		= Symbol.fromStr("any");
-	public static final Symbol SYM_UNKNOWN 	= Symbol.fromStr("unknown");
-	public static final Symbol SYM_TYPE 	= Symbol.fromStr("__type__");
-
-
-	
 	/** Converts an ID to a symbol */
 	public static Symbol IDToSym(byte b) {
 		switch(b) {
 		//case BOOL : return 'B';
-		case CHAR : return SYM_CHAR;
-		case NUM : return SYM_NUM;
-		case BLOCK : return SYM_BLOCK;
-		case BIGNUM : return SYM_NUM;
+		case CHAR : return SymbolConstants.CHAR;
+		case NUM : return SymbolConstants.NUM;
+		case BLOCK : return SymbolConstants.BLOCK;
+		case BIGNUM : return SymbolConstants.NUM;
 		
-		case LIST : return SYM_LIST;
-		case NUMBERLIST : return SYM_LIST;
-		case NUMBERITEMLIST : return SYM_LIST;
-		case OBJLIST : return SYM_LIST;
-		case STRLIST : return SYM_LIST;
+		case LIST : return SymbolConstants.LIST;
+		case NUMBERLIST : return SymbolConstants.LIST;
+		case NUMBERITEMLIST : return SymbolConstants.LIST;
+		case OBJLIST : return SymbolConstants.LIST;
+		case STRLIST : return SymbolConstants.LIST;
 		
-		case SYMBOL : return SYM_SYM;
-		case STR : return SYM_STR;
-		case NUMBER : return SYM_NUM;
-		case RATIONAL_NUMBER : return SYM_NUM;
-		case COMPLEXNUM : return SYM_NUM;
-		case DICT : return SYM_DICT;
-		case ANY : return SYM_ANY;
+		case SYMBOL : return SymbolConstants.SYM;
+		case STR : return SymbolConstants.STR;
+		case NUMBER : return SymbolConstants.NUM;
+		case RATIONAL_NUMBER : return SymbolConstants.NUM;
+		case COMPLEXNUM : return SymbolConstants.NUM;
+		case DICT : return SymbolConstants.DICT;
+		case ANY : return SymbolConstants.ANY;
 
-		default: return SYM_UNKNOWN;
+		default: return SymbolConstants.UNKNOWN;
 		}
 	}
 	
 	
 	/** Converts a character abbreviation to its ID */
-	public static byte symToID(long s) {
-		if (s == SYM_NUM.id()) {
+	public static byte symToID(Symbol sym) {
+		long s = sym.id();
+		if (s == SymbolConstants.NUM.id()) {
 			return NUM;
-		} else if (s == SYM_BLOCK.id()) {
+		} else if (s == SymbolConstants.BLOCK.id()) {
 			return BLOCK;
-		} else if (s == SYM_LIST.id()) {
+		} else if (s == SymbolConstants.LIST.id()) {
 			return LIST;
-		} else if (s == SYM_STR.id()) {
+		} else if (s == SymbolConstants.STR.id()) {
 			return STR;
-		} else if (s == SYM_CHAR.id()) {
+		} else if (s == SymbolConstants.CHAR.id()) {
 			return CHAR;
-		} else if (s == SYM_ANY.id()) {
+		} else if (s == SymbolConstants.ANY.id()) {
 			return ANY;
-		} else if (s == SYM_DICT.id()) {
+		} else if (s == SymbolConstants.DICT.id()) {
 			return DICT;
-		} else if (s == SYM_SYM.id()) {
+		} else if (s == SymbolConstants.SYM.id()) {
 			return SYMBOL;
 		} else {
 			return UNKNOWN;
 		}
 	}
-	
-	/** Converts a character abbreviation to its ID */
-	public static byte symToID(Symbol s) {
-		return symToID(s.id());
-	}
-	
 	
 	/** Create a deep copy of the obj */
 	public abstract Obj deepcopy();

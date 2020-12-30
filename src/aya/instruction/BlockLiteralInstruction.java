@@ -53,7 +53,7 @@ public class BlockLiteralInstruction extends Instruction {
 
 			VariableData vars = Aya.getInstance().getVars();
 			for (Symbol v : _captures) {
-				bh.addDefault(v.id(), vars.getVar(v.id()));
+				bh.addDefault(v, vars.getVar(v));
 			}
 			
 			return b;
