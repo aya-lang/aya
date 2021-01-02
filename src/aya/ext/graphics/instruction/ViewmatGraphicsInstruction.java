@@ -1,28 +1,28 @@
-package aya.ext.graphics;
+package aya.ext.graphics.instruction;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import aya.exceptions.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.ext.graphics.Canvas;
+import aya.ext.graphics.CanvasTable;
+import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
-import aya.util.Casting;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+import aya.util.Casting;
 
-public class ViewmatGraphicsInstruction extends NamedInstruction {
+public class ViewmatGraphicsInstruction extends GraphicsInstruction {
 
-	private CanvasInterface _canvas_interface;
 	private Color[] _colors;
 	
-	public ViewmatGraphicsInstruction(CanvasInterface canvas_interface) {
-		super("graphics.viewmat");
+	public ViewmatGraphicsInstruction(CanvasTable canvas_table) {
+		super(canvas_table, "viewmat", "LN");
 		_doc = "LN draw a matrix on the canvas";
-		_canvas_interface = canvas_interface;
 		
 		// Init Colors
 		_colors = new Color[256];
@@ -31,27 +31,21 @@ public class ViewmatGraphicsInstruction extends NamedInstruction {
 		}
 	}
 	
-
 	@Override
-	public void execute(Block block) {
-		final Obj o_id = block.pop();
+	protected void doCanvasCommand(Canvas cvs, Block block) {
 		final Obj o_data = block.pop();
-		
+
 		NumberList data;
 		int width;
-		int canvas_id;
 		try {
-			canvas_id = ((aya.obj.number.Number)o_id).toInt();
 			List data_list = Casting.asList(o_data);
 			width = Casting.asList(data_list.getExact(0)).length();
 			data = data_list.flatten().toNumberList();
 		} catch (ClassCastException e) {
-			throw new TypeError(this, "LN", o_id, o_data);
+			throw new TypeError(this, "L", o_data);
 		}
 	
-		Canvas cvs = _canvas_interface.getCanvas(canvas_id);
 		drawMat(data, width, cvs);
-
 	}
 
 	private void drawMat(NumberList data, int width, Canvas canvas) {

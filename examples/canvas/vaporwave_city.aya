@@ -54,6 +54,9 @@ w2/ 150 100 c.fillcircle
 darkblue c.set_color
 { 45Q15+ 100Q120+ wQ c building} 5 %
 
+0 0 0 color! :transparent;
+0.0 transparent.:a;
+
 .# Nearby buildings (multiple layers)
 {
     {
@@ -62,7 +65,7 @@ darkblue c.set_color
     } 40 %
 
     .# Transparent gradient to provide depth
-    [0 150] {,0:a} [0 h1.7*] lightblue 0 c.set_grad
+    [0 150] transparent [0 h1.7*] lightblue 0 c.set_grad
     0 0 w h c.fillrect
 } 2 %
 
@@ -72,4 +75,4 @@ darkblue c.set_color
 } 10 %
 
 
-c.show
+c.show;

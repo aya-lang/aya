@@ -1,0 +1,35 @@
+package aya.ext.graphics.instruction;
+
+import java.awt.BasicStroke;
+
+import aya.exceptions.AyaRuntimeException;
+import aya.ext.graphics.Canvas;
+import aya.ext.graphics.CanvasTable;
+import aya.ext.graphics.GraphicsInstruction;
+import aya.obj.block.Block;
+
+public class SetStrokeWidthGraphicsInstruction extends GraphicsInstruction {
+
+	public SetStrokeWidthGraphicsInstruction(CanvasTable canvas_table) {
+		super(canvas_table, "set_stroke_width", "NN");
+		_doc = "width canvas_id: set the stroke width of the pen";
+	}
+	
+
+	@Override
+	protected void doCanvasCommand(Canvas cvs, Block block) {
+		float width = (float)(_reader.popDouble());
+
+		BasicStroke prev = (BasicStroke)(cvs.getG2D().getStroke());
+		
+		try {
+			cvs.getG2D().setStroke(new BasicStroke(width, prev.getEndCap(), prev.getLineJoin()));
+		} catch (IllegalArgumentException e) {
+			throw new AyaRuntimeException("Invalid parameters for set_stroke_width: " + width);
+		}
+	}
+	
+}
+
+
+

@@ -40,6 +40,11 @@ public class SymbolConstants {
 	public static final Symbol QUESTION = S.getSymbol("question");
 	public static final Symbol WARN 	= S.getSymbol("warn");
 	public static final Symbol ERROR 	= S.getSymbol("error");
+	public static final Symbol WIDTH 	= S.getSymbol("width");
+	public static final Symbol HEIGHT 	= S.getSymbol("height");
+	public static final Symbol SCALE 	= S.getSymbol("scale");
+	public static final Symbol AUTOFLUSH 	= S.getSymbol("autoflush");
+	public static final Symbol SHOW 	= S.getSymbol("show");
 
 	public static final Symbol DAY_OF_WEEK 	= S.getSymbol("day_of_week");
 	public static final Symbol YEAR 		= S.getSymbol("year");

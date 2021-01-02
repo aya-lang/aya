@@ -16,6 +16,7 @@ class ::color
 def color::__init__ {r::num g::num b::num self,
     [[r g b], .round 0 255 .clip] ~
     self .:b .:g .:r ;
+    1.0 self.:a;
 }
 
 
@@ -35,12 +36,12 @@ def color::newhsv { : color^ ,
 .#
 
 def color::__repr__ {self,
-    "($(self.r) $(self.g) $(self.b)) color!"
+    "($(self.r) $(self.g) $(self.b)) color! $(self.a)"
 }
 
 
 def color::__str__ {self,
-    "($(self.r) $(self.g) $(self.b)) color!"
+    "($(self.r) $(self.g) $(self.b)) color! $(self.a)"
 }
 
 

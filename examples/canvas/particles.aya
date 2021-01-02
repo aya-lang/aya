@@ -16,6 +16,12 @@ def vector::__add__{other self,
     self.M!
 }
 
+def vector::__rmul__{self n,
+    self.x n *
+    self.y n *
+    self.M!
+}
+
 
 struct ::particle [
     ::pos   .# vector
@@ -34,10 +40,12 @@ def ::from_vec {pos : p,
 }
 
 .# Apply physics simulation to the particle
+.# Use a time step of 3
+2.5 :time_step;
 def particle::update {self,
-    self.vel self.acc + self.:vel;
-    self.pos self.vel + self.:pos;
-    self.life 2 - self.:life;
+    self.vel self.acc time_step * + self.:vel;
+    self.pos self.vel time_step * + self.:pos;
+    self.life 4 - self.:life;
 }
 
 
@@ -63,24 +71,24 @@ def particle::dead {self,
 
 
 .# Create a new canvas
-{, "Particles":name } canvas! :c;
+{, "Particles":name 0:autoflush } canvas! :c;
 .# The spawn location of the particles
 200 100 vector! :origin;
 .# Array of particles
-[400,; origin from_vec]:particles;
+[500,; origin from_vec]:particles;
 .# Initialize all lifetimes
 particles :# {255Q \.:life};
 
 .# Simulation loop
 {
-    c.clear
-
     .# Update particles
     particles :# {p,
         p.update
         p.dead {origin p.reset} ?
-        p.draw
     } ;
+
+    c.clear
+    particles :# { .draw };
 
     c.show
     10:Z

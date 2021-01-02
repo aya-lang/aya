@@ -1,100 +1,95 @@
-{::close {,} g MG;} {;} .K
+{g :{graphics.close}; } {;} .K
 
 .{
     A Demo of all raw graphics calls that can be made
     Generally, one should use std/canvas for graphics manipulation
 .}
 
-{255Q:r 255Q:g 255Q:b}:col;
-{x y, 
-  ::set_stroke {, 1:width } g MG;
-  ::set_color {, 0:r:g:b } g MG;
-  ::line {, x:xa:xb y:ya:yb } g MG;
+
+{,255Q:r 255Q:g 255Q:b}:col;
+{,100:r 100:g 100:b}:col;
+{x y,
+    1 g :{graphics.set_stroke_width}
+    0 0 0 g :{graphics.set_color}
+    x y x y g :{graphics.line}
 }:point;
 
-::new {, 300:width 300:height "Test":name 1:autoflush 1:show} 0 MG :g;
+{, 300:width 300:height "Test":name 1:autoflush 1:show} :{graphics.new} :g;
 200 200 point
-::line {, 0:xa 0:ya 100:xb 200:yb } g MG;
-::line {, 150:xa 0:ya 150:xb 300:yb} g MG;
-::line {, 150:ya 0:xa 150:yb 300:xb} g MG;
-::rect {, 20:x 30:y 10:w 100:h } g MG;
-::set_color {, 200:r 0:g 0:b} g MG;
-::set_stroke {, 3:width } g MG;
-::line {, 40:xa 40:ya 0:xb 50:yb } g MG;
-::rect {, 120:x 130:y 10:w 50:h 1:fill } g MG;
-::set_color {, 200:r 250:g 0:b} g MG;
-::roundrect {, 50:x 50:y 50:w 50:h 30:dh 15:dv 1:fill } g MG;
-::roundrect {, 45:x 45:y 60:w 60:h 15:dh 30:dv } g MG;
-::set_color {, col } g MG;
-::oval {, 200:x 200:y 50:w 50:h 1:fill } g MG;
-::oval {, 194:x 194:y 61:w 61:h 0:fill } g MG;
-::ellipse {, 150:x 150:y 40:w 60:h 0:fill } g MG;
-::arc {, 150:x 150:y 100:w 100:h 0:angle 90:extent} g MG;
-::arc {, 150:x 150:y 100:w 100:h 90:angle 90:extent 1:fill} g MG;
+0 0 100 200 g :{graphics.line}
+150 0 150 300 g :{graphics.line}
+0 150 300 150 g :{graphics.line}
+.# x1 y1 w h fill
+20 30 10 100 0 g :{graphics.rect}
+.# r g b
+200 0 0 g :{graphics.set_color}
+3 g :{graphics.set_stroke_width}
+40 40 0 50 g :{graphics.line}
+120 130 10 50 1 g :{graphics.rect}
+200 250 0 g :{graphics.set_color}
+.# x y w h dh dv fill
+50 50 50 50 30 15 1 g :{graphics.round_rect}
+45 45 60 60 15 30 0 g :{graphics.round_rect}
+col.r col.g col.b g :{graphics.set_color}
+200 200 50 50 1 g :{graphics.oval}
+194 194 61 61 0 g :{graphics.oval}
+150 150 40 60 0 g :{graphics.ellipse}
+.# x y w h angle extent fill
+150 150 100 100 0  90 0 g :{graphics.arc}
+150 150 100 100 90 90 1 g :{graphics.arc}
 
-::set_color {, 0:r:g:b} g MG;
-::set_stroke {, 1:width } g MG;
-::line {, 250:xa 0:ya 250:xb 300:yb} g MG;
-::set_color {, 100:r:g 0:b} g MG;
-::set_stroke {, 5:width } g MG;
+0 0 0 g :{graphics.set_color}
+1 g :{graphics.set_stroke_width}
+250 0 250 300 g :{graphics.line}
+100 100 0 g :{graphics.set_color}
+5 g :{graphics.set_stroke_width}
 
 1:idx;
-[::butt ::round ::square] :# {cap,
-  ::set_stroke {, cap:cap } g MG;
-  ::line {, idx20*:ya 150:xa idx20*:yb 250:xb} g MG;
+["butt" "round" "square"] :# {cap,
+  5 cap "bevel" g :{graphics.set_stroke}
+  150 idx20* 250 idx20* g :{graphics.line}
   ::idx B
 };
 
-::set_stroke {, 5:width } g MG;
-::set_color {, col } g MG;
-[::bevel ::miter ::round] :# {join,
-  ::set_stroke {, join:join } g MG;
-  ::rect {, idx30*:y 150:x 100:w 15:h} g MG;
+5 g :{graphics.set_stroke_width}
+col.r col.g col.b g :{graphics.set_color}
+["bevel" "miter" "round"] :# {join,
+  5 "square" join g :{graphics.set_stroke}
+  150 idx30* 100 15 0 g :{graphics.rect}
   ::idx B
 };
 
-::set_paint {, 
-  ::grad:type
-  0:xa 0:ya 20:xb 20:yb
-  {, 255:r 0:g   0:b }:start
-  {, 0:r   255:g 0:b }:end
-}  g MG;
+.# x1 y1 x2 y2 start_r start_g start_b start_a end_r end_g end_b end_a cycle
+0 0 20 20 (255 0 0 200) (0 255 0 200) 1 g :{graphics.set_paint_grad}
 
-::set_alpha {, 0.4:a } g MG;
-::path {,
-  [ 0 75 100 125 200 150 160 100 40 50 0 ]:xs
-  [ 85 75 10 75 85 125 190 150 190 125 85 ]:ys
-  1:fill
-} g MG;
+0.4 g :{graphics.set_alpha}
 
-::set_alpha {, } g MG;
-::set_color {, 0:r:g:b } g MG;
-::set_stroke {, 2:width } g MG;
+[ 0 75 100 125 200 150 160 100 40 50 0 ]
+[ 85 75 10 75 85 125 190 150 190 125 85 ]
+1 g :{graphics.path}
 
-::path {,
-  [ 0 75 100 125 200 150 160 100 40 50 0 ]:xs
-  [ 85 75 10 75 85 125 190 150 190 125 85 ]:ys
-  0:fill
-} g MG;
+0 0 0 1.0 g :{graphics.set_color_alpha}
+2 g :{graphics.set_stroke_width}
 
+[ 0 75 100 125 200 150 160 100 40 50 0 ]
+[ 85 75 10 75 85 125 190 150 190 125 85 ]
+0 g :{graphics.path}
 
 225 225 point
 260 260 point
 
 .# fonts
 
-::set_alpha {,} g MG;
-::set_color {, 0:r:g:b } g MG;
-::text {, 20:x 20:y "Hello world!":text } g MG;
+0 0 0 1.0 g :{graphics.set_color_alpha}
+"Hello world!" 20 20 g :{graphics.text}
 
-::set_font {, "Times New Roman":name ::bold:style 20:size} g MG;
-::text {, 20:x 40:y "Hello world!":text } g MG;
+"Times New Roman" "bold" 20 g :{graphics.set_font}
 
-::set_color {, col } g MG;
-::set_font {, "Comic Sans MS":name ::italic:style 15:size } g MG;
-::text {, 20:x 60:y "Hello world!":text } g MG;
+"Hello world!" 20 40 g :{graphics.text}
 
-::set_font {, "Courier New":name ::bolditalic:style 24:size } g MG;
-::text {, 20:x 80:y "Hello world!":text } g MG;
+col.r col.g col.b g :{graphics.set_color}
+"Comic Sans MS" "italic" 15 g :{graphics.set_font}
+"Hello world!" 20 60 g :{graphics.text}
 
-
+"Courier New" "bolditalic" 24 g :{graphics.set_font}
+"Hello world!" 20 80 g :{graphics.text}
