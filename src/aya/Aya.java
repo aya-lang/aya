@@ -20,6 +20,7 @@ import aya.exceptions.AyaUserObjRuntimeException;
 import aya.exceptions.AyaUserRuntimeException;
 import aya.exceptions.TypeError;
 import aya.ext.date.DateInstructionStore;
+import aya.ext.debug.DebugInstructionStore;
 import aya.ext.dialog.DialogInstructionStore;
 import aya.ext.fstream.FStreamInstructionStore;
 import aya.ext.graphics.GraphicsInstructionStore;
@@ -267,6 +268,7 @@ public class Aya extends Thread {
 	////////////////////////
 
 	private void initNamedInstructions() {
+		_namedInstructionStores.add(new DebugInstructionStore());
 		_namedInstructionStores.add(new JSONInstructionStore());
 		_namedInstructionStores.add(new ImageInstructionStore());
 		_namedInstructionStores.add(new GraphicsInstructionStore());

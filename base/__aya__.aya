@@ -32,6 +32,8 @@
     }
 }:overloads;
 
+0 :ignore_breakpoints;
+
 }:__aya__;
 
 .# 1 nil.M.:__pushself__;
@@ -43,6 +45,26 @@
 .###########################
 .# DEFINE __aya__ KEYWORDS #
 .###########################
+
+.# -----
+.# DEBUG
+.# -----
+
+.# Breakpoint
+{ : __aya__^, 
+    __aya__.ignore_breakpoints ! {
+        :{debug.pause}
+    } ?
+}:bp;
+
+.# Breakpoint
+{ : __aya__^,
+    0 __aya__.:ignore_breakpoints;
+}:bp_enable;
+
+{ : __aya__^,
+    1 __aya__.:ignore_breakpoints;
+}:bp_disable;
 
 
 

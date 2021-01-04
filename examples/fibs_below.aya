@@ -12,5 +12,8 @@
 .# Golfed
 {n,0 1{\$:P\$@+$n<}W;}:fib;
 
+
+0\1{$@+}@%;
+
 "Fibs below 100 (golfed):" :P
 100 fib

@@ -1,56 +1,53 @@
 .# Binary Search Tree Implementation
 .# @nick-paul
 
-{,
+class ::bst
 
-    ::bst:__type__;
 
-    {data,
-        {, data:data ::nil:left ::nil:right } bst MO
-    }:__new__;
+def bst::__init__ {data self,
+    data  self.:data;
+    ::nil self.:left;
+    ::nil self.:right;
+}
 
-    {a b,
 
-    }:__eq__;
+def bst::_print {node depth : bst^,
+bp
+    " |" depth 1 + L S .P
+    node :T ::bst = {
+        node.right depth 1+ bst._print
+        node.left  depth 1+ bst._print
+    } { "-":P } .?
+}
 
-    {node depth,
-        " |" depth L S .P
-        node :T ::bst = {
-            node.data :P
-
-            node.right depth 1+ bst._print
-            node.left  depth 1+ bst._print
-        } { "-":P } .?
-    }:_print;
-
-    {data node parent::bst side::sym,
-        node :T ::bst = {
-            data node.data > {
-                data node.right node ::right bst._insert
-            } {
-                data node.data < {
-                    data node.left node ::left bst._insert
-                } ?
-            } .?
+def bst::_insert {data node parent::bst side::sym : bst^,
+    node :T ::bst = {
+        data node.data > {
+            data node.right node ::right bst._insert
         } {
-            data bst! parent.:[side];
+            data node.data < {
+                data node.left node ::left bst._insert
+            } ?
         } .?
-    }:_insert;
+    } {
+        data bst! parent.:[side];
+    } .?
+}
 
-    {self,
-        self 0 bst._print
-        ""
-    }:__repr__;
+def bst::__repr__ {self : bst^,
+    self 0 bst._print
+    ""
+}
 
-    {data self,
-        data self.data > {
-            data self.right self ::right bst._insert
-        } {
-            data self.left  self ::left  bst._insert
-        } .?
-    }:insert;
+def bst::insert {data self : bst^,
+    data self.data > {
+        data self.right self ::right bst._insert
+    } {
+        data self.left  self ::left  bst._insert
+    } .?
+}
 
-}:bst;
-
-.# 50 bst! :b;
+50 bst! :b;
 .# {100Q b.insert} 10 %
+
+b

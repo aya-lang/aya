@@ -1,4 +1,3 @@
-import ::enum
 import ::plot
 
 enum ::state [::win ::lose]
@@ -54,13 +53,13 @@ games R plt.domain
 
 {plt r,
     "$r" 2 [] games r runsim plt.addseries
-}:runit
+}:runit;
 
 [0.3 0.35 0.4 0.45 0.5 0.55] # {r,
     plt r runit
-}
+};
 
-"Betting Strategy" plt.:title
-"cash" plt.:ylabel
-"games" plt.:xlabel
+"Betting Strategy" plt.:title;
+"cash" plt.:ylabel;
+"games" plt.:xlabel;
 plt.view

@@ -377,6 +377,15 @@ def matrix::__getindex__ {ix mat : r c matrix^,
     } .?
 }
 
+def matrix::__setindex__ {val ix self : r c matrix^,
+    ix.[0] :r;
+    ix.[1] :c;
+
+    val mat.rows.[r].:[c];
+
+    self
+}
+
 .##############
 .# Generators #
 .##############

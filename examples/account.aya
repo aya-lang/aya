@@ -2,15 +2,21 @@
 
 class ::account
 
+.# Constructor
 def account::__init__ {name self,
+    .# The name of the account
     name self.:name;
+    .# Set the account starting balance to 0
     0 self.:balance;
 }
 
+.# Deposit the amount into the account, leave nothing on the stack
 def account::deposit {amnt self,
     self.balance amnt + self.:balance ;
 }
 
+.# Remove the amount from the account
+.# Throw an error (.D) if there are insufficient funds
 def account::withdrawl {amnt self,
     amnt self.balance > {
       "Cannot withdrawl: Insufficient funds in account $(self.name)" .D
@@ -18,26 +24,31 @@ def account::withdrawl {amnt self,
     self.balance amnt - self.:balance ;
 }
 
+.# Override for printing to the console
 def account::__repr__ {self,
     "$(self.name): \$$(self.balance)"
 }
 
 
+.# Example Usage
+.#################
 
-.{ EXAMPLE USAGE
+"> Creating account 'demo'" :P
+"demo" account! :demo;
+demo :P
 
-    aya> "demo" account! :demo
-    demo: $0
-    aya> 100 demo.deposit
-    aya> demo
-    demo: $100
-    aya> 50 demo.withdrawl
-    aya> demo
-    demo: $50
-    aya> 70 demo.withdrawl
-    Cannot withdrawl: Insufficient funds in account demo
-    stack:
+"> Depositing $100..." :P
+100 demo.deposit
+demo :P
 
-    just before:
-        self .balance amnt - self .:balance ;
-.}
+
+"> Withdrawling $50..." :P
+50 demo.withdrawl
+demo :P
+
+{
+    "> Attempting to withdrawl $70..." :P
+    70 demo.withdrawl
+} {ex,
+    "> Failed. Error: $ex" :P
+} .K

@@ -1,5 +1,4 @@
 import ::plot
-import ::list
 import ::math
 
 plot!:p;

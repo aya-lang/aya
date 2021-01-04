@@ -85,7 +85,7 @@ export [::plot]
         ::scatter plt.:plottype;
         domain plt.domain
         range plt.addline
-        0.5 plt.stroke
+        0.5 plt.:stroke;
         plt
     }:scatter;
 

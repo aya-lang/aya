@@ -1,8 +1,7 @@
 .# Draws a rainbow in a plot window
 
 import ::plot
-import ::color
-import ::list
+from ::color import ::colors
 
 plot!:p;
 0 0.9+ pi 0.9- 600.1 linspace p.domain
