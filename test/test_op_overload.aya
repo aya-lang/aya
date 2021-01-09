@@ -71,6 +71,8 @@
   {ix self, self.l.[ix]}:__getindex__;
 
   {val ix self, val self.l.:[ix]; self }:__setindex__;
+
+  {self, self.l E 0 =!}:__bool__;
 }:vec;
 
 {v : vec^, vR vec! } vec.:__range__;
@@ -288,6 +290,15 @@ test_.` :test;
     0:i;
     { 100 v.:[i] P "< 100 2 99 4 5 >" } test
 };
+
+"bool..." :P
+{,
+    [1 2 3 4 5] vec! :v;
+    { v 't 'f .? 't } test
+    [ ] vec! :v;
+    { v 't 'f .? 'f } test
+};
+
 
 
 
