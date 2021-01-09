@@ -36,12 +36,12 @@ def color::newhsv { : color^ ,
 .#
 
 def color::__repr__ {self,
-    "($(self.r) $(self.g) $(self.b)) color! $(self.a)"
+    "($(self.r) $(self.g) $(self.b)) color!"
 }
 
 
 def color::__str__ {self,
-    "($(self.r) $(self.g) $(self.b)) color! $(self.a)"
+    "($(self.r) $(self.g) $(self.b)) color!"
 }
 
 
@@ -197,7 +197,7 @@ def color::rgbtohsv {r g b : h s v delta maxv minv,
     128 0   128 color!:purple;
     220 20  60  color!:crimson;
     255 182 193 color!:lightpink;
-    255 192 203 color!:pink;
+    255 192 203 color!:pinkfill;
     255 105 180 color!:hotpink;
     135 38  87  color!:raspberry;
     208 32  144 color!:violetred;
@@ -282,7 +282,8 @@ def color::rgbtohsv {r g b : h s v delta maxv minv,
     178 34  34  color!:firebrick;
     220 220 220 color!:gainsboro;
     211 211 211 color!:lightgrey;
-    169 169 169 color!:darkgray;
+    64  64  64  color!:darkgray;
+    0   0   139 color!:darkblue;
 
 }:colors;
 

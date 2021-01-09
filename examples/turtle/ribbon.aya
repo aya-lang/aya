@@ -5,8 +5,8 @@ import ::turtle
 turtle! :t;
 0 :count;
 {
-  1 t.fwd
-  count Ms t.right
-  0.01 count +: count;
+    1 t.fwd
+    count Ms t.right
+    0.01 count +: count;
 } 1200 %
 t.draw

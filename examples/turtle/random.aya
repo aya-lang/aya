@@ -1,0 +1,39 @@
+.# Draw a pattern using the turtle library
+.# Based on the example in Luxor.jl
+.# https://juliagraphics.github.io/Luxor.jl/stable/turtle/
+
+import ::turtle
+import ::math
+import ::canvas
+from ::color import [::colors ::color]
+
+.# The canvas to pass to the turtle
+{, 500:width; 500:height; } canvas! :cvs;
+
+def ::newimage { :
+    cvs^
+    t( {, cvs :canvas; colors.darkgray :bg_color; } turtle! )
+    c( 360Q 1.0 1.0 color.newhsv )
+    .# Random number between 60 and 190
+    dtheta( 60 190 \$@\-Q+ )
+    dstep( .Q )
+    n( 0 )
+    shift( .Q ),
+
+    {
+        shift c.hueshift :c;
+        c t.pencolor 
+        n dstep + :n;
+        dtheta t.right
+        n t.fd
+    } 400 %
+}
+
+.# Generate new images forever
+{
+    newimage
+    "Press enter to generate a new image. Enter 'q' to quit" :P
+    :R :input;
+
+    input "q" =!
+} W

@@ -1,4 +1,4 @@
-    .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .{
     turtle
@@ -16,10 +16,16 @@
 .}
 
 import ::canvas
+from ::color import ::colors
 
+export ::turtle
 class ::turtle
 
-def turtle::__init__ {params::dict self,
+colors.white :c_white;
+colors.black :c_black;
+
+
+def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
 
     .# Default values
     {,
@@ -30,7 +36,11 @@ def turtle::__init__ {params::dict self,
         300:height;
         ::deg:units;
         1 :autodraw;
+        c_white :bg_color;
+        c_black :fg_color;
+        nil :canvas;
     }
+
     .# Merge user defined
     params .+ :params;
 
@@ -40,9 +50,22 @@ def turtle::__init__ {params::dict self,
 
     params.units `in [::deg ::degrees] self.:_use_deg;
 
-    params.width self.:_w;
-    params.height self.:_h;
-    {, self._w:width self._h:height} canvas! self.:_cvs;
+    .# Use the provided canvas or generate one?
+    params.canvas nil = {
+        params.width self.:_w;
+        params.height self.:_h;
+        {, self._w:width self._h:height} canvas! self.:_cvs;
+    } {
+        params.canvas self.:_cvs;
+        self._cvs.width self.:_w;
+        self._cvs.height self.:_h;
+    } .?
+
+    .# Draw background
+    params.bg_color self._cvs.set_color
+    0 0 self._cvs.width self._cvs.height self._cvs.fillrect
+
+    params.fg_color self._cvs.set_color
 
     1 self.:_pen_down
     params.autodraw self.:_autodraw;
@@ -82,6 +105,10 @@ def turtle::pos {self,
 
 def turtle::draw {self,
     self._cvs.show
+}
+
+def turtle::close {self,
+    self._cvs.close
 }
 
 .###############

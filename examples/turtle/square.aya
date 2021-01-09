@@ -1,0 +1,24 @@
+.# Draw a pattern using the turtle library
+.# Based on the example in Luxor.jl
+.# https://juliagraphics.github.io/Luxor.jl/stable/turtle/
+
+import ::turtle
+import ::math
+from ::color import ::colors
+
+{,
+    400:width;
+    400:height;
+    colors.darkblue :bg_color;
+} turtle!:t;
+
+5 :n;
+colors.blue :c;
+
+{
+    n t.fd
+    89.5 t.right
+    1 c.hueshift :c;
+    c t.pencolor 
+    n 0.75 + :n;
+} 400 %
