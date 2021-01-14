@@ -41,9 +41,6 @@ def nn::loss {self,
     self.y self.output - 2^ .mean
 }
 
-"**Defined NN class" :P
-
-.# Train
 main {
     import ::plot
 

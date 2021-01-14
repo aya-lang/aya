@@ -1179,8 +1179,16 @@ class OP_L extends OpInstruction {
 
 		} 
 		
-		else if (n.isa(NUMBERLIST) && item.isa(LIST)) {
-			block.push( asList(item).reshape(asNumberList(n)) );
+		else if (n.isa(NUMBERLIST)) {
+			List l;
+			
+			if (item.isa(LIST) && !item.isa(STR)) {
+				l = asList(item);
+			} else {
+				l = new List();
+				l.mutAdd(item);
+			}
+			block.push( l.reshape(asNumberList(n)) );
 		}
 		
 		else {
