@@ -13,6 +13,7 @@ import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.util.StringUtils;
 
 /** Wrapper for strings */
 public class Str extends ListImpl implements Comparable<Str> {
@@ -370,9 +371,9 @@ public class Str extends ListImpl implements Comparable<Str> {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		if (_str.length() > 100) {
-			stream.print("\"" + _str.substring(0, 30) + " ... " + _str.substring(_str.length()-30) + "\"");
+			stream.print(StringUtils.quote(_str.substring(0, 30) + " ... " + _str.substring(_str.length()-30)));
 		} else {
-			stream.print("\"" + _str + "\"");
+			stream.print(StringUtils.quote(_str));
 		}
 		return stream;
 	}

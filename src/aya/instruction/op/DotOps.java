@@ -502,7 +502,8 @@ class OP_Dot_Minus extends OpInstruction {
 		if (idx.isa(SYMBOL)) {
 			d.remove((Symbol)idx);
 		} else if (idx.isa(STR)) {
-			d.remove(idx.str());
+			Symbol s = Aya.getInstance().getSymbols().getSymbol(idx.str());
+			d.remove(s);
 		} else if (idx.isa(LIST)) {
 			List l = asList(idx);
 			for (int i = 0; i < l.length(); i++) {

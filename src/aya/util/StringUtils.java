@@ -34,4 +34,10 @@ public class StringUtils {
 		return s.substring(0, dsi+1);
 	}
 
+	// Add quotes to a string
+	public static String quote(String s) {
+		s = s.replaceAll("\\\"", "\\\\\"");
+		return "\"" + s + "\"";
+	}
+
 }

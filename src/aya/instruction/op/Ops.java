@@ -1250,7 +1250,8 @@ class OP_N extends OpInstruction {
 		} else if(b.isa(Obj.LIST)) {			
 			block.push(Num.fromInt(asList(b).find(a)));
 		} else if (b.isa(DICT) && a.isa(STR)) {
-			block.push( Num.fromBool(((Dict)b).containsKey(a.str())) );
+			Symbol s = Aya.getInstance().getSymbols().getSymbol(a.str());
+			block.push( Num.fromBool(((Dict)b).containsKey(s)) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
 			block.push( Num.fromBool(((Dict)b).containsKey(asSymbol(a))) );
 		} else {

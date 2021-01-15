@@ -102,11 +102,12 @@ public class JSONUtils {
 			JSONObject json = (JSONObject)object;
 			Dict d = new Dict();
 			for (String key : json.keySet()) {
+				Symbol sym = Aya.getInstance().getSymbols().getSymbol(key);
 				if (json.isNull(key)) {
-					d.set(key, Aya.getInstance().getVars().OBJ_NIL);
+					d.set(sym, Aya.getInstance().getVars().OBJ_NIL);
 				} else {
 					final Object o = json.get(key);
-					d.set(key, toObj(o, params));
+					d.set(sym, toObj(o, params));
 				}
 			}
 			return d;
@@ -155,12 +156,12 @@ public class JSONUtils {
 			JSONObject out = new JSONObject();
 			Dict d = (Dict)o;
 			vc.push(d);
-			ArrayList<Pair<String, Obj>> items = d.items();
-			for (Pair<String, Obj> e : items) {
+			ArrayList<Pair<Symbol, Obj>> items = d.items();
+			for (Pair<Symbol, Obj> e : items) {
 				if (vc.hasVisited(e.second())) {
 					throw new AyaRuntimeException("JSON: Circular reference detected when serializing json object. key: " + e.first());
 				} else {
-					out.put(e.first(), toJSON(e.second(), params, vc));
+					out.put(e.first().name(), toJSON(e.second(), params, vc));
 				}
 			}
 			vc.pop(d);

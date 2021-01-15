@@ -49,13 +49,12 @@ public class VariableData {
 	
 	private void initNil(Aya aya) {
 		Dict nil_meta = new Dict();
-		nil_meta.set("__type__", Aya.getInstance().getSymbols().getSymbol("__nil"));
+		nil_meta.set(SymbolConstants.KEYVAR_TYPE, Aya.getInstance().getSymbols().getSymbol("__nil"));
 		List nil_str = List.fromString("nil");
-		nil_meta.set("__str__", nil_str);
-		nil_meta.set("__repr__", nil_str);
-		nil_meta.set("__pushself__", Num.ONE);
-
-		nil_meta.set("__eq__", Parser.compile("; :T ::__nil =", aya));
+		nil_meta.set(SymbolConstants.KEYVAR_STR, nil_str);
+		nil_meta.set(SymbolConstants.KEYVAR_REPR, nil_str);
+		nil_meta.set(SymbolConstants.KEYVAR_PUSHSELF, Num.ONE);
+		nil_meta.set(SymbolConstants.KEYVAR_EQ, Parser.compile("; :T ::__nil =", aya));
 		
 		OBJ_NIL.setMetaTable(nil_meta);
 	}

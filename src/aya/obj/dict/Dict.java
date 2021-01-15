@@ -1,17 +1,13 @@
 package aya.obj.dict;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.obj.symbol.SymbolTable;
 import aya.util.Pair;
 import aya.variable.VariableSet;
 
@@ -28,7 +24,6 @@ public class Dict extends Obj {
 	/** The map of key-value pairs */
 	protected VariableSet _vars;
 	private Dict _meta; // Quick lookup for meta
-	private HashMap<String, Obj> _string_vars;
 
 	/** Create a new empty dict, use the input dict as the metatable */
 	public Dict(VariableSet vars, Dict metatable) {
@@ -43,7 +38,6 @@ public class Dict extends Obj {
 			_vars.setVar(META, metatable);
 			_meta = metatable;
 		}
-		_string_vars = new HashMap<>();
 	}
 	
 	/** Create a new dict given a variable set */
@@ -56,14 +50,12 @@ public class Dict extends Obj {
 		} else {
 			_meta = null;
 		}
-		_string_vars = new HashMap<>();
 	}
 	
 	/** Create a new empty dict */
 	public Dict() {
 		_vars = new VariableSet(false);
 		_meta = null;
-		_string_vars = new HashMap<>();
 	}
 
 	/** Set the metatable to the input dict */
@@ -73,38 +65,12 @@ public class Dict extends Obj {
 	}
 	
 
-	//////////////////
-	// STRING TABLE //
-	//////////////////
-	
-	private Obj strGet(String s) {
-		final Obj o = _string_vars.get(s);
-		if (o == null) {
-			throw new AyaKeyError(this, s);
-		} else {
-			return o;
-		}
-	}
-	
-	
 	/////////////
 	// GETTERS //
 	/////////////
 	
 	public boolean pushSelf() {
 		return hasMetaKey(PUSH_SELF);
-	}
-	
-	/** Get the object assigned to key whos name is {@code s} 
-	 * If the string is not a valid symbol, look it up in the string dict
-	 * If this key is unassigned, throw an error
-	 */
-	public Obj get(String s) {
-		if (SymbolTable.isBasicSymbolString(s)) {
-			return get(Aya.getInstance().getSymbols().getSymbol(s));
-		} else {
-			return strGet(s);
-		}
 	}
 	
 	/** throws exception if key not found */
@@ -185,15 +151,6 @@ public class Dict extends Obj {
 		return _get(key) != null;
 	}
 	
-	/** Returns true if this dict contains the input key */
-	public boolean containsKey(String s) {
-		if (SymbolTable.isBasicSymbolString(s)) {
-			return containsKey(Aya.getInstance().getSymbols().getSymbol(s));
-		} else {
-			return _string_vars.containsKey(s);
-		}
-	}
-	
 	/** Return the inner variable set object */
 	public VariableSet getVarSet() {
 		return _vars;
@@ -201,55 +158,23 @@ public class Dict extends Obj {
 
 	/** The number of items in this dict */
 	public int size() {
-		return _vars.getMap().size() + _string_vars.size();
+		return _vars.getMap().size();
 	}
 	
 	/** A list of keys */
-	public ArrayList<Symbol> symKeys() {
+	public ArrayList<Symbol> keys() {
 		return _vars.keys();
 	}
 	
-	/** List of string-only keys */
-	public Set<String> strKeys() {
-		return _string_vars.keySet();
-	}
-	
-	public ArrayList<Obj> keys() {
-		ArrayList<Obj> out = new ArrayList<Obj>(size());
-		for (Symbol s : symKeys()) { out.add(s); }
-		for (String s : strKeys()) { out.add(List.fromString(s)); }
-		return out;
-	}
-	
-	/** All keys (symbols & strings) as a list of strings */
-	public ArrayList<String> allKeysAsStrings() {
-		ArrayList<String> keys = new ArrayList<String>();
-		for (Symbol s : symKeys()) { keys.add(s.name()); }
-		keys.addAll(strKeys());
-		return keys;
-	}
-	
 	/** All key/value pairs */
-	public ArrayList<Pair<String, Obj>> items() {
-		ArrayList<Pair<String, Obj>> pairs = new ArrayList<Pair<String,Obj>>();
-		// String keys
-		for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
-			pairs.add(new Pair<String, Obj>(e.getKey(), e.getValue()));
-		}
-		// Symbols
-		for (Pair<Symbol, Obj> e : _vars.getAllVars()) {
-			pairs.add(new Pair<String, Obj>(e.first().name(), e.second()));
-		}
-		return pairs;
+	public ArrayList<Pair<Symbol, Obj>> items() {
+		return _vars.getAllVars();
 	}
-	
-	
 	
 	/** A list of values */
 	public ArrayList<Obj> values() {
 		ArrayList<Obj> out = new ArrayList<Obj>(size());
 		out.addAll(_vars.values());
-		out.addAll(_string_vars.values());
 		return out;
 	}
 	
@@ -270,24 +195,10 @@ public class Dict extends Obj {
 		}
 	}
 	
-	/** Set a key-value pair.
-	 * If a pair exists, overwrite
-	 * if not, create a new pair
-	 */ 
-	public void set(String s, Obj o) {
-		if (SymbolTable.isBasicSymbolString(s)) {
-			set(Aya.getInstance().getSymbols().getSymbol(s), o);
-		} else {
-			_string_vars.put(s, o);
-		}
-	}
-	
 	/** Update values in this dict to the values from the input dict */
 	public void update(Dict other) {
 		_vars.update(other._vars);
-		_string_vars.putAll(other._string_vars);
 	}
-	
 	
 	
 	///////////////////
@@ -365,16 +276,10 @@ public class Dict extends Obj {
 		
 		if (o instanceof Dict) {
 			Dict other = (Dict)o;
-			if (other._vars.size() == this._vars.size() && other._string_vars.size() == this._string_vars.size()) {
+			if (other._vars.size() == this._vars.size()) {
 				for (Symbol sym : this._vars.getMap().keySet()) {
 					Obj elem = other._vars.getMap().get(sym);
 					if (elem == null || !elem.equiv(this._vars.getMap().get(sym))) {
-						return false;
-					}
-				}
-				for (String s : this._string_vars.keySet()) {
-					Obj elem = other._string_vars.get(s);
-					if (elem == null || !elem.equiv(this._string_vars.get(s))) {
 						return false;
 					}
 				}
@@ -439,7 +344,7 @@ public class Dict extends Obj {
 		}
 	
 		// Normal repr
-		if (_vars.size() == 0 && _string_vars.size() == 0) {
+		if (_vars.size() == 0) {
 			stream.print("{,}");
 		} else {
 			stream.println("{,");
@@ -450,10 +355,6 @@ public class Dict extends Obj {
 					_vars.getObj(sym).repr(stream);
 					stream.println(":" + sym.name() + ";");
 				}
-			}
-			for (HashMap.Entry<String, Obj> e : _string_vars.entrySet()) {
-				e.getValue().repr(stream);
-				stream.println(":\"" + e.getKey() + "\";");
 			}
 			stream.decIndent();
 			stream.currentLineMatchIndent();
@@ -483,11 +384,6 @@ public class Dict extends Obj {
 		}
 	}
 
-	/** Returns true if the metatable defines a given key name */
-	public boolean hasMetaKey(String str) {
-		return _meta != null && _meta.containsKey(Aya.getInstance().getSymbols().getSymbol(str));
-	}
-	
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(Symbol v) {
 		return _meta != null && _meta.containsKey(v);
@@ -497,7 +393,7 @@ public class Dict extends Obj {
 	/** General setindex */
 	public static void setIndex(Dict dict, Obj index, Obj value) {
 		if (index.isa(Obj.STR)) {
-			dict.set(index.str(), value);
+			dict.set(Aya.getInstance().getSymbols().getSymbol(index.str()), value);
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set((Symbol)index, value);
 		} else {
@@ -508,18 +404,5 @@ public class Dict extends Obj {
 	public void remove(Symbol key) {
 		_vars.remove(key);
 	}
-	
-	public void remove(String s) {
-		if (SymbolTable.isBasicSymbolString(s)) {
-			Symbol sym = Aya.getInstance().getSymbols().getSymbol(s);
-			remove(sym);
-		} else {
-			_string_vars.remove(s);
-		}
-	}
-
-
-
-
 
 }

@@ -3,6 +3,7 @@ package aya.obj.symbol;
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
+import aya.util.StringUtils;
 
 public class Symbol extends Obj {
 	
@@ -21,7 +22,12 @@ public class Symbol extends Obj {
 	}
 		
 	public String name() {
-		return Aya.getInstance().getSymbols().getName(this);
+		String s = Aya.getInstance().getSymbols().getName(this);
+		if (SymbolTable.isBasicSymbolString(s)) {
+			return s;
+		} else {
+			return StringUtils.quote(s);
+		}
 	}
 	
 	@Override

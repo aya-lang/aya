@@ -1,6 +1,8 @@
 package aya.instruction.op;
 
+import aya.Aya;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.Symbol;
 
 public class OpInfo {
 	
@@ -18,7 +20,8 @@ public class OpInfo {
 	private static void _addOps(Dict dict, OpInstruction[] ops) {
 		for (OpInstruction op : ops) {
 			if (op != null) {
-				dict.set(op.getName(), op.getInfo());
+				Symbol s = Aya.getInstance().getSymbols().getSymbol(op.getName());
+				dict.set(s, op.getInfo());
 			}
 		}
 	}

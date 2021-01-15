@@ -17,8 +17,6 @@ public class SymbolTable {
 	}
 	
 	public Symbol getSymbol(String str) {
-
-
 		Symbol sym = _symbols.get(str);
 		if (sym != null) {
 			return sym;
@@ -37,9 +35,6 @@ public class SymbolTable {
 	}
 	
 	private Symbol newSymbol(String name) {
-		if (!isValidStr(name)) {
-			throw new RuntimeException("Invalid symbol name: '" + name + "'");
-		}
 		Symbol sym = new Symbol(_counter);
 		_symbols.put(name, sym);
 		_symbols_rev.put(_counter,  name);

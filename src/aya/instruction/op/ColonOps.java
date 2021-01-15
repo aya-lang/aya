@@ -194,9 +194,9 @@ class OP_Colon_Bang extends OpInstruction {
 		final Obj b = block.pop();
 		if (!a.equiv(b)) {
 			Dict error = new Dict();
-			error.set("message", List.fromString("AssertionError"));
-			error.set("expected", a);
-			error.set("received", b);
+			error.set(SymbolConstants.MESSAGE, List.fromString("AssertionError"));
+			error.set(SymbolConstants.EXPECTED, a);
+			error.set(SymbolConstants.RECEIVED, b);
 			throw new AyaUserObjRuntimeException(error);
 		}
 	}
@@ -521,7 +521,8 @@ class OP_Colon_D extends OpInstruction {
 		if (key.isa(SYMBOL)) {
 			d.set((Symbol)key, value);
 		} else if (key.isa(STR)) {
-			d.set(key.str(), value);
+			Symbol s = Aya.getInstance().getSymbols().getSymbol(key.str());
+			d.set(s, value);
 		} else {
 			throw new TypeError(this, value, key, d);
 		}
@@ -589,7 +590,8 @@ class OP_Colon_I extends OpInstruction {
 			final Dict d = ((Dict)list);
 			
 			if (index.isa(STR)) {
-				out = d.get(index.str());
+				Symbol s = Aya.getInstance().getSymbols().getSymbol(index.str());
+				out = d.get(s);
 			} else if (index.isa(SYMBOL)) {
 				out = d.get( (Symbol)index );
 			} else if (index.isa(LIST)) {
@@ -630,7 +632,9 @@ class OP_Colon_K extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			block.push(new List(asDict(a).keys()));
+			ArrayList<Obj> al = new ArrayList<Obj>();
+			Collections.copy(al, asDict(a).keys());
+			block.push(new List(al));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -795,7 +799,7 @@ class OP_Colon_S extends OpInstruction {
 		final Obj a = block.pop();
 		
 		if (a.isa(STR) || a.isa(CHAR)) {
-			block.push(Aya.getInstance().getSymbols().getSymbol(SymbolTable.toBasicSymbolName(a.str())));
+			block.push(Aya.getInstance().getSymbols().getSymbol(a.str()));
 		} else if (a.isa(BLOCK)) {
 			block.push(singleToSymbolList((Block)a));
 		} else {

@@ -254,8 +254,9 @@ public class ChartParams {
 	}
 	
 	private static Obj getParam(String name, Dict params, Obj dflt) {
-		if (params.containsKey(name)) {
-			return params.get(name);
+		Symbol key = Aya.getInstance().getSymbols().getSymbol(name);
+		if (params.containsKey(key)) {
+			return params.get(key);
 		} else {
 			return dflt;
 		}

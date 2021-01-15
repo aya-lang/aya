@@ -55,6 +55,9 @@ public class SymbolConstants {
 	public static final Symbol SECOND		= S.getSymbol("second");
 	public static final Symbol MS 			= S.getSymbol("ms");
 	public static final Symbol STAMP		= S.getSymbol("stamp");
+	public static final Symbol MESSAGE		= S.getSymbol("message");
+	public static final Symbol EXPECTED		= S.getSymbol("expected");
+	public static final Symbol RECEIVED		= S.getSymbol("received");
 
 	public static final Symbol KEYVAR_EQ		= S.getSymbol("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S.getSymbol("__new__");
@@ -73,4 +76,5 @@ public class SymbolConstants {
 	public static final Symbol KEYVAR_STR 		= S.getSymbol("__str__");
 	public static final Symbol KEYVAR_REPR 		= S.getSymbol("__repr__");
 	public static final Symbol KEYVAR_BOOL    	= S.getSymbol("__bool__");
+	public static final Symbol KEYVAR_PUSHSELF    	= S.getSymbol("__pushself__");
 }
