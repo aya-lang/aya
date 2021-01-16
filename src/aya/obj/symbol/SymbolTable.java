@@ -54,6 +54,7 @@ public class SymbolTable {
 	
 	/** Return true if the string is a valid variable name */
 	private static boolean isValidStr(String varname) {
+		if (varname.length() == 0) return  false;
 		char[] chars = varname.toCharArray();
 		for (char c : chars) {
 			if (!isValidChar(c)) return false;

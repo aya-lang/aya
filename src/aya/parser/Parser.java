@@ -172,10 +172,17 @@ public class Parser {
 						tokens.add(new KeyVarToken(varname));
 					}
 
+					else if (in.peek() == '\'') {
+						in.next(); // Skip opening '
+						String varname = parseString(in, '\'');
+						tokens.add(new KeyVarToken(varname));
+					}
+
 					// Special Character Key Variable
 					else if (CharacterParser.isSpecialChar(in.peek())) {
 						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
 					}
+					
 
 					// Quote a function (.`)
 					else if (in.peek() == '`') {
@@ -187,6 +194,13 @@ public class Parser {
 					else if (in.peek() == ':') {
 						tokens.add(SpecialToken.DOT_COLON);
 						in.next(); // Skip the ':'
+						
+						// Quoted variable
+						if (in.peek() == '\'') {
+							in.next(); // Skip open '
+							String str = parseString(in, '\'');
+							tokens.add(new VarToken(str));
+						}
 					}
 
 					// Plain Dot
@@ -249,84 +263,8 @@ public class Parser {
 
 			// String Literals
 			else if (current == '"') {
-				StringBuilder str = new StringBuilder();
-				boolean complete = false;
-				while (in.hasNext()) {
-					char c = in.next();
-					if (c == '\\') {
-						if (!in.hasNext()) {
-							throw new SyntaxError("Expected escape character: " + in);
-						}
-						char escape = in.next();
-						switch (escape) {
-						case '}':
-							str.append("}"); // For escaping documented comments
-							break;
-						case 'n':
-							str.append('\n');
-							break;
-						case 'r':
-							str.append('\r');
-							break;
-						case 'b':
-							str.append('\b');
-							break;
-						case 'f':
-							str.append('\f');
-							break;
-						case 't':
-							str.append('\t');
-							break;
-						case '"':
-							str.append('"');
-							break;
-						case '\\':
-							str.append('\\');
-							break;
-						case '{':
-							StringBuilder sc = new StringBuilder(); // Special Char
-							boolean specialComplete = false;
-
-							while (in.hasNext()) {
-								if (in.peek() == '}') {
-									specialComplete = true;
-									in.next(); // Skip the closing '}'
-									break;
-								}
-								sc.append(in.next());
-							}
-
-							if (!specialComplete) {
-								throw new SyntaxError(
-										"Early termination of special character in string literal: " + str.toString());
-							}
-
-							// Parse the character
-							char specChar = CharacterParser.parse(sc.toString());
-							if (specChar == CharacterParser.INVALID) {
-								throw new SyntaxError("'\\" + sc.toString() + "' is not a valid special character");
-							}
-
-							str.append(specChar);
-							break;
-
-						default:
-							// throw new SyntaxError("'" + escape + "' is not a valid escape character in
-							// the string \""
-							// + str.toString() + "\\" + escape + " ...\"" + in.toString());
-							str.append("\\").append(escape);
-						}
-					} else if (c == '"') {
-						complete = true;
-						break;
-					} else {
-						str.append(c);
-					}
-				}
-				if (!complete) {
-					throw new SyntaxError("Expected closing quote after string \"" + str.toString());
-				}
-				tokens.add(new StringToken(str.toString()));
+				String str = parseString(in);
+				tokens.add(new StringToken(str));
 			}
 
 			// Character Literals
@@ -393,27 +331,35 @@ public class Parser {
 				if (in.hasNext() && in.peek() == ':') {
 					in.next(); // Move to the next colon
 					String sym = "";
-					while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
-						sym += in.next();
-					}
+					if (in.hasNext() && in.peek() == '\'') {
+						// Quoted symbol
+						in.next(); // Skip '
+						sym = parseString(in, '\'');
+					} else {
+						// Standard symbol
+						while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
+							sym += in.next();
+						}
 
-					if (sym.equals("")) {
-						if (in.hasNext()) {
-							char sym_char = in.peek();
-							if (CharacterParser.isSpecialChar(sym_char)) {
-								sym = CharacterParser.getName(sym_char);
-								in.next();
+						// If empty, check for operator or special character
+						if (sym.equals("")) {
+							if (in.hasNext()) {
+								char sym_char = in.peek();
+								if (CharacterParser.isSpecialChar(sym_char)) {
+									sym = CharacterParser.getName(sym_char);
+									in.next();
+								} else {
+									sym = parseOpSym(in);
+								}
 							} else {
-								sym = parseOpSym(in);
+								throw new SyntaxError("Expected symbol name");
 							}
-						} else {
-							throw new SyntaxError("Expected symbol name");
 						}
 					}
 
 					tokens.add(new SymbolToken(sym));
 				}
-
+				
 				// Named Operator
 				else if (in.hasNext() && in.peek() == '{') {
 					in.next(); // Skip '{'
@@ -441,6 +387,14 @@ public class Parser {
 					in.next(); // Skip the #
 				}
 
+				// Quoted variable
+				else if (in.hasNext() && in.peek() == '\'') {
+					tokens.add(SpecialToken.COLON);
+					in.next(); // Skip open '
+					String varname = parseString(in, '\'');
+					tokens.add(new VarToken(varname));
+				}
+
 				// Colon Operator
 				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
 					tokens.add(new OperatorToken("" + in.next(), OperatorToken.COLON_OP));
@@ -451,6 +405,7 @@ public class Parser {
 					in.backup();
 					tokens.add(parseNumber(in));
 				}
+				
 
 				// Normal Colon
 				else {
@@ -781,9 +736,18 @@ public class Parser {
 		return is;
 
 	}
-
+	
 	private static String formatString(String input) {
-		ParserString in = new ParserString(input);
+		ParserString in = new ParserString(input + "\"");
+		return parseString(in);
+	}
+
+	private static String parseString(ParserString in) {
+		return parseString(in, '"');
+	}
+
+	private static String parseString(ParserString in, char termination) {
+		boolean complete = false;
 		StringBuilder str = new StringBuilder();
 		while (in.hasNext()) {
 			char c = in.next();
@@ -855,13 +819,18 @@ public class Parser {
 					// Always return a valid result
 					str.append('\\').append(escape);
 				}
-			} else if (c == '$') {
-
+			} else if (c == termination) {
+				complete = true;
+				break;
 			} else {
 				str.append(c);
 			}
 		}
-		return str.toString();
+		if (complete) {
+			return str.toString();
+		} else {
+			throw new SyntaxError("Expected closing quote after string \"" + str.toString());
+		}
 	}
 
 	/** Returns true if the character is lowercase a-z */

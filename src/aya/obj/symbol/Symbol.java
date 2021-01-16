@@ -26,7 +26,7 @@ public class Symbol extends Obj {
 		if (SymbolTable.isBasicSymbolString(s)) {
 			return s;
 		} else {
-			return StringUtils.quote(s);
+			return StringUtils.singleQuote(s);
 		}
 	}
 	

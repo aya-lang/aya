@@ -37,7 +37,12 @@ public class StringUtils {
 	// Add quotes to a string
 	public static String quote(String s) {
 		s = s.replaceAll("\\\"", "\\\\\"");
-		return "\"" + s + "\"";
+		return '"' + s + '"';
+	}
+
+	public static String singleQuote(String s) {
+		s = s.replaceAll("\\\'", "\\\\\'");
+		return "'" + s + "'";
 	}
 
 }
