@@ -42,7 +42,7 @@ list 13R{_@_@I{*}.F\@#B}987%;;.Amax
 
 ##Project Euler 34  
 ```
-[3 5E,,$P:'48-M!S=]S
+[3 5E,,$P:"48-M!S=]S
 ```
 
 ##Project Euler 48  

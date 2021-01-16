@@ -27,7 +27,7 @@
     {.trim "\W+"|}:split;
 
     .#? S.bytes\n  convert string to byte list
-    {:'}:bytes;
+    {:"}:bytes;
 
     .# S.tolower\n  convert string to uppercase
     {:#{.upper}}:upper;

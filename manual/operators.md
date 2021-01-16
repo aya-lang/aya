@@ -64,7 +64,7 @@
 	<tr><td>.$</td><td>..AN</td><td>..AN: copies the Nth item on the stack to the top (not including N)</td><td></td></tr>
 	<tr><td>.%</td><td>NN</td><td>NN: integer division</td><td>__idiv__/__ridiv__</td></tr>
 	<tr><td>.&</td><td>SSS|LLB</td><td>SSS: replace all occurances of the regex S1 with S2 in S3<br />LLB: zip with</td><td></td></tr>
-	<tr><td>.'</td><td>N|S|L</td><td>N|S: cast to char<br />L: convert number list to string using UTF-8 encoding</td><td></td></tr>
+	<tr><td>."</td><td>N|S|L</td><td>N|S: cast to char<br />L: convert number list to string using UTF-8 encoding</td><td></td></tr>
 	<tr><td>.(</td><td>NN</td><td>NN: left bitwise shift</td><td></td></tr>
 	<tr><td>.)</td><td>NN</td><td>NN: signed right bitwise shift</td><td></td></tr>
 	<tr><td>.+</td><td>NN|BD</td><td>NN: gdc<br />BD: swap vars in a copy of B for values defined in D</td><td></td></tr>
@@ -103,7 +103,7 @@
 	<thead><tr><th>name</th><th>types</th><th>info</th><th>overload</th></tr></thead>
 	<tr><td>:#</td><td>L:#B|D:#B</td><td>L:#B: map<br />D:#B: map over key value pairs</td><td>__each__</td></tr>
 	<tr><td>:$</td><td>..AN</td><td>..AN: copies the first N items on the stack (not including N)</td><td></td></tr>
-	<tr><td>:'</td><td>C|S|N</td><td>C: ord (cast to int)<br />S: convert a string to bytes using UTF-8 encoding<br />N: identity; return N</td><td></td></tr>
+	<tr><td>:"</td><td>C|S|N</td><td>C: ord (cast to int)<br />S: convert a string to bytes using UTF-8 encoding<br />N: identity; return N</td><td></td></tr>
 	<tr><td>:*</td><td>LLB</td><td>LLB: outer product of two lists using B</td><td></td></tr>
 	<tr><td>:/</td><td>L</td><td>L: promote list to more specific type if possible</td><td></td></tr>
 	<tr><td>:&lt;</td><td>NN|CC|SS</td><td>NN|CC|SS: less then or equal to</td><td>__leq__</td></tr>

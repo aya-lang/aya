@@ -23,7 +23,7 @@
     {P "\W+" & E 1 =}:iswhitespace;
 
     .#? C.isascii\n  test if character is ascii
-    {:' 127 <}:isascii;
+    {:" 127 <}:isascii;
 
     .#? C.isalpha\n  test if character is alphabetical
     {$ $ 'a :> \ 'z :< & \ $ 'A :> \ 'Z :< & |}:isalpha;
@@ -36,7 +36,7 @@
 'x .M \.+
 
 .#? S spechar\n  converts the name of a special character into the corresponding special character
-{a::str,"\"\\{$a}\""~.'}:spechar;
+{a::str,"\"\\{$a}\""~."}:spechar;
 
 
 

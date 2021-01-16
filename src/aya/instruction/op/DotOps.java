@@ -65,12 +65,12 @@ public class DotOps {
 	 */
 	public static OpInstruction[] DOT_OPS = {
 		/* 33 !  */ new OP_Dot_Bang(),
-		/* 34 "  */ null,
+		/* 34 "  */ new OP_Dot_CastChar(),
 		/* 35 #  */ null, //Comment
 		/* 36 $  */ new OP_Dot_Duplicate(),
 		/* 37 %  */ new OP_Dot_Percent(),
 		/* 38 &  */ new OP_Dot_And(),
-		/* 39 '  */ new OP_Dot_CastChar(),
+		/* 39 '  */ null, // Long symbol lookup
 		/* 40 (  */ new OP_Dot_OParen(),
 		/* 41 )  */ new OP_Dot_CParen(),
 		/* 42 *  */ new OP_Dot_Star(),
@@ -225,6 +225,35 @@ class OP_Dot_Bang extends OpInstruction {
 	}
 }
 
+// " - 34
+class OP_Dot_CastChar extends OpInstruction {
+
+	public OP_Dot_CastChar() {
+		init(".\"");
+		arg("N|S", "cast to char");
+		arg("L", "convert number list to string using UTF-8 encoding");
+	}
+
+	@Override
+	public void execute(final Block block) {
+		Obj o = block.pop();
+
+		if (o.isa(NUMBER)) {
+			block.push( Char.valueOf(((Number)o).toInt()) );
+		} else if (o.isa(STR)) {
+			block.push( Char.valueOf(o.str().charAt(0)) );
+		} else if (o.isa(LIST)) {
+			block.push( new List(Str.fromBytes(asNumberList(o).toByteArray())) );
+		} else if (o.isa(CHAR)) {
+			block.push(o);
+		} else {
+			throw new TypeError(this,o);
+		}
+	}
+	
+}
+
+
 // $ - 36
 class OP_Dot_Duplicate extends OpInstruction {
 
@@ -319,35 +348,6 @@ class OP_Dot_And extends OpInstruction {
 		}
 	}
 }
-
-// ' - 39
-class OP_Dot_CastChar extends OpInstruction {
-
-	public OP_Dot_CastChar() {
-		init(".'");
-		arg("N|S", "cast to char");
-		arg("L", "convert number list to string using UTF-8 encoding");
-	}
-
-	@Override
-	public void execute(final Block block) {
-		Obj o = block.pop();
-
-		if (o.isa(NUMBER)) {
-			block.push( Char.valueOf(((Number)o).toInt()) );
-		} else if (o.isa(STR)) {
-			block.push( Char.valueOf(o.str().charAt(0)) );
-		} else if (o.isa(LIST)) {
-			block.push( new List(Str.fromBytes(asNumberList(o).toByteArray())) );
-		} else if (o.isa(CHAR)) {
-			block.push(o);
-		} else {
-			throw new TypeError(this,o);
-		}
-	}
-	
-}
-
 
 // ( - 40
 class OP_Dot_OParen extends OpInstruction {

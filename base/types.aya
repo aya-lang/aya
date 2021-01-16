@@ -11,7 +11,7 @@
 .# {Md}:double;   .#? A double\n  cast to an double
 .# {Z}:bignum;    .#? A bignum\n  cast to an bignum
 .# {P}:string;    .#? A string\n  cast to an string
-.# {.'}:char;     .#? A char\n  cast to an char
+.# {."}:char;     .#? A char\n  cast to an char
 
 
 .# TYPE CHECKING

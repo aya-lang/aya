@@ -53,12 +53,12 @@ public class ColonOps {
 	 */
 	public static OpInstruction[] COLON_OPS = {
 		/* 33 !  */ new OP_Colon_Bang(),
-		/* 34 "  */ null,
+		/* 34 "  */ new OP_Colon_Quote(),
 		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ null,
 		/* 38 &  */ new OP_Colon_And(),
-		/* 39 '  */ new OP_Colon_Quote(),
+		/* 39 '  */ null, // Quoted Symbol assignment
 		/* 40 (  */ null, //List item assignment
 		/* 41 )  */ null,
 		/* 42 *  */ new OP_Colon_Times(),
@@ -202,6 +202,40 @@ class OP_Colon_Bang extends OpInstruction {
 	}
 }
 
+// " - 34
+class OP_Colon_Quote extends OpInstruction {
+
+	public OP_Colon_Quote() {
+		init(":\"");
+		arg("C", "ord (cast to int)");
+		arg("S", "convert a string to bytes using UTF-8 encoding");
+		arg("N", "identity; return N");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(NUMBER)) {
+			block.push(a);
+		} else if (a.isa(CHAR)) { 
+			int c = ((Char)a).charValue();
+			block.push(Num.fromInt(c & 0xff));
+		} else if (a.isa(STR)) {
+			Str s = asStr(a);
+			ArrayList<Number> nums = new ArrayList<Number>(s.length());
+			byte[] bytes = s.getBytes();
+			for (byte b : bytes) {
+				nums.add(Num.fromByte(b));
+			}
+			block.push(new List(new NumberItemList(nums)));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 // # - 35
 class OP_Colon_Pound extends OpInstruction {
 	
@@ -264,39 +298,6 @@ class OP_Colon_And extends OpInstruction {
 	public void execute(Block block) {
 		Obj a = block.peek();
 		block.push(a);
-	}
-}
-
-// ' - 39
-class OP_Colon_Quote extends OpInstruction {
-
-	public OP_Colon_Quote() {
-		init(":'");
-		arg("C", "ord (cast to int)");
-		arg("S", "convert a string to bytes using UTF-8 encoding");
-		arg("N", "identity; return N");
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		
-		if (a.isa(NUMBER)) {
-			block.push(a);
-		} else if (a.isa(CHAR)) { 
-			int c = ((Char)a).charValue();
-			block.push(Num.fromInt(c & 0xff));
-		} else if (a.isa(STR)) {
-			Str s = asStr(a);
-			ArrayList<Number> nums = new ArrayList<Number>(s.length());
-			byte[] bytes = s.getBytes();
-			for (byte b : bytes) {
-				nums.add(Num.fromByte(b));
-			}
-			block.push(new List(new NumberItemList(nums)));
-		} else {
-			throw new TypeError(this, a);
-		}
 	}
 }
 

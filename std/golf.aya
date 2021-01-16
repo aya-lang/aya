@@ -88,14 +88,14 @@ matrix:m;
 []      :emptyset;
 {2^}    :square;
 {3^}    :cube;
-[256,V.']:ascii;
+[256,V."]:ascii;
 
 
 .# Additional operators
 
 .# Overwrite defaults
-9999.' "bowtie" Mk
-9998.' "para"   Mk
+9999." "bowtie" Mk
+9998." "para"   Mk
 
 {`range}:to;
 
@@ -118,19 +118,19 @@ matrix:m;
 '\xf0' "bmod"       Mk .# 240
 
 {.^}:sqrt;
-8730.' "sqrt" Mk
+8730." "sqrt" Mk
 {1 3/^}:cbrt;
-8731.' "cbrt" Mk
+8731." "cbrt" Mk
 
-3808.' "supfour"  Mk
-8309.' "supfive"  Mk
-8310.' "supsix"   Mk
-8311.' "supseven" Mk
-3812.' "supeight" Mk
-8313.' "supnine"  Mk
+3808." "supfour"  Mk
+8309." "supfive"  Mk
+8310." "supsix"   Mk
+8311." "supseven" Mk
+3812." "supeight" Mk
+8313." "supnine"  Mk
 
-8710.' "inc" Mk
-8711.' "dec" Mk
+8710." "inc" Mk
+8711." "dec" Mk
 
 
 

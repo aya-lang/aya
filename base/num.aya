@@ -5,7 +5,7 @@
 
 .#? N digits\n  convert a number into a list of digits
 .# '0 = 48
-{P"\."|V\;#:'48-}:digits;
+{P"\."|V\;#:"48-}:digits;
 
 {10 2 H}:bits;
 
