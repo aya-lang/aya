@@ -94,5 +94,31 @@ public class SocketManager {
 		}
 	}
 
+	public int getPort(int id) {
+		if (_servers.containsKey(id)) {
+			return _servers.get(id).getPort();
+		} else if (_sockets.containsKey(id)) {
+			return _sockets.get(id).getPort();
+		} else {
+			notFound(id);
+			return 0;
+		}
+	}
+
+	public String getIP(int id) {
+		if (_servers.containsKey(id)) {
+			return _servers.get(id).getAddr().toString();
+		} else if (_sockets.containsKey(id)) {
+			return _sockets.get(id).getAddr().toString();
+		} else {
+			notFound(id);
+			return "";
+		}
+	}
+	
+	private void notFound(int id) {
+		throw new AyaRuntimeException("Server or socket with id " + id + " does not exist");
+	}
+
 
 }

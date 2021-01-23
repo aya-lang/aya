@@ -1,6 +1,5 @@
 package aya.exceptions;
 
-
 /**
  * A special runtime exception with a basic message. The exception is
  * caught by the interpreter and its message is printed.
@@ -16,6 +15,11 @@ public class AyaRuntimeException extends RuntimeException {
 		this.msg = msg;
 	}
 	
+	public AyaRuntimeException(Exception e) {
+		super(e.getMessage());
+		this.msg = e.getMessage();
+	}
+
 	public String getSimpleMessage() {
 		return msg;
 	}

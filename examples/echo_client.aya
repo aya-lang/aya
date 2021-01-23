@@ -1,0 +1,28 @@
+.# A Simple echo client running on localhost:3003
+
+import ::socket
+
+"localhost" :addr;
+3003 :port;
+
+"Attempting to connect on $addr:$port..." :P
+
+addr port socket.connect :conn;
+
+"Got connection!" :P
+
+{
+    {
+        "> " .P
+        :R :data;
+        "Sending '$data'..." :P
+        data conn.println
+
+        conn.recv :reply;
+        "Server replied with '$reply'" :P
+
+        1 .# Loop forever
+    } W
+} {e,
+    "Connection closed" :P
+} .K

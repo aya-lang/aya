@@ -2,6 +2,7 @@ package aya.ext.socket;
 
 import java.io.IOException;
 
+import aya.exceptions.AyaRuntimeException;
 import aya.exceptions.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
@@ -31,6 +32,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 						result = socket_manager.openServer(ip, port);
 					} catch (IOException e) {
 						result = SocketManager.NULL_ID;
+						throw new AyaRuntimeException(e);
 					}
 					
 					block.push(Num.fromInt(result));
@@ -62,8 +64,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 						int result = socket_manager.openClient(ip, port);
 						block.push(Num.fromInt(result));
 					} catch (IOException e) {
-						throw new RuntimeException(e);
-						//throw new AyaRuntimeException("Unable to open connection on " + ip + ":" + port + e.getMessage());
+						throw new AyaRuntimeException(e);
 					}
 					
 				} else {
@@ -82,7 +83,11 @@ public class SocketInstructionStore extends NamedInstructionStore {
 					int id = Casting.asNumber(obj_id).toInt();
 					AyaSocket sock = socket_manager.getSocket(id);
 					String data = obj_data.str();
-					sock.send(data);
+					try {
+						sock.send(data);
+					} catch (IOException e) {
+						throw new AyaRuntimeException(e);
+					}
 				} else {
 					throw new TypeError(this, "SN");
 				}
@@ -107,6 +112,22 @@ public class SocketInstructionStore extends NamedInstructionStore {
 				int id = getSingleIntArg(this, block);
 				AyaSocket sock = socket_manager.getSocket(id);
 				block.push(List.fromString(sock.recv()));
+			}
+		});
+
+		addInstruction(new NamedInstruction("socket.get_addr", "id::num: Get the socket's connection addr") {
+			@Override
+			public void execute(Block block) {
+				int id = getSingleIntArg(this, block);
+				block.push(List.fromString(socket_manager.getIP(id).toString()));
+			}
+		});
+
+		addInstruction(new NamedInstruction("socket.get_port", "id::num: Get the socket's connection port") {
+			@Override
+			public void execute(Block block) {
+				int id = getSingleIntArg(this, block);
+				block.push(Num.fromInt(socket_manager.getPort(id)));
 			}
 		});
 

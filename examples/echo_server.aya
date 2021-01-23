@@ -1,0 +1,27 @@
+.# A Simple echo server running on localhost:3003
+
+import ::socket
+
+"localhost" 3003 socket_server.listen :srv;
+
+"Waiting for connection on $(srv.addr):$(srv.port)..." :P
+
+srv.accept :conn;
+
+"Got connection!" :P
+
+{
+    {
+        .# Get the data
+        conn.recv :data;
+        "Client sent '$data'" :P
+
+        .# echo it back 
+        data conn.println
+
+        1 .# Loop forever
+    } W
+} {e,
+    "Connection closed" :P
+} .K
+

@@ -12,11 +12,7 @@ public class AyaSocketServer {
 	protected int _port;
 	
 	AyaSocketServer(String ip, int port) throws IOException {
-		if (ip == null || ip.equals("") || ip.equals("localhost")) {
-			_ip = InetAddress.getLocalHost();
-		} else {
-			_ip = InetAddress.getByName(ip);
-		}
+		_ip = AyaSocket.resolveIP(ip);
 		_port = port;
 		_server = new ServerSocket(port, 1, _ip);
 	}
@@ -28,6 +24,10 @@ public class AyaSocketServer {
 
 	int getPort() {
 		return _port;
+	}
+	
+	InetAddress getAddr() {
+		return _ip;
 	}
 	
 	public void close() throws IOException {

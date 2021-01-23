@@ -163,7 +163,7 @@ public class Block extends Obj {
 			} catch (EmptyStackException es) {
 				throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
 			} catch (NullPointerException npe) {
-				throw new RuntimeException(npe.toString());
+				throw new RuntimeException(npe);
 			}
 		}
 	}

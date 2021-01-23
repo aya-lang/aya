@@ -27,6 +27,7 @@ import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.image.ImageInstructionStore;
 import aya.ext.json.JSONInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
+import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
@@ -277,6 +278,7 @@ public class Aya extends Thread {
 		_namedInstructionStores.add(new DialogInstructionStore());
 		_namedInstructionStores.add(new PlotInstructionStore());
 		_namedInstructionStores.add(new DateInstructionStore());
+		_namedInstructionStores.add(new SocketInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(getInstance());

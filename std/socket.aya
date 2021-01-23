@@ -1,0 +1,58 @@
+.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+
+.# socket.aya
+.# Defines socket and socket_server types
+
+export [::socket ::socket_server]
+
+struct ::socket [::_sock]
+
+struct ::socket_server  [::_srv]
+
+def socket_server::accept {self : socket^,
+    self._srv :{socket.accept} socket!
+}
+
+def socket_server::listen {addr port : socket_server^,
+    addr port :{socket.open_server} socket_server!
+}
+
+def socket_server::close {self,
+    self._srv :{socket.close}
+}
+
+def socket_server::port {self,
+    self._srv :{socket.get_port}
+}
+
+def socket_server::addr {self,
+    self._srv :{socket.get_addr}
+}
+
+def socket::connect {addr port : socket^,
+    addr port :{socket.open_client} socket!
+}
+
+def socket::recv {self,
+    self._sock :{socket.recv}
+}
+
+def socket::port {self,
+    self._sock :{socket.get_port}
+}
+
+def socket::addr {self,
+    self._sock :{socket.get_addr}
+}
+
+def socket::send {self,
+    self._sock :{socket.send}
+}
+
+def socket::println {data self,
+    data P "\r\n" + self._sock :{socket.send}
+}
+
+def socket::close {self,
+    self._sock :{socket.close}
+}
