@@ -633,9 +633,10 @@ class OP_Colon_K extends OpInstruction {
 		Obj a = block.pop();
 		
 		if (a.isa(DICT)) {
-			ArrayList<Obj> al = new ArrayList<Obj>();
-			Collections.copy(al, asDict(a).keys());
-			block.push(new List(al));
+			ArrayList<Symbol> keys = asDict(a).keys();
+			List out = new List();
+			for (Symbol k : keys) out.mutAdd(k);
+			block.push(out);
 		} else {
 			throw new TypeError(this, a);
 		}

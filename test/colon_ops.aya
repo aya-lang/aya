@@ -2,3 +2,10 @@ test_.` :test;
 
 { [1 2 3] [1] :| [2 3] } test
 { [1 2 3] [1 2] :| [3] } test
+
+
+{ {, } :K [] } test
+.# Test that removing all leaves an empty lise
+{ {, 1:a 2:b } :K [::a ::b] :| [] } test
+.# Test that the length is 2
+{ {, 1:a 2:b } :K E 2 } test

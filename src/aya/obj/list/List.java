@@ -687,6 +687,7 @@ public class List extends Obj {
 	 * into a NumberList)
 	 */
 	public void mutAdd(Obj o) {
+		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
 		try {
 			_list.addItem(o);
@@ -703,6 +704,7 @@ public class List extends Obj {
 	 * into a NumberList)
 	 */
 	public void mutAddExact(int i, Obj o) {
+		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
 		try {
 			_list.addItem(i, o);
@@ -719,6 +721,7 @@ public class List extends Obj {
 	 * ( Ex. {@code [1 2 3].extend(['a 'b 'c])} )
 	 */
 	public void mutAddAll(List l) {
+		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
 		try {
 			_list.addAll(l._list);
