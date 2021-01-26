@@ -1,15 +1,17 @@
 package aya.obj.dict;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Pair;
-import aya.variable.VariableSet;
 
 /**
  * A set of key-value pairs accessible as a runtime object
@@ -22,29 +24,29 @@ public class Dict extends Obj {
 	public static Symbol META = Aya.getInstance().getSymbols().getSymbol("__meta__");
 	
 	/** The map of key-value pairs */
-	protected VariableSet _vars;
+	private HashMap<Symbol, Obj> _vars;
 	private Dict _meta; // Quick lookup for meta
 
 	/** Create a new empty dict, use the input dict as the metatable */
-	public Dict(VariableSet vars, Dict metatable) {
+	public Dict(HashMap<Symbol, Obj> vars, Dict metatable) {
 		if (vars == null) {
-			_vars = new VariableSet(false);
+			_vars = new HashMap<Symbol, Obj>();
 		} else {
 			_vars = vars;
 		}
 		
 		if (metatable != null)
 		{
-			_vars.setVar(META, metatable);
+			_vars.put(META, metatable);
 			_meta = metatable;
 		}
 	}
 	
 	/** Create a new dict given a variable set */
-	public Dict(VariableSet vars) {
+	public Dict(HashMap<Symbol, Obj> vars) {
 		_vars = vars;
 		// Check if the VariableSet has a __meta__ key
-		Obj maybe_meta = vars.getObj(META);
+		Obj maybe_meta = vars.get(META);
 		if (maybe_meta != null && maybe_meta.isa(DICT)) {
 			_meta = (Dict)(maybe_meta);
 		} else {
@@ -54,13 +56,13 @@ public class Dict extends Obj {
 	
 	/** Create a new empty dict */
 	public Dict() {
-		_vars = new VariableSet(false);
+		_vars = new HashMap<Symbol, Obj>();
 		_meta = null;
 	}
 
 	/** Set the metatable to the input dict */
 	public void setMetaTable(Dict d) {
-		_vars.setVar(META, d);
+		_vars.put(META, d);
 		_meta = d;
 	}
 	
@@ -93,7 +95,6 @@ public class Dict extends Obj {
 		}
 	}
 
-
 	/** returns null if key not found */
 	private Obj _get(Symbol typeId) {
 		return _get(typeId, null);
@@ -106,7 +107,7 @@ public class Dict extends Obj {
 	
 	/** Returns null if no key found */
 	private Obj _get(Symbol typeId, ArrayList<Integer> visited) {
-		Obj o = _vars.getObj(typeId);
+		Obj o = _vars.get(typeId);
 		if (o != null)
 		{
 			return o;
@@ -160,24 +161,31 @@ public class Dict extends Obj {
 		return _get(key) != null;
 	}
 	
-	/** Return the inner variable set object */
-	public VariableSet getVarSet() {
-		return _vars;
-	}
-
 	/** The number of items in this dict */
 	public int size() {
-		return _vars.getMap().size();
+		return _vars.size();
 	}
 	
 	/** A list of keys */
 	public ArrayList<Symbol> keys() {
-		return _vars.keys();
+		ArrayList<Symbol> out = new ArrayList<Symbol>();
+		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
+	    	out.add(pair.getKey());
+	    }
+	    return out;
 	}
 	
 	/** All key/value pairs */
 	public ArrayList<Pair<Symbol, Obj>> items() {
-		return _vars.getAllVars();
+		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
+		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
+	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
+	    }
+	    return out;
 	}
 	
 	/** A list of values */
@@ -196,7 +204,7 @@ public class Dict extends Obj {
 	 * if not, create a new pair
 	 */ 
 	public void set(Symbol key, Obj o) {
-		_vars.setVar(key, o);
+		_vars.put(key,  o);
 		
 		if (key.id() == META.id() && o.isa(Obj.DICT))
 		{
@@ -206,7 +214,7 @@ public class Dict extends Obj {
 	
 	/** Update values in this dict to the values from the input dict */
 	public void update(Dict other) {
-		_vars.update(other._vars);
+		_vars.putAll(other._vars);
 	}
 	
 	
@@ -218,10 +226,10 @@ public class Dict extends Obj {
 	public Obj deepcopy() {
 		// Don't deep copy the meta
 		if (_meta != null) {
-			_vars.unsetVar(META);
+			_vars.remove(META);
 		}
 		
-		Dict d = new Dict(_vars.deepcopy(), _meta);
+		Dict d = new Dict(deepcopyHashMap(), _meta);
 		
 		// Re-attach the meta if it exists
 		if (_meta != null) {
@@ -286,9 +294,9 @@ public class Dict extends Obj {
 		if (o instanceof Dict) {
 			Dict other = (Dict)o;
 			if (other._vars.size() == this._vars.size()) {
-				for (Symbol sym : this._vars.getMap().keySet()) {
-					Obj elem = other._vars.getMap().get(sym);
-					if (elem == null || !elem.equiv(this._vars.getMap().get(sym))) {
+				for (Symbol sym : this._vars.keySet()) {
+					Obj elem = other._vars.get(sym);
+					if (elem == null || !elem.equiv(this._vars.get(sym))) {
 						return false;
 					}
 				}
@@ -359,9 +367,9 @@ public class Dict extends Obj {
 			stream.println("{,");
 			stream.incIndent();
 			stream.currentLineMatchIndent();
-			for (Symbol sym : _vars.getMap().keySet()) {
+			for (Symbol sym : _vars.keySet()) {
 				if (sym.id() != META.id()) {
-					_vars.getObj(sym).repr(stream);
+					_vars.get(sym).repr(stream);
 					stream.println(":" + sym.name() + ";");
 				}
 			}
@@ -372,10 +380,29 @@ public class Dict extends Obj {
 		return stream;
 	}
 
+	///////////
+	// OTHER //
+	///////////
 	
 	public Obj getMetaDict() {
 		if (_meta == null) setMetaTable(new Dict());
 		return _meta;
+	}
+	
+	public HashMap<Symbol, Obj> getMap() {
+		return _vars;
+	}
+	
+	public void clear() {
+		_vars.clear();
+		_meta = null;
+	}
+
+	@Override
+	public Dict clone() {
+		Dict out = new Dict();
+		out.update(this);
+		return out;
 	}
 	
 	////////////////////
@@ -388,7 +415,7 @@ public class Dict extends Obj {
 	 * @param b
 	 */
 	public static void assignVarValues(Dict d, Block b) {
-		for (Pair<Symbol, Obj> pair : d._vars.getAllVars()) {
+		for (Pair<Symbol, Obj> pair : d.getAllVars()) {
 			b.getInstructions().assignVarValue(pair.first(), pair.second());
 		}
 	}
@@ -416,4 +443,58 @@ public class Dict extends Obj {
 	
 
 
+	/** Return all variables as a list of pairs */
+	private ArrayList<Pair<Symbol, Obj>> getAllVars() {
+		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
+		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
+	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
+	    }
+	    return out;
+	}
+	
+	private HashMap<Symbol, Obj> deepcopyHashMap() {
+		// Copy the hash map
+		HashMap<Symbol, Obj> vars_copy = new HashMap<Symbol, Obj>();
+		for (Symbol l : _vars.keySet()) {
+			vars_copy.put(l, _vars.get(l).deepcopy());
+		}
+		return vars_copy;
+	}
+
+	
+
+	/**
+	 * Output the variable set as a space separated list of name(value) items
+	 * If the value is 0, do not print the value or the parenthesis
+	 */
+	public ReprStream reprHeader(ReprStream stream) {
+		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
+		while (it.hasNext()) {
+			HashMap.Entry<Symbol, Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
+			stream.print(pair.getKey().name());
+
+			final Obj obj = pair.getValue();
+			if (obj.equiv(Num.ZERO)) {
+				stream.print(" ");
+			} else {
+				stream.print("(");
+				obj.repr(stream);
+				stream.print(")");
+			}
+		}
+		return stream;
+	}
+
+	/** Merge variables from the given variable set only if they are defined in this one */
+	public void mergeDefined(Dict other) {
+		for (HashMap.Entry<Symbol, Obj> e : other._vars.entrySet()) {
+			if (_vars.containsKey(e.getKey())) {
+				_vars.put(e.getKey(), e.getValue());
+			}
+		}
+	}
+	
+	
 }

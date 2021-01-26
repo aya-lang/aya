@@ -52,7 +52,6 @@ import aya.obj.symbol.SymbolConstants;
 import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.variable.VariableSet;
 
 public class DotOps {
 
@@ -1326,9 +1325,9 @@ class OP_Dot_Bar extends OpInstruction {
 		}
 		Collections.reverse(args_list);
 		d.set(SymbolConstants.ARGS, new List(args_list));
-		final VariableSet vars = b.getLocals();
+		final Dict vars = b.getLocals();
 		if (vars != null) {
-			d.set(SymbolConstants.LOCALS, new Dict(vars));
+			d.set(SymbolConstants.LOCALS, vars);
 		}
 				
 		return d;
@@ -1380,7 +1379,7 @@ class OP_Dot_Tilde extends OpInstruction {
 			}
 		} else if (a.isa(DICT)) {
 			// Set all vars in the dict
-			Aya.getInstance().getVars().setVars(asDict(a).getVarSet());
+			Aya.getInstance().getVars().setVars(asDict(a));
 		} else {
 			throw new TypeError(this, a);
 		}

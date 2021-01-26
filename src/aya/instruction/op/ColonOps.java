@@ -90,7 +90,7 @@ public class ColonOps {
 		/* 68 D  */ new OP_Colon_D(),
 		/* 69 E  */ new OP_Colon_E(),
 		/* 70 F  */ null,
-		/* 71 G  */ null,
+		/* 71 G  */ new OP_Colon_G(),
 		/* 72 H  */ null,
 		/* 73 I  */ new OP_Colon_I(),
 		/* 74 J  */ null,
@@ -572,6 +572,20 @@ class OP_Colon_E extends OpInstruction {
 	}
 }
 
+// G - 71
+class OP_Colon_G extends OpInstruction {
+	
+	public OP_Colon_G() {
+		init(":G");
+		arg("", "Return the variable scope stack as a list of dicts");
+	}
+
+	@Override
+	public void execute(Block block) {
+		block.push(Aya.getInstance().getVars().getDictList());
+	}
+}
+
 // I - 73  
 class OP_Colon_I extends OpInstruction {
 	
@@ -686,7 +700,7 @@ class OP_Colon_M extends OpInstruction {
 			Obj o = meta.get(LOCALS);
 			if (o.isa(DICT)) {
 				Dict locals = (Dict)o;
-				bh = new BlockHeader(locals.getVarSet());
+				bh = new BlockHeader(locals);
 			} else {
 				throw new AyaRuntimeException("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
 			}

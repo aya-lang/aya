@@ -3,9 +3,7 @@ package aya.variable;
 import static aya.util.Casting.asDict;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.Stack;
 
 import aya.Aya;
@@ -21,7 +19,7 @@ import aya.parser.Parser;
 
 /**
  * Static class containing all variables for the current session.
- * Variable scope is not recursive but handled by a list of variable sets.
+ * Variable scope is not recursive but handled by a list of dicts
  * When variable bindings are requested, this starts by looking in the
  * most local scope and moving outward until a variable is found in the global
  * scope or not at all. 
@@ -30,7 +28,22 @@ import aya.parser.Parser;
  *
  */
 public class VariableData {
-	private ArrayList<VariableSet> varSets = new ArrayList<VariableSet>();
+	
+	class Scope {
+		Dict dict;
+		boolean capture_all_assignments;
+		
+		Scope(Dict dict, boolean capture_all_assignments) {
+			this.dict = dict;
+			this.capture_all_assignments = capture_all_assignments;
+		}
+		
+		Scope(Dict dict) {
+			this(dict, false);
+		}
+	};
+	
+	private ArrayList<Scope> _var_sets = new ArrayList<Scope>();
 	private Stack<Integer> _checkpoints = new Stack<Integer>();
 
 	private final Dict OBJ_STR = new Dict();
@@ -60,13 +73,13 @@ public class VariableData {
 	}
 	
 	public void initGlobals(Aya aya) {
-		VariableSet globals = new VariableSet(null, null, null);
+		Dict globals = new Dict();
 		
-		globals.setVar(SymbolConstants.VERSION, List.fromString(Aya.VERSION_NAME));
-		globals.setVar(SymbolConstants.HELP, List.fromString(InteractiveAya.HELP_TEXT));
+		globals.set(SymbolConstants.VERSION, List.fromString(Aya.VERSION_NAME));
+		globals.set(SymbolConstants.HELP, List.fromString(InteractiveAya.HELP_TEXT));
 
-		globals.setVar(SymbolConstants.E, Num.E);				
-		globals.setVar(SymbolConstants.PI, Num.PI);
+		globals.set(SymbolConstants.E, Num.E);				
+		globals.set(SymbolConstants.PI, Num.PI);
 		
 		OBJ_CHAR.set(SymbolConstants.KEYVAR_META,  OBJ_CHAR);
 		OBJ_SYM.set(SymbolConstants.KEYVAR_META,  OBJ_SYM);
@@ -83,9 +96,9 @@ public class VariableData {
 		BUILTINS.set(SymbolConstants.STR,   OBJ_STR);
 		
 		initNil(aya);
-		globals.setVar(SymbolConstants.NIL, OBJ_NIL);
+		globals.set(SymbolConstants.NIL, OBJ_NIL);
 
-		varSets.add(globals);
+		_var_sets.add(new Scope(globals));
 	}
 	
 	public Dict getBuiltinMeta(Obj o) {
@@ -93,38 +106,23 @@ public class VariableData {
 	}
 	
 	/** Returns the set containing the global variables */
-	public VariableSet getGlobals() {
-		return varSets.get(0);
-	}
-	
-	/** Returns (varname) = (debugString(o)) ((default variable)) for each global variable */
-	public ArrayList<String> getDefaultVariableDiscs(Aya aya) {
-		if(varSets.size() < 1) {
-			initGlobals(aya);
-		}
-		
-		ArrayList<String> out = new ArrayList<String>();
-		Iterator<Map.Entry<Symbol, Obj>> entries = varSets.get(0).getMap().entrySet().iterator();
-		while (entries.hasNext()) {
-		  Entry<Symbol, Obj> thisEntry = (Entry<Symbol, Obj>) entries.next();
-		  out.add(thisEntry.getKey().repr() + " = " + thisEntry.getValue().repr() + "\n(default variable)");
-		}
-		return out;
+	public Dict getGlobals() {
+		return _var_sets.get(0).dict;
 	}
 	
 	/** clears all but the global variables */
 	public void reset() {
-		for (int i = varSets.size()-1; i >=1; i--) {
-			varSets.remove(i);
+		for (int i = _var_sets.size()-1; i >=1; i--) {
+			_var_sets.remove(i);
 		}
 	}
 	
 	public void setGlobalVar(Symbol v, Obj o) {
-		varSets.get(0).setVar(v, o);
+		_var_sets.get(0).dict.set(v, o);
 	}
 	
 	public void setCheckpoint() {
-		_checkpoints.push(varSets.size());
+		_checkpoints.push(_var_sets.size());
 	}
 	
 	public void popCheckpoint() {
@@ -133,34 +131,32 @@ public class VariableData {
 	
 	public void rollbackCheckpoint() {
 		int stack_size = _checkpoints.pop();
-		while (varSets.size() > stack_size) {
+		while (_var_sets.size() > stack_size) {
 			pop();
 		}
 	}
 	
 	public void pop() {
-		if (varSets.size() == 1) {
+		if (_var_sets.size() == 1) {
 			throw new RuntimeException("Variable state error!!");
 		}
-		varSets.remove(varSets.size()-1).clear();
+		_var_sets.remove(_var_sets.size()-1).dict.clear();
 	}
 	
-	public VariableSet peek() {
-		return varSets.get(varSets.size()-1);
+	public Dict peek() {
+		return _var_sets.get(_var_sets.size()-1).dict;
 	}
 	
-	public VariableSet popGet() {
-		return varSets.remove(varSets.size()-1);
+	public Dict popGet() {
+		return _var_sets.remove(_var_sets.size()-1).dict;
 	}
 	
 	public void setVar(Symbol v, Obj o) {
-		//Pre 2016.Feb.24 Code:
-		//varSets.get(varSets.size()-1).setVar(v, o);
-		
 		// Cond is >=1 because we don't need to check the globals
-		for(int i = varSets.size()-1; i >=1; i--) {
-			if(varSets.get(i).hasVar(v) || varSets.get(i).isModule()) {
-				varSets.get(i).setVar(v, o);
+		for(int i = _var_sets.size()-1; i >=1; i--) {
+			Scope scope = _var_sets.get(i);
+			if(scope.dict.containsKey(v) || scope.capture_all_assignments) {
+				scope.dict.set(v, o);
 				return;
 			}
 		}
@@ -181,8 +177,8 @@ public class VariableData {
 	
 	private Obj getVarOrNull(Symbol id) {
 		Obj res = null;
-		for(int i = varSets.size()-1; i >= 0; i--) {
-			res = varSets.get(i).getObj(id);
+		for(int i = _var_sets.size()-1; i >= 0; i--) {
+			res = _var_sets.get(i).dict.get(id, null);
 			if(res != null) {
 				return res;
 			}
@@ -190,17 +186,28 @@ public class VariableData {
 		return null;
 	}
 	
-	public void add(VariableSet vs) {
-		varSets.add(vs);
+	public void add(Dict vars, boolean b) {
+		_var_sets.add(new Scope(vars, b));
+	}
+
+	public void add(Dict vars) {
+		_var_sets.add(new Scope(vars, false));
 	}
 
 	public boolean isDefined(Symbol id) {
 		return getVarOrNull(id) != null;
 	}
 
-	public void setVars(VariableSet varSet) {
-		for (Map.Entry<Symbol, Obj> p : varSet.getMap().entrySet()) {
+	public void setVars(Dict vars) {
+		for (HashMap.Entry<Symbol, Obj> p : vars.getMap().entrySet()) {
 			setVar(p.getKey(), p.getValue());
 		}
 	}
+
+	public Obj getDictList() {
+		List l = new List();
+		for (Scope s : _var_sets) l.mutAdd(s.dict);
+		return l;
+	}
+
 }

@@ -14,7 +14,7 @@ import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.variable.VariableSet;
+import aya.util.Casting;
 
 public class BlockHeader extends Instruction {
 	
@@ -48,12 +48,12 @@ public class BlockHeader extends Instruction {
 		}
 	}
 	
-	private VariableSet _vars;
+	private Dict _vars;
 	private HashMap<Symbol, InstructionStack> _defaults;
 	private ArrayList<Arg> _args;
 
 	
-	public BlockHeader(VariableSet vars) {
+	public BlockHeader(Dict vars) {
 		_vars = vars;
 		_defaults = new HashMap<Symbol, InstructionStack>();
 		_args = new ArrayList<Arg>();
@@ -61,7 +61,7 @@ public class BlockHeader extends Instruction {
 
 
 	public BlockHeader() {
-		this(new VariableSet(false));
+		this(new Dict());
 	}
 
 	
@@ -77,18 +77,18 @@ public class BlockHeader extends Instruction {
 
 	
 	public void addDefault(Symbol var, Obj value) {
-		_vars.setVar(var, value);
+		_vars.set(var, value);
 	}
 	
 	
 	public void execute(Block b) {
-		VariableSet vars = _vars.clone();
+		Dict vars = _vars.clone();
 		setArgs(_args, vars, b);
 		Aya.getInstance().getVars().add(vars);
 		evaluateDefaults(b, vars, _defaults);
 	}
 	
-	private static void evaluateDefaults(Block b, VariableSet vars, HashMap<Symbol, InstructionStack> defaults) {
+	private static void evaluateDefaults(Block b, Dict vars, HashMap<Symbol, InstructionStack> defaults) {
 		Block block = new Block();
 		for (HashMap.Entry<Symbol, InstructionStack> init : defaults.entrySet()) {
 			block.clear();
@@ -100,7 +100,7 @@ public class BlockHeader extends Instruction {
 			} catch (EmptyStackException e) {
 				throw new AyaRuntimeException("Empty stack in initializer (" + init.getValue().toString() + ")");
 			}
-			vars.setVar(init.getKey(), o);
+			vars.set(init.getKey(), o);
 		}
 		
 	}
@@ -134,17 +134,16 @@ public class BlockHeader extends Instruction {
 		}
 	}
 	
-	private static void setArgs(ArrayList<Arg> args, VariableSet vars, Block b)
-	{
+	private static void setArgs(ArrayList<Arg> args, Dict vars, Block b) {
 		if (args.size() == 0) return;
 		
 		for (Arg arg : args) {
 			final Obj o = b.pop();
 			if (checkType(o, arg.type)) {
 				if (arg.copy) {
-					vars.setVar(arg.var, o.deepcopy());
+					vars.set(arg.var, o.deepcopy());
 				} else {
-					vars.setVar(arg.var, o);
+					vars.set(arg.var, o);
 				}
 			} else {
 				throw new TypeError("{ARGS}\n\tExpected:" + arg.type.repr()
@@ -195,7 +194,7 @@ public class BlockHeader extends Instruction {
 	public BlockHeader copy() {
 		BlockHeader b = new BlockHeader();
 		b._args = _args;
-		b._vars = _vars.deepcopy();
+		b._vars = Casting.asDict(_vars.deepcopy());
 		for (HashMap.Entry<Symbol, InstructionStack> d : _defaults.entrySet()) {
 			b._defaults.put(d.getKey(), d.getValue());
 		}
@@ -206,7 +205,7 @@ public class BlockHeader extends Instruction {
 		return _args;
 	}
 
-	public VariableSet getVars() {
+	public Dict getVars() {
 		return _vars;
 	}
 

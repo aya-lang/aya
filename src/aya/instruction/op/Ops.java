@@ -1570,7 +1570,7 @@ class OP_W extends OpInstruction {
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
 			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
-			for (Entry<Symbol, Obj> e : d.getVarSet().getMap().entrySet()) {
+			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
 				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
 			}
 			return;
@@ -1774,7 +1774,7 @@ class OP_Tilde extends OpInstruction {
 			block.push(Aya.getInstance().getVars().getVar(asSymbol(a)));
 		} else if (a.isa(DICT)) {
 			// Dump all vars if they exist in the most local scope
-			Aya.getInstance().getVars().peek().mergeDefined(asDict(a).getVarSet());
+			Aya.getInstance().getVars().peek().mergeDefined(asDict(a));
 		} else {
 			throw new TypeError(this, a);
 		}

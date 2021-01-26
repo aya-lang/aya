@@ -8,7 +8,6 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
-import aya.variable.VariableSet;
 
 /** DictFactories sit on the instruction stack. When evoked, they generate a dict
  * given the current scope of variables
@@ -36,12 +35,8 @@ public class DictLiteralInstruction extends Instruction {
 	
 	/** Run the dict, collect variables, return the Dict object */
 	public Dict getDict(Queue<Obj> q) {
-		
-		//Capture all assignments within the scope
-		VariableSet module = new VariableSet(true);
-		
 		//Add the variable set to the stack
-		Aya.getInstance().getVars().add(module);
+		Aya.getInstance().getVars().add(new Dict(), true);
 		
 		//Run the block
 		Block b2 = _block.duplicate();
@@ -52,11 +47,8 @@ public class DictLiteralInstruction extends Instruction {
 		}
 		b2.eval();
 		
-		//Retrieve the variableSet
-		module = Aya.getInstance().getVars().popGet();
-		
-		//Create a new dict using the assignments from the variable set
-		return new Dict(module);
+		//Retrieve the Dict
+		return Aya.getInstance().getVars().popGet();
 	}
 	
 	@Override

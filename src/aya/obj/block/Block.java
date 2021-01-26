@@ -18,7 +18,6 @@ import aya.obj.block.BlockHeader.Arg;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
-import aya.variable.VariableSet;
 
 /** 
  * Block contain instructions and the resulting stacks 
@@ -371,7 +370,7 @@ public class Block extends Obj {
 	 *  If there are no locals, return null
 	 * @return
 	 */
-	public VariableSet getLocals() {
+	public Dict getLocals() {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			return header.getVars();

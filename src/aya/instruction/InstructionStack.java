@@ -82,8 +82,8 @@ public class InstructionStack {
 		int i = 0;
 		int skip = 0;
 		while (i < ticks) {
-			if(peek(skip) instanceof FlagInstruction || peek(skip) instanceof VariableSetInstruction) {
-				i--; //Ignore flags and var sets
+			if(peek(skip) instanceof FlagInstruction) {
+				i--; //Ignore flags
 			}
 			skip++;
 			i++;
@@ -91,16 +91,6 @@ public class InstructionStack {
 		instructions.add(instructions.size()-skip, o);
 	}
 	
-	/** Return true if this instruction stack is a single block */
-//	public boolean isSingleBlock() {
-//		return size() == 1
-//					&& peek(0) instanceof DataInstruction
-//					&& (((DataInstruction)peek(0)).objIsa(Obj.BLOCK));
-//	}
-	
-//	public boolean isSingleBlockInstruction() {
-//		return size() == 1 && peek(0) instanceof BlockLiteralInstruction;
-//	}
 	
 	/** If the instruction stack consists of a single block instruction, return it. Else return null */
 	public BlockLiteralInstruction getIfSingleBlockInstruction() {
@@ -112,9 +102,6 @@ public class InstructionStack {
 	}
 	
 
-
-
-	
 	/** Creates a deep copy of the InstructionStack */
 	public InstructionStack duplicate() {
 		InstructionStack is = new InstructionStack();

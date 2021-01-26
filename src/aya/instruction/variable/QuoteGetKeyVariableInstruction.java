@@ -22,14 +22,10 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 			Dict dict;
 			dict = (Dict)kv_obj;
 			Obj o = dict.get(variable_);
-			// If user object function, leave it as the first item on the stack
-			//if (dict.hasMetaTable() && o.isa(Obj.BLOCK)) {
-			//	b.push(dict);
-			//}
 			b.push(o);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().getObj(typeSym);
+			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().get(typeSym);
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
 				Obj o;
