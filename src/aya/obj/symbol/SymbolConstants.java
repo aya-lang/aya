@@ -76,5 +76,6 @@ public class SymbolConstants {
 	public static final Symbol KEYVAR_STR 		= S.getSymbol("__str__");
 	public static final Symbol KEYVAR_REPR 		= S.getSymbol("__repr__");
 	public static final Symbol KEYVAR_BOOL    	= S.getSymbol("__bool__");
-	public static final Symbol KEYVAR_PUSHSELF    	= S.getSymbol("__pushself__");
+	public static final Symbol KEYVAR_PUSHSELF  = S.getSymbol("__pushself__");
+	public static final Symbol __CALL__    		= S.getSymbol("__call__");
 }

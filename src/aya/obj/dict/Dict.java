@@ -72,11 +72,20 @@ public class Dict extends Obj {
 	public boolean pushSelf() {
 		return hasMetaKey(PUSH_SELF);
 	}
+
+	/** returns default value if key not found */
+	public Obj get(Symbol key, Obj dflt) {
+		Obj x = _get(key, null);
+		if (x == null) {
+			return dflt;
+		} else {
+			return x;
+		}
+	}
 	
 	/** throws exception if key not found */
 	public Obj get(Symbol key) {
 		Obj o = _get(key, null);
-		
 		if (o == null) {
 			throw new AyaKeyError(this, key);
 		} else {
@@ -404,5 +413,7 @@ public class Dict extends Obj {
 	public void remove(Symbol key) {
 		_vars.remove(key);
 	}
+	
+
 
 }

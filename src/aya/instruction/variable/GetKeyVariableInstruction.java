@@ -9,6 +9,7 @@ import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.util.Callable;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
 
@@ -23,11 +24,12 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 			Dict dict;
 			dict = (Dict)kv_obj;
 			Obj o = dict.get(variable_);
+			Block callable = Callable.getCallable(o);
 			// If user object function, leave it as the first item on the stack
-			if (dict.pushSelf() && o.isa(Obj.BLOCK)) {
+			if (dict.pushSelf() && callable != null) {
 				b.push(dict);
 			}
-			this.addOrDumpVar(o, b);
+			this.addOrDumpVar(o, b, callable);
 		} else {
 			Dict builtin_dict = Aya.getInstance().getVars().getBuiltinMeta(kv_obj);
 			Dict dict = (Dict)builtin_dict;
