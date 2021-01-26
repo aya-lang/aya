@@ -1,8 +1,9 @@
 import ::color
 from ::color import [::color ::colors]
 
-class ::canvas
 export ::canvas
+
+class ::canvas
 
 def canvas::__init__ {params::dict self : colors^,
 
@@ -111,16 +112,6 @@ def canvas::clear {self,
     self.id :{graphics.clear}
 }
 
-def canvas::viewmat { data : cvs canvas^ ,
-    {,
-        data E :height;
-        data.[0] E :width;
-        width height .< 400 :< {
-            2 :scale;
-        } ?
-    } canvas! :cvs;
-
-    data cvs.id :{graphics.viewmat}
-
-    cvs
+def canvas::viewmat {data self,
+    data self.id :{graphics.viewmat}
 }

@@ -1,0 +1,27 @@
+import ::canvas
+
+export ::viewmat
+export ::viewmat_scaled
+
+
+def ::viewmat_scaled { data scale : cvs canvas^,
+    {,
+        data E :height;
+        data.[0] E :width;
+        scale :scale;
+    } canvas! :cvs;
+
+    data cvs.viewmat
+
+    cvs
+}
+
+def ::viewmat { data : width height scale viewmat_scaled^,
+    data E :height;
+    data.[0] E :width;
+    width height .< 400 :< {
+        2 :scale;
+    } ?
+    
+    data scale viewmat_scaled
+}

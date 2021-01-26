@@ -1,10 +1,12 @@
+.# Also see examples/canvas/mandelbrot
+
 { a : z(0),
     {z2^ a+ :z; } 50 %
     z
 }:mandl;
 
-0.04 :y_step;
-0.02 :x_step;
+0.05 :y_step;
+0.03 :x_step;
 
 [1 $y_step- :1,] :# {y,
     [:2 $x_step+ 0.5,] :# {x,

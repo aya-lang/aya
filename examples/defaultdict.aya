@@ -1,53 +1,42 @@
 .# Dictionary where indexing missing keys, the default value is returned
 .# Must use "d.[::key]" syntax not "d.key" as d.key is not overloadable
 
-{,
+class ::defaultdict
 
-    {d::dict dflt,
-        {,d:dict dflt:dflt} defaultdict MO
-    }:__new__;
+def defaultdict::__init__ {dict default self,
+    dict self.:dict;
+    default self.:default;
+}
 
-    {index self : t,
-        self.dict index N 0 = \; {
-            self.dflt $ :t;;
-            t self.dict.:[index];
-            t
-        } {
-            self.dict.[index]
-        } .?
-    }:__getindex__;
+def defaultdict::__getindex__ {key self,
+    self.dict key N 0 = \; {
+        .# Make a copy
+        self.default $\; self.dict.:[key];
+    } ?
+    self.dict.[key]
+}
 
-    .# TODO: __setindex__ is broken...
-    .{
-        aya> run "examples/defaultdict"
-        aya> {, 1:x } 0 defaultdict! :d
-        {, 1:x; }
-        aya> 5 d.:[::y];
-        Unexpected empty stack
-        stack:
+def defaultdict::__setindex__ {value key self,
+    value self.dict.:[key]
+}
 
-        just before:
-                "index" :P index :P "self" :P self :P "val" :P val :P .A :P self .dict [index] .:
-    .}
-    {val index self,
-        "index" :P index :P
-        "self" :P self :P
-        "val" :P val :P
-        .A :P self.dict.:[index];
-    }:__setindex__;
+def defaultdict::__str__ {self,
+    self.dict P
+}
 
-    {self,
-        self.dict P
-    }:__str__:__repr__;
+def defaultdict::__repr__ (defaultdict.__str__.`)
 
+.# Create a default dict
+{,} 0 defaultdict! :dd;
+"> Dict is $dd" :P
 
-}:defaultdict;
+"> Adding x=10..." :P
+10 dd.:[::x] :P
 
-.{
-    Example:
+"> Looking up ::x..." :P
+dd.[::x] :P
 
-    {,} 0 defaultdict!
+"> Looking up unknown value ::y..." :P
+dd.[::y] :P
 
-
-
-.}
+"> Dict is $dd" :P

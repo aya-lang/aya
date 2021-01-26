@@ -1,0 +1,43 @@
+.# Golfed stack based version
+{
+0\1{$@+}@%;
+}:fib_stack;
+
+"" :P
+"0 fib_stack is $(0 fib_stack)" :P
+"7 fib_stack is $(7 fib_stack)" :P
+"15 fib_stack is $(15 fib_stack)" :P
+
+
+.# Verbose iterative version
+{n : a(0) b(1) fib(0),
+    .# Set n to the max of n-1 and 0
+    n 1 - 0 .< :n;
+    n R :# {
+        a b + :fib;
+        b :a;
+        fib :b;
+    };
+    fib
+}:fib_iter;
+
+"" :P
+"0 fib_iter is $(0 fib_iter)" :P
+"7 fib_iter is $(7 fib_iter)" :P
+"15 fib_iter is $(15 fib_iter)" :P
+
+.# Classic recursive algorithm
+{n,
+    n 0 = n 1 = | {
+        n
+    } {
+        n 1 - fib_rec n 2 - fib_rec +
+    } .?
+}:fib_rec;
+
+"" :P
+"0 fib_rec is $(0 fib_rec)" :P
+"7 fib_rec is $(7 fib_rec)" :P
+"15 fib_rec is $(15 fib_rec)" :P
+
+

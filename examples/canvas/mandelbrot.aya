@@ -1,4 +1,4 @@
-import ::canvas
+import ::viewmat
 
 { a ,
     0 { 2^ a+ } 30 %
@@ -15,5 +15,5 @@ import ::canvas
     }
 }
 
-canvas.viewmat :c;
-c.show
+.# from canvas
+viewmat.show

@@ -1,8 +1,5 @@
 .# Example of defning a class using the `class` keywords
-.#   - class: declare a class
-.#   - impl: instance function (instance is first arg)
-.#   - impl_static: class function (class dict is fist arg)
-.#   - static: plain "static" function (no args)
+.# See also: examples/account.aya
 
 class ::point
 
@@ -24,19 +21,53 @@ def point::__add__ {other self,
     self .M !
 }
 
+.# Could have also used the following:
+.# def point::+ {other self,
+
 .# static class variable
-0 point.:my_value;
+99 point.:my_value;
 
 .# static class function
-def point::inc_my_value {self : meta(self.M),
-    meta.my_value 1 + meta.:my_value ;
+def point::inc_my_value { : point^ ,
+    point.my_value 1 + point.:my_value ;
 }
 
-impl_static point::get_my_value {self,
-    self.M.my_value
+def point::get_my_value { : point^ ,
+    point.my_value
 }
 
 .# Plain static function
-static point::say_hello {
+def point::say_hello {
     "Hello world!" :P
 }
+
+
+
+.# Usage
+.###############
+
+.# constructor
+2 3 point! :p;
+1 5 point! :q;
+
+.# Use REPR Overload
+"p is " .P p :P
+"q is " .P q :P
+
+.# Addition overload
+"p + q is " .P
+p q + :P
+
+.# Static variables
+"point.my_value is $(point.my_value)" :P
+"p.my_value is $(p.my_value)" :P
+"q.my_value is $(q.my_value)" :P
+"point.get_my_value is $(point.get_my_value)" :P
+
+"Incrementing my_value twice ..." :P
+.# Static functions must be called from the class
+point.inc_my_value
+.# ... or the metatable
+p.M.inc_my_value
+
+"point.my_value is $(point.my_value)" :P

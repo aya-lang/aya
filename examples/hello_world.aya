@@ -1,3 +1,4 @@
-.# Run this script by typing "load scripts/hello_world"hello
+.# Run this script by typing the following in aya
+.# aya> load "examples/hello_world"
 
-"Hello world!" .P
+"Hello world!" :P

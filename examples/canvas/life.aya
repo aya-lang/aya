@@ -1,0 +1,26 @@
+import ::matrix
+import ::golf
+import ::viewmat
+
+.# if there is a canvas open from the previous run, close it
+{cvs.close} {;} .K
+
+.# Life function
+.# Algorithm based off the APL implementation here:
+.# https://www.youtube.com/watch?v=a9xAKttWgP4
+{$1.i$@{.n}:*{.z}:*.FS$3=\4=@&|}:life;
+
+.# Generate initial Matrix
+9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 24 \ .pad :mat;
+
+mat.rows 10 viewmat_scaled :cvs;
+
+mat {
+    life $
+    1 \ - .# invert so viewmat draws black pixels on white canvas
+    .rows cvs.viewmat
+    cvs.show
+
+    10 :Z
+    cvs.isopen
+} W

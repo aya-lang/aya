@@ -9,7 +9,6 @@
 
 {
     "Please input your guess: " .P
-
     .# User input
     :R :guess;
     .# Parse as number

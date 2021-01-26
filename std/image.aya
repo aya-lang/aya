@@ -28,3 +28,11 @@ def image::write {filename self : path^,
         self.data :data;
     } :{image.write}
 }
+
+def image::pixels {self,
+    self.data [self.width self.height * 3] L
+}
+
+def image::channels {self,
+    self.data [self.width self.height * 3] L .T
+}

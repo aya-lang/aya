@@ -1,6 +1,13 @@
 import ::terminal
-import ::color
+from ::color import ::color
 
-"data/xkcd_colors.txt" G .lines :# {
+.# Print all the colors in the XKCD color list
+.# If the terminal supports it, all colors will be printed using their own color
+
+"https://xkcd.com/color/rgb.txt" G .lines
+.# Filter to only select lines with colors in them
+{"\t#" N\; :1 =!} I
+.# Map over the list and print each color
+:# {
     "\t" |~ color.newhex terminal.println_color
 };

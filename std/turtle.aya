@@ -120,7 +120,7 @@ def turtle::pendown {self,
 }
 
 def turtle::penup {self,
-    0 self.:_pen_up
+    0 self.:_pen_down
 }
 
 def turtle::isdown {self,
