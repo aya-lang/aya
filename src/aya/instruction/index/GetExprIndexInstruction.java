@@ -1,5 +1,6 @@
 package aya.instruction.index;
 
+import aya.ReprStream;
 import aya.exceptions.AyaRuntimeException;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -10,6 +11,14 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 
 	public GetExprIndexInstruction(Block index) {
 		_index = index;
+	}
+
+	@Override
+	public ReprStream repr(ReprStream stream) {
+		stream.print(".[");
+		_index.repr(stream, false);
+		stream.print("]");
+		return stream;
 	}
 	
 	protected Obj getIndex() {

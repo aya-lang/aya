@@ -7,6 +7,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import aya.ReprStream;
+import aya.exceptions.AyaException;
 import aya.exceptions.AyaRuntimeException;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -204,8 +205,12 @@ public class Block extends Obj {
 	/** Returns a string representation of the output stack */
 	public String getPrintOutputState() {
 		StringBuilder sb = new StringBuilder();
-		for(Obj o : stack) {
-			sb.append(o.repr(new ReprStream()) + " ");
+		try {
+			for(Obj o : stack) {
+				sb.append(o.repr(new ReprStream()) + " ");
+			}
+		} catch (Exception e) {
+			throw new AyaRuntimeException(e.getMessage() + "\n\tJust after\n" + sb.toString());
 		}
 		return sb.toString();
 	}

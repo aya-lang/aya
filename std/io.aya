@@ -262,7 +262,7 @@ def file::__repr__ {self,
             {"<stream(" self.isinput {"R"} {"W"} .? "):"}
             "<closed:"
         .?
-        self.path.__str__ ">"
+        self.path P ">"
     ]S
 }
 

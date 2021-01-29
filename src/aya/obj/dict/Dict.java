@@ -11,6 +11,7 @@ import aya.obj.block.Block;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.util.Callable;
 import aya.util.Pair;
 
 /**
@@ -339,8 +340,9 @@ public class Dict extends Obj {
 		if (_meta != null) {
 			Obj repr = _meta._get(SymbolConstants.KEYVAR_REPR);
 			if (repr != null) {
-				if (repr.isa(Obj.BLOCK)) {
-					Block blk_repr = ((Block)repr).duplicate();
+				Block callable = Callable.getCallable(repr);
+				if (callable != null) {
+					Block blk_repr = callable.duplicate();
 					blk_repr.push(this);
 					blk_repr.eval();
 					Obj obj_res = blk_repr.pop();

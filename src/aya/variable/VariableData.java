@@ -140,7 +140,7 @@ public class VariableData {
 		if (_var_sets.size() == 1) {
 			throw new RuntimeException("Variable state error!!");
 		}
-		_var_sets.remove(_var_sets.size()-1).dict.clear();
+		_var_sets.remove(_var_sets.size()-1); // .dict.clear();
 	}
 	
 	public Dict peek() {
