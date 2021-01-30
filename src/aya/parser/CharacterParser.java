@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.SyntaxError;
 
 public class CharacterParser {
 	public static final String TAB_STR = "  ";
@@ -350,8 +350,9 @@ public class CharacterParser {
 	}
 	
 	/**  
-	 * Returns Character.MAX_VALUE if char is invalid */
-	public static char parse(String in) {
+	 * Returns Character.MAX_VALUE if char is invalid 
+	 * @throws SyntaxError */
+	public static char parse(String in) throws SyntaxError {
 		String s = in;
 
 		//Character.initMap() should be called in main somewhere

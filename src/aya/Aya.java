@@ -8,17 +8,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.PatternSyntaxException;
 
-import aya.exceptions.AyaBuildException;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.AyaUserObjRuntimeException;
-import aya.exceptions.AyaUserRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
 import aya.ext.dialog.DialogInstructionStore;
@@ -249,7 +245,7 @@ public class Aya extends Thread {
 	private void run(String str) {
 		try {
 			run(Parser.compile(str, this));
-		} catch (AyaBuildException e) {
+		} catch (ParserException e) {
 			_instance._err.println("SYNTAX ERROR: " + e.getSimpleMessage());
 		}
 	}
@@ -316,6 +312,11 @@ public class Aya extends Thread {
 			if (!s.equals("")) {
 				println(s);
 			}
+		} catch (AyaRuntimeException ex) {
+			ex.print(_instance._err);
+			if (!_callstack.isEmpty()) {
+				_instance._err.print(_callstack.toString());
+			}
 		} catch (Exception e) {
 			_instance._err.println(exToString(e));
 			try {
@@ -342,40 +343,21 @@ public class Aya extends Thread {
 	////////////////////
 	
 	public static String exToString(Exception e) {
-		if (e instanceof TypeError) {
-			return "TYPE ERROR: " + ((TypeError)e).getSimpleMessage();
-		} else if (e instanceof AyaBuildException) {
-			return ((AyaBuildException)e).getSimpleMessage();
-		} else if (e instanceof AyaRuntimeException) {
-			return "ERROR: " + ((AyaRuntimeException)e).getSimpleMessage();
-		} else if (e instanceof PatternSyntaxException) {
-			return exToSimpleStr(e);
-		} else if (e instanceof EmptyStackException) {
-			return "Unexpected empty stack";
-		} else if (e instanceof AyaUserRuntimeException ) {
-			return ((AyaUserRuntimeException)e).getSimpleMessage();
-		} else if (e instanceof IndexOutOfBoundsException) {
-			return ((IndexOutOfBoundsException)e).getMessage();
-		}
-		else {
-			if(PRINT_LARGE_ERRORS) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				pw.println(AyaPrefs.BUG_MESSAGE);
-				e.printStackTrace(pw);
-				return sw.toString();
-			} else {
-				return "Error";
-			}
-		}
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		pw.println(AyaPrefs.BUG_MESSAGE);
+		e.printStackTrace(pw);
+		return sw.toString();
 	}
 	
+	/*
 	private static String exToSimpleStr(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString().split("\n")[0];
 	}
+	*/
 
 
 	public void quit() {
@@ -394,8 +376,8 @@ public class Aya extends Thread {
 
 
 	public static Obj exceptionToObj(Exception e) {
-		if (e instanceof AyaUserObjRuntimeException) {
-			return ((AyaUserObjRuntimeException)e).getObj();
+		if (e instanceof UserObjRuntimeException) {
+			return ((UserObjRuntimeException)e).getObj();
 		} else {
 			return List.fromString(exToString(e));
 		}

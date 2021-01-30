@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import aya.AyaPrefs;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -53,7 +53,7 @@ public class LegacySystemInstruction extends NamedInstruction {
 			if(arg.isa(Obj.STR)) {
 				AyaPrefs.setPrompt(arg.str());
 			} else {
-				throw new AyaRuntimeException("arg 1 MZ: arg must be a string. Received:\n" + arg.repr());
+				throw new ValueError("arg 1 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
 			break;
 		
@@ -70,12 +70,12 @@ public class LegacySystemInstruction extends NamedInstruction {
 					AyaPrefs.resetWorkingDir();
 				} else {
 					if (!AyaPrefs.setWorkingDir(arg.str())) {
-						throw new AyaRuntimeException("arg 3 MZ: arg is not a valid path."
+						throw new ValueError("arg 3 MZ: arg is not a valid path."
 								+ " Did you include a '/' or '\' at the end? Received:\n" + arg.repr());
 					}
 				}
 			}else {
-				throw new AyaRuntimeException("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
+				throw new ValueError("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
 			break;
 		
@@ -91,10 +91,10 @@ public class LegacySystemInstruction extends NamedInstruction {
 					}
 					b.push(new List(obj_dirs));
 				} catch (NullPointerException e) {
-					throw new AyaRuntimeException("arg 4 MZ: arg is not a valid location. Received:\n" + fstr);
+					throw new ValueError("arg 4 MZ: arg is not a valid location. Received:\n" + fstr);
 				}
 			} else {
-				throw new AyaRuntimeException("arg 4 MZ: arg must be a string. Received:\n" + arg.repr());
+				throw new ValueError("arg 4 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
 			break;
 			
@@ -103,10 +103,10 @@ public class LegacySystemInstruction extends NamedInstruction {
 			if(arg.isa(Obj.STR)) {
 				String fstr = arg.str();
 				if(!AyaPrefs.mkDir(fstr)) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
+					throw new ValueError("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
 				}
 			} else {
-				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
+				throw new ValueError("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
 			break;
 		
@@ -115,14 +115,14 @@ public class LegacySystemInstruction extends NamedInstruction {
 			if(arg.isa(Obj.STR)) {
 				String arg_str = arg.str();
 				if(arg_str.equals("")) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + arg_str);
+					throw new ValueError("arg 5 MZ: arg must be a valid name. Received:\n" + arg_str);
 				}
 				String fstr = AyaPrefs.getWorkingDir() + arg.str();
 				if(!AyaPrefs.deleteFile(fstr)) {
-					throw new AyaRuntimeException("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
+					throw new ValueError("arg 5 MZ: arg must be a valid name. Received:\n" + fstr);
 				}
 			} else {
-				throw new AyaRuntimeException("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
+				throw new ValueError("arg 5 MZ: arg must be a string. Received:\n" + arg.repr());
 			}
 			break;
 		
@@ -150,7 +150,7 @@ public class LegacySystemInstruction extends NamedInstruction {
 			break;
 		
 		default:
-			throw new AyaRuntimeException("arg " + cmdID + " MZ: is not a valid command ID");
+			throw new ValueError("arg " + cmdID + " MZ: is not a valid command ID");
 
 		}
 	}

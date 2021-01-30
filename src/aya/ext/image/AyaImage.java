@@ -8,7 +8,7 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
@@ -56,7 +56,7 @@ public class AyaImage {
 	
 	public BufferedImage toBufferedImage() {
 		if (bytes.length() != (width * height * 3)) {
-			throw new AyaRuntimeException("Error when reading image data. Data is invalid length. Must be width*height*3");
+			throw new ValueError("Error when reading image data. Data is invalid length. Must be width*height*3");
 		}
 		
 		byte[] raw = bytes.toByteArray();

@@ -1,7 +1,8 @@
 package aya.parser.tokens;
 
 import aya.Aya;
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.InterpolateStringInstruction;
@@ -28,13 +29,13 @@ public class StringToken extends StdToken {
 	}
 	
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		if (interpolate && data.contains("$"))
 			return parseInterpolateStr(data);
 		return new StringLiteralInstruction(data);
 	}
 
-	private InterpolateStringInstruction parseInterpolateStr(String data) {
+	private InterpolateStringInstruction parseInterpolateStr(String data) throws ParserException {
 		ParserString in = new ParserString(data);
 		StringBuilder sb = new StringBuilder();
 		InstructionStack instrs = new InstructionStack();

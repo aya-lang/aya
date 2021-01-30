@@ -3,7 +3,7 @@ package aya.obj.list;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 
 public class ListAlgorithms {
@@ -99,7 +99,7 @@ public class ListAlgorithms {
 
 	public static <T extends Obj> ArrayList<T> slice(ArrayList<T> list, int i, int j) {
 		if (i >= j) {
-			throw new AyaRuntimeException("Cannot slice list at indices " + i + " and " + j + ".");
+			throw new ValueError("Cannot slice list at indices " + i + " and " + j + ".");
 		}
 
 		ArrayList<T> out = new ArrayList<T>(j - i);

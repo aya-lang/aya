@@ -1,6 +1,6 @@
 package aya.ext.graphics.instruction;
 
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;

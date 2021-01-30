@@ -7,8 +7,9 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.exceptions.AyaException;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.EmptyStackError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
@@ -161,9 +162,14 @@ public class Block extends Obj {
 			try {
 				instr.execute(this);
 			} catch (EmptyStackException es) {
-				throw new AyaRuntimeException("Unexpected empty stack while executing instruction: " + instr);
+				EmptyStackError es2 = new EmptyStackError("Unexpected empty stack while executing instruction: " + instr);
+				es2.addContext(instr, this);
+				throw es2;
 			} catch (NullPointerException npe) {
 				throw new RuntimeException(npe);
+			} catch (AyaRuntimeException are) {
+				are.addContext(instr, this);
+				throw are;
 			}
 		}
 	}
@@ -210,7 +216,7 @@ public class Block extends Obj {
 				sb.append(o.repr(new ReprStream()) + " ");
 			}
 		} catch (Exception e) {
-			throw new AyaRuntimeException(e.getMessage() + "\n\tJust after\n" + sb.toString());
+			throw new ValueError(e.getMessage() + "\n\tJust after\n" + sb.toString());
 		}
 		return sb.toString();
 	}

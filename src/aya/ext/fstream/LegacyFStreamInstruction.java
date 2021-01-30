@@ -1,7 +1,7 @@
 package aya.ext.fstream;
 
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -66,7 +66,7 @@ public class LegacyFStreamInstruction extends NamedInstruction {
 				block.push(Num.fromInt(FStreamManager.info(i)));
 				break;
 			default:
-				throw new AyaRuntimeException("Invalid char for operator 'O': " + c);
+				throw new ValueError("Invalid char for operator 'O': " + c);
 			}
 			
 		} else if (a.isa(Obj.NUMBER)) {

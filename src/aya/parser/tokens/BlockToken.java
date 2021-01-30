@@ -3,7 +3,8 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
@@ -15,10 +16,10 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
-import aya.obj.symbol.Symbol;
 
 public class BlockToken extends CollectionToken {
 	
@@ -30,7 +31,7 @@ public class BlockToken extends CollectionToken {
 
 	
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
@@ -90,7 +91,7 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
-	private Instruction parseMatchInstruction(ArrayList<TokenQueue> blockData) {
+	private Instruction parseMatchInstruction(ArrayList<TokenQueue> blockData) throws ParserException {
 		TokenQueue header = blockData.get(0);
 		String orig_header = header.toString();
 		
@@ -156,7 +157,7 @@ public class BlockToken extends CollectionToken {
 	}
 
 
-	private void parseMatchInstructionConditions(MatchInstruction m, ArrayList<TokenQueue> blockData) {
+	private void parseMatchInstructionConditions(MatchInstruction m, ArrayList<TokenQueue> blockData) throws ParserException {
 		int condition_count = 0;
 		for (int i = 0; i < blockData.size(); i++) {
 			TokenQueue tokens = blockData.get(i);
@@ -223,7 +224,7 @@ public class BlockToken extends CollectionToken {
 		return false;
 	}
 	
-	private Pair<BlockHeader, ArrayList<Symbol>> generateBlockHeader(TokenQueue tokens) {
+	private Pair<BlockHeader, ArrayList<Symbol>> generateBlockHeader(TokenQueue tokens) throws ParserException {
 		BlockHeader header = new BlockHeader();
 		
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
@@ -237,7 +238,7 @@ public class BlockToken extends CollectionToken {
 		return new Pair<BlockHeader, ArrayList<Symbol>>(header, captures);
 	}
 	
-	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) {
+	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
 		String orig = tokens.toString(); // For error reporting
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
@@ -266,8 +267,9 @@ public class BlockToken extends CollectionToken {
 	}
 	
 	/** Assumes args have already been set 
-	 * @param captures */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Symbol> captures) {
+	 * @param captures 
+	 * @throws ParserException */
+	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Symbol> captures) throws ParserException {
 		String orig = tokens.toString();
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
@@ -294,7 +296,7 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
-	private static void generateBlockHeaderDefaultsError(String orig) {
+	private static void generateBlockHeaderDefaultsError(String orig) throws SyntaxError {
 		throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
 	}
 		
@@ -307,8 +309,9 @@ public class BlockToken extends CollectionToken {
 	 * the colon is not included in any
 	 * @param tokens
 	 * @return
+	 * @throws SyntaxError 
 	 */
-	private static Pair<TokenQueue, TokenQueue> splitAtColon(TokenQueue tokens) {
+	private static Pair<TokenQueue, TokenQueue> splitAtColon(TokenQueue tokens) throws SyntaxError {
 		ArrayList<Token> ts = tokens.getArrayList();
 		int colons = 0;
 		int colon_index = 0;

@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.EmptyStackError;
+import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.obj.Obj;
@@ -98,7 +98,9 @@ public class BlockHeader extends Instruction {
 			try {
 				o = block.pop();
 			} catch (EmptyStackException e) {
-				throw new AyaRuntimeException("Empty stack in initializer (" + init.getValue().toString() + ")");
+				EmptyStackError ese = new EmptyStackError("Empty stack in block initializer (" + init.getValue().toString() + ")");
+				ese.addContext(b);
+				throw ese;
 			}
 			vars.set(init.getKey(), o);
 		}

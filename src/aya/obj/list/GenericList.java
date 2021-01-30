@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
@@ -75,7 +75,7 @@ public class GenericList extends ListImpl {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
 			if (!_list.get(i).isa(Obj.NUMBER)) {
-				throw new AyaRuntimeException("Cannot convert list " + repr() + " to a numeric list.");
+				throw new ValueError("Cannot convert list " + repr() + " to a numeric list.");
 			} else {
 				out.add((Number)(_list.get(i)));
 			}
@@ -204,7 +204,7 @@ public class GenericList extends ListImpl {
 			if (o.isa(Obj.STR)) {
 				strs.add(Casting.asStr(o));
 			} else {
-				throw new AyaRuntimeException("Cannot sort generic list: " + repr());
+				throw new ValueError("Cannot sort generic list: " + repr());
 			}
 		}
 		Collections.sort(strs);
@@ -216,7 +216,7 @@ public class GenericList extends ListImpl {
 	public void set(int i, Obj o) {
 		if (o.hashCode() == this.hashCode())
 		{
-			throw new AyaRuntimeException("Cannot set list as member of itself");
+			throw new ValueError("Cannot set list as member of itself");
 		}
 		// Decrement the _char / _num counter
 		Obj old = _list.get(i);

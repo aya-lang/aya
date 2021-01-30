@@ -3,8 +3,10 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.exceptions.EndOfInputError;
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.EndOfInputError;
+import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -65,7 +67,7 @@ import aya.parser.tokens.VarToken;
  */
 public class Parser {
 
-	public static TokenQueue tokenize(Aya aya, String s) {
+	public static TokenQueue tokenize(Aya aya, String s) throws ParserException {
 		TokenQueue tokens = new TokenQueue();
 		ParserString in = new ParserString(s);
 
@@ -432,7 +434,7 @@ public class Parser {
 		return tokens;
 	}
 
-	public static NumberToken parseNumber(ParserString in) {
+	public static NumberToken parseNumber(ParserString in) throws EndOfInputError, SyntaxError {
 		if (!in.hasNext()) {
 			throw new SyntaxError("Attempted to parse empty number string");
 		}
@@ -474,7 +476,7 @@ public class Parser {
 		}
 	}
 
-	public static TokenQueue assemble(TokenQueue in) {
+	public static TokenQueue assemble(TokenQueue in) throws EndOfInputError, SyntaxError {
 		TokenQueue out = new TokenQueue();
 
 		while (in.hasNext()) {
@@ -523,8 +525,10 @@ public class Parser {
 	/**
 	 * Assumes the first delim has been removed input = 1 2 3] output = out.add(new
 	 * Token(Token.LIST, data))
+	 * @throws EndOfInputError 
+	 * @throws SyntaxError 
 	 */
-	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out) {
+	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out) throws EndOfInputError, SyntaxError {
 		TokenQueue innerTokens = new TokenQueue();
 		StringBuilder debugStr = new StringBuilder();
 		boolean complete = false;
@@ -569,7 +573,7 @@ public class Parser {
 
 	}
 
-	public static InstructionStack generate(TokenQueue tokens_in) {
+	public static InstructionStack generate(TokenQueue tokens_in) throws ParserException {
 		InstructionStack is = new InstructionStack();
 		TokenStack stk = new TokenStack(tokens_in);
 
@@ -737,16 +741,16 @@ public class Parser {
 
 	}
 	
-	private static String formatString(String input) {
+	private static String formatString(String input) throws EndOfInputError, SyntaxError {
 		ParserString in = new ParserString(input + "\"");
 		return parseString(in);
 	}
 
-	private static String parseString(ParserString in) {
+	private static String parseString(ParserString in) throws EndOfInputError, SyntaxError {
 		return parseString(in, '"');
 	}
 
-	private static String parseString(ParserString in, char termination) {
+	private static String parseString(ParserString in, char termination) throws EndOfInputError, SyntaxError {
 		boolean complete = false;
 		StringBuilder str = new StringBuilder();
 		while (in.hasNext()) {
@@ -845,20 +849,26 @@ public class Parser {
 	/**
 	 * Compiles a string into a code block using input => tokenize => assemble =>
 	 * generate
+	 * @throws ParserException 
+	 * @throws SyntaxError 
+	 * @throws EndOfInputError 
 	 */
-	public static Block compile(String s, Aya aya) {
+	public static Block compile(String s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
 		return new Block(generate(assemble(tokenize(aya, s))));
 	}
 
 	/**
 	 * Compiles a string into instruction stack using input => tokenize => assemble
 	 * => generate
+	 * @throws ParserException 
+	 * @throws SyntaxError 
+	 * @throws EndOfInputError 
 	 */
-	public static InstructionStack compileIS(String s, Aya aya) {
+	public static InstructionStack compileIS(String s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
 		return generate(assemble(tokenize(aya, s)));
 	}
 
-	private static String parseOpSym(ParserString in) {
+	private static String parseOpSym(ParserString in) throws EndOfInputError, SyntaxError {
 		String opstr = "" + in.peek(); // For printing error message
 		OpInstruction op = null;
 		char opchar = in.next();
@@ -881,7 +891,11 @@ public class Parser {
 				}
 			}
 		} else if (Ops.isOpChar(opchar)) {
-			op = Ops.getOp(opchar);
+			try {
+				op = Ops.getOp(opchar);
+			} catch (NotAnOperatorError e) {
+				throw new SyntaxError(e.getMessage());
+			}
 		}
 
 		if (op == null) {

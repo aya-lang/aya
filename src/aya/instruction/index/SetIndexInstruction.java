@@ -1,7 +1,7 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;

@@ -1,7 +1,7 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
 import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -21,7 +21,7 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 		} else if (list.isa(Obj.DICT)) {
 			block.push(DictIndexing.getIndex((Dict)list, index));
 		} else {
-			throw new TypeError(Ops.getOp('I'), index, list);
+			throw new TypeError(Ops.OP_I_INSTANCE, index, list);
 		}
 	}
 

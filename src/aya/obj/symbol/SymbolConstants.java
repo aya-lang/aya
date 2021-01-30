@@ -43,8 +43,9 @@ public class SymbolConstants {
 	public static final Symbol WIDTH 	= S.getSymbol("width");
 	public static final Symbol HEIGHT 	= S.getSymbol("height");
 	public static final Symbol SCALE 	= S.getSymbol("scale");
-	public static final Symbol AUTOFLUSH 	= S.getSymbol("autoflush");
+	public static final Symbol AUTOFLUSH= S.getSymbol("autoflush");
 	public static final Symbol SHOW 	= S.getSymbol("show");
+	public static final Symbol MSG    	= S.getSymbol("msg");
 
 	public static final Symbol DAY_OF_WEEK 	= S.getSymbol("day_of_week");
 	public static final Symbol YEAR 		= S.getSymbol("year");
@@ -78,4 +79,17 @@ public class SymbolConstants {
 	public static final Symbol KEYVAR_BOOL    	= S.getSymbol("__bool__");
 	public static final Symbol KEYVAR_PUSHSELF  = S.getSymbol("__pushself__");
 	public static final Symbol __CALL__    		= S.getSymbol("__call__");
+
+	public static final Symbol UNDEF_VAR 		= S.getSymbol("undef_var");
+	public static final Symbol SYNTAX_ERR 		= S.getSymbol("syntax_err");
+	public static final Symbol VALUE_ERR 		= S.getSymbol("value_err");
+	public static final Symbol TYPE_ERR 		= S.getSymbol("type_err");
+	public static final Symbol INVALID_REF_ERR  = S.getSymbol("invalid_ref_err");
+	public static final Symbol IO_ERR 			= S.getSymbol("io_err");
+	public static final Symbol EMPTY_STACK_ERR  = S.getSymbol("empty_stack_err");
+	public static final Symbol END_OF_INPUT_ERR = S.getSymbol("end_of_input");
+	public static final Symbol PARSER_ERR 		= S.getSymbol("parser_err");
+	public static final Symbol INDEX_ERR 		= S.getSymbol("index_err");
+	public static final Symbol MATH_ERR 		= S.getSymbol("math_err");
+	public static final Symbol NOT_AN_OP_ERROR = S.getSymbol("not_an_op_err");
 }

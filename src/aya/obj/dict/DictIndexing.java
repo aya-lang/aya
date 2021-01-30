@@ -5,6 +5,7 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
@@ -44,14 +45,14 @@ public class DictIndexing {
 		} else if (index.isa(Obj.BLOCK)) {
 			return filter(dict, (Block)index);
 		} else {
-			throw new AyaKeyError(dict, index, true);
+			throw new IndexError(dict, index, true);
 		}
 	}
 
 	public static Obj getIndex(Dict list, Obj index, Obj dflt_val) {
 		try {
 			return getIndex(list, index);
-		} catch (AyaKeyError e) {
+		} catch (IndexError e) {
 			return dflt_val;
 		}
 	}

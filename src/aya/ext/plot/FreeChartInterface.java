@@ -19,7 +19,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
 import aya.AyaPrefs;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.ValueError;
 
 @SuppressWarnings("serial")
 public class FreeChartInterface extends JFrame 
@@ -99,11 +100,11 @@ public class FreeChartInterface extends JFrame
 				   file = new File(path); 
 				   ChartUtilities.saveChartAsJPEG(file, chart, cp.getWidth(), cp.getHeight());
 			   } else {
-				   throw new AyaRuntimeException("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
+				   throw new ValueError("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
 						   + "Received: " + cp.getFilename());
 			   }
 		   } catch (IOException e) {
-			   throw new AyaRuntimeException("Unable to save plot to " + path);
+			   throw new IOError("plot", path, e);
 		   }
 	   }
 	   
@@ -122,7 +123,7 @@ public class FreeChartInterface extends JFrame
 		   try {
 			   dataset.addSeries(series);
 		   } catch (IllegalArgumentException e) {
-			   throw new AyaRuntimeException("Plot: Each series must have a unique (or empty) name");
+			   throw new ValueError("Plot: Each series must have a unique (or empty) name");
 		   }
 	   }
 	         

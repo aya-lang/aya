@@ -2,7 +2,7 @@ package aya.ext.graphics.instruction;
 
 import java.awt.BasicStroke;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
@@ -25,7 +25,7 @@ public class SetStrokeGraphicsInstruction extends GraphicsInstruction {
 		try {
 			cvs.getG2D().setStroke(new BasicStroke(width, cap, join));
 		} catch (IllegalArgumentException e) {
-			throw new AyaRuntimeException("Invalid parameters for setstroke: " + width + " " + cap + " " + join);
+			throw new ValueError("Invalid parameters for setstroke: " + width + " " + cap + " " + join);
 		}
 	}
 

@@ -2,7 +2,7 @@ package aya.ext.graphics.instruction;
 
 import java.awt.geom.GeneralPath;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
@@ -23,13 +23,13 @@ public class PathGraphicsInstruction extends GraphicsInstruction {
 		double[] xs = _reader.popNumberList().todoubleArray();
 		
 		if (xs.length != ys.length) {
-			throw new AyaRuntimeException(
+			throw new ValueError(
 					":{graphics.path} : 'xs' and 'ys' must be the same length. Got xs(" +
 					xs.length + "), ys(" + ys.length + ")");
 		}
 		
 		if (xs.length == 0) {
-			throw new AyaRuntimeException(
+			throw new ValueError(
 					":{graphics.path} : 'xs' and 'ys' must contain at least 1 point.");
 		}
 		

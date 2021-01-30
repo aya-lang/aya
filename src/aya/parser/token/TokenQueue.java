@@ -2,7 +2,7 @@ package aya.parser.token;
 
 import java.util.ArrayList;
 
-import aya.exceptions.EndOfInputError;
+import aya.exceptions.ex.EndOfInputError;
 import aya.parser.tokens.Token;
 
 public class TokenQueue  {

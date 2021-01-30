@@ -2,7 +2,7 @@ package aya.obj.symbol;
 
 import java.util.HashMap;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 
 public class SymbolTable {
 	
@@ -82,7 +82,7 @@ public class SymbolTable {
 		}
 		
 		if (sym.equals("")) {
-			throw new AyaRuntimeException("Can't create symbol from string \"" + str + "\"");
+			throw new ValueError("Can't create symbol from string \"" + str + "\"");
 		}
 		
 		return sym;

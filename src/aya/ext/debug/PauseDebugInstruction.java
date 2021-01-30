@@ -2,6 +2,7 @@ package aya.ext.debug;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.exceptions.ex.ParserException;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.block.Block;
 import aya.parser.Parser;
@@ -33,9 +34,18 @@ public class PauseDebugInstruction extends NamedInstruction {
 				print(""); // newline
 				break;
 			}
-			Block b = Parser.compile(input, Aya.getInstance());
-			b.eval();
-			print(b.getPrintOutputState());
+			
+			Block b = null;
+			try {
+				b = Parser.compile(input, Aya.getInstance());
+			} catch (ParserException e) {
+				print("Error parsing expression '" + input + "':\n" + e.getMessage());
+			}
+			
+			if (b != null) {
+				b.eval();
+				print(b.getPrintOutputState());
+			}
 		}
 	}
 

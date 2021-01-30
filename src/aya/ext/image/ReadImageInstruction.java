@@ -8,8 +8,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -38,7 +38,7 @@ public class ReadImageInstruction extends NamedInstruction {
 		try {
 			image = loadImage(filename);
 		} catch (IOException e) {
-			throw new AyaRuntimeException(opName() + ", Unable to read image: '" + filename + "'\n" + e.getMessage());
+			throw new IOError(opName(), filename, e.getMessage());
 		}
 		
 		block.push(image.toDict());

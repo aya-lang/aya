@@ -2,7 +2,8 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
@@ -20,7 +21,7 @@ public class ListToken extends CollectionToken {
 
 	
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		if (col.size() == 0) {
 			return EmptyListLiteralInstruction.INSTANCE;
 		}
@@ -88,7 +89,7 @@ public class ListToken extends CollectionToken {
 		} //End switch
 	}
 	
-	private static int parsePops(ArrayList<Token> arr) {
+	private static int parsePops(ArrayList<Token> arr) throws SyntaxError {
 		int pops = 0;
 		//Do we need to pop from the outer stack?
 		if (arr.size() > 1 

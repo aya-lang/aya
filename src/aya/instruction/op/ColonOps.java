@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.AyaUserObjRuntimeException;
-import aya.exceptions.SyntaxError;
-import aya.exceptions.TypeError;
+import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UserObjRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.Instruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
@@ -161,10 +161,10 @@ public class ColonOps {
 	}
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) {
+	public static OpInstruction getOp(char c) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new SyntaxError("Colon operator ':" + c + "' does not exist");
+			throw new NotAnOperatorError(":" + c);
 		} else {
 			return op;
 		}
@@ -197,7 +197,7 @@ class OP_Colon_Bang extends OpInstruction {
 			error.set(SymbolConstants.MESSAGE, List.fromString("AssertionError"));
 			error.set(SymbolConstants.EXPECTED, a);
 			error.set(SymbolConstants.RECEIVED, b);
-			throw new AyaUserObjRuntimeException(error);
+			throw new UserObjRuntimeException(error);
 		}
 	}
 }
@@ -271,7 +271,7 @@ class OP_Colon_Duplicate extends OpInstruction {
 			int i = ((Number)a).toInt();
 			
 			if (i > size || i <= 0) {
-				throw new AyaRuntimeException(i + " :$ stack index out of bounds");
+				throw new ValueError(i + " :$ stack index out of bounds");
 			} else {
 				while (i > 0) {
 					final Obj cp = block.getStack().get(size - i);
@@ -402,7 +402,7 @@ class OP_Colon_Equals extends OpInstruction {
 				Aya aya = Aya.getInstance();
 				aya.getVars().setVar(aya.getSymbols().getSymbol(s), obj);
 			} else {
-				throw new AyaRuntimeException(":= Invalid identifier: '" + s + "'");
+				throw new ValueError(":= Invalid identifier: '" + s + "'");
 			}
 		} else {
 			throw new TypeError(this, sym, obj);
@@ -702,7 +702,7 @@ class OP_Colon_M extends OpInstruction {
 				Dict locals = (Dict)o;
 				bh = new BlockHeader(locals);
 			} else {
-				throw new AyaRuntimeException("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
+				throw new ValueError("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
 			}
 		} else {
 			bh = new BlockHeader();
@@ -718,7 +718,7 @@ class OP_Colon_M extends OpInstruction {
 					bh.addArg(new BlockHeader.Arg(info.first(), info.second(), info.third()));
 				}
 			} else {
-				throw new AyaRuntimeException("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
+				throw new ValueError("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
 			}
 		}
 		
@@ -738,7 +738,7 @@ class OP_Colon_M extends OpInstruction {
 		} else if (obj.isa(SYMBOL)) {
 			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, ANY, false);
 		} else {
-			throw new AyaRuntimeException("::dict ::block .M: key 'args' must be a list of dicts or symbols");
+			throw new ValueError("::dict ::block .M: key 'args' must be a list of dicts or symbols");
 		}
 	}
 }
@@ -761,7 +761,7 @@ class OP_Colon_O extends OpInstruction {
 			if (sym.name().equals("ops")) {
 				block.push(OpInfo.getDict());
 			} else {
-				throw new AyaRuntimeException("':O': Unknown symbol " + sym.name());
+				throw new ValueError("':O': Unknown symbol " + sym.name());
 			}
 		} else {
 			throw new TypeError(this, a);

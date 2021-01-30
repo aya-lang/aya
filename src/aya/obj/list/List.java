@@ -1,15 +1,16 @@
 package aya.obj.list;
 
+import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
-import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.IndexError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -127,7 +128,7 @@ public class List extends Obj {
 			}
 			return new List(new GenericList(outer_list));
 		} else {
-			throw new AyaRuntimeException("Cannot transpose list: " + repr());
+			throw new ValueError("Cannot transpose list: " + repr());
 		}
 	}
 	
@@ -164,10 +165,10 @@ public class List extends Obj {
 	//Yes I know this is gross, i'll fix it later...
 	public List reshape(NumberList dims) {
 		if (dims.length() == 0)
-			throw new AyaRuntimeException("reshape: must have non-empty dims");
+			throw new ValueError("reshape: must have non-empty dims");
 		
 		if (dims.length() > 5)
-			throw new AyaRuntimeException("reshape: maximum rank of 5, recieved rank " 
+			throw new ValueError("reshape: maximum rank of 5, recieved rank " 
 					+ dims.length() + " resulting from " + dims.repr());
 		
 		NDListIterator<Obj> iter = new NDListIterator<Obj>(this);
@@ -188,7 +189,7 @@ public class List extends Obj {
 			return reshape(iter, ds[0], ds[1], ds[2], ds[3], ds[4]);
 		}
 		
-		throw new AyaRuntimeException("reshape: invalid dimensions: " + dims.repr());
+		throw new ValueError("reshape: invalid dimensions: " + dims.repr());
 	}
 	
 	private static List reshape(NDListIterator<Obj> iter, int count) {
@@ -247,7 +248,7 @@ public class List extends Obj {
 			}
 			
 			else if (iter1.done() || iter2.done()) {
-				throw new AyaRuntimeException("element-wise equals, dimension mismatch:\n\tlist1:\n"
+				throw new ValueError("element-wise equals, dimension mismatch:\n\tlist1:\n"
 						+ repr() + "\n\tlist2:\n" + l2.repr());
 			}
 			
@@ -496,21 +497,31 @@ public class List extends Obj {
 		
 	/** Get the 0-indexed item from the list */
 	public Obj getExact(int i) {
-		return _list.get(i);
+		try {
+			return _list.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			throw new IndexError(this, Num.fromInt(i));
+		}
 	}
 
 	/** Get the 0-indexed item from the list */
 	public Obj getExact(int i, Obj dflt) {
-		if (i < 0 || i >= _list.length()) {
-			return dflt;
-		} else {
+		try {
 			return _list.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			return dflt;
 		}
 	}
 	
 	/** Get the 0-indexed items from the list */
 	public List getExact(int[] is) {
-		return new List(_list.get(is));
+		try {
+			return new List(_list.get(is));
+		} catch (IndexOutOfBoundsException e) {
+			List l = new List();
+			for (int i = 0; i < is.length; i++) l.mutAdd(Num.fromInt(is[i]));
+			throw new IndexError(this, l);
+		}
 	}
 
 	/** Get the 0-indexed items from the list */
@@ -769,7 +780,7 @@ public class List extends Obj {
 				List l_item = (List)item;
 				
 				if (l_item.length() == 0) {
-					throw new AyaRuntimeException("Cannot set index of list using empty item list:\n"
+					throw new ValueError("Cannot set index of list using empty item list:\n"
 							+ "list:\t" + repr() + "\n"
 							+ "index:\t" +  index.repr() + "\n"
 							+ "items:\t" + item.repr() + "\n");

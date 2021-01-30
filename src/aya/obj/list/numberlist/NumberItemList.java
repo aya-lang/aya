@@ -1,19 +1,19 @@
 package aya.obj.list.numberlist;
 
+import static aya.util.Casting.asNumber;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
-
-import static aya.util.Casting.asNumber;
 
 /** List containing a list of Number objects */
 public class NumberItemList extends NumberList {
@@ -37,9 +37,9 @@ public class NumberItemList extends NumberList {
  		int numOfItems = NumberMath.div(NumberMath.sub(hi, lo), inc).floor().toInt() + 1;
 	
 		if(numOfItems > 10000000) {
-			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new ValueError("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
-			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
+			throw new ValueError("Cannot create range containing a negative number of elements in"
 					+ " ["+ lo.repr(new ReprStream()) +" "+ NumberMath.add(lo,inc).repr(new ReprStream()) +" "+ hi.repr(new ReprStream()) +"]" );
 		}
 		
@@ -645,7 +645,7 @@ public class NumberItemList extends NumberList {
 
 	private void boundsCheck(NumberList a, NumberList b) {
 		if (a.length() != b.length())
-			throw new AyaRuntimeException("List length mismatch\n"
+			throw new ValueError("List length mismatch\n"
 					+ "  " + a.str() + "\n  " + b.str());
 	}
 	

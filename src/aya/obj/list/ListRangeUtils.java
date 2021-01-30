@@ -1,13 +1,13 @@
 package aya.obj.list;
 
-import aya.exceptions.AyaRuntimeException;
+import static aya.util.Casting.asList;
+
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
-
-import static aya.util.Casting.*;
 
 public class ListRangeUtils {
 
@@ -45,9 +45,9 @@ public class ListRangeUtils {
 		int numOfItems = 1 + (int) Math.floor((upper-lower)/inc);
 		
 		if(numOfItems > 10000000) {
-			throw new AyaRuntimeException("Cannot create range with more than 10^7 elements"); 
+			throw new ValueError("Cannot create range with more than 10^7 elements"); 
 		} else if (numOfItems < 0) {
-			throw new AyaRuntimeException("Cannot create range containing a negative number of elements in"
+			throw new ValueError("Cannot create range containing a negative number of elements in"
 					+ " ["+lower+" "+(lower+inc)+" "+upper+"]" );
 		}
 		
@@ -84,7 +84,7 @@ public class ListRangeUtils {
 			else if (o.isa(Obj.LIST)) {
 				return asList(o).impl();
 			} else {
-				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());	
+				throw new ValueError("ListBuilder: Cannot create list from " + args.repr());	
 			}
 
 		//List range has 2 arguments
@@ -102,7 +102,7 @@ public class ListRangeUtils {
 				}
 				return new Str(charRange(lo,hi,inc));
 			} else {
-				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+				throw new ValueError("ListBuilder: Cannot create list from " + args.repr());
 			}
 			
 		//List range has 3 arguments
@@ -118,12 +118,12 @@ public class ListRangeUtils {
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return new Str(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {
-				throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+				throw new ValueError("ListBuilder: Cannot create list from " + args.repr());
 			}
 		
 		//List range has 3 or more arguments
 		default:
-			throw new AyaRuntimeException("ListBuilder: Cannot create list from " + args.repr());
+			throw new ValueError("ListBuilder: Cannot create list from " + args.repr());
 		}
 	}	
 	

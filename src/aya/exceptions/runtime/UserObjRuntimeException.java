@@ -1,6 +1,7 @@
-package aya.exceptions;
+package aya.exceptions.runtime;
 
 import aya.obj.Obj;
+import aya.obj.symbol.Symbol;
 
 /**
  * A special runtime exception with a basic message. The exception is
@@ -9,10 +10,10 @@ import aya.obj.Obj;
  *
  */
 @SuppressWarnings("serial")
-public class AyaUserObjRuntimeException extends AyaRuntimeException {
+public class UserObjRuntimeException extends AyaRuntimeException {
 	Obj obj;
 	
-	public AyaUserObjRuntimeException(Obj obj) {
+	public UserObjRuntimeException(Obj obj) {
 		super(obj.str());
 		this.obj = obj;
 	}
@@ -23,5 +24,10 @@ public class AyaUserObjRuntimeException extends AyaRuntimeException {
 
 	public Obj getObj() {
 		return obj;
+	}
+
+	@Override
+	public Symbol typeSymbol() {
+		return Obj.IDToSym(obj.type());
 	}
 }

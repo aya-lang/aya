@@ -11,8 +11,8 @@ import org.json.JSONTokener;
 import org.json.XML;
 
 import aya.Aya;
-import aya.exceptions.AyaException;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.ex.AyaException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -141,7 +141,7 @@ public class JSONUtils {
 		} else if (object instanceof Boolean) {
 			return (Boolean)object ? params.obj_true : params.obj_false;
 		} else {
-			throw new AyaException("Unsupported type: " + object.toString());
+			throw new ValueError("Unsupported type: " + object.toString());
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class JSONUtils {
 			ArrayList<Pair<Symbol, Obj>> items = d.items();
 			for (Pair<Symbol, Obj> e : items) {
 				if (vc.hasVisited(e.second())) {
-					throw new AyaRuntimeException("JSON: Circular reference detected when serializing json object. key: " + e.first());
+					throw new ValueError("JSON: Circular reference detected when serializing json object. key: " + e.first());
 				} else {
 					out.put(e.first().name(), toJSON(e.second(), params, vc));
 				}
@@ -173,7 +173,7 @@ public class JSONUtils {
 			for (int i = 0; i < l.length(); i++) {
 				Obj e = l.getExact(i);
 				if (vc.hasVisited(e)) {
-					throw new AyaRuntimeException("JSON: Circular reference detected when serializing list at index " + i);
+					throw new ValueError("JSON: Circular reference detected when serializing list at index " + i);
 				} else {
 					arr.put(toJSON(e, params, vc));
 				}
@@ -193,7 +193,7 @@ public class JSONUtils {
 				return sym.name();
 			}
 		} else {
-			throw new RuntimeException("Unable to convert object to json: " + o.repr());
+			throw new ValueError("Unable to convert object to json: " + o.repr());
 		}
 	}
 	
@@ -206,9 +206,9 @@ public class JSONUtils {
 		try {
 			return toObj(readJSON(s), params);
 		} catch (JSONException e) {
-			throw new AyaRuntimeException(e.getLocalizedMessage());
+			throw new ValueError(e.getLocalizedMessage());
 		} catch (AyaException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new ValueError(e.getMessage());
 		}
 	}
 
@@ -216,9 +216,9 @@ public class JSONUtils {
 		try {
 			return toObj(readXML(s), params);
 		} catch (JSONException e) {
-			throw new AyaRuntimeException(e.getLocalizedMessage());
+			throw new ValueError(e.getLocalizedMessage());
 		} catch (AyaException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new ValueError(e.getMessage());
 		}
 	}
 	

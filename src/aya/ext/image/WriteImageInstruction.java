@@ -6,8 +6,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -36,7 +37,7 @@ public class WriteImageInstruction extends NamedInstruction {
 		String filename = dr.getStringEx(Aya.getInstance().getSymbols().getSymbol("filename"));
 		String ext = getExt(filename);
 		if (ext.equals("")) {
-			throw new AyaRuntimeException(opName() + ", filename does not have a valid extension");
+			throw new ValueError(opName() + ", filename does not have a valid extension");
 		}
 		
 		AyaImage aya_image = AyaImage.fromDict(dr);
@@ -44,11 +45,9 @@ public class WriteImageInstruction extends NamedInstruction {
 		try {
 			ImageIO.write(aya_image.toBufferedImage(), ext, new File(filename));
 		} catch (IOException e) {
-			e.printStackTrace(Aya.getInstance().getErr());
-			throw new AyaRuntimeException(opName() + ", unable to write image to file'" + filename + "'");
+			throw new IOError(opName(), filename, e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace(Aya.getInstance().getErr());
-			throw new AyaRuntimeException(opName() + ", unable to write image to file'" + filename + "'");
+			throw new IOError(opName(), filename, e.getMessage());
 		}
 	}
 	

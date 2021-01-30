@@ -4,7 +4,7 @@ import java.io.File;
 import java.math.BigInteger;
 
 import aya.AyaPrefs;
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.Str;
@@ -100,7 +100,7 @@ public class SpecialNumberParser {
 		return c >= 'a' && c <= 'z';
 	}
 	
-	public Obj toNumber() {
+	public Obj toNumber() throws SyntaxError {
 		try {
 			switch (_sep) {
 			case NEG:
@@ -218,7 +218,7 @@ public class SpecialNumberParser {
 		}
 	}
 	
-	private Obj toConstVal() {
+	private Obj toConstVal() throws SyntaxError {
 		int i = Integer.parseInt(_fst);
 		if (i < 0 || i > AyaPrefs.CONSTS.length) {
 			throw new SyntaxError(":" + _fst + 
@@ -259,7 +259,7 @@ public class SpecialNumberParser {
 	/* ?*/ public static final String S_EMPTY = "";
 	
 	
-	private String toStrVal() {
+	private String toStrVal() throws SyntaxError {
 		if (_snd.equals("")) {
 			int id = 0;
 			try {

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.mathlibrary.exception.CalculatorException;
 import com.mathlibrary.function.Complex;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.MathError;
 import aya.obj.Obj;
 import aya.util.MathUtils;
 import aya.util.StringUtils;
@@ -107,7 +107,7 @@ public class ComplexNum extends Number {
 		try {
 			return new ComplexNum(Complex.div(_val, other._val));
 		} catch (CalculatorException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new MathError(e.getMessage());
 		}
 	}
 
@@ -117,7 +117,7 @@ public class ComplexNum extends Number {
 		try {
 			return new ComplexNum(floor(Complex.div(_val, other._val)));
 		} catch (CalculatorException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new MathError(e.getMessage());
 		}
 	}
 	
@@ -200,7 +200,7 @@ public class ComplexNum extends Number {
 		try {
 			return new ComplexNum(_val.tan());
 		} catch (CalculatorException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new MathError(e.getMessage());
 		}
 	}
 
@@ -219,7 +219,7 @@ public class ComplexNum extends Number {
 		try {
 			return new ComplexNum(_val.atan());
 		} catch (CalculatorException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new MathError(e.getMessage());
 		}
 	}
 

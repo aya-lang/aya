@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
@@ -90,7 +91,7 @@ public class Dict extends Obj {
 	public Obj get(Symbol key) {
 		Obj o = _get(key, null);
 		if (o == null) {
-			throw new AyaKeyError(this, key);
+			throw new IndexError(this, key);
 		} else {
 			return o;
 		}
@@ -435,7 +436,7 @@ public class Dict extends Obj {
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set((Symbol)index, value);
 		} else {
-			throw new AyaKeyError(dict, index);
+			throw new IndexError(dict, index);
 		}
 	}
 

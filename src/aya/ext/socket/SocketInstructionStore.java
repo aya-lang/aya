@@ -2,8 +2,8 @@ package aya.ext.socket;
 
 import java.io.IOException;
 
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
@@ -32,7 +32,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 						result = socket_manager.openServer(ip, port);
 					} catch (IOException e) {
 						result = SocketManager.NULL_ID;
-						throw new AyaRuntimeException(e);
+						throw new IOError(opName(), ip + ":" + port, e);
 					}
 					
 					block.push(Num.fromInt(result));
@@ -64,7 +64,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 						int result = socket_manager.openClient(ip, port);
 						block.push(Num.fromInt(result));
 					} catch (IOException e) {
-						throw new AyaRuntimeException(e);
+						throw new IOError(opName(), ip + ":" + port, e);
 					}
 					
 				} else {
@@ -86,7 +86,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 					try {
 						sock.send(data);
 					} catch (IOException e) {
-						throw new AyaRuntimeException(e);
+						throw new IOError(opName(), sock.getAddr() + ":" + sock.getPort(), e);
 					}
 				} else {
 					throw new TypeError(this, "SN");

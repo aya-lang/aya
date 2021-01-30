@@ -3,7 +3,7 @@ package aya.ext.graphics.instruction;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;

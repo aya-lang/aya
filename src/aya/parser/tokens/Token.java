@@ -1,6 +1,7 @@
 package aya.parser.tokens;
 
 import aya.TypeIDs;
+import aya.exceptions.ex.ParserException;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 
@@ -60,7 +61,7 @@ public abstract class Token {
 		return data;
 	}
 	
-	abstract public Instruction getInstruction();	
+	abstract public Instruction getInstruction() throws ParserException;	
 	abstract public String typeString();
 	
 	public String toString() {

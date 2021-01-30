@@ -1,6 +1,6 @@
 package aya.instruction.index;
 
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;

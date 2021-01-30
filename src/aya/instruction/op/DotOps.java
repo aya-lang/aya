@@ -29,10 +29,15 @@ import java.util.Stack;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.AyaUserObjRuntimeException;
-import aya.exceptions.SyntaxError;
-import aya.exceptions.TypeError;
+import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.InternalAyaRuntimeException;
+import aya.exceptions.runtime.MathError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UserObjRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
 import aya.instruction.ListBuilderInstruction;
 import aya.obj.Obj;
@@ -160,10 +165,10 @@ public class DotOps {
 	};
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) {
+	public static OpInstruction getOp(char c) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new SyntaxError("Dot operator '." + c + "' does not exist");
+			throw new NotAnOperatorError("." + c);
 		} else {
 			return op;
 		}
@@ -204,17 +209,20 @@ class OP_Dot_Bang extends OpInstruction {
 			block.push( new List(asNumberList(o).signnum()) );
 		} else if (o.isa(STR)) {
 			String numStr = o.str().trim();
+			ParserString ps = new ParserString(numStr);
+			Number n;
 			try {
-				ParserString ps = new ParserString(numStr);
-				Number n = Parser.parseNumber(ps).numValue();
-				if (ps.hasNext()) {
-					// The full string wasn't used, it is not completely a number
-					block.push(o);
-				} else {
-					block.push(n);
-				}
-			} catch (SyntaxError e) {
+				n = Parser.parseNumber(ps).numValue();
+			} catch (ParserException e) {
+				// Error converting to number
 				block.push(o);
+				return;
+			}
+			if (ps.hasNext()) {
+				// The full string wasn't used, it is not completely a number
+				block.push(o);
+			} else {
+				block.push(n);
 			}
 		} else if (o.isa(BLOCK)) {
 			block.push(((Block)o).duplicateNoHeader());
@@ -270,7 +278,7 @@ class OP_Dot_Duplicate extends OpInstruction {
 			int i = ((Number)a).toInt();
 
 			if (i > size || i <= 0) {
-				throw new AyaRuntimeException(i + " .$ stack index out of bounds");
+				throw new ValueError(i + " .$ stack index out of bounds");
 			} else {
 				final Obj cp = block.getStack().get(size - i);
 				block.push(cp.deepcopy());
@@ -303,7 +311,7 @@ class OP_Dot_Percent extends OpInstruction {
 				//b idiv a
 				block.push(NumberMath.idiv(asNumber(b), asNumber(a)));
 			} catch (ArithmeticException e) {
-				throw new AyaRuntimeException("%: Divide by 0");
+				throw new MathError("Divide by 0 in expression " + b.str() + " " + a.str() + " .%");
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( new List(asNumberList(a).idivFrom((Number)b)) );
@@ -470,7 +478,7 @@ class OP_Dot_Plus extends OpInstruction {
 					if (s.isa(SYMBOL)) {
 						capture(blk, (Symbol)s);
 					} else {
-						throw new AyaRuntimeException(".+ Expected list of symbols. Got:\n" + a.repr());
+						throw new ValueError(".+ Expected list of symbols. Got:\n" + a.repr());
 					}
 				}
 			}
@@ -750,7 +758,7 @@ class OP_Dot_At extends OpInstruction {
 			int i = ((Number)a).toInt();
 
 			if (i > size || i <= 0) {
-				throw new AyaRuntimeException(i + " .@ stack index out of bounds");
+				throw new ValueError(i + " .@ stack index out of bounds");
 			} else {
 				final Obj cp = block.getStack().get(size - i);
 				block.getStack().remove(size - i);
@@ -836,7 +844,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 				Collections.sort(items);
 
 			} catch (ClassCastException e) {
-				throw new AyaRuntimeException(".C: all objects must be comparable to each other");
+				throw new ValueError(".C: all objects must be comparable to each other");
 			}
 
 
@@ -882,7 +890,7 @@ class OP_Dot_Error extends OpInstruction {
 
 	@Override
 	public void execute (Block block) {
-		throw new AyaUserObjRuntimeException(block.pop());
+		throw new UserObjRuntimeException(block.pop());
 	}
 }
 
@@ -959,9 +967,9 @@ class OP_Dot_Write extends OpInstruction {
 				try {
 				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				}catch (IOException e) {
-				    throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
+				    throw new IOError(".G", fstr, e);
 				} catch (InvalidPathException ipe) {
-					throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
+				    throw new IOError(".G", fstr, "Invalid path");
 				}
 			}
 
@@ -969,14 +977,14 @@ class OP_Dot_Write extends OpInstruction {
 				try {
 				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 				}catch (IOException e) {
-				    throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
-				}  catch (InvalidPathException ipe) {
-					throw new AyaRuntimeException("Cannot open file '" + fstr + "'");
+				    throw new IOError(".G", fstr, e);
+				} catch (InvalidPathException ipe) {
+				    throw new IOError(".G", fstr, "Invalid path");
 				}
 			}
 
 			else {
-			    throw new AyaRuntimeException(".U: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
+			    throw new ValueError(".G: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
 			}
 			return;
 		}
@@ -1032,13 +1040,17 @@ class OP_Dot_TryCatch extends OpInstruction {
 				Aya.getInstance().getCallStack().popCheckpoint();
 				Aya.getInstance().getVars().popCheckpoint();
 				block.appendToStack(b.getStack());
-			} catch (Exception e) {
+			} catch (AyaRuntimeException e) {
 				Aya.getInstance().getCallStack().rollbackCheckpoint();
 				Aya.getInstance().getVars().rollbackCheckpoint();
 				Block b = ((Block)catchBlock).duplicate();
-				b.push(Aya.exceptionToObj(e));
+				//b.push(Aya.exceptionToObj(e));
+				b.push(e.getObj());
 				b.eval();
 				block.appendToStack(b.getStack());
+			} catch (Exception e2) {
+				// An actual bug
+				throw e2;
 			}
 		}
 	}
@@ -1351,13 +1363,17 @@ class OP_Dot_Tilde extends OpInstruction {
 		final Obj a = block.pop();
 
 		if (a.isa(STR)) {
-			block.push( Parser.compile(a.str(), Aya.getInstance()) );
+			try {
+				block.push( Parser.compile(a.str(), Aya.getInstance()) );
+			} catch (ParserException e) {
+				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
+			}
 			return;
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
 			final String varname = CharacterParser.getName(c);
 			if(varname == null) {
-				throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
+				throw new ValueError("Character '" + c + " is not a valid variable");
 			}
 
 			Obj e = Aya.getInstance().getVars().getVar(Aya.getInstance().getSymbols().getSymbol(varname));

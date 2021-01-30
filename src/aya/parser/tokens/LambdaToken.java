@@ -3,6 +3,7 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.exceptions.ex.ParserException;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
@@ -35,7 +36,7 @@ public class LambdaToken extends CollectionToken {
 	}
 	
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		
 		//Is it a negative number?
 		if(col.size() == 2 && col.get(0).isa(Token.OP)){
@@ -80,16 +81,18 @@ public class LambdaToken extends CollectionToken {
 		return "block";
 	}
 	
-	/** Does not generate instructions for sections after the first (if they exist) */
-	public InstructionStack generateInstructionsForFirst() {
+	/** Does not generate instructions for sections after the first (if they exist) 
+	 * @throws ParserException */
+	public InstructionStack generateInstructionsForFirst() throws ParserException {
 		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		return Parser.generate(lambdaData.get(0));
 	}
 
 	/**
 	 * Should copy in init will only be false if the value is a variable reference
+	 * @throws ParserException 
 	 */
-	public Pair<Boolean, Obj> getInnerConstObj() {
+	public Pair<Boolean, Obj> getInnerConstObj() throws ParserException {
 		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		InstructionStack is = Parser.generate(lambdaData.get(0));
 		if (is.size() != 1) return null;

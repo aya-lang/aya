@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import aya.AyaPrefs;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
@@ -35,10 +35,10 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						}
 						block.push(new List(obj_dirs));
 					} catch (NullPointerException e) {
-						throw new AyaRuntimeException(":{sys.readdir} : arg is not a valid location. Received:\n" + fstr);
+						throw new ValueError(":{sys.readdir} : arg is not a valid location. Received:\n" + fstr);
 					}
 				} else {
-					throw new AyaRuntimeException(":{sys.readdir} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":{sys.readdir} : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -64,12 +64,12 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						AyaPrefs.resetWorkingDir();
 					} else {
 						if (!AyaPrefs.setWorkingDir(arg.str())) {
-							throw new AyaRuntimeException("arg 3 MZ: arg is not a valid path."
+							throw new ValueError("arg 3 MZ: arg is not a valid path."
 									+ " Did you include a '/' or '\' at the end? Received:\n" + arg.repr());
 						}
 					}
 				} else {
-					throw new AyaRuntimeException("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -83,10 +83,10 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if(arg.isa(Obj.STR)) {
 					String fstr = arg.str();
 					if(!AyaPrefs.mkDir(fstr)) {
-						throw new AyaRuntimeException(":{sys.mkdir} : arg must be a valid name. Received:\n" + fstr);
+						throw new ValueError(":{sys.mkdir} : arg must be a valid name. Received:\n" + fstr);
 					}
 				} else {
-					throw new AyaRuntimeException(":{sys.mkdir} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":{sys.mkdir} : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -115,14 +115,14 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if(arg.isa(Obj.STR)) {
 					String arg_str = arg.str();
 					if(arg_str.equals("")) {
-						throw new AyaRuntimeException(":{sys.rm} : arg must be a valid name. Received:\n" + arg_str);
+						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + arg_str);
 					}
 					String fstr = AyaPrefs.getWorkingDir() + arg.str();
 					if(!AyaPrefs.deleteFile(fstr)) {
-						throw new AyaRuntimeException(":{sys.rm} : arg must be a valid name. Received:\n" + fstr);
+						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + fstr);
 					}
 				} else {
-					throw new AyaRuntimeException(":{sys.rm} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":{sys.rm} : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});

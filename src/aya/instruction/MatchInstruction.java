@@ -3,7 +3,7 @@ package aya.instruction;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
@@ -86,7 +86,7 @@ public class MatchInstruction extends Instruction {
 			if (condition.stackEmpty()) {
 				Block msg = _conditions.get(i).duplicate();
 				msg.addStack(init);
-				throw new AyaRuntimeException("Empty stack after execution condition " + msg.repr());
+				throw new EmptyStackError("Empty stack after execution condition " + msg.repr());
 			}
 			Obj cond = condition.pop();
 			if (cond.bool()) {

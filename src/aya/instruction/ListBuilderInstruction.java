@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
@@ -63,7 +63,7 @@ public class ListBuilderInstruction extends Instruction {
 				if(size == -1) {
 					size = listArgs.get(0).length();
 				} else if (size != listArgs.get(i).length()) {
-					throw new AyaRuntimeException("List Builder: All lists must be same length");
+					throw new ValueError("List Builder: All lists must be same length");
 				}
 			}
 			

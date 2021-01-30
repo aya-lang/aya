@@ -13,8 +13,8 @@ import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
-import static aya.util.Casting.asSymbol;
 import static aya.util.Casting.asStr;
+import static aya.util.Casting.asSymbol;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +33,14 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.IndexError;
+import aya.exceptions.runtime.InternalAyaRuntimeException;
+import aya.exceptions.runtime.MathError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
@@ -73,6 +79,9 @@ public class Ops {
 	
 	
 	public static final char FIRST_OP = '!';
+	protected static final OpInstruction OP_PLUS = new OP_Plus();
+	public static final OpInstruction OP_I_INSTANCE = new OP_GetIndex();
+	
 	public static final OpInstruction[] OPS = {
 		/* 33 !  */ new OP_Bang(),
 		/* 34 "  */ null, // String
@@ -84,7 +93,7 @@ public class Ops {
 		/* 40 (  */ null, // Lambda
 		/* 41 )  */ null, // Lambda
 		/* 42 *  */ new OP_Times(),
-		/* 43 +  */ new OP_Plus(),
+		/* 43 +  */ OP_PLUS,
 		/* 44 ,  */ null, // Delimiter
 		/* 45 -  */ new OP_Minus(),
 		/* 46 .  */ null, // Dot Operators
@@ -108,7 +117,7 @@ public class Ops {
 		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
-		/* 73 I  */ new OP_GetIndex(),
+		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
 		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
@@ -170,7 +179,7 @@ public class Ops {
 				|| c == '~';
 	}
 	
-	public static OpInstruction getOp(char op) {
+	public static OpInstruction getOp(char op) throws NotAnOperatorError {
 		if ((op >= 33 && op <= 47) || (op >= 59 && op <= 96)) {
 			return OPS[op-FIRST_OP];
 		} else if (op == '~') {
@@ -178,7 +187,7 @@ public class Ops {
 		} else if (op == '|') {
 			return BAR;
 		} else {
-			throw new RuntimeException("Operator " + op + " does not exist");
+			throw new NotAnOperatorError(""+op);
 		}
 	}
 	
@@ -214,7 +223,7 @@ class OP_Bang extends OpInstruction {
 			} else {
 				//Create a new empty dict with the input as its metatable
 				//block.push(new Dict((Dict)o));
-				throw new AyaRuntimeException("! : keyword __new__ not found");
+				throw new IndexError(d, SymbolConstants.KEYVAR_NEW);
 			}
 		} else {
 			throw new TypeError(this,o);
@@ -244,7 +253,7 @@ class OP_Pound extends OpInstruction {
 				map.add(popped);
 				
 				if (block.stackEmpty()) {
-					throw new AyaRuntimeException("Could not find list to map to\n"
+					throw new ValueError("Could not find list to map to\n"
 							+ "\t in " + block.toString() + "\n"
 							+ "\t map using " + map);
 				} else {
@@ -295,7 +304,7 @@ class OP_Percent extends OpInstruction {
 				//b mod a
 				block.push(NumberMath.mod(asNumber(b), asNumber(a)));
 			} catch (ArithmeticException e) {
-				throw new AyaRuntimeException("%: Divide by 0");
+				throw new MathError("Divide by 0 in expression " + b.str() + " " + a.str() + "%" );
 			}
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			block.push( new List(asNumberList(a).modFrom((Number)b)) );
@@ -722,7 +731,7 @@ class OP_B extends OpInstruction {
 			} else if (o.isa(CHAR)) {
 				Aya.getInstance().getVars().setVar(var, ((Char)o).inc());
 			}  else {
-				throw new AyaRuntimeException("Cannot increment " + o.repr() 
+				throw new ValueError("Cannot increment " + o.repr() 
 				+ " in place in call " + a.repr() + " V");
 			}
 		} else if (a.isa(LIST)) {
@@ -732,7 +741,7 @@ class OP_B extends OpInstruction {
 				block.push(l);
 				block.push(popped);
 			} else {
-				throw new AyaRuntimeException("B: unable to remove element from empty list");
+				throw new ValueError("B: unable to remove element from empty list");
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -906,7 +915,7 @@ class OP_G extends OpInstruction {
 					block.push(List.fromString(sb.toString()));
 				}
 				catch(IOException ex) {
-					throw new AyaRuntimeException("Cannot read URL: " + name);
+					throw new IOError("G", name, ex);
 				} finally {
 					if(scnr != null)
 						scnr.close();
@@ -921,7 +930,7 @@ class OP_G extends OpInstruction {
 				try {
 					block.push( List.fromString(FileUtils.readAllText(path)) );
 				} catch (IOException e) {
-					throw new AyaRuntimeException("Cannot open file: " + new File(path).getAbsolutePath());
+					throw new IOError("G", new File(path).getAbsolutePath(), e);
 				} 
 			}
 			return;
@@ -960,7 +969,7 @@ class OP_H extends OpInstruction {
 								from_base != 0
 								&& to_base != 0
 								)){
-					throw new AyaRuntimeException("H: base out of range (" + from_base + ", " + to_base + ")");
+					throw new ValueError("H: base out of range (" + from_base + ", " + to_base + ")");
 				}
 				
 				//String
@@ -986,7 +995,7 @@ class OP_H extends OpInstruction {
 								if (c == 1 || c == 0) {
 									sb.append(c);
 								} else {
-									throw new AyaRuntimeException("H: List must be base 2");
+									throw new ValueError("H: List must be base 2");
 								}
 								
 							}
@@ -1000,7 +1009,7 @@ class OP_H extends OpInstruction {
 						}
 						out_bi = new BigInteger(in_bytes);
 					} else {
-						throw new AyaRuntimeException("H: List must be base 2 or bytes (base 0)");
+						throw new ValueError("H: List must be base 2 or bytes (base 0)");
 					}
 				}
 				
@@ -1046,7 +1055,7 @@ class OP_H extends OpInstruction {
 			}
 		}
 		catch (NumberFormatException nfe) {
-			throw new AyaRuntimeException("H: invalid number format (" 
+			throw new ValueError("H: invalid number format (" 
 					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
 		}
 		
@@ -1166,7 +1175,7 @@ class OP_L extends OpInstruction {
 			int repeats = ((Number)n).toInt();
 
 			if(repeats < 0) {
-				throw new AyaRuntimeException("Cannot create list with negative number of elements");
+				throw new ValueError("Cannot create list with negative number of elements " + repeats);
 			}
 
 			if (item.isa(CHAR)) {
@@ -1409,7 +1418,7 @@ class OP_S extends OpInstruction {
 				}
 				//Push all but the last item
 				for(int i = list.length()-1; i > 0; i--) {
-					block.add(Ops.getOp('+'));
+					block.add(Ops.OP_PLUS);
 					block.add(list.getExact(i));
 				}
 				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
@@ -1509,7 +1518,7 @@ class OP_V extends OpInstruction {
 			} else if (o.isa(CHAR)) {
 				Aya.getInstance().getVars().setVar(var, ((Char)o).dec());
 			} else {
-				throw new AyaRuntimeException("Cannot decrement " + o.repr() 
+				throw new ValueError("Cannot decrement " + o.repr() 
 						+ " in place in call " + a.repr() + " V");
 			}
 		} else if (a.isa(LIST)) {
@@ -1519,7 +1528,7 @@ class OP_V extends OpInstruction {
 				block.push(l);
 				block.push(popped);
 			} else {
-				throw new AyaRuntimeException("V: unable to remove element from empty list");
+				throw new ValueError("V: unable to remove element from empty list");
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1627,7 +1636,7 @@ class OP_Z extends OpInstruction {
 			try	{
 				block.push(new BigNum(new BigDecimal(a.str())));
 			} catch (NumberFormatException e) {
-				throw new AyaRuntimeException("Cannot cast " + a.str() + " to bignum");
+				throw new ValueError("Cannot cast " + a.str() + " to bignum");
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1752,7 +1761,11 @@ class OP_Tilde extends OpInstruction {
 		if(a.isa(BLOCK)) {
 			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
 		} else if (a.isa(STR)) {
-			block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
+			try {
+				block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
+			} catch (ParserException e) {
+				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
+			}
 		} else if (a.isa(CHAR)) {
 			final char c = ((Char)a).charValue();
 			if (c >= '0' && c <= '9') {
@@ -1760,7 +1773,7 @@ class OP_Tilde extends OpInstruction {
 			} else {
 				final String varname = CharacterParser.getName(c);
 				if(varname == null) {
-					throw new AyaRuntimeException("Character '" + c + " is not a valid variable");
+					throw new ValueError("Character '" + c + " is not a valid variable");
 				}
 				block.add(new GetVariableInstruction(Aya.getInstance().getSymbols().getSymbol(varname)));
 			}

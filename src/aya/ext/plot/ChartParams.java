@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -125,7 +125,7 @@ public class ChartParams {
 		
 		List xValues = getList("x", params, null);
 		if (xValues == null) {
-			throw new AyaRuntimeException("MX: input dict does not contain key 'x'");
+			throw new ValueError("MX: input dict does not contain key 'x'");
 		} else {
 			cp.setXvalues(parseData(xValues));
 		}
@@ -133,7 +133,7 @@ public class ChartParams {
 		List series = getList("y", params, null);
 		
 		if (series == null) {
-			throw new AyaRuntimeException("MX: input dict does not contain key 'y'");
+			throw new ValueError("MX: input dict does not contain key 'y'");
 		}
 		
 		//Parse the series (must be the last step)
@@ -150,7 +150,7 @@ public class ChartParams {
 				if (o_stroke.isa(Obj.NUMBER)) {
 					stroke = (Number)o_stroke;
 				} else {
-					throw new AyaRuntimeException("Series key 'stroke' must be a number");
+					throw new ValueError("Series key 'stroke' must be a number");
 				}
 				
 				Obj o_color = getParam("color", dict, Num.ZERO);  // Use '0' if not given
@@ -158,7 +158,7 @@ public class ChartParams {
 				if (o_color.isa(Obj.LIST)) {
 					color = parseColor(asList(o_color));
 				} else {
-					throw new AyaRuntimeException("Series key 'color' must be a list of numbers [r g b]");
+					throw new ValueError("Series key 'color' must be a list of numbers [r g b]");
 				}
 				
 				Obj o_data = getParam("data", dict, Num.ZERO);  // Use '0' if not given
@@ -166,7 +166,7 @@ public class ChartParams {
 				if (o_data.isa(Obj.LIST)) {
 					data = asList(o_data).toNumberList().toArrayList();
 				} else {
-					throw new AyaRuntimeException("Series key 'data' must be a list of numbers");
+					throw new ValueError("Series key 'data' must be a list of numbers");
 				}
 				
 				
@@ -191,7 +191,7 @@ public class ChartParams {
 					((Number)(list.getExact(2))).toInt()
 					);
 		} else {
-			throw new AyaRuntimeException("Invalid color: " + list.repr());
+			throw new ValueError("Invalid color: " + list.repr());
 		}
 	}
 	
@@ -208,11 +208,11 @@ public class ChartParams {
 				
 				return new Pair<Double, Double>(n_max.toDouble(), n_min.toDouble());
 			} else {
-				throw new AyaRuntimeException("Axis max/min must have 2 numbers\n"
+				throw new ValueError("Axis max/min must have 2 numbers\n"
 						+ "Received: " + list.repr());
 			}
 		} else {
-			throw new AyaRuntimeException("Axis max/min must have both max and min values\n"
+			throw new ValueError("Axis max/min must have both max and min values\n"
 					+ "Received: " + list.repr());
 		}
 	}
@@ -222,7 +222,7 @@ public class ChartParams {
 		if (o instanceof Number) {
 			return (Number)o;
 		} else if (o != null) {
-			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a number."
+			throw new ValueError("MX: Param name '" + name + "' should be a number."
 					+ " Received " + o.repr());
 		} else {
 			return null;
@@ -234,7 +234,7 @@ public class ChartParams {
 		if (o instanceof Symbol) {
 			return (Symbol)o;
 		} else if (o != null) {
-			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a symbol."
+			throw new ValueError("MX: Param name '" + name + "' should be a symbol."
 					+ " Received " + o.repr());
 		} else {
 			return (Symbol)dflt;
@@ -246,7 +246,7 @@ public class ChartParams {
 		if (o instanceof List) {
 			return asList(o);
 		} else if (o != null) {
-			throw new AyaRuntimeException("MX: Param name '" + name + "' should be a list."
+			throw new ValueError("MX: Param name '" + name + "' should be a list."
 					+ " Received " + o.repr());
 		} else {
 			return null;

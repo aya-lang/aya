@@ -1,7 +1,7 @@
 package aya.parser.tokens;
 
 import aya.Aya;
-import aya.exceptions.AyaBuildException;
+import aya.exceptions.ex.ParserException;
 import aya.instruction.Instruction;
 import aya.instruction.named.NamedInstruction;
 
@@ -12,12 +12,12 @@ public class NamedOpToken extends StdToken {
 	}
 
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		NamedInstruction instruction = Aya.getInstance().getNamedInstruction(data);
 		if (instruction != null) {
 			return instruction;
 		} else {
-			throw new AyaBuildException("Named instruction :{" + data + "} does not exist");
+			throw new ParserException("Named instruction :{" + data + "} does not exist");
 		}
 	}
 

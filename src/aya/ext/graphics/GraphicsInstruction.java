@@ -1,7 +1,8 @@
 package aya.ext.graphics;
 
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.InvalidReferenceError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -34,17 +35,16 @@ public abstract class GraphicsInstruction extends NamedInstruction {
 			throw new TypeError(this, _arg_type_string + " " + _name + " first invalid canvas id ", o_id);
 		}
 
-		Canvas cvs = _canvas_table.getCanvas(Casting.asNumber(o_id).toInt());
-		if (cvs == null) {
-			throw new AyaRuntimeException("Canvas with id '" + canvas_id + "' does not exist");
-		} else if (!cvs.isOpen()) {
-			throw new AyaRuntimeException("Canvas with id '" + canvas_id + "' has been closed");
+		Canvas cvs = _canvas_table.getCanvas(canvas_id);
+
+		if (cvs == null || !cvs.isOpen()) {
+			throw new InvalidReferenceError(this._name, canvas_id);
 		}
 		
 		try {
 			doCanvasCommand(cvs, block);
 		} catch (IllegalArgumentException e) {
-			throw new AyaRuntimeException(e.getMessage());
+			throw new ValueError(e.getMessage());
 		}
 		
 	}

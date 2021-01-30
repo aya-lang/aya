@@ -2,10 +2,9 @@ package aya.instruction.variable;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.dict.AyaKeyError;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 
@@ -33,12 +32,12 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 					o = dict.get(variable_);
 					//b.push(kv_obj);
 					b.push(o);
-				} catch (AyaKeyError e) {
-					throw new AyaRuntimeException("Built in type " + typeSym + 
+				} catch (IndexError e) {
+					throw new IndexError("Built in type " + typeSym + 
 							" does not contain member '" + varName() + "'");
 				}
 			} else {
-				throw new AyaRuntimeException("Built in type " + typeSym + " was redefined to " + builtin_dict);
+				throw new RuntimeException("Built in type " + typeSym + " was redefined to " + builtin_dict);
 			}
 			
 		}

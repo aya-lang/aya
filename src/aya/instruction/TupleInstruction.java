@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
@@ -31,7 +31,8 @@ public class TupleInstruction extends Instruction {
 			try {
 				b.eval();
 			} catch (EmptyStackException e) {
-				throw new AyaRuntimeException("Empty Stack in tuple");
+				EmptyStackError e2 = new EmptyStackError("Empty stack during evaluation of tuple");
+				e2.addContext(elements[i]);
 			}
 			out.add(b.pop());
 		}

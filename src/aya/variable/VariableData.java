@@ -8,8 +8,10 @@ import java.util.Stack;
 
 import aya.Aya;
 import aya.InteractiveAya;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
+import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
@@ -67,7 +69,14 @@ public class VariableData {
 		nil_meta.set(SymbolConstants.KEYVAR_STR, nil_str);
 		nil_meta.set(SymbolConstants.KEYVAR_REPR, nil_str);
 		nil_meta.set(SymbolConstants.KEYVAR_PUSHSELF, Num.ONE);
-		nil_meta.set(SymbolConstants.KEYVAR_EQ, Parser.compile("; :T ::__nil =", aya));
+		
+		Block nil_eq = null;
+		try {
+			nil_eq = Parser.compile("; :T ::__nil =", aya);
+		} catch (ParserException e) {
+			throw new RuntimeException(e);
+		}
+		nil_meta.set(SymbolConstants.KEYVAR_EQ, nil_eq);
 		
 		OBJ_NIL.setMetaTable(nil_meta);
 	}
@@ -169,7 +178,7 @@ public class VariableData {
 	public Obj getVar(Symbol var) {
 		Obj res = getVarOrNull(var);
 		if (res == null) {
-			throw new AyaRuntimeException("Variable " + var.name() + " not found");
+			throw new UndefVarException(var);
 		} else {
 			return res;
 		}

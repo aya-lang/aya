@@ -3,8 +3,10 @@ package aya.util;
 import java.awt.Color;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.UndefVarException;
+import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.IndexError;
+import aya.exceptions.runtime.UndefVarException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -43,11 +45,11 @@ public class DictReader {
 	}
 	
 	public AyaRuntimeException notFound(Symbol key) throws AyaRuntimeException {
-		return new AyaRuntimeException(_err_name + ": Key '" + key.name() + "' does not exist");
+		return new IndexError(_dict, key, "Error at " + _err_name);
 	}
 	
 	public AyaRuntimeException badType(Symbol key, String type_expected, Obj got) throws AyaRuntimeException {
-		return new AyaRuntimeException(_err_name + ": Expected type ::" + type_expected +" for key '" + key.name() + "' but got " + got.repr());
+		return new ValueError(_err_name + ": Expected type ::" + type_expected +" for key '" + key.name() + "' but got " + got.repr());
 	}
 	
 	public double[] getDoubleArrayEx(Symbol key) {
@@ -88,7 +90,7 @@ public class DictReader {
 			try {
 				return new Color(r,g,b,a);
 			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Invalid color: " + r + "," + g + "," + b + "," + a);
+				throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
 			}
 		} else {
 			throw badType(key, "sym", val);
@@ -175,7 +177,7 @@ public class DictReader {
 			try {
 				return new Color(r,g,b,a);
 			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Invalid color: " + r + "," + g + "," + b + "," + a);
+				throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
 			}
 		} else {
 			return null;

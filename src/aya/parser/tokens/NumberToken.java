@@ -1,5 +1,6 @@
 package aya.parser.tokens;
 
+import aya.exceptions.ex.ParserException;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
@@ -19,7 +20,7 @@ public class NumberToken extends StdToken {
 	}
 
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		if (isSpecNum) {
 			return new DataInstruction(new SpecialNumberParser(data).toNumber());
 		} else {
@@ -38,10 +39,15 @@ public class NumberToken extends StdToken {
 	 */
 	public aya.obj.number.Number numValue() {
 		if (isSpecNum) {
-			Obj o = (new SpecialNumberParser(data)).toNumber();
-			if (o instanceof aya.obj.number.Number) {
-				return (aya.obj.number.Number)o;
-			} else {
+			try {
+				Obj o = (new SpecialNumberParser(data)).toNumber();
+				if (o instanceof aya.obj.number.Number) {
+					return (aya.obj.number.Number)o;
+				} else {
+					throw new NumberFormatException();
+				}
+			} catch (ParserException e) {
+				// Not a valid numeric
 				throw new NumberFormatException();
 			}
 		}

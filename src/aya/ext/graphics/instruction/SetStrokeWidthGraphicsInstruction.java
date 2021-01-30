@@ -2,7 +2,7 @@ package aya.ext.graphics.instruction;
 
 import java.awt.BasicStroke;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
@@ -25,7 +25,7 @@ public class SetStrokeWidthGraphicsInstruction extends GraphicsInstruction {
 		try {
 			cvs.getG2D().setStroke(new BasicStroke(width, prev.getEndCap(), prev.getLineJoin()));
 		} catch (IllegalArgumentException e) {
-			throw new AyaRuntimeException("Invalid parameters for set_stroke_width: " + width);
+			throw new ValueError("Invalid parameters for set_stroke_width: " + width);
 		}
 	}
 	

@@ -1,11 +1,12 @@
-package aya.exceptions;
+package aya.exceptions.runtime;
 
 import aya.instruction.named.NamedInstruction;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
+import aya.obj.symbol.SymbolConstants;
 
 @SuppressWarnings("serial")
-public class TypeError extends RuntimeException {
+public class TypeError extends InternalAyaRuntimeException {
 	String msg;
 	
 	public String getSimpleMessage() {
@@ -13,7 +14,7 @@ public class TypeError extends RuntimeException {
 	}
 	
 	public TypeError(OpInstruction op, Obj... recieved) {
-		super("Type error at (" + op.name + "):\n\tExpected (" 
+		super(SymbolConstants.TYPE_ERR, "Type error at (" + op.name + "):\n\tExpected (" 
 				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved));
 		
@@ -23,7 +24,7 @@ public class TypeError extends RuntimeException {
 	}
 
 	public TypeError(OpInstruction op, String message, Obj... recieved) {
-		super("Type error at (" + op.name + "):\n\t" + message + "\n\tExpected (" 
+		super(SymbolConstants.TYPE_ERR, "Type error at (" + op.name + "):\n\t" + message + "\n\tExpected (" 
 				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved));
 		
@@ -33,7 +34,8 @@ public class TypeError extends RuntimeException {
 	}
 	
 	public TypeError(NamedInstruction inst, String expected, Obj... recieved) {
-		super("Type error at " + inst.getName() + "\n\tExpected (" 
+		super(SymbolConstants.TYPE_ERR,
+				"Type error at " + inst.getName() + "\n\tExpected (" 
 				+ expected
 				+ ")\n\tReceived (" + listStr(recieved));
 		
@@ -43,7 +45,7 @@ public class TypeError extends RuntimeException {
 	}
 	
 	public TypeError(String s) {
-		super(s);
+		super(SymbolConstants.TYPE_ERR, s);
 		msg = s;
 	}
 	

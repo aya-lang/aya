@@ -1,6 +1,6 @@
 package aya.parser;
 
-import aya.exceptions.EndOfInputError;
+import aya.exceptions.ex.EndOfInputError;
 
 public class ParserString {
 	char[] chars;

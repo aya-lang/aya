@@ -1,6 +1,7 @@
 package aya.parser.tokens;
 
-import aya.exceptions.SyntaxError;
+import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
@@ -28,7 +29,7 @@ public class OperatorToken extends StdToken {
 	}
 	
 	@Override
-	public Instruction getInstruction() {
+	public Instruction getInstruction() throws ParserException {
 		OpInstruction op = null;
 		switch (op_type) {
 		case STD_OP:

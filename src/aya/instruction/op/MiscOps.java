@@ -1,7 +1,7 @@
 package aya.instruction.op;
 
-import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.BLOCK;
+import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
@@ -13,9 +13,9 @@ import static aya.util.Casting.asNumberList;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.SyntaxError;
-import aya.exceptions.TypeError;
+import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.obj.Obj;
@@ -138,10 +138,10 @@ public class MiscOps {
 	};
 	
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) {
+	public static OpInstruction getOp(char c) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new SyntaxError("Misc operator 'M" + c + "' does not exist");
+			throw new NotAnOperatorError("M" + c);
 		} else {
 			return op;
 		}
@@ -249,14 +249,14 @@ class OP_Help extends OpInstruction {
 		} else if (s.isa(BLOCK)) {
 			InstructionStack instructions = ((Block)s).getInstructions();
 			if (instructions.isEmpty()) {
-				throw new AyaRuntimeException("Empty block");
+				throw new ValueError("Empty block");
 			} else {
 				Instruction i = instructions.pop();
 				if (i instanceof OpInstruction) {
 					OpInstruction op = (OpInstruction)i;
 					block.push(op.getDoc().toDict());
 				} else {
-					throw new AyaRuntimeException("No doc found for " + s.str());
+					throw new ValueError("No doc found for " + s.str());
 				}
 			}
 		}
@@ -441,7 +441,7 @@ class OP_CastDouble extends OpInstruction {
 			try {
 				block.push(new Num(Double.parseDouble(a.str())));
 			} catch (NumberFormatException e) {
-				throw new AyaRuntimeException("Cannot cast string \""+ a.repr() + "\" to a double.");
+				throw new ValueError("Cannot cast string \""+ a.repr() + "\" to a double.");
 			}
 		} else if (a.isa(NUM)) {
 			block.push(a); //Already a double
@@ -528,7 +528,7 @@ class OP_AddParserChar extends OpInstruction {
 			if (str.length() > 0 && CharacterParser.lalpha(str)) {
 				CharacterParser.add_char(str, ((Char)obj_char).charValue());
 			} else {
-				throw new AyaRuntimeException("Cannot create special character using " + str);
+				throw new ValueError("Cannot create special character using " + str);
 			}
 		} else {
 			throw new TypeError(this, obj_char, obj_name);
@@ -598,7 +598,7 @@ class OP_Primes extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			int i = ((Number)a).toInt();
 			if (i < 0) {
-				throw new AyaRuntimeException("Mp: Input must be positive");
+				throw new ValueError("Mp: Input must be positive");
 			}
 			block.push(new List(NumberItemList.primes(i)));
 		} else {

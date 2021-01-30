@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import aya.ReprStream;
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
@@ -321,7 +321,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 		try {
 			return new Str(new String(bytes, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			throw new AyaRuntimeException(".' Unsuported encoding");
+			throw new ValueError(".' Unsuported encoding");
 		}
 	}
 	
@@ -329,7 +329,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 		try {
 			return _str.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new AyaRuntimeException(":' Unsuported encoding");
+			throw new ValueError(":' Unsuported encoding");
 		}
 	}
 

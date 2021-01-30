@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import aya.exceptions.AyaRuntimeException;
-import aya.exceptions.TypeError;
+import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -32,7 +32,7 @@ public class FormatDateInstruction extends NamedInstruction {
 			try {
 				df = new SimpleDateFormat(df_str, Locale.ENGLISH);
 			} catch (IllegalArgumentException e) {
-				throw new AyaRuntimeException("Invalid date format: '" + df_str + "'");
+				throw new ValueError("Invalid date format: '" + df_str + "'");
 			}
 			
 			Date date = new Date(time);
@@ -40,7 +40,7 @@ public class FormatDateInstruction extends NamedInstruction {
 			try {
 				out = df.format(date);
 			} catch (Exception e) {
-				throw new AyaRuntimeException("Cannot parse time: '" + time + "' as date '" + df_str + "'");
+				throw new ValueError("Cannot parse time: '" + time + "' as date '" + df_str + "'");
 			}
 			block.push(List.fromString(out));
 		} else {

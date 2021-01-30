@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import aya.exceptions.AyaRuntimeException;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.InvalidReferenceError;
 
 public class SocketManager {
 	public static final int NULL_ID = 0;
@@ -50,7 +51,7 @@ public class SocketManager {
 	public AyaSocket getSocket(int id) {
 		AyaSocket sock = _sockets.get(id);
 		if (sock == null) {
-			throw new AyaRuntimeException("Socket " + id + " is either closed or does not exist");
+			throw new InvalidReferenceError("socket", id);
 		} else {
 			return sock;
 		}
@@ -59,7 +60,7 @@ public class SocketManager {
 	public AyaSocketServer getSocketServer(int id) {
 		AyaSocketServer srv = _servers.get(id);
 		if (srv == null) {
-			throw new AyaRuntimeException("Socket " + id + " is either closed or does not exist");
+			throw new InvalidReferenceError("socket", id);
 		} else {
 			return srv;
 		}
@@ -87,10 +88,10 @@ public class SocketManager {
 			try {
 				return storeSocket(srv.accept());
 			} catch (IOException e) {
-				throw new AyaRuntimeException("Unable to accept connection on server with id " + id + ": " + e.getMessage());
+				throw new IOError("socket", srv.getAddr() + ":" + srv.getPort() + " (socket id " + id + ")", e);
 			}
 		} else {
-			throw new AyaRuntimeException("Server with id " + id + " does not exist");
+			throw new InvalidReferenceError("socket", id);
 		}
 	}
 
@@ -100,8 +101,7 @@ public class SocketManager {
 		} else if (_sockets.containsKey(id)) {
 			return _sockets.get(id).getPort();
 		} else {
-			notFound(id);
-			return 0;
+			throw new InvalidReferenceError("socket", id);
 		}
 	}
 
@@ -111,14 +111,7 @@ public class SocketManager {
 		} else if (_sockets.containsKey(id)) {
 			return _sockets.get(id).getAddr().toString();
 		} else {
-			notFound(id);
-			return "";
+			throw new InvalidReferenceError("socket", id);
 		}
 	}
-	
-	private void notFound(int id) {
-		throw new AyaRuntimeException("Server or socket with id " + id + " does not exist");
-	}
-
-
 }
