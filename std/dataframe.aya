@@ -98,12 +98,7 @@ def dataframe::__getindex__ { index self : dataframe^,
             index self._numgetindex
         },
         ::str {
-            self._index index N\; :index_num;
-            index_num :1 = {
-                "dataframe does not contain row '$index'" .D
-            } {
-                index_num self._numgetindex
-            } .?
+            index self._get_col
         },
         {"Unsupported index: $index" .D}
     }

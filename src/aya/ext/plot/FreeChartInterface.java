@@ -3,6 +3,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -11,6 +12,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
@@ -190,6 +193,44 @@ public class FreeChartInterface extends JFrame
 	}
 	
 	
+	private static void configAxes(String type, DictReader plot_dr, XYPlot plot) {
+		boolean is_x = type.equals("xaxis");
+		Dict axis_dict = plot_dr.getDict(sym(type));
+		// If it is not provided, use an empty one so all defaults are used
+		if (axis_dict == null) axis_dict = new Dict(); 
+		
+		DictReader d = new DictReader(axis_dict, "plot." + type);
+
+		if (is_x) {
+			plot.setDomainGridlinePaint(d.getColor(sym("gridline_color"), Color.DARK_GRAY));
+			plot.setDomainGridlinesVisible(d.getBool(sym("gridlines"), false));
+			plot.setDomainZeroBaselineVisible(d.getBool(sym("zeroline"), true));
+		} else {
+			plot.setRangeGridlinePaint(d.getColor(sym("gridline_color"), Color.DARK_GRAY));
+			plot.setRangeGridlinesVisible(d.getBool(sym("gridlines"), false));
+			plot.setRangeZeroBaselineVisible(d.getBool(sym("zeroline"), true));
+		}
+		
+		ValueAxis ax = is_x ? plot.getDomainAxis() : plot.getRangeAxis();
+		ax.setVisible(d.getBool(sym("visible"), true));
+
+		if (d.hasKey(sym("numberformat")) && ax instanceof NumberAxis) {
+			try {
+				((NumberAxis)ax).setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
+			} catch (IllegalArgumentException e) {
+				throw new ValueError(e.getMessage());
+			}
+		}
+		
+		// View limits
+		Symbol lim_key = sym(is_x ? "xlim" : "ylim");
+		if (plot_dr.hasKey(lim_key)) {
+			Pair<Number, Number> lim = plot_dr.getNumberPairEx(lim_key);
+			ax.setRange(lim.first().toDouble(), lim.second().toDouble());
+		}
+
+	}
+	
 	
 	private static JFreeChart drawChart2(Dict plot_dict) {
 		DictReader d = new DictReader(plot_dict, "plot");
@@ -220,37 +261,9 @@ public class FreeChartInterface extends JFrame
 		// Plot config
 		plot.setBackgroundPaint(d.getColor(sym("bgcolor"), Color.WHITE));
 		
-		// X Axis
-		Dict xaxis_dict = d.getDict(sym("xaxis"));
-		// If it is not provided, use an empty one so all defaults are used
-		if (xaxis_dict == null) xaxis_dict = new Dict();
-		DictReader ax = new DictReader(xaxis_dict, "plot.xaxis");
-		plot.setDomainGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
-		plot.setDomainGridlinesVisible(ax.getBool(sym("gridlines"), false));
-		plot.setDomainZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
-		plot.getDomainAxis().setVisible(ax.getBool(sym("visible"), true));
-
-		// Y Axis
-		Dict yaxis_dict = d.getDict(sym("yaxis"));
-		// If it is not provided, use an empty one so all defaults are used
-		if (yaxis_dict == null) yaxis_dict = new Dict();
-		ax = new DictReader(yaxis_dict, "plot.yaxis");
-		plot.setRangeGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
-		plot.setRangeGridlinesVisible(ax.getBool(sym("gridlines"), false));
-		plot.setRangeZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
-		plot.getRangeAxis().setVisible(ax.getBool(sym("visible"), true));
-
-		// X limits
-		if (d.hasKey(sym("xlim"))) {
-			Pair<Number, Number> lim = d.getNumberPairEx(sym("xlim"));
-			plot.getDomainAxis().setRange(lim.first().toDouble(), lim.second().toDouble());
-		}
-
-		// Y limits
-		if (d.hasKey(sym("ylim"))) {
-			Pair<Number, Number> lim = d.getNumberPairEx(sym("ylim"));
-			plot.getRangeAxis().setRange(lim.first().toDouble(), lim.second().toDouble());
-		}
+		// Axes config
+		configAxes("xaxis", d, plot);
+		configAxes("yaxis", d, plot);
 		
 		return chart;
 	}
@@ -307,6 +320,7 @@ public class FreeChartInterface extends JFrame
 		return List.fromString(s);
 	}
 
+	/*
 	public static void main( String[ ] args ) 
 	{		
 		List x1 = new List();
@@ -377,6 +391,7 @@ public class FreeChartInterface extends JFrame
 		
 		plot(params);
 	}
+	*/
 	
 	
 }

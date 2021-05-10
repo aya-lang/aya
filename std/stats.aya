@@ -1,6 +1,7 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 module ::stats
+export ::stats
 
 .#? ::list stats.mean\n  average of a list of numbers
 def stats::mean {

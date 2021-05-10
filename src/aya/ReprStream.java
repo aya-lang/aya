@@ -46,7 +46,10 @@ public class ReprStream {
 	}
 	
 	public void print(String str) {
-		boolean trailing_newline = str.charAt(str.length()-1) == '\n';
+		boolean trailing_newline = false;
+		if (str.length() > 0) {
+			trailing_newline = str.charAt(str.length()-1) == '\n';
+		}
 		String[] ss = str.split("\n");
 		for (int i = 0; i < ss.length; i++) {
 			if (i == ss.length - 1) {
