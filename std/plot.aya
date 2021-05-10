@@ -1,198 +1,96 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+import ::color
 
-.# plot.aya
-.# Defines the plot type
+class ::plot
+class ::dataset
 
-export [::plot]
+.# plot
+.#   data::list : list of plot.dataset objects (see plot.dataset)
+.#   title::str : plot title
+.#   bgcolor::color/str : background color
+.#   color_cycle::list : override the default color cycle
+.#   xlabel,ylabel::str : X,Y axis label
+.#   xaxis,yaxis::dict : axis configuration
+.#       gridlines::bool : show axis gridlines
+.#       gridline_color::color/str : axis gridline color
+.#       zeroline::bool : show axis zero line
+.#       visible::bool : draw axis labels
+.#   xlim,ylim::list ([min,max]) :
+.#       pair containing the X,Y min/max limits for the view
+.#   <any value in dataset params will be used as the default value>
+.#       for example, setting stroke to 10 here will make it the default
+.#       for all lines that do not explicitly provide one
+def plot::__init__ {self,
+    [] self.:data;
 
-{, .# plot
-
-    ::plot :__type__;
-    1 :__pushself__;
-
-    {, .# axis
-        {min::num max::num,
-            {,min:min max:max} plot.axis :M
-        }:__new__;
-    }:axis;
-
-
-    .#? plot.new\n  create a new plot instance with default settings
-    {meta : plt,
-        .# [plot.fieldnamesE,0] plot MO :plt;
-        {,
-            ::line      :plottype
-            500         :width
-            400         :height
-            ""          :title
-            ""          :xlabel
-            ""          :ylabel
-            []          :x
-            []          :y
-            1           :legend
-            :-1         :stroke .# Use individual strokes
-        }
-        meta :M
-    }:__new__;
-
-    .#? ::plot plot.view\n  view the plot in a new window
-    {self::plot,
-        self :{plot.plot}
-    }:view;
-
-    .#? S ::plot plot.save\n  save the plot as a PNG in the working directory with the name S
-    {filename::str self : cpy,
-        self$ :cpy;; .# Create a copy
-        0 cpy.:show;
-        filename  cpy.:filename;
-        cpy :{plot.plot}
-    }:save;
-
-    .#? L<N> ::plot plot.addline\n  add a dataset to the plot using defaults
-    {list::list self,
-        "" 1 [] list self.addseries
-    }:addline;
-
-    .#? L<N> ::plot plot.domain\n  set the domain of the plot
-    {data::list self,
-        data self.:x;
-    }:domain;
-
-    .#? nameS strokeN colorL dataL ::plot plot.addseries\n  add a series to a plot
-    {name::str stroke::num color::list data::list self,
-    .# stroke 0 = then {self.stroke :stroke;}
-        self.y {,
-            name:name
-            stroke:stroke
-            color:color
-            data:data
-        } AK;
-    }:addseries;
-
-    .#? nameS strokeN colorL exprE ::plot plot.addexpr\n  evaluate the expression on the domain of the plot and add it as a series
-    {name::str stroke::num color::list expr::block self,
-        self.y {,
-            name:name
-            stroke:stroke
-            color:color
-            [self.x, expr]:data
-        } AK;
-    }:addexpr;
-
-    .# domainL rangeL plot.scatter\n  return a scatter plot with the given domain and range
-    {domain::list range::list : plt,
-        plot!:plt;
-        ::scatter plt.:plottype;
-        domain plt.domain
-        range plt.addline
-        0.5 plt.:stroke;
-        plt
-    }:scatter;
-
-    .#? domainL rangeL plot.scatterreg\n  plot a scatter plot and a regression plot. print the regression to the console
-    {x::list y::list : reg,
-        x y stats.regression :reg;
-        x y plot.scatter.view
-        x x#reg plot.line.view
-        "Regression: y= $(1reg0reg-)x + ($(0reg))".P
-    }:scatterreg;
-
-    .# domainL rangeL plot.line\n  return a line plot with the given domain and range
-    {domain::list range::list : plt,
-        plot!:plt;
-        domain plt.domain
-        range plt.addline
-        plt
-    }:line;
-
-    .#? munN maxN eE plot.fn\n  plot the function e on the domain (min, max). return a plot instance
-    {min::num max::num ex::block : plt,
-        plot!:plt;
-        minMd maxMd 600.1 linspace plt.domain
-        "" 1 [] {ex} plt.addexpr
-        plt
-    }:fn;
-
-    .#? minN maxN exsL plot.fns\n  plot each function in exs on the domain (min, max). return a plot instance
-    {min::num max::num exs::list : plt,
-        plot!:plt;
-        minMd maxMd 600.1 linspace plt.domain
-        exs # {x,
-            "" 1 [] {x} plt.addexpr
-        };
-        plt
-    }:fns;
-
-    {c::color : plt,
-        plot! :plt;
-        [1 2 2 1 1] plt.domain
-        "" 500 c.rgb [1 1 2 2 1] plt.addseries
-        100 plt.:width;
-        100 plt.:height;
-        [1 2] plt.:yaxis;
-        [1 2] plt.:xaxis;
-        plt.view
-    }:showcolor;
-
-    {cs::list : plt i(0),
-        plot! :plt;
-        100 plt.:width;
-        100 10 csE* + 100 400.clip plt.:height;
-        [1 2] plt.domain
-        cs :# {c,
-            "" 10 c.rgb [i i] plt.addseries
-            ::i B
-        };
-        [1 csE] plt.:yaxis;
-        [1 2] plt.:xaxis;
-        plt.view
-    }:showcolors;
-
-    .#? ::list lineplot\n  draw a quick lineplot of the list
-    {
-        .# Generate a plot object
-        :& .ER\plot.line
-        .# Compute 2% margin on top and bottom
-        \:&.max \.min\K :&{-}F0.02*.|[1|$T\]+ \.:yaxis
-        .# Display the plot
-        .view
-    }:lineplot;
-
-    {"Plot Instance"}:str:repr;
-
-}:plot;
-
-
-.# Add a function to the list metatable
-def ([].M)::x {l::list,
-    l E 2 = {l#:T [::list ::list]= {1} {0} .?} {0} .? {
-        l.[0] l.[1] plot.line.view
-    } {
-        l plot.lineplot
-    } .?
+    {,} self.:yaxis;
+    {,} self.:xaxis;
 }
 
-.# Basic Plotting
 
-.{
-{.X}:plot;
-[(-10)$0.1+10]R:plotrange:pr;             .#? plotrange pr \n  a range from -10 to 10 at 0.1 increments
-{fE,[(-10)$.01+10,f].X}:quickplot;        .#? E quickplot qp \n  plots an expression on the testplot range
-{fE,[(-10)$.01+10,f,0=!].X}:plotnozero;   .#? E plotnozero \n  same as plot but with no zero (avoids div by zero error)
-{$(-2)E+}:dy:ddelta;                      .#? N dt or \{delta} \n  copies the value and adds one-hundredth\n ex: [0dt1,Ms].X
-{(-2)E+}:dx;                              .#? N dx \n  adds one one-hundredth to the value
-.}
+.# plot.dataset
+.#   x::list : domain data
+.#   y::list : range data
+.#   label::str : name of the dataset
+.#   color::color/str : color of line/shapes
+.#   stroke::num : stroke weight (may be non-integer)
+.#   lines::num (bool) : draw lines between points
+.#   points::num (bool) : draw points
+.#   yclip::list ([min,max]) : y values outside of this range will not
+.#       be rendered, they will create a jump in the graph
+def dataset::__init__ {x y params self,
+    x self.:x;
+    y self.:y;
+    self params .+ ;
+}
+
+.# Get y as a list
+.# If y is a block, apply it to x and return a list
+def plot::_get_y {x::list y,
+    y.` :T {?=,
+        ::block (
+            x y :y;
+        ),
+        ::list (
+            .# noop
+        ),
+        "invalid" .D
+    }
+    y
+}
+
+.# Add a dataset to the plot
+def plot::_add_dataset {d::dataset self,
+    d self.data .B ;
+}
+
+.# Generic plot function
+.# Add a new dataset to the plot
+def plot::plot {x::list y params::dict self : dataset^,
+    x (x y.` self.M._get_y) params dataset! self._add_dataset
+}
+
+.# Adds a new dataset to the plot, formatted as a scatter plot
+def plot::scatter {x::list y params::dict self : dataset^ d,
+    x (x y.` self.M._get_y) params dataset! :d;
+    0 d.:lines;
+    1 d.:points;
+    d self._add_dataset
+}
+
+.# Show the plot in a window
+def plot::view {self,
+    "" self.:filename;
+    self :{plot.plot}
+}
 
 
+.# Quick Plot Functions
+.########################
 
-.{? scatter plot example
-  [10,;.Q] [10,;.Q] plot.scatter :p;
-  "A Scatter plot" p.:title
-  p.view
-.}
-
-.{? line plot example
-  10R $#.^ plot.line :p;
-  3 p.:stroke
-  p.view
-.}
+.# Create a line plot with default paramaters and x,y as a dataset
+def ::line {x::list y::list : plt plot^,
+    plot! :p;
+    x y {,} p.plot
+    0 p.:legend;
+    p
+}

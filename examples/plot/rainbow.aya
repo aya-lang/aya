@@ -1,21 +1,20 @@
 .# Draws a rainbow in a plot window
 
 import ::plot
-from ::color import ::colors
 
-plot!:p;
-0 0.9+ pi 0.9- 600.1 linspace p.domain
-[0.857 1.1] p.:yaxis
+plot.plot!:p;
+[0.857 1.1] p.:ylim;
+16 p.:stroke;
+0 p.:legend;
+"A Rainbow" p.:title;
+0 p.yaxis.:visible;
+0 p.xaxis.:visible;
+[ "violet" "indigo" "blue" "green" "yellow" "orange" "red"] p.:color_cycle;
 
-0.011:mul;
-16:s;
+0 0.9+ :1p 0.9- 600.1 linspace :x;
 
-"" s colors.violet.rgb {Ms 1 mul* +} p.addexpr
-"" s colors.indigo.rgb {Ms 2 mul* +} p.addexpr
-"" s colors.blue.rgb   {Ms 3 mul* +} p.addexpr
-"" s colors.green.rgb  {Ms 4 mul* +} p.addexpr
-"" s colors.yellow.rgb {Ms 5 mul* +} p.addexpr
-"" s colors.orange.rgb {Ms 6 mul* +} p.addexpr
-"" s colors.red.rgb    {Ms 7 mul* +} p.addexpr
+7R :# {i,
+    x {Ms i 0.011* +}.use[::i] {,} p.plot
+};
 
 p.view

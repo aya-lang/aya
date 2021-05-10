@@ -1,6 +1,6 @@
 .# Plot Bernstein Polynomials
 
-import "math plot list"
+import ::plot
 
 .# The Bernstein Polynomial generator
 {t i n, n i bin t i ^ * 1 t - n i - ^ *} :bernstein;
@@ -8,18 +8,18 @@ import "math plot list"
 .# coefficient for `n`
 8 :coeff;
 
+plot.plot! :plt;
+0 1 200 linspace :x;
+
 .# generate polynomials
-coeff B R # {x,
-  {a coeff bernstein} {,xV:a} .+
+coeff B .R # {i : f,
+  x ({a coeff bernstein} {,i:a} .+) {,} plt.plot
 }:fns;
 
-.# plot the generated polynomials from 0 to 1
-0 1 fns plot.fns:plt;
-
 .# plot attributes
-"Bernstein Polynomials" plt.:title
-"B_i,$coeff(t)" plt.:ylabel
-"t" plt.:xlabel
+"Bernstein Polynomials" plt.:title;
+"B_(i,$coeff(t))" plt.:ylabel;
+0 plt.:legend;
 plt.view
 
 .# Uncomment to save

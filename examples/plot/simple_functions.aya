@@ -1,26 +1,27 @@
 import ::plot
 import ::math
 
-plot!:p;
+plot.plot!:p;
 
 .# The domain
-0 2pi* 600 linspace p.domain
+0 2pi* 600 linspace :x;
 
 .# Add each function
-"sin" 2 colors.red.rgb    {sin} p.addexpr
-"cos" 2 colors.blue.rgb   {cos} p.addexpr
-"ln"  2 colors.orange.rgb {ln} p.addexpr
+x {sin} {, "sin":label } p.plot
+x {cos} {, "cos":label } p.plot
+x {tan} {, "tan":label [:3 3]:yclip} p.plot
+x {ln}  {, "ln":label  } p.plot
 
 .# Plot title
-"A Sample Expression Plot" p.:title
+"Example Expression Plot" p.:title
 
 .# Other plot parameters
-[(-2) 2] p.:yaxis;
-[0 2pi*] p.:xaxis;
+[:2 2]   p.:ylim;
+[0 :2p]  p.:xlim;
 1        p.:legend;
 "f(x)"   p.:ylabel;
-400      p.:width;
-300      p.:height;
+2        p.:stroke;
+1        p.yaxis.:gridlines;
 
 .# Open the plot window
 p.view

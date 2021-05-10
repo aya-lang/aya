@@ -1,13 +1,15 @@
 .# A simple scatter plot
-
 import ::plot
+
+plot.plot! :plt;
 
 .# Generate random data
 [100,;.Q]:x;
 [100,;.Q]:y;
 
-x y plot.scatter:p;
+x y {,} plt.scatter
 
-"A Scatter Plot" p.:title;
+"A Scatter Plot" plt.:title;
+0 plt.:legend;
 
-p.view
+plt.view

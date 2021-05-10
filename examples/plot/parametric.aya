@@ -1,6 +1,5 @@
 .# Generate a spiral using parametric coordinates
 
-import ::list
 import ::plot
 
 0 100 1000 linspace:t;

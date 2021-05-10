@@ -9,7 +9,7 @@ import ::plot
 10   :a;
 28   :b;
 8`/3 :c;
-0.01 :dt;
+0.005 :dt;
 
 .# List to keep track of state
 []
@@ -24,11 +24,15 @@ import ::plot
 
   .# Append to state list
   \.B
-} 5000 %
+} 50000 %
 
 .# Transpose to separate list of x and y values
-.T ~ plot.line.view
+.T ~ plot.line:plt;
 
+"Lorenz Attractor" plt.:title;
+0.3 plt.:stroke;
+
+plt.view
 
 .# Lorenz attractor golfed (61 chars)
 {

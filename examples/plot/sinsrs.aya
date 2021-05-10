@@ -2,15 +2,16 @@
 
 import::plot
 
-plot!:plt;
-0 4pi* 100 linspace plt.domain
+plot.plot!:plt;
+0 :4p 300 linspace :x;
 
-4R # {n,
-  nP 1 [] {x,[nR [nR,x*Ms],*]S} plt.addexpr
+
+5R # {n,
+  x {x, [nR [nR, x*Ms], *] S} {, nP:label } plt.plot
 };
 
-"Demo: Sine Series" plt.:title
-2 plt.:stroke
-[0 pi4*] plt.:xaxis
+"Sine Series" plt.:title;
+[0 pi4*] plt.:xlim;
+1.5 plt.:stroke;
 
 plt.view
