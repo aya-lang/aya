@@ -165,22 +165,55 @@ public class DictReader {
 		}
 	}
 	
+
+	public Dict getDictEx(Symbol key) {
+		Obj o = _dict.getSafe(key);
+		if (o == null) {
+			throw notFound(key);
+		} else if (!o.isa(Obj.DICT)) {
+			throw badType(key, "dict", o);
+		} else {
+			return (Dict)o;
+		}
+	}
+
 	public Color getColor(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		
-		if (val != null && val.isa(Obj.DICT)) {
-			DictReader c = new DictReader((Dict)val);
-			int r = c.getInt(R, 0);
-			int g = c.getInt(G, 0);
-			int b = c.getInt(B, 0);
-			int a = c.getInt(A, 255);
-			try {
-				return new Color(r,g,b,a);
-			} catch (IllegalArgumentException e) {
-				throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
-			}
-		} else {
+		if (val == null) {
 			return null;
+		} else {
+			if ( val.isa(Obj.DICT)) {
+				DictReader c = new DictReader((Dict)val);
+				int r = c.getInt(R, 0);
+				int g = c.getInt(G, 0);
+				int b = c.getInt(B, 0);
+				int a = c.getInt(A, 255);
+				try {
+					return new Color(r,g,b,a);
+				} catch (IllegalArgumentException e) {
+					throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
+				}
+			} else if (val.isa(Obj.STR)) {
+				return ColorFactory.valueOf(val.str());
+			} else {
+				return null;
+			}
+		}
+	}
+	
+	public Color getColor(Symbol key, Color dflt) {
+		Color c = null;
+		try {
+			c = getColor(key); // May return null
+		} catch (ValueError e) {
+			c = null;
+		}
+
+		if (c == null) {
+			return dflt;
+		} else {
+			return c;
 		}
 	}
 	
@@ -271,5 +304,10 @@ public class DictReader {
 			return o.bool();
 		}
 	}
+
+	public boolean hasKey(Symbol key) {
+		return _dict.containsKey(key);
+	}
+	
 
 }

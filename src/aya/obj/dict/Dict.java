@@ -14,7 +14,6 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Callable;
 import aya.util.Pair;
-
 /**
  * A set of key-value pairs accessible as a runtime object
  * @author Nick
@@ -22,9 +21,6 @@ import aya.util.Pair;
  */
 public class Dict extends Obj {
 
-	private static Symbol PUSH_SELF = Aya.getInstance().getSymbols().getSymbol("__pushself__");
-	public static Symbol META = Aya.getInstance().getSymbols().getSymbol("__meta__");
-	
 	/** The map of key-value pairs */
 	private HashMap<Symbol, Obj> _vars;
 	private Dict _meta; // Quick lookup for meta
@@ -39,7 +35,7 @@ public class Dict extends Obj {
 		
 		if (metatable != null)
 		{
-			_vars.put(META, metatable);
+			_vars.put(SymbolConstants.KEYVAR_META, metatable);
 			_meta = metatable;
 		}
 	}
@@ -48,7 +44,7 @@ public class Dict extends Obj {
 	public Dict(HashMap<Symbol, Obj> vars) {
 		_vars = vars;
 		// Check if the VariableSet has a __meta__ key
-		Obj maybe_meta = vars.get(META);
+		Obj maybe_meta = vars.get(SymbolConstants.KEYVAR_META);
 		if (maybe_meta != null && maybe_meta.isa(DICT)) {
 			_meta = (Dict)(maybe_meta);
 		} else {
@@ -64,7 +60,7 @@ public class Dict extends Obj {
 
 	/** Set the metatable to the input dict */
 	public void setMetaTable(Dict d) {
-		_vars.put(META, d);
+		_vars.put(SymbolConstants.KEYVAR_META, d);
 		_meta = d;
 	}
 	
@@ -74,7 +70,7 @@ public class Dict extends Obj {
 	/////////////
 	
 	public boolean pushSelf() {
-		return hasMetaKey(PUSH_SELF);
+		return hasMetaKey(SymbolConstants.KEYVAR_PUSHSELF);
 	}
 
 	/** returns default value if key not found */
@@ -208,7 +204,7 @@ public class Dict extends Obj {
 	public void set(Symbol key, Obj o) {
 		_vars.put(key,  o);
 		
-		if (key.id() == META.id() && o.isa(Obj.DICT))
+		if (key.id() == SymbolConstants.KEYVAR_META.id() && o.isa(Obj.DICT))
 		{
 			_meta = (Dict)o;
 		}
@@ -228,7 +224,7 @@ public class Dict extends Obj {
 	public Obj deepcopy() {
 		// Don't deep copy the meta
 		if (_meta != null) {
-			_vars.remove(META);
+			_vars.remove(SymbolConstants.KEYVAR_META);
 		}
 		
 		Dict d = new Dict(deepcopyHashMap(), _meta);
@@ -371,7 +367,7 @@ public class Dict extends Obj {
 			stream.incIndent();
 			stream.currentLineMatchIndent();
 			for (Symbol sym : _vars.keySet()) {
-				if (sym.id() != META.id()) {
+				if (sym.id() != SymbolConstants.KEYVAR_META.id()) {
 					_vars.get(sym).repr(stream);
 					stream.println(":" + sym.name() + ";");
 				}

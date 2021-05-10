@@ -33,8 +33,7 @@ public class LegacyPlotInstruction extends NamedInstruction {
 		Obj a = block.pop();
 
 		if (a.isa(Obj.DICT)) {
-			ChartParams cp = ChartParams.parseParams((Dict)a);
-			FreeChartInterface.drawChart(cp);
+			FreeChartInterface.plot((Dict)a);
 		} else {
 			throw new TypeError(this, "D", a);
 		}
