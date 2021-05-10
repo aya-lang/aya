@@ -1,0 +1,19 @@
+import ::dataframe
+import ::plot
+
+{, "data/rdatasets/iris.csv":filename} dataframe.read_csv :df;
+
+.# get unique species names
+df.["Species"] :~ :species;
+
+plot.plot! :plt;
+"Iris Dataset" plt.:title;
+"sepal length" plt.:xlabel;
+"sepal width" plt.:ylabel;
+
+species :# {s_name : sp_df,
+  "Species" {s_name =} df.filter_on_col :sp_df;
+  sp_df.["Sepal.Length"] sp_df.["Sepal.Width"] {, s_name:label } plt.scatter
+};
+
+plt.view

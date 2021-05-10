@@ -74,14 +74,18 @@ def dataframe::read_csv {arg : dataframe^ csv^ ,
     arg csv.read dataframe.from_csv
 }
 
-def dataframe::_get_col {colname self : colindex,
+def dataframe::_get_col_index {colname self,
     colname :T ::sym = {colname :C :colname; } ?
     self._colnames colname N\; :colindex;
     colindex :1 = {
         "Column $colname not found" .D
-    } {
-        self._data :# { colindex I }
-    } .?
+    } ?
+    colindex
+}
+
+def dataframe::_get_col {colname self : colindex,
+    colname self._get_col_index :colindex;
+    self._data :# { colindex I }
 }
 
 def dataframe::_numgetindex {index::num self : dataframe^,
@@ -103,6 +107,45 @@ def dataframe::__getindex__ { index self : dataframe^,
         {"Unsupported index: $index" .D}
     }
 }
+
+.{
+    aya> df
+        A B C
+    0 | 1 2 3
+    1 | 4 5 6
+    2 | 7 8 9
+    aya> df.row[1]
+        A B C
+    0 | 4 5 6
+    aya> df.row[[1 2]]
+        A B C
+    0 | 4 5 6
+    1 | 7 8 9
+.}
+def dataframe::row {`({self index : data,
+    self._data.[index~]:data;
+    [ index~ :T ::num = { [data]:data } ? ];
+
+    {, self._colnames:colnames data:data } dataframe!
+})}
+
+
+.{
+    aya> df
+        A B C
+    0 | 1 2 3
+    1 | 4 5 6
+    2 | 7 8 9
+    aya> "C" {5>} df.filter_on_col
+        A B C
+    0 | 4 5 6
+    1 | 7 8 9
+.}
+def dataframe::filter_on_col {column condition self : colindex,
+    column self._get_col_index :colindex;
+    df.row[ { .[colindex] condition } ]
+}
+
 
 .# Serialization / Output
 .########################

@@ -214,11 +214,16 @@ public class FreeChartInterface extends JFrame
 		ValueAxis ax = is_x ? plot.getDomainAxis() : plot.getRangeAxis();
 		ax.setVisible(d.getBool(sym("visible"), true));
 
-		if (d.hasKey(sym("numberformat")) && ax instanceof NumberAxis) {
-			try {
-				((NumberAxis)ax).setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
-			} catch (IllegalArgumentException e) {
-				throw new ValueError(e.getMessage());
+		if (ax instanceof NumberAxis) {
+			NumberAxis nax = (NumberAxis)ax;
+			((NumberAxis) ax).setAutoRangeIncludesZero(false);
+			
+			if (d.hasKey(sym("numberformat"))) {
+				try {
+					((NumberAxis)ax).setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
+				} catch (IllegalArgumentException e) {
+					throw new ValueError(e.getMessage());
+				}
 			}
 		}
 		
