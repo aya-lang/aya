@@ -11,7 +11,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
@@ -32,19 +31,81 @@ import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
+import aya.util.CircleIterator;
+import aya.util.ColorFactory;
 import aya.util.DictReader;
+import aya.util.ObjToColor;
 import aya.util.Pair;
 
 @SuppressWarnings("serial")
 public class FreeChartInterface extends JFrame 
 {	
+
+	private static class SeriesConfig {
+		Color color;
+		boolean use_color_cycle;
+		float stroke;
+		boolean lines;
+		boolean points;
+		double yclip_min;
+		double yclip_max;
+
+		public SeriesConfig() {
+			color = Color.BLACK;
+			use_color_cycle = true;
+			stroke = 1.0f;
+			lines = true;
+			points = false;
+			yclip_min = -9e99;
+			yclip_max = 9e99;
+		}
+		
+		public SeriesConfig copy() {
+			SeriesConfig cfg = new SeriesConfig();
+			cfg.color = color;
+			cfg.use_color_cycle = use_color_cycle;
+			cfg.stroke = stroke;
+			cfg.lines = lines;
+			cfg.points = points;
+			cfg.yclip_min = yclip_min;
+			cfg.yclip_max = yclip_max;
+			return cfg;
+		}
+
+		public static SeriesConfig fromDict(DictReader d, SeriesConfig defaults) {
+			SeriesConfig cfg = defaults.copy();
+
+			cfg.stroke = (float)(d.getDouble(sym("stroke"), defaults.stroke));
+			cfg.points = d.getBool(sym("points"), defaults.points);
+			cfg.lines = d.getBool(sym("lines"), defaults.lines);
+			
+			Color c = d.getColor(sym("color"));
+			if (c == null) {
+				cfg.use_color_cycle = true;
+			} else {
+				cfg.use_color_cycle = false;
+				cfg.color = c;
+			}
+
+			if (d.hasKey(sym("yclip"))) {
+				Pair<Number, Number> yclip_pair = d.getNumberPairEx(sym("yclip"));
+				cfg.yclip_min = yclip_pair.first().toDouble();
+				cfg.yclip_max = yclip_pair.second().toDouble();
+			}
+			
+			return cfg;
+		}
+	}
 	
 	private static class PlotDataset {
 		public XYDataset data;
 		public XYLineAndShapeRenderer renderer;
 	}
 	
-	private static ArrayList<PlotDataset> makeDataset(List datasets) {
+	private static ArrayList<PlotDataset> makeDataset(List datasets,
+													  CircleIterator<Color> colors,
+													  SeriesConfig default_series_config) {
+
 		ArrayList<PlotDataset> out = new ArrayList<FreeChartInterface.PlotDataset>();
 		
 		for (int dataset_index = 0; dataset_index < datasets.length(); dataset_index++) {
@@ -53,23 +114,14 @@ public class FreeChartInterface extends JFrame
 				DictReader dataset = new DictReader(Casting.asDict(dataset_obj), "plot");
 				double[] x = dataset.getListEx(SymbolConstants.X).toNumberList().todoubleArray();
 				double[] y = dataset.getListEx(SymbolConstants.Y).toNumberList().todoubleArray();
-				double yclip_min = -9e99;
-				double yclip_max = 9e99;
-				if (dataset.hasKey(sym("yclip"))) {
-					Pair<Number, Number> yclip_pair = dataset.getNumberPairEx(sym("yclip"));
-					yclip_min = yclip_pair.first().toDouble();
-					yclip_max = yclip_pair.second().toDouble();
-				}
+				SeriesConfig cfg = SeriesConfig.fromDict(dataset, default_series_config);
 
 				if (x.length == y.length) {
 					// Copy data into XYSeries
 					final XYSeries series = new XYSeries(dataset.getString(sym("label"), ""), false);
 					for (int i = 0; i < x.length; i++) {
 						double yi = y[i];
-						if (yi < yclip_min || yi > yclip_max) yi = Double.NaN;
-						if (Double.isNaN(yi)) {
-							System.out.println(y[i]);
-						}
+						if (yi < cfg.yclip_min || yi > cfg.yclip_max) yi = Double.NaN;
 						series.add(x[i], yi);
 					}
 
@@ -83,10 +135,16 @@ public class FreeChartInterface extends JFrame
 					
 					// Create renderer
 					XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
-					r.setSeriesPaint(0, dataset.getColor(sym("color"), Color.BLACK));
-					r.setSeriesStroke(0, new BasicStroke((float) dataset.getDouble(sym("weight"), 1)));
-					r.setBaseLinesVisible(dataset.getBool(sym("lines"), true));
-					r.setBaseShapesVisible(dataset.getBool(sym("points"), false));
+					Color c = dataset.getColor(sym("color"));
+					if (cfg.use_color_cycle) {
+						r.setSeriesPaint(0, colors.next());
+					} else {
+						r.setSeriesPaint(0, c);
+					}
+
+					r.setSeriesStroke(0, new BasicStroke(cfg.stroke));
+					r.setBaseLinesVisible(cfg.lines);
+					r.setBaseShapesVisible(cfg.points);
 					
 					PlotDataset pd = new PlotDataset();
 					pd.data = col;
@@ -104,10 +162,40 @@ public class FreeChartInterface extends JFrame
 		return out;
 	}
 	
+	private static CircleIterator<Color> makeColorIterator(DictReader d) {
+		ArrayList <Color> colors = new ArrayList<Color>();
+		if (d.hasKey(sym("color_cycle"))) {
+			List colors_obj = d.getListEx(sym("color_cycle"));
+			if (colors_obj.length() > 0) {
+				for (int i = 0; i < colors_obj.length(); i++) {
+					colors.add(ObjToColor.objToColorEx(colors_obj.getExact(i), "plot.color_cycle"));
+				}
+			} else {
+				throw new ValueError("plot.color_cycle: Expected non-empty list for 'color_cycle', got empty list");
+			}
+		} else {
+			// matplotlib default color cycle
+			colors.add(ColorFactory.web("#1f77b4"));
+			colors.add(ColorFactory.web("#ff7f0e"));
+			colors.add(ColorFactory.web("#2ca02c"));
+			colors.add(ColorFactory.web("#d62728"));
+			colors.add(ColorFactory.web("#9467bd"));
+			colors.add(ColorFactory.web("#8c564b"));
+			colors.add(ColorFactory.web("#e377c2"));
+			colors.add(ColorFactory.web("#7f7f7f"));
+			colors.add(ColorFactory.web("#bcbd22"));
+			colors.add(ColorFactory.web("#17becf"));
+		}
+		return new CircleIterator<Color>(colors);
+	}
+	
+	
+	
 	private static JFreeChart drawChart2(Dict plot_dict) {
 		DictReader d = new DictReader(plot_dict, "plot");
 		
-		ArrayList<PlotDataset> data = makeDataset(d.getListEx(sym("data")));
+		SeriesConfig defaults = SeriesConfig.fromDict(d, new SeriesConfig());
+		ArrayList<PlotDataset> data = makeDataset(d.getListEx(sym("data")), makeColorIterator(d), defaults);
 		
 		JFreeChart chart = ChartFactory.createXYLineChart(
 				d.getString(sym("title"), ""),
@@ -140,6 +228,7 @@ public class FreeChartInterface extends JFrame
 		plot.setDomainGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
 		plot.setDomainGridlinesVisible(ax.getBool(sym("gridlines"), false));
 		plot.setDomainZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
+		plot.getDomainAxis().setVisible(ax.getBool(sym("visible"), true));
 
 		// Y Axis
 		Dict yaxis_dict = d.getDict(sym("yaxis"));
@@ -149,6 +238,7 @@ public class FreeChartInterface extends JFrame
 		plot.setRangeGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
 		plot.setRangeGridlinesVisible(ax.getBool(sym("gridlines"), false));
 		plot.setRangeZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
+		plot.getRangeAxis().setVisible(ax.getBool(sym("visible"), true));
 
 		// X limits
 		if (d.hasKey(sym("xlim"))) {

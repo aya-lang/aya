@@ -8,6 +8,10 @@ public class SymbolConstants {
 	public static final Symbol E 		= S.getSymbol("e");
 	public static final Symbol X 		= S.getSymbol("x");
 	public static final Symbol Y 		= S.getSymbol("y");
+	public static final Symbol R 		= S.getSymbol("r");
+	public static final Symbol G 		= S.getSymbol("g");
+	public static final Symbol B 		= S.getSymbol("b");
+	public static final Symbol A 		= S.getSymbol("a");
 
 	public static final Symbol ANY 		= S.getSymbol("any");
 	public static final Symbol CHAR 	= S.getSymbol("char");

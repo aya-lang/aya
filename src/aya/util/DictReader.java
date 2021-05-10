@@ -2,7 +2,6 @@ package aya.util;
 
 import java.awt.Color;
 
-import aya.Aya;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.UndefVarException;
@@ -13,14 +12,8 @@ import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolTable;
 
 public class DictReader {
-	
-	private final Symbol R;
-	private final Symbol G;
-	private final Symbol B;
-	private final Symbol A;
 	
 	private Dict _dict;
 	private String _err_name;
@@ -28,11 +21,6 @@ public class DictReader {
 	public DictReader(Dict dict) {
 		_dict = dict;
 		_err_name = "DictReader";
-		SymbolTable syms = Aya.getInstance().getSymbols();
-		R = syms.getSymbol("r");
-		G = syms.getSymbol("g");
-		B = syms.getSymbol("b");
-		A = syms.getSymbol("a");
 	}
 
 	public DictReader(Dict dict, String error_name) {
@@ -80,21 +68,7 @@ public class DictReader {
 	public Color getColorEx(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		if (val == null) throw notFound(key);
-		
-		if (val.isa(Obj.DICT)) {
-			DictReader c = new DictReader((Dict)val);
-			int r = c.getInt(R, 0);
-			int g = c.getInt(G, 0);
-			int b = c.getInt(B, 0);
-			int a = c.getInt(A, 255);
-			try {
-				return new Color(r,g,b,a);
-			} catch (IllegalArgumentException e) {
-				throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
-			}
-		} else {
-			throw badType(key, "sym", val);
-		}
+		return ObjToColor.objToColorEx(val);
 	}
 	
 	public double getDoubleEx(Symbol key) {
@@ -189,26 +163,10 @@ public class DictReader {
 
 	public Color getColor(Symbol key) {
 		Obj val = _dict.getSafe(key);
-		
 		if (val == null) {
 			return null;
 		} else {
-			if ( val.isa(Obj.DICT)) {
-				DictReader c = new DictReader((Dict)val);
-				int r = c.getInt(R, 0);
-				int g = c.getInt(G, 0);
-				int b = c.getInt(B, 0);
-				int a = c.getInt(A, 255);
-				try {
-					return new Color(r,g,b,a);
-				} catch (IllegalArgumentException e) {
-					throw new ValueError("Invalid color: " + r + "," + g + "," + b + "," + a);
-				}
-			} else if (val.isa(Obj.STR)) {
-				return ColorFactory.valueOf(val.str());
-			} else {
-				return null;
-			}
+			return ObjToColor.objToColor(val);
 		}
 	}
 	
