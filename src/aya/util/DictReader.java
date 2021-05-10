@@ -177,6 +177,16 @@ public class DictReader {
 		}
 	}
 
+	public Dict getDict(Symbol key) {
+		Obj o = _dict.getSafe(key);
+		if (o == null || !o.isa(Obj.DICT)) {
+			return null;
+		} else {
+			return Casting.asDict(o);
+		}
+	}
+
+
 	public Color getColor(Symbol key) {
 		Obj val = _dict.getSafe(key);
 		
@@ -307,6 +317,16 @@ public class DictReader {
 
 	public boolean hasKey(Symbol key) {
 		return _dict.containsKey(key);
+	}
+	
+	public Pair<Number, Number> getNumberPairEx(Symbol key) {
+		List l = this.getListEx(key);
+		if (l.length() == 2) {
+			NumberList ab = l.toNumberList();
+			return new Pair<Number, Number>(ab.get(0), ab.get(1));
+		} else {
+			throw new ValueError("plot.ylim: expected list of length 2. got:\n" + l.str());
+		}
 	}
 	
 

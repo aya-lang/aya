@@ -33,6 +33,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
 import aya.util.DictReader;
+import aya.util.Pair;
 
 @SuppressWarnings("serial")
 public class FreeChartInterface extends JFrame 
@@ -52,11 +53,24 @@ public class FreeChartInterface extends JFrame
 				DictReader dataset = new DictReader(Casting.asDict(dataset_obj), "plot");
 				double[] x = dataset.getListEx(SymbolConstants.X).toNumberList().todoubleArray();
 				double[] y = dataset.getListEx(SymbolConstants.Y).toNumberList().todoubleArray();
+				double yclip_min = -9e99;
+				double yclip_max = 9e99;
+				if (dataset.hasKey(sym("yclip"))) {
+					Pair<Number, Number> yclip_pair = dataset.getNumberPairEx(sym("yclip"));
+					yclip_min = yclip_pair.first().toDouble();
+					yclip_max = yclip_pair.second().toDouble();
+				}
+
 				if (x.length == y.length) {
 					// Copy data into XYSeries
 					final XYSeries series = new XYSeries(dataset.getString(sym("label"), ""), false);
 					for (int i = 0; i < x.length; i++) {
-						series.add(x[i], y[i]);
+						double yi = y[i];
+						if (yi < yclip_min || yi > yclip_max) yi = Double.NaN;
+						if (Double.isNaN(yi)) {
+							System.out.println(y[i]);
+						}
+						series.add(x[i], yi);
 					}
 
 					// Create XYDataset from the XYSeries
@@ -100,7 +114,13 @@ public class FreeChartInterface extends JFrame
 				d.getString(sym("xlabel"), ""),
 				d.getString(sym("ylabel"), ""),
 				null);
+
+		// Chart config
+		if (!d.getBool(sym("legend"), true)) {
+			chart.removeLegend();
+		}
 		
+		// Add data
 		XYPlot plot = (XYPlot) chart.getPlot();
 		for (int i = 0; i < data.size(); i++)
 		{
@@ -109,31 +129,37 @@ public class FreeChartInterface extends JFrame
 			plot.setRenderer(i, pd.renderer);
 		}
 		
+		// Plot config
 		plot.setBackgroundPaint(d.getColor(sym("bgcolor"), Color.WHITE));
-		plot.setDomainGridlinePaint(d.getColor(sym("xaxis_color"), Color.BLACK));
-		plot.setRangeGridlinePaint(d.getColor(sym("yaxis_color"), Color.BLACK));
-		plot.setDomainGridlinesVisible(d.getBool(sym("xaxis_grid"), false));
-		plot.setRangeGridlinesVisible(d.getBool(sym("yaxis_grid"), false));
+		
+		// X Axis
+		Dict xaxis_dict = d.getDict(sym("xaxis"));
+		// If it is not provided, use an empty one so all defaults are used
+		if (xaxis_dict == null) xaxis_dict = new Dict();
+		DictReader ax = new DictReader(xaxis_dict, "plot.xaxis");
+		plot.setDomainGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
+		plot.setDomainGridlinesVisible(ax.getBool(sym("gridlines"), false));
+		plot.setDomainZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
 
+		// Y Axis
+		Dict yaxis_dict = d.getDict(sym("yaxis"));
+		// If it is not provided, use an empty one so all defaults are used
+		if (yaxis_dict == null) yaxis_dict = new Dict();
+		ax = new DictReader(yaxis_dict, "plot.yaxis");
+		plot.setRangeGridlinePaint(ax.getColor(sym("gridline_color"), Color.DARK_GRAY));
+		plot.setRangeGridlinesVisible(ax.getBool(sym("gridlines"), false));
+		plot.setRangeZeroBaselineVisible(ax.getBool(sym("zeroline"), true));
+
+		// X limits
 		if (d.hasKey(sym("xlim"))) {
-			List xlim_obj = d.getListEx(sym("xlim"));
-			double[] xlim = xlim_obj.toNumberList().todoubleArray();
-			if (xlim.length == 2) {
-				ValueAxis domain = plot.getDomainAxis();
-				domain.setRange(xlim[0], xlim[1]);
-			} else {
-				throw new ValueError("plot.xlim: expected list of length 2. got:\n" + xlim_obj.str());
-			}
+			Pair<Number, Number> lim = d.getNumberPairEx(sym("xlim"));
+			plot.getDomainAxis().setRange(lim.first().toDouble(), lim.second().toDouble());
 		}
+
+		// Y limits
 		if (d.hasKey(sym("ylim"))) {
-			List ylim_obj = d.getListEx(sym("ylim"));
-			double[] ylim = ylim_obj.toNumberList().todoubleArray();
-			if (ylim.length == 2) {
-				ValueAxis domain = plot.getRangeAxis();
-				domain.setRange(ylim[0], ylim[1]);
-			} else {
-				throw new ValueError("plot.ylim: expected list of length 2. got:\n" + ylim_obj.str());
-			}
+			Pair<Number, Number> lim = d.getNumberPairEx(sym("ylim"));
+			plot.getRangeAxis().setRange(lim.first().toDouble(), lim.second().toDouble());
 		}
 		
 		return chart;
