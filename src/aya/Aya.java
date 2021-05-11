@@ -15,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.UserObjRuntimeException;
+import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
 import aya.ext.dialog.DialogInstructionStore;
@@ -275,6 +276,7 @@ public class Aya extends Thread {
 		_namedInstructionStores.add(new PlotInstructionStore());
 		_namedInstructionStores.add(new DateInstructionStore());
 		_namedInstructionStores.add(new SocketInstructionStore());
+		_namedInstructionStores.add(new ColorInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(getInstance());

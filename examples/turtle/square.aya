@@ -4,16 +4,16 @@
 
 import ::turtle
 import ::math
-from ::color import ::colors
+import ::color
 
 {,
     400:width;
     400:height;
-    colors.darkblue :bg_color;
+    color.colors.darkblue :bg_color;
 } turtle!:t;
 
 5 :n;
-colors.blue :c;
+color.colors.blue :c;
 
 {
     n t.fd

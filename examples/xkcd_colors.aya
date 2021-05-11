@@ -1,5 +1,5 @@
 import ::terminal
-from ::color import ::color
+import ::color
 
 .# Print all the colors in the XKCD color list
 .# If the terminal supports it, all colors will be printed using their own color

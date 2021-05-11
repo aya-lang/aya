@@ -12,17 +12,17 @@
         10R :# {n, {0.1 t.right n t.fd 2:Z} 100 %} ;
 
         .# A small colorful star
-        colors.red {10\.hueshift $ t.pencolor 40 t.fd 124 t.right} 36 %
+        color.colors.red {10\.hueshift $ t.pencolor 40 t.fd 124 t.right} 36 %
 .}
 
 import ::canvas
-from ::color import ::colors
+import ::color
 
 export ::turtle
 class ::turtle
 
-colors.white :c_white;
-colors.black :c_black;
+color.colors.white :c_white;
+color.colors.black :c_black;
 
 
 def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,

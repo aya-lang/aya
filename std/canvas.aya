@@ -1,11 +1,10 @@
 import ::color
-from ::color import [::color ::colors]
 
 export ::canvas
 
 class ::canvas
 
-def canvas::__init__ {params::dict self : colors^,
+def canvas::__init__ {params::dict self : color^,
 
     .# Default values
     {,
@@ -14,8 +13,8 @@ def canvas::__init__ {params::dict self : colors^,
         "Canvas" :name
         0 :autoflush
         0 :show
-        colors.white :bg
-        colors.black :fg
+        color.colors.white :bg
+        color.colors.black :fg
         params W
     }:params;
 

@@ -1,5 +1,5 @@
 import ::canvas
-from ::color import [::color ::colors]
+import ::color
 
 .# A randomly generated vaporwave style city
 
@@ -27,11 +27,11 @@ from ::color import [::color ::colors]
 "3048CC" color.newhex :lightblue;
 
 .# Background
-[0 0] colors.blue0.4* [0 h0.75*] magenta 0 c.set_grad
+[0 0] color.colors.blue0.4* [0 h0.75*] magenta 0 c.set_grad
 0 0 w h c.fillrect
 
 .# Stars
-colors.white c.set_color
+color.colors.white c.set_color
 { wQ hQ c.point } 50 %
 { wQ h3/Q c.point } 30 %
 

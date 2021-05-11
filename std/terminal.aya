@@ -1,10 +1,10 @@
-from ::color import ::colors
+import ::color
 
 module ::terminal
 export ::terminal
 
-def terminal::fg (colors.white)
-def terminal::bg (colors.black)
+def terminal::fg (color.colors.white)
+def terminal::bg (color.colors.black)
 
 def terminal::clear {"\{x1b}[2J".P}
 def terminal::clearline {"\{x1b}[1K\{x1b}[1G".P}
@@ -34,15 +34,15 @@ def terminal::reset_font {: terminal^ ,
     0 terminal.strike
 }
 
-def terminal::reset_color {: colors^ terminal^ ,
-    colors.white terminal.setfg
-    colors.black terminal.setbg
+def terminal::reset_color {: color^ terminal^ ,
+    color.colors.white terminal.setfg
+    color.colors.black terminal.setbg
 }
 
-def terminal::replcolor {c::color : colors^ terminal^ ,
+def terminal::replcolor {c::color : color^ terminal^ ,
     [c terminal._setfgstr
      "aya> "
-     colors.white terminal._setfgstr]S
+     color.colors.white terminal._setfgstr]S
      1 :{sys.MZ}
 }
 

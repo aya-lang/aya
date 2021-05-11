@@ -53,6 +53,7 @@
 package aya.util;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -279,6 +280,10 @@ public final class ColorFactory {
 		} catch (NumberFormatException nfe) {}
 
 		throw new IllegalArgumentException("Invalid color specification");
+	}
+	
+	public static ArrayList<String> listNamedColors() {
+		return NamedColors.list();
 	}
 
 	private static Color parseRGBColor(String color, int roff,
@@ -1390,12 +1395,26 @@ public final class ColorFactory {
 	private static final class NamedColors {
 		private static final Map<String, Color> namedColors =
 				createNamedColors();
+		private static final ArrayList<String> namedColorsList =
+				createNamedColorsList();
 
 		private NamedColors() {
 		}
 
+		public static ArrayList<String> list() {
+			return namedColorsList;
+		}
+
 		private static Color get(String name) {
 			return namedColors.get(name);
+		}
+		
+		private static ArrayList<String> createNamedColorsList() {
+			ArrayList<String> names = new ArrayList<String>();
+			for (Map.Entry<String, Color> e : namedColors.entrySet()) {
+				names.add(e.getKey());
+			}
+			return names;
 		}
 
 		private static Map<String, Color> createNamedColors() {

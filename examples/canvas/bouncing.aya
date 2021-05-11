@@ -1,5 +1,5 @@
 import ::canvas
-from ::color import ::colors
+import ::color
 
 {c.close} {;} .K
 
@@ -7,8 +7,8 @@ from ::color import ::colors
 400:w;
 300:h;
 {, w:width h:height "Bouncing":name } canvas! :c;
-colors.white c.set_bg
-colors.white 0.5* c.set_color
+color.colors.white c.set_bg
+color.colors.white 0.5* c.set_color
 
 
 
