@@ -48,11 +48,11 @@ state.win :laststate;
 }:runsim;
 
 
-plot!:plt;
-games R plt.domain
+plot.plot!:plt;
+games R :x;
 
 {plt r,
-    "$r" 2 [] games r runsim plt.addseries
+    x (games r runsim) {, "$r":label} plt.plot
 }:runit;
 
 [0.3 0.35 0.4 0.45 0.5 0.55] # {r,

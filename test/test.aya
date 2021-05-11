@@ -43,3 +43,6 @@
 
 "Running tests..." :P
 __aya__.doruntests
+
+.# Also load and auto-run many examples
+"test/examples" load_test

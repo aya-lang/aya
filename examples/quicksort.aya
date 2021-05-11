@@ -49,6 +49,6 @@ lst qs :P
 .# [ 497 496 504 518 502 495 525 508 498 521 ] 506.4 
 
 .# Sorting 100,000 items
-"Sorting 100,000 items..." :P
-[100000,;.Q] {qs;}.time :ms;
+"Sorting 10,000 items..." :P
+[10000,;.Q] {qs;}.time :ms;
 "Took $(ms)ms" :P

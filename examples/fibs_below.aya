@@ -10,10 +10,9 @@
 100 fib
 
 .# Golfed
-{n,0 1{\$:P\$@+$n<}W;}:fib;
+{n,0 1{\$:P\$@+$nB<}W;}:fib;
 
-
-0\1{$@+}@%;
+.# fib golfed: 0\1{$@+}@%;
 
 "Fibs below 100 (golfed):" :P
 100 fib

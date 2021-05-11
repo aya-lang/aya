@@ -12,7 +12,6 @@ def bst::__init__ {data self,
 
 
 def bst::_print {node depth : bst^,
-bp
     " |" depth 1 + L S .P
     node :T ::bst = {
         node.right depth 1+ bst._print
@@ -34,10 +33,6 @@ def bst::_insert {data node parent::bst side::sym : bst^,
     } .?
 }
 
-def bst::__repr__ {self : bst^,
-    self 0 bst._print
-    ""
-}
 
 def bst::insert {data self : bst^,
     data self.data > {
@@ -47,7 +42,48 @@ def bst::insert {data self : bst^,
     } .?
 }
 
-50 bst! :b;
-.# {100Q b.insert} 10 %
 
-b
+.# Tree printing algorithm from: https://stackoverflow.com/a/50650932
+def ::printtree {b::bst,
+  b ::nil = ! {
+    b.data :P
+    b "" printsubtree
+  } ?
+}
+
+def ::printsubtree {t::bst prefix::str : hasleft hasright,
+  t ::nil = ! {
+    t.right ::nil = ! :hasright;
+    t.left  ::nil = ! :hasleft;
+
+    hasleft hasright | {
+      prefix .P
+      hasleft  hasright & "├── " "" .? .P
+      hasleft! hasright & "└── " "" .? .P
+
+      hasright {: print_strand(0) newprefix,
+        hasleft hasright & {
+          t.right.right ::nil = !
+          t.right.left  ::nul = !
+          | :print_strand;
+        } ?
+        prefix (print_strand "│   " "    " .?) + :newprefix;
+        t.right.data :P
+        t.right newprefix printsubtree
+      } ?
+
+      hasleft {
+        (hasright prefix "" .?) .P
+        "└── " .P
+        t.left.data :P
+        t.left "$prefix    " printsubtree
+      } ?
+    } ?
+  } ?
+}
+
+50 bst! :b;
+.# Insert 10 random values
+{ 100Q b.insert } 20 %
+.# print
+b printtree

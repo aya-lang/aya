@@ -1,0 +1,31 @@
+.# This file loads and auto-runs many examples
+
+
+[
+"100doors"
+"account"
+"asciitrain"
+"bst"
+"checked"
+"class"
+"collatz"
+"defaultdict"
+"fibonacci"
+"fibs_below"
+"for_loop_list"
+"greeter"
+"hello_world"
+"isprime"
+"mandelbrot"
+"monte_carlo"
+"nth_fib"
+"product"
+"quicksort"
+"quine"
+"tocamel"
+"visited_cities"
+] :# {ex, 
+    "\n## $ex:" :P
+    [ load "examples/$ex" ]; 
+} ;
+

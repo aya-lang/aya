@@ -7,3 +7,5 @@
   .# remove extra (trailing) '_'
   str "_" :|
 }:tocamel;
+
+"hello_there_world" $.P " -> ".P tocamel :P
