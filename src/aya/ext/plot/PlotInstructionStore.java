@@ -6,7 +6,6 @@ public class PlotInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
-		// JSON
-		addInstruction(new LegacyPlotInstruction());
+		addInstruction(new PlotInstruction());
 	}
 }

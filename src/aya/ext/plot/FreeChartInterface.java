@@ -29,7 +29,6 @@ import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
@@ -40,10 +39,71 @@ import aya.util.DictReader;
 import aya.util.ObjToColor;
 import aya.util.Pair;
 
-@SuppressWarnings("serial")
-public class FreeChartInterface extends JFrame 
+public class FreeChartInterface
 {	
 
+	///////////////////////////
+	// Public Plot Interface //
+	///////////////////////////
+
+	/**
+	 * Generate a plot using a dictionary
+	 * 
+	 * @param plot_dict
+	 */
+	public static void plot(Dict plot_dict)
+	{
+		DictReader d = new DictReader(plot_dict, "plot");
+		JFrame frame = new JFrame();
+		JFreeChart chart = drawChart2(plot_dict);
+		ChartPanel cp = new ChartPanel(chart);
+		
+		int width  = d.getInt(SymbolConstants.WIDTH, 500);
+		int height = d.getInt(SymbolConstants.HEIGHT, 400);
+		cp.setPreferredSize(new java.awt.Dimension(width, height));
+		frame.setContentPane(cp);
+
+		// Save chart
+		String filename = d.getString(sym("filename"), "");
+		if (!filename.equals("")) {
+			String path = AyaPrefs.getWorkingDir() + filename;
+			File file;
+			try {
+				if (path.contains(".png")) {
+					file = new File(path); 
+					ChartUtilities.saveChartAsPNG(file, chart, width, height);
+				} else if (path.contains(".jpg")) {
+					file = new File(path); 
+					ChartUtilities.saveChartAsJPEG(file, chart, width, height);
+				} else {
+					throw new ValueError("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
+							+ "Received: " + filename);
+				}
+			} catch (IOException e) {
+				throw new IOError("plot", path, e);
+			}
+		}
+		
+		if (d.getBool(sym("show"), true)) {
+			frame.pack();
+			RefineryUtilities.centerFrameOnScreen(frame);
+			frame.setVisible(true);
+		}
+		
+		
+	}
+
+
+	////////////////////////////
+	// Private Helper Methods //
+	////////////////////////////
+
+	/**
+	 * Configuration object for a single dataset (or series) in a plot
+	 * 
+	 * @author npaul
+	 *
+	 */
 	private static class SeriesConfig {
 		Color color;
 		boolean use_color_cycle;
@@ -75,6 +135,13 @@ public class FreeChartInterface extends JFrame
 			return cfg;
 		}
 
+		/**
+		 * Load configuration from a dict
+		 * 
+		 * @param d The dict to read from
+		 * @param defaults If a value is missing from d, use the value here instead
+		 * @return
+		 */
 		public static SeriesConfig fromDict(DictReader d, SeriesConfig defaults) {
 			SeriesConfig cfg = defaults.copy();
 
@@ -105,6 +172,14 @@ public class FreeChartInterface extends JFrame
 		public XYLineAndShapeRenderer renderer;
 	}
 	
+	/**
+	 * Convert a aya.obj.list.List into an ArrayList<PlotDataset> objects
+	 * 
+	 * @param datasets List to load datasets from 
+	 * @param colors Color cycle iterator to load colors from if they are not provided by the dataset
+	 * @param default_series_config Default configuration to load from if a value is not provided by the dataset
+	 * @return
+	 */
 	private static ArrayList<PlotDataset> makeDataset(List datasets,
 													  CircleIterator<Color> colors,
 													  SeriesConfig default_series_config) {
@@ -216,11 +291,11 @@ public class FreeChartInterface extends JFrame
 
 		if (ax instanceof NumberAxis) {
 			NumberAxis nax = (NumberAxis)ax;
-			((NumberAxis) ax).setAutoRangeIncludesZero(false);
+			nax.setAutoRangeIncludesZero(false);
 			
 			if (d.hasKey(sym("numberformat"))) {
 				try {
-					((NumberAxis)ax).setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
+					nax.setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
 				} catch (IllegalArgumentException e) {
 					throw new ValueError(e.getMessage());
 				}
@@ -273,131 +348,11 @@ public class FreeChartInterface extends JFrame
 		return chart;
 	}
 	
-	public static void plot(Dict plot_dict)
-	{
-		DictReader d = new DictReader(plot_dict, "plot");
-		JFrame frame = new JFrame();
-		JFreeChart chart = drawChart2(plot_dict);
-		ChartPanel cp = new ChartPanel(chart);
-		
-		int width  = d.getInt(SymbolConstants.WIDTH, 500);
-		int height = d.getInt(SymbolConstants.HEIGHT, 400);
-		cp.setPreferredSize(new java.awt.Dimension(width, height));
-		frame.setContentPane(cp);
-
-		// Save chart
-		String filename = d.getString(sym("filename"), "");
-		if (!filename.equals("")) {
-			String path = AyaPrefs.getWorkingDir() + filename;
-			File file;
-			try {
-				if (path.contains(".png")) {
-					file = new File(path); 
-					ChartUtilities.saveChartAsPNG(file, chart, width, height);
-				} else if (path.contains(".jpg")) {
-					file = new File(path); 
-					ChartUtilities.saveChartAsJPEG(file, chart, width, height);
-				} else {
-					throw new ValueError("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
-							+ "Received: " + filename);
-				}
-			} catch (IOException e) {
-				throw new IOError("plot", path, e);
-			}
-		}
-		
-		if (d.getBool(sym("show"), true)) {
-			frame.pack();
-			RefineryUtilities.centerFrameOnScreen(frame);
-			frame.setVisible(true);
-		}
-		
-		
-	}
+	
 		
 	private static Symbol sym(String s)
 	{
 		return Aya.getInstance().getSymbols().getSymbol(s);
 	}
-	
-	private static List str(String s)
-	{
-		return List.fromString(s);
-	}
-
-	/*
-	public static void main( String[ ] args ) 
-	{		
-		List x1 = new List();
-		for (double d = -5; d < 5; d += 0.1) {
-			x1.mutAdd(new Num(d));
-		}
-			
-		// Datasets
-		Dict d1 = new Dict();
-		Dict d2 = new Dict();
-		List y1 = new List();
-		List y2 = new List();
-		
-		for (int i = 0; i < x1.length(); i++) {
-			Number n = (Number)x1.getExact(i);
-			y1.mutAdd(n.sin());
-			y2.mutAdd(n.cos());
-		}
-		
-		Dict d3 = new Dict();
-		List x3 = new List();
-		List y3 = new List();
-		for (double t = 0; t < (2 * 3.14); t += 0.1) {
-			x3.mutAdd(new Num(3 * Math.cos(t)));
-			y3.mutAdd(new Num(0.4 * Math.sin(t)));
-		}
-		
-		d1.set(sym("x"), x1);
-		d1.set(sym("y"), y1);
-		d2.set(sym("x"), x1);
-		d2.set(sym("y"), y2);
-		d3.set(sym("x"), x3);
-		d3.set(sym("y"), y3);
-		
-		d1.set(sym("color"), str("blue"));
-		d1.set(sym("weight"), Num.fromInt(5));
-		d1.set(sym("label"), str("sin(x)"));
-		
-		d2.set(sym("color"), str("orange"));
-		d2.set(sym("label"), str("cos(x)"));
-		d2.set(sym("lines"), Num.fromBool(false));
-		d2.set(sym("points"), Num.fromBool(true));
-		
-		d3.set(sym("color"), str("green"));
-		d3 .set(sym("label"), str("polar"));
-		
-		List datasets = new List();
-		datasets.mutAdd(d1);
-		datasets.mutAdd(d2);
-		datasets.mutAdd(d3);
-
-		Dict params = new Dict();
-		params.set(sym("title"), str("Title"));
-		params.set(sym("xlabel"), str("X Label"));
-		params.set(sym("ylabel"), str("Y Label"));
-		params.set(sym("data"), datasets);
-		params.set(sym("yaxis_grid"), Num.fromBool(true));
-		
-		List xlim = new List();
-		xlim.mutAdd(new Num(-3.0));
-		xlim.mutAdd(new Num(8.0));
-		params.set(sym("xlim"), xlim);
-
-		List ylim = new List();
-		ylim.mutAdd(new Num(-1.5));
-		ylim.mutAdd(new Num(0.7));
-		params.set(sym("ylim"), ylim);
-		
-		plot(params);
-	}
-	*/
-	
-	
 }
 
