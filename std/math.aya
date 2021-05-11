@@ -214,6 +214,9 @@ exportall
     .?
 }:factors;
 
+.# Generate a normally distributed random number using the Box-Muller transform
+{.Q Ml :2 * .^ :2p .Q * Mc * }:randnorm;
+
 
 
 

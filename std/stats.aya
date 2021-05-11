@@ -3,6 +3,8 @@
 module ::stats
 export ::stats
 
+from ::math import ::cumsum
+
 .#? ::list stats.mean\n  average of a list of numbers
 def stats::mean {
     .E\S\/
@@ -79,6 +81,37 @@ def stats::pearson {x y : n xs ys,
      * .^
     /
 }
+
+def stats::hist {l::list nbins::num : min max bin_size bins counter,
+    .# compute bin size using list min and max values
+    l.min :min;
+    l.max :max;
+    max min - nbins / :bin_size;
+
+    .# generate list of bins
+    .# for example, if 2:bin_size, 1:min, 5:nbins
+    .#    [ 3 5 7 9 11 ] :bins
+    bin_size nbins L cumsum min + :bins;
+
+    .# Set last bin to max value (prevent rounding errors)
+    max bins.:[:1];
+
+    .# Create a list of counters
+    [nbins,; 0] :counter;
+
+    .# Map each item to it's bin index
+    l #{bins>S}
+    .# count all bin indices
+    :# {i, counter.[i] 1 + counter.:[i]};
+
+    counter
+}
+
+
+
+
+
+
 
 ({:ts stats^,
     "stats" testset! :ts;

@@ -1,0 +1,15 @@
+import ::math
+import ::plot
+import ::stats
+
+[10000,; randnorm]:l 100 stats.hist :h;
+
+plot.plot! :plt;
+
+l.min l.max 100 linspace h {, "Frequency":label} plt.scatter
+
+"Normal Distribution" plt.:title;
+"Frequency" plt.:ylabel;
+0 plt.:legend;
+[:3.5 3.5] plt.:xlim;
+plt.view

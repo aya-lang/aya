@@ -16,12 +16,16 @@ def ::viewmat_scaled { data scale : cvs canvas^,
     cvs
 }
 
-def ::viewmat { data : width height scale viewmat_scaled^,
+def ::viewmat { data : width height scale size viewmat_scaled^,
     data E :height;
     data.[0] E :width;
-    width height .< 400 :< {
-        2 :scale;
-    } ?
-    
+    width height .< :size;
+
+    .# Set a reasonable scale
+    size 400 :< { 2:scale; } ?
+    size 100 :< { 8:scale; } ?
+    size 40  :< { 16:scale; } ?
+    size 10  :< { 64:scale; } ?
+
     data scale viewmat_scaled
 }
