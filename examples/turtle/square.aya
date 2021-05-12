@@ -3,7 +3,6 @@
 .# https://juliagraphics.github.io/Luxor.jl/stable/turtle/
 
 import ::turtle
-import ::math
 import ::color
 
 {,

@@ -7,15 +7,16 @@
   - Terse, yet readable syntax
   - Standard library written in aya code
   - Key-value pair dictionaries and objects
-  - Number types: double, arbitrary precision float, rational, *complex (coming soon)*
+  - Number types: double, arbitrary precision float, rational, and complex
   - Basic support for objects and data structures using metatables
   - Pre-evaluation stack manipulation (custom infix operators)
   - List comprehension
   - String Interpolation, Unicode, and special characters
   - Interactive GUI
-  - Built in plotting
+  - Built in plotting, graphics, and gui dialog library
+  - I/O operators for file streams, web downloads, tcp/sockets, and more
   - Interactive help and Documentation
-  - Simple GUI dialogs
+  - Metaprogramming
 
 ## Overview
 
@@ -56,156 +57,220 @@ java -jar aya.jar filename.aya
 
 ## Examples
 
-### Project Euler Problem 1
 
-*Find the sum of all the multiples of 3 or 5 below 1000.*
+### Hypotenuse Formula
 
-```
-aya> :1e3VR{15.+!}IS
-233168
-```
-Note that `V`, `R`, `I`, and `S` (and all other uppercase letters) are operators just like `+`, `-`, `*`, `/`, etc.
+Given side lengths `a` and `b` of a right triangle, compute the hypotenuse `c`
 
-```
-aya> 0:sum;
-     999R # {x,
-       x5%0= x3%0= | {x sum +:sum} ?
-     };
-     sum
-233168
-```
-
-### Recursive factorial function written in the style of C.
-
-The tick (\`) operator is used to convert postfix operators into infix ones.
+  - `x y ^`: Raise `x` to `y`th power
+  - `x y +`: Add `x` and `y`
+  - `x .^`: Square root of x
 
 ```
-`:factorial {n,
-  n `:< 1 {
-    1
-  } {
-    n `* ( `factorial(n`-1) )
-  } .?
-}
+{a b,
+    a 2 ^ b 2 ^ + .^
+}:hypot;
+
+aya> 3 4 hypot
+5
 ```
+
+Pure stack based (no local function variables)
+
+```
+aya> {J2^S.^}:hypot;
+```
+
+  - `x y J`: Wrap `x` and `y` in a list (`[x y]`)
+  - `[] 2 ^`: Broadcast `2 ^` across the list
+  - `[] S`: Sum the list
+  - `z .^`: Square root
+
+Operator breakdown: 
+
+```
+aya> 3 4 J
+[ 3 4 ] 
+aya> 3 4 J 2 ^
+[ 9 16 ] 
+aya> 3 4 J 2 ^ S
+25 
+aya> 3 4 J 2 ^ S .^
+5 
+```
+
+### Primality Test
+
+Test if a number is prime *(without using aya's built-in primaity test operator `G`)*
+
+Algorithm utilzing stack-based concatenative programming and aya's operators
+
+Note that `R`, `B`, and `S` (and all other uppercase letters) are operators just like `+`, `-`, `*`, `/`, etc.
+
+```
+aya> { RB\%0.=S1= }:isprime;
+aya> 11 isprime
+1
+```
+
+Same algorithm using more verbose syntax
+```
+{n, 
+    n 2 < {
+        .# n is less than 2, not prime
+        0
+    } {
+        .# n is greater than or equal to 2, check for any factors
+        .# for each number in the set [2 to (n-1)] `i`, do..
+        [2 (n 1 -),] #: {i,
+            .# check if (n%i == 0)
+            n i % 0 =
+        }
+        .# If any are true (equal to 1), the number is not prime
+        {1 =} any !
+    } .?
+}:isprime;
+```
+
 
 ### Define a 2D vector type
 
 Type definition:
 
 ```
-{,
+struct ::vec [::x ::y]
 
-  .# Constructor
-  {x y, {, x:x y:y} vec MO}:new;
+.# Member function
+def vec::len {self,
+    self.x 2^ self.y 2^ + .^
+}
 
-  .# Print Override
-  {self, "<$(self.x),$(self.y)>"}:repr;
+.# Print overload
+def vec::__repr__ {self,
+    .# Aya supports string interpolation
+    "<$(self.x),$(self.y)>"
+}
 
-  .# Member Function
-  {self, self.x2^ self.y2^ + .^}:len;
-
-  .# Operator Overload
-  {a b, a.x b.x+ a.y b.y+ vec!}:add
-
-}:vec;
-
+.# Operator overload
+def vec::+ {self other,
+    self.x other.x +
+    self.y other.y +
+    vec!
+}
 ```
 
-Call constructor using `!` operator and print using `.repr` definition:
+Call constructor using `!` operator and print using `__repr__` definition:
 
 ```
 aya> 3 4 vec! :v
-<1,2>
-
+<3,4>
 ```
+
 Perform operations on the type:
 
 ```
 aya> v.len
-5.0
+5
 
 aya> 10 10 vec! v +
 <13,14>
 ```
 
-### Plot some expressions
+
+### Generate a Mandelbrot Fractal
+
+Complex numbers are built in to aya's number system can can be used seamlessly with other numeric types. Aya also includes a graphics library. The `viewmat` module uses it to draw a 2d intensity image.
 
 ```
-import "plot color list math"
+import ::viewmat
 
-plot!:p;
+{ a ,
+    0 { 2^ a+ } 30 %
+}:mandl;
 
-.# The domain
-0 2pi* 600 linspace p.domain
+0.008 :y_step;
+0.008 :x_step;
+3 :max_thresh;
 
-.# Add each function
-"sin" 2 colors.red.rgb    {sin} p.addexpr
-"cos" 2 colors.blue.rgb   {cos} p.addexpr
-"ln"  2 colors.orange.rgb {ln} p.addexpr
+[1 $y_step- :1,] :# {y,
+    [:2 $x_step+ 0.5,] :# {x,
+        x y MI mandl .|
+        max_thresh .>
+    }
+}
 
-.# Plot title
-"A Sample Expression Plot" p.:title
-
-.# Other plot parameters
-[(-2) 2] p.:yaxis;
-[0 2pi*] p.:xaxis;
-1        p.:legend;
-"f(x)"   p.:ylabel;
-400      p.:width;
-300      p.:height;
-
-.# Open the plot window
-p.view
-
-.# Save the plot
-"sample_plot.png" p.save
+viewmat.show 
 ```
 
-Output:
+![Mandelbrot Fractal](images/mandel.png)
 
-![Sample Expression Plot](images/sample_plot.png)
 
-### Plot a Lorenz Attractor
+
+### Draw Using a Turtle
+
+Use aya's `turtle` and `color` modules to draw a pattern
 
 ```
-import ::plot
+import ::turtle
+import ::color
 
-.# Starting parameters
-0.01 :x;
-0.1  :y;
-0.3  :z;
-10   :a;
-28   :b;
-8`/3 :c;
-0.01 :dt;
+{,
+    400:width;
+    400:height;
+    color.colors.darkblue :bg_color;
+} turtle!:t;
 
-.# List to keep track of state
-[]
+5 :n;
+color.colors.blue :c;
 
 {
-  .# Update the point
-  [
-    y x - a * dt* x+:x
-    b z - x * y - dt* y+:y
-  ]
-  x y * c z * - dt* z+:z;
-
-  .# Append to state list
-  \.B
-} 5000 %
-
-.# Transpose to separate list of x and y values
-.T ~ plot.line:p
-
-"Lorenz Attractor" p.:title;
-
-p.view
+    n t.fd
+    89.5 t.right
+    1 c.hueshift :c;
+    c t.pencolor 
+    n 0.75 + :n;
+} 400 %
 ```
 
-Output:
+![Turtle Example](images/turtle.png)
 
-![Running aya from the command line. ](images/lorenz_attractor.png)
+
+
+### Load, Examine, and Visualize Datasets
+
+```
+import ::dataframe
+import ::plot
+import ::stats
+
+"Downloading file..." :P
+{,
+    "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/LakeHuron.csv":filename
+    1:csvindex
+}
+dataframe.read_csv :df;
+
+df.["time"] :x;
+df.["value"] :y;
+
+.# stats.regression returns a function
+x y stats.regression :r;
+
+plot.plot! :plt;
+x y   {, "Water Level":label} plt.plot
+x {r} {, "Trend":label} plt.plot
+
+"Water Level of Lake Huron" plt.:title;
+[575 583] plt.:ylim;
+1 plt.yaxis.:gridlines;
+"####" plt.xaxis.:numberformat;
+2 plt.:stroke;
+
+plt.view
+```
+
+![Lake Huron](images/lakehuron.png)
+
 
 ### Interactive help
 
@@ -236,13 +301,7 @@ Sample documentation from `math.aya`
   - **Optimization**: Parts of the interpreter run fairly slow and can be optimized to run faster. Many operators also need to be optimized.
   - **More Operators**: Most of the dot (`.<op>`), misc (`M<op>`), and colon (`:<op>`) operators have not yet been assigned.
   - **Refine the Standard Library**: Debug, fix small errors, clean
-  - **Better I/O Support**: Currently IO includes text files (input and output) and the ability to download files from the web. An official IOStream object should be implemented.
-  - Complex number types
 
 ## Contributing
 
 If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternively, implement any feature or bugfix yourself and submit a pull request.
-
-# Limitations
-
-Aya was not originally intended for computational or memory intensive tasks. It was intended to be used as an advanced desktop "calculator" for programming puzzles and simple or tedious computational tasks. It's compact syntax and extensibility make it great for both of these. As the language grows it will become better for larger and larger tasks.

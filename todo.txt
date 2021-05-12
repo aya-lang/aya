@@ -1,7 +1,0 @@
-list indexing
-item list [< i,j,..]
-     list [> i,j,..]
-     list [? i,j,..]
-
-set value of symbol
-item ::symbol <set>

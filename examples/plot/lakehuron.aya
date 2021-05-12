@@ -17,6 +17,7 @@ plot.plot! :plt;
 df.["time"] :x;
 df.["value"] :y;
 
+.# stats.regression returns a function
 x y stats.regression :r;
 
 x y   {, "Water Level":label} plt.plot
