@@ -1,0 +1,10 @@
+import ::enum
+
+[
+
+{:e, enum ::e [::a ::b ::c] e P "e"}
+{:e, enum ::e [::a ::b ::c] e.a P "e.a"}
+{:e, enum ::e [::a ::b ::c] e.a e.b = 0}
+{:e, enum ::e [::a ::b ::c] e.a e.a = 1}
+
+] :# { test_ }

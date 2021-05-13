@@ -1,8 +1,9 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of aya: https://github.com/aya-lang/aya
 
-.# enum.aya
 .# Defines the enum keyword which allows for
 .#  easy creation of enum classes and symbol groups
+
+export ::enum
 
 {``({class::sym enums::list : dict meta,
 
@@ -35,21 +36,3 @@
     .# Assign the name of the enum to the enum class
     class := ;
 })}:enum;
-
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "enum" testset! :ts;
-
-    {:e, enum ::e [::a ::b ::c] e P} ["e"] ts+
-    {:e, enum ::e [::a ::b ::c] e.a P} ["e.a"] ts+
-    {:e, enum ::e [::a ::b ::c] e.a e.b =} [0] ts+
-    {:e, enum ::e [::a ::b ::c] e.a e.a =} [1] ts+
-
-    ts __aya__.addtest
-}

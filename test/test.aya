@@ -36,8 +36,11 @@
 "test/test_op_overload" load_test
 
 .# Base
-"test/base/sym" load_test
-"test/base/char" load_test
+"test/base/test_sym" load_test
+"test/base/test_char" load_test
+
+.# Std
+{, "test/std/test_enum" load_test };
 
 .# Import entire standard library
 "Importing standard library..." :P

@@ -1,7 +1,6 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of aya: https://github.com/aya-lang/aya
 
-.# char.aya
-.# Defines functions for working with characters
+.# Metatable definition for the built-in `char` type
 
 {,
     .#? C.islower\n  tests if a character is lowercase

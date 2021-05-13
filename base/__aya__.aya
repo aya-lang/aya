@@ -375,7 +375,6 @@
 
     .# required libraries
     "importlib"
-    "enum"
 
     .# Interpreter commands
     "interpreter_t"
