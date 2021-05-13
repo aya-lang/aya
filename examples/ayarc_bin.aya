@@ -3,6 +3,6 @@
 .# This file redirects aya to /aya-lang and
 .# calls the ayarc.aya file from there
 
-:{sys.wd} "/"|B;#"/"+S 3:{sys.MZ}
+:{sys.wd} "/"|B;#"/"+S :{sys.cd}
 
 :{sys.wd} "ayarc.aya" + G ~

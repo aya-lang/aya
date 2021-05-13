@@ -43,7 +43,7 @@ def terminal::replcolor {c::color : color^ terminal^ ,
     [c terminal._setfgstr
      "aya> "
      color.colors.white terminal._setfgstr]S
-     1 :{sys.MZ}
+    :{sys.alterprompt}
 }
 
 def terminal::print_color {value c::color : terminal^ prev_fg,

@@ -17,8 +17,6 @@ public class SystemInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
-		addInstruction(new LegacySystemInstruction());
-		
 		// Readdir
 		addInstruction(new NamedInstruction("sys.readdir", "list files in working dir") {
 			@Override
@@ -35,7 +33,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						}
 						block.push(new List(obj_dirs));
 					} catch (NullPointerException e) {
-						throw new ValueError(":{sys.readdir} : arg is not a valid location. Received:\n" + fstr);
+						throw new ValueError(":{sys.readdir} : arg is not a valid location. Received:\n'" + fstr + "'");
 					}
 				} else {
 					throw new ValueError(":{sys.readdir} : arg must be a string. Received:\n" + arg.repr());
@@ -142,6 +140,15 @@ public class SystemInstructionStore extends NamedInstructionStore {
 			public void execute(Block block) {
 				final Obj arg = block.pop();
 				block.push(List.fromString(FileUtils.resolveHome(arg.str())));
+			}
+		});
+		
+		// Change the prompt text
+		addInstruction(new NamedInstruction("sys.alterprompt", "change the prompt text") {
+			@Override
+			public void execute(Block block) {
+				final Obj arg = block.pop();
+				AyaPrefs.setPrompt(arg.str());
 			}
 		});
 	}

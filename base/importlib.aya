@@ -246,6 +246,8 @@ importlib __aya__.:importlib;
 .# If provided a 0 (for example from `from` keyword), do nothing
 {`(:& 0= {;} {__aya__.importlib.import} .?)}:import;
 
+{: importlib^ , {,} importlib.:imported; } :reimport;
+
 {`(__aya__.importlib.export)}:export;
 {1:__export__;} :exportall;
 

@@ -12,7 +12,8 @@ def sys::cd {dirname : path^,
     dirname
     .# If it is a string, conv to path
     dirname :T ::str = { path! } ?
-    P 3:{sys.MZ}
+    P :{sys.cd}
+
 }
 
 

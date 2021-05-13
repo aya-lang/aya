@@ -68,12 +68,12 @@ def path::__dec__ {self,
 
 .#? ::str path.readdir\n  list of file/dir names in the given path
 def path::readdir {
-    P""4:{sys.MZ}
+    P :{sys.readdir}
 }
 
 .#? path.working\n  working directory
 def path::working {:path^,
-    ""2:{sys.MZ} path!
+    :{sys.wd} path!
 }
 
 
@@ -162,9 +162,9 @@ iswindows {:9s$+} {:9s} .? path.:filesplit;
 
 
 
-""7:{sys.MZ} path! path.:home;
+"~" :{sys.resolvehome} path! path.:home;
 
-{, ""2:{sys.MZ} path._split :dirs} path :M path.:dfltworking;
+{, :{sys.wd} path._split :dirs} path :M path.:dfltworking;
 
 
 
