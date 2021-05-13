@@ -5,7 +5,7 @@
 
 {,
     .# Import list variables
-    using ([].M)
+    [].M W
 
     .#? S.trim\n  remove whitespace from start and end of string
     {"^\\s+|\\s+$" |S $0={;""}?}:trim;

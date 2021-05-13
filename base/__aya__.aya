@@ -13,39 +13,28 @@
 
     {,}:interpreter;
 
-
-
     .# If set to 1, all breakpoints will be ignored
+    .#? __aya__.ignore_breakpoints\n  if true, skip all breakpoints
     0 :ignore_breakpoints;
 
 }:__aya__;
 
 
 
-.###########################
-.# DEFINE __aya__ KEYWORDS #
-.###########################
+.#######################################
+.# DEFINE __aya__ KEYWORDS AND GLOBALS #
+.#######################################
 
 .# -----
 .# DEBUG
 .# -----
 
-.# Breakpoint
-{ : __aya__^, 
+.#? bp\n  set a breakpoint
+{ : __aya__^,
     __aya__.ignore_breakpoints ! {
         :{debug.pause}
     } ?
 }:bp;
-
-.# Breakpoint
-{ : __aya__^,
-    0 __aya__.:ignore_breakpoints;
-}:bp_enable;
-
-{ : __aya__^,
-    1 __aya__.:ignore_breakpoints;
-}:bp_disable;
-
 
 
 .# ----
@@ -55,14 +44,6 @@
 .#? load S\n  Load a script
 {`(".aya"+G~)}:load;
 
-
-
-.# -----
-.# USING
-.# -----
-
-.#? using dict\n  import variables from a dict into the current scope
-{`W}:using;
 
 .# -------
 .# OPT_MOD
@@ -153,36 +134,33 @@
 
 } __aya__.:opt_mod;
 
-{`(__aya__.opt_mod)}:opt_mod;
 
-
-
-.# ----
-.#  FN
-.# ----
+.# -----
+.#  DEF
+.# -----
 
 
 .{
-    `fn` macro
+    `def` macro
     Universal verbose syntax for defining functions
 
     Define a function in the current scope:
 
-        aya> fn ::double {2*}
+        aya> def ::double {2*}
         aya> 3 double
         6
 
     Define a function in a module scope:
 
         aya> {,}:math;
-        aya> fn math::sq {2^}
+        aya> def math::sq {2^}
         aya> 5 math.sq
         25
 
     Define a function in a class/struct scope:
 
         aya> struct ::point [::x ::y]
-        aya> fn point::sum {self, self.x self.y +}
+        aya> def point::sum {self, self.x self.y +}
         aya> 2 3 point! :p
         ( 2 3 ) point!
         aya> p.sum
@@ -191,19 +169,19 @@
     Define a function in a submodule:
 
         aya> {, {,}:stats; }:math;
-        aya> fn (math.stats)::mean {.E\S\/}
+        aya> def (math.stats)::mean {.E\S\/}
         aya> [1 2 3 4] math.stats.mean
         2.5
 .}
 
-opt_mod (
+(
     {block name mod,
         block.` name mod :D ;
     }
     {block name,
         block.` name := ;
     }
-):def;
+) __aya__.opt_mod :def;
 
 
 
