@@ -1,0 +1,42 @@
+[
+
+{'c .islower 1}
+{'C .islower 0}
+{'* .islower 0}
+
+{'c .isupper 0}
+{'C .isupper 1}
+{'* .isupper 0}
+
+{'c .lower 'c}
+{'C .lower 'c}
+{'* .lower '*}
+
+{'c .upper 'C}
+{'C .upper 'C}
+{'* .upper '*}
+
+{'c .isdigit 0}
+{'C .isdigit 0}
+{'* .isdigit 0}
+{'0 .isdigit 1}
+
+{'\n' .iswhitespace 1}
+{'\t' .iswhitespace 1}
+{'    .iswhitespace 1}
+{'c   .iswhitespace 0}
+{'C   .iswhitespace 0}
+{'*   .iswhitespace 0}
+{'0   .iswhitespace 0}
+
+{'c   .isascii 1}
+{'C   .isascii 1}
+{'*   .isascii 1}
+{'0   .isascii 1}
+{'\alpha'   .isascii 0}
+
+{"a,b,c"  ', .split_keep ["a," "b," "c"]}
+{"a,b,c"  '* .split_keep ["a,b,c"]}
+{"a.b.c." '. .split_keep ["a." "b." "c." ""]}
+
+] :# { test_ }

@@ -37,6 +37,7 @@
 
 .# Base
 "test/base/sym" load_test
+"test/base/char" load_test
 
 .# Import entire standard library
 "Importing standard library..." :P

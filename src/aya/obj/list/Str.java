@@ -83,7 +83,13 @@ public class Str extends ListImpl implements Comparable<Str> {
 		return levenshteinDistance(_str, other._str);
 	}
 	
-	/** Split a string at all instances of the given character */
+	/** Split a string at all instances of the given character
+	 * 
+	 * "a.b.c".splitAtChar('.') => ["a" "b" "c"]
+	 * "a.b.c.".splitAtChar('.') => ["a" "b" "c" ""]
+	 * @param splitter
+	 * @return
+	 */
 	public ArrayList<Str> splitAtChar(char splitter) {
 		ArrayList<Str> strs = new ArrayList<Str>();
 		StringBuilder current_str = new StringBuilder();
@@ -96,7 +102,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 				current_str.append(c);
 			}
 		}
-		if (current_str.length() > 0) {
+		if (current_str.length() > 0 || chars[chars.length-1] == splitter) {
 			strs.add(new Str(current_str.toString()));
 		}
 		return strs;

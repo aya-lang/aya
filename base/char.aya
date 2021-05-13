@@ -20,7 +20,7 @@
     {$ '0 :> \ '9 :< &}:isdigit;
 
     .#? C.iswhitespace\n  tests if a character is a whitespace character
-    {P "\W+" & E 1 =}:iswhitespace;
+    { " \f\n\r\t\v\{x00A0}\{x2028}\{x2029}" \ N 0 :> \;}:iswhitespace;
 
     .#? C.isascii\n  test if character is ascii
     {:" 127 <}:isascii;
@@ -28,34 +28,10 @@
     .#? C.isalpha\n  test if character is alphabetical
     {$ $ 'a :> \ 'z :< & \ $ 'A :> \ 'Z :< & |}:isalpha;
 
+    .#? ::str ::char .split_keep\n  split the string at the char, keep the char in the leading string
     {s c,
-        s cP | :1| \:#{c+}\J
-    }:split;
+        s c | :1| \:#{c+}\J
+    }:split_keep;
 }
 .# Merge with char metatable
 'x .M \.+
-
-.#? S spechar\n  converts the name of a special character into the corresponding special character
-{a::str,"\"\\{$a}\""~."}:spechar;
-
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "char" testset! :ts;
-
-    {"cC*" #.islower} [[1 0 0]] ts+
-    {"cC*" #.isupper} [[0 1 0]] ts+
-    {"HelLo!" #.upper} ["HELLO!"] ts+
-    {"HelLo!" #.lower} ["hello!"] ts+
-    {"Cr4zy1!" #.isdigit} [[0 0 1 0 0 1 0]] ts+
-    {"\n\t s" #.iswhitespace} [[1 1 1 0]] ts+
-    {"alpha" spechar '\alpha' =} [1] ts+
-
-    ts __aya__.addtest
-
-}
