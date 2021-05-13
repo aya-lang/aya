@@ -1,0 +1,11 @@
+test_.` :test;
+
+[
+
+.# Convert blocks to strings for equality test
+{ ::+ .op P {+} P }
+{ ::Ms .op P {Ms} P }
+{ ::+ .rev ::__radd__ }
+{ ::Ms .rev ::__sin__ }
+
+] :# { test }

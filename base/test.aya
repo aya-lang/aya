@@ -8,10 +8,10 @@
     {
         blk :!
     } {ex,
-        ex :T ::dict = {
+        ex.` :T ::dict = {
             ["Test Failed: $blk"
-             "\tExpected: $(ex.expected)"
-             "\tReceived: $(ex.received)"] "\n"* :P
+             "\tExpected: $(ex.expected.`)"
+             "\tReceived: $(ex.received.`)"] "\n"* :P
         } {
             "Error while evaluating test $blk\n$ex" .D
         } .?

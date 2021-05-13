@@ -35,6 +35,9 @@
 "test/range" load_test
 "test/test_op_overload" load_test
 
+.# Base
+"test/base/sym" load_test
+
 .# Import entire standard library
 "Importing standard library..." :P
 :{sys.wd} "/std"+ :{sys.readdir}:# {"\.aya"|S} :# {name, "importing $name...":P import name} ;

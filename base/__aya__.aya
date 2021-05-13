@@ -1,4 +1,4 @@
-.# This file is a part of aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of aya: https://github.com/aya-lang/aya
 
 .# __aya__
 .# Defines the __aya__ namespace and keywords
@@ -8,34 +8,17 @@
 
 
 
-{, .# begin __aya__ namespace
-
-{,}:interpreter;
-
-{,::ops :O :#{o, o.overload:#{sym, o sym :=}}}:ops;
-
+.# Global __aya__ table
 {,
-    "overloadable" M? :# {
-        .# Get <name> <op> as strings
-        :& "overloadable:.*$" & .[0] " " |.[:1] \ " " |.[0]
-        .# Lambda to apply to each <name> <op>
-        ({name op,
-            .# If the name is "__add__/__radd__", only use the first one
-            name "/" |.[0]:name;
-            .# Attempt to parse the op ( operator __each__ ":#" will fail)
-            .# And assign the op to its name
-            {op.~ name :=} {;} .K
-        })
-    }
-}:overloads;
 
-0 :ignore_breakpoints;
+    {,}:interpreter;
+
+
+
+    .# If set to 1, all breakpoints will be ignored
+    0 :ignore_breakpoints;
 
 }:__aya__;
-
-.# 1 nil.M.:__pushself__;
-
-
 
 
 

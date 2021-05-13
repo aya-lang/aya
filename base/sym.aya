@@ -1,19 +1,67 @@
+.# This file is a part of aya: https://github.com/aya-lang/aya
+
+.# Metatable definition for the built-in `sym` type
+
 {,
+    .{? ::sym .op
 
-{s, {__aya__.overloads s I} {; s :C.~ } .K }:op;
+        Return a block containing the operator
+        Does not currently work with quoted operators (TODO: fix internal representation)
 
-.{
-    Return the reverse overload for a symbol
-    - If the symbol is an operator and has a reverse overload, return it
-    - If the symbol is an operator but does not have a reverse overload,
-        return the original operator
-    - If the symbol is not an operator, throw an error
+        aya> ::+ .op
+        {+}
+        aya> ::Ms .op
+        {Ms}
+        aya> ::'Ms' .op
+        Error
+    .}
 
-    aya> ::+ .rev
-    ::__radd__
-.}
-{__aya__.ops\I.overload1.>~}:rev;
+    .# Get a dict of all operator/symbol pairs
+    {,
+        "overloadable" M? :# {
+            .# Get <name> <op> as strings
+            :& "overloadable:.*$" & .[0] " " |.[:1] \ " " |.[0]
+            .# Lambda to apply to each <name> <op>
+            ({name op,
+                .# If the name is "__add__/__radd__", only use the first one
+                name "/" |.[0]:name;
+                .# Attempt to parse the op ( operator __each__ ":#" will fail)
+                .# And assign the op to its name
+                {op.~ name :=} {;} .K
+            })
+        }
+    }:_overloads;
+
+    {s, {::_.M._overloads s I} {; s :C.~ } .K }:op;
+
+
+    .{? ::sym .rev
+
+        Return the reverse overload for a symbol
+        - If the symbol is an operator and has a reverse overload, return it
+        - If the symbol is an operator but does not have a reverse overload,
+            return the original operator
+        - If the symbol is not an operator, throw an error
+
+        aya> ::+ .rev
+        ::__radd__
+    .}
+
+    {,
+        .# Get the overload list for all ops
+        ::ops :O :#{.overload}
+        .# Get all ops with non-zero length overloads
+        .[{E 0 = !}]
+        .# For each overload list
+        :V :#{l,
+            .# Assign the reversed op to the standard one
+            .# If the list length is 1, standard will be assigned to itself
+            l.[:1] l.[0] :=
+        }
+    }:_rev_overloads;
+
+    { ::_.M._rev_overloads \ I }:rev;
 
 }
-.# Merge with str metatable
+.# Merge with sym metatable
 ::_ .M \.+
