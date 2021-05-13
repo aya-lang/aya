@@ -1,0 +1,10 @@
+struct ::exception [::msg ::type]
+
+def exception::__repr__ {self,
+    "$(self.type :C): $(self.msg)"
+}
+
+{,
+    {msg : exception^ , msgP ::value_err exception! .D }:value_err;
+
+}:ex;

@@ -1,4 +1,21 @@
 {,
+
+    .#? ::list.capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
+    .{ Example:
+        aya> {1 +}:a 2:b
+        {1 +} 2
+        aya> [::a ::b].capture_vars
+        {,
+          {1 +}:a;
+          2:b;
+        }
+        aya> [::a ::b ::c].capture_vars
+        ERROR: Variable c not found
+    .}
+    { {1, :# {$~\:=} } }:_capture_vars;
+
+
+
     {}:op;
 
     .#? LLE zw\n  zip two lists with a block
@@ -97,7 +114,7 @@
         aya> 5 f
         6
     .}
-    {`({\.makelocals :& .|.locals @ .capture_vars .+ ;})}:capture;
+    {`({\.makelocals :& .|.locals @ {}.M._capture_vars .+ ;})}:capture;
 
     .#? ::block .time\n  return the execution time of a block in ms
     .# {M$ \[1|~]; M$ /}:time;

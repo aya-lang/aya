@@ -1,21 +1,107 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
+.# This file is a part of aya: https://github.com/aya-lang/aya
 
-.# list.aya
-.# Defines functions for working with lists
-
-.# Basic functions
-
-.# Operators
-{\N\;:1=!}:in;      .#? AL in\n  tests whether or not item `a` is in list `l`
-.# {\N0:>}:in;
-{N\;(-1)=!}:ni;     .#? LA ni\n  tests whether or not item `a` is in list `l`
-
-
+.# Metatable definition for the built-in `list` type
 
 {,
-    {B\.V}:roll;           .#? L roll\n  move the last element to the front
+    .# Querying
+    .###############
 
-    .#? ::list.r\n  generate a multidimentional range
+    .#? ::any ::list .in\n  tests whether or not item is in the list
+    {\N\;:1=!}:in;
+
+    .#? ::list .max\n  max value of a list
+    {{.<}F}:max;
+
+    .#? ::list .min\n  min value of a list
+    {{.>}F}:min;
+
+    .#? ::list .argmax\n  return the index of the largest value in the list
+    {$.maxN\;}:argmax;
+
+    .#? ::list .argmin\n  return the index of the smallest value in the list
+    {$.minN\;}:argmin;
+
+    .#? ::list ::list .i\n  index using mask
+    {.ER*{0=!}I1#- .E0={;;[]} {.E@@I\ 1={A}?} .?}:i;
+
+    .#? ::list ::list.mask\n  select indices with non-false values from list
+    .{
+        aya> [1 2 3 4 5] [0 1 0 0 1].mask
+        [ 2 5 ]
+    .}
+    {a b,
+        aE bE = {
+            a b .E R * .[{0=!}] 1- I
+        } {
+            "::list.mask: both lists must be the same length" ex.value_err
+        } .?
+    }:mask;
+
+    .#? ::list.alleq\n  return true if all items in the list are the same
+    {:~E1:<}:alleq;
+
+    .#? ::list .allt\n  true if all elements in list are true
+    {{&}F}:allt;
+
+    .#? ::list .allf\n  true if all elements in list are false
+    {{|}F!}:allf;
+
+
+
+
+    .# Manipulation
+    .###############
+
+
+    .#? ::any ::list .append\n  add item to end of list
+    {.B}:append;
+
+    .#? ::list .pop\n  remove item from end of list
+    {B}:pop;
+
+    .#? ::list .roll\n  move the last element to the front
+    {B\.V}:roll;
+
+    .#? ::num ::list .rotate\n  shift items in list up N times wrappping the items around
+    .{ Example:
+        aya> 1 [1 2 3 4].rotate
+        [ 4 1 2 3 ]
+        aya> 2 [1 2 3 4].rotate
+        [ 3 4 1 2 ]
+        aya> :1 [1 2 3 4].rotate
+        [ 2 3 4 1 ]
+    .}
+    {
+        .E@-        .# inverse so rotate in correct direction 2 5R => 3
+        \.E@\%      .# force bounds: n % length
+        | \ K       .# Split, swap, and rejoin
+    }:rotate;
+
+
+    .#? ::num ::num ::list .swap\n  swap two elements in a list given their indices
+    {i::num j::num l::list: tmp,
+        l i I : tmp;
+        l j I  l i D;
+        tmp l j D
+    }:swap;
+
+
+    .#? ::list .shuffle\n  shuffle a list
+    {{;.Q}.C}:shuffle;
+
+
+    .#? ::list .makesquare\n  make all lists in the given 2d lists the same length
+    {list,
+        list$ #E {.<}F
+        #.<
+    }:makesquare;
+
+
+
+    .# Generators
+    .#############
+
+    .#? ::list.r\n  multidimentional range
     .{ Example:
         aya> [2 3].r
         [ [ 1 2 3 ] [ 4 5 6 ] ]
@@ -33,216 +119,38 @@
     {${*}F0\L\L}:zeros;
     {${*}F1\L\L}:ones;
 
-    .#? ::num ::list.rotate\n  shift items in list up N times wrappping the items around
-    .{ Example:
-        aya> 1 [1 2 3 4].rotate
-        [ 4 1 2 3 ]
-        aya> 2 [1 2 3 4].rotate
-        [ 3 4 1 2 ]
-        aya> :1 [1 2 3 4].rotate
-        [ 2 3 4 1 ]
-    .}
-    {
-        .E@-        .# inverse so rotate in correct direction 2 5R => 3
-        \.E@\%      .# force bounds: n % length
-        | \ K       .# Split, swap, and rejoin
-    }:rotate;
+    .#? ::any ::num ::list .lpad\n  left pad list using ::any to a max length of ::num
+    { .E @ \- 0.< @\L\J }:lpad;
+    .#? ::any ::num ::list .rpad\n  left pad list using ::any to a max length of ::num
+    { .E @ \- 0.< @\L J }:rpad;
 
 
-    {$\; \$@K\K}:surround; .#? LA surround\n  append A to the front and back of L
-    {{.<}F}:max;           .#? L max\n  max value of a list
-    {{.>}F}:min;           .#? L min\n  min value of a list
+    .#? ::any ::list .surround\n  append A to the front and back of L
+    {$\; \$@J\J}:surround;
 
-    {$.maxN\;}:argmax; .#? L.argmax\n  return the index of the largest value in the list
-    {$.minN\;}:argmin; .#? L.argmin\n  return the index of the smallest value in the list
-
-    .#? L enumerate\n  return a list of index-value pairs for the list
+    .#? ::list .enumerate\n  return a list of index-value pairs for the list
     {.E.R{A.B}.&}:enumerate;
 
-
-    .#? L rank\n  rank a list
+    .#? ::list .rank\n  rank a list from highest to lowest
     {${>}.pu#S1+}:rank;
 
-    .#? L irange\n generates a range of indices for the list
+    .#? ::list .irange\n generates a range of indices for the list
     {E.R}:irange;
 
-    .#? <LII> swap\n  swap two elements in a list given their indices
-    {i::num j::num l::list: tmp,
-        l i I : tmp;
-        l j I  l i D;
-        tmp l j D
-    }:swap;
-
-    .#? <L> shuffle\n  shuffle a list
-    {{;.Q}.C}:shuffle;
 
 
-    .#? ::list.allsame\n  return true if all items in the list are the same
-    {:~E1:<}:allsame;
-
-    .# Always return a list
-    {.ER*{0=!}I1#- .E0={;;[]} {.E@@I\ 1={A}?} .?}:i;
-
-
-    .#? ::list.capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
-    .{ Example:
-        aya> {1 +}:a 2:b
-        {1 +} 2
-        aya> [::a ::b].capture_vars
-        {,
-          {1 +}:a;
-          2:b;
-        }
-        aya> [::a ::b ::c].capture_vars
-        ERROR: Variable c not found
-    .}
-    { {1, :# {$~\:=} } }:capture_vars;
-
-    {
-        #.op .*
-    }:blk;
-
-    {.B}:push;
-    {B}:pop;
+    .# OTHER UTILITIES
+    .##################
 
     .#? ::list.dict_flatten\n  given a list of dicts, flatten the into a single dict
     {
         {,}\J{.+}F
     }:dict_flatten;
 
-    .# ::list ::list.mask\n  select indices with non-false values from list
-    .{
-        aya> [1 2 3 4 5] [0 1 0 0 1].mask
-        [ 2 5 ]
-    .}
-    {
-        .E.R*.[{0=!}]I
-    }:mask;
-
-
-    .# 3 argument version of the .> operator
-    .{ Example:
-        aya> "" 5 ["a" "b" "c"].pad
-        ["a" "b" "c"] ["" ""]
-        aya> "" 2 ["a" "b" "c"].pad
-        ["a" "b" "c"] []
-    .}
-    {
-        :& E@\- 0.< @\L
-    }:pad;
-
-
 }
-.# Merge with char metatable
+.# Merge with list metatable
 [] .M \.+
+
 
 .# Removing .I, can directly swap for this
 {\:&@I}:dot_i;
-
-
-.# Testing / Conditions
-
-{{&}F}:allt;     .#? <L> allt\n  true if all elements in list are true
-{{|}F!}:allf;    .#? <L> allf\n  true if all elements in list are false
-{\:&@IE\E=}:all;  .#? <LE> all\n  tests if all elements of the list meet the condition
-{IE0>}:any;      .#? <LE> any\n  returns true if any elements satisfy the predicate
-
-
-
-
-.# Other Functions
-
-
-
-.#? AEN rpt\n  start at A and repeat E N times on the previous value of the list
-{start expr len,
-    [start {$ expr} len %]
-}:rpt;
-
-
-.#? LI lotto\n  pick N random items from L
-{\.EV@L#QI}:lotto;
-
-
-.#? L<N> digitstonum\n  convert a list of numbers into a number
-{l::list : total multip,
-    1:multip;
-    lU#{
-        multip* total+:total;
-        multip 10 *:multip
-    };
-    total
-}:digitstonum;
-
-.#? list makesquare\n  make all lists in the given 2d lists the same length
-{list,
-    list$ #E {.<}F
-    #.<
-}:makesquare;
-
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "list" testset! :ts;
-
-    {4 [1 2 3] in} [0] ts+
-    {[1 2 3] 4 ni} [0] ts+
-    {2 [1 2 3] in} [1] ts+
-    {[1 2 3] 2 ni} [1] ts+
-    {[1 2 3 4].roll.roll} [[3 4 1 2]] ts+
-    {'~ "abc" .surround} ["~abc~"] ts+
-    .#{[1 2] [3 4] {+} zw} [[4 6]] ts+
-    {[1 2 3 4].max} [4] ts+
-    {[1 2 3 4].min} [1] ts+
-
-    {[1 1 1] allt} [1] ts+
-    {[0 0 0] allt} [0] ts+
-    {[1 0 1] allt} [0] ts+
-    {[1 1 1] allf} [0] ts+
-    {[0 0 0] allf} [1] ts+
-    {[1 0 1] allf} [0] ts+
-    {[1 2 3] {4<} all} [1] ts+
-    {[1 2 3 4] {4<} all} [0] ts+
-    {[1 2 3] {3=} any} [1] ts+
-    {[7 8 9] {3=} any} [0] ts+
-    {[] allt} [0] ts+
-    {[] allf} [1] ts+
-    {[] {3=} any} [0] ts+
-    {[] {3=} all} [1] ts+
-
-    {1  [1 2 3 4] .rotate} [[4 1 2 3]] ts+
-    {0  [1 2 3 4] .rotate} [[1 2 3 4]] ts+
-    {:1 [1 2 3 4] .rotate} [[2 3 4 1]] ts+
-    {7  [1 2 3 4] .rotate} [[2 3 4 1]] ts+
-
-
-    {"abc" .enumerate} [[[0 'a][1 'b][2 'c]]] ts+
-    {[10].enumerate} [[[0 10]]] ts+
-    .# Put these back
-    .# {[4 7 3 2 7].rank} [[3 1 4 5 1]] ts+
-    .# {[4].rank} [[1]] ts+
-    {1 {2*} 4 rpt} [[1 2 4 8 16]] ts+
-    .#{123 digits} [[1 2 3]] ts+
-    .#{12.5 digits} [[1 2]] ts+
-    {10R 4 lotto E 4 =} [1] ts+
-    {[5 2 8].irange} [[0 1 2]] ts+
-    .#{"01""abc" {P+} pu .F} ["a0b0c0a1b1c1"] ts+
-    {:1 0 "abcd" .swap} ["dbca"] ts+
-    {10R.shuffle S} [55] ts+
-    .# {0 1 5 linspace} [[0 .25 .5 .75 1]] ts+
-    .# {1 10 4 intspace} [[1 4 7 10]] ts+
-    {[2 4 2 5] digitstonum} [2425] ts+
-    {[2] digitstonum} [2] ts+
-    {[] digitstonum} [0] ts+
-    {[[1 2][4][1 2 3]] makesquare} [[[1 2 0][4 0 0][1 2 3]]] ts+
-    .#{[1 2 3 4 5] {4<} tw} [[1 2 3]] ts+
-    .#{[1 2 3] {10=} tw} [[]] ts+
-
-    ts __aya__.addtest
-
-}

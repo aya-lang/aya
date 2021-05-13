@@ -98,7 +98,7 @@
         s.lines :# {
             sep | :# {.parsenum}
         }
-        makesquare
+        .makesquare
     }:readdlm;
 
     {n s,

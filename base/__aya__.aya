@@ -6,7 +6,7 @@
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
-
+{load "test/test"}:tt;
 
 .# Global __aya__ table
 {,
@@ -375,6 +375,7 @@
 
     .# required libraries
     "importlib"
+    "exception"
 
     .# Interpreter commands
     "interpreter_t"

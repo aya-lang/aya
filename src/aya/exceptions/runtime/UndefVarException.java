@@ -13,7 +13,7 @@ import aya.obj.symbol.SymbolConstants;
 public class UndefVarException extends InternalAyaRuntimeException {
 	
 	public UndefVarException(Symbol var) {
-		super(SymbolConstants.UNDEF_VAR, "Undefined variable " + var.name());
+		super(SymbolConstants.UNDEF_VAR, "Undefined variable '" + var.name() +"'");
 	}
 	
 }

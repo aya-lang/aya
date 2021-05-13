@@ -1,12 +1,14 @@
+import ::mp
+
 class ::matrix
 export ::matrix
 
 .# Test if list is a valid matrix
 def matrix::_is_valid_list {m::list,
     .# Both of the following must be true:
-    m#:T {::list=} all .# The list is made up of only other lists
+    m :#{:T::list=} .allt   .# The list is made up of only other lists
     {
-        m#E {m0IE=} all           .# All of the list lengths are the same
+        m :#{Em0IE=} .allt  .# All of the list lengths are the same
     } 0 .?
 }
 
@@ -49,9 +51,10 @@ def matrix::__repr__ {self,
     ::+ ::- ::* ::/
     ::^ ::< ::> ::%
     :::< :::> ::.%
-] :# {op_sym : op_to_n([::n op_sym].blk)
+] :# {op_sym : mp^
+               op_to_n([::n op_sym] mp.merge)
                op(op_sym.op)
-               rop([::other {\} op_sym].blk)
+               rop([::other {\} op_sym] mp.merge)
                rop_sym(op_sym.rev),
 
     def matrix op_sym {other self : op^ rop^,

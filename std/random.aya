@@ -1,0 +1,11 @@
+.# This file is a part of aya: https://github.com/aya-lang/aya
+
+.# Functions related to random number generation
+
+module ::random
+export ::random
+
+.#? ::list ::num random.lotto\n  pick N random items from L
+def random::lotto {
+    \.EV@L#QI
+}
