@@ -6,7 +6,7 @@ import ::stats
 
 plot.plot! :plt;
 
-l.min l.max 100 linspace h {, "Frequency":label} plt.scatter
+l.min l.max 100.linspace h {, "Frequency":label} plt.scatter
 
 "Normal Distribution" plt.:title;
 "Frequency" plt.:ylabel;

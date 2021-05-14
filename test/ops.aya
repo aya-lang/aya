@@ -17,3 +17,6 @@ test_.` :test;
 { "*"  '. | ["*"] } test
 { "a.b.c"  '. | ["a" "b" "c"] } test
 { "a.b.c." '. | ["a" "b" "c" ""] } test
+
+{ 0.1 .\ 0 = 1 } test
+{ 0.1 .\ 0 } test

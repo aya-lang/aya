@@ -1,63 +1,89 @@
+.# This file is a part of aya: https://github.com/aya-lang/aya
+
+.# Metatable definition for the built-in `num` type
 
 {,
 
-{R:#{;.Q}}:rand;     .#? ::num.rand\n  generate a set of random nums (0 to 1) of length i
+    .#? ::num .digits\n  convert a number into a list of digits
+    {
+        Z           .# Convert to bignum
+        .|          .# Absolute value (ignore negative)
+        P B;V;      .# Remove the ': and 'z
+        '. | V \;   .# Remove any decimal
+        #:"         .# Convert to list of ascii values
+        48-         .# Subtract 48 (ascii value of '0)
+    }:digits;
 
-.#? N digits\n  convert a number into a list of digits
-.# '0 = 48
-{P"\."|V\;#:"48-}:digits;
 
-{10 2 H}:bits;
+    .#? ::num .bits\n  return binary representation of the integer
+    {.| 10 2 H}:bits;
 
-.#? round a decimal to the nearest whole value
-{0.49999999-./}:round;
 
-{E$@@*.\\/}:to_fixed; .#? ::num ::num.to_fixed\n  round N1 to N2 decimal digits
+    .#? ::num .round\n  round a decimal to the nearest whole value
+    {0.49999999-./}:round;
 
-.#? N1 N2 N3 .clip N1 between N2 (lo) and N3 (hi)
-{@.>.<}:clip;
 
-.#? ::num.i\n  generate a range from -N to N
-.{ Example:
-    aya> 4.i
-    [ -4 -3 -2 -1 0 1 2 3 4 ]
-    aya> :-1.i
-    [ 1 0 -1 ]
-.}
-{.|$TR\R0\KK}:i;
+    .#? ::num ::num.fixed\n  round N1 to N2 decimal digits
+    {E$@@*.\\/}:fixed;
 
-.#? ::num.fractional\n  the fractional part of the number
-{ 1% }:fractional;
 
-.#? ::num.s\n  split a decimal into two numbers
-.{ Example:
-    aya> 4.6 .s
-    4 6
-    aya> 0.3 .s
-    0 3
-    aya> 5 .s
-    5 0
-.}
-{
-    $1%P$.[0]'.={V;}?~ \.\ \
-}:s;
+    .#? n::nun lo::num hi::num .clip N1 between N2 (lo) and N3 (hi)
+    .# Reverse the order of min/max algorithms depending on sign
+    { @$ 0:> {.>.<} {.<.>} .? }:clip;
+
+
+    .#? ::num.i\n  generate a range from -N to N
+    .{ Example:
+        aya> 4.i
+        [ -4 -3 -2 -1 0 1 2 3 4 ]
+        aya> 1.i
+        [ -1 0 1 ]
+        aya> :-1.i
+        [ 1 0 -1 ]
+    .}
+    {
+        $           .# dup n so we can use the sign later
+        .| $TR\R    .# create negative and positive versions of the list
+        0\KK        .# join lists with a 0 between
+        \0<{U}?     .# If the sign is negative, reverse
+    }:i;
+
+
+    .#? ::num.frac\n  the fractional part of the number
+    { 1% }:frac;
+
+
+    .#? ::num.s\n  split a decimal into two numbers
+    .{ Example:
+        aya> 4.6 .s
+        4 6
+        aya> 0.3 .s
+        0 3
+        aya> 5 .s
+        5 0
+    .}
+    {
+        $1%P$.[0]'.={V;}?~ \.\ \
+    }:fracsplit;
+
+
+    .#? start::num end::num n::num .intspace\n  create a range from start to b consisting of c ints\n  (also see .linspace)
+    { .linspace .\ }:intspace;
+
+
+    .#? start::num end::num n::num .linspace\n  create a uniform range from start to end with n steps\n  (also see .intspace)
+    {a b nums,
+        a b=
+        a numsL .# a=b, return nums a's
+        {[a b a-numsV/a+ b,]}
+        .?
+
+        .# If the length is not equal to nums, add b to the end
+        $Enums={}{bK}.?
+    }:linspace;
 
 
 }
 .# Merge with num metatable
 0 .M \.+
 
-.#? NNN linspace\n  create a uniform range from n1 to n2 with n3 steps\n  (also see intspace)
-{a b nums,
-    a b=
-    a numsL .# a=b, return nums a's
-    {[a b a-numsV/a+ b,]}
-    .?
-
-    .# If the length is not equal to nums, add b to the end
-    $Enums={}{bK}.?
-}:linspace;
-
-
-.#? III intspace\n create a range from a to b consisting of c ints\n  (also see linspace)
-{a b l, [a b l linspace,.\]}:intspace;

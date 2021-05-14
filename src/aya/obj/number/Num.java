@@ -280,7 +280,7 @@ public class Num extends Number {
 
 	@Override
 	public boolean equiv(Obj o) {
-		return o instanceof Number && ((Number)o).compareTo(this) == 0.0;
+		return o instanceof Number && ((Number)o).compareTo(this) == 0;
 	}
 	
 
@@ -291,7 +291,8 @@ public class Num extends Number {
 
 	@Override
 	public int compareTo(Number n) {
-		return Double.compare(_val, n.toDouble()); 
+		// Add 0.0 to both numbers to prevent Double.compare(-0, 0) == -1
+		return Double.compare(_val + 0.0, n.toDouble() + 0.0); 
 	}
 
 	@Override

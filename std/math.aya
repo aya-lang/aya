@@ -41,7 +41,6 @@ exportall
 {Me}:exp;           .#? N exp\n  exp(x)
 {M!}:fact;          .#? N fact\n  factorial
 {.\}:floor;         .#? N floor\n  floor
-{$.\-}:frac;        .#? N frac\n  fractional part
 {ML2ML/}:lg;        .#? N lg\n  base-2 log
 {Ml}:ln;            .#? N ln\n  natural log
 {ML}:log;           .#? N log\n  base-10 log
@@ -229,16 +228,10 @@ exportall
 
     "math" testset! :ts;
 
-    .# Verify to_fixed does what it is supposed to
-    {:1p1 4.to_fixed} [3.1415] ts+
-    {0.00012345 5.to_fixed} [0.00012] ts+
-    {9218731923.0012387087 4 .to_fixed} [9218731923.0012 ] ts+
-    {3.141 0.to_fixed} [3] ts+
-
     {[3 5][4 12] hypot} [[5 13]] ts+
 
     .# Trig
-    {3.4 acoth 3.to_fixed} [0.303] ts+
+    {3.4 acoth 3.fixed} [0.303] ts+
 
     .# List operations
     {10R normal $S/S .\} [1] ts+

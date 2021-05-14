@@ -4,7 +4,7 @@ import ::math
 plot.plot!:p;
 
 .# The domain
-0 2pi* 600 linspace :x;
+0 2pi* 600.linspace :x;
 
 .# Add each function
 x {sin} {, "sin":label } p.plot

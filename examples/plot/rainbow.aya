@@ -11,7 +11,7 @@ plot.plot!:p;
 0 p.xaxis.:visible;
 [ "violet" "indigo" "blue" "green" "yellow" "orange" "red"] p.:color_cycle;
 
-0 0.9+ :1p 0.9- 600.1 linspace :x;
+0 0.9+ :1p 0.9- 600.1.linspace :x;
 
 7R :# {i,
     x {Ms i 0.011* +}.use[::i] {,} p.plot

@@ -37,6 +37,7 @@
 
 .# Base
 "test/base/test_sym" load_test
+"test/base/test_num" load_test
 "test/base/test_char" load_test
 "test/base/test_list" load_test
 
