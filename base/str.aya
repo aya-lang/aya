@@ -7,42 +7,34 @@
     .# Import list variables
     [].M W
 
-    .#? S.trim\n  remove whitespace from start and end of string
+
+    .#? ::str.trim\n  remove whitespace from start and end of string
     {"^\\s+|\\s+$" |S $0={;""}?}:trim;
 
-    .#? ICS.leftpad\n  left pad string S so it is at least length I using char C
+
+    .#? ::num ::char ::str .leftpad\n  left pad string S so it is at least length I using char C
     {len::num pad::char s,
         s.E len\- {pad\K}\%
-    }:leftpad;
+    }:lpad;
+
 
     .#? ICS.rightpad\n  right pad string S so it is at least length I using char C
     {len::num pad::char s,
         s.E len\- {padK}\%
-    }:rightpad;
+    }:rpad;
 
-    .#? S.replace(S1,S2)\n  replace S! with S2 in S
-    {`(@.&)}:replace;
-
-    .#? S.split\n  split a string at whitespace
-    {.trim "\W+"|}:split;
-
-    .#? S.bytes\n  convert string to byte list
-    {:"}:bytes;
 
     .# S.tolower\n  convert string to uppercase
     {:#{.upper}}:upper;
 
+
     .# S.toupper\n  convert string to lowercase
     {:#{.lower}}:lower;
+
 
     .#? S.isnum\n  returns true if the string is a valid number
     {.! :T ::num =}:isnum;
 
-    .#? S.lines\n  split a string into lines. ignore traling newlines
-    {"\n"|}:lines;
-
-    .#? ::str ::str.endswith\n  test if a string 2 ends with string 1
-    {\:&E@\.>=}:endswith;
 
     .#? S.titlecase\n  convert a string to titlecase
     {s,
@@ -56,33 +48,15 @@
     }:titlecase;
 
 
-    .# aya> "A".rmquote
-    .# "A"
-    .# aya> "\"A\"".rmquote
-    .# "A"
-    .# aya> "\"A\"b".rmquote
-    .# ""A"b"
-    {s,
-        s {?,
-            (E2<) s,
-            (;s.[:1] '"= s.[0] '"= &) {s$\;B;V;},
-            {s}
-        }
-    }:rmquote;
+    .#? S.lines\n  split a string into lines. ignore traling newlines
+    {"\n"|}:lines;
 
-    .# aya> "na".in "name"
-    .# 1
-    .# aya> "red".in "I saw a red fox"
-    .# 1
-    .# aya> "/".in "some/path"
-    .# 1
-    .# aya> "x".in "abc"
-    .# 0
-    {`(
-        \N :1=!\;
-    )}:in;
 
-    .#? S.parse\n  If num, return num, else return str (rm surrounding quotes)
+    .#? S.bytes\n  convert string to byte list
+    {:"}:bytes;
+
+
+    .#? S.parsenum\n  If num, return num, else return str (rm surrounding quotes)
     {
         .!
         $:T ::str = {
@@ -101,10 +75,37 @@
         .makesquare
     }:readdlm;
 
+
+    .#? ::str ::str .endswith\n  test if a string 1 ends with string 2
+    {:&E@\.>=}:endswith;
+
+    .#? ::str .rmquote\n  remove single leading/trailing quote characters if they exist
+    .# aya> "A".rmquote
+    .# "A"
+    .# aya> "\"A\"".rmquote
+    .# "A"
+    .# aya> "\"A\"b".rmquote
+    .# ""A"b"
+    {s,
+        s {?,
+            (E2<) s,
+            (;s.[:1] '"= s.[0] '"= &) {s$\;B;V;},
+            {s}
+        }
+    }:rmquote;
+
+
+
+
+
+    .# Maybe remove
     {n s,
         s.lines :#{" "nLS\+"\n"}S
     }:padlines;
 
+
+    .# TODO: Replace this with a built-in that applies string interpolation parser to a string
+    .# This way, we can use string interpolation with long strings
     {s__:orig__,
         .# Make a copy of the original for error message
         s__ $ :orig__;;
@@ -123,16 +124,9 @@
         };
         s__
     }:fmt;
-
-    {s : lines(s.lines),
-        lines E 24 > {
-            [lines 10 .<~ "..." lines 10 .>~]"\n"*
-        } {
-            s
-        } .?
-    }:repr_lines;
-
 }
+
+
 .# Merge with str metatable
 "" .M \.+
 
@@ -151,114 +145,4 @@ def ::matstr {m : colmax,
                                         .# padding equal to the max for that column + 1
     :#{SB;}                             .# Combine each row into a single string, remove trailing space
     '\n' *                              .# Join with newlines
-}
-
-
-
-.#? list sep na tocsvstr\n  convert a 2d list to a csv string
-{list sep na,
-    list :# {
-        .# If it is na, make it emptystr
-        :#{$ na = {;""} ?}
-        sep *
-    } "\n" *
-}:tocsvstr;
-
-
-
-{
-    "<" "&lt;" @ .&
-    ">" "&gt;" @ .&
-    "\n" "<br />" @ .&
-}:tohtml;
-
-
-
-.# REGEX FUNCTIONS
-
-{, .# begin regex module
-
-    .# Returns all URLs in a string
-    {"http[|s]/[^ |>|<]+"&}:geturls;
-
-    .# Return the first match of a regular expression
-    {&0I}:firstmatch;
-
-    .# Return the last match of a regular expression
-    {&:1I}:lastmatch;
-
-    .# Remove all matches of a regex in a string
-    {|S}:removeall;
-
-    .# Removes all spaces from a string
-    {"\\s+"|S}:trimall;
-
-}:rgx;
-
-
-{strs : indent,
-    0:indent;
-    strs :# {s,
-        s "" = {" ":s;} ?
-
-        s.[0] '} =  indent 0 >  & {
-            ::indent V
-        } ?
-
-        " " indent 4 * L S s +
-
-        s.[0] '{ = {::indent B} ?
-    }
-};
-
-
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "str" testset! :ts;
-
-    {"\n\t abc \t \n".trim} ["abc"] ts+
-    {"\n\t ".trim} [""] ts+
-    {5 '- "abc".leftpad} ["--abc"] ts+
-    {3 '- "abc".leftpad} ["abc"] ts+
-    {0 '- "abc".leftpad} ["abc"] ts+
-    {5 '- "abc".rightpad} ["abc--"] ts+
-    {3 '- "abc".rightpad} ["abc"] ts+
-    {0 '- "abc".rightpad} ["abc"] ts+
-    {"aBc!1".upper} ["ABC!1"] ts+
-    {"aBc!1".lower} ["abc!1"] ts+
-    {"".upper} [""] ts+
-    {"".lower} [""] ts+
-    {"12.34".isnum} [1] ts+
-    {"12..123".isnum} [0] ts+
-    {"".isnum} [0] ts+
-    {"to be or not to be".titlecase} ["To Be Or Not To Be"] ts+
-    {"1\n2\n\n3\n\n".lines} [["1" "2" "" "3"]] ts+
-    {"abc".bytes} [[97 98 99]] ts+
-    {"1".parsenum} [1] ts+
-    {"1.2".parsenum} [1.2] ts+
-    {"hello".parsenum} ["hello"] ts+
-    {"\"hello\"".parsenum} ["hello"] ts+
-    {', "1,2,3".readdlm} [[[1 2 3]]] ts+
-    {"," "1,2,3\n4,5,6".readdlm} [[[1 2 3][4 5 6]]] ts+
-    {"hat cat".replace("a", "o")} ["hot cot"] ts+
-
-    {[[7 8][9 10]] matstr} ["7 8 \n9 10"] ts+
-
-    .#{ [["A" pi "CCC"]["hello world" "EE" 2]] matstr P} ["A           3.14159265 CCC\nhello world EE         2  "] ts+
-    {"," "A,B\n1,2\n3,4".readdlm} [[[ "A" "B" ] [ 1 2 ] [ 3 4 ]]] ts+
-    {[[1 2][3 4]] "," 0 tocsvstr} ["1,2\n3,4"] ts+
-    {[[1 2][::na 0][4 5]] "," ::na tocsvstr} ["1,2\n,0\n4,5"] ts+
-    {"abc def ghi" "\w+" rgx.firstmatch} ["abc"] ts+
-    {"abc def ghi" "\w+" rgx.lastmatch} ["ghi"] ts+
-    {"dn783d908d0m30" "\d+" rgx.removeall} ["dnddm"] ts+
-    {"\t\tAB \n C" rgx.trimall} ["ABC"] ts+
-
-    ts __aya__.addtest
-
 }

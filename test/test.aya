@@ -40,9 +40,11 @@
 "test/base/test_num" load_test
 "test/base/test_char" load_test
 "test/base/test_list" load_test
+"test/base/test_str" load_test
 
 .# Std
 {, "test/std/test_enum" load_test };
+{, "test/std/test_csv" load_test };
 
 .# Import entire standard library
 "Importing standard library..." :P

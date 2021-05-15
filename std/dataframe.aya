@@ -165,6 +165,16 @@ def dataframe::__str__ {self : max_idx_len,
     matstr
 }
 
-def dataframe::__repr__ {self,
-    self.__str__.repr_lines
+
+def dataframe::_repr_lines {s : lines(s.lines),
+    lines E 24 > {
+        [lines 10 .<~ "..." lines 10 .>~]"\n"*
+    } {
+        s
+    } .?
+}
+
+
+def dataframe::__repr__ {self : dataframe^,
+    self.__str__ dataframe._repr_lines
 }

@@ -62,12 +62,12 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						AyaPrefs.resetWorkingDir();
 					} else {
 						if (!AyaPrefs.setWorkingDir(arg.str())) {
-							throw new ValueError("arg 3 MZ: arg is not a valid path."
+							throw new ValueError(":{sys.cd} : arg is not a valid path."
 									+ " Did you include a '/' or '\' at the end? Received:\n" + arg.repr());
 						}
 					}
 				} else {
-					throw new ValueError("arg 3 MZ: arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":{sys.cd} : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});

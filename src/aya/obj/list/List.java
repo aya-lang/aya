@@ -305,16 +305,20 @@ public class List extends Obj {
 	 */
 	public List map(Block block) {
 		int len = length();
-		ArrayList<Obj> out = new ArrayList<Obj>(len);
-		Block b = new Block();
-		for (int i = 0; i < len; i++) {
-			b.addAll(block.getInstructions().getInstrucionList());
-			b.add(new DataInstruction(getExact(i)));
-			b.eval();
-			out.addAll(b.getStack());
-			b.clear();
+		if (len > 0) {
+			ArrayList<Obj> out = new ArrayList<Obj>(len);
+			Block b = new Block();
+			for (int i = 0; i < len; i++) {
+				b.addAll(block.getInstructions().getInstrucionList());
+				b.add(new DataInstruction(getExact(i)));
+				b.eval();
+				out.addAll(b.getStack());
+				b.clear();
+			}
+			return new List(out);
+		} else {
+			return this.deepcopy();
 		}
-		return new List(out);
 	}
 	/** 
 	 * Same as map but push 1 additional item to the stack (shallow copied)

@@ -68,3 +68,14 @@ def csv::_read_kw {kwargs::dict : csv^
         rownames:rownames
     }
 }
+
+.#? list sep na csv.dumps\n  convert a 2d list to a csv string
+def csv::dumps {list sep na,
+    list :# {
+        .# If it is na, make it emptystr
+        :#{$ na = {;""} ?}
+        sep *
+    } "\n" *
+}
+
+

@@ -33,7 +33,6 @@ import [
     char.lower.` char.:l;
     str.upper.`  str.:u;
     str.lower.`  str.:l;
-    str.split.`  str.:s;
     str.trim.`   str.:t;
     str.lines.`  str.:n;
     list.shuffle.` list.:q;
