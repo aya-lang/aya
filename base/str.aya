@@ -94,29 +94,6 @@
         }
     }:rmquote;
 
-
-
-
-    .# TODO: Replace this with a built-in that applies string interpolation parser to a string
-    .# This way, we can use string interpolation with long strings
-    {s__:orig__,
-        .# Make a copy of the original for error message
-        s__ $ :orig__;;
-
-        .# Find all variable names to replace
-        s__  "\\{[a-z]+\}" &
-        .# Remove braces from names
-        :#{"{}":|}
-        .# Remove duplicates
-        :~
-        .# For each variable, replace with value
-        :# {n__,
-            "\\{$n__}"
-            {n__:S~P} {err, "Error in fmt string:\n\"$orig__\"\n$err" .D} .K
-            s__ .& :s__
-        };
-        s__
-    }:fmt;
 }
 
 

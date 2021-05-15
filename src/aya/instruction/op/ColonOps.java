@@ -20,10 +20,13 @@ import java.util.Collections;
 
 import aya.Aya;
 import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
+import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -38,6 +41,7 @@ import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
+import aya.parser.tokens.StringToken;
 import aya.util.DictReader;
 import aya.util.Triple;
 
@@ -56,7 +60,7 @@ public class ColonOps {
 		/* 34 "  */ new OP_Colon_Quote(),
 		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ new OP_Colon_Duplicate(),
-		/* 37 %  */ null,
+		/* 37 %  */ new OP_Colon_Percent(),
 		/* 38 &  */ new OP_Colon_And(),
 		/* 39 '  */ null, // Quoted Symbol assignment
 		/* 40 (  */ null, //List item assignment
@@ -282,6 +286,25 @@ class OP_Colon_Duplicate extends OpInstruction {
 			
 		} else {
 			
+		}
+	}
+}
+
+// % - 38
+class OP_Colon_Percent extends OpInstruction {
+	
+	public OP_Colon_Percent() {
+		init(":%");
+		arg("S", "interpolate string");
+	}
+
+	@Override
+	public void execute(Block block) {
+		StringToken str_token = new StringToken(block.pop().str(), true);
+		try {
+			str_token.getInstruction().execute(block);
+		} catch (ParserException e) {
+			throw new ValueError("Error when parsing string at :% " + e.getMessage());
 		}
 	}
 }
