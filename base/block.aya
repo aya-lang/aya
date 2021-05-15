@@ -1,62 +1,63 @@
 {,
 
-    .#? ::list.capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
-    .{ Example:
-        aya> {1 +}:a 2:b
-        {1 +} 2
-        aya> [::a ::b].capture_vars
-        {,
-          {1 +}:a;
-          2:b;
-        }
-        aya> [::a ::b ::c].capture_vars
-        ERROR: Variable c not found
-    .}
-    { {1, :# {$~\:=} } }:_capture_vars;
-
-
-
-    {}:op;
-
-    .#? LLE zw\n  zip two lists with a block
-    {.&}:zip;
+    .# Functional Operations
+    .########################
 
     .#? ::list ::list ::block.pu\n  (permusing) permutes elements of two lists and applies an expression to each
-    .# aya> "AB" "ab" {P+}.pu
-    .#      [ [ "aA" "bA" ] [ "aB" "bB" ] ]
-    .# aya> [1 2 3][1 2 3] {*} .pu
-    .#      [ [ 1 2 3 ] [ 2 4 6 ] [ 3 6 9 ] ]
-    {la lb ex, [la lb laEL,\#{ex}]}:pu;
+    .{ Example:
+        aya> "AB" "ab" {P+}.pu
+        [["Aa" "Ab"]["Ba" "Bb"]]
+        aya> [1 2 3][4 5 6] {P+}.pu
+        [[4 5 6][8 10 12][12 15 18]]
+    .}
+    {la lb ex, [lb la lbEL,\#{ex}]}:pu;
+
 
     .#? ::list ::block.tw\n  (takewhile) take from list while the condition is satisfied
-    .# aya> 10R {5<}.tw
-    .#      [ 1 2 3 4 ]
+    .{ Example:
+        aya> 10R {5<}.tw
+        [ 1 2 3 4 ]
+    .}
     {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
 
+
     .#? ::any ::list ::block.el\n  apply block to `any` and `i` for each element across list
-    .# aya> "a" ["A" "B" "C"] {+}.el
-    .#      ["aA" "aB" "aC"]
+    .{ Example:
+        aya> "a" ["A" "B" "C"] {+}.el
+        ["aA" "aB" "aC"]
+    .}
     {@@.E@\L\@.&}:el;
 
+
     .#? ::list ::any ::block.le\n  apply block to `any` and `i` for each element across list
-    .# aya> ["A" "B" "C"] "a" {+}.le
-    .#      ["Aa" "Ba" "Ca"]
+    .{ Example:
+        aya> ["A" "B" "C"] "a" {+}.le
+        ["Aa" "Ba" "Ca"]
+    .}
     {@@\.E@\L@.&}:le;
 
 
     .#? ::block.haslocals\n  return true if the block has a local variables
     {.|::localsN\;}:haslocals;
 
+
+    .#? ::block.locals\n  get the locals of a block\n  will throw error if block does not have locals
     {.|.locals}:locals;
+
+
+    .#? ::block.args\n  get an ordered list of argument descriptions to the block\n  empty list if there are none
     {.|.args}:args;
 
+
     .#? ::block.makelocals\n  if a block has local variables, return the block, otherwise wrap it in a block that has an empty local variable set
-    .# aya> {:a, a 1 +}.makelocals
-    .# {: a , a 1 + }
-    .# aya> {a, a 1 +}.makelocals
-    .# {a , a 1 + }
-    .# aya> {a 1 +}.makelocals
-    .# {, {a 1 +} ~ }
+    .{ Example:
+        aya> {:a, a 1 +}.makelocals
+        {: a , a 1 + }
+        aya> {a, a 1 +}.makelocals
+        {a , a 1 + }
+        aya> {a 1 +}.makelocals
+        {, {a 1 +} ~ }
+    .}
     {f,
         f.`.haslocals {
             .# f has locals, simply return the block
@@ -69,19 +70,19 @@
 
 
     .#? ::list ::block.setlocals\n  wrap a block in a scope which has locals provided by the list of symbols
-    .# aya> [::x] {:x; "x is $x"}.setlocals :setx
-    .# {: x , {:x ; "$xx is "} ~ }
-    .# aya> 4 setx
-    .# "x is 4"
-    .# aya> x
-    .# ERROR: Variable x not found
+    .{ Example:
+        aya> [::x] {:x; "x is $x"}.setlocals :setx
+        {: x , {:x ; "$xx is "} ~ }
+        aya> 4 setx
+        "x is 4"
+        aya> x
+        ERROR: Variable x not found
+    .}
     {syms code,
         {: ,_~} {, code.` :_ } .+ :code;
         0 syms code.`.locals :D;
         code .`
-    }:_setlocals;
-
-    {: _setlocals^, _setlocals.` `(\@\~)}:setlocals;
+    }:setlocals;
 
 
     .#? ::block .use ::list\n  evaulate the variables (given by a list of symbols) in the block in the current scope
@@ -116,8 +117,7 @@
     .}
     {`({\.makelocals :& .|.locals @ {}.M._capture_vars .+ ;})}:capture;
 
-    .#? ::block .time\n  return the execution time of a block in ms
-    .# {M$ \[1|~]; M$ /}:time;
+    .#? ::block .time\n  return the result of the block and the execution time in ms
     {:a__, M$:a__; ~ M$ a__ -} :time;
 
     .#? ::block.where_const ::dict\n  use variables defined in D in B
@@ -156,24 +156,32 @@
     {`(\$\;.makelocals:&.|.locals@.+;)}:where;
 
 
-    {:indent(0),
-        P ';.split :#{',.split~} :#{.trim} :# {s,
-            s "" = {" ":s;} ?
+    .# Utility Functions
+    .#####################
 
-            s.[0] '} =  indent 0 >  & {
-                ::indent V
-            } ?
 
-            " " indent 4 * L S s +
+    .# ::list _capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
+    .{ Example:
+        aya> {1 +}:a 2:b
+        {1 +} 2
+        aya> [::a ::b].capture_vars
+        {,
+          {1 +}:a;
+          2:b;
+        }
+        aya> [::a ::b ::c].capture_vars
+        ERROR: Variable c not found
+    .}
+    { {1, :# {$~\:=} } }:_capture_vars;
 
-            s.[0] '{ = {::indent B} ?
-        } "\n" * :P
-    }:show;
 
+    .#? ::block .op\n  return the block (allows use of (::sym or ::block) .op without type checking
+    {}:op;
 
 }
 .# Merge with char metatable
 {} .M \.+
 
+.# Define operators
 {.le}:otimes;
 {.el}:odot;
