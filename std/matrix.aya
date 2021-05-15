@@ -36,7 +36,7 @@ def matrix::__repr__ {self,
     self.r self.c + 100 > {
         "($(self.r)x$(self.c) matrix)"
     } {
-        "\n" " ]\n [ " self.rows matstr .& "[[ " \+ " ]]"+
+        "\n" " ]\n [ " self.rows .matstr .& "[[ " \+ " ]]"+
     } .?
 }
 

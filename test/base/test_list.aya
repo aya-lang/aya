@@ -95,4 +95,18 @@
 { [{, 1:a } {, 2:b }].dict_flatten {, 1:a 2:b } }
 { [{, 1:a 3:b } {, 2:b }].dict_flatten {, 1:a 2:b } }
 
+
+
+{
+[["A" "B" "CCC"]["D" "EE" "F"]] .matstr
+"""A B  CCC
+D EE F  """
+}
+
+{
+[["A" pi "CCC"]["hello world" "EE" 2]] .matstr
+"""A           3.14159265 CCC
+hello world EE         2  """
+}
+
 ] :# { test_ }

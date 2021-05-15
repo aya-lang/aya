@@ -100,7 +100,6 @@ matrix:m;
 
 '\x82' "to"         Mk .# 130
 '\xa5' "println"    Mk .# 165
-'\xa6' "matstr"     Mk .# 166
 '\xa7' "zw"         Mk .# 167
 '\xac' "back"       Mk .# 172
 '\xb6' "pu"         Mk .# 182

@@ -178,7 +178,11 @@ def docstr::_get__doc__ {self,
     } .?
 }
 
-def docstr::show {self : builtin,
+def docstr::_padlines {n s,
+    s.lines :#{" "nLS\+"\n"}S
+}
+
+def docstr::show {self : builtin docstr^,
     [::desc ::args ::example]:builtin;
 
     [
@@ -190,10 +194,10 @@ def docstr::show {self : builtin,
         self._args #{2 \ .show}~
         ""
         "example:"
-        2 self.sections.example.padlines
+        2 self.sections.example docstr._padlines
         self.sections :K .[{builtin \N\;:1=}] :# {k,
             k :C
-            2 self.sections.[k].padlines
+            2 self.sections.[k] docstr._padlines
         } ~
     ] #'\n'+ S .trim
 }

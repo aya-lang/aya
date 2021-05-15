@@ -162,7 +162,7 @@ def dataframe::__str__ {self : max_idx_len,
     .# Add the colum as the first elemnt in the list
     A\J
     .# Convert to a pretty matstr
-    matstr
+    .matstr
 }
 
 
