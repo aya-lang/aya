@@ -5,6 +5,8 @@ def exception::__repr__ {self,
 }
 
 {,
-    {msg : exception^ , msgP ::value_err exception! .D }:value_err;
+    ::ex :O :K :# {type,
+        {msg : exception^ , msgP type exception! .D } {, type:type} .+ type :=
+    };
 
 }:ex;

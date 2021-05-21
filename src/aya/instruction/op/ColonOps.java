@@ -17,16 +17,19 @@ import static aya.util.Casting.asSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import aya.Aya;
+import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
+import aya.exceptions.ex.StaticAyaExceptionList;
+import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.Instruction;
-import aya.instruction.InstructionStack;
-import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -783,12 +786,40 @@ class OP_Colon_O extends OpInstruction {
 			Symbol sym = (Symbol)a;
 			if (sym.name().equals("ops")) {
 				block.push(OpInfo.getDict());
+			} else if (sym.name().equals("ex")) {
+				block.push(getExInfo());
 			} else {
 				throw new ValueError("':O': Unknown symbol " + sym.name());
 			}
 		} else {
 			throw new TypeError(this, a);
 		}
+	}
+	
+	/**
+	 * Get list of all built-in exception types
+	 * @return
+	 */
+	public Dict getExInfo() {
+		Dict ex_info = new Dict();
+		HashMap<Symbol, AyaException> exceptions = StaticAyaExceptionList.getExceptions();
+		HashMap<Symbol, AyaRuntimeException> rt_exceptions = StaticAyaExceptionList.getRuntimeExceptions();
+		
+		for (Map.Entry<Symbol, AyaException> entry : exceptions.entrySet()) {
+			Dict d = new Dict();
+			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
+			d.set(SymbolConstants.SOURCE, SymbolConstants.EXCEPTION);
+			ex_info.set(entry.getKey(), d);
+		}
+
+		for (Map.Entry<Symbol, AyaRuntimeException> entry : rt_exceptions.entrySet()) {
+			Dict d = new Dict();
+			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
+			d.set(SymbolConstants.SOURCE, SymbolConstants.RUNTIME_EXCEPTION);
+			ex_info.set(entry.getKey(), d);
+		}
+
+		return ex_info;
 	}
 }
 

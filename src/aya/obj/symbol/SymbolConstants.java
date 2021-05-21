@@ -63,6 +63,7 @@ public class SymbolConstants {
 	public static final Symbol MESSAGE		= S.getSymbol("message");
 	public static final Symbol EXPECTED		= S.getSymbol("expected");
 	public static final Symbol RECEIVED		= S.getSymbol("received");
+	public static final Symbol SOURCE 		= S.getSymbol("source");
 
 	public static final Symbol KEYVAR_EQ		= S.getSymbol("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S.getSymbol("__new__");
@@ -84,16 +85,19 @@ public class SymbolConstants {
 	public static final Symbol KEYVAR_PUSHSELF  = S.getSymbol("__pushself__");
 	public static final Symbol __CALL__    		= S.getSymbol("__call__");
 
-	public static final Symbol UNDEF_VAR 		= S.getSymbol("undef_var");
+	public static final Symbol UNDEF_VAR 		= S.getSymbol("undef_var_err");
 	public static final Symbol SYNTAX_ERR 		= S.getSymbol("syntax_err");
 	public static final Symbol VALUE_ERR 		= S.getSymbol("value_err");
 	public static final Symbol TYPE_ERR 		= S.getSymbol("type_err");
 	public static final Symbol INVALID_REF_ERR  = S.getSymbol("invalid_ref_err");
 	public static final Symbol IO_ERR 			= S.getSymbol("io_err");
 	public static final Symbol EMPTY_STACK_ERR  = S.getSymbol("empty_stack_err");
-	public static final Symbol END_OF_INPUT_ERR = S.getSymbol("end_of_input");
+	public static final Symbol END_OF_INPUT_ERR = S.getSymbol("end_of_input_err");
 	public static final Symbol PARSER_ERR 		= S.getSymbol("parser_err");
 	public static final Symbol INDEX_ERR 		= S.getSymbol("index_err");
 	public static final Symbol MATH_ERR 		= S.getSymbol("math_err");
-	public static final Symbol NOT_AN_OP_ERROR = S.getSymbol("not_an_op_err");
+	public static final Symbol NOT_AN_OP_ERROR  = S.getSymbol("not_an_op_err");
+
+	public static final Symbol EXCEPTION            = S.getSymbol("exception");
+	public static final Symbol RUNTIME_EXCEPTION    = S.getSymbol("runtime_exception");
 }
