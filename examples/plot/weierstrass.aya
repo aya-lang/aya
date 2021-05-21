@@ -1,0 +1,20 @@
+.# Plot Weierstrass Function
+
+import ::plot
+
+3 :a;
+2 :b;
+
+{x : nn(500),
+    [1 nn, {n, a n ^ :1p* x* Mc b n ^ /}]S
+}:w;
+
+plot.plot! :plt;
+:0.7 0.7 5000.linspace :x;
+
+x {w} {, } plt.plot
+
+.# plot attributes
+"Weierstrass Function" plt.:title;
+0 plt.:legend;
+plt.view
