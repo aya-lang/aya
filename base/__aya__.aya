@@ -378,7 +378,7 @@
     "exception"
 
     .# Interpreter commands
-    "interpreter_t"
+    "interpreter"
 
 ] :# {f,
     .# "Loading base/$f..." :P
