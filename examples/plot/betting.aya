@@ -61,6 +61,6 @@ games R :x;
 };
 
 "Betting Strategy" plt.:title;
-"cash" plt.:ylabel;
-"games" plt.:xlabel;
+"cash" plt.y.:label;
+"games" plt.x.:label;
 plt.view

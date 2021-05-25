@@ -8,8 +8,8 @@ df.["Species"] :~ :species;
 
 plot.plot! :plt;
 "Iris Dataset" plt.:title;
-"sepal length" plt.:xlabel;
-"sepal width" plt.:ylabel;
+"sepal length" plt.x.:label;
+"sepal width" plt.y.:label;
 
 species :# {s_name : sp_df,
   "Species" {s_name =} df.filter_on_col :sp_df;

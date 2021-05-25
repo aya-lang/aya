@@ -61,6 +61,6 @@ main {
     lossER loss plot.line :plt;
     "Neural Net Example" plt.:title;
     "Loss" plt.:ylabel;
-    "Iteration" plt.:xlabel;
+    "Iteration" plt.x.:label;
     plt.view
 }

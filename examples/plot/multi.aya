@@ -1,0 +1,37 @@
+import ::plot
+import ::math
+
+plot.multiplot! :mp;
+
+
+.# The domain
+0 :4p 400.linspace :x;
+
+.# Upper plot
+plot.plot!:a;
+x {sin} {, "sin":label } a.plot
+x {0.3*} {, "0.3x":label } a.plot
+a mp.add
+
+.# Lower plot
+plot.plot!:b;
+x {x, x Ms x 0.3* +}  {, "sin(x)+0.3x":label  } b.plot
+b mp.add
+
+.# Plot title
+"Example Multi Plot" mp.:suptitle;
+
+.# Other plot parameters
+[:2 6]   mp.y.:lim;
+[0 :2p]  mp.x.:lim;
+1        mp.:legend;
+"f(x)"   mp.y.:label;
+1.5      mp.:stroke;
+1        mp.y.:gridlines;
+
+
+.# Open the plot window
+mp.view
+
+.# Uncomment to save the plot
+.# "sample_plot.png" mp.save

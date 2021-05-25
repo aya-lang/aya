@@ -1,4 +1,5 @@
 class ::plot
+class ::multiplot
 class ::dataset
 
 .# plot
@@ -6,22 +7,21 @@ class ::dataset
 .#   title::str : plot title
 .#   bgcolor::color/str : background color
 .#   color_cycle::list : override the default color cycle
-.#   xlabel,ylabel::str : X,Y axis label
-.#   xaxis,yaxis::dict : axis configuration
+.#   x,y::dict : axis configuration
 .#       gridlines::bool : show axis gridlines
 .#       gridline_color::color/str : axis gridline color
 .#       zeroline::bool : show axis zero line
 .#       visible::bool : draw axis labels
-.#   xlim,ylim::list ([min,max]) :
-.#       pair containing the X,Y min/max limits for the view
+.#       lim::list : min and max axis limits
+.#       label::str : axis label
 .#   <any value in dataset params will be used as the default value>
 .#       for example, setting stroke to 10 here will make it the default
 .#       for all lines that do not explicitly provide one
 def plot::__init__ {self,
     [] self.:data;
 
-    {,} self.:yaxis;
-    {,} self.:xaxis;
+    {,} self.:y;
+    {,} self.:x;
 }
 
 
@@ -77,6 +77,25 @@ def plot::scatter {x::list y params::dict self : dataset^ d,
 
 .# Show the plot in a window
 def plot::view {self,
+    "" self.:filename;
+    self :{plot.plot}
+}
+
+.# Multi-Plot
+.##############
+
+def multiplot::__init__ {self,
+    [] self.:subplots;
+
+    {,} self.:y;
+    {,} self.:x;
+}
+
+def multiplot::add {plot self,
+    plot self.subplots.append;
+}
+
+def multiplot::view {self,
     "" self.:filename;
     self :{plot.plot}
 }

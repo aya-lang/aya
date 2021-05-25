@@ -261,9 +261,9 @@ x y   {, "Water Level":label} plt.plot
 x {r} {, "Trend":label} plt.plot
 
 "Water Level of Lake Huron" plt.:title;
-[575 583] plt.:ylim;
-1 plt.yaxis.:gridlines;
-"####" plt.xaxis.:numberformat;
+[575 583] plt.y.:lim;
+1 plt.y.:gridlines;
+"####" plt.x.:numberformat;
 2 plt.:stroke;
 
 plt.view

@@ -16,12 +16,12 @@ x {ln}  {, "ln":label  } p.plot
 "Example Expression Plot" p.:title
 
 .# Other plot parameters
-[:2 2]   p.:ylim;
-[0 :2p]  p.:xlim;
+[:2 2]   p.y.:lim;
+[0 :2p]  p.x.:lim;
 1        p.:legend;
 "f(x)"   p.:ylabel;
 2        p.:stroke;
-1        p.yaxis.:gridlines;
+1        p.y.:gridlines;
 
 .# Open the plot window
 p.view

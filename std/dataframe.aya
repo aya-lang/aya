@@ -147,6 +147,19 @@ def dataframe::filter_on_col {column condition self : colindex,
 }
 
 
+def dataframe::nrows {self,
+    self._data E
+}
+
+def dataframe::ncols {self,
+    self.data.[0] E
+}
+
+def dataframe::shape {self,
+    [self.nrows self.ncols]
+}
+
+
 .# Serialization / Output
 .########################
 

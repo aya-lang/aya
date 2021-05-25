@@ -11,7 +11,7 @@ plot.plot!:plt;
 };
 
 "Sine Series" plt.:title;
-[0 pi4*] plt.:xlim;
+[0 pi4*] plt.x.:lim;
 1.5 plt.:stroke;
 
 plt.view

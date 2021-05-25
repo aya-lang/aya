@@ -19,7 +19,7 @@ coeff B .R # {i : f,
 
 .# plot attributes
 "Bernstein Polynomials" plt.:title;
-"B_(i,$coeff(t))" plt.:ylabel;
+"B_(i,$coeff(t))" plt.y.:label;
 0 plt.:legend;
 plt.view
 

@@ -1,4 +1,6 @@
 package aya.ext.plot;
+import static aya.util.Sym.sym;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
@@ -14,14 +16,14 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
-import aya.Aya;
 import aya.AyaPrefs;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
@@ -29,7 +31,6 @@ import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.obj.number.Number;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
@@ -37,7 +38,9 @@ import aya.util.CircleIterator;
 import aya.util.ColorFactory;
 import aya.util.DictReader;
 import aya.util.ObjToColor;
-import aya.util.Pair;
+
+import static aya.obj.symbol.SymbolConstants.X;
+import static aya.obj.symbol.SymbolConstants.Y;
 
 public class FreeChartInterface
 {	
@@ -54,13 +57,38 @@ public class FreeChartInterface
 	public static void plot(Dict plot_dict)
 	{
 		DictReader d = new DictReader(plot_dict, "plot");
-		JFrame frame = new JFrame();
-		JFreeChart chart = drawChart2(plot_dict);
+		JFreeChart chart;
+		
+		// Get top-level configs
+		SeriesConfig series_cfg_defaults = SeriesConfig.fromDict(d, new SeriesConfig());
+		AxisConfig domain_config = new AxisConfig();
+		AxisConfig range_config = new AxisConfig();
+		if (d.hasKey(X)) domain_config = domain_config.updateCopy(new DictReader(d.getDictEx(X)));
+		if (d.hasKey(Y)) range_config = range_config.updateCopy(new DictReader(d.getDictEx(Y)));
+		
+		// Normal plot or multi-plot?
+		if (d.hasKey(sym("subplots"))) {
+			List subplots_obj = d.getListEx(sym("subplots"));
+			ArrayList<DictReader> subplots = new ArrayList<DictReader>();
+			for (int i = 0; i < subplots_obj.length(); i++) {
+				Obj o = subplots_obj.getExact(i);
+				if (o.isa(Obj.DICT)) {
+					subplots.add(new DictReader(Casting.asDict(o)));
+				} else {
+					throw new ValueError("plot.subplots: expected list of plot objects. Got:\n" + o.str());
+				}
+			}
+
+			chart = createMultiPlot(subplots, new MultiPlotConfig(d), series_cfg_defaults, domain_config, range_config);
+		} else {
+			chart = createSinglePlot(d, series_cfg_defaults, domain_config, range_config);
+		}
 		ChartPanel cp = new ChartPanel(chart);
 		
 		int width  = d.getInt(SymbolConstants.WIDTH, 500);
 		int height = d.getInt(SymbolConstants.HEIGHT, 400);
 		cp.setPreferredSize(new java.awt.Dimension(width, height));
+		JFrame frame = new JFrame();
 		frame.setContentPane(cp);
 
 		// Save chart
@@ -98,79 +126,8 @@ public class FreeChartInterface
 	// Private Helper Methods //
 	////////////////////////////
 
-	/**
-	 * Configuration object for a single dataset (or series) in a plot
-	 * 
-	 * @author npaul
-	 *
-	 */
-	private static class SeriesConfig {
-		Color color;
-		boolean use_color_cycle;
-		float stroke;
-		boolean lines;
-		boolean points;
-		double yclip_min;
-		double yclip_max;
-
-		public SeriesConfig() {
-			color = Color.BLACK;
-			use_color_cycle = true;
-			stroke = 1.0f;
-			lines = true;
-			points = false;
-			yclip_min = -9e99;
-			yclip_max = 9e99;
-		}
-		
-		public SeriesConfig copy() {
-			SeriesConfig cfg = new SeriesConfig();
-			cfg.color = color;
-			cfg.use_color_cycle = use_color_cycle;
-			cfg.stroke = stroke;
-			cfg.lines = lines;
-			cfg.points = points;
-			cfg.yclip_min = yclip_min;
-			cfg.yclip_max = yclip_max;
-			return cfg;
-		}
-
-		/**
-		 * Load configuration from a dict
-		 * 
-		 * @param d The dict to read from
-		 * @param defaults If a value is missing from d, use the value here instead
-		 * @return
-		 */
-		public static SeriesConfig fromDict(DictReader d, SeriesConfig defaults) {
-			SeriesConfig cfg = defaults.copy();
-
-			cfg.stroke = (float)(d.getDouble(sym("stroke"), defaults.stroke));
-			cfg.points = d.getBool(sym("points"), defaults.points);
-			cfg.lines = d.getBool(sym("lines"), defaults.lines);
-			
-			Color c = d.getColor(sym("color"));
-			if (c == null) {
-				cfg.use_color_cycle = true;
-			} else {
-				cfg.use_color_cycle = false;
-				cfg.color = c;
-			}
-
-			if (d.hasKey(sym("yclip"))) {
-				Pair<Number, Number> yclip_pair = d.getNumberPairEx(sym("yclip"));
-				cfg.yclip_min = yclip_pair.first().toDouble();
-				cfg.yclip_max = yclip_pair.second().toDouble();
-			}
-			
-			return cfg;
-		}
-	}
 	
-	private static class PlotDataset {
-		public XYDataset data;
-		public XYLineAndShapeRenderer renderer;
-	}
+
 	
 	/**
 	 * Convert a aya.obj.list.List into an ArrayList<PlotDataset> objects
@@ -184,7 +141,7 @@ public class FreeChartInterface
 													  CircleIterator<Color> colors,
 													  SeriesConfig default_series_config) {
 
-		ArrayList<PlotDataset> out = new ArrayList<FreeChartInterface.PlotDataset>();
+		ArrayList<PlotDataset> out = new ArrayList<PlotDataset>();
 		
 		for (int dataset_index = 0; dataset_index < datasets.length(); dataset_index++) {
 			Obj dataset_obj = datasets.getExact(dataset_index);
@@ -268,69 +225,48 @@ public class FreeChartInterface
 	}
 	
 	
-	private static void configAxes(String type, DictReader plot_dr, XYPlot plot) {
-		boolean is_x = type.equals("xaxis");
-		Dict axis_dict = plot_dr.getDict(sym(type));
-		// If it is not provided, use an empty one so all defaults are used
-		if (axis_dict == null) axis_dict = new Dict(); 
+	private static void configAxes(String type, XYPlot plot, AxisConfig config) {
+		boolean is_x = type.equals("x");
 		
-		DictReader d = new DictReader(axis_dict, "plot." + type);
 
 		if (is_x) {
-			plot.setDomainGridlinePaint(d.getColor(sym("gridline_color"), Color.DARK_GRAY));
-			plot.setDomainGridlinesVisible(d.getBool(sym("gridlines"), false));
-			plot.setDomainZeroBaselineVisible(d.getBool(sym("zeroline"), true));
+			plot.setDomainGridlinePaint(config.gridline_color);
+			plot.setDomainGridlinesVisible(config.gridlines);
+			plot.setDomainZeroBaselineVisible(config.zeroline);
 		} else {
-			plot.setRangeGridlinePaint(d.getColor(sym("gridline_color"), Color.DARK_GRAY));
-			plot.setRangeGridlinesVisible(d.getBool(sym("gridlines"), false));
-			plot.setRangeZeroBaselineVisible(d.getBool(sym("zeroline"), true));
+			plot.setRangeGridlinePaint(config.gridline_color);
+			plot.setRangeGridlinesVisible(config.gridlines);
+			plot.setRangeZeroBaselineVisible(config.zeroline);
 		}
 		
 		ValueAxis ax = is_x ? plot.getDomainAxis() : plot.getRangeAxis();
-		ax.setVisible(d.getBool(sym("visible"), true));
+		ax.setLabel(config.label);
+		ax.setVisible(config.visible);
+		// View limits
+		if (config.limit != null) ax.setRange(config.limit.min, config.limit.max);
 
 		if (ax instanceof NumberAxis) {
 			NumberAxis nax = (NumberAxis)ax;
 			nax.setAutoRangeIncludesZero(false);
 			
-			if (d.hasKey(sym("numberformat"))) {
+			if (config.numberformat != null) {
 				try {
-					nax.setNumberFormatOverride(new DecimalFormat(d.getString(sym("numberformat"))));
+					nax.setNumberFormatOverride(new DecimalFormat(config.numberformat));
 				} catch (IllegalArgumentException e) {
 					throw new ValueError(e.getMessage());
 				}
 			}
 		}
-		
-		// View limits
-		Symbol lim_key = sym(is_x ? "xlim" : "ylim");
-		if (plot_dr.hasKey(lim_key)) {
-			Pair<Number, Number> lim = plot_dr.getNumberPairEx(lim_key);
-			ax.setRange(lim.first().toDouble(), lim.second().toDouble());
-		}
-
 	}
 	
-	
-	private static JFreeChart drawChart2(Dict plot_dict) {
-		DictReader d = new DictReader(plot_dict, "plot");
-		
-		SeriesConfig defaults = SeriesConfig.fromDict(d, new SeriesConfig());
+	private static void addXYData(XYPlot plot,
+								  DictReader d,
+								  SeriesConfig defaults,
+								  AxisConfig domain_config,
+								  AxisConfig range_config) {
 		ArrayList<PlotDataset> data = makeDataset(d.getListEx(sym("data")), makeColorIterator(d), defaults);
-		
-		JFreeChart chart = ChartFactory.createXYLineChart(
-				d.getString(sym("title"), ""),
-				d.getString(sym("xlabel"), ""),
-				d.getString(sym("ylabel"), ""),
-				null);
 
-		// Chart config
-		if (!d.getBool(sym("legend"), true)) {
-			chart.removeLegend();
-		}
-		
 		// Add data
-		XYPlot plot = (XYPlot) chart.getPlot();
 		for (int i = 0; i < data.size(); i++)
 		{
 			PlotDataset pd = data.get(i);
@@ -342,17 +278,89 @@ public class FreeChartInterface
 		plot.setBackgroundPaint(d.getColor(sym("bgcolor"), Color.WHITE));
 		
 		// Axes config
-		configAxes("xaxis", d, plot);
-		configAxes("yaxis", d, plot);
+		if (d.hasKey(X)) domain_config = domain_config.updateCopy(new DictReader(d.getDictEx(X)));
+		if (d.hasKey(Y)) range_config  = range_config.updateCopy(new DictReader(d.getDictEx(Y)));
+		configAxes("x", plot, domain_config);
+		configAxes("y", plot, range_config);
+	}
+	
+	private static JFreeChart createSinglePlot(DictReader d,
+											   SeriesConfig series_cfg_defaults,
+											   AxisConfig domain_config,
+											   AxisConfig range_config) {
+
+		JFreeChart chart = ChartFactory.createXYLineChart(
+				d.getString(sym("title"), ""), null, null, null);
+		
+		// Add XY data
+		addXYData(chart.getXYPlot(), d, series_cfg_defaults, domain_config, range_config);
+
+		// Chart config
+		if (!d.getBool(sym("legend"), true)) {
+			chart.removeLegend();
+		}
 		
 		return chart;
 	}
 	
+
+	/////////////////
+	//   SUBPLOTS  //
+	/////////////////
+
+	private static class MultiPlotConfig {
+		double gap;
+		PlotOrientation orientation;
+		String suptitle;
+		
+		public MultiPlotConfig(DictReader dict) {
+			gap = dict.getDouble(sym("gap"), 10.0);
+			suptitle = dict.getString(sym("suptitle"), "");
+			Symbol orientation_sym = dict.getSymbol(sym("orient"), sym("vertical"));
+			if (orientation_sym.equals(sym("vertical"))) {
+				orientation = PlotOrientation.VERTICAL;
+			} else if (orientation_sym.equals(sym("horizontal"))) {
+				orientation = PlotOrientation.HORIZONTAL;
+			} else {
+				throw new ValueError("plot: ::orient must be one of [::vertical ::horizontal]");
+			}
+		}
+	}
+	
+	private static JFreeChart createMultiPlot(ArrayList<DictReader> plots,
+											  MultiPlotConfig config,
+											  SeriesConfig series_cfg_defaults,
+											  AxisConfig domain_config,
+											  AxisConfig range_config) {
+		final CombinedDomainXYPlot combined_plot = new CombinedDomainXYPlot();
+		combined_plot.setGap(config.gap);
+
+
+		for (DictReader d : plots) {
+			JFreeChart chart = ChartFactory.createXYLineChart(
+					d.getString(sym("title"), ""), null, null, null);
+			
+			AxisConfig d_conf = domain_config;
+			AxisConfig r_conf = range_config;
+			if (d.hasKey(SymbolConstants.X)) d_conf = d_conf.updateCopy(new DictReader(d.getDictEx(X)));
+			if (d.hasKey(SymbolConstants.Y)) r_conf = r_conf.updateCopy(new DictReader(d.getDictEx(Y)));
+			
+			// Add XY data
+			addXYData(chart.getXYPlot(), d, series_cfg_defaults, d_conf, r_conf);
+
+			// Chart config
+			if (!d.getBool(sym("legend"), true)) {
+				chart.removeLegend();
+			}
+		
+			combined_plot.add(chart.getXYPlot());
+		}
+		combined_plot.setOrientation(config.orientation);
+		
+		return new JFreeChart(config.suptitle, JFreeChart.DEFAULT_TITLE_FONT, combined_plot, true);
+	}
 	
 		
-	private static Symbol sym(String s)
-	{
-		return Aya.getInstance().getSymbols().getSymbol(s);
-	}
+	
 }
 

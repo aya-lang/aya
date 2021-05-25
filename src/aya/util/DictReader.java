@@ -283,7 +283,7 @@ public class DictReader {
 			NumberList ab = l.toNumberList();
 			return new Pair<Number, Number>(ab.get(0), ab.get(1));
 		} else {
-			throw new ValueError("plot.ylim: expected list of length 2. got:\n" + l.str());
+			throw badType(key, "[::num ::num]::list", l);
 		}
 	}
 	

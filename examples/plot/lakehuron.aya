@@ -24,11 +24,11 @@ x y   {, "Water Level":label} plt.plot
 x {r} {, "Trend":label} plt.plot
 
 "Water Level of Lake Huron" plt.:title;
-[575 583] plt.:ylim;
-1 plt.yaxis.:gridlines;
-"Water Level" plt.:ylabel
-"Year" plt.:xlabel
-"####" plt.xaxis.:numberformat;
+[575 583] plt.y.:lim;
+1 plt.y.:gridlines;
+"Water Level" plt.y.:label
+"Year" plt.x.:label
+"####" plt.x.:numberformat;
 2 plt.:stroke;
 
 plt.view

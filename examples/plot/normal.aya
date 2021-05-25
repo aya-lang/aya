@@ -11,5 +11,5 @@ l.min l.max 100.linspace h {, "Frequency":label} plt.scatter
 "Normal Distribution" plt.:title;
 "Frequency" plt.:ylabel;
 0 plt.:legend;
-[:3.5 3.5] plt.:xlim;
+[:3.5 3.5] plt.x.:lim;
 plt.view

@@ -3,12 +3,12 @@
 import ::plot
 
 plot.plot!:p;
-[0.857 1.1] p.:ylim;
+[0.857 1.1] p.y.:lim;
 16 p.:stroke;
 0 p.:legend;
 "A Rainbow" p.:title;
-0 p.yaxis.:visible;
-0 p.xaxis.:visible;
+0 p.y.:visible;
+0 p.x.:visible;
 [ "violet" "indigo" "blue" "green" "yellow" "orange" "red"] p.:color_cycle;
 
 0 0.9+ :1p 0.9- 600.1.linspace :x;
