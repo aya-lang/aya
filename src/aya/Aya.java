@@ -48,7 +48,7 @@ public class Aya extends Thread {
 	public static final boolean DEBUG = true;
 	public static final String QUIT = "\\Q";
 	
-	public static final String VERSION_NAME = "v0.2.0";
+	public static final String VERSION_NAME = "v0.3.0-rc1";
 	public static String ayarcPath = "ayarc.aya";
 	
 	public static boolean PRINT_LARGE_ERRORS = true;
