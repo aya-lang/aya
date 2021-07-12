@@ -58,7 +58,7 @@ def ::mkdir {`(sys.mkdir)}
 
 def ::echo ({```x``~} {, shell_impl.echo.` :x } .+)
 .#? cat S\n  print a file to the console
-def ::cat  ({```x``~} {, shell_impl.cat.`  :x } .+)
+def ::cat  ({``x`~} {, shell_impl.cat.`  :x } .+)
 def ::grep  ({```x``~} {, shell_impl.grep.` :x } .+)
 
 

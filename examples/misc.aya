@@ -1,5 +1,5 @@
 
-.#? AEN rpt\n  start at A and repeat E N times on the previous value of the list
+.#? ::any ::block ::num rpt\n  start at A and repeat E N times on the previous value of the list
 .{
     aya> 1 {2*} 4 rpt
     [1 2 4 8 16]
@@ -10,7 +10,7 @@
 
 
 
-.#? L<N> digitstonum\n  convert a list of numbers into a number
+.#? ::list<::num> digitstonum\n  convert a list of numbers into a number
 {l::list : total multip,
     1:multip;
     lU#{
@@ -21,3 +21,7 @@
 }:digitstonum;
 
 
+main {
+    1 {2*} 4 rpt [1 2 4 8 16] :!
+    [1 2 3 4] digitstonum 1234 :!
+}

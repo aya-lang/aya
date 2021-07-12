@@ -2,6 +2,10 @@ class ::plot
 class ::multiplot
 class ::dataset
 
+.# If true, the view command will not open windows
+.# Generally useful is running tests
+def plot::_supress_windows 0
+
 .# plot
 .#   data::list : list of plot.dataset objects (see plot.dataset)
 .#   title::str : plot title
@@ -77,8 +81,11 @@ def plot::scatter {x::list y params::dict self : dataset^ d,
 
 .# Show the plot in a window
 def plot::view {self,
-    "" self.:filename;
-    self :{plot.plot}
+    self.M._supress_windows ! {
+        "" self.:filename;
+        self :{plot.plot}
+    } ?
+
 }
 
 .# Multi-Plot
@@ -95,9 +102,11 @@ def multiplot::add {plot self,
     plot self.subplots.append;
 }
 
-def multiplot::view {self,
-    "" self.:filename;
-    self :{plot.plot}
+def multiplot::view {self : plot^,
+    plot._supress_windows ! {
+        "" self.:filename;
+        self :{plot.plot}
+    } ?
 }
 
 

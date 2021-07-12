@@ -92,7 +92,7 @@ def population::best {self,
 }
 
 main {
-    "evolution":target_str;
+    "evolve":target_str;
     30 :pop_size;
 
     target_str 0.0 dna! :target;

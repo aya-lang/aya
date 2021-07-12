@@ -1,5 +1,7 @@
 .# This file loads and auto-runs many examples
 
+import ::plot
+1 plot.plot.:_supress_windows
 
 [
 "100doors"
@@ -13,19 +15,37 @@
 "fibonacci"
 "fibs_below"
 "for_loop_list"
+"genetic"
 "greeter"
 "hello_world"
 "isprime"
 "mandelbrot"
+"misc"
 "monte_carlo"
+"nn"
 "nth_fib"
 "product"
 "quicksort"
 "quine"
 "tocamel"
 "visited_cities"
+"plot/bernstein"
+"plot/betting"
+"plot/lorenz"
+"plot/multi"
+"plot/normal"
+"plot/parametric"
+"plot/rainbow"
+"plot/random_wave"
+"plot/randomwalk"
+"plot/scatter"
+"plot/simple_functions"
+"plot/sinsrs"
+"plot/weierstrass"
 ] :# {ex, 
     "\n## $ex:" :P
     [ load "examples/$ex" ]; 
 } ;
 
+.# Revert supress windows
+0 plot.plot.:_supress_windows
