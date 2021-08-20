@@ -1,0 +1,14 @@
+import ::stats
+
+[
+
+    {10R stats.mean  5.5}
+    {10R stats.variance  8.25}
+    {[:5 5]R stats.stdev 2.fixed  3.16}
+    {10R stats.geomean 2.fixed  4.52}
+    {[1 6 3 4 7 8 3 2 2] stats.median  3}
+    {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.regression 10\~ 3.fixed  8.902}
+    {10R $ stats.pearson  1}
+    {[ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.pearson 3.fixed  .902}
+
+] :# { test_ }

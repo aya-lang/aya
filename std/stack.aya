@@ -71,27 +71,3 @@ def stack::clear {self,
 def stack::__each__ {blk self,
     self.list :# blk.`
 }
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "stack" testset! :ts;
-
-    {: stack^, [1 2 3] stack! :T} [::stack] ts+
-    {: stack^, [1 2 3] stack! .pop} [1] ts+
-    {: stack^ s, [1 2] stack!:s .pop; s.pop} [2] ts+
-    {: stack^ s, [1 2] stack!:s .peek; s.pop} [1] ts+
-    {: stack^, [1 2] stack! .clear .list} [[]] ts+
-    {: stack^, 3 [1 2] stack! + .pop} [3] ts+
-    {: stack^, [1 2 3] stack! E} [3] ts+
-    {: stack^ s, [1] stack!:s .pop; s.isempty} [1] ts+
-    {: stack^, [1] stack! .isempty} [0] ts+
-    {: stack^, [] stack! .isempty} [1] ts+
-
-
-    ts __aya__.addtest
-}

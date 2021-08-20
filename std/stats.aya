@@ -106,25 +106,3 @@ def stats::hist {l::list nbins::num : min max bin_size bins counter,
 
     counter
 }
-
-
-
-
-
-
-
-({:ts stats^,
-    "stats" testset! :ts;
-
-    .# Statistics
-    {:stats^, 10R stats.mean} [5.5] ts+
-    {:stats^, 10R stats.variance} [8.25] ts+
-    {:stats^, [:5 5]R stats.stdev 2.fixed} [3.16] ts+
-    {:stats^, 10R stats.geomean 2.fixed} [4.52] ts+
-    {:stats^, [1 6 3 4 7 8 3 2 2] stats.median} [3] ts+
-    {:stats^, [ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.regression 10\~ 3.fixed} [8.902]
-    {:stats^, 10R $ stats.pearson} [1] ts+
-    {:stats^, [ .25 .36 .44 .45 .5 ]  [ .3 .33 .4 .5 .51 ] stats.pearson 3.fixed} [.902] ts+
-
-    ts __aya__.addtest
-})

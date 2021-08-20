@@ -44,8 +44,16 @@
 "test/base/test_block" load_test
 
 .# Std
-{, "test/std/test_enum" load_test };
-{, "test/std/test_csv" load_test };
+[
+    "enum"
+    "csv"
+    "matrix"
+    "set"
+    "stats"
+    "stack"
+] :# {mod,
+    {, "test/std/test_$mod" load_test };
+};
 
 .# Import entire standard library
 "Importing standard library..." :P

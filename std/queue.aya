@@ -69,27 +69,3 @@ def queue::__each__ {blk self,
     self.list :# {blk}
 }
 
-
-
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "queue" testset! :ts;
-
-    {:queue^,   [1 2 3] queue! :T} [::queue] ts+
-    {:queue^,   [1 2 3] queue! .next} [1] ts+
-    {:queue^ q, [1 2] queue!:q .next; q.next} [2] ts+
-    {:queue^ q, [1 2] queue!:q .peek; q.next} [1] ts+
-    {:queue^,   [1 2] queue! .clear .list} [[]] ts+
-    {:queue^,   3 [1 2] queue! + .next} [1] ts+
-    {:queue^,   [1 2 3] queue! E} [3] ts+
-    {:queue^ q, [1] queue!:q .next; q.isempty} [1] ts+
-    {:queue^,   [1] queue! .isempty} [0] ts+
-    {:queue^,   [] queue! .isempty} [1] ts+
-
-
-    ts __aya__.addtest
-}

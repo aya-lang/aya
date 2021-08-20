@@ -1,0 +1,16 @@
+import ::queue
+
+[
+
+    { [1 2 3] queue! :T  ::queue }
+    { [1 2 3] queue! .next  1 }
+    {: q, [1 2] queue!:q .next; q.next  2 }
+    {: q, [1 2] queue!:q .peek; q.next  1 }
+    { [1 2] queue! .clear .list  [] }
+    { 3 [1 2] queue! + .next  1 }
+    { [1 2 3] queue! E  3 }
+    {: q, [1] queue!:q .next; q.isempty  1 }
+    { [1] queue! .isempty  0 }
+    { [] queue! .isempty  1 }
+
+] :# { test_ }
