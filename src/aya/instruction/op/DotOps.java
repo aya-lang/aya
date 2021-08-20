@@ -449,7 +449,13 @@ class OP_Dot_Plus extends OpInstruction {
 
 	private Block capture(Block b, Symbol s) {
 		Obj o = Aya.getInstance().getVars().getVar(s);
-		Block dup = b.duplicateNewHeader(b.getHeader().copy());
+		BlockHeader bh = b.getHeader();
+		Block dup;
+		if (bh == null) {
+			dup = b.duplicate();
+		} else {
+			dup = b.duplicateNewHeader(bh.copy());
+		}
 		dup.getInstructions().assignVarValue(s, o);
 		return dup;
 	}
