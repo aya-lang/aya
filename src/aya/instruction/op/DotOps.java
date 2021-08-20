@@ -447,9 +447,11 @@ class OP_Dot_Plus extends OpInstruction {
 		arg("DD", "update D1 with the values from D2 (modify D1)");
 	}
 
-	private void capture(Block b, Symbol s) {
+	private Block capture(Block b, Symbol s) {
 		Obj o = Aya.getInstance().getVars().getVar(s);
-		b.getInstructions().assignVarValue(s, o);
+		Block dup = b.duplicateNewHeader(b.getHeader().copy());
+		dup.getInstructions().assignVarValue(s, o);
+		return dup;
 	}
 
 	@Override
@@ -468,7 +470,7 @@ class OP_Dot_Plus extends OpInstruction {
 			}
 			// Constant capture from scope
 			else if (a.isa(SYMBOL)) {
-				capture(blk, (Symbol)a);
+				blk = capture(blk, (Symbol)a);
 			}
 			// Constant capture from scope (list)
 			else if (a.isa(LIST)) {
@@ -476,7 +478,7 @@ class OP_Dot_Plus extends OpInstruction {
 				for (int i = 0; i < l.length(); i++) {
 					final Obj s = l.getExact(i);
 					if (s.isa(SYMBOL)) {
-						capture(blk, (Symbol)s);
+						blk = capture(blk, (Symbol)s);
 					} else {
 						throw new ValueError(".+ Expected list of symbols. Got:\n" + a.repr());
 					}
