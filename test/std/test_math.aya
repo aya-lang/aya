@@ -1,16 +1,35 @@
-import ::queue
+import ::math
 
 [
 
-    { [1 2 3] queue! :T  ::queue }
-    { [1 2 3] queue! .next  1 }
-    {: q, [1 2] queue!:q .next; q.next  2 }
-    {: q, [1 2] queue!:q .peek; q.next  1 }
-    { [1 2] queue! .clear .list  [] }
-    { 3 [1 2] queue! + .next  1 }
-    { [1 2 3] queue! E  3 }
-    {: q, [1] queue!:q .next; q.isempty  1 }
-    { [1] queue! .isempty  0 }
-    { [] queue! .isempty  1 }
+    {[3 5][4 12] hypot  [5 13] }
+
+    .# Trig
+    {3.4 acoth 3.fixed  0.303 }
+
+    .# List operations
+    {10R normal $S/S .\  1 }
+    {5R product  120 }
+    {[] product  0 }
+    {[1 2 3][4 5 6] dot  32 }
+    {12 4 lcm  12 }
+    {[120 45 3 5] lcm  360 }
+    {12 4 gcd  4 }
+    {[120 45 10 5] gcd  5 }
+    {[1 2 3 4] cumsum  [1 3 6 10] }
+    {[1 2 3 4] cumprod  [1 2 6 24] }
+
+    .# Other
+    {12 bits  [1 1 0 0] }
+    {[1 1 0 0] unbit  12 }
+    {98476 hex  "180ac" }
+    {"180ac" unhex  98476 }
+    {100R #isprime S  25 }
+    {9 4 npr  3024 }
+    {9 4 bin  126 }
+    {5R $ bin S  5 }
+    {12 divisors  [1 2 3 4 6 12] }
+    {12 factors  [2 2 3] }
+
 
 ] :# { test_ }

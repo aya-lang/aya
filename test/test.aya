@@ -45,8 +45,12 @@
 
 .# Std
 [
+    "color"
+    "date"
     "enum"
     "csv"
+    "io"
+    "map"
     "matrix"
     "set"
     "stats"

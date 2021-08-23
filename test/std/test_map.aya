@@ -1,0 +1,15 @@
+import ::map
+
+[
+
+    { [[::a"a"]['b::b][2 1]]map.fromlist.[::a]  "a" }
+    { [[::a"a"]['b::b][2 1]]map.fromlist.['b]  ::b }
+    { [[::a"a"]['b::b][2 1]]map.fromlist.[2]  1 }
+    { ::a [[::a"a"]['b::b][2 1]]map.fromlist.haskey  1 }
+    { ::c [[::a"a"]['b::b][2 1]]map.fromlist.haskey  0 }
+    {: m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put m.[::c]  "C" }
+    {: m, [[::a"a"]['b::b][2 1]]map.fromlist:m; "C" ::c m.put "c" ::c m.put m.[::c]  "c" }
+    {: m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E  2 }
+    {: m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E  3 }
+
+] :# { test_ }

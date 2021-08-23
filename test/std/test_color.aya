@@ -1,0 +1,12 @@
+import ::color
+
+[
+
+    { 0 0 0 color! :T  ::color }
+    { "35C62A" color.newhex.rgb  [53 198 42] }
+    { "35C62A" color.newhex.hsv 100*./  [11577 79 78] }
+    { "35C62A" color.newhex.hex  "35c62a" }
+    { "ff00ff" color.newhex.hex  "ff00ff" }
+    { color.colors.red color.colors.blue.mid.rgb [127 0 127] }
+
+] :# { test_ }

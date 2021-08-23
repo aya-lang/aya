@@ -205,22 +205,3 @@ def colors::Q {
 
 .# Add the colors module as a submodule of color
 def color::colors colors
-
-
-.#########
-.# TESTS #
-.#########
-
-({:ts,
-
-    "color" testset! :ts;
-
-    {: color^, 0 0 0 color! :T} [::color] ts+
-    {: color^, "35C62A" color.newhex.rgb} [[53 198 42]] ts+
-    {: color^, "35C62A" color.newhex.hsv 100*./} [[11577 79 78]] ts+
-    {: color^, "35C62A" color.newhex.hex} ["35c62a"] ts+
-    {: color^, "ff00ff" color.newhex.hex} ["ff00ff"] ts+
-    {: color^, color.colors.red color.colors.blue.mid.rgb} [[127 0 127]] ts+
-
-    ts __aya__.addtest
-})

@@ -7,7 +7,7 @@
     The date type provides operations for accessing date and time variables.
 .}
 
-export [::date ::dates]
+export [::date ::dates ::dateunit]
 
 {,
 
@@ -122,25 +122,3 @@ export [::date ::dates]
 }:dates;
 
 {date.now}:now;
-
-
-
-.#########
-.# TESTS #
-.#########
-
-({:ts,
-
-    "date" testset! :ts;
-
-    {:date^ dates^ dateunit^, "1707-04-15" date! .mmddyy} ["04/15/07"] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! .mmddyyyy} ["04/15/1707"] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! .timestr} ["12:00 AM"] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.month + .month} ["June"] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! 1 dates.day - .dayofmonth} [14] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! 100 dates.year + .year} [1807] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.hour + .hour} [2] ts+
-    {:date^ dates^ dateunit^, "1707-04-15" date! 2 dates.minute + .min} [2] ts+
-
-    ts __aya__.addtest
-})

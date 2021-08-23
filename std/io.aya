@@ -168,25 +168,6 @@ iswindows {:9s$+} {:9s} .? path.:filesplit;
 
 
 
-.#########
-.# TESTS #
-.#########
-
-`~ {:ts,
-
-    "path" testset! :ts;
-
-    {"/a/b/c" path!.dirs} [["a""b""c"]] ts+
-    {"/a/b/c/.." path!.dirs} [["a""b"]] ts+
-    {"/a/b/c" path! ".." + .dirs} [["a""b"]] ts+
-    {"/a/b/c" path! V .dirs} [["a""b"]] ts+
-    {"~/a" path!.__str__} [path.home.__str__ "a" + :9s +] ts+
-
-    ts __aya__.addtest
-
-}
-
-
 .####################
 .# FILE             #
 .####################
