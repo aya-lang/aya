@@ -45,6 +45,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.tokens.StringToken;
+import aya.util.Casting;
 import aya.util.DictReader;
 import aya.util.Triple;
 
@@ -122,7 +123,7 @@ public class ColonOps {
 		/* 93 ]  */ null,
 		/* 94 ^  */ null,
 		/* 95 _  */ null, // Assignment
-		/* 96 `  */ null,
+		/* 96 `  */ new OP_Colon_Tick(),
 		/* 97 a  */ null, // Assignment
 		/* 98 b  */ null, // Assignment
 		/* 99 c  */ null, // Assignment
@@ -982,6 +983,45 @@ class OP_Colon_Zed extends OpInstruction {
 		}
 	}
 }
+
+
+
+//` - 96
+class OP_Colon_Tick extends OpInstruction {
+	
+	public OP_Colon_Tick() {
+		init(":`");
+		arg("N:`A", "wrap next N instructions in a block");
+	}
+
+	@Override
+	public void execute (Block block) {
+		Obj n_obj = block.pop();
+		if (n_obj.isa(Obj.NUM)) {
+			int n = Casting.asNumber(n_obj).toInt();
+			boolean unwrap_list = false;
+			if (n == 0) {
+				n = 1;
+				unwrap_list = true;
+			}
+			List l = new List();
+			for (int i = 0; i < n; i++) {
+				final Block b = new Block();
+				b.add(block.getInstructions().popNextNonFlagInstruction());
+				l.mutAdd(b);
+			}
+			if (unwrap_list) {
+				block.push(l.getExact(0));
+			} else {
+				block.push(l);
+			}
+		} else {
+			throw new TypeError(this, n_obj);
+		}
+	}
+}
+
+
 
 
 // \ - 92

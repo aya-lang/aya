@@ -39,7 +39,9 @@ import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
+import aya.instruction.Instruction;
 import aya.instruction.ListBuilderInstruction;
+import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
@@ -56,6 +58,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.ParserString;
+import aya.util.Casting;
 
 public class DotOps {
 
@@ -1363,6 +1366,7 @@ class OP_Dot_Tilde extends OpInstruction {
 		arg("S|C", "parse contents to a block");
 		arg("J", "deref variable; if not a block, put contents in block");
 		arg("D", "set all variables");
+		arg("B", "get contents of block");
 	}
 
 	@Override
@@ -1390,6 +1394,15 @@ class OP_Dot_Tilde extends OpInstruction {
 		} else if (a.isa(DICT)) {
 			// Set all vars in the dict
 			Aya.getInstance().getVars().setVars(asDict(a));
+		} else if (a.isa(BLOCK)) {
+			Block b = Casting.asBlock(a);
+			Instruction i = b.getInstructions().pop();
+			if (i instanceof VariableInstruction) {
+				VariableInstruction v = (VariableInstruction)i;
+				block.push(v.getSymbol());
+			} else {
+				block.push(b);
+			}
 		} else {
 			throw new TypeError(this, a);
 		}
