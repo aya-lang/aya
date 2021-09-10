@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import aya.ReprStream;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
@@ -19,6 +20,11 @@ public class InstructionStack {
 	/** Pops the instructions from the top of the instruction stack */
 	public Instruction pop() {
 		return instructions.remove(instructions.size()-1);
+	}
+
+	/** Pops the instructions from the top of the instruction stack */
+	public Instruction pop(int i) {
+		return instructions.remove(instructions.size()-1-i);
 	}
 	
 	/** Pushes the instruction to the top of the stack */
@@ -89,6 +95,16 @@ public class InstructionStack {
 			i++;
 		}
 		instructions.add(instructions.size()-skip, o);
+	}
+	
+	public Instruction popNextNonFlagInstruction() throws ValueError {
+		for (int i = 0; i < instructions.size(); i++) {
+			if (!(peek(i) instanceof FlagInstruction)) {
+				return pop(i);
+			}
+		}
+		
+		throw new ValueError("Empty instruction stack");
 	}
 	
 	
