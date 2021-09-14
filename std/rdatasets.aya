@@ -5,7 +5,7 @@ module ::rdatasets
 export ::rdatasets
 
 def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/datasets.csv"
-def rdatasets::_cache_loc "data/rdatasets_index.csv"
+def rdatasets::_cache_loc "rdatasets_index.csv"
 
 .# Load index file
 def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
@@ -22,11 +22,13 @@ def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
     index_str "," csv.parse :data;
     data V; :data; .# Remove first row
 
+    data :d;
+
     .# Build index
     "Building index..." :P
     data :# {row : pkg(row.[0]) name(row.[1]),
         .# Add to url index
-        row.[:2] "$pkg/$name" index :D
+        row.[:2] index.:["$pkg/$name"]
 
         .# Add to package index
         .# Add package list if it does not exist
@@ -50,7 +52,7 @@ def rdatasets::load {id::str : rdatasets^ csv^,
         rdatasets.load_index
     } ?
     
-    "/" `in id {
+    "/" id.in {
         rdatasets.index.[id]
     } {
         rdatasets.index.["datasets/$id"]

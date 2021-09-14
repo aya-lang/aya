@@ -1,7 +1,7 @@
 .# A simple spell checker using levenshtein distance
 
 .# Load the word database
-"data/words.txt"G.lines :words;
+"examples/data/words.txt"G.lines :words;
 
 .#
 .# A minimal example:
@@ -23,7 +23,7 @@ import ::dialog
     words {w^}.C V\;
 }:nearest_word;
 
-"Enter a word" dialog.requeststr.lower :my_word;
+"Enter a word" dialog.getstr.lower :my_word;
 
 my_word "" = {
   "No word entered" dialog.error

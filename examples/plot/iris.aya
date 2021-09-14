@@ -1,7 +1,7 @@
 import ::dataframe
 import ::plot
 
-{, "data/rdatasets/iris.csv":filename} dataframe.read_csv :df;
+{, "examples/data/iris.csv":filename} dataframe.read_csv :df;
 
 .# get unique species names
 df.["Species"] :~ :species;

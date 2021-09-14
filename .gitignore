@@ -1,7 +1,7 @@
 /versions
 /plots
 /bin
-/data/rdatasets
 *.swp
 *.DS_Store
 aya.jar
+rdatasets_index.csv

@@ -37,6 +37,11 @@ def dialog::error {text,
     text "Aya" ::error :{dialog.alert}
 }
 
+.#? ::str dialog.warn\n  display a warning message with the given message
+def dialog::warn {text,
+    text "Aya" ::warn :{dialog.alert}
+}
+
 .#? ::str ::str ::str dialog.yesno\n  display a dialog box with the question ::str1. ::str2 and ::str3 return true and false respectively
 def dialog::yesno {question yes no,
     question [yes no] "Aya" ::plain :{dialog.confirm}
