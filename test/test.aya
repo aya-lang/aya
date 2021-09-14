@@ -5,7 +5,7 @@
 
 .#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
 {`({blk::block expected::list,
-  {:blk^, [blk] expected} test_
+  {:blk^, [blk] expected} test.test
 })}:assert;
 
 {blk::block,
@@ -64,9 +64,6 @@
 :{sys.wd} "/std"+ :{sys.readdir}:# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
-
-"Running tests..." :P
-__aya__.doruntests
 
 .# Also load and auto-run many examples
 "test/examples" load_test

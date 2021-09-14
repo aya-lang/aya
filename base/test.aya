@@ -3,6 +3,8 @@
 .# test.aya
 .# Defines an interface for testing aya code
 
+{, } :test;
+
 .# New simpler test function
 {blk,
     {
@@ -16,77 +18,4 @@
             "Error while evaluating test $blk\n$ex" .D
         } .?
     } .K
-}:test_;
-
-class ::test
-
-def test::__init__ {blk::block expected::list self,
-    blk.`    self.:blk;
-    expected self.:expected;
-}
-
-def test::__str__ {self,
-    "(test $(self.blk.`) ?= $(self.expected))"
-}
-
-def test::__repr__ (test.__str__.`)
-
-def test::run {self : result,
-    {[self.blk.` ~] :result;} {e,
-        "Exception in test $(self.blk.`):\n\t$e" .D
-    } .K
-
-    result self.expected = ! {
-        ["Test failed: $(self.blk.`)\n"
-         "\tExpected: $(self.expected)\n"
-         "\tReceived: $result" ]S
-    } { "" } .?
-}
-
-
-
-
-class ::testset
-
-def testset::__init__ {name::str self,
-    name self.:name;
-    []   self.:tests;
-}
-
-def testset::+ {blk::block expected::list self : test^,
-    blk.` expected test!
-    self.tests K ;
-}
-
-def testset::run {self,
-    "testing $(self.name)... " .P
-    self.tests #{.run} [""] :|
-    .E 0 = {
-        ; "All tests passed!" :P
-    } {
-        "Tests failed!\n" :P
-        #{:P}
-    } .?
-}
-
-
-.# Add functions to the aya namespace
-
-def __aya__::tests []
-
-def __aya__::addtest {ts::testset : __aya__^,
-    __aya__.tests ts K ;
-}
-
-def __aya__::doruntests {:__aya__^,
-    __aya__.tests # {ts,
-        ts.run
-    };
-}
-
-
-.{
-Visualize a decoded long:
-32 2 {l n, l .bits n5* .> [n 5] L :#{$ 2 10 H $'a+ [3|] :P}; }:b~
-172066848 6 b
-.}
+} test.:test;

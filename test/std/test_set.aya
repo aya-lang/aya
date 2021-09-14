@@ -22,4 +22,4 @@ import ::set
     { s[1 2 3] E  3 }
     { s[1 2 3].clear.list  [] }
 
-] :# { test_ }
+] :# { test.test }

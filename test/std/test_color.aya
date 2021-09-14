@@ -9,4 +9,4 @@ import ::color
     { "ff00ff" color.newhex.hex  "ff00ff" }
     { color.colors.red color.colors.blue.mid.rgb [127 0 127] }
 
-] :# { test_ }
+] :# { test.test }

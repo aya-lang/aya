@@ -12,4 +12,4 @@ import ::map
     {: m, ::a [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E  2 }
     {: m, ::c [[::a"a"]['b::b][2 1]]map.fromlist:m.del m.keys E  3 }
 
-] :# { test_ }
+] :# { test.test }

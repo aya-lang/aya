@@ -1,43 +1,42 @@
 [
 
-    { "AB" "ab" {P+}.pu [["Aa" "Ba"]["Ab" "Bb"]] }
-    { [1 2 3][4 5 6] {*}.pu [ [ 4 8 12 ] [ 5 10 15 ] [ 6 12 18 ] ]}
+{ "AB" "ab" {P+}.pu [["Aa" "Ba"]["Ab" "Bb"]] }
+{ [1 2 3][4 5 6] {*}.pu [ [ 4 8 12 ] [ 5 10 15 ] [ 6 12 18 ] ]}
 
-    { 10R {5<}.tw [1 2 3 4] }
+{ 10R {5<}.tw [1 2 3 4] }
 
-    { "a" ["A" "B" "C"] {+}.el ["aA" "aB" "aC"] }
-    { ["A" "B" "C"] "a" {+}.le ["Aa" "Ba" "Ca"] }
+{ "a" ["A" "B" "C"] {+}.el ["aA" "aB" "aC"] }
+{ ["A" "B" "C"] "a" {+}.le ["Aa" "Ba" "Ca"] }
 
-    { {: a b, }.haslocals 1 }
-    { {a b, }.haslocals 1 }
-    { { }.haslocals 0 }
-    { { a b }.haslocals 0 }
-    { {a b, a b }.haslocals 1 }
-    { {a b : c d, a b }.haslocals 1 }
+{ {: a b, }.haslocals 1 }
+{ {a b, }.haslocals 1 }
+{ { }.haslocals 0 }
+{ { a b }.haslocals 0 }
+{ {a b, a b }.haslocals 1 }
+{ {a b : c d, a b }.haslocals 1 }
 
-    { {: a b, }.locals {, 0:a 0:b } }
+{ {: a b, }.locals {, 0:a 0:b } }
 
-    { {a b, }.haslocals 1 }
+{ {a b, }.haslocals 1 }
 
-    { {a b$::str,}.args
-      [ {, 0:copy; ::a:name; ::any:type; }
-        {, 1:copy; ::b:name; ::str:type; } ] 
-    }
+{ {a b$::str,}.args
+  [ {, 0:copy; ::a:name; ::any:type; }
+    {, 1:copy; ::b:name; ::str:type; } ] 
+}
 
-    { {}.makelocals .locals {,} }
-    { {:a,}.makelocals .locals {,0:a} }
+{ {}.makelocals .locals {,} }
+{ {:a,}.makelocals .locals {,0:a} }
 
-    { [::x] {}.setlocals .locals {, 0:x} }
-    .# block is wrapped, not merged
-    { [::x] {:y,}.setlocals .locals {, 0:x} }
+{ [::x] {}.setlocals .locals {, 0:x} }
+.# block is wrapped, not merged
+{ [::x] {:y,}.setlocals .locals {, 0:x} }
 
-    {:a, 1:a; {a}.use[::a] ~ 1 }
+{:a, 1:a; {a}.use[::a] ~ 1 }
 
-    {:a, 1:a; {a}.capture[::a] 2:a; ~ 1 }
+{:a, 1:a; {a}.capture[::a] 2:a; ~ 1 }
 
-    {:a, 1:a; {a}.where_const{, 10:a } ~ 10 }
+{:a, 1:a; {a}.where_const{, 10:a } ~ 10 }
 
-    {:a, 1:a; {a}.where{, 10:a } ~ 10 }
+{:a, 1:a; {a}.where{, 10:a } ~ 10 }
 
-
-] :# { test_ }
+] :# { test.test }

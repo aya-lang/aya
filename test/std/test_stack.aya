@@ -13,4 +13,4 @@ import ::stack
     { [1] stack! .isempty  0 }
     { [] stack! .isempty  1 }
 
-] :# { test_ }
+] :# { test.test }

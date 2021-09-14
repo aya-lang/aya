@@ -13,4 +13,4 @@ import ::queue
     { [1] queue! .isempty  0 }
     { [] queue! .isempty  1 }
 
-] :# { test_ }
+] :# { test.test }

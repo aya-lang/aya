@@ -49,4 +49,4 @@
     {"\"A\"".rmquote "A" }
     {"\"A\"b".rmquote "\"A\"b" }
 
-] :# { test_ }
+] :# { test.test }
