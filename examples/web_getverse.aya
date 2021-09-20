@@ -7,7 +7,7 @@ import ::dialog
 "Type the name of a verse" dialog.getstr :vs;
 
 .# URL encode the verse
-" " "%20" vs .& :ref;
+vs " " "%20" .& :ref;
 
 .# Create the url and download the web file
 ["http://www.esvapi.org/v2/rest/passageQuery"
@@ -27,10 +27,10 @@ out "ERROR" N :1 = \; {
   out "[" N | \; :out;
 
   .# Remove newlines
-  "\n" " " out .& :out;
+  out "\n" " " .& :out;
 
   .# Format for single line output
-  "\s\s+" " " out .& dialog.alert
+  out "\s\s+" " " .& dialog.alert
 } {
   "Cannot find verse: $vs" dialog.error
 } .?

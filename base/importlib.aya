@@ -71,7 +71,7 @@ def importlib::is_main {
     "foo/bar" => "foo/bar"
 .}
 def importlib::to_path_str {s,
-    "\." "/" s :C .& ".aya" +
+    s :C "\." "/" .& ".aya" +
 }
 
 .# Import from path

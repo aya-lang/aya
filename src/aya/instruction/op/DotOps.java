@@ -338,12 +338,12 @@ class OP_Dot_And extends OpInstruction {
 
 	@Override
 	public void execute(final Block block) {
-		Obj a = block.pop();  // str
-		Obj b = block.pop();  // replace
-		Obj c = block.pop();  // find
+		Obj a = block.pop();  // replace
+		Obj b = block.pop();  // find
+		Obj c = block.pop();  // str
 
-		if ( a.isa(STR) && (b.isa(STR) || b.isa(CHAR)) && (c.isa(STR) || c.isa(CHAR))) {
-			block.push(List.fromString( a.str().replaceAll(c.str(), b.str()) ));
+		if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
+			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
 			Block initial = new Block();
 			initial.push(c);

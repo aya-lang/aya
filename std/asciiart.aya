@@ -254,7 +254,7 @@ def asciiart::fill {c self,
 def asciiart::replace {s::str self,
     s "`" | .E1={~}? :s ;
     s V:from ; V:to ; ;
-    self.list :# {from to @ .&}
+    self.list :# {from to .&}
     self.M!
 }
 
