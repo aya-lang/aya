@@ -85,7 +85,7 @@ public class ColonOps {
 		/* 56 8  */ null, //Number Literal
 		/* 57 9  */ null, //Number Literal
 		/* 58    */ null,
-		/* 59 ;  */ null,
+		/* 59 ;  */ new OP_Colon_Semicolon(),
 		/* 60 <  */ new OP_Colon_LessThan(),
 		/* 61 =  */ new OP_Colon_Equals(),
 		/* 62 >  */ new OP_Colon_GreaterThan(),
@@ -370,6 +370,20 @@ class OP_Colon_Times extends OpInstruction {
 }
 
 // / - 47
+class OP_Colon_Semicolon extends OpInstruction {
+	
+	public OP_Colon_Semicolon() {
+		init(":;");
+		arg("..AA", "clear all but the top of the stack");
+	}
+
+	@Override
+	public void execute(final Block block) {
+		final Obj a = block.pop();
+		block.clearStack();
+		block.push(a);
+	}
+}
 
 
 // < - 60
