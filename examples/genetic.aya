@@ -25,7 +25,7 @@ def dna::mutate {self,
 }
 
 .# Overload = operator
-def dna::= {other self,
+def dna::__eq__ {other self,
     other.data self.data =
 }
 

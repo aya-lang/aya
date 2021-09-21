@@ -54,7 +54,6 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 
@@ -1361,8 +1360,8 @@ class OP_Dot_Tilde extends OpInstruction {
 
 	public OP_Dot_Tilde() {
 		init(".~");
-		arg("S", "parse contents to a block");
-		arg("J|C", "deref variable; if not a block, put contents in block");
+		arg("S|C", "parse contents to a block");
+		arg("J", "deref variable; if not a block, put contents in block");
 		arg("D", "set all variables");
 	}
 
@@ -1370,28 +1369,14 @@ class OP_Dot_Tilde extends OpInstruction {
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 
-		if (a.isa(STR)) {
+		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
 				block.push( Parser.compile(a.str(), Aya.getInstance()) );
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}
 			return;
-		} else if (a.isa(CHAR)) {
-			final char c = ((Char)a).charValue();
-			final String varname = CharacterParser.getName(c);
-			if(varname == null) {
-				throw new ValueError("Character '" + c + " is not a valid variable");
-			}
 
-			Obj e = Aya.getInstance().getVars().getVar(Aya.getInstance().getSymbols().getSymbol(varname));
-			if (!e.isa(BLOCK)) {
-				Block b = new Block();
-				b.add(e);
-				block.push(b);
-			} else {
-				block.push(e);
-			}
 		} else if (a.isa(SYMBOL)) {
 			Obj e = Aya.getInstance().getVars().getVar(asSymbol(a));
 			if (!e.isa(BLOCK)) {
@@ -1401,6 +1386,7 @@ class OP_Dot_Tilde extends OpInstruction {
 			} else {
 				block.push(e);
 			}
+
 		} else if (a.isa(DICT)) {
 			// Set all vars in the dict
 			Aya.getInstance().getVars().setVars(asDict(a));

@@ -38,7 +38,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
-import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
@@ -80,7 +79,6 @@ public class Aya extends Thread {
 		if(_instance == null) {
 			_instance = new Aya();
 			_instance._variables = new VariableData(_instance);
-			CharacterParser.initMap();
 			AyaPrefs.init();
 			_instance.initNamedInstructions();
 		}

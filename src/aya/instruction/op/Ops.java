@@ -42,7 +42,6 @@ import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
-import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
@@ -60,7 +59,6 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.CharacterParser;
 import aya.parser.Parser;
 import aya.util.FileUtils;
 import aya.util.Pair;
@@ -79,8 +77,10 @@ public class Ops {
 	
 	
 	public static final char FIRST_OP = '!';
+	public static final char MAX_OP = (char)126;
 	protected static final OpInstruction OP_PLUS = new OP_Plus();
 	public static final OpInstruction OP_I_INSTANCE = new OP_GetIndex();
+
 	
 	public static final OpInstruction[] OPS = {
 		/* 33 !  */ new OP_Bang(),
@@ -1760,22 +1760,11 @@ class OP_Tilde extends OpInstruction {
 		
 		if(a.isa(BLOCK)) {
 			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
-		} else if (a.isa(STR)) {
+		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
 				block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
-			}
-		} else if (a.isa(CHAR)) {
-			final char c = ((Char)a).charValue();
-			if (c >= '0' && c <= '9') {
-				block.add(Num.BYTES[c-'0']);
-			} else {
-				final String varname = CharacterParser.getName(c);
-				if(varname == null) {
-					throw new ValueError("Character '" + c + " is not a valid variable");
-				}
-				block.add(new GetVariableInstruction(Aya.getInstance().getSymbols().getSymbol(varname)));
 			}
 		} else if (a.isa(LIST)) {
 			List list = asList(a);

@@ -29,7 +29,8 @@ import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.CharacterParser;
+import aya.util.NamedCharacters;
+import aya.util.StringUtils;
 
 public class MiscOps {	
 
@@ -525,8 +526,8 @@ class OP_AddParserChar extends OpInstruction {
 		
 		if (obj_name.isa(STR) && obj_char.isa(CHAR)) {
 			String str = obj_name.str();
-			if (str.length() > 0 && CharacterParser.lalpha(str)) {
-				CharacterParser.add_char(str, ((Char)obj_char).charValue());
+			if (str.length() > 0 && StringUtils.lalpha(str)) {
+				NamedCharacters.addChar(str, ((Char)obj_char).charValue());
 			} else {
 				throw new ValueError("Cannot create special character using " + str);
 			}

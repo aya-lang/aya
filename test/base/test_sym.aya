@@ -1,9 +1,9 @@
 [
 
 .# Convert blocks to strings for equality test
-{ ::+ .op P {+} P }
-{ ::Ms .op P {Ms} P }
-{ ::+ .rev ::__radd__ }
-{ ::Ms .rev ::__sin__ }
+{ ::__add__ .op P {+} P }
+{ ::__sin__ .op P {Ms} P }
+{ ::__add__ .rev ::__radd__ }
+{ ::__sin__ .rev ::__sin__ }
 
 ] :# { test.test }

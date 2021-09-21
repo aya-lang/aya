@@ -45,4 +45,40 @@ public class StringUtils {
 		return "'" + s + "'";
 	}
 
+	/** Test if a string contains all lowercase alphabetical letters */
+	public static boolean lalpha(String str) {
+		for (char c : str.toCharArray()) {
+			if (!('a' <= c && c <= 'z')) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/** Returns true if all characters in a string are digits */
+	public static boolean allDigits(String s) {
+		for(char c : s.toCharArray()) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}	
+	
+
+	/** Returns true if the string is less than 5
+	 * chararacters and are all valid hex characters */
+	public static boolean isHex(String s) {
+		for(char c : s.toCharArray()) {
+			if(Character.isUpperCase(c)) {
+				c = Character.toLowerCase(c);
+			}
+			if ( !((c >= '0' && c <= '9') || (c >= 'A' || c <= 'F')) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

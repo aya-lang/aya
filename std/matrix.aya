@@ -48,9 +48,9 @@ def matrix::__repr__ {self,
 .# ------
 
 [
-    ::+ ::- ::* ::/
-    ::^ ::< ::> ::%
-    :::< :::> ::.%
+    ::__add__ ::__sub__ ::__mul__ ::__div__
+    ::__pow__ ::__lt__  ::__gt__  ::__mod__
+    ::__leq__ ::__geq__ ::__idiv__
 ] :# {op_sym : mp^
                op_to_n([::n op_sym] mp.merge)
                op(op_sym.op)
@@ -76,9 +76,9 @@ def matrix::__repr__ {self,
 .# Unary
 .# -----
 [
-    ::.\ ::./ ::T ::.| ::.!
-    ::.^ ::Me ::Ml ::ML
-    ::Ms ::MS ::Mc ::MC ::Mt ::MT
+    ::__floor__ ::__ceil__ ::__negate__ ::__abs__ ::__signnum__
+    ::__sqrt__ ::__exp__ ::__ln__ ::__log__
+    ::__sin__ ::__asin__ ::__cos__ ::__acos__ ::__tan__ ::__atan__
 ] :# {sym : op(sym.op),
     def matrix sym ({
         :& .rows op #~ \.M._new
@@ -315,7 +315,7 @@ def matrix::pad {n::num self : r c,
 def matrix::__reverse__ {:& .rows U \.M._new}
 
 .#? ::matrix E\n  the shape of the matrix
-def matrix::E {.rows.E\0IEJ}
+def matrix::__len__ {.rows.E\0IEJ}
 
 
 .#############
@@ -420,7 +420,7 @@ def matrix::pascal {n::num : matrix^,
 }
 
 .#? [rows cols] matrix::R\n  generate a matrix counting up from 1
-def matrix::R {l::list : matrix^,
+def matrix::__range__ {l::list : matrix^,
     l~*R l L matrix!
 }
 

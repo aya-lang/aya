@@ -59,8 +59,8 @@ def stack::push {self,
     self.list.V; self
 }
 
-def stack::+ (stack.push.`)
-def stack::- (stack.pop.`)
+def stack::__add__ (stack.push.`)
+def stack::__sub__ (stack.pop.`)
 
 .#? ::stack.clear\n  clear the queue
 def stack::clear {self,

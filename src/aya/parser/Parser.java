@@ -53,6 +53,7 @@ import aya.parser.tokens.SymbolToken;
 import aya.parser.tokens.TickToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
+import aya.util.CharUtils;
 
 /**
  * 0. Input String 1. tokenize: Converts characters and character sets to tokens
@@ -180,11 +181,6 @@ public class Parser {
 						tokens.add(new KeyVarToken(varname));
 					}
 
-					// Special Character Key Variable
-					else if (CharacterParser.isSpecialChar(in.peek())) {
-						tokens.add(new KeyVarToken(CharacterParser.getName(in.next())));
-					}
-					
 
 					// Quote a function (.`)
 					else if (in.peek() == '`') {
@@ -211,9 +207,14 @@ public class Parser {
 					}
 
 					// Dot operator
-					else {
+					else if (in.peek() <= Ops.MAX_OP){
 						tokens.add(new OperatorToken("" + in.next(), OperatorToken.DOT_OP));
 					}
+					
+					else {
+						tokens.add(new KeyVarToken(""+in.next()));
+					}
+
 				} else {
 					throw new SyntaxError("Unexpected end of input after '.'" + in.toString());
 				}
@@ -328,106 +329,114 @@ public class Parser {
 
 			// Colon
 			else if (current == ':') {
+				
+				if (in.hasNext()) {
 
-				// Symbol
-				if (in.hasNext() && in.peek() == ':') {
-					in.next(); // Move to the next colon
-					String sym = "";
-					if (in.hasNext() && in.peek() == '\'') {
-						// Quoted symbol
-						in.next(); // Skip '
-						sym = parseString(in, '\'');
-					} else {
-						// Standard symbol
-						while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
-							sym += in.next();
-						}
+					// Symbol
+					if (in.peek() == ':') {
+						in.next(); // Move to the next colon
+						String sym = "";
+						if (in.hasNext() && in.peek() == '\'') {
+							// Quoted symbol
+							in.next(); // Skip '
+							sym = parseString(in, '\'');
+						} else {
 
-						// If empty, check for operator or special character
-						if (sym.equals("")) {
-							if (in.hasNext()) {
-								char sym_char = in.peek();
-								if (CharacterParser.isSpecialChar(sym_char)) {
-									sym = CharacterParser.getName(sym_char);
-									in.next();
+							// Fist, try to parse as simple variable
+							while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
+								sym += in.next();
+							}
+
+							// If empty, check for operator or special character
+							if (sym.equals("")) {
+								if (in.hasNext()) {
+									
+									// Multi-char operator
+									if (isMultiCharOpPrefix(in.peek())) {
+										sym = ""+in.next();  // prefix
+										sym += ""+in.next(); // op char
+									} else {
+										// Anything else: (single op, unicode symbol, etc.) single character
+										sym = "" + in.next();
+									}
+									
 								} else {
-									sym = parseOpSym(in);
+									throw new SyntaxError("Expected symbol name");
 								}
-							} else {
-								throw new SyntaxError("Expected symbol name");
 							}
 						}
-					}
 
-					tokens.add(new SymbolToken(sym));
-				}
-				
-				// Named Operator
-				else if (in.hasNext() && in.peek() == '{') {
-					in.next(); // Skip '{'
-					StringBuilder sb = new StringBuilder();
-					boolean done = false;
-					while (in.hasNext()) {
-						char c = in.next();
-						if (c == '}') {
-							done = true;
-							break;
+						tokens.add(new SymbolToken(sym));
+					}
+					
+					// Named Operator
+					else if (in.peek() == '{') {
+						in.next(); // Skip '{'
+						StringBuilder sb = new StringBuilder();
+						boolean done = false;
+						while (in.hasNext()) {
+							char c = in.next();
+							if (c == '}') {
+								done = true;
+								break;
+							} else {
+								sb.append(c);
+							}
+						}
+						if (done) {
+							tokens.add(new NamedOpToken(sb.toString()));
 						} else {
-							sb.append(c);
+							throw new SyntaxError("Expected '}' after :{" + sb.toString());
 						}
 					}
-					if (done) {
-						tokens.add(new NamedOpToken(sb.toString()));
-					} else {
-						throw new SyntaxError("Expected '}' after :{" + sb.toString());
+
+					// Colon Pound
+					else if (in.peek() == '#') {
+						tokens.add(SpecialToken.COLON_POUND);
+						in.next(); // Skip the #
+					}
+
+					// Quoted variable
+					else if (in.peek() == '\'') {
+						tokens.add(SpecialToken.COLON);
+						in.next(); // Skip open '
+						String varname = parseString(in, '\'');
+						tokens.add(new VarToken(varname));
+					}
+
+					// Colon Operator
+					else if (ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
+						tokens.add(new OperatorToken("" + in.next(), OperatorToken.COLON_OP));
+					}
+
+					// Special number
+					else if (CharUtils.isDigit(in.peek()) || in.peek() == '-') {
+						in.backup();
+						tokens.add(parseNumber(in));
+					}
+					
+					// Plain Colon
+					else {
+						tokens.add(SpecialToken.COLON);
 					}
 				}
 
-				// Colon Pound
-				else if (in.hasNext() && in.peek() == '#') {
-					tokens.add(SpecialToken.COLON_POUND);
-					in.next(); // Skip the #
-				}
-
-				// Quoted variable
-				else if (in.hasNext() && in.peek() == '\'') {
-					tokens.add(SpecialToken.COLON);
-					in.next(); // Skip open '
-					String varname = parseString(in, '\'');
-					tokens.add(new VarToken(varname));
-				}
-
-				// Colon Operator
-				else if (in.hasNext() && ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
-					tokens.add(new OperatorToken("" + in.next(), OperatorToken.COLON_OP));
-				}
-
-				// Special number
-				else if (in.hasNext() && (isDigit(in.peek()) || in.peek() == '-')) {
-					in.backup();
-					tokens.add(parseNumber(in));
-				}
-				
-
-				// Normal Colon
+				// !hasNext()
 				else {
-					// throw new SyntaxError("Expected non-whitespace after ':' near " +
-					// in.lookAround(30));
 					tokens.add(SpecialToken.COLON);
 				}
-			}
 
-			// Special Character Variables
-			else if (CharacterParser.isSpecialChar(current)) {
-				tokens.add(new VarToken(CharacterParser.getName(current)));
-			}
-			// Single Character Special Tokens
+			} // end colon
+
 			else {
+				// Single Character Special Tokens
 				SpecialToken tmp = SpecialToken.get(current);
 				if (tmp != null) {
 					tokens.add(tmp);
+				} else if (!Character.isWhitespace(current)){
+					// Single character variable
+					tokens.add(new VarToken(""+current));
 				}
-				// else, ignore it
 			}
 		}
 
@@ -440,12 +449,12 @@ public class Parser {
 		}
 		char start = in.next();
 		if (start == ':') {
-			if (in.hasNext() && (isDigit(in.peek()) || in.peek() == '-')) {
+			if (in.hasNext() && (CharUtils.isDigit(in.peek()) || in.peek() == '-')) {
 				// Collect the special number
 				StringBuilder specNum = new StringBuilder();
 				while (in.hasNext()
-						&& (isDigit(in.peek()) || isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.')) {
-					if (in.peek() == '.' && in.hasNext() && !isDigit(in.peek(1)))
+						&& (CharUtils.isDigit(in.peek()) || CharUtils.isLowerAlpha(in.peek()) || in.peek() == '-' || in.peek() == '.')) {
+					if (in.peek() == '.' && in.hasNext() && !CharUtils.isDigit(in.peek(1)))
 						break;
 					specNum.append(in.next());
 				}
@@ -453,7 +462,7 @@ public class Parser {
 			} else {
 				throw new SyntaxError(in.toString() + " is not a valid number");
 			}
-		} else if (isDigit(start) || start == '.') {
+		} else if (CharUtils.isDigit(start) || start == '.') {
 			StringBuilder num = new StringBuilder("" + start);
 
 			while (in.hasNext() && Character.isDigit(in.peek())) {
@@ -837,14 +846,7 @@ public class Parser {
 		}
 	}
 
-	/** Returns true if the character is lowercase a-z */
-	private static boolean isLowerAlpha(char c) {
-		return (c >= 'a' && c <= 'z');
-	}
 
-	private static boolean isDigit(char c) {
-		return c >= '0' && c <= '9';
-	}
 
 	/**
 	 * Compiles a string into a code block using input => tokenize => assemble =>
@@ -909,6 +911,10 @@ public class Parser {
 
 			return sym;
 		}
+	}
+	
+	private static boolean isMultiCharOpPrefix(char c) {
+		return c == ':' || c == '.' || c == 'M';
 	}
 
 }
