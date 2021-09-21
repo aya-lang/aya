@@ -100,4 +100,6 @@ public class SymbolConstants {
 
 	public static final Symbol EXCEPTION            = S.getSymbol("exception");
 	public static final Symbol RUNTIME_EXCEPTION    = S.getSymbol("runtime_exception");
+
+	public static final Symbol __CDICT__    = S.getSymbol("__cdict__");
 }

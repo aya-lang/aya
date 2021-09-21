@@ -39,6 +39,7 @@ import aya.obj.symbol.SymbolTable;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
+import aya.parser.tokens.CDictToken;
 import aya.parser.tokens.CharToken;
 import aya.parser.tokens.KeyVarToken;
 import aya.parser.tokens.LambdaToken;
@@ -67,6 +68,8 @@ import aya.util.CharUtils;
  *
  */
 public class Parser {
+	
+	public static char CDICT_CHAR = (char)162; // cent
 
 	public static TokenQueue tokenize(Aya aya, String s) throws ParserException {
 		TokenQueue tokens = new TokenQueue();
@@ -227,6 +230,10 @@ public class Parser {
 				} catch (EndOfInputError e) {
 					throw new SyntaxError("Expected op name after 'M'" + in.toString());
 				}
+			}
+			
+			else if (current == Parser.CDICT_CHAR) { // cent
+				tokens.add(new CDictToken(""+in.next()));
 			}
 
 			// Long String Literals
