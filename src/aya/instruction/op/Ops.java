@@ -510,6 +510,27 @@ class OP_Divide extends OpInstruction {
 			block.push( new List(asNumberList(b).div(asNumber(a))) );
 		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			block.push( new List(asNumberList(b).div(asNumberList(a))) );
+		} else if(a.isa(BLOCK) && b.isa(LIST)) {
+			List blist = asList(b);
+			
+			int length = blist.length();
+			if(length == 0) {
+				block.push(Num.ZERO);
+				return;
+			}
+			
+			Block foldBlock = ((Block)(a));
+			
+			//Push all but the last item
+			//for(int i = 0; i < list.size()-1; i++) {
+			for(int i = length-1; i > 0; i--) {
+				block.addAll(foldBlock.getInstructions().getInstrucionList());
+				block.add(blist.getExact(i));
+			}
+			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+			//block.add(list.get(list.size()-1));
+			block.add(blist.getExact(0));
+			return;
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -857,27 +878,6 @@ class OP_F extends OpInstruction {
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
-		} else if(a.isa(BLOCK) && b.isa(LIST)) {
-			List blist = asList(b);
-			
-			int length = blist.length();
-			if(length == 0) {
-				block.push(Num.ZERO);
-				return;
-			}
-			
-			Block foldBlock = ((Block)(a));
-			
-			//Push all but the last item
-			//for(int i = 0; i < list.size()-1; i++) {
-			for(int i = length-1; i > 0; i--) {
-				block.addAll(foldBlock.getInstructions().getInstrucionList());
-				block.add(blist.getExact(i));
-			}
-			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-			//block.add(list.get(list.size()-1));
-			block.add(blist.getExact(0));
-			return;
 		} else {
 			throw new TypeError(this, a, b);
 		}

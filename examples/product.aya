@@ -9,6 +9,6 @@ numbers :# {n,
 };
 "The product is $product" :P
 
-.# Can also use the fold operator (F)
-[2 4 6 8] {*} F :product;
+.# Can also use the fold operator (/)
+[2 4 6 8] {*} / :product;
 "The product is $product" :P

@@ -62,15 +62,15 @@ exportall
 .###################
 
 {:&2^S.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
-{{*}F}:product;     .#? L product\n  product of a list
+{{*}/}:product;     .#? L product\n  product of a list
 {*S}:dot;           .#? LL dot\n  dot product of a list
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
-{:& :T ::num = {.-}{{.-}F} .?}:lcm;
+{:& :T ::num = {.-}{{.-}/} .?}:lcm;
 
 .#? NN gcd \n  greatest common divisor of 2 numbers or a list of numbers
-{:& :T ::num = {.+}{{.+}F} .?}:gcd;
+{:& :T ::num = {.+}{{.+}/} .?}:gcd;
 
 .#? L<N> cumsum\n  cumulative summation of a list
 .{
@@ -107,7 +107,7 @@ exportall
   outlist
 }:cumprod;
 .}
-{l,lER:#{l\.<{*}F}}:cumprod;
+{l,lER:#{l\.<{*}/}}:cumprod;
 
 
 

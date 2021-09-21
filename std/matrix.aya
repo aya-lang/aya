@@ -102,7 +102,7 @@ def matrix::_eq_list {l self,
 }
 
 def matrix::_eq_mat {a b,
-    aE bE =! 0 {[a.rows b.rows,.=]{&}F} .?
+    aE bE =! 0 {[a.rows b.rows,.=]{&}/} .?
 }
 
 .#? ::matrix ::matrix =\n  test if two matrices are equal
@@ -140,7 +140,7 @@ def matrix::sq { :& * }
 
 
 .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
-def matrix::issq {self, self.rowsE self.rows#E\#= {|}F}
+def matrix::issq {self, self.rowsE self.rows#E\#= {|}/}
 
 .#? ::matrix matrix.tr\n  trace of a matrix as a list
 def matrix::tr {[1|.rows$ER,VI]}

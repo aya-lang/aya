@@ -9,5 +9,5 @@ numbers :# {n,
 
 "The product is $product" println
 
-[2 4 6 8] {*} F :product;
+[2 4 6 8] {*} / :product;
 "The product is $product" println

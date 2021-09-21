@@ -105,7 +105,7 @@ def color::mid {3@@\.grad 1I}
 
 .#? [::color] N color.multigrad\n  compute a linear gradient with resolution N between each color
 def color::multigrad {l n,
-    [l {a b, n a b .grad B} F ; ].F
+    [l {a b, n a b .grad B} / ; ].F
 }
 
 .#? N ::color.hueshift\n  shift hue by N degrees

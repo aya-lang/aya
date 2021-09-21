@@ -19,7 +19,7 @@
 
       - Order N Serpinski triangle:
 
-        aya> 3 "##`#"_\L{I}F
+        aya> 3 "##`#"_\L{I}/
         asciiart:
         ########
         # # # #
@@ -283,7 +283,7 @@ def asciiart::replace_aa {a::asciiart self : l,
     :#{
         :#{ l \ I }    .# Use the mask to index into the list
         S              .# Concat each aa in the row
-    } {/}F             .# Concat each row
+    } {/}/             .# Concat each row
 }
 
 def asciiart::rle {s,
