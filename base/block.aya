@@ -18,7 +18,7 @@
         aya> 10R {5<}.tw
         [ 1 2 3 4 ]
     .}
-    {e,{e!}.N $0= {;;[]} {|;} .? }:tw;
+    {e,{e!}.N $0= {;;[]} {F;} .? }:tw;
 
 
     .#? ::any ::list ::block.el\n  apply block to `any` and `i` for each element across list

@@ -47,6 +47,28 @@ public class List extends Obj {
 	public static List fromStr(Str str) {
 		return new List(str);
 	}
+	
+	public static <T extends Obj> List fromTemplate(ArrayList<T> list) {
+		List l = new List();
+		for (Obj o : list) l.mutAdd(o);
+		return l;
+	}
+	
+	public static <T extends Obj> List from2DTemplate(ArrayList<ArrayList<T>> list2d) {
+		List l = new List();
+		for (ArrayList<T> sublist : list2d) {
+			l.mutAdd(List.fromTemplate(sublist));
+		}
+		return l;
+	}
+
+	public static List from2D(ArrayList<ArrayList<Obj>> list2d) {
+		List l = new List();
+		for (ArrayList<Obj> sublist : list2d) {
+			l.mutAdd(new List(sublist));
+		}
+		return l;
+	}
 
 	private void promote() {
 		_list = _list.promote();
@@ -493,6 +515,15 @@ public class List extends Obj {
 			j = t;
 		}
 		return new List(_list.slice(i, j));
+	}
+	
+	public List split(Obj o) {
+		if (o.isa(Obj.BLOCK)) {
+			// TODO: Split wherever the block evaluates to true
+			return new List();
+		} else {
+			return _list.split(o);
+		}
 	}
 	
 	///////////////

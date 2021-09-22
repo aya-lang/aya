@@ -101,7 +101,7 @@ def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     .# Names
     self.sections.args matcher & :#{B;}
     .# Desc
-    self.sections.args matcher |V;
+    self.sections.args matcher F V;
     .# Create list of arg objects
     {J}.& :# {~ self.M.arg!}
 }

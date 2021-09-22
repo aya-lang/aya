@@ -37,6 +37,6 @@
 
 {"a,b,c"  ', .split_keep ["a," "b," "c"]}
 {"a,b,c"  '* .split_keep ["a,b,c"]}
-{"a.b.c." '. .split_keep ["a." "b." "c." ""]}
+{"a.b.c." '. .split_keep ["a." "b." "c."]}
 
 ] :# { test.test }

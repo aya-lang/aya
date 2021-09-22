@@ -60,6 +60,7 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
+import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
 
@@ -871,6 +872,17 @@ class OP_F extends OpInstruction {
 		arg("NN", "unsigned right bitshift");
 	}
 
+	private static List strsToList(String[] strs) {
+		ArrayList<Obj> out = new ArrayList<Obj>(strs.length);
+		for (String s : strs) out.add(List.fromString(s));
+		return new List(out);
+	}
+	private static List strsToList(ArrayList<Str> strs) {
+		ArrayList<Obj> out = new ArrayList<Obj>(strs.size());
+		for (Str s : strs) out.add(new List(s));
+		return new List(out);
+	}
+
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -878,6 +890,14 @@ class OP_F extends OpInstruction {
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
+		} else if (a.isa(STR) && b.isa(STR)) {
+			block.push(strsToList(b.str().split(a.str())));
+		} else if (a.isa(CHAR) && b.isa(STR)) {
+			block.push(strsToList(asStr(b).splitAtChar(asChar(a).charValue())));
+		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
+			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
+			block.push(lists.first());
+			block.push(lists.second());
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1707,16 +1727,7 @@ class OP_Bar extends OpInstruction {
 		setOverload(2,  "or");
 	}
 	
-	private static List strsToList(String[] strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.length);
-		for (String s : strs) out.add(List.fromString(s));
-		return new List(out);
-	}
-	private static List strsToList(ArrayList<Str> strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.size());
-		for (Str s : strs) out.add(new List(s));
-		return new List(out);
-	}
+
 
 	@Override
 	public void execute(final Block block) {
@@ -1728,14 +1739,8 @@ class OP_Bar extends OpInstruction {
 		//Bitwise or
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.bor((Number)a, (Number)b) );
-		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(strsToList(b.str().split(a.str())));
-		} else if (a.isa(CHAR) && b.isa(STR)) {
-			block.push(strsToList(asStr(b).splitAtChar(asChar(a).charValue())));
-		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
-			block.push(lists.first());
-			block.push(lists.second());
+		} else if (b.isa(LIST)) {
+			block.push(Casting.asList(b).split(a));
 		} else {
 			throw new TypeError(this, a, b);
 		}

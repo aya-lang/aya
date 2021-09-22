@@ -108,6 +108,25 @@ public class ListAlgorithms {
 		}
 		return out;
 	}
+	
+	
+	public static <T extends Obj> ArrayList<ArrayList<T>> split(ArrayList<T> list, T o) {
+		ArrayList<ArrayList<T>> out = new ArrayList<ArrayList<T>>();
+		ArrayList<T> current = new ArrayList<T>();
+	
+		for (T item : list) {
+			if (item.equiv(o)) {
+				out.add(current);
+				current = new ArrayList<T>();
+			} else {
+				current.add(item);
+			}
+		}
+		
+		if (current.size() != 0) out.add(current);
+
+		return out;
+	}
     
     public static <T extends Obj> ReprStream repr(ReprStream stream, ArrayList<T> list) {
     	// Does this list have containers? If not, print compact

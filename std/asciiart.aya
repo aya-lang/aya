@@ -287,7 +287,7 @@ def asciiart::replace_aa {a::asciiart self : l,
 }
 
 def asciiart::rle {s,
-    s $ "\\d+"| \ "\\d+" &  .# Split into lists of string sections and runs
+    s $ "\\d+" F \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
     .E 0 = {
         ;;s                 .# If no rle to do, just return the string

@@ -9,11 +9,13 @@ import java.util.Collections;
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
+import aya.obj.list.List;
 import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+import aya.util.Casting;
 
 /** List containing a list of Number objects */
 public class NumberItemList extends NumberList {
@@ -556,6 +558,16 @@ public class NumberItemList extends NumberList {
 	protected ListImpl flatten() {
 		return copy();
 	}
+	
+	@Override
+	public List split(Obj o) {
+		if (o.isa(Obj.NUMBER)) {
+			return List.from2DTemplate(ListAlgorithms.split(this._list, Casting.asNumber(o)));
+		} else {
+			return new List();
+		}
+	}
+	
 	
 	
 	///////////////////

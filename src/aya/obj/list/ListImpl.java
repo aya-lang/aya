@@ -27,7 +27,7 @@ public abstract class ListImpl {
 			return null;
 		}
 	}
-
+	
 	
 	
 	/////////////////////
@@ -113,6 +113,8 @@ public abstract class ListImpl {
 
 	/** Return a flattened version of the list */
 	protected abstract ListImpl flatten();
+	
+	public abstract List split(Obj o);
 	
 	////////////////////////
 	// LIST MODIFICATIONS //

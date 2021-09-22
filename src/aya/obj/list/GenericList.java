@@ -21,8 +21,8 @@ public class GenericList extends ListImpl {
 	private int _chars;
 	private int _nums;
 	
-	public GenericList(ArrayList<Obj> list) {
-		_list = list;
+	public GenericList(ArrayList<Obj> l) {
+		_list = l;
 		_chars = 0;
 		_nums = 0;
 		
@@ -289,10 +289,14 @@ public class GenericList extends ListImpl {
 		return out.promote();
 	}
 
+	@Override
+	public List split(Obj o) {
+		return List.from2D(ListAlgorithms.split(this._list, o));
+	}
 	
 	
 	////////////////////
-	// List OVERRIDES //
+	// Obj OVERRIDES //
 	////////////////////
 	
 	@Override

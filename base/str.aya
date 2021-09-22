@@ -8,8 +8,16 @@
     [].M W
 
 
+    {"\\s+" FE0=}:iswhitespace;
+
     .#? ::str.trim\n  remove whitespace from start and end of string
-    {"^\\s+|\\s+$" |S $0={;""}?}:trim;
+    {
+        :& .iswhitespace {
+            ; ""
+        } {
+            "^\\s+" FB\; "\\s+$"FV\; 
+        } .?
+    }:trim;
 
 
     .#? ::num ::char ::str .leftpad\n  left pad string S so it is at least length I using char C

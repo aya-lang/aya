@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
@@ -107,7 +108,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 		}
 		return strs;
 	}
-	
+
 	
 	////////////////////
 	// LIST OVERRIDES //
@@ -357,6 +358,22 @@ public class Str extends ListImpl implements Comparable<Str> {
 	@Override
 	protected ListImpl flatten() {
 		return this; // Strs are immutable
+	}
+	
+	@Override
+	public List split(Obj o) {
+		List l = new List();
+
+		if (o.isa(Obj.CHAR) || o.isa(Obj.STR)) {
+			String match = o.str();
+			String[] ss = this._str.split(Pattern.quote(match));
+			for (String s : ss) l.mutAdd(List.fromString(s));
+			if (l.length() == 0) l.mutAdd(List.fromStr(Str.EMPTY));
+		} else {
+			l.mutAdd(List.fromStr(this));
+		}
+
+		return l;
 	}
 	
 	
