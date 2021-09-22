@@ -5,22 +5,15 @@
 
 exportall
 
-import [
-    ::date
-    ::math
-    ::matrix
-    ::dataframe
-    ::map
-    ::set
-    ::queue
-    ::sys
-    ::io
-    ::shell
-    ::plot
-]
+.# Import standard library
+:{sys.wd} "/std"+ :{sys.readdir}:# {".aya"|S:S} :# {name,
+    name ::golf = ! {
+        import name
+    } ?
+} ;
 
 .# Standard library shortcuts
-{, 
+{,
     0 .M :num;
     'x.M :char;
     [].M :list;
@@ -29,21 +22,26 @@ import [
     num.clip.`   num.:c;
     num.digits.` num.:d;
     num.round.`  num.:r;
+
     char.upper.` char.:u;
     char.lower.` char.:l;
+
     str.upper.`  str.:u;
     str.lower.`  str.:l;
     str.trim.`   str.:t;
     str.lines.`  str.:n;
+
     list.shuffle.` list.:q;
     list.max.` list.:u;
     list.min.` list.:l;
     list.irange.` list.:i;
 }
+
 matrix.rotate_cols.` matrix.:n;
 matrix.rotate_rows.` matrix.:z;
 
 .# Single letter variables
+
 1:a;
 2:b;
 3:c;
@@ -61,7 +59,7 @@ matrix:m;
 .#:o;
 :0c :p;
 .#:q;
-{VR0\K}:r;
+{.R}:r;
 .#:s;
 .#:t;
 .#:u;
@@ -71,66 +69,42 @@ matrix:m;
 0:y;
 0:z;
 
-.# Common boxed operators
-{{+}} :badd;
-{{-}} :bsub;
-{{*}} :bmul;
-{{/}} :bdiv;
-{{%}} :bmod;
 
-.# Operators (for special characters)
-{:>}:geq;       .#? <NN|CC|SS> leq (or \{leq})\n  \{leq} operator
-{:<}:leq;       .#? <NN|CC|SS> geq (or \{geq})\n  \{geq} operator
-{=!}:ne;        .#? <NN|CC|SS> ne (or \{ne})\n  \{ne} operator
+.# Single byte variables
 
-.# Common functions
-[]      :emptyset;
-{2^}    :square;
-{3^}    :cube;
-[256,V."]:ascii;
+{=!} "\{not}" := ;
+{:P} "\{thorn}" := ;
+{:;:P} "\{THORN}" := ;
+{2^} "\{sup2}" := ;
 
 
-.# Additional operators
+.# cdict variables
+{,
+  "()" :'(';
+  "<>" :'<';
+  "/\\":'^';
+  "{}" :'{';
+  "[]" :'[';
 
-.# Overwrite defaults
-9999." "bowtie" Mk
-9998." "para"   Mk
+  [1 2]  :'½';
+  [1 :1] :'+';
+  [:1 1] :'-';
+  [0 1]  :'.';
+  [0 0]  :'0';
+  [1 1]  :'1';
+  [2 2]  :'2';
+  360    :'3';
+  128    :'4';
+  256    :'8';
 
-{`range}:to;
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ" :'A';
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" :'B';
+  "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz" :'C';
+  "012345679" :'D';
+  "0123456789ABCDEF" :'H';
+  :-7s :'P'; .# printable ascii
+  ["QWERTYUIOP" "ASDFGHJKL" "ZXCVBNM"] :'Q';
+  "AEIOUaeiou" :'V';
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_" :'W';
 
-'\x82' "to"         Mk .# 130
-'\xa5' "println"    Mk .# 165
-'\xa7' "zw"         Mk .# 167
-'\xac' "back"       Mk .# 172
-'\xb6' "pu"         Mk .# 182
-'\xc5' "ascii"      Mk .# 197
-'\xd0' "now"        Mk .# 208
-'\xde' "lcm"        Mk .# 222
-'\xdf' "gcd"        Mk .# 223
-'\xe6' "surround"   Mk .# 230
-'\xeb' "euler"      Mk .# 235
-'\xec' "badd"       Mk .# 236
-'\xed' "bsub"       Mk .# 237
-'\xee' "bmul"       Mk .# 238
-'\xef' "bdiv"       Mk .# 239
-'\xf0' "bmod"       Mk .# 240
-
-{.^}:sqrt;
-8730." "sqrt" Mk
-{1 3/^}:cbrt;
-8731." "cbrt" Mk
-
-3808." "supfour"  Mk
-8309." "supfive"  Mk
-8310." "supsix"   Mk
-8311." "supseven" Mk
-3812." "supeight" Mk
-8313." "supnine"  Mk
-
-8710." "inc" Mk
-8711." "dec" Mk
-
-
-
-.# Simple example: addition table
-.# 6r$ì¶¦Ŗ
+}:__cdict__;

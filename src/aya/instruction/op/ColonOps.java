@@ -433,17 +433,14 @@ class OP_Colon_Equals extends OpInstruction {
 	public void execute(final Block block) {
 		final Obj sym = block.pop();
 		final Obj obj = block.peek();
-		
+	
+		final Aya aya = Aya.getInstance();
+
 		if (sym.isa(SYMBOL)) {
-			Aya.getInstance().getVars().setVar((Symbol)sym, obj);
+			aya.getVars().setVar((Symbol)sym, obj);
 		} else if (sym.isa(CHAR) || sym.isa(STR)) {
 			String s = sym.str();
-			if (SymbolTable.isBasicSymbolString(s)) {
-				Aya aya = Aya.getInstance();
-				aya.getVars().setVar(aya.getSymbols().getSymbol(s), obj);
-			} else {
-				throw new ValueError(":= Invalid identifier: '" + s + "'");
-			}
+			aya.getVars().setVar(aya.getSymbols().getSymbol(s), obj);
 		} else {
 			throw new TypeError(this, sym, obj);
 		}
