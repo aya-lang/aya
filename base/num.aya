@@ -18,6 +18,9 @@
     .#? ::num .bits\n  return binary representation of the integer
     {.| 10 2 H}:bits;
 
+    .#? ::num .bytes\n  return byte list representation of the integer
+    {10 0 H}:bytes;
+
 
     .#? ::num .round\n  round a decimal to the nearest whole value
     {0.49999999-./}:round;

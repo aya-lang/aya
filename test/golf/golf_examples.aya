@@ -1,0 +1,114 @@
+import ::golf
+
+.# 
+.# A or An
+.# https://codegolf.stackexchange.com/questions/235345/english-an-or-a
+.#
+.# 13 bytes
+.#
+
+{:f,
+
+    {
+        ì¢V\ÑB"an"\.<
+    }:f;
+
+    .# test cases
+    [
+        "ebike"
+        "bike"
+    ] #f
+
+    .# expected result
+    [ "an" "a" ]
+
+} test.test
+
+
+
+.#
+.# Written Word Equation
+.# https://codegolf.stackexchange.com/questions/235352/written-word-equation
+.#
+.# 31 bytes
+.#
+
+{
+    {
+        '-':.&' |~\ì:"5%"/*+ -"\I.A' *~
+    }:f;
+    
+    .# test cases
+    [ 
+        "7 minus -3"
+        "-7 plus 3"
+        "7 times 3"
+        "7 divide 3"
+    ] #f
+    
+    .# expected result
+    [ 10 :-4 21 (7 3/)]
+
+} test.test
+
+
+
+.#
+.# Unlolify
+.# https://codegolf.stackexchange.com/questions/235199/unlolify-a-lolified-message
+.#
+.# 4 bytes
+.#
+
+{
+    :0x636f6f6c2c206e696365
+
+    .a."
+
+    "cool, nice"
+    
+} test.test
+
+
+
+
+
+.#
+.# L-phabet
+.# https://codegolf.stackexchange.com/questions/87064/print-output-the-l-phabet
+.#
+.# 11 bytes
+.#
+
+{
+
+    ¢A${.<}:*n*
+
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ
+BBCDEFGHIJKLMNOPQRSTUVWXYZ
+CCCDEFGHIJKLMNOPQRSTUVWXYZ
+DDDDEFGHIJKLMNOPQRSTUVWXYZ
+EEEEEFGHIJKLMNOPQRSTUVWXYZ
+FFFFFFGHIJKLMNOPQRSTUVWXYZ
+GGGGGGGHIJKLMNOPQRSTUVWXYZ
+HHHHHHHHIJKLMNOPQRSTUVWXYZ
+IIIIIIIIIJKLMNOPQRSTUVWXYZ
+JJJJJJJJJJKLMNOPQRSTUVWXYZ
+KKKKKKKKKKKLMNOPQRSTUVWXYZ
+LLLLLLLLLLLLMNOPQRSTUVWXYZ
+MMMMMMMMMMMMMNOPQRSTUVWXYZ
+NNNNNNNNNNNNNNOPQRSTUVWXYZ
+OOOOOOOOOOOOOOOPQRSTUVWXYZ
+PPPPPPPPPPPPPPPPQRSTUVWXYZ
+QQQQQQQQQQQQQQQQQRSTUVWXYZ
+RRRRRRRRRRRRRRRRRRSTUVWXYZ
+SSSSSSSSSSSSSSSSSSSTUVWXYZ
+TTTTTTTTTTTTTTTTTTTTUVWXYZ
+UUUUUUUUUUUUUUUUUUUUUVWXYZ
+VVVVVVVVVVVVVVVVVVVVVVWXYZ
+WWWWWWWWWWWWWWWWWWWWWWWXYZ
+XXXXXXXXXXXXXXXXXXXXXXXXYZ
+YYYYYYYYYYYYYYYYYYYYYYYYYZ
+ZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+
+} test.test

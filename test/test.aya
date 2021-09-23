@@ -44,6 +44,7 @@
 "test/base/test_str" load_test
 "test/base/test_block" load_test
 
+
 .# Std
 [
     "color"
@@ -59,6 +60,8 @@
 ] :# {mod,
     {, "test/std/test_$mod" load_test };
 };
+
+"test/golf/golf_examples" load_test
 
 .# Import entire standard library
 "Importing standard library..." :P
