@@ -37,12 +37,19 @@
 }:bp;
 
 
+.# Hold operator (same as `)
+.# 1 `+ 1
+.# 1 (1 hold)+ 1
+.# ``+ 1 1
+.# (2 hold)+ 1 1
+{__hold_n, {__hold_f : __hold_n^, {:__hold_f^, {~} O ~ __hold_f} __hold_n :` } 0 :` }:hold;
+
 .# ----
 .# LOAD
 .# ----
 
 .#? load S\n  Load a script
-{`(".aya"+G~)}:load;
+{(1 hold)(".aya"+G~)}:load;
 
 
 .# -------
@@ -88,7 +95,7 @@
             with_mod.` :with_mod
         }
 
-        ```(
+        (3 hold)(
             .# Variable argument prefix operator
             .# aya> {mod name block, mod ::_fn =! {;} ? [mod name block.`]} :f
 
@@ -100,7 +107,7 @@
             .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
             .# [ ::_fn ::foo {+} ]
 
-            \:&:T ::sym=! {\`}{\}.?
+            \:&:T ::sym=! {\(1 hold)}{\}.?
 
 
             ( {mod name obj : is_module with_mod no_mod,
@@ -190,7 +197,7 @@
 .# ------
 
 
-{``({name::sym members::list,
+{(2 hold)({name::sym members::list,
     members $:~=!{"struct: all members must be unique in $members".D}?
 
     .# Metatable
@@ -241,7 +248,7 @@
 .# ------
 
 .#? class ::sym\n  declare a new class
-{`({sym,
+{(1 hold)({sym,
     {,
         sym:__type__;
         1 :__pushself__;
@@ -277,7 +284,7 @@
 .# ------
 
 .#? module ::sym\n  declare a new module
-{`({name,
+{(1 hold)({name,
     {,
         name :__modname__;
 
@@ -301,17 +308,17 @@
 
 
 .#? if (B) E E\n  if statement:\n  if (bool value) {\n    then\n  } {\n    else\n  }
-{```.?}:if;
+{(3 hold).?}:if;
 
 
 .#? dowhile E E\n  evaluates E1 as long as E2 is true\n  always evaluates at least once
-{``({condition__ loop__,
+{(2 hold)({condition__ loop__,
     {loop__ condition__} W
 })}:dowhile;
 
 
 .#? while E E\n  evaluates E1 as long as E2 is true
-{``({condition__ loop__,
+{(2 hold)({condition__ loop__,
     condition__ {
         {loop__ condition__} W
     } ?
@@ -340,7 +347,7 @@
     just before:
             {::f .Z .close} ~
 .}
-{```(__aya__.with_ ~)}:with;
+{(3 hold)(__aya__.with_ ~)}:with;
 
 
 .#? ::any ::sym isa\n  returns true if the item's type matches the input
