@@ -48,7 +48,7 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
     params.y self.:_y;
     params.r self.:_r;
 
-    params.units `.in [::deg ::degrees] self.:_use_deg;
+    params.units [::deg ::degrees].in self.:_use_deg;
 
     .# Use the provided canvas or generate one?
     params.canvas nil = {

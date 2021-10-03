@@ -94,7 +94,7 @@
         aya> 3 double
         6
     .}
-    {`({:d__,
+    {(1 hold)({:d__,
         .# Create a dictionary of all values given by the list
         {,}:d__;
         :#{$~\d__:D;};
@@ -115,7 +115,7 @@
         aya> 5 f
         6
     .}
-    {`({\.makelocals :& .|.locals @ {}.M._capture_vars .+ ;})}:capture;
+    {(1 hold)({\.makelocals :& .|.locals @ {}.M._capture_vars .+ ;})}:capture;
 
     .#? ::block .time\n  return the result of the block and the execution time in ms
     {:a__, M$:a__; ~ M$ a__ -} :time;
@@ -151,9 +151,9 @@
         aya> 2 apply_double
         4
     .}
-    {`.+}:where_const;
+    {1 hold .+}:where_const;
 
-    {`(\$\;.makelocals:&.|.locals@.+;)}:where;
+    {(1 hold)(\$\;.makelocals:&.|.locals@.+;)}:where;
 
 
     .# Utility Functions

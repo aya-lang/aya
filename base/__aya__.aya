@@ -49,7 +49,7 @@
 .# ----
 
 .#? load S\n  Load a script
-{(1 hold)(".aya"+G~)}:load;
+{{~".aya"+G~} 0 :`}:load;
 
 
 .# -------

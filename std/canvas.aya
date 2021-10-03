@@ -79,7 +79,7 @@ def canvas::save {filename self,
     .# Convert to string (in case it is a path object)
     filename P
     .# Add file extension if it does not exist
-    ".png" `in filename ! {".png"+} ?
+    ".png" filename.in ! {".png"+} ?
 
     self.id :{graphics.save}
 }

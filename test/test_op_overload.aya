@@ -145,29 +145,29 @@
 "lt..." :P
 {,
     [1 2 3] vec! :v;
-    { 3 `< v P "< 0 0 0 >" } test.test
-    { [3 3 3] `< v P "< 0 0 0 >" } test.test
+    { 3 v < P "< 0 0 0 >" } test.test
+    { [3 3 3] v < P "< 0 0 0 >" } test.test
 };
 
 "gt..." :P
 {,
     [1 2 3] vec! :v;
-    { 3 `> v P "< 1 1 0 >" } test.test
-    { [3 3 3] `> v P "< 1 1 0 >" } test.test
+    { 3 v > P "< 1 1 0 >" } test.test
+    { [3 3 3] v > P "< 1 1 0 >" } test.test
 };
 
 "leq..." :P
 {,
     [1 2 3] vec! :v;
-    { 3 `:< v P "< 0 0 1 >" } test.test
-    { [3 3 3] `:< v P "< 0 0 1 >" } test.test
+    { 3 v :< P "< 0 0 1 >" } test.test
+    { [3 3 3] v :< P "< 0 0 1 >" } test.test
 };
 
 "geq..." :P
 {,
     [1 2 3] vec! :v;
-    { 3 `:> v P "< 1 1 1 >" } test.test
-    { [3 3 3] `:> v P "< 1 1 1 >" } test.test
+    { 3 v :> P "< 1 1 1 >" } test.test
+    { [3 3 3] v :> P "< 1 1 1 >" } test.test
 };
 
 "eq..." :P

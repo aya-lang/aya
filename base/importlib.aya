@@ -244,25 +244,22 @@ def importlib::from {mod_sym import_vars : meta_mod importlib^,
 importlib __aya__.:importlib;
 
 .# If provided a 0 (for example from `from` keyword), do nothing
-{`(:& 0= {;} {__aya__.importlib.import} .?)}:import;
+{(1 hold)(:& 0= {;} {__aya__.importlib.import} .?)}:import;
 
 {: importlib^ , {,} importlib.:imported; } :reimport;
 
-{`(__aya__.importlib.export)}:export;
+{(1 hold)(__aya__.importlib.export)}:export;
 {1:__export__;} :exportall;
 
 .# from ::math import [::sin ::cos]
 .# from ::io import ::path
 {
-    ```0        .# Insert a zero just after `import` so it no-ops
-    (````(      .# Insert after import list `::mod import [] ^here`
-        __aya__.importlib.from
-    ))
+    {:&.[0]~ \.[:1]~ __aya__.importlib.from} 3 :` 
 }:from;
 
 .# main {do stuff...}
 .# Do not execute this block if the file it is contained in
 .# is being imported as a module
-{`(
+{(1 hold)(
     __aya__.importlib.is_main {~} {;} .?
 )}:main;

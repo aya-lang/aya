@@ -991,13 +991,14 @@ class OP_Colon_Tick extends OpInstruction {
 	
 	public OP_Colon_Tick() {
 		init(":`");
-		arg("N:`A", "wrap next N instructions in a block");
+		arg("BN:`A", "wrap next N instructions in a block");
 	}
 
 	@Override
 	public void execute (Block block) {
 		Obj n_obj = block.pop();
-		if (n_obj.isa(Obj.NUM)) {
+		Obj blk_obj = block.pop();
+		if (n_obj.isa(Obj.NUM) && blk_obj.isa(Obj.BLOCK)) {
 			int n = Casting.asNumber(n_obj).toInt();
 			boolean unwrap_list = false;
 			if (n == 0) {
@@ -1015,8 +1016,11 @@ class OP_Colon_Tick extends OpInstruction {
 			} else {
 				block.push(l);
 			}
+			
+			block.addAll(Casting.asBlock(blk_obj).getInstructions().getInstrucionList());
+			
 		} else {
-			throw new TypeError(this, n_obj);
+			throw new TypeError(this, n_obj, blk_obj);
 		}
 	}
 }

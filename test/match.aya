@@ -1,48 +1,35 @@
-
-.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
-{`({blk::block expected::list,
-  [blk] expected= {
-      .# Do nothing
-    } {
-    .# Throw an error message about the assertation
-      ["assert " ::blk .~ " = " expectedP  "\n\trecieved: " [blk]P]SP.D
-    } .?
-})}:assert;
-
-
 .# Syntax checks
 .###############
 
-{ 1 {?=, 1 "a", 2 "b", "c"} } assert ["a"]
-{ 2 {?=, 1 "a", 2 "b", "c"} } assert ["b"]
-{ 3 {?=, 1 "a", 2 "b", "c"} } assert ["c"]
-{ 3 {?=, 1 "a", 2 "b"} } assert []
+{ 1 {?=, 1 "a", 2 "b", "c"} "a" } test.test
+{ 2 {?=, 1 "a", 2 "b", "c"} "b" } test.test
+{ 3 {?=, 1 "a", 2 "b", "c"} "c" } test.test
+{ [3 {?=, 1 "a", 2 "b"}]    []  } test.test
 
-{ 1 {?=, 1 "a"} } assert ["a"]
-{ 3 {?=, 1 "a"} } assert []
-{ 3 {?=, 1 "a"} } assert []
+{ 1 {?=, 1 "a"}     "a" } test.test
+{ [ 3 {?=, 1 "a"} ] []  } test.test
+{ [ 3 {?=, 1 "a"} ] []  } test.test
 
-{:x(1), {0? x, 1= "a", 2= "b", "c"}} assert ["a"]
-{:x(2), {0? x, 1= "a", 2= "b", "c"}} assert ["b"]
-{:x(3), {0? x, 1= "a", 2= "b", "c"}} assert ["c"]
+{:x(1), {0? x, 1= "a", 2= "b", "c"} "a"} test.test
+{:x(2), {0? x, 1= "a", 2= "b", "c"} "b"} test.test
+{:x(3), {0? x, 1= "a", 2= "b", "c"} "c"} test.test
 
-{:x(1), {0?= x, 1 "a", 2 "b", "c"}} assert ["a"]
-{:x(2), {0?= x, 1 "a", 2 "b", "c"}} assert ["b"]
-{:x(3), {0?= x, 1 "a", 2 "b", "c"}} assert ["c"]
+{:x(1), {0?= x, 1 "a", 2 "b", "c"} "a" } test.test
+{:x(2), {0?= x, 1 "a", 2 "b", "c"} "b" } test.test
+{:x(3), {0?= x, 1 "a", 2 "b", "c"} "c" } test.test
 
-.# Rule for A {?B, C ...}: {C A B}
-{ 1 {?(1+=),  0 "a", 1 "b", "c"} } assert ["a"]
-{ 1 {?(\1+=), 0 "a", 1 "b", "c"} } assert ["c"]
-{ 1 {?{1+=},  0 "a", 1 "b", "c"} } assert ["a"]
-{ 1 {?{\1+=}, 0 "a", 1 "b", "c"} } assert ["c"]
+.# Rule for A {?B, C ... }: {C A B}
+{ 1 {?(1+=),  0 "a", 1 "b", "c"} "a" } test.test
+{ 1 {?(\1+=), 0 "a", 1 "b", "c"} "c" } test.test
+{ 1 {?{1+=},  0 "a", 1 "b", "c"} "a" } test.test
+{ 1 {?{\1+=}, 0 "a", 1 "b", "c"} "c" } test.test
 
 .# Capture order
-{:x, 1 2 3 {3?, .A:x0 0} x } assert [[1 2 3]]
-{:x, 1 2   {2?, .A:x0 0} x } assert [[1 2]]
-{:x, 1     {1?, .A:x0 0} x } assert [[1]]
-{:x, 1     { ?, .A:x0 0} x } assert [[1]]
-{:x,       {0?, .A:x0 0} x } assert [[]]
-
+{:x, 1 2 3 {3?, .A:x0 0} x [1 2 3]} test.test
+{:x, 1 2   {2?, .A:x0 0} x [1 2  ]} test.test
+{:x, 1     {1?, .A:x0 0} x [1    ]} test.test
+{:x, 1     { ?, .A:x0 0} x [1    ]} test.test
+{:x,       {0?, .A:x0 0} x []     } test.test
 
 
 
@@ -57,9 +44,9 @@
                               {"correct"}}
     }:f;
 
-    3 :guess; {f} assert ["too small"]
-    7 :guess; {f} assert ["too big"]
-    5 :guess; {f} assert ["correct"]
+    { 3 :guess; f "too small" } test.test
+    { 7 :guess; f "too big"   } test.test
+    { 5 :guess; f "correct"   } test.test
 }~
 
 {: secret(5) guess f,
@@ -69,9 +56,9 @@
                              {"correct"}}
     }:f;
 
-    3 :guess; {f} assert ["too small"]
-    7 :guess; {f} assert ["too big"]
-    5 :guess; {f} assert ["correct"]
+    { 3 :guess; f "too small" } test.test
+    { 7 :guess; f "too big"   } test.test
+    { 5 :guess; f "correct"   } test.test
 }~
 
 {: secret(5) guess f,
@@ -81,9 +68,9 @@
                               {"correct"}}
     }:f;
 
-    3 :guess; {f} assert ["too small"]
-    7 :guess; {f} assert ["too big"]
-    5 :guess; {f} assert ["correct"]
+    { 3 :guess; f "too small" } test.test
+    { 7 :guess; f "too big"   } test.test
+    { 5 :guess; f "correct"   } test.test
 }~
 
 {: secret(5) guess f,
@@ -93,9 +80,9 @@
                             {"correct"}}
     }:f;
 
-    3 :guess; {f} assert ["too small"]
-    7 :guess; {f} assert ["too big"]
-    5 :guess; {f} assert ["correct"]
+    { 3 :guess; f "too small" } test.test
+    { 7 :guess; f "too big"   } test.test
+    { 5 :guess; f "correct"   } test.test
 }~
 
 .{ Fail: stack captures are popped in wrong order
@@ -106,9 +93,9 @@
                             {"correct"}}
     }:f;
 
-    3 :guess; {f} assert ["too small"]
-    7 :guess; {f} assert ["too big"]
-    5 :guess; {f} assert ["correct"]
+    { 3 :guess; f "too small" } test.test
+    { 7 :guess; f "too big"   } test.test
+    { 5 :guess; f "correct"   } test.test
 }~
 .}
 

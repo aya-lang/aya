@@ -51,7 +51,6 @@ import aya.parser.tokens.SpecialToken;
 import aya.parser.tokens.StdToken;
 import aya.parser.tokens.StringToken;
 import aya.parser.tokens.SymbolToken;
-import aya.parser.tokens.TickToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
 import aya.util.CharUtils;
@@ -522,12 +521,6 @@ public class Parser {
 //				throw new RuntimeException("Unexpected DOT operator. parser needs to be fixed");
 
 			case Token.TICK:
-				int ticks = 1;
-				while (in.hasNext() && in.peek().isa(Token.TICK)) {
-					ticks++;
-					in.next();
-				}
-				out.add(new TickToken(ticks));
 				break;
 
 			default:

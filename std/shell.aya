@@ -49,22 +49,31 @@ def ::pwd {: path^ , path.working:P}
 
 
 .#? cd dir\n  change directory
-def ::cd {`(sys.cd)}
+def ::cd {{sys.cd} 0:`}
 
 
 .#? mkdir S\n  create a new directory
-def ::mkdir {`(sys.mkdir)}
+def ::mkdir { {sys.mkdir} 0 :` }
 
 
-def ::echo ({```x``~} {, shell_impl.echo.` :x } .+)
+.# def ::echo ({(4 hold)x (2 hold)~} {, shell_impl.echo.` :x } .+)
+
+.#? echo S\n  print a string to the console
+def ::echo {: shell_impl^,  
+    {: shell_impl^, ~ shell_impl.echo } 0 :`
+}
+
 .#? cat S\n  print a file to the console
-def ::cat  ({``x`~} {, shell_impl.cat.`  :x } .+)
-def ::grep  ({```x``~} {, shell_impl.grep.` :x } .+)
+def ::cat {: shell_impl^, 
+    {: shell_impl^, ~ shell_impl.cat} 0 :`
+}
+
+def ::grep {: shell_impl^, 
+    {: shell_impl^, ~ shell_impl.grep} 0 :`
+}
 
 
-def ::touch {`({s::str,"" s 1.G})}
-
-def ::run {`(".aya"+G~)}
+def ::touch { {s::str, "" s 1.G} 0 :` }
 
 def ::clear {:terminal^, terminal.clear}
 
@@ -90,7 +99,6 @@ export [
     ::cat
     ::grep
     ::touch
-    ::run
     ::clear
 ]
 

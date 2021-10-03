@@ -7,9 +7,9 @@ def versionstr::__init__ {maj min pat self,
     pat "" = 0 pat .? P self.:patch;
 }
 
-def ::v {`(
-    '.| 3.< ~ versionstr!
-)}
+def ::v { {
+    ~ '.| 3.< ~ versionstr!
+} 0:` }
 
 def versionstr::__str__ {self,
     "v\"$(self.major).$(self.minor).$(self.patch)\""

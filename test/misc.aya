@@ -1,20 +1,12 @@
-.#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
-{`({blk::block expected::list,
-  [blk] expected= {
-      .# Do nothing
-    } {
-    .# Throw an error message about the assertation
-      ["assert " ::blk .~ " = " expectedP  "\n\trecieved: " [blk]P]SP.D
-    } .?
-})}:assert;
-
 .# Two implementations of the collatz conjecture
 .# See "examples/collatz"
 
-{[10,
-    $1={;0}{0\{n,Bn2%n3*Bn2/.?$1>}W;}.?
-]} assert [[ 0 1 7 2 5 8 16 3 19 6 ]]
+{
+    [10, $1={;0}{0\{n,Bn2%n3*Bn2/.?$1>}W;}.?  ]
+    [ 0 1 7 2 5 8 16 3 19 6 ]
+} test.test
 
-{[10,
-    $1={;0}{0\{\B\$$2%\3*B@2/.?$1>}W;}.?
-]} assert [[ 0 1 7 2 5 8 16 3 19 6 ]]
+{
+    [10, $1={;0}{0\{\B\$$2%\3*B@2/.?$1>}W;}.? ]
+    [ 0 1 7 2 5 8 16 3 19 6 ]
+} test.test

@@ -254,7 +254,7 @@ def file::__repr__ {self,
         f.readll :P
     }
 .}
-def file::do {`(\ ._do)}
+def file::do {(1 hold)(\ ._do)}
 
 .# Helper function for file.do
 def file::_do {blk__::block self__,

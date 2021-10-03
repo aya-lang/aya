@@ -5,7 +5,7 @@
 
 export ::enum
 
-{``({class::sym enums::list : dict meta,
+{(2 hold)({class::sym enums::list : dict meta,
 
     .# The metatable for each enum member
     {,

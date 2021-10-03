@@ -4,9 +4,9 @@
 "Test file loaded!\n" .P
 
 .#? E assert L\n  Evaluates E as a list, throws an error if [E~] != L
-{`({blk::block expected::list,
-  {:blk^, [blk] expected} test.test
-})}:assert;
+{
+    {~\ [1|] [1|{{~}O}] .B .* test.test }0:`
+} :assert;
 
 {blk::block,
     .; .# Clear stack
@@ -34,6 +34,8 @@
 "test/colon_ops" load_test
 "test/range" load_test
 "test/unicode" load_test
+"test/misc" load_test
+"test/match" load_test
 "test/test_op_overload" load_test
 
 .# Base

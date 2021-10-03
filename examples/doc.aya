@@ -215,7 +215,7 @@ impl docstr::to_html {self,
 }
 
 
-{``({:d,
+{(2 hold)({:d,
     docstr! :d:dd;
 
     .# Add the doc to the module (or global scope)
@@ -229,7 +229,7 @@ impl docstr::__repr__ {self,
 }
 
 
-{`({x,
+{(1 hold)({x,
     x :T ::list = {
         x.[0].__doc__.[x.[1]] .show :P
     } ?

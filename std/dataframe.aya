@@ -122,7 +122,7 @@ def dataframe::__getindex__ { index self : dataframe^,
     0 | 4 5 6
     1 | 7 8 9
 .}
-def dataframe::row {`({self index : data,
+def dataframe::row {(1 hold)({self index : data,
     self._data.[index~]:data;
     [ index~ :T ::num = { [data]:data } ? ];
 

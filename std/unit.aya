@@ -71,13 +71,13 @@
 .# Conversion functions (Uncomment to use)
 
 .# Type saftey version
-{`({num::num from::num to::num, num from * to/})}:to;
+{(1 hold)({num::num from::num to::num, num from * to/})}:to;
 
 .# Regular Version
-.#	{`(\@*\/)}:to;
+.#	{(1 hold)(\@*\/)}:to;
 
 {,
-    {`({sub super : super_type,
+    {(1 hold)({sub super : super_type,
         super.__type__ :super_type;
         super ::__type__ .- ;
         sub super .+ ;
