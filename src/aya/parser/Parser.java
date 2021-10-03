@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.exceptions.ex.EndOfInputError;
-import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.ex.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
@@ -21,8 +20,6 @@ import aya.instruction.index.SetNumberIndexInstruction;
 import aya.instruction.index.SetObjIndexInstruction;
 import aya.instruction.index.SetVarIndexInstruction;
 import aya.instruction.op.ColonOps;
-import aya.instruction.op.DotOps;
-import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.op.Ops;
 import aya.instruction.variable.GetKeyVariableInstruction;
@@ -870,49 +867,6 @@ public class Parser {
 		return generate(assemble(tokenize(aya, s)));
 	}
 
-	private static String parseOpSym(ParserString in) throws EndOfInputError, SyntaxError {
-		String opstr = "" + in.peek(); // For printing error message
-		OpInstruction op = null;
-		char opchar = in.next();
-
-		if (opchar == '.') {
-			if (in.hasNext()) {
-				opstr += in.peek();
-				op = DotOps.getOpOrNull(in.next());
-			}
-		} else if (opchar == 'M') {
-			if (in.hasNext()) {
-				opstr += in.peek();
-				op = MiscOps.getOpOrNull(in.next());
-			}
-		} else if (opchar == ':') {
-			if (in.hasNext()) {
-				opstr += in.peek();
-				if (ColonOps.isColonOpChar(in.peek())) {
-					op = ColonOps.getOpOrNull(in.next());
-				}
-			}
-		} else if (Ops.isOpChar(opchar)) {
-			try {
-				op = Ops.getOp(opchar);
-			} catch (NotAnOperatorError e) {
-				throw new SyntaxError(e.getMessage());
-			}
-		}
-
-		if (op == null) {
-			throw new SyntaxError("No symbol name asociated with ::" + opstr);
-		} else {
-			String sym = op.getSymName();
-
-			if (sym == null) {
-				throw new SyntaxError("No symbol name asociated with ::" + opstr);
-			}
-
-			return sym;
-		}
-	}
-	
 	private static boolean isMultiCharOpPrefix(char c) {
 		return c == ':' || c == '.' || c == 'M';
 	}
