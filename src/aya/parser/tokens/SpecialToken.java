@@ -81,7 +81,7 @@ public class SpecialToken extends Token {
 		case LAMBDA:
 			return "lambda";
 		case Token.TICK:
-			return "tick(s)";
+			return "tick";
 		case Token.DOT:
 			return "dot";
 		case Token.COLON:

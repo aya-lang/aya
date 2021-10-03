@@ -514,12 +514,6 @@ public class Parser {
 			case Token.CLOSE_SQBRACKET:
 				throw new SyntaxError("Unexpected token ']'");
 
-//			case Token.DOT:
-//				throw new RuntimeException("Unexpected DOT operator. parser needs to be fixed");
-
-			case Token.TICK:
-				break;
-
 			default:
 				out.add(current);
 			}
@@ -675,34 +669,14 @@ public class Parser {
 
 			// POUND
 			else if (current.isa(Token.POUND)) {
-				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after '#' in:\n\t" + tokens_in.toString());
-				}
-				Instruction next = is.pop();
-				// Apply a block to a list
-				if (next instanceof DataInstruction && ((DataInstruction) next).objIsa(Obj.BLOCK)) {
-					throw new SyntaxError("Assertion Failed!!");
-				} else if (next instanceof BlockLiteralInstruction) {
-					is.push(Ops.getOp('#'));
-					is.push(next);
-				}
+				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
+				is.push(Ops.getOp('#'));
+				is.push(blk_ins);
+			}
 
-				// Create a block and apply it to a list
-				else {
-					Block colonBlock = new Block();
-					is.push(next); // Add next back in
-
-					while (!is.isEmpty()) {
-						Instruction o = is.pop();
-						colonBlock.getInstructions().insert(0, o);
-						if (o instanceof OpInstruction || o instanceof GetVariableInstruction
-								|| o instanceof GetKeyVariableInstruction) {
-							break;
-						}
-					}
-					is.push(Ops.getOp('#'));
-					is.push(colonBlock);
-				}
+			else if (current.isa(Token.TICK)) {
+				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
+				is.push(blk_ins);
 			}
 
 			// COLON POUND
@@ -745,6 +719,35 @@ public class Parser {
 
 		return is;
 
+	}
+	
+	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
+		if (is.isEmpty()) {
+			throw new SyntaxError("Expected token when assembling block in:\n\t" + tokens_in.toString());
+		} else {
+			Instruction next = is.pop();
+
+			// Apply a block to a list
+			if (next instanceof DataInstruction && ((DataInstruction) next).objIsa(Obj.BLOCK)) {
+				throw new SyntaxError("Assertion Failed!!");
+			} else if (next instanceof BlockLiteralInstruction) {
+				return (BlockLiteralInstruction)next;
+			} else {
+				// Create a block and apply it to a list
+				Block colonBlock = new Block();
+				is.push(next); // Add next back in
+
+				while (!is.isEmpty()) {
+					Instruction o = is.pop();
+					colonBlock.getInstructions().insert(0, o);
+					if (o instanceof OpInstruction || o instanceof GetVariableInstruction
+							|| o instanceof GetKeyVariableInstruction) {
+						break;
+					}
+				}
+				return new BlockLiteralInstruction(colonBlock);
+			}
+		}
 	}
 	
 	private static String formatString(String input) throws EndOfInputError, SyntaxError {
