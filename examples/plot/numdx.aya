@@ -1,0 +1,39 @@
+import ::plot
+
+.#{Mc} :fn;
+.# :-2p:a;
+.# :2p :b;
+.# 0.6:t;
+
+{x, x2^4* 2x* + 1 + x Me 2 * x + / x ^}:fn;
+0:a;
+6:b;
+2.5:t;
+
+.# numerical derivative (central)
+{a f : h(0.0001),
+  a h + f a h - f - h 2 * /
+}:dx;
+
+.# Generate a function for a tangent line at a point
+{a f : dx^,
+  {x, f_a fdx_a x a - * +}.where_const{, 
+    a f :f_a;
+    a f.`dx :fdx_a;
+    a :a;
+  }
+}:tangent_line;
+
+
+t fn.` tangent_line :f_;
+
+a b 200.linspace :x;
+
+plot.plot! :p;
+
+x :& #fn       {, "f":label  } p.plot
+x :& #{fn.`dx} {, "f'":label } p.plot
+x :& #f_       {, "tangent@$t":label  } p.plot
+
+p.view
+

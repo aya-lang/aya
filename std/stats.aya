@@ -82,7 +82,7 @@ def stats::pearson {x y : n xs ys,
     /
 }
 
-def stats::hist {l::list nbins::num : min max bin_size bins counter,
+def stats::hist {l::list nbins::num : min max bin_size bins counter cumsum^,
     .# compute bin size using list min and max values
     l.min :min;
     l.max :max;

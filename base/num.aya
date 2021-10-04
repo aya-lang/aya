@@ -32,7 +32,7 @@
 
     .#? n::nun lo::num hi::num .clip N1 between N2 (lo) and N3 (hi)
     .# Reverse the order of min/max algorithms depending on sign
-    { @$ 0:> {.>.<} {.<.>} .? }:clip;
+    {@ .> .<}:clip;
 
 
     .#? ::num.i\n  generate a range from -N to N
