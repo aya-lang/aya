@@ -79,7 +79,9 @@ def turtle::__repr__ {self,
 .# Turtle Motion #
 .#################
 
-def turtle::fd {n self : px(self._x) py(self._y),
+def turtle::fd {n self : px py,
+    self._x :px;
+    self._y :py;
     self._x self._r Mc n * + self.:_x;
     self._y self._r Ms n * + self.:_y;
     px py self._step_from
@@ -93,7 +95,9 @@ def turtle::left {amount self,
     self._r amount self._to_rad - self.:_r;
 }
 
-def turtle::goto {x y self : px(self._x) py(self._y),
+def turtle::goto {x y self : px py,
+    self._x :px;
+    self._y :py;
     x self.:_x;
     y self.:_y;
     px py self._step_from

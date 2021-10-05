@@ -103,9 +103,9 @@
 {[1 2 3]:& {a$::num, a B ;;}~} assertfail
 {[1 2 3]:& {a::num, a B ;;}~}  assertfail
 
-{1 ({a: b(a), a b})} assert [1 1]
-{1 ({a: a(a 1 +), a})} assert [2]
-{{: b({,}), b}:x; 1 x.:y; x} assert [{,}]
+{:a(2), 1 ({a: b(a), a b})} assert [1 2]
+{:a(9), 2 ({a: a(a 1 +), a})} assert [2]
+{{: b({,}), b}:x; 1 x.:y; x} assert [{,1:y}]
 
 .# Dictionaries
 

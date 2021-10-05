@@ -1,6 +1,7 @@
 package aya.parser.tokens;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import aya.ReprStream;
 import aya.exceptions.ex.ParserException;
@@ -12,6 +13,7 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.MatchInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
@@ -80,9 +82,9 @@ public class BlockToken extends CollectionToken {
 					Block b = new Block();
 					b.add(PopVarFlagInstruction.INSTANCE);
 					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-					Pair<BlockHeader, ArrayList<Symbol>> p = generateBlockHeader(blockData.get(0));
+					Pair<BlockHeader, HashMap<Symbol, Block>> p = generateBlockHeader(blockData.get(0));
 					BlockHeader block_header = p.first();
-					ArrayList<Symbol> captures = p.second();
+					HashMap<Symbol, Block> captures = p.second();
 					b.add(block_header);
 					return new BlockLiteralInstruction(b, captures);
 				}
@@ -132,11 +134,7 @@ public class BlockToken extends CollectionToken {
 				Instruction instr = bt.getInstruction();
 				if (instr instanceof BlockLiteralInstruction) {
 					BlockLiteralInstruction bli = (BlockLiteralInstruction)instr;
-					if (bli.isRawBlock()) {
-						test_expr = bli.getRawBlock();
-					} else {
-						throw new SyntaxError("Match instruction may not contain blocks with captures");
-					}
+					test_expr = bli.getRawBlock();
 				} else {
 					throw new SyntaxError("Invalid test ecpression: " + instr.repr(new ReprStream()).toStringOneline());
 				}
@@ -175,11 +173,7 @@ public class BlockToken extends CollectionToken {
 					InstructionStack is = Parser.generate(blockData.get(i));
 					if (is.size() == 1 && is.peek(0) instanceof BlockLiteralInstruction) {
 						BlockLiteralInstruction bli = (BlockLiteralInstruction)is.peek(0);
-						if (bli.isRawBlock()) {
-							m.setFallback(bli.getRawBlock());
-						} else {
-							throw new SyntaxError("A block in a match expression may not contain captures");
-						}
+						m.setFallback(bli.getRawBlock());
 					} else {
 						m.setFallback(new Block(is));
 					}
@@ -195,11 +189,7 @@ public class BlockToken extends CollectionToken {
 			Block result_block = null;
 			if (result instanceof BlockLiteralInstruction) {
 				BlockLiteralInstruction bli = (BlockLiteralInstruction)result;
-				if (bli.isRawBlock()) {
-					result_block = bli.getRawBlock();
-				} else {
-					throw new SyntaxError("Blocks in match expressions may not contain captures");
-				}
+				result_block = bli.getRawBlock();
 			} else {
 				result_block = new Block();
 				result_block.add(result);
@@ -225,18 +215,18 @@ public class BlockToken extends CollectionToken {
 		return false;
 	}
 	
-	private Pair<BlockHeader, ArrayList<Symbol>> generateBlockHeader(TokenQueue tokens) throws ParserException {
+	private Pair<BlockHeader, HashMap<Symbol, Block>> generateBlockHeader(TokenQueue tokens) throws ParserException {
 		BlockHeader header = new BlockHeader();
 		
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
 		TokenQueue default_tokens = split_tokens.second();
-		ArrayList<Symbol> captures = new ArrayList<Symbol>();
+		HashMap<Symbol, Block> captures = new HashMap<Symbol, Block>();
 	
 		generateBlockHeaderArgs(header, arg_tokens);
 		generateBlockHeaderDefaults(header, default_tokens, captures);
 		
-		return new Pair<BlockHeader, ArrayList<Symbol>>(header, captures);
+		return new Pair<BlockHeader, HashMap<Symbol, Block>>(header, captures);
 	}
 	
 	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
@@ -270,7 +260,7 @@ public class BlockToken extends CollectionToken {
 	/** Assumes args have already been set 
 	 * @param captures 
 	 * @throws ParserException */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, ArrayList<Symbol> captures) throws ParserException {
+	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, HashMap<Symbol, Block> captures) throws ParserException {
 		String orig = tokens.toString();
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
@@ -280,11 +270,13 @@ public class BlockToken extends CollectionToken {
 					header.addDefault(var.getSymbol(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					header.addDefault(var.getSymbol(), lambda.generateInstructionsForFirst());
+					captures.put(var.getSymbol(), new Block(lambda.generateInstructionsForFirst()));
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
-						captures.add(var.getSymbol());
+						Block b = new Block();
+						b.add(new QuoteGetVariableInstruction(var.getSymbol()));
+						captures.put(var.getSymbol(), b);
 					} else {
 						generateBlockHeaderDefaultsError(orig);
 					}

@@ -2,12 +2,14 @@ package aya.instruction;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
+import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
 
@@ -162,7 +164,7 @@ public class InstructionStack {
 		return repr(stream, null);
 	}
 	
-	public ReprStream repr(ReprStream stream, ArrayList<Symbol> captures) {
+	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> captures) {
 		if (captures != null) {
 			reprWithCaptures(stream, captures);
 		} else {
@@ -176,7 +178,7 @@ public class InstructionStack {
 	}
 
 	/** Called from a block literal instruction */
-	private ReprStream reprWithCaptures(ReprStream stream, ArrayList<Symbol> captures) {
+	private ReprStream reprWithCaptures(ReprStream stream, HashMap<Symbol, Block> captures) {
 		if (instructions.size() == 0) return stream;
 
 		Instruction inst = instructions.get(instructions.size()-1);

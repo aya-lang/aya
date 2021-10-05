@@ -51,11 +51,12 @@ def matrix::__repr__ {self,
     ::__add__ ::__sub__ ::__mul__ ::__div__
     ::__pow__ ::__lt__  ::__gt__  ::__mod__
     ::__leq__ ::__geq__ ::__idiv__
-] :# {op_sym : mp^
-               op_to_n([::n op_sym] mp.merge)
-               op(op_sym.op)
-               rop([::other {\} op_sym] mp.merge)
-               rop_sym(op_sym.rev),
+] :# {op_sym : mp^ op_to_n op rop rop_sym,
+    
+    [::n op_sym] mp.merge :op_to_n;
+    op_sym.op :op;
+    [::other {\} op_sym] mp.merge :rop;
+    op_sym.rev :rop_sym;
 
     def matrix op_sym {other self : op^ rop^,
         other :T {?=,
@@ -79,7 +80,8 @@ def matrix::__repr__ {self,
     ::__floor__ ::__ceil__ ::__negate__ ::__abs__ ::__signnum__
     ::__sqrt__ ::__exp__ ::__ln__ ::__log__
     ::__sin__ ::__asin__ ::__cos__ ::__acos__ ::__tan__ ::__atan__
-] :# {sym : op(sym.op),
+] :# {sym : op,
+    sym.op :op;
     def matrix sym ({
         :& .rows op #~ \.M._new
         } {, op.`:op } .+

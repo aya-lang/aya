@@ -47,11 +47,7 @@ public class ListToken extends CollectionToken {
 			} 
 			
 			if (bli != null) {
-				if (!bli.isRawBlock()) {
-					throw new SyntaxError("List comprehension literal cannot contain a block with captures:\n" + data);
-				} else {
-					bli.setAutoEval();
-				}
+				bli.setAutoEval();
 			}
 			
 		return new ListBuilderInstruction(initialList, map, null, pops);
@@ -75,11 +71,7 @@ public class ListToken extends CollectionToken {
 				//If the filter clause only contains a single block, set them to auto eval
 				BlockLiteralInstruction bli = tmpFilter.getInstructions().getIfSingleBlockInstruction();
 				if (bli != null) {
-					if (!bli.isRawBlock()) {
-						throw new SyntaxError("List comprehension literal cannot contain a block with captures:\n[" + data + "]");
-					} else {
-						bli.setAutoEval();
-					}
+					bli.setAutoEval();
 				}
 				
 				filters[k-2] = tmpFilter;

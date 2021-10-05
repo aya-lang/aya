@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.Stack;
 
 import aya.ReprStream;
@@ -396,9 +397,9 @@ public class Block extends Obj {
 	
 
 	/** If true, return "{instructions}" else just "instructions" */
-	private ReprStream blockRepr(ReprStream stream, boolean print_braces, ArrayList<Symbol> captures) {
+	private ReprStream blockRepr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
 		if (print_braces) stream.print("{");
-		instructions.repr(stream, captures);
+		instructions.repr(stream, defaults);
 		if (print_braces) stream.print("}");
 		return stream;
 	}
@@ -412,9 +413,9 @@ public class Block extends Obj {
 		return repr(stream, print_braces, null);
 	}
 	
-	public ReprStream repr(ReprStream stream, boolean print_braces, ArrayList<Symbol> captures) {
+	public ReprStream repr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
 		if (stream.visit(this)) {
-			blockRepr(stream, print_braces, captures);
+			blockRepr(stream, print_braces, defaults);
 			stream.popVisited(this);
 		} else {
 			stream.print("{...}");

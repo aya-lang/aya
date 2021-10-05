@@ -9,7 +9,6 @@ import aya.ReprStream;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Callable;
@@ -464,27 +463,6 @@ public class Dict extends Obj {
 
 	
 
-	/**
-	 * Output the variable set as a space separated list of name(value) items
-	 * If the value is 0, do not print the value or the parenthesis
-	 */
-	public ReprStream reprHeader(ReprStream stream) {
-		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
-		while (it.hasNext()) {
-			HashMap.Entry<Symbol, Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
-			stream.print(pair.getKey().name());
-
-			final Obj obj = pair.getValue();
-			if (obj.equiv(Num.ZERO)) {
-				stream.print(" ");
-			} else {
-				stream.print("(");
-				obj.repr(stream);
-				stream.print(")");
-			}
-		}
-		return stream;
-	}
 
 	/** Merge variables from the given variable set only if they are defined in this one */
 	public void mergeDefined(Dict other) {

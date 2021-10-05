@@ -179,7 +179,8 @@ def dataframe::__str__ {self : max_idx_len,
 }
 
 
-def dataframe::_repr_lines {s : lines(s.lines),
+def dataframe::_repr_lines {s : lines,
+    s.lines :lines;
     lines E 24 > {
         [lines 10 .<~ "..." lines 10 .>~]"\n"*
     } {

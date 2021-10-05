@@ -63,13 +63,13 @@
     {, "test/std/test_$mod" load_test };
 };
 
-"test/golf/golf_examples" load_test
-
 .# Import entire standard library
 "Importing standard library..." :P
 :{sys.wd} "/std"+ :{sys.readdir}:# {"\.aya"|S} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
+
+"test/golf/golf_examples" load_test
 
 .# Also load and auto-run many examples
 "test/examples" load_test

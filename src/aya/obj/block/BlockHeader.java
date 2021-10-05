@@ -1,17 +1,16 @@
 package aya.obj.block;
 
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.runtime.EmptyStackError;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
-import aya.instruction.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
+import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
@@ -19,13 +18,11 @@ import aya.util.Casting;
 public class BlockHeader extends Instruction {
 	
 	private Dict _vars;
-	private HashMap<Symbol, InstructionStack> _defaults;
 	private ArrayList<BlockHeaderArg> _args;
 
 	
 	public BlockHeader(Dict vars) {
 		_vars = vars;
-		_defaults = new HashMap<Symbol, InstructionStack>();
 		_args = new ArrayList<BlockHeaderArg>();
 	}
 
@@ -40,12 +37,6 @@ public class BlockHeader extends Instruction {
 		_args.add(0, arg);
 	}
 
-	
-	public void addDefault(Symbol var, InstructionStack instructions) {
-		_defaults.put(var, instructions);
-	}
-
-	
 	public void addDefault(Symbol var, Obj value) {
 		_vars.set(var, value);
 	}
@@ -55,26 +46,6 @@ public class BlockHeader extends Instruction {
 		Dict vars = _vars.clone();
 		setArgs(_args, vars, b);
 		Aya.getInstance().getVars().add(vars);
-		evaluateDefaults(b, vars, _defaults);
-	}
-	
-	
-	private static void evaluateDefaults(Block b, Dict vars, HashMap<Symbol, InstructionStack> defaults) {
-		Block block = new Block();
-		for (HashMap.Entry<Symbol, InstructionStack> init : defaults.entrySet()) {
-			block.clear();
-			block.addAll(init.getValue().duplicate().getInstrucionList());
-			block.eval();
-			Obj o;
-			try {
-				o = block.pop();
-			} catch (EmptyStackException e) {
-				EmptyStackError ese = new EmptyStackError("Empty stack in block initializer (" + init.getValue().toString() + ")");
-				ese.addContext(b);
-				throw ese;
-			}
-			vars.set(init.getKey(), o);
-		}
 	}
 	
 	
@@ -131,29 +102,29 @@ public class BlockHeader extends Instruction {
 		return repr(stream, null);
 	}
 	
-	public ReprStream repr(ReprStream stream, ArrayList<Symbol> captures) {
+	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> defaults) {
 		for (int i = _args.size()-1; i >= 0; i--) {
 			stream.print(_args.get(i).str());
 			stream.print(" ");
 		}
 		
-		if (_vars.size() != 0 || _defaults.size() != 0 || captures != null) {
+		if (_vars.size() != 0) {
 			stream.print(": ");
 		}
 		
-		_vars.reprHeader(stream);
-		stream.print(" ");
-		
-		for (HashMap.Entry<Symbol, InstructionStack> d : _defaults.entrySet()) {
-			stream.print(d.getKey().name());
+		// Print any remaining locals not in defaults
+		for (Symbol key : _vars.keys()) {
+			stream.print(key.name());
 			stream.print("(");
-			d.getValue().repr(stream);
-			stream.print(") ");
+			_vars.get(key).repr(stream);
+			stream.print(")");
 		}
 	
-		if (captures != null) {
-			for (Symbol v : captures) {
-				stream.print(v.name() + "^ ");
+		if (defaults != null) {
+			for (Symbol v : defaults.keySet()) {
+				stream.print(v.name() + "(");
+				defaults.get(v).repr(stream, false);
+				stream.print(") ");
 			}
 		}
 
@@ -163,13 +134,32 @@ public class BlockHeader extends Instruction {
 		return stream;
 	}
 
+	/**
+	 * Output the variable set as a space separated list of name(value) items
+	 * If the value is 0, do not print the value or the parenthesis
+	 */
+	public ReprStream reprHeader(ReprStream stream) {
+		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.getMap().entrySet().iterator();
+		while (it.hasNext()) {
+			HashMap.Entry<Symbol, Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
+			stream.print(pair.getKey().name());
+
+			final Obj obj = pair.getValue();
+			if (obj.equiv(Num.ZERO)) {
+				stream.print(" ");
+			} else {
+				stream.print("(");
+				obj.repr(stream);
+				stream.print(")");
+			}
+		}
+		return stream;
+	}
+
 	public BlockHeader copy() {
 		BlockHeader b = new BlockHeader();
 		b._args = _args;
 		b._vars = Casting.asDict(_vars.deepcopy());
-		for (HashMap.Entry<Symbol, InstructionStack> d : _defaults.entrySet()) {
-			b._defaults.put(d.getKey(), d.getValue());
-		}
 		return b;
 	}
 	
