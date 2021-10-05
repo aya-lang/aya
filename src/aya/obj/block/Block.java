@@ -16,7 +16,6 @@ import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockHeader.Arg;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
@@ -147,7 +146,7 @@ public class Block extends Obj {
 		ArrayList<Symbol> list = new ArrayList<>();
 		BlockHeader header = getHeader();
 		if (header != null) {
-			for (BlockHeader.Arg arg : header.getArgs()) {
+			for (BlockHeaderArg arg : header.getArgs()) {
 				list.add(arg.var);
 			}
 		}
@@ -312,12 +311,12 @@ public class Block extends Obj {
 
 	
 	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<Arg> getArgsAndTypes() {
+	public ArrayList<BlockHeaderArg> getArgsAndTypes() {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			return header.getArgs();
 		} else {
-			return new ArrayList<BlockHeader.Arg>();
+			return new ArrayList<BlockHeaderArg>();
 		}
 	}
 

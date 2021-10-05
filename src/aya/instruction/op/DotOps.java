@@ -45,6 +45,7 @@ import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
+import aya.obj.block.BlockHeaderArg;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
@@ -1335,10 +1336,10 @@ class OP_Dot_Bar extends OpInstruction {
 	private Dict getBlockMeta(Block b) {
 		Dict d = new Dict();
 		// Arg Names
-		final ArrayList<BlockHeader.Arg> args_and_types = b.getArgsAndTypes();
+		final ArrayList<BlockHeaderArg> args_and_types = b.getArgsAndTypes();
 
 		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (BlockHeader.Arg a : args_and_types) {
+		for (BlockHeaderArg a : args_and_types) {
 			Dict arg = new Dict();
 			arg.set(SymbolConstants.NAME, a.var);
 			arg.set(SymbolConstants.TYPE, a.type);

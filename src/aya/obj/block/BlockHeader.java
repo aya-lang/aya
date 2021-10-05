@@ -18,45 +18,15 @@ import aya.util.Casting;
 
 public class BlockHeader extends Instruction {
 	
-	public static class Arg {
-		public Symbol var;
-		public Symbol type;
-		public boolean copy;
-		
-		public Arg(Symbol var) {
-			this.var = var;
-			this.type = SymbolConstants.ANY;
-			this.copy = false;
-		}
-		
-		public Arg(Symbol var, Symbol type, boolean copy) {
-			this.var = var;
-			this.type = type;
-			this.copy = copy;
-		}
-		
-		public String toString() {
-			return str();
-		}
-
-		public String str() {
-			String s = var.name() + (copy ? "$" : "");
-			if (this.type.id() != SymbolConstants.ANY.id()) {
-				s += "::" + type.name();
-			}
-			return s;
-		}
-	}
-	
 	private Dict _vars;
 	private HashMap<Symbol, InstructionStack> _defaults;
-	private ArrayList<Arg> _args;
+	private ArrayList<BlockHeaderArg> _args;
 
 	
 	public BlockHeader(Dict vars) {
 		_vars = vars;
 		_defaults = new HashMap<Symbol, InstructionStack>();
-		_args = new ArrayList<Arg>();
+		_args = new ArrayList<BlockHeaderArg>();
 	}
 
 
@@ -66,7 +36,7 @@ public class BlockHeader extends Instruction {
 
 	
 	/** Add an argument to the top of the argument stack */
-	public void addArg(Arg arg) {
+	public void addArg(BlockHeaderArg arg) {
 		_args.add(0, arg);
 	}
 
@@ -88,6 +58,7 @@ public class BlockHeader extends Instruction {
 		evaluateDefaults(b, vars, _defaults);
 	}
 	
+	
 	private static void evaluateDefaults(Block b, Dict vars, HashMap<Symbol, InstructionStack> defaults) {
 		Block block = new Block();
 		for (HashMap.Entry<Symbol, InstructionStack> init : defaults.entrySet()) {
@@ -104,7 +75,6 @@ public class BlockHeader extends Instruction {
 			}
 			vars.set(init.getKey(), o);
 		}
-		
 	}
 	
 	
@@ -136,10 +106,10 @@ public class BlockHeader extends Instruction {
 		}
 	}
 	
-	private static void setArgs(ArrayList<Arg> args, Dict vars, Block b) {
+	private static void setArgs(ArrayList<BlockHeaderArg> args, Dict vars, Block b) {
 		if (args.size() == 0) return;
 		
-		for (Arg arg : args) {
+		for (BlockHeaderArg arg : args) {
 			final Obj o = b.pop();
 			if (checkType(o, arg.type)) {
 				if (arg.copy) {
@@ -203,7 +173,7 @@ public class BlockHeader extends Instruction {
 		return b;
 	}
 	
-	public ArrayList<Arg> getArgs() {
+	public ArrayList<BlockHeaderArg> getArgs() {
 		return _args;
 	}
 

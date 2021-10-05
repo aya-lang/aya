@@ -15,6 +15,7 @@ import aya.instruction.flag.PopVarFlagInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
+import aya.obj.block.BlockHeaderArg;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
@@ -244,7 +245,7 @@ public class BlockToken extends CollectionToken {
 			Token current = tokens.next();
 			if (current.isa(Token.VAR)) {
 				VarToken var = (VarToken)current;
-				BlockHeader.Arg arg = new BlockHeader.Arg(var.getSymbol());
+				BlockHeaderArg arg = new BlockHeaderArg(var.getSymbol());
 				
 				// Copy?
 				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {

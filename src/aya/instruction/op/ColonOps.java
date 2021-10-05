@@ -34,6 +34,7 @@ import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
+import aya.obj.block.BlockHeaderArg;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -698,13 +699,6 @@ class OP_Colon_K extends OpInstruction {
 // M - 77
 class OP_Colon_M extends OpInstruction {
 	
-	private final Symbol LOCALS = Aya.getInstance().getSymbols().getSymbol("locals");
-	private final Symbol ARGS = Aya.getInstance().getSymbols().getSymbol("args");
-	private final Symbol NAME = Aya.getInstance().getSymbols().getSymbol("name");
-	private final Symbol TYPE = Aya.getInstance().getSymbols().getSymbol("type");
-	private final Symbol COPY = Aya.getInstance().getSymbols().getSymbol("copy");
-	private final Symbol ANY = Aya.getInstance().getSymbols().getSymbol("any");
-
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
@@ -734,8 +728,8 @@ class OP_Colon_M extends OpInstruction {
 	private BlockHeader headerFromDict(Dict meta) {
 		BlockHeader bh;
 
-		if (meta.containsKey(LOCALS)) {
-			Obj o = meta.get(LOCALS);
+		if (meta.containsKey(SymbolConstants.LOCALS)) {
+			Obj o = meta.get(SymbolConstants.LOCALS);
 			if (o.isa(DICT)) {
 				Dict locals = (Dict)o;
 				bh = new BlockHeader(locals);
@@ -747,13 +741,13 @@ class OP_Colon_M extends OpInstruction {
 		}
 		
 		// Args
-		if (meta.containsKey(ARGS)) {
-			Obj args = meta.get(ARGS);
+		if (meta.containsKey(SymbolConstants.ARGS)) {
+			Obj args = meta.get(SymbolConstants.ARGS);
 			if (args.isa(LIST)) {
 				List args_list = asList(args);
 				for (int i = 0; i < args_list.length(); i++) {
 					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.getExact(i));
-					bh.addArg(new BlockHeader.Arg(info.first(), info.second(), info.third()));
+					bh.addArg(new BlockHeaderArg(info.first(), info.second(), info.third()));
 				}
 			} else {
 				throw new ValueError("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
@@ -769,12 +763,12 @@ class OP_Colon_M extends OpInstruction {
 			DictReader dr = new DictReader(d);
 			dr.setErrorName("::dict ::block .M");
 			return new Triple<Symbol, Symbol, Boolean>(
-					dr.getSymbolEx(NAME),
-					dr.getSymbol(TYPE, ANY),
-					dr.getBool(COPY, false));
+					dr.getSymbolEx(SymbolConstants.NAME),
+					dr.getSymbol(SymbolConstants.TYPE, SymbolConstants.ANY),
+					dr.getBool(SymbolConstants.COPY, false));
 			
 		} else if (obj.isa(SYMBOL)) {
-			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, ANY, false);
+			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, SymbolConstants.ANY, false);
 		} else {
 			throw new ValueError("::dict ::block .M: key 'args' must be a list of dicts or symbols");
 		}
