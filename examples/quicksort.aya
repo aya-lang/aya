@@ -15,12 +15,10 @@
 
 
 .# Optimized implementation with no global vars
-{l$,
-    .# We define this function this way since the first call must copy the list
-    .# Other calls may use the reference.
-    l q
-}.where{,
-    {l : h,
+.# We define this function this way since the first call must copy the list
+.# Other calls may use the reference.
+{l$ :
+    q({l : h,
         .# If the list is more than 1 item long, perform the operation
         .#   otherwise just leave the original list on the stack
         l .E 1 > {
@@ -29,7 +27,9 @@
             .# [ sort items less than h, h, sort items larger than h]
             [l,,h:<]q h [l,,h>]q JJ
         } ?
-    }:q;
+    }),
+    
+    l q
 }:qs;
 
 lst :P
