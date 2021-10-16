@@ -48,7 +48,7 @@ def matrix::__repr__ {self,
 .# ------
 
 [
-    ::__add__ ::__sub__ ::__mul__ ::__div__
+    ::__sub__ ::__div__
     ::__pow__ ::__lt__  ::__gt__  ::__mod__
     ::__leq__ ::__geq__ ::__idiv__
 ] :# {op_sym : mp^ op_to_n op rop rop_sym,
@@ -72,6 +72,61 @@ def matrix::__repr__ {self,
 
     def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M._new}
 }
+
+def matrix ::__mul__ { other self,
+    other :T {?=,
+        ::matrix {
+            selfE otherE = {
+                other.rows self.rows {*} .& self.M._new
+            } {
+                .{ The following code does the operation:
+                    aya> x
+                    [[ 1 2 3 ]]
+                    aya> y
+                    [[ 1 ]
+                     [ 2 ]
+                     [ 3 ]]
+                    aya> x y *
+                    [[ 1 2 3 ]
+                     [ 2 4 6 ]
+                     [ 3 6 9 ]]
+                .}
+                other.rows self.rows  {{*}:*{~}O}:*{~}O self.M._new
+            } .?
+        },
+        ::num {
+            self.rows {other \*} O self.M._new
+        },
+        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
+    }
+}
+
+def matrix::__rmul__ {self n::num,
+    self.rows [n {*}].* O self.M._new
+}
+
+
+def matrix ::__add__ { other self,
+    other :T {?=,
+        ::matrix {
+            selfE otherE = {
+                other.rows self.rows {+} .& self.M._new
+            } {
+                self.rows other.rows  {{+}:*{~}O}:*{~}O self.M._new
+            } .?
+        },
+        ::num {
+            self.rows {other \+} O self.M._new
+        },
+        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
+    }
+}
+
+def matrix::__radd__ {self n::num,
+    self.rows {n +} O self.M._new
+}
+
+
 
 
 .# Unary
@@ -383,12 +438,25 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 }
 
 def matrix::__setindex__ {val ix self : r c matrix^,
-    ix.[0] :r;
-    ix.[1] :c;
+    ix :T {?=,
+        ::matrix {
+            val :T ::matrix = {
+                [ix.rows val.rows self.rows, [3|,.?] ] self.:rows;
+            } {
+                [ix.rows self.rows, [2|,val\.?] ] self.:rows;
+            } .?
+            self
+        },
+        ::list {
+            ix.[0] :r;
+            ix.[1] :c;
 
-    val mat.rows.[r].:[c];
+            val mat.rows.[r].:[c];
 
-    self
+            self
+        },
+        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
+    }
 }
 
 .##############
@@ -435,11 +503,17 @@ def matrix::__random__ {:matrix^,
 def matrix::_newfill {:matrix^, \L\Lmatrix._new}
 
 .#? [rows cols] matrix.ones\n  create a N1 by N2 matrix of ones
-def matrix::ones  ({:_newfill, ~ 1 _newfill} .where {, matrix._newfill.` :_newfill})
+def matrix::ones  {:matrix^, ~ 1 matrix._newfill} 
 
 .#? [rows cols] matrix.zeros\n  create a N1 by N2 matrix of zeros
-def matrix::zeros ({:_newfill, ~ 0 _newfill} .where {, matrix._newfill.` :_newfill})
+def matrix::zeros {:matrix^, ~ 0 matrix._newfill}
+
+.#? value::num [rows cols] matrix.full\n  create a rows x cols matrix filled with value
+def matrix::full {value::num shape::list : matrix^,
+    shape.[0] shape.[1] value matrix._newfill
+}
 
 
-.#? ::matrix.np_str\n  print the matrix in list with comma format
+
+.#? ::matrix.comma_str\n  print the matrix in list with comma format
 def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}

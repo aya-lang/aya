@@ -115,7 +115,7 @@ public abstract class Obj {
 	public static byte symToID(Symbol sym) {
 		long s = sym.id();
 		if (s == SymbolConstants.NUM.id()) {
-			return NUM;
+			return NUMBER;
 		} else if (s == SymbolConstants.BLOCK.id()) {
 			return BLOCK;
 		} else if (s == SymbolConstants.LIST.id()) {

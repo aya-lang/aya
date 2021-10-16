@@ -491,6 +491,7 @@ class OP_Divide extends OpInstruction {
 	public OP_Divide() {
 		init("/");
 		arg("NN", "divide");
+		arg("LB", "fold");
 		vect();
 		setOverload(2, "div");
 
@@ -868,7 +869,6 @@ class OP_F extends OpInstruction {
 	public OP_F() {
 		this.name = "F";
 		init("F");
-		arg("LB", "fold from right to left");
 		arg("NN", "unsigned right bitshift");
 	}
 

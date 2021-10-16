@@ -1,0 +1,56 @@
+import ::matrix
+import ::viewmat
+
+def ::julia { kwargs :
+    .# kwargs
+    width(200)
+    height(180)
+    c(:-0.4i0.6)
+    x(0)
+    y(0)
+    zoom(1)
+    max_iterations(64)
+    .# locals
+    x_width y_height
+    x_from x_to
+    y_from y_to
+    z m div_time
+    .# captures
+    matrix^,
+
+    .# set kwargs
+    kwargs~
+
+    1.5 :x_width;
+    1.5 height * width / :y_height;
+    x x_width zoom / - :x_from;
+    x x_width zoom / + :x_to;
+    y y_height zoom / - :y_from;
+    y y_height zoom / + :y_to;
+
+    [x_from x_to width.linspace ] matrix!   :x;
+    [y_from y_to height.linspace] matrix!.t :y;
+    x y :0i1 * + :z;
+
+    c zE matrix.full :c;
+    zE matrix.zeros :div_time;
+    1 zE matrix.full :m; .# mask
+
+    max_iterations .R # {i,
+        .# z[m] = z[m]**2 + c[m]
+        z 2 ^ c + z m D;
+
+        .# m[np.abs(z) > 2] = False
+        0 m z .| 2 > D;
+
+        .# div_time[m] = i
+        i div_time m D;
+    };
+
+    div_time
+}
+
+{,} julia 4 viewmat_scaled.show
+
+.# Higher resolution; may take ~20 seconds
+.# {, 400:width 360:height 130:max_iterations } julia viewmat.show

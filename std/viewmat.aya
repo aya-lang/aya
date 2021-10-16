@@ -5,6 +5,9 @@ export ::viewmat_scaled
 
 
 def ::viewmat_scaled { data scale : cvs canvas^,
+    .# special case for matrix
+    data :T ::matrix = {data.rows :data;} ?
+
     {,
         data E :height;
         data.[0] E :width;
@@ -17,6 +20,9 @@ def ::viewmat_scaled { data scale : cvs canvas^,
 }
 
 def ::viewmat { data : width height scale size viewmat_scaled^,
+    .# special case for matrix
+    data :T ::matrix = {data.rows :data;} ?
+
     data E :height;
     data.[0] E :width;
     width height .< :size;
