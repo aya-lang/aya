@@ -1,19 +1,17 @@
+import ::matrix
 import ::viewmat
 
-{ a ,
-    0 { 2^ a+ } 30 %
-}:mandl;
+400 :width;
+width 0.8* :height;
 
-0.008 :y_step;
-0.008 :x_step;
-3 :max_thresh;
+[:2 0.5 width.linspace] matrix! :x;
+[1 :1  height.linspace] matrix! .t :y;
+y :0i1 * x + :a;
 
-[1 $y_step- :1,] :# {y,
-    [:2 $x_step+ 0.5,] :# {x,
-        x y MI mandl .|
-        max_thresh .>
-    }
-}
+aE matrix.zeros :z;
 
-.# from canvas
-viewmat.show
+.# Generate the fractal
+z {2^a+} 20 % .|
+
+.# Display
+{3.>} O viewmat.show
