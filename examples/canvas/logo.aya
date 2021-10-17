@@ -10,17 +10,31 @@ import ::canvas
   width:height
 } canvas! :c;
 
-50:margin;
+60:margin;
 width 2/:center;
 50:sh; .# shape height
+27:spacing;
+125:y_start;
 
-8 canvas.cap.square canvas.join.round c.set_stroke
+10 canvas.cap.square canvas.join.round c.set_stroke
 
 {y,
   [margin center (width margin -) center margin]
   [y (y sh +) y (y sh -) y]
 }:shape;
 
-5.R :# {i,
-  100 i 20 * + shape 0 c.path
+4.R :# {i,
+  1 i 0.28 * - c.set_alpha
+  y_start i spacing * + shape 0 c.path
+  1 (i2.8+) 0.28 * - c.set_alpha
+  y_start i spacing * + shape 1 c.path
 };
+
+c.show
+
+.# Uncomment to save
+.# "images/logo.png" c.save {
+.#     "saved!"
+.# } {
+.#     "failed to save!"
+.# } .? :P

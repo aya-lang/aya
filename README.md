@@ -1,6 +1,12 @@
-# The Aya Programming Language
+<p align="center">
+  <img align="center" width="180px" src="images/logo.png" />
+</p>
 
-![Running Aya from the command line.](images/aya-demo.png)
+<h1 align="center">The Aya Programming Language</h1>
+
+<p align="center">
+  <img src="images/aya-demo.png" />
+</p>
 
 ## Features
 
