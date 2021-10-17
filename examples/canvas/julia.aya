@@ -38,13 +38,13 @@ def ::julia { kwargs :
 
     max_iterations .R # {i,
         .# z[m] = z[m]**2 + c[m]
-        z 2 ^ c + z m D;
+        z 2 ^ c + z.:[m];
 
         .# m[np.abs(z) > 2] = False
-        0 m z .| 2 > D;
+        0 m.:[z .| 2 >];
 
         .# div_time[m] = i
-        i div_time m D;
+        i div_time.:[m];
     };
 
     div_time
