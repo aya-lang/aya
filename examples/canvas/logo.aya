@@ -1,0 +1,26 @@
+import ::canvas
+
+{c.close}{;}.K
+
+300 :width;
+{, 
+  1:show
+  1:autoflush
+  width:width
+  width:height
+} canvas! :c;
+
+50:margin;
+width 2/:center;
+50:sh; .# shape height
+
+8 canvas.cap.square canvas.join.round c.set_stroke
+
+{y,
+  [margin center (width margin -) center margin]
+  [y (y sh +) y (y sh -) y]
+}:shape;
+
+5.R :# {i,
+  100 i 20 * + shape 0 c.path
+};

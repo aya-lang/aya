@@ -8,10 +8,8 @@ width 0.8* :height;
 [1 :1  height.linspace] matrix! .t :y;
 y :0i1 * x + :a;
 
-aE matrix.zeros :z;
-
 .# Generate the fractal
-z {2^a+} 20 % .|
+aE matrix.zeros {2^a+} 20 % .|
 
 .# Display
 {3.>} O viewmat.show

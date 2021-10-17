@@ -40,6 +40,10 @@ def canvas::line {xa ya xb yb self,
     xa ya xb yb self.id :{graphics.line}
 }
 
+def canvas::path {xs::list ys::list fill::num self,
+    xs ys fill self.id :{graphics.path}
+}
+
 def canvas::point {x y self,
     .#::line {, x:xa:xb y:ya:yb} self.id :{graphics.MG} ;
     x y x y self.id :{graphics.line}
@@ -61,6 +65,24 @@ def canvas::set_color {color self,
 def canvas::set_alpha {a self,
     .# ::set_alpha {, a:a } self.id :{graphics.MG} ;
     a self.id :{graphics.set_alpha}
+}
+
+def canvas::set_stroke_width {n::num self,
+    n self.id :{graphics.set_stroke_width}
+}
+
+def canvas::cap {,}
+"butt"   canvas.cap.:butt;
+"round"  canvas.cap.:round;
+"square" canvas.cap.:square;
+
+def canvas::join {,}
+"bevel" canvas.join.:bevel;
+"miter" canvas.join.:miter;
+"round" canvas.join.:round;
+
+def canvas::set_stroke {width::num cap::str join::str self,
+    width cap join self.id :{graphics.set_stroke}
 }
 
 def canvas::set_grad {start::list ca::color end::list cb::color cycle::num self,
