@@ -39,27 +39,6 @@ Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The
   - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
   - [Esolang Wiki](http://esolangs.org/wiki/Aya)
 
-## Installation
-
-Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive.
-
-Aya requires Java 8. To run the GUI, double click the jar file or run the command:
-
-```
-java -jar aya.jar
-```
-
-To run Aya interactively from the command line use `-i`
-
-```
-java -jar aya.jar -i
-```
-
-To run scripts from the command line:
-
-```
-java -jar aya.jar filename.aya
-```
 
 ## Examples
 
@@ -188,24 +167,22 @@ aya> 10 10 vec! v +
 Complex numbers are built in to aya's number system can can be used seamlessly with other numeric types. Aya also includes a graphics library. The `viewmat` module uses it to draw a 2d intensity image.
 
 ```
+import ::matrix
 import ::viewmat
 
-{ a ,
-    0 { 2^ a+ } 30 %
-}:mandl;
+400 :width;
+width 0.8* :height;
 
-0.008 :y_step;
-0.008 :x_step;
-3 :max_thresh;
+.# Create complex plane
+[:2 0.5 width.linspace] matrix! :x;
+[1 :1  height.linspace] matrix! .t :y;
+y :0i1 * x + :a;
 
-[1 $y_step- :1,] :# {y,
-    [:2 $x_step+ 0.5,] :# {x,
-        x y MI mandl .|
-        max_thresh .>
-    }
-}
+.# Generate the fractal
+a E matrix.zeros {2^a+} 20 % .|
 
-viewmat.show 
+.# Display
+{3 .>} O viewmat.show
 ```
 
 ![Mandelbrot Fractal](images/mandel.png)
@@ -280,33 +257,40 @@ plt.view
 
 ### Interactive help
 
-Add a `?` to a line comment operator `.#` to add the comment to the interactive help.
-The interactive help can be searched from within the REPL or IDE and can be used
-to document source files.
+Search the interactive help from the repl using `\? <hepl text>` or from the IDE using `Ctrl+Q`
 
 ```
-aya> .#? A help comment!\n  This comment will be added to the interactive help
-aya> \? help comment
-A help comment!
-     This comment will be added to the interactive help
-```
-
-Sample documentation from `math.aya`
-
-```
-{Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
-{{*}U}:product;     .#? L product\n  product of a list
-{.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
-{.^}:sqrt;          .#? N sqrt\n  square root
+aya> \? cosine
+MC (N) V
+     N: inverse cosine
+     overloadable: __acos__
+Mc (N) V
+     N: cosine
+     overloadable: __cos__
 ```
 
 
-# TODO
+## Installation
 
-  - *See issues page for more detailed todos*
-  - **Optimization**: Parts of the interpreter run fairly slow and can be optimized to run faster. Many operators also need to be optimized.
-  - **More Operators**: Most of the dot (`.<op>`), misc (`M<op>`), and colon (`:<op>`) operators have not yet been assigned.
-  - **Refine the Standard Library**: Debug, fix small errors, clean
+Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive.
+
+Aya requires Java 8. To run the GUI, double click the jar file or run the command:
+
+```
+java -jar aya.jar
+```
+
+To run Aya interactively from the command line use `-i`
+
+```
+java -jar aya.jar -i
+```
+
+To run scripts from the command line:
+
+```
+java -jar aya.jar filename.aya
+```
 
 ## Contributing
 
