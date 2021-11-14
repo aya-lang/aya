@@ -64,6 +64,7 @@ exportall
 {:&2^S.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}/}:product;     .#? L product\n  product of a list
 {*S}:dot;           .#? LL dot\n  dot product of a list
+{2^S.^}:norm;       .#? L norm\n compute the vector norm
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers

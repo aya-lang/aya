@@ -1,0 +1,129 @@
+import ::canvas
+import ::math
+
+.# Simple boid simulation  
+
+{c.close} {;} .K
+
+500 :width;
+500 :height;
+
+{, width:width height:height } canvas! :c;
+
+struct ::boid [ ::pos ::vel ::acc ]
+
+def boid::max_speed 6
+def boid::max_force 1
+def boid::perception 100
+
+def boid::draw {self,
+    .# Draw body
+    self.pos.x self.pos.y 4 c.fillcircle
+    .# Draw direction vector
+    self.vel [0 0] =! {
+        self.vel normal 10 * self.pos + ~
+        self.pos ~
+        c.line
+    } ?
+}
+
+def boid::update {self,
+    self.pos self.vel + self.:pos;
+    self.vel self.acc10/ + self.:vel;
+    self.edges
+
+    .# limit
+    self.vel norm self.max_speed > {
+        self.vel $ norm / self.max_speed * self.:vel;
+    } ?
+
+    [0 0] self.:acc;
+}
+
+def boid::edges {self,
+    self.pos.x width >  {0      self.pos.:[0]} ?
+    self.pos.x 0 <      {width  self.pos.:[0]} ?
+    self.pos.y height > {0      self.pos.:[1]} ?
+    self.pos.y 0 <      {height self.pos.:[1]} ?
+
+}
+
+def boid::align {boids self,
+    .# compute average velocity
+    boids#.vel S boids E /
+    .# normalize
+    $ norm / self.max_speed *
+    .# steering is this vec minus our current velocity
+    self.vel -
+}
+
+def boid::cohesion {boids self : com vec_to_com steering,
+    .# compute average position (center of mass)
+    boids#.pos S boids E / :com;
+    .# vector pointing at center of mass
+    com self.pos - :vec_to_com;
+
+    vec_to_com norm 0 > {
+        vec_to_com $ norm / self.max_speed * :vec_to_com;
+    } ?
+
+    vec_to_com self.vel - :steering;
+
+    .# limit force
+    steering norm self.max_force > {
+        steering $ norm / self.max_force * :steering;
+    } ?
+
+    steering
+}
+
+def boid::separation {boids self,
+    .# compute average distance
+    boids :# {boid,
+        self.pos boid.pos - $ norm /
+    } S boids E /
+
+    self.vel - :steering;
+
+    steering norm self.max_force > {
+        steering $ norm / self.max_force * :steering;
+    } ?
+
+    steering
+}
+
+def boid::apply_behavior {all_boids self : seen_boids,
+    .# Filter out boids it can't seet
+    all_boids {boid,
+        boid.pos self.pos - norm self.perception <
+        .# also filter out itself
+        self.pos boid.pos =!
+        &
+    } I :seen_boids;
+
+    seen_boids E 0 > {
+        .# apply rules
+        [
+            seen_boids self.align
+            seen_boids self.cohesion
+            seen_boids self.separation 5 *
+        ]
+        S self.:acc;
+    } ?
+}
+
+.# Create boids with random initial velocity
+[15,; [widthQ heightQ] [.Q.5- .Q.5-] [0 0] boid!]:boids;
+
+{
+    boids :# {boid,
+        boids boid.apply_behavior
+        boid.update
+    };
+    c.clear
+    boids#.draw;
+
+    c.show
+    20 :Z
+    c.isopen
+} W

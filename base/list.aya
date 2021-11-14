@@ -46,6 +46,11 @@
     .#? ::list .allf\n  true if all elements in list are false
     {{|}/!}:allf;
 
+    .# Vector convience functions
+    {0I}:x;
+    {1I}:y;
+    {2I}:z;
+
 
 
 
