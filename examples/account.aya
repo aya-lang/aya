@@ -1,6 +1,6 @@
 .# A basic account object
 
-class ::account
+class account
 
 .# Constructor
 def account::__init__ {name self,

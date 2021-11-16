@@ -6,7 +6,7 @@
 .{? class: color
     A module for manipulating and printing colors in Aya
 .}
-class ::color
+class color
 export ::color
 
 
@@ -184,7 +184,7 @@ def color::rgbtohsv {r g b : h s v delta maxv minv,
       colors.aqua
       colors.raspberry
 .}
-module ::colors
+module colors
 
 {,
     :{color.name_list} :# {color_name : color_dict,

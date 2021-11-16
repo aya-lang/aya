@@ -1,6 +1,6 @@
 from ::io import ::path
 
-module ::sys
+module sys
 export ::sys
 
 .#? sys.iswindows\n  returns true if system is windows

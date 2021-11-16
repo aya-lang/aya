@@ -1,4 +1,4 @@
-module ::importlib
+module importlib
 
 def importlib::_debug 0
 

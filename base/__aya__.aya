@@ -166,7 +166,7 @@
 
     Define a function in a class/struct scope:
 
-        aya> struct ::point [::x ::y]
+        aya> struct point {x y}
         aya> def point::sum {self, self.x self.y +}
         aya> 2 3 point! :p
         ( 2 3 ) point!
@@ -197,7 +197,7 @@
 .# ------
 
 
-{(2 hold)({name::sym members::list,
+{name::sym members::list,
     members $:~=!{"struct: all members must be unique in $members".D}?
 
     .# Metatable
@@ -240,15 +240,21 @@
 
 
     } name {,}:DW
-})}:struct;
+} __aya__.:_struct_impl;
+
+
+
+{ : _struct_impl(__aya__._struct_impl.`),
+    { : _struct_impl^ , :&.[0]:S~ \.[1]~.*:#{:S~} _struct_impl } 2 :`
+}:struct;
 
 
 .# ------
 .# CLASS
 .# ------
 
-.#? class ::sym\n  declare a new class
-{(1 hold)({sym,
+.#? class sym\n  declare a new class
+{sym::sym,
     {,
         sym:__type__;
         1 :__pushself__;
@@ -276,15 +282,19 @@
         }:__meta__;
     }
     sym := ; .# assign variable
-})}:class;
+} __aya__.:_class_impl;
+
+{ : _class_impl(__aya__._class_impl.`),
+    { : _class_impl^ , ~:S~ _class_impl} 1 :`
+}:class;
 
 
 .# ------
 .# MODULE
 .# ------
 
-.#? module ::sym\n  declare a new module
-{(1 hold)({name,
+.#? module sym\n  declare a new module
+{name::sym,
     {,
         name :__modname__;
 
@@ -298,8 +308,12 @@
         }:__meta__;
     }
     name := ; .# assign variable
-})}:module;
+} __aya__.:_module_impl;
 
+
+{ : _module_impl(__aya__._module_impl.`),
+    { : _module_impl^ , ~:S~ _module_impl} 1 :`
+}:module;
 
 
 .###########

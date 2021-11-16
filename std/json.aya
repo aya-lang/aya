@@ -1,6 +1,6 @@
 import ::io
 
-module ::json
+module json
 export ::json
 
 def json::loads {:{json.loads}}

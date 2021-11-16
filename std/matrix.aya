@@ -1,6 +1,6 @@
 import ::mp
 
-class ::matrix
+class matrix
 export ::matrix
 
 .# Test if list is a valid matrix

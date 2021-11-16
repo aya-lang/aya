@@ -123,7 +123,7 @@ Same algorithm using more verbose syntax
 Type definition:
 
 ```
-struct ::vec [::x ::y]
+struct vec {x y}
 
 .# Member function
 def vec::len {self,

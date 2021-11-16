@@ -2,7 +2,7 @@ import ::color
 
 export ::canvas
 
-class ::canvas
+class canvas
 
 def canvas::__init__ {params::dict self : color^,
 

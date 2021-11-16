@@ -9,7 +9,7 @@
 .}
 
 
-class ::set
+class set
 export [::set ::s]
 
 def set::__init__ {l::list self,

@@ -29,7 +29,9 @@ def foo::.+ { }
 def foo:::+ { }
 def foo::M+ { }
 
-class ::point [::x ::y]
+class point
+
+struct point {x y}
 
 ." :" "str"
 .' :' 'c 'b

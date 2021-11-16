@@ -1,7 +1,7 @@
 .# Binary Search Tree Implementation
 .# @nick-paul
 
-class ::bst
+class bst
 
 
 def bst::__init__ {data self,

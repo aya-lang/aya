@@ -212,7 +212,7 @@ aya> point.add
 Metatables can be used to create user-defined types. The `struct` macro creates a `point` metatable. The `!` operator calls the `point` constructor which creates a new table with `x` and `y` values and sets itself as the new table's metatable. *See the wiki for more details.*
 
 ```
-aya> struct ::point [::x ::y]
+aya> struct point {x y}
 aya> 3 4 point! :p
 ( 3 4 ) point!
 aya> [1 "hello" p] #:T

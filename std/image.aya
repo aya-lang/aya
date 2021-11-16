@@ -1,9 +1,9 @@
 from ::io import ::path
 
-module ::image
+module image
 export ::image
 
-class ::image
+class image
 
 def image::__init__ {data width height self,
     data self.:data;

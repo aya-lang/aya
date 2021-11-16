@@ -3,7 +3,7 @@
 
 from ::math import ::cumsum
 
-struct ::dna [::data ::fitness]
+struct dna {data fitness}
 
 .# Random character between 'a and 'z
 {26Q'a+}:new_char;
@@ -40,7 +40,7 @@ def dna::__eq__ {other self,
 }:crossover;
 
 
-struct ::population [::pop ::pop_fitness]
+struct population { pop pop_fitness }
 
 .# Generate a random population
 {pop_size dna_size,

@@ -5,10 +5,10 @@ import ::canvas
 
 
 .# Vector used for physics calculations
-struct ::vector [
-    ::x
-    ::y
-]
+struct vector {
+    x
+    y
+}
 
 def vector::__add__{other self,
     other.x self.x +
@@ -23,12 +23,12 @@ def vector::__rmul__{self n,
 }
 
 
-struct ::particle [
-    ::pos   .# vector
-    ::vel   .# vector
-    ::acc   .# vector
-    ::life  .# num (0-255)
-]
+struct particle {
+    pos   .# vector
+    vel   .# vector
+    acc   .# vector
+    life  .# num (0-255)
+}
 
 
 .# Create a particle from a vector

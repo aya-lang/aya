@@ -37,7 +37,7 @@ https://codegolf.stackexchange.com/questions/101684/all-aboard-the-ascii-train
 })
 .}
 
-class ::asciiart
+class asciiart
 export [::asciiart ::_]
 
 def asciiart::__init__ {str self,

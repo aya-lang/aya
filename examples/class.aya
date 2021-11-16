@@ -1,7 +1,7 @@
 .# Example of defning a class using the `class` keywords
 .# See also: examples/account.aya
 
-class ::point
+class point
 
 .# constructor
 def point::__init__ {x y self,

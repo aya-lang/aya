@@ -1,6 +1,6 @@
-class ::plot
-class ::multiplot
-class ::dataset
+class plot
+class multiplot
+class dataset
 
 .# If true, the view command will not open windows
 .# Generally useful is running tests

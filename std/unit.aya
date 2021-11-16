@@ -84,7 +84,7 @@
         super_type super.:__type__;
     })}:extends
 
-    class ::time
+    class time
 
     def time::__init__ {n self,
         n self._to_sec self.:s;
@@ -113,14 +113,14 @@
     }
 
 
-    class ::minute
+    class minute
 
     minute extends time
 
     def minute::scale_factor 60
 
 
-    class ::hour
+    class hour
 
     hour extends time
 

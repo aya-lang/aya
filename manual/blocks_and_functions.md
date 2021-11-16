@@ -83,7 +83,7 @@ Arguments may have type assertions. Write a variable name followed by a symbol c
 If a user defined type defines a `__type__` key as a symbol in an objects meta, the symbol will be used for type assertions. This is done by defauld by `class` and `struct`. (See user types for more information).
 
 ```
-struct ::point [::x ::y]
+struct point {x y}
 
 {p::point,
     p.x p.y +

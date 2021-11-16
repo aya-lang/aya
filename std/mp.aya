@@ -2,7 +2,7 @@
 
 .# Metaprogramming utilities
 
-module ::mp
+module mp
 export ::mp
 
 .#? ::list mp.capture_vars\n  given a list of symbols, return a dict with each symbol and

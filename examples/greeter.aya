@@ -1,7 +1,7 @@
 .# Modeled after the greeter class from
 .# https://www.ruby-lang.org/en/
 
-class ::greeter
+class greeter
 
 def greeter::__init__ {name self,
     name.titlecase self.:name;

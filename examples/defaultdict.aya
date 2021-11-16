@@ -1,7 +1,7 @@
 .# Dictionary where indexing missing keys, the default value is returned
 .# Must use "d.[::key]" syntax not "d.key" as d.key is not overloadable
 
-class ::defaultdict
+class defaultdict
 
 def defaultdict::__init__ {dict default self,
     dict self.:dict;

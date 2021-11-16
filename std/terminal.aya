@@ -1,6 +1,6 @@
 import ::color
 
-module ::terminal
+module terminal
 export ::terminal
 
 def terminal::fg (color.colors.white)

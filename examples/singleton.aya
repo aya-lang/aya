@@ -1,6 +1,6 @@
 import ::missing
 
-class ::singleton
+class singleton
 
 nil singleton.:_instance;
 

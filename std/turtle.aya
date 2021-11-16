@@ -19,7 +19,7 @@ import ::canvas
 import ::color
 
 export ::turtle
-class ::turtle
+class turtle
 
 color.colors.white :c_white;
 color.colors.black :c_black;

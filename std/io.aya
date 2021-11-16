@@ -8,7 +8,7 @@ export [
 def ::iswindows {:9s"\\"=}
 
 
-class ::path
+class path
 
 .# Create a new path (accepts relative or abs paths)
 .# Custom constructor
@@ -172,7 +172,7 @@ iswindows {:9s$+} {:9s} .? path.:filesplit;
 .# FILE             #
 .####################
 
-class ::file
+class file
 
 def file::__init__ {filepath type::char  self : path^,
     .# save a copy of the path
@@ -295,7 +295,7 @@ def file::_do {blk__::block self__,
 
 .# dummyfile for testing opening and closing of input streams
 
-class ::dummyfile
+class dummyfile
 export ::dummyfile
 
 def dummyfile::__init__ {name self,

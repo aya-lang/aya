@@ -8,7 +8,7 @@
     all functions in this module are shortcuts for the :{dialog.legacy} operator
 .}
 
-module ::dialog
+module dialog
 export ::dialog
 
 

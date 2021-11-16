@@ -5,9 +5,13 @@
 
 export [::socket ::socket_server]
 
-struct ::socket [::_sock]
+struct socket {
+    _sock
+}
 
-struct ::socket_server  [::_srv]
+struct socket_server {
+    _srv
+}
 
 def socket_server::accept {self : socket^,
     self._srv :{socket.accept} socket!

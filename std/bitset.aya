@@ -3,7 +3,7 @@
 .# bitset.aya
 .# Defines bitset type
 
-class ::bitset
+class bitset
 export ::bitset
 
 def bitset::__new__ {s meta,

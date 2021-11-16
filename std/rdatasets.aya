@@ -1,7 +1,7 @@
 import ::csv
 
 
-module ::rdatasets
+module rdatasets
 export ::rdatasets
 
 def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/datasets.csv"

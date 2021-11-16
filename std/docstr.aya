@@ -9,7 +9,7 @@
 
 
 
-class ::docstr
+class docstr
 
 def docstr::__init__ {name string::str self,
     .# If single item in a list, unwrap the list
@@ -59,7 +59,7 @@ def docstr::_parse {self : m("@.+:\n") d keys vals,
 }
 
 .# Inner class
-docstr {, class ::arg} .+;
+docstr {, class arg} .+;
 
 def (docstr.arg)::__init__ {name desc self,
     name.[0] ': = self.:is_stack_arg;
@@ -240,7 +240,7 @@ def docstr::__repr__ {self,
 })}:help;
 
 .{
-struct ::example [::a ::b]
+struct example {a b}
 
 doc [example::variable] """
     Some description of the variable or function

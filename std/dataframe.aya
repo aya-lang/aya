@@ -1,6 +1,6 @@
 import ::csv
 
-class ::dataframe
+class dataframe
 export ::dataframe
 
 def dataframe::__init__ {kwargs::dict self :

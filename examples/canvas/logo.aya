@@ -3,7 +3,7 @@ import ::canvas
 {c.close}{;}.K
 
 300 :width;
-{, 
+{,
   1:show
   1:autoflush
   width:width

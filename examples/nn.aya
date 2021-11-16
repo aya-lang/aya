@@ -5,7 +5,7 @@ import ::matrix
 {:& 1\- *}:dsigmoid;
 
 .# Neural Net class
-class ::nn
+class nn
 
 def nn::__init__ {x y self,
     x self.:input;

@@ -8,7 +8,7 @@
       and mixed data types as the key.
 .}
 
-class ::map
+class map
 export ::map
 
 def map::__init__ {self,

@@ -1,4 +1,4 @@
-struct ::exception [::msg ::type]
+struct exception {msg type}
 
 def exception::__repr__ {self,
     "$(self.type :C): $(self.msg)"

@@ -11,7 +11,7 @@
 .}
 
 
-class ::stack
+class stack
 export ::stack
 
 

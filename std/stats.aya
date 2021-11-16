@@ -1,6 +1,6 @@
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
-module ::stats
+module stats
 export ::stats
 
 from ::math import ::cumsum

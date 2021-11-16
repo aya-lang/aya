@@ -10,7 +10,7 @@ import ::math
 
 {, width:width height:height } canvas! :c;
 
-struct ::boid [ ::pos ::vel ::acc ]
+struct boid { pos vel acc }
 
 def boid::max_speed 6
 def boid::max_force 1

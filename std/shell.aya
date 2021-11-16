@@ -4,7 +4,7 @@ import ::sys
 import ::io
 import ::terminal
 
-struct ::shellresult [::value]
+struct shellresult {value}
 
 def shellresult::__repr__ {self,
     self.value
@@ -15,7 +15,7 @@ def shellresult::lines {self,
 }
 
 
-module ::shell_impl
+module shell_impl
 
 def shell_impl::grep {res::shellresult rgx::str : shellresult^ ,
     res.lines {rgx &E0>} I
