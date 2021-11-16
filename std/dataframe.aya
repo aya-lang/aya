@@ -178,6 +178,25 @@ def dataframe::__str__ {self : max_idx_len,
     .matstr
 }
 
+def dataframe::to_html {kwargs::dict self : noindex(0) data style("") border(0),
+    kwargs ~
+    df._data :data;
+    noindex ! {
+        df._index df._data {J} .& :data;
+    } ?
+
+    [] :out;
+    "<table style=\"$style\" border=\"$border\">" out.B;
+    data :# {row,
+        "<tr>" out.B;
+        row :# {x, "<td>$x</td>" out.B } ;
+        "</tr>" out.B;
+    } ;
+    "</table>" out.B;
+
+    out S
+}
+
 
 def dataframe::_repr_lines {s : lines,
     s.lines :lines;

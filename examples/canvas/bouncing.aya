@@ -1,15 +1,9 @@
 import ::canvas
-import ::color
-
-{c.close} {;} .K
 
 .# Initialize the canvas
 400:w;
 300:h;
 {, w:width h:height "Bouncing":name } canvas! :c;
-color.colors.white c.set_bg
-color.colors.white 0.5* c.set_color
-
 
 
 30:rad;
@@ -41,3 +35,5 @@ color.colors.white 0.5* c.set_color
     .# Check if the window is open
     c.isopen
 } W
+
+c.close

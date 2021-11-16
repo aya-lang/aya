@@ -12,6 +12,7 @@ def ::viewmat_scaled { data scale : cvs canvas^,
         data E :height;
         data.[0] E :width;
         scale :scale;
+        "viewmat" :name;
     } canvas! :cvs;
 
     data cvs.viewmat

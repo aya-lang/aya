@@ -2,9 +2,6 @@ import ::matrix
 import ::golf
 import ::viewmat
 
-.# if there is a canvas open from the previous run, close it
-{cvs.close} {;} .K
-
 .# Life function
 .# Algorithm based off the APL implementation here:
 .# https://www.youtube.com/watch?v=a9xAKttWgP4
@@ -24,3 +21,5 @@ mat {
     10 :Z
     cvs.isopen
 } W
+
+cvs.close

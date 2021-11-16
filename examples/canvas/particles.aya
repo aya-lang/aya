@@ -1,28 +1,5 @@
 import ::canvas
 
-.# Close the open canvas if there is one
-{c.close} {;} .K
-
-
-.# Vector used for physics calculations
-struct vector {
-    x
-    y
-}
-
-def vector::__add__{other self,
-    other.x self.x +
-    other.y self.y +
-    self.M!
-}
-
-def vector::__rmul__{self n,
-    self.x n *
-    self.y n *
-    self.M!
-}
-
-
 struct particle {
     pos   .# vector
     vel   .# vector
@@ -34,7 +11,7 @@ struct particle {
 .# Create a particle from a vector
 .# Use the input vector as the position
 def ::from_vec {pos : p,
-    0 0 vector! $ $ 255 particle! :p;
+    [0 0] $ $ 255 particle! :p;
     pos p.reset
     p
 }
@@ -52,15 +29,15 @@ def particle::update {self,
 .# Draw the particle on the canvas
 def particle::draw {self,
     self.life 255/ c.set_alpha
-    self.pos.x self.pos.y 4 c.fillcircle
+    self.pos.x self.pos.y 3 c.fillcircle
 }
 
 .# Set the particle to the given location and
 .# randomize the velocity
 def particle::reset {pos self,
     pos self.:pos;
-    .Q2*1- .Q2*2- vector! self.:vel;
-    0 0.05 vector! self.:acc;
+    [.Q2*1- .Q2*2-] self.:vel;
+    [0 0.05] self.:acc;
     255 self.:life;
 }
 
@@ -73,7 +50,7 @@ def particle::dead {self,
 .# Create a new canvas
 {, "Particles":name 0:autoflush } canvas! :c;
 .# The spawn location of the particles
-200 100 vector! :origin;
+[200 100] :origin;
 .# Array of particles
 [500,; origin from_vec]:particles;
 .# Initialize all lifetimes
@@ -94,3 +71,5 @@ particles :# {255Q \.:life};
     10:Z
     c.isopen
 } W
+
+c.close

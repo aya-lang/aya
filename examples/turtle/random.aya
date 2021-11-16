@@ -10,19 +10,19 @@ import ::color
 .# The canvas to pass to the turtle
 {, 500:width; 500:height; } canvas! :cvs;
 
-def ::newimage { :
-    cvs^
-    t( {, cvs :canvas; "#444" color.fromstr :bg_color; } turtle! )
-    c( 360Q 1.0 1.0 color.newhsv )
-    .# Random number between 60 and 190
-    dtheta( 60 190 \$@\-Q+ )
-    dstep( .Q )
-    n( 0 )
-    shift( .Q ),
+def ::newimage { : cvs^ ,
 
+    {, cvs :canvas; "#444" color.fromstr :bg_color; } turtle! :t;
+    .# random bright color
+    360Q 1.0 1.0 color.newhsv :c;
+    .# Random number between 60 and 190
+    60 190 \$@\-Q+ :dtheta;
+    .Q :dstep;
+    0 :n;
+    .Q :shift;
     {
         shift c.hueshift :c;
-        c t.pencolor 
+        c t.pencolor
         n dstep + :n;
         dtheta t.right
         n t.fd

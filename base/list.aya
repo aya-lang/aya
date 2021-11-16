@@ -46,12 +46,13 @@
     .#? ::list .allf\n  true if all elements in list are false
     {{|}/!}:allf;
 
-    .# Vector convience functions
-    {0I}:x;
-    {1I}:y;
-    {2I}:z;
-
-
+    .# Convenience functions for using a list as a vector
+    {.[0]}:x;
+    {.[1]}:y;
+    {.[2]}:z;
+    {.:[0]}:setx;
+    {.:[1]}:sety;
+    {.:[2]}:setz;
 
 
     .# Manipulation

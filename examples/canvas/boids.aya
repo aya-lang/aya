@@ -1,14 +1,12 @@
 import ::canvas
 import ::math
 
-.# Simple boid simulation  
-
-{c.close} {;} .K
+.# Simple boid simulation
 
 500 :width;
 500 :height;
 
-{, width:width height:height } canvas! :c;
+{, width:width height:height "Boids":name } canvas! :c;
 
 struct boid { pos vel acc }
 
@@ -18,10 +16,10 @@ def boid::perception 100
 
 def boid::draw {self,
     .# Draw body
-    self.pos.x self.pos.y 4 c.fillcircle
+    self.pos.x self.pos.y 3 c.fillcircle
     .# Draw direction vector
     self.vel [0 0] =! {
-        self.vel normal 10 * self.pos + ~
+        self.vel normal :10 * self.pos + ~
         self.pos ~
         c.line
     } ?
@@ -41,10 +39,10 @@ def boid::update {self,
 }
 
 def boid::edges {self,
-    self.pos.x width >  {0      self.pos.:[0]} ?
-    self.pos.x 0 <      {width  self.pos.:[0]} ?
-    self.pos.y height > {0      self.pos.:[1]} ?
-    self.pos.y 0 <      {height self.pos.:[1]} ?
+    self.pos.x width >  {0      self.pos.setx} ?
+    self.pos.x 0 <      {width  self.pos.setx} ?
+    self.pos.y height > {0      self.pos.sety} ?
+    self.pos.y 0 <      {height self.pos.sety} ?
 
 }
 
@@ -127,3 +125,5 @@ def boid::apply_behavior {all_boids self : seen_boids,
     20 :Z
     c.isopen
 } W
+
+c.close

@@ -1,6 +1,5 @@
 import ::canvas
 
-{c.close}{;}.K
 
 300 :width;
 {,
@@ -38,3 +37,5 @@ c.show
 .# } {
 .#     "failed to save!"
 .# } .? :P
+
+c.wait

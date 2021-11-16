@@ -54,7 +54,7 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
     params.canvas nil = {
         params.width self.:_w;
         params.height self.:_h;
-        {, self._w:width self._h:height} canvas! self.:_cvs;
+        {, self._w:width self._h:height "Turtle":name } canvas! self.:_cvs;
     } {
         params.canvas self.:_cvs;
         self._cvs.width self.:_w;
@@ -67,8 +67,11 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
 
     params.fg_color self._cvs.set_color
 
-    1 self.:_pen_down
+
+    1 self.:_pen_down;
     params.autodraw self.:_autodraw;
+
+
 }
 
 def turtle::__repr__ {self,
@@ -120,11 +123,11 @@ def turtle::close {self,
 .###############
 
 def turtle::pendown {self,
-    1 self.:_pen_down
+    1 self.:_pen_down;
 }
 
 def turtle::penup {self,
-    0 self.:_pen_down
+    0 self.:_pen_down;
 }
 
 def turtle::isdown {self,

@@ -136,3 +136,8 @@ def canvas::clear {self,
 def canvas::viewmat {data self,
     data self.id :{graphics.viewmat}
 }
+
+.# Block until the canvas is closed
+def canvas::wait {self,
+    { 100:Z self.isopen } W
+}
