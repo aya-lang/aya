@@ -28,6 +28,10 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 		
 	public Str(String s) {
+		if (s == null)
+		{
+			throw new RuntimeException("Input value for aya.Str is null!");
+		}
 		_str = s;
 	}
 	

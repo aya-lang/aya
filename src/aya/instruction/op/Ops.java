@@ -1265,8 +1265,8 @@ class OP_N extends OpInstruction {
 	
 	public OP_N() {
 		init("N");
-		arg("SS|LA", "return index of first occurance, -1 if not found");
-		arg("DJ|DS", "contains key");
+		arg("SS|LA", "return index of first occurance, -1 if not found; keep list on stack");
+		arg("DJ|DS", "contains key; keep dict on stack");
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.Aya;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
+import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 
@@ -120,13 +121,22 @@ public class OpDoc {
 	public Dict toDict() {
 		Dict d = new Dict();
 		
+		d.set(SymbolConstants.NAME, List.fromString(_name));
+		d.set(SymbolConstants.OPTYPE, typeSymbol());
+		String overload = _overload;
+		if (overload == null) overload = "";
+		d.set(SymbolConstants.OVERLOAD, List.fromString(overload));
+		d.set(SymbolConstants.VECTORIZED, Num.fromBool(_vectorized));
+		
+		Dict ops = new Dict();
 		for (OpDesc desc : descs) {
 			String[] strs = desc.types.split("\\|");
 			for (String s : strs) {
 				Symbol sym = Aya.getInstance().getSymbols().getSymbol(s);
-				d.set(sym, List.fromString(desc.desc));
+				ops.set(sym, List.fromString(desc.desc));
 			}
 		}
+		d.set(SymbolConstants.OPS, ops);
 		
 		return d;
 	}

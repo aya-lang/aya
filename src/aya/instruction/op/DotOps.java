@@ -84,7 +84,7 @@ public class DotOps {
 		/* 43 +  */ new OP_Dot_Plus(),
 		/* 44 ,  */ null,
 		/* 45 -  */ new OP_Dot_Minus(),
-		/* 46 .  */ null,
+		/* 46 .  */ null, // Reserved
 		/* 47 /  */ new OP_Dot_FwdSlash(),
 		/* 48 0  */ null, //Number Literal
 		/* 49 1  */ null, //Number Literal
@@ -605,7 +605,7 @@ class OP_Dot_LessThan extends OpInstruction {
 		init(".<");
 		arg("LN", "head / pad 0");
 		arg("SN", "head / pad ' '");
-		arg("NN|SS|CC", "lesser of");
+		arg("NN|SS|CC", "greater of");
 		setOverload(-1, "head");
 	}
 
@@ -650,7 +650,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 		init(".>");
 		arg("LN", "tail / pad 0");
 		arg("SN", "tail / pad ' '");
-		arg("NN|CC|SS", "greater of");
+		arg("NN|CC|SS", "lesser of");
 		setOverload(-1, "tail");
 
 	}
@@ -1095,7 +1095,7 @@ class OP_Dot_N extends OpInstruction {
 
 	public OP_Dot_N() {
 		init(".N");
-		arg("LB", "return the index of the first element of L that satifies E");
+		arg("LB", "return the index of the first element of L that satifies E; keep list on stack");
 	}
 
 	@Override

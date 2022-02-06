@@ -143,7 +143,7 @@ def dataframe::row {(1 hold)({self index : data,
 .}
 def dataframe::filter_on_col {column condition self : colindex,
     column self._get_col_index :colindex;
-    df.row[ { .[colindex] condition } ]
+    self.row[ { .[colindex] condition } ]
 }
 
 
@@ -180,9 +180,9 @@ def dataframe::__str__ {self : max_idx_len,
 
 def dataframe::to_html {kwargs::dict self : noindex(0) data style("") border(0),
     kwargs ~
-    df._data :data;
+    self._data :data;
     noindex ! {
-        df._index df._data {J} .& :data;
+        self._index self._data {J} .& :data;
     } ?
 
     [] :out;
