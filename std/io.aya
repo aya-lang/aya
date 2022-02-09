@@ -85,10 +85,7 @@ def path::working {:path^,
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
 def path::_split {dir::str : path^,
-    .# Split using system sep
-    dir A :# {path.filesplit |~}
-    .# Split using "/"
-    :# {"/"|~}
+    dir "\\"|#{"/"|~}
     .# Remove empties
     [""] :|
 }
