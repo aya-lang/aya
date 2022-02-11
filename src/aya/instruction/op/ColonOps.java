@@ -29,6 +29,7 @@ import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
+import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
@@ -153,7 +154,7 @@ public class ColonOps {
 		/* 122 z */ null, // Assignment
 		/* 123 { */ null, // Named instructions
 		/* 124 | */ new OP_SetMinus(),
-		/* 125 } */ null,
+		/* 125 } */ new OP_WrapInBlock(),
 		/* 126 ~ */ new OP_Colon_Tilde()
 	};
 	
@@ -1048,6 +1049,23 @@ class OP_SetMinus extends OpInstruction {
 		}
 	}
 }
+
+// } - 125
+class OP_WrapInBlock extends OpInstruction {
+	
+	public OP_WrapInBlock() {
+		init(":}");
+		arg("A", "wrap in block");
+	}
+
+	@Override
+	public void execute(final Block block) {
+		Block b = new Block();
+		b.add(new DataInstruction(block.pop()));
+		block.push(b);
+	}
+}
+
 
 // ~ - 126
 class OP_Colon_Tilde extends OpInstruction {
