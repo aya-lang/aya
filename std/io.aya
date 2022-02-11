@@ -145,11 +145,7 @@ def path::_clean {dirs::list : path^ i(0),
 .#
 
 .#? path.root\n  root dir name
-iswindows {
-    "C:"
-} {
-    ""
-} .? path.:root;
+"user.dir" :{sys.getprop} :9s |.[0] path.:root;
 
 
 .# Regular expression used for splitting path strings
