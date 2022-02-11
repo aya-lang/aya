@@ -39,14 +39,16 @@ def path::isfile {self,
 
 .#? ::str ::path.add\n  append file or dir to path, if path is file, don't change
 def path::__add__ {dir::str self,
-    .# Modify a copy of this path
-    self $ :self; ;
     .# Can only join if the path is not a file
-    self.isfile ! {
-        self.dirs dir path._split K
-        path._clean ;
-    } ?
-    self
+    self.isfile ! { : newpath ,
+        .# Make a copy of this path
+        self $ :newpath; ;
+        newpath.dirs dir path._split J
+        path._clean newpath.:dirs;
+        newpath
+    } {
+        self
+    }.?
 }
 
 def path::__radd__ {\.__add__}
@@ -119,7 +121,7 @@ def path::_isabs {p::str : path^,
 .# Remove all ".." by traversing the directories
 def path::_clean {dirs::list : path^ i(0),
     .# Remove root and self refs (".")
-    dirs [path.root "."] :| ;
+    dirs [path.root "."] :| :dirs;
 
     .# If there is a ".." remove the dir before it
     {{
