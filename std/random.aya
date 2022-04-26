@@ -9,3 +9,8 @@ export ::random
 def random::lotto {
     \.EV@L#QI
 }
+
+.#? lo::num hi::num random.randint\n  random integer between lo and hi
+def random::randint {
+    \$@\-Q+
+}

@@ -1,0 +1,103 @@
+import ::math
+import ::canvas
+import ::color
+import ::random
+
+color.colors.black :black;
+color.colors.white :white;
+
+"running!":P
+1 :g;
+
+.# Mover
+.########
+
+class mover
+
+def mover::__init__ {x y mass self,
+  [x y]       self.:pos;
+  [.Q .Q] 2 * self.:vel;
+  [0 0]       self.:acc;
+  mass        self.:mass;
+  mass .^ 2 * self.:r;
+}
+
+def mover::apply_force {force self : f,
+  force self.mass / self.acc + self.:acc;
+}
+
+def mover::update {self,
+  self.vel self.acc + self.:vel;
+  self.pos self.vel + self.:pos;
+  [0 0] self.:acc;
+}
+
+def mover::show {self,
+  (self.pos.x, self.pos.y, self.r 0.5 *) cvs.fillcircle
+}
+
+.# Attractor
+.############
+
+class attractor
+
+def attractor::__init__ {x y mass self,
+  [x y]       self.:pos;
+  mass        self.:mass;
+  mass .^ 3 * self.:r;
+}
+
+def attractor::attract {mover self : force dist_sq,
+  self.pos mover.pos - normal mover.apply_force
+}
+
+def attractor::show {self,
+  self.pos.x self.pos.y self.r cvs.fillcircle
+}
+
+.# Run Loop
+.###########
+
+{, "Attractor":name 0:autoflush } canvas! :cvs;
+
+.# Create list of movers
+[50,;
+    0 cvs.width random.randint
+    0 cvs.width random.randint
+    3 20 random.randint
+    mover!
+]:ms;
+
+200 200 5 attractor! :a;
+
+.# Start with a black background
+black cvs.set_color
+0 0 cvs.width cvs.height cvs.fillrect
+
+{
+  .# Update movers
+  ms :# {m,
+    m.update
+    m a.attract
+  };
+
+  .# Use alpha for background to keep particle tails
+  black cvs.set_color
+  0.1 cvs.set_alpha
+  0 0 400 400 cvs.fillrect
+
+  .# Draw movers and attractor
+  1.0 cvs.set_alpha
+  white cvs.set_color
+  ms #.show ;
+  color.colors.red cvs.set_color
+  a.show
+  cvs.show
+
+  10:Z
+
+  cvs.isopen
+} W
+
+cvs.close
+"done!" :P
