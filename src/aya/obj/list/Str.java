@@ -214,12 +214,13 @@ public class Str extends ListImpl implements Comparable<Str> {
 
 	@Override
 	public int find(Obj o) {
+		int found = -1;
 		if (o instanceof Char) {
 			char c = ((Char)o).charValue();
-			return _str.indexOf(c);
-		} else {
-			return -1;
+			found = _str.indexOf(c);
 		}
+		if (found < 0) found = -(_str.length()+1);
+		return found;
 	}
 
 	@Override

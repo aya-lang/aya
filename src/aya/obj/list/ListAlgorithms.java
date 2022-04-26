@@ -52,6 +52,12 @@ public class ListAlgorithms {
 		}
 	}
 
+	/**
+	 * Search for an object in a list
+	 * @param list
+	 * @param o
+	 * @return The index of the first item found. If no item return -(list.length()+1)
+	 */
 	public static int find(ArrayList<? extends Obj> list, Obj o) {
 		int ix;
 		for (ix = 0; ix < list.size(); ix++) {
@@ -59,7 +65,7 @@ public class ListAlgorithms {
 				return ix;
 			}
 		}
-		return -1;
+		return -(list.size()+1);
 	}
 
 	public static int findBack(ArrayList<? extends Obj> list, Obj o) {

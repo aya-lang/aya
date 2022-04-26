@@ -22,7 +22,7 @@ G:out;
 
 .# Make sure the verse does not return an error
 .# '\;' to remove `out` string from the stack
-out "ERROR" N :1 = \; {
+out "ERROR" N 0 < \; {
   .# Trim the header
   out "[" N | \; :out;
 

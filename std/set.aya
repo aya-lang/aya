@@ -89,7 +89,7 @@ def set::__geq__ {\.__leq__}
 
 .#? ::any ::set.in\n  tests if an item is in a set
 def set::in {item self,
-    self.list item N\; :1 =!
+    self.list item N\; 0 :>
 }
 
 

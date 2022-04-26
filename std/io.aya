@@ -33,7 +33,7 @@ class path
 
 .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
 def path::isfile {self,
-    self.dirs.[:1] "." N :1 =! \;
+    self.dirs.[:1] "." N 0 :> \;
 }
 
 
@@ -99,7 +99,7 @@ def path::_fixhome {dirs::list : path^,
     dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
 
     .# Does the path contain a "~" ?
-    $:1=! {
+    $ 0 :> {
         .< U .# Take all directories before the "~" and reverse
 
         .# Append the home dir to the front

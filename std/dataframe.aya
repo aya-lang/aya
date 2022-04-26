@@ -77,7 +77,7 @@ def dataframe::read_csv {arg : dataframe^ csv^ ,
 def dataframe::_get_col_index {colname self,
     colname :T ::sym = {colname :C :colname; } ?
     self._colnames colname N\; :colindex;
-    colindex :1 = {
+    colindex 0 < {
         "Column $colname not found" .D
     } ?
     colindex

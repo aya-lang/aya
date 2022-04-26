@@ -79,7 +79,7 @@ matrix:m;
 {:;:P} "\{THORN}" := ;
 {2^} "\{sup2}" := ;
 .# ::list ::any : 1 if item is in list, 0 otherwise
-{N\;:1=!} "\{Ntilde}" := ;
+{N\;0:>} "\{Ntilde}" := ;
 .# pop font/back shortcuts
 {B\;} "\{iacute}" := ;
 {V\;} "\{igrave}" := ;
