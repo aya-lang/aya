@@ -19,14 +19,14 @@ def map::__init__ {self,
 
 .#? key map.haskey\n  true if map contains key
 def map::haskey {key self,
-    self.keys key N :1 = ! \;
+    self.keys key N 0 :> \;
 }
 
 
 .#? key value self map.put\n  put key value pair in the map
 def map::put {value key self : idx,
     self.keys key N :idx;;
-    idx :1 = {
+    idx 0 < {
         key self.keys .B;
         value self.values .B;
     } {
@@ -38,7 +38,7 @@ def map::put {value key self : idx,
 .#? key ::map.del\n  remove the key value pair from thist list
 def map::del {key self,
     .# Apply remove code only if it is in the map
-    self.keys key N $ :1 =! {
+    self.keys key N $ 0 :> {
         $@\.-;              .# remove from keys
         self.values\.-;     .# remove from values
     } {
@@ -50,7 +50,7 @@ def map::del {key self,
 .#? key map.getindex\n  get the value for the key in the map
 def map::__getindex__ {key self : idx,
     self.keys key N :idx;;
-    idx :1 = {
+    idx 0 < {
         "map does not contain key $key" .D
     } {
         self.values.[idx]

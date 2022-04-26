@@ -92,7 +92,7 @@ public class List extends Obj {
 		
 		for (int i = 0; i < length(); i++) {
 			Obj o = getExact(i);
-			if (uniq.find(o) == -1) {
+			if (uniq.find(o) < 0) {
 				out.mutAdd(o);
 			}
 		}

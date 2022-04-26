@@ -79,7 +79,7 @@ def ::clear {:terminal^, terminal.clear}
 
 
 def (__aya__.interpreter)::shell {str : cmd args,
-    str ' N $ :1 = {
+    str ' N $ 0 :> {
         ;; str~
     } {
         | trim :args; :cmd;
