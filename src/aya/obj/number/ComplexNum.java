@@ -271,7 +271,8 @@ public class ComplexNum extends Number {
 	@Override
 	public boolean equiv(Obj o) {
 		if (o instanceof ComplexNum) {
-			return ((ComplexNum)o)._val.equals(_val);
+			ComplexNum c = (ComplexNum)o;
+			return c._val.i == _val.i && c._val.r == _val.r;
 		} else if (o instanceof Number && _val.i == 0.0) {
 			return ((Number)o).toDouble() == _val.r;
 		} else {
