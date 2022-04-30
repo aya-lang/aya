@@ -681,6 +681,10 @@ public class List extends Obj {
 		return _list.find(o);
 	}
 	
+	public List findAll(Obj o) {
+		return new List(_list.findAll(o));
+	}
+	
 	/** Return the index of the last occurrence of Obj in the list */
 	public int findBack(Obj o) {
 		return _list.findBack(o);

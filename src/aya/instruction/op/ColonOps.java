@@ -106,7 +106,7 @@ public class ColonOps {
 		/* 75 K  */ new OP_Colon_K(),
 		/* 76 L  */ null,
 		/* 77 M  */ new OP_Colon_M(),
-		/* 78 N  */ null,
+		/* 78 N  */ new OP_Colon_N(),
 		/* 79 O  */ new OP_Colon_O(),
 		/* 80 P  */ new OP_Colon_P(),
 		/* 81 Q  */ null,
@@ -774,6 +774,30 @@ class OP_Colon_M extends OpInstruction {
 		}
 	}
 }
+
+// N - 79
+class OP_Colon_N extends OpInstruction {
+	
+	public OP_Colon_N() {
+		init(":N");
+		arg("LA", "find all instances of A in L");
+	}
+
+	@Override
+	public void execute (Block block) {		
+		final Obj a = block.pop(); //Item
+		final Obj b = block.peek(); //List
+
+
+		if(b.isa(Obj.LIST)) {			
+			block.push(asList(b).findAll(a));
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+
 
 
 // O - 80

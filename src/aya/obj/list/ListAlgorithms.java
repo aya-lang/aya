@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
+import aya.obj.number.Num;
+import aya.obj.number.Number;
 
 public class ListAlgorithms {
 
@@ -66,6 +68,22 @@ public class ListAlgorithms {
 			}
 		}
 		return -(list.size()+1);
+	}
+
+	/**
+	 * Search for an object in a list
+	 * @param list
+	 * @param o
+	 * @return The index of the first item found. If no item return -(list.length()+1)
+	 */
+	public static ArrayList<Number> findAll(ArrayList<? extends Obj> list, Obj o) {
+		ArrayList<Number> out = new ArrayList<Number>();
+		for (int ix = 0; ix < list.size(); ix++) {
+			if (o.equiv(list.get(ix))) {
+				out.add(Num.fromInt(ix));
+			}
+		}
+		return out;
 	}
 
 	public static int findBack(ArrayList<? extends Obj> list, Obj o) {

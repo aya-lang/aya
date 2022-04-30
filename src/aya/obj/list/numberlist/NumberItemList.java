@@ -480,6 +480,11 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
+	public NumberItemList findAll(Obj o) {
+		return new NumberItemList(ListAlgorithms.findAll(_list, o));
+	}
+
+	@Override
 	public int findBack(Obj o) {
 		return ListAlgorithms.findBack(_list, o);
 	}

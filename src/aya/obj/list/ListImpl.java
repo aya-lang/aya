@@ -92,6 +92,9 @@ public abstract class ListImpl {
 	
 	/** Return the index of the first occurrence of Obj in the list */
 	public abstract int find(Obj o);
+
+	/** Return a list of indices for each occurrence of Obj in the list */
+	public abstract ListImpl findAll(Obj o);
 	
 	/** Return the index of the last occurrence of Obj in the list */
 	public abstract int findBack(Obj o);
@@ -170,5 +173,8 @@ public abstract class ListImpl {
 	protected String repr() {
 		return repr(new ReprStream()).toStringOneline();
 	}
+
+
+
 	
 }

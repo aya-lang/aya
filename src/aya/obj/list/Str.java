@@ -14,6 +14,7 @@ import aya.obj.character.Char;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.util.Casting;
 import aya.util.StringUtils;
 
 /** Wrapper for strings */
@@ -221,6 +222,19 @@ public class Str extends ListImpl implements Comparable<Str> {
 		}
 		if (found < 0) found = -(_str.length()+1);
 		return found;
+	}
+	
+	public NumberItemList findAll(Obj o) {
+		ArrayList<Number> out = new ArrayList<Number>();
+		if (o instanceof Char) {
+			char c = Casting.asChar(o).charValue();
+			for (int i = 0; i < _str.length(); i++) {
+				if (c == _str.charAt(i)) {
+					out.add(Num.fromInt(i));
+				}
+			}
+		} 
+		return new NumberItemList(out);
 	}
 
 	@Override
