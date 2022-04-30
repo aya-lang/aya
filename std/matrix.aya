@@ -159,7 +159,7 @@ def matrix::_eq_list {l self,
 }
 
 def matrix::_eq_mat {a b,
-    aE bE =! 0 {[a.rows b.rows,.=]{&}/} .?
+    aE bE =! 0 {a.rows b.rows =} .?
 }
 
 .#? ::matrix ::matrix =\n  test if two matrices are equal
@@ -268,11 +268,11 @@ def matrix::vcat {a::matrix b::matrix,
      [ 6 4 5 ]
      [ 9 7 8 ]]
 .}
-def matrix::rotate_cols {
+def matrix::rotate_cols {:matrix^,
     .rows \ #{\.rotate} matrix._new
 }
 
-def matrix::rotate_rows {
+def matrix::rotate_rows {:matrix^,
     .rows .rotate matrix._new
 }
 
@@ -405,7 +405,7 @@ def matrix::__each__ {expr::block self,
 .# value row column matrix::_set
 .# Set the value of a location in a matrix
 def matrix::_set {value r::num c::num self,
-    value self.rows.[r].:[c];
+    value self.rows.[r].:[c]; self
 }
 
 .#? matrix::cols\n  return a copy of the matrix columns
@@ -448,12 +448,7 @@ def matrix::__setindex__ {val ix self : r c matrix^,
             self
         },
         ::list {
-            ix.[0] :r;
-            ix.[1] :c;
-
-            val mat.rows.[r].:[c];
-
-            self
+            val ix.[0] ix.[1] self._set
         },
         {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
     }
