@@ -191,7 +191,7 @@ impl docstr::show {self : builtin,
         ""
         "example:"
         2 self.sections.example.padlines
-        self.sections :K .[{builtin \N\;:1=}] :# {k,
+        self.sections :K .[{builtin \N\;0<}] :# {k,
             k :C
             2 self.sections.[k].padlines
         } ~
