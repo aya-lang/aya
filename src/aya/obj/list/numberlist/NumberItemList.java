@@ -653,7 +653,7 @@ public class NumberItemList extends NumberList {
 		//Add primes into array
 		for (int i = 2; i <= n; i++) {
 			if (flags[i-1]) {
-				primeList.add(new Num(i));
+				primeList.add(Num.fromInt(i));
 			}
 		}
 		
