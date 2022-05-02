@@ -12,7 +12,7 @@
         {+}
         aya> ::Ms .op
         {Ms}
-        aya> ::'Ms' .op
+        aya> ::"Ms" .op
         Error
     .}
 

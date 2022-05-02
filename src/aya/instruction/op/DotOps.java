@@ -72,12 +72,12 @@ public class DotOps {
 	 */
 	public static OpInstruction[] DOT_OPS = {
 		/* 33 !  */ new OP_Dot_Bang(),
-		/* 34 "  */ new OP_Dot_CastChar(),
+		/* 34 "  */ null, // String symbol literal
 		/* 35 #  */ null, //Comment
 		/* 36 $  */ new OP_Dot_Duplicate(),
 		/* 37 %  */ new OP_Dot_Percent(),
 		/* 38 &  */ new OP_Dot_And(),
-		/* 39 '  */ null, // Long symbol lookup
+		/* 39 '  */ new OP_Dot_CastChar(),
 		/* 40 (  */ new OP_Dot_OParen(),
 		/* 41 )  */ new OP_Dot_CParen(),
 		/* 42 *  */ new OP_Dot_Star(),
@@ -239,7 +239,7 @@ class OP_Dot_Bang extends OpInstruction {
 class OP_Dot_CastChar extends OpInstruction {
 
 	public OP_Dot_CastChar() {
-		init(".\"");
+		init(".'");
 		arg("N|S", "cast to char");
 		arg("L", "convert number list to string using UTF-8 encoding");
 	}

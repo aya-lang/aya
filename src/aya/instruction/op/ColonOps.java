@@ -62,12 +62,12 @@ public class ColonOps {
 	 */
 	public static OpInstruction[] COLON_OPS = {
 		/* 33 !  */ new OP_Colon_Bang(),
-		/* 34 "  */ new OP_Colon_Quote(),
+		/* 34 "  */ null, // Quoted Symbol
 		/* 35 #  */ new OP_Colon_Pound(),
 		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ new OP_Colon_Percent(),
 		/* 38 &  */ new OP_Colon_And(),
-		/* 39 '  */ null, // Quoted Symbol assignment
+		/* 39 '  */ new OP_Colon_Quote(),
 		/* 40 (  */ null, //List item assignment
 		/* 41 )  */ null,
 		/* 42 *  */ new OP_Colon_Times(),
@@ -215,8 +215,8 @@ class OP_Colon_Bang extends OpInstruction {
 class OP_Colon_Quote extends OpInstruction {
 
 	public OP_Colon_Quote() {
-		init(":\"");
-		arg("C", "ord (cast to int)");
+		init(":'");
+		arg("C", "to int");
 		arg("S", "convert a string to bytes using UTF-8 encoding");
 		arg("N", "identity; return N");
 	}

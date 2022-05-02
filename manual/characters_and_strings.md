@@ -1,4 +1,4 @@
-#Characters
+# Characters
 
 Character literals are created using single quotes. Most characters do not need closing quotes.
 

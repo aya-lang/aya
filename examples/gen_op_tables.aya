@@ -19,7 +19,7 @@ import ::dataframe
 
 {, 1:noindex } abbr_table.to_html :abbr_table_html;
 
-.# ::'N' -> "N"
+.# ::"N" -> "N"
 {:C "'" "" .&}:sym_to_str;
 
 {,
