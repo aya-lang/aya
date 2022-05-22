@@ -87,31 +87,31 @@ matrix:m;
 
 .# cdict variables
 {,
-  "()" :'(';
-  "<>" :'<';
-  "/\\":'^';
-  "{}" :'{';
-  "[]" :'[';
+  "()" :"(";
+  "<>" :"<";
+  "/\\":"^";
+  "{}" :"{";
+  "[]" :"[";
 
-  [1 2]  :'½';
-  [1 :1] :'+';
-  [:1 1] :'-';
-  [0 1]  :'.';
-  [0 0]  :'0';
-  [1 1]  :'1';
-  [2 2]  :'2';
-  360    :'3';
-  128    :'4';
-  256    :'8';
+  [1 2]  :"½";
+  [1 :1] :"+";
+  [:1 1] :"-";
+  [0 1]  :".";
+  [0 0]  :"0";
+  [1 1]  :"1";
+  [2 2]  :"2";
+  360    :"3";
+  128    :"4";
+  256    :"8";
 
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ" :'A';
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" :'B';
-  "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz" :'C';
-  "012345679" :'D';
-  "0123456789ABCDEF" :'H';
-  :-7s :'P'; .# printable ascii
-  ["QWERTYUIOP" "ASDFGHJKL" "ZXCVBNM"] :'Q';
-  "AEIOUaeiou" :'V';
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_" :'W';
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ" :"A";
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" :"B";
+  "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz" :"C";
+  "012345679" :"D";
+  "0123456789ABCDEF" :"H";
+  :-7s :"P"; .# printable ascii
+  ["QWERTYUIOP" "ASDFGHJKL" "ZXCVBNM"] :"Q";
+  "AEIOUaeiou" :"V";
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_" :"W";
 
 }:__cdict__;

@@ -123,7 +123,7 @@ public class JSONUtils {
 			}
 			return new List(arr);
 		} else if (object instanceof Integer) {
-			return new Num((Integer)object);
+			return Num.fromInt((Integer)object);
 		} else if (object instanceof Double) {
 			return new Num((Double)object);
 		} else if (object instanceof String) {

@@ -17,16 +17,12 @@ public class Symbol extends Obj {
 		return _id;
 	}
 	
-	public String rawName() {
-		return Aya.getInstance().getSymbols().getName(this);
-	}
-		
 	public String name() {
 		String s = Aya.getInstance().getSymbols().getName(this);
 		if (SymbolTable.isBasicSymbolString(s)) {
 			return s;
 		} else {
-			return StringUtils.singleQuote(s);
+			return StringUtils.quote(s);
 		}
 	}
 	

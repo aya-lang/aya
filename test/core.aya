@@ -117,6 +117,9 @@
 { {,5:x} "x" N \;} assert [1]
 { {,5:x} "y" N \;} assert [0]
 
+.# Symbols
+{ {, 1:"FOO" } ."FOO" } assert [1]
+
 .# Meta dictionaries
 
 {{, 1:a} {, 2:b} :M .a} assert [1]

@@ -174,9 +174,9 @@ public class Parser {
 						tokens.add(new KeyVarToken(varname));
 					}
 
-					else if (in.peek() == '\'') {
+					else if (in.peek() == '"') {
 						in.next(); // Skip opening '
-						String varname = parseString(in, '\'');
+						String varname = parseString(in, '"');
 						tokens.add(new KeyVarToken(varname));
 					}
 
@@ -193,9 +193,9 @@ public class Parser {
 						in.next(); // Skip the ':'
 						
 						// Quoted variable
-						if (in.peek() == '\'') {
+						if (in.peek() == '"') {
 							in.next(); // Skip open '
-							String str = parseString(in, '\'');
+							String str = parseString(in, '"');
 							tokens.add(new VarToken(str));
 						}
 					}
@@ -339,10 +339,10 @@ public class Parser {
 					if (in.peek() == ':') {
 						in.next(); // Move to the next colon
 						String sym = "";
-						if (in.hasNext() && in.peek() == '\'') {
+						if (in.hasNext() && in.peek() == '"') {
 							// Quoted symbol
 							in.next(); // Skip '
-							sym = parseString(in, '\'');
+							sym = parseString(in, '"');
 						} else {
 
 							// Fist, try to parse as simple variable
@@ -400,10 +400,10 @@ public class Parser {
 					}
 
 					// Quoted variable
-					else if (in.peek() == '\'') {
+					else if (in.peek() == '"') {
 						tokens.add(SpecialToken.COLON);
 						in.next(); // Skip open '
-						String varname = parseString(in, '\'');
+						String varname = parseString(in, '"');
 						tokens.add(new VarToken(varname));
 					}
 

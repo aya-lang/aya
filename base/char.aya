@@ -22,7 +22,7 @@
     { " \f\n\r\t\v\{x00A0}\{x2028}\{x2029}" \ N 0 :> \;}:iswhitespace;
 
     .#? C.isascii\n  test if character is ascii
-    {:" 127 <}:isascii;
+    {:' 127 <}:isascii;
 
     .#? C.isalpha\n  test if character is alphabetical
     {$ $ 'a :> \ 'z :< & \ $ 'A :> \ 'Z :< & |}:isalpha;

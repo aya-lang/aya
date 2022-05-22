@@ -146,14 +146,7 @@ public class FractionNum extends Number {
 
 	@Override
 	public Number signnum() {
-		double val = this.toDouble();
-		if (val == 0.0) {
-			return new Num(0);
-		} else if (val > 0.0) {
-			return new Num(1);
-		} else {
-			return new Num(-1);
-		}
+		return Num.fromInt(MathUtils.signnum(this.toDouble()));
 	}
 
 	@Override

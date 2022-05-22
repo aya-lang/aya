@@ -61,7 +61,7 @@
 
 
     .#? S.bytes\n  convert string to byte list
-    {:"}:bytes;
+    {:'}:bytes;
 
 
     .#? S.parsenum\n  If num, return num, else return str (rm surrounding quotes)
