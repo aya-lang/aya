@@ -26,7 +26,7 @@ import aya.util.Pair;
 
 public class BlockToken extends CollectionToken {
 	
-	public static final Obj DEFAULT_LOCAL_VAR = new Num(0);
+	public static final Obj DEFAULT_LOCAL_VAR = Num.ZERO;
 		
 	public BlockToken(String data, ArrayList<Token> col) {
 		super(Token.BLOCK, data, col);
