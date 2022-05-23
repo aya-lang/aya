@@ -95,7 +95,7 @@ def matrix ::__mul__ { other self,
             } .?
         },
         ::num {
-            self.rows {other \*} O self.M._new
+            self.rows {other *} O self.M._new
         },
         {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
     }
@@ -440,10 +440,11 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 def matrix::__setindex__ {val ix self : r c matrix^,
     ix :T {?=,
         ::matrix {
-            val :T ::matrix = {
-                [ix.rows val.rows self.rows, [3|,.?] ] self.:rows;
+            val :T ::matrix = {val.rows :val;} ?
+            val :T ::list = {
+                val self.rows ix.rows [3|,D];
             } {
-                [ix.rows self.rows, [2|,val\.?] ] self.:rows;
+                self.rows ix.rows {val @@ D} .&;
             } .?
             self
         },
