@@ -1,30 +1,57 @@
 import ::mp
 
-class matrix
-export ::matrix
+class fastmatrix
+export ::fastmatrix
+
+fastmatrix:matrix;
+
+::matrix fastmatrix.:__type__;
+
+{l::list ncols::num,
+    l [lE ncols .% ncols] L
+}:rows;
 
 .# Test if list is a valid matrix
-def matrix::_is_valid_list {m::list,
-    .# Both of the following must be true:
-    m :#{:T::list=} .allt   .# The list is made up of only other lists
-    {
-        m :#{Em0IE=} .allt  .# All of the list lengths are the same
-    } 0 .?
+def matrix::_is_valid_list {m::list ncols::num,
+    mE ncols % 0 =
 }
 
-def matrix::__init__ {input::list self,
-    input self.M._is_valid_list {
-        input self.:rows;
+def matrix::__init__ {rows::list self : ncols input,
+    rows.[0]E:ncols;
+    rows.F :input;
+    input ncols self.M._is_valid_list {
+        input  self.:_data;
+        ncols self.:_ncols;
     } {
         "$input is not a valid matrix" .D
     } .?
 }
 
+def matrix::rows {self : rows^,
+    self._data self._ncols rows
+}
+
+def matrix::_nrows {self,
+    self._dataE self._ncols .%
+}
+
 .# Use this instead of the constructor to avoid
 .# validating the list
-def matrix::_new {:matrix^,
-    {1, :rows} matrix :M
+def matrix::_new {rows::list : matrix^,
+    {,
+        rows.[0]E :_ncols
+        rows .F   :_data
+    } matrix :M
 }
+
+def matrix::_new_data {data::list ncols::num : matrix^,
+    {,
+        ncols :_ncols
+        data  :_data
+    } matrix :M
+}
+
+matrix._new_data.` :_new_data;
 
 .{ Example:
     aya> [3 3] matrixR 10^
@@ -61,23 +88,24 @@ def matrix::__repr__ {self,
     def matrix op_sym {other self : op^ rop^,
         other :T {?=,
             ::matrix {
-                other.rows self.rows op.` .& self.M._new
+                other._data self._data op self._ncols self.M._new_data
             },
             ::num {
-                self.rows :# rop.` self.M._new
+                self._data rop self._ncols self.M._new_data
             },
             { "TypeError: Invalid operation $(other:T) $(self:T) *" .D }
         }
     }
 
-    def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M._new}
+    def matrix rop_sym {self n::num : op_to_n^, self._data op_to_n self._ncols self.M._new_data}
 }
+
 
 def matrix ::__mul__ { other self,
     other :T {?=,
         ::matrix {
             selfE otherE = {
-                other.rows self.rows {*} .& self.M._new
+                other._data self._data * self._ncols self.M._new_data
             } {
                 .{ The following code does the operation:
                     aya> x
@@ -95,14 +123,14 @@ def matrix ::__mul__ { other self,
             } .?
         },
         ::num {
-            self.rows {other *} O self.M._new
+            self._data other * self._ncols self.M._new_data
         },
         {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
     }
 }
 
 def matrix::__rmul__ {self n::num,
-    self.rows [n {*}].* O self.M._new
+    self._data n * self._ncols self.M._new_data
 }
 
 
@@ -110,20 +138,20 @@ def matrix ::__add__ { other self,
     other :T {?=,
         ::matrix {
             selfE otherE = {
-                other.rows self.rows {+} .& self.M._new
+                other._data self._data + self._ncols self.M._new_data
             } {
                 self.rows other.rows  {{+}:*{~}O}:*{~}O self.M._new
             } .?
         },
         ::num {
-            self.rows {other \+} O self.M._new
+            self.rows other + self.M._new_data
         },
         {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
     }
 }
 
 def matrix::__radd__ {self n::num,
-    self.rows {n +} O self.M._new
+    self._data n + self._ncols self.M._new_data
 }
 
 
@@ -138,7 +166,7 @@ def matrix::__radd__ {self n::num,
 ] :# {sym : op,
     sym.op :op;
     def matrix sym ({
-        :& .rows op #~ \.M._new
+        :& ._data op ~ \ :&._ncols\ .M._new_data
         } {, op.`:op } .+
     )
 }
@@ -148,7 +176,7 @@ def matrix::__radd__ {self n::num,
 
 
 def matrix::_eq_num {n self,
-    self.rows n .= self.M._new
+    self._data n .= self._ncols self.M._new_data
 }
 
 def matrix::_eq_list {l self,
@@ -159,7 +187,7 @@ def matrix::_eq_list {l self,
 }
 
 def matrix::_eq_mat {a b,
-    aE bE =! 0 {a.rows b.rows =} .?
+    aE bE =! 0 {a._data b._data =} .?
 }
 
 .#? ::matrix ::matrix =\n  test if two matrices are equal
@@ -197,7 +225,7 @@ def matrix::sq { :& * }
 
 
 .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
-def matrix::issq {self, self.rowsE self.rows#E\#= {|}/}
+def matrix::issq {E{=}/}
 
 .#? ::matrix matrix.tr\n  trace of a matrix as a list
 def matrix::tr {[1|.rows$ER,VI]}
@@ -215,7 +243,7 @@ def matrix::min {.rows#.min.min}
 def matrix::norm {:& .sq .sum .^ /}
 
 .#? ::matrix.sum\n  the sum of all values in the matrix
-def matrix::sum {.rows #SS}
+def matrix::sum {._data S}
 
 .#? ::matrix.mean\n  the mean of all values in the matrix
 def matrix::mean {.E~* \.sum\/}
@@ -231,10 +259,10 @@ def matrix::dot {o self : t matrix^,
 }
 
 .#? ::matrix.r\n  number of rows
-def matrix::r {.rowsE}
+def matrix::r {._nrows}
 
 .#? ::matrix.c\n  number of cols
-def matrix::c {.rows.[0] E}
+def matrix::c {._ncols}
 
 .###################
 .# Transformations #
@@ -372,7 +400,7 @@ def matrix::pad {n::num self : r c,
 def matrix::__reverse__ {:& .rows U \.M._new}
 
 .#? ::matrix E\n  the shape of the matrix
-def matrix::__len__ {.rows.E\0IEJ}
+def matrix::__len__ {:&._ncols $ @ ._data E \ .% \ J}
 
 
 .#############
@@ -405,7 +433,12 @@ def matrix::__each__ {expr::block self,
 .# value row column matrix::_set
 .# Set the value of a location in a matrix
 def matrix::_set {value r::num c::num self,
-    value self.rows.[r].:[c]; self
+    .# Fix negative indices
+    r 0 < { self._nrows r + : r; } ?
+    c 0 < { self._ncols c + : c; } ?
+
+    value self._data.:[r self._ncols * c +]
+
 }
 
 .#? matrix::cols\n  return a copy of the matrix columns
@@ -440,12 +473,8 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 def matrix::__setindex__ {val ix self : r c matrix^,
     ix :T {?=,
         ::matrix {
-            val :T ::matrix = {val.rows :val;} ?
-            val :T ::list = {
-                val self.rows ix.rows [3|,D];
-            } {
-                self.rows ix.rows {val @@ D} .&;
-            } .?
+            val :T ::matrix = {val._data :val;} ?
+            val self._data ix._data D;
             self
         },
         ::list {

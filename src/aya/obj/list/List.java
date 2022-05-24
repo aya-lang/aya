@@ -809,35 +809,39 @@ public class List extends Obj {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {
-			int[] l_index = asList(index).toNumberList().toIntArray();
+			NumberList l_index = asList(index).toNumberList();
 
-			// If both are list, assign corresponding values to indices.
-			// wrap if needed
-			// Ex [1 2 3 4].set([1 2], ['a 'b]) = [1 'a 'b 4]
-			//    [1 2 3 4].set([1 2], ['a])    = [1 'a 'a 4]
+			// Set index with mask
 			if (item.isa(Obj.LIST)) {
 				List l_item = (List)item;
 				
 				if (l_item.length() == 0) {
-					throw new ValueError("Cannot set index of list using empty item list:\n"
+					throw new IndexError("Cannot set index of list using empty item list:\n"
 							+ "list:\t" + repr() + "\n"
 							+ "index:\t" +  index.repr() + "\n"
 							+ "items:\t" + item.repr() + "\n");
 				}
 				
-				int itlen = l_item.length();
-				int itix = 0;
-				
-				for (int i = 0; i < l_index.length; i++) {
-					itix = itix >= itlen ? 0 : itix;
-					mutSetIndexed(l_index[i], l_item.getExact(itix++));
+				if (l_item.length() == l_index.length() && l_item.length() == this.length())
+				{
+					for (int i = 0; i < l_index.length(); i++) {
+						if (l_index.get(i).bool()) {
+							this.mutSetExact(i, l_item.getExact(i));
+						}
+					}
+				} else {
+					throw new IndexError("Invalid mask index:\n"
+							+ "list:\t" + repr() + "\n"
+							+ "index:\t" +  index.repr() + "\n"
+							+ "items:\t" + item.repr() + "\n");
 				}
 			} else {
-				for (int i = 0; i < l_index.length; i++) {
-					mutSetIndexed(l_index[i], item);
+				for (int i = 0; i < l_index.length(); i++) {
+					if (l_index.get(i).bool()) {
+						this.mutSetExact(i, item);
+					}
 				}
 			}
-			
 		} 
 		else if (index.isa(Obj.BLOCK)) {
 			boolean[] truthIdxs = filterIndex(asBlock(index));
