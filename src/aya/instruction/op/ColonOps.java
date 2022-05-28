@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import aya.Aya;
+import aya.ReprStream;
 import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
@@ -29,6 +30,7 @@ import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
+import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
@@ -53,7 +55,7 @@ import aya.util.Triple;
 
 public class ColonOps {	
 	
-	public static final char FIRST_OP = '!';
+	private static final char FIRST_OP = '!';
 
 	
 	/** A list of all valid single character operations. 
@@ -179,7 +181,7 @@ public class ColonOps {
 		}
 	}
 	
-	public static OpInstruction getOpOrNull(char op) {
+	private static OpInstruction getOpOrNull(char op) {
 		if(op >= 33 && op <= 126) {
 			return COLON_OPS[op-FIRST_OP];
 		} else {
@@ -494,7 +496,57 @@ class OP_Colon_Bool extends OpInstruction {
 
 	@Override
 	public void execute (Block block) {		
-		block.push(block.pop().bool() ? Num.ONE : Num.ZERO);
+		Obj a = block.pop();
+		if (a.isa(Obj.BLOCK)) {
+			Obj result = runConditional(Casting.asBlock(a).getInstructions().getInstrucionList());
+			if (result != null) {
+				block.push(result);
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+	
+	private static boolean evalCondition(Instruction instruction) {
+		Block b = new Block();
+		b.add(instruction);
+		b.eval();
+		if (!b.getStack().isEmpty()) {
+			return b.pop().bool();
+		} else {
+			ReprStream rs = new ReprStream();
+			instruction.repr(rs);
+			throw new TypeError("Condition did not return a result: " + rs.toString());
+		}
+	}
+	
+	private static Obj evalResult(Instruction instruction) {
+		Block b = new Block();
+		if (instruction instanceof BlockLiteralInstruction) {
+			b.addAll(((BlockLiteralInstruction)instruction).getBlock().getInstructions().getInstrucionList());
+		} else {
+			b.add(instruction);
+		}
+		b.eval();
+		if (!b.getStack().isEmpty()) {
+			return b.pop();
+		} else {
+			return null;
+		}
+	}
+	
+	private static Obj runConditional(ArrayList<Instruction> instructions) {
+		int i;
+		for (i = instructions.size()-1; i > 0; i-=2) {
+			if (evalCondition(instructions.get(i))) {
+				return evalResult(instructions.get(i-1));
+			}
+		}
+		if (i == 0) {
+			return evalResult(instructions.get(i));
+		} else {
+			return null;
+		}
 	}
 }
 
