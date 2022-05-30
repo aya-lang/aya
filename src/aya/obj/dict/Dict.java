@@ -6,13 +6,16 @@ import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Callable;
+import aya.util.Casting;
 import aya.util.Pair;
+import aya.util.Sym;
 /**
  * A set of key-value pairs accessible as a runtime object
  * @author Nick
@@ -25,29 +28,16 @@ public class Dict extends Obj {
 	private Dict _meta; // Quick lookup for meta
 
 	/** Create a new empty dict, use the input dict as the metatable */
-	public Dict(HashMap<Symbol, Obj> vars, Dict metatable) {
+	private Dict(HashMap<Symbol, Obj> vars, Dict metatable) {
 		if (vars == null) {
 			_vars = new HashMap<Symbol, Obj>();
 		} else {
 			_vars = vars;
 		}
 		
-		if (metatable != null)
-		{
+		if (metatable != null) {
 			_vars.put(SymbolConstants.KEYVAR_META, metatable);
 			_meta = metatable;
-		}
-	}
-	
-	/** Create a new dict given a variable set */
-	public Dict(HashMap<Symbol, Obj> vars) {
-		_vars = vars;
-		// Check if the VariableSet has a __meta__ key
-		Obj maybe_meta = vars.get(SymbolConstants.KEYVAR_META);
-		if (maybe_meta != null && maybe_meta.isa(DICT)) {
-			_meta = (Dict)(maybe_meta);
-		} else {
-			_meta = null;
 		}
 	}
 	
@@ -74,7 +64,7 @@ public class Dict extends Obj {
 
 	/** returns default value if key not found */
 	public Obj get(Symbol key, Obj dflt) {
-		Obj x = _get(key, null);
+		Obj x = _get(key, false, null);
 		if (x == null) {
 			return dflt;
 		} else {
@@ -84,7 +74,7 @@ public class Dict extends Obj {
 	
 	/** throws exception if key not found */
 	public Obj get(Symbol key) {
-		Obj o = _get(key, null);
+		Obj o = _get(key, false, null);
 		if (o == null) {
 			throw new IndexError(this, key);
 		} else {
@@ -92,19 +82,29 @@ public class Dict extends Obj {
 		}
 	}
 
-	/** returns null if key not found */
-	private Obj _get(Symbol typeId) {
-		return _get(typeId, null);
-	}
-	
+
 	/** Returns null if key not found */
 	public Obj getSafe(Symbol key) {
-		return _get(key, null);
+		return _get(key, false, null);
 	}
 	
-	/** Returns null if no key found */
-	private Obj _get(Symbol typeId, ArrayList<Integer> visited) {
-		Obj o = _vars.get(typeId);
+
+	/** returns null if key not found */
+	private Obj _get(Symbol typeId) {
+		return _get(typeId, false, null);
+	}
+
+
+	/** Returns null if no key found 
+	 * 
+	 *  Default is always prefer _vars
+	 *  If meta_only is true, skip _vars
+	 *  
+	 *  If not found continue along the __meta__ chain
+	 * */
+	private Obj _get(Symbol typeId, boolean meta_only, ArrayList<Integer> visited) {
+		Obj o = null;
+		if (!meta_only) o = _vars.get(typeId);
 		if (o != null)
 		{
 			return o;
@@ -113,7 +113,7 @@ public class Dict extends Obj {
 			// Check meta
 			if (_meta != null) {
 				// Add this dict as visited
-				// Only allocate the visited array of needed
+				// Only allocate the visited array if needed
 				if (visited == null) visited = new ArrayList<Integer>();
 				visited.add(this.hashCode());
 				
@@ -132,7 +132,7 @@ public class Dict extends Obj {
 					return null;
 				} else {
 					// Not visited, search it (and it's metas) for the key
-					o = _meta._get(typeId, visited);
+					o = _meta._get(typeId, false, visited);
 					return o;
 				}
 				
@@ -145,12 +145,7 @@ public class Dict extends Obj {
 	
 	/** Get from metatable. If no such key, return null */
 	public Obj getFromMetaTableOrNull(Symbol typeId) {
-		if (_meta == null) {
-			return null;
-		} else {
-			return _meta._get(typeId);
-
-		}
+		return _get(typeId, true, null);
 	}
 	
 	/** Returns true if this dict contains the input key */
@@ -212,6 +207,7 @@ public class Dict extends Obj {
 	/** Update values in this dict to the values from the input dict */
 	public void update(Dict other) {
 		_vars.putAll(other._vars);
+		if (other._meta != null) _meta = other._meta;
 	}
 	
 	
@@ -221,7 +217,7 @@ public class Dict extends Obj {
 	
 	@Override
 	public Obj deepcopy() {
-		// Don't deep copy the meta
+		// Don't deep copy meta
 		if (_meta != null) {
 			_vars.remove(SymbolConstants.KEYVAR_META);
 		}
@@ -229,16 +225,16 @@ public class Dict extends Obj {
 		Dict d = new Dict(deepcopyHashMap(), _meta);
 		
 		// Re-attach the meta if it exists
-		if (_meta != null) {
-			d.setMetaTable(_meta);
-		}
+		if (_meta != null) _vars.put(SymbolConstants.KEYVAR_META, _meta);
 		return d;
 	}
 
 	@Override
 	public boolean bool() {
-		if (_meta != null) {
-			Obj bool = get(SymbolConstants.KEYVAR_BOOL);
+		Obj bool = getFromMetaTableOrNull(SymbolConstants.KEYVAR_BOOL);
+		if (bool == null) {
+			return true;
+		} else {
 			if (bool.isa(Obj.BLOCK)) {
 				Block blk_bool = ((Block)bool).duplicate();
 				blk_bool.push(this);
@@ -249,8 +245,6 @@ public class Dict extends Obj {
 				return bool.bool();
 			}
 		}
-
-		return true;
 	}
 
 	@Override
@@ -266,22 +260,21 @@ public class Dict extends Obj {
 		
 	@Override
 	public String str() {
-		if (_meta != null) {
-			Obj str = _meta._get(SymbolConstants.KEYVAR_REPR);
-			if (str != null) {
-				if (str.isa(Obj.BLOCK)) {
-					Block blk_str = ((Block)str).duplicate();
-					blk_str.push(this);
-					blk_str.eval();
-					Obj obj_res = blk_str.pop();
-					return obj_res.str();
-				} else {
-					return str.str();
-				}
+		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR);
+		if (str == null) {
+			return dictStr();
+		} else {
+			if (str.isa(Obj.BLOCK)) {
+				Block blk_str = ((Block)str).duplicate();
+				blk_str.push(this);
+				blk_str.eval();
+				Obj obj_res = blk_str.pop();
+				return obj_res.str();
+			} else {
+				return str.str();
 			}
 		}
 		
-		return dictStr();
 	}
 
 	@Override
@@ -317,7 +310,7 @@ public class Dict extends Obj {
 	}
 
 	public boolean hasMetaTable() {
-		return _meta != null; 
+		return _meta != null;
 	}
 	
 	////////////////////
@@ -332,49 +325,70 @@ public class Dict extends Obj {
 	/** Return a string representation of the dict 
 	 * @param stream */
 	private ReprStream dictRepr(ReprStream stream) {
-		// Metatable?
-		if (_meta != null) {
-			Obj repr = _meta._get(SymbolConstants.KEYVAR_REPR);
-			if (repr != null) {
-				Block callable = Callable.getCallable(repr);
-				if (callable != null) {
-					Block blk_repr = callable.duplicate();
-					blk_repr.push(this);
-					blk_repr.eval();
-					Obj obj_res = blk_repr.pop();
-					if (obj_res.isa(Obj.STR)) {
-						stream.print(obj_res.str());
-						return stream;
-					} else {
-						return obj_res.repr(stream);
 
-					}
-				} else if (repr.isa(Obj.STR)) {
-					stream.print(repr.str());
+		// Is __type__ defined?
+		Obj type = _vars.get(SymbolConstants.KEYVAR_TYPE);
+		if (type != null) {
+			String typename;
+			if (type.isa(Obj.SYMBOL)) {
+				typename = Casting.asSymbol(type).name();
+			} else {
+				typename = type.str();
+			}
+			stream.print("<type '" + typename + "'>");
+			return stream;
+		} 
+		
+		// Metatable?
+		Obj repr = null;
+		// If we are in safe mode, don't attempt to call __repr__
+		if (!stream.isSafeMode()) repr = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR);
+
+		if (repr != null) {
+			Block callable = Callable.getCallable(repr);
+			if (callable != null) {
+				Block blk_repr = callable.duplicate();
+				blk_repr.push(this);
+				try {
+					blk_repr.eval();
+				} catch (AyaRuntimeException ex) {
+					stream.print("{, <Exception thrown when calling __repr__ on dict: " + ex.getSimpleMessage() + "> }");
+					return stream;
+				}
+				Obj obj_res = blk_repr.pop();
+				if (obj_res.isa(Obj.STR)) {
+					stream.print(obj_res.str());
 					return stream;
 				} else {
-					return repr.repr(stream);
+					return obj_res.repr(stream);
+
 				}
+			} else if (repr.isa(Obj.STR)) {
+				stream.print(repr.str());
+				return stream;
+			} else {
+				return repr.repr(stream);
 			}
-		}
-	
-		// Normal repr
-		if (_vars.size() == 0) {
-			stream.print("{,}");
 		} else {
-			stream.println("{,");
-			stream.incIndent();
-			stream.currentLineMatchIndent();
-			for (Symbol sym : _vars.keySet()) {
-				if (sym.id() != SymbolConstants.KEYVAR_META.id()) {
-					_vars.get(sym).repr(stream);
-					stream.println(":" + sym.name() + ";");
+			// Normal repr
+			if (_vars.size() == 0) {
+				stream.print("{,}");
+			} else {
+				stream.println("{,");
+				stream.incIndent();
+				stream.currentLineMatchIndent();
+				for (Symbol sym : _vars.keySet()) {
+					if (sym.id() != SymbolConstants.KEYVAR_META.id()) {
+						_vars.get(sym).repr(stream);
+						stream.println(":" + sym.name() + ";");
+					}
 				}
+				stream.decIndent();
+				stream.currentLineMatchIndent();
+				stream.print("}");
 			}
-			stream.decIndent();
-			stream.currentLineMatchIndent();
-			stream.print("}");
 		}
+
 		return stream;
 	}
 
@@ -420,7 +434,7 @@ public class Dict extends Obj {
 
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(Symbol v) {
-		return _meta != null && _meta.containsKey(v);
+		return getFromMetaTableOrNull(v) != null;
 	}
 
 	

@@ -1,0 +1,117 @@
+{,
+    {meta : instance,
+        {, meta :__meta__; } :instance;
+
+        .# If it has a constructor call it
+        instance ::__init__ N \; {
+            instance.__init__
+        } ?
+
+        .# return the new object
+        instance
+    }:__new__;
+
+
+    {self,
+        "($(self.__type__:C) 0x$(self M# 10 16 H))"
+    }:__repr__;
+
+    ::object:__type__;
+    1 :__pushself__;
+
+}:object;
+
+{type super,
+    {,
+        super:__meta__;
+        type:__type__;
+        .# copy new
+        super.__new__.` :__new__;
+        1:__pushself__;
+    } type := ;
+}:new_type;
+
+::vec object new_type
+
+def vec::__init__ {x y self,
+    x self.:x;
+    y self.:y;
+}
+
+def vec::__repr__ {self,
+    "<$(self.x),$(self.y)>"
+}
+
+def vec::hypot {self,
+    self.x 2 ^ self.y 2 ^ + .^
+}
+
+def vec::dims 2
+
+
+.# OOP Testing
+
+::dog object new_type
+
+def dog::__init__ {name age self,
+    name self.:name;
+    age  self.:age;
+}
+
+def dog::species "Canis familiaris"
+
+def dog::__repr__ {self,
+    "$(self.name) is a $(self:T:C) and is $(self.age) years old"
+}
+
+def dog::speak {self,
+    "$(self.name) says woof!"
+}
+
+
+"Buddy" 9 dog! :buddy;
+"Miles" 4 dog! :miles;
+
+::dachshund dog new_type
+::poodle dog new_type
+
+"Oscar" 3 dachshund! :oscar;
+"Bubs" 3 poodle! :bubs;
+
+{cls : l,
+    []:l;
+    cls.__type__ l .B;
+    {
+        .# Move to the next meta
+        cls.__meta__:cls
+        .# append this type to the list
+        .__type__ l .B;
+        .# Stop if there is no more metatables
+        cls::__meta__ N\;
+    } W
+    l
+}:type_chain;
+
+{instance cls : instance_cls type_chain^,
+    instance.__meta__ type_chain cls.__type__ N\;0<!
+}:isinstance;
+
+bubs  poodle isinstance !{"failed".D}?
+bubs  dog    isinstance !{"failed".D}?
+bubs  object isinstance !{"failed".D}?
+oscar poodle isinstance  {"failed".D}?
+
+{
+    {
+        ~PB;V;V; .# literally parse the string from the block...
+        \:&.__meta__.__meta__@ :I\; ~
+    } 1 :`
+}:super;
+
+def poodle::speak {self,
+    "poodle speak!" :P
+    self super.speak
+}
+
+.# TODO: built-in instanceof operator
+.# TODO: built-in super operator
