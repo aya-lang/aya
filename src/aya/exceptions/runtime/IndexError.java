@@ -1,5 +1,6 @@
 package aya.exceptions.runtime;
 
+import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -36,23 +37,23 @@ public class IndexError extends InternalAyaRuntimeException {
 	}
 	
 	public IndexError(Dict dict, Obj index, String message) {
-		super(SymbolConstants.INDEX_ERR, "Invalid index " + index.repr() + " for dict " + dict.repr() + ": " + message);
+		super(SymbolConstants.INDEX_ERR, "Invalid index " + index.repr() + " for dict " + dict.repr(ReprStream.newSafe()) + ": " + message);
 	}
 
 	public IndexError(Dict dict, Symbol key) {
-		super(SymbolConstants.INDEX_ERR, "Dict does not contain key '" + key.name() + "':\n" + dict.repr());
+		super(SymbolConstants.INDEX_ERR, "Dict does not contain key '" + key.name() + "':\n" + dict.repr(ReprStream.newSafe()));
 	}
 
 	public IndexError(Dict dict, String key) {
-		super(SymbolConstants.INDEX_ERR, "Dict does not contain key \"" + key + "\":\n" + dict.repr());
+		super(SymbolConstants.INDEX_ERR, "Dict does not contain key \"" + key + "\":\n" + dict.repr(ReprStream.newSafe()));
 	}
 	
 	public IndexError(Dict dict, Obj key, boolean invalid_type) {
-		super(SymbolConstants.INDEX_ERR, "Dict does not contain key [" + key.repr() + "] (incorrect type):\n" + dict.repr());
+		super(SymbolConstants.INDEX_ERR, "Dict does not contain key [" + key.repr() + "] (incorrect type):\n" + dict.repr(ReprStream.newSafe()));
 	}
 
 	public IndexError(Dict dict, Obj key) {
-		super(SymbolConstants.INDEX_ERR, "Dict does not contain key [" + key.repr() + "]:\n" + dict.repr());
+		super(SymbolConstants.INDEX_ERR, "Dict does not contain key [" + key.repr() + "]:\n" + dict.repr(ReprStream.newSafe()));
 	}
 
 	public IndexError(String string) {
