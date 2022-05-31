@@ -96,14 +96,16 @@ def dog::speak {self,
     l
 }:type_chain;
 
-{instance cls : instance_cls type_chain^,
-    instance.__meta__ type_chain cls.__type__ N\;0<!
-}:isinstance;
+{ :@ }:isinstance;
 
 bubs  poodle isinstance !{"failed".D}?
 bubs  dog    isinstance !{"failed".D}?
 bubs  object isinstance !{"failed".D}?
 oscar poodle isinstance  {"failed".D}?
+
+bubs {x::poodle, } ~
+bubs {x::dog,    } ~
+bubs {x::object, } ~
 
 {
     {
@@ -117,7 +119,6 @@ def poodle::speak {self,
     self super.speak
 }
 
-.# TODO: built-in instanceof operator
 .# TODO: built-in super operator
 
 ::person object extend;
