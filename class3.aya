@@ -21,17 +21,21 @@
 
 }:object;
 
-{type super,
+{type::sym super,
     {,
         super:__meta__;
         type:__type__;
         .# copy new
         super.__new__.` :__new__;
         1:__pushself__;
-    } type := ;
-}:new_type;
+    } type :=
+}:extend;
 
-::vec object new_type
+{: extend^ object^,
+    {:extend^ object^, ~:S~ object extend;} 1 :`
+}:class;
+
+class vec
 
 def vec::__init__ {x y self,
     x self.:x;
@@ -51,7 +55,7 @@ def vec::dims 2
 
 .# OOP Testing
 
-::dog object new_type
+::dog object extend;
 
 def dog::__init__ {name age self,
     name self.:name;
@@ -72,8 +76,8 @@ def dog::speak {self,
 "Buddy" 9 dog! :buddy;
 "Miles" 4 dog! :miles;
 
-::dachshund dog new_type
-::poodle dog new_type
+::dachshund dog extend;
+::poodle dog extend;
 
 "Oscar" 3 dachshund! :oscar;
 "Bubs" 3 poodle! :bubs;
@@ -115,3 +119,85 @@ def poodle::speak {self,
 
 .# TODO: built-in instanceof operator
 .# TODO: built-in super operator
+
+::person object extend;
+
+def person::__init__ {name age self : person^,
+    name self.:name;
+    age  self.:age;
+    person.counter 1+ person.:counter;
+}
+
+def person::counter 0
+
+def person::greet {self,
+    "Hi it's $(self.name)"
+}
+
+def person::create_anon {cls,
+    "Anon" 20 cls!
+}
+
+.# static methods still require the cls argument
+def person::years_to_months {years cls,
+    years 12 *
+}
+
+
+
+"John" 25 person! :john;
+person.create_anon :anon;
+3 person.years_to_months ;
+
+::employee person extend;
+
+def employee::__init__ {name age job self,
+    name age self super.__init__
+    job self.:job;
+}
+
+"bob" 30 "salesman" employee! :bob;
+
+def employee::greet {self,
+    self super.greet ", I'm a $(self.job)" +
+}
+
+{type__::sym members__::list super__ :
+    extend__(extend.`)
+    cls__,
+
+    type__ super__ extend__ : cls__;
+
+    .# __init__
+    {self,
+        .# grab all members from the stack
+        num_members :A
+        .# and assign them to self
+        members {self :D} .&;
+    } {,
+        members__ E :num_members;
+        members__   :members;
+    } .+ cls__.:__init__;
+
+    .# __str__/__repr__
+    .# default string:
+    .# ( m1 m2 ... mN ) type!
+    {self,
+        "( "
+        members :# {self \:I \;} " "* +
+        " ) " +
+        name  +
+        "!"+
+    } {,
+        type__ :C   :name;
+        members__ :members;
+    } .+ cls__.:__str__;
+
+    cls__.__str__.` cls__.:__repr__;
+
+    cls__
+}:_struct_impl;
+
+{ : _struct_impl(_struct_impl.`) object^,
+    { : _struct_impl^ , :&.[0]:S~ \.[1]~.*:#{:S~} object _struct_impl } 2 :`
+}:structb;
