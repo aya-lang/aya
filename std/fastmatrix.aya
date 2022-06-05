@@ -12,7 +12,7 @@ fastmatrix:matrix;
 }:rows;
 
 .# Test if list is a valid matrix
-def matrix::_is_valid_list {m::list ncols::num,
+def matrix::_is_valid_list {m::list ncols::num matrix,
     mE ncols % 0 =
 }
 
@@ -37,14 +37,14 @@ def matrix::_nrows {self,
 
 .# Use this instead of the constructor to avoid
 .# validating the list
-def matrix::_new {rows::list : matrix^,
+def matrix::_new {rows::list matrix,
     {,
         rows.[0]E :_ncols
         rows .F   :_data
     } matrix :M
 }
 
-def matrix::_new_data {data::list ncols::num : matrix^,
+def matrix::_new_data {data::list ncols::num matrix,
     {,
         ncols :_ncols
         data  :_data
@@ -489,12 +489,12 @@ def matrix::__setindex__ {val ix self : r c matrix^,
 .##############
 
 .#? N matrix.eye\n  generate an Nd identity matrix
-def matrix::eye {:matrix^,
+def matrix::eye {matrix,
     $0\L1\K\$KL  matrix._new
 }
 
 .# generates the next row of a pascal matrix
-def matrix::_nextpascal {prev::list : new len ix,
+def matrix::_nextpascal {prev::list matrix : new len ix,
     prevE:len;
     1 0 lenVLK:new;
     1:ix;
@@ -510,31 +510,31 @@ def matrix::_nextpascal {prev::list : new len ix,
      [ 1 3 6  10 ]
      [ 1 4 10 20 ]]
 .}
-def matrix::pascal {n::num : matrix^,
+def matrix::pascal {n::num matrix,
     [1 n L {$matrix._nextpascal} n V %] matrix._new
 }
 
 .#? [rows cols] matrix::R\n  generate a matrix counting up from 1
-def matrix::__range__ {l::list : matrix^,
+def matrix::__range__ {l::list matrix,
     l~*R l L matrix!
 }
 
 .#? [rows cols] matrix.random\n  create a N1 by N2 matrix of random values [0,1]
-def matrix::__random__ {:matrix^,
+def matrix::__random__ {matrix,
     0\L :#{:#{;.Q}} matrix._new
 }
 
 .# rows::num cols::num matrix._newfill\n  create a I1 by I2 matrix filled with N3
-def matrix::_newfill {:matrix^, \L\Lmatrix._new}
+def matrix::_newfill {matrix, \L\Lmatrix._new}
 
 .#? [rows cols] matrix.ones\n  create a N1 by N2 matrix of ones
-def matrix::ones  {:matrix^, ~ 1 matrix._newfill} 
+def matrix::ones  {matrix, ~ 1 matrix._newfill} 
 
 .#? [rows cols] matrix.zeros\n  create a N1 by N2 matrix of zeros
-def matrix::zeros {:matrix^, ~ 0 matrix._newfill}
+def matrix::zeros {matrix, ~ 0 matrix._newfill}
 
 .#? value::num [rows cols] matrix.full\n  create a rows x cols matrix filled with value
-def matrix::full {value::num shape::list : matrix^,
+def matrix::full {value::num shape::list matrix,
     shape.[0] shape.[1] value matrix._newfill
 }
 

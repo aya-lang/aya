@@ -79,7 +79,7 @@ def map::__each__ {blk self,
 }
 
 
-def map::fromlist {list : map^ m,
+def map::fromlist {list map : m,
     map!:m;
     list # {~ \m.put};
     m

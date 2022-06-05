@@ -1315,7 +1315,7 @@ class OP_O extends OpInstruction {
 			block.push(asList(container).map(blk));
 		} else if (container.isa(Obj.DICT)) {
 			Dict d = (Dict)container;
-			if (d.pushSelf()) {
+			if (d.pushSelf() && d.containsKey(SymbolConstants.KEYVAR_EACH)) {
 				block.push(blk);
 				block.callVariable(d, SymbolConstants.KEYVAR_EACH);
 			} else {

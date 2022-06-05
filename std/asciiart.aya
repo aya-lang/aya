@@ -286,7 +286,7 @@ def asciiart::replace_aa {a::asciiart self : l,
     } {/}/             .# Concat each row
 }
 
-def asciiart::rle {s,
+def asciiart::rle {s asciiart,
     s $ "\\d+" F \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
     .E 0 = {
