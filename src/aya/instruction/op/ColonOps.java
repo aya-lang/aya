@@ -26,6 +26,7 @@ import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.ex.StaticAyaExceptionList;
+import aya.exceptions.runtime.AssertError;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
@@ -204,11 +205,7 @@ class OP_Colon_Bang extends OpInstruction {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		if (!a.equiv(b)) {
-			Dict error = new Dict();
-			error.set(SymbolConstants.MESSAGE, List.fromString("AssertionError"));
-			error.set(SymbolConstants.EXPECTED, a);
-			error.set(SymbolConstants.RECEIVED, b);
-			throw new UserObjRuntimeException(error);
+			throw new AssertError("AssertError", a, b);
 		}
 	}
 }
