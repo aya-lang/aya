@@ -2,13 +2,11 @@ package aya.obj.symbol;
 
 import java.util.HashMap;
 
-import aya.exceptions.runtime.ValueError;
-
 public class SymbolTable {
 	
-	HashMap<String, Symbol> _symbols;
-	HashMap<Integer, String> _symbols_rev;
-	int _counter;
+	private HashMap<String, Symbol> _symbols;
+	private HashMap<Integer, String> _symbols_rev;
+	private int _counter;
 	
 	public SymbolTable() {
 		_symbols = new HashMap<String, Symbol>();
@@ -25,7 +23,7 @@ public class SymbolTable {
 		}
 	}
 	
-	public String getName(Symbol s) {
+	String getName(Symbol s) {
 		String name = _symbols_rev.get(s._id);
 		if (name != null) {
 			return name;
@@ -67,26 +65,4 @@ public class SymbolTable {
 		return (c >= 'a' && c <= 'z') || c == '_';
 	}
 	
-	/** Converts any string to a symbol string by ignoring non alpha chars */
-	public static String toBasicSymbolName(String str) {
-		String sym = "";
-		
-		for (char c : str.toCharArray()) {
-			if (isValidChar(c)) {
-				sym += c;
-			} else if (c >= 'A' && c <= 'Z') {
-				sym += Character.toLowerCase(c); // Make lowercase
-			} else if (c == ' ') {
-				sym += '_';
-			}
-		}
-		
-		if (sym.equals("")) {
-			throw new ValueError("Can't create symbol from string \"" + str + "\"");
-		}
-		
-		return sym;
-	}
-	
-
 }

@@ -26,6 +26,7 @@ import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.ex.StaticAyaExceptionList;
+import aya.exceptions.runtime.AssertError;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UserObjRuntimeException;
@@ -94,7 +95,7 @@ public class ColonOps {
 		/* 61 =  */ new OP_Colon_Equals(),
 		/* 62 >  */ new OP_Colon_GreaterThan(),
 		/* 63 ?  */ new OP_Colon_Bool(),
-		/* 64 @  */ null,
+		/* 64 @  */ new OP_IsInstance(),
 		/* 65 A  */ new OP_Colon_A(),
 		/* 66 B  */ null,
 		/* 67 C  */ new OP_Colon_C(),
@@ -204,11 +205,7 @@ class OP_Colon_Bang extends OpInstruction {
 		final Obj a = block.pop();
 		final Obj b = block.pop();
 		if (!a.equiv(b)) {
-			Dict error = new Dict();
-			error.set(SymbolConstants.MESSAGE, List.fromString("AssertionError"));
-			error.set(SymbolConstants.EXPECTED, a);
-			error.set(SymbolConstants.RECEIVED, b);
-			throw new UserObjRuntimeException(error);
+			throw new AssertError("AssertError", a, b);
 		}
 	}
 }
@@ -1125,6 +1122,34 @@ class OP_SetMinus extends OpInstruction {
 	}
 }
 
+class OP_IsInstance extends OpInstruction {
+	
+	public OP_IsInstance() {
+		init(":@");
+		arg("AA", "isinstance");
+	}
+
+	@Override
+	public void execute(final Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		Symbol type_name = null;
+		if (a.isa(DICT)) {
+			Obj type_name_obj = Casting.asDict(a).getSafe(SymbolConstants.KEYVAR_TYPE);
+			if (type_name_obj.isa(SYMBOL)) type_name = Casting.asSymbol(type_name_obj);
+		} else if (a.isa(SYMBOL)) {
+			type_name = Casting.asSymbol(a);
+		}
+		
+		if (type_name == null){
+			throw new TypeError(this, a, b);
+		}
+		
+		block.push(Num.fromBool(Obj.isInstance(b, type_name)));
+	}
+}
+	
 // ~ - 126
 class OP_Colon_Tilde extends OpInstruction {
 	

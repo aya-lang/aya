@@ -20,11 +20,13 @@ public class ReprStream {
 		}
 	}
 	
-	ArrayList<Line> _lines;
-	int _current_indent;
-	String _indent_str;
-	Line _current_line;
-	Stack<Obj> _visited;
+	private ArrayList<Line> _lines;
+	private int _current_indent;
+	private String _indent_str;
+	private Line _current_line;
+	private Stack<Obj> _visited;
+	// In safe mode, do not try to call __repr__ on objects
+	private boolean _safe_mode;
 	
 	public ReprStream() {
 		_lines = new ArrayList<ReprStream.Line>();
@@ -32,6 +34,14 @@ public class ReprStream {
 		_indent_str = "  ";
 		_visited = new Stack<Obj>();
 		_current_line = new Line(_current_indent);
+		_safe_mode = false;
+	}
+
+	
+	public static ReprStream newSafe() {
+		ReprStream rs = new ReprStream();
+		rs.setSafeMode(true);
+		return rs;
 	}
 	
 	public void println() {
@@ -176,5 +186,13 @@ public class ReprStream {
 
 	public void delTrailingSpaces() {
 		_current_line.delTrailingSpaces();
+	}
+	
+	public void setSafeMode(boolean safe_mode) {
+		_safe_mode = safe_mode;
+	}
+	
+	public boolean isSafeMode() {
+		return _safe_mode;
 	}
 }

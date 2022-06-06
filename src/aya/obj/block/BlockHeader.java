@@ -49,40 +49,13 @@ public class BlockHeader extends Instruction {
 	}
 	
 	
-	private static boolean checkType(Obj o, Symbol type) {
-		// Special type "any"
-		if (type.id() == SymbolConstants.ANY.id()) return true;
-		
-		// Check user defined type 
-		if (o.isa(Obj.DICT)) {
-			Symbol otype = null;
-
-			Obj dtype = ((Dict)o).getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
-			if (dtype != null && dtype.isa(Obj.SYMBOL)) {
-				otype = (Symbol)dtype;
-			} else {
-				otype = SymbolConstants.DICT;
-			}
-			
-			if (otype != null && otype.id() == type.id()) {
-				return true;
-			}
-		}
-	
-		// Normal check
-		if (o.isa(Obj.symToID(type))) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
 	private static void setArgs(ArrayList<BlockHeaderArg> args, Dict vars, Block b) {
 		if (args.size() == 0) return;
 		
 		for (BlockHeaderArg arg : args) {
 			final Obj o = b.pop();
-			if (checkType(o, arg.type)) {
+			if (Obj.isInstance(o, arg.type)) {
 				if (arg.copy) {
 					vars.set(arg.var, o.deepcopy());
 				} else {

@@ -1,8 +1,10 @@
 package aya.obj;
 
 import aya.ReprStream;
+import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.util.Casting;
 
 /**
  * Superclass for all runtime objects existing on the stack
@@ -132,6 +134,44 @@ public abstract class Obj {
 			return SYMBOL;
 		} else {
 			return UNKNOWN;
+		}
+	}
+	
+	public static boolean isInstance(Obj o, Symbol type) {
+		// Special type "any"
+		if (type.id() == SymbolConstants.ANY.id()) return true;
+		
+		
+		// Check user defined type 
+		if (o.isa(Obj.DICT)) {
+			
+			// If type is dict, return true
+			if (type.id() == SymbolConstants.DICT.id()) return true;
+			
+			// Check type chain
+			Dict cls = Casting.asDict(o);
+			while (cls.hasMetaTable()) {
+				Obj cls_type = cls.getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
+				if (type.equiv(cls_type)) {
+					return true;
+				}
+				
+				Obj next_cls = cls.get(SymbolConstants.KEYVAR_META);
+				if (next_cls.isa(DICT)) {
+					cls = Casting.asDict(next_cls);
+				} else {
+					break;
+				}
+			}
+			
+			return false;
+		}
+	
+		// Normal check
+		if (o.isa(Obj.symToID(type))) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

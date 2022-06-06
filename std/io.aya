@@ -69,12 +69,12 @@ def path::__dec__ {self,
 }
 
 .#? ::str path.readdir\n  list of file/dir names in the given path
-def path::readdir {
+def path::readdir {path,
     P :{sys.readdir}
 }
 
 .#? path.working\n  working directory
-def path::working {:path^,
+def path::working {path,
     :{sys.wd} path!
 }
 
@@ -86,7 +86,7 @@ def path::working {:path^,
 
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
-def path::_split {dir::str : path^,
+def path::_split {dir::str path,
     dir "\\"|#{"/"|~}
     .# Remove empties
     [""] :|
@@ -95,7 +95,7 @@ def path::_split {dir::str : path^,
 .# dirs::list path._fixhome
 .# If the path list contains a "~"
 .#   find the last "~" and take all directories after it
-def path::_fixhome {dirs::list : path^,
+def path::_fixhome {dirs::list path,
     dirs U "~" N    .# Reverse and find the first ~ (aka the last ~)
 
     .# Does the path contain a "~" ?
@@ -111,7 +111,7 @@ def path::_fixhome {dirs::list : path^,
 }
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
-def path::_isabs {p::str : path^,
+def path::_isabs {p::str path,
     p "/" N 0 = \;
     p path.root :9s + N 0 = \;
     p path.root "/" + N 0 = \;
@@ -119,7 +119,7 @@ def path::_isabs {p::str : path^,
 }
 
 .# Remove all ".." by traversing the directories
-def path::_clean {dirs::list : path^ i(0),
+def path::_clean {dirs::list path : i(0),
     .# Remove root and self refs (".")
     dirs [path.root "."] :| :dirs;
 
@@ -249,7 +249,10 @@ def file::__repr__ {self,
         f.readll :P
     }
 .}
-def file::do {(1 hold)(\ ._do)}
+def file::do {
+    ; .# pop class
+    (1 hold)(\ ._do)
+}
 
 .# Helper function for file.do
 def file::_do {blk__::block self__,

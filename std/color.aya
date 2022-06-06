@@ -21,21 +21,21 @@ def color::__init__ {r::num g::num b::num self,
 }
 
 
-def color::newhex { : color^ ,
+def color::newhex { color ,
     0 dot_i '#= {V;} ? .# Strip leading '# if it exists
     16 2 H 24 .> [3 8] L #{2 10 H} ~ color!
 }
 
 
-def color::newhsv { : color^ ,
+def color::newhsv { color,
     color.hsvtorgb~ color!
 }
 
-def color::fromstr { s::str : color^ ,
+def color::fromstr { s::str color,
     s :{color.fromstr} color.fromdict
 }
 
-def color::fromdict { d::dict : color^ ,
+def color::fromdict { d::dict color ,
     d.r d.g d.b color!
 }
 
@@ -119,7 +119,7 @@ def color::hueshift {n self,
 .#
 
 .#? NNN color.hsvtorgb\n  convert h s v (0-360,0-1,0-1) color to hsv
-def color::hsvtorgb {h s v : hi p q t ff,
+def color::hsvtorgb {h s v color : hi p q t ff,
     .# no saturation, just greyscale
     s 0 = {
         [v v v]
@@ -150,7 +150,7 @@ def color::hsvtorgb {h s v : hi p q t ff,
 
 
 .#? NNN color.rgbtohsv\n  convert r g b color to hsv\n  r,g,b values are from 0 to 1
-def color::rgbtohsv {r g b : h s v delta maxv minv,
+def color::rgbtohsv {r g b color : h s v delta maxv minv,
     [r g b].min:minv;
     [r g b].max:maxv;
     maxv:v;

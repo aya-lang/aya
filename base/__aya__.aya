@@ -191,102 +191,120 @@
 ) __aya__.opt_mod :def;
 
 
+.# ----------------
+.#  CLASS / STRUCT
+.# ----------------
 
-.# ------
-.# STRUCT
-.# ------
 
-
-{name::sym members::list,
-    members $:~=!{"struct: all members must be unique in $members".D}?
-
-    .# Metatable
-    {,
-        name:__type__;
-        1 :__pushself__;
-
-        .# Constructor
-        {meta : self,
-            .# This object
-            {,} :self;
-            .# args will grab all args off the stack using list grabbing
-            num_members :A members {self :D}.&;
-            .# add the outer table as a metatable at runtime
-            self meta :M
-        } {,
-            members  :members
-            membersE :num_members
-        } .+ :__new__;
-
-        .# string and print overloads
-        .# default string:
-        .# ( m1 m2 ... mN ) type!
-        {self,
-            "( "
-            members :# {self \:I \;} " "* +
-            " ) " +
-            name :C +
-            "!"+
-        }.use[
-            ::name
-            ::members
-        ]:__str__:__repr__;
-
+.#
+.# `objcet`: Base object for class and struct
+.#
+{,
+    {meta : instance,
         {,
-            ::struct :__type__;
-            "(struct $name $members)":__repr__;
-            members :fields;
-        }:__meta__;
+            meta :__meta__;
+            1 :__pushself__;
+        } :instance;
+
+        .# If it has a constructor call it
+        instance ::__init__ N \; {
+            instance.__init__
+        } ?
+
+        .# return the new object
+        instance
+    }:__new__;
 
 
-    } name {,}:DW
+    {self,
+        "($(self.__type__:C) 0x$(self M# 10 16 H))"
+    }:__repr__;
+
+    ::object:__type__;
+    0 :__pushself__;
+
+} __aya__.:object;
+
+
+.#
+.# `extend`: Keyword for extending a class
+.#
+
+{type::sym super,
+    {,
+        super:__meta__;
+        type:__type__;
+        .# copy new from super directly
+        super.__new__.` :__new__;
+        0:__pushself__;
+    } type :=
+} __aya__.:extend;
+
+__aya__.extend.` :extend;
+
+
+.#
+.# `class`: Macro keyword for creating a default class that extends `object`
+.#
+
+{: extend^ object(__aya__.object),
+    {:extend^ object^, ~:S~ object extend;} 1 :`
+}:class;
+
+
+.#
+.# `super`: Macro keyword for accessing super variables
+.#
+
+{{
+    ~:S~
+    \:&.__meta__.__meta__@ :I\; ~
+} 1 :` }:super;
+
+
+.#
+.# `struct`: Macro keyword for creating dataclasses
+.#
+
+{type__::sym members__::list super__ :
+    extend__(extend.`)
+    cls__,
+
+    type__ super__ extend__ : cls__;
+
+    .# __init__
+    {self,
+        .# grab all members from the stack
+        num_members :A
+        .# and assign them to self
+        members {self :D} .&;
+    } {,
+        members__ E :num_members;
+        members__   :members;
+    } .+ cls__.:__init__;
+
+    .# __str__/__repr__
+    .# default string:
+    .# ( m1 m2 ... mN ) type!
+    {self,
+        "( "
+        members :# {self \:I \;} " "* +
+        " ) " +
+        name  +
+        "!"+
+    } {,
+        type__ :C   :name;
+        members__ :members;
+    } .+ cls__.:__str__;
+
+    cls__.__str__.` cls__.:__repr__;
+
+    cls__
 } __aya__.:_struct_impl;
 
-
-
-{ : _struct_impl(__aya__._struct_impl.`),
-    { : _struct_impl^ , :&.[0]:S~ \.[1]~.*:#{:S~} _struct_impl } 2 :`
+{ : _struct_impl(__aya__._struct_impl.`) object(__aya__.object),
+    { : _struct_impl^ , :&.[0]:S~ \.[1]~.*:#{:S~} object _struct_impl } 2 :`
 }:struct;
-
-
-.# ------
-.# CLASS
-.# ------
-
-.#? class sym\n  declare a new class
-{sym::sym,
-    {,
-        sym:__type__;
-        1 :__pushself__;
-
-        {meta : self,
-            .# Create a new dict and set its metatable
-            {,}:self meta :M;
-
-            .# if it has a constructor, call it
-            meta ::__init__ N \; {
-                self.__init__
-            } ?
-
-            .# return the new object
-            self
-        } :__new__;
-
-        {self,
-            "($(self.__type__ :C) 0x$(self M# 10 16 H))"
-        }:__repr__:__str__;
-
-        {,
-            ::class :__type__;
-            "(class $sym)":__repr__;
-        }:__meta__;
-    }
-    sym := ; .# assign variable
-} __aya__.:_class_impl;
-
-{ : _class_impl(__aya__._class_impl.`),
-    { : _class_impl^ , ~:S~ _class_impl} 1 :`
-}:class;
 
 
 .# ------

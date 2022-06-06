@@ -100,6 +100,7 @@ public class SymbolConstants {
 	public static final Symbol INDEX_ERR 		= S.getSymbol("index_err");
 	public static final Symbol MATH_ERR 		= S.getSymbol("math_err");
 	public static final Symbol NOT_AN_OP_ERROR  = S.getSymbol("not_an_op_err");
+	public static final Symbol ASSERT_ERROR     = S.getSymbol("assert_err");
 
 	public static final Symbol EXCEPTION            = S.getSymbol("exception");
 	public static final Symbol RUNTIME_EXCEPTION    = S.getSymbol("runtime_exception");

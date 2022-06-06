@@ -5,8 +5,8 @@ class point
 
 .# constructor
 def point::__init__ {x y self,
-    x self.:x ;
-    y self.:y ;
+    x self.:x;
+    y self.:y;
 }
 
 .# print overload
@@ -28,16 +28,16 @@ def point::__add__ {other self,
 99 point.:my_value;
 
 .# static class function
-def point::inc_my_value { : point^ ,
-    point.my_value 1 + point.:my_value ;
+def point::inc_my_value {point,
+    point.my_value 1 + point.:my_value;
 }
 
-def point::get_my_value { : point^ ,
+def point::get_my_value {point,
     point.my_value
 }
 
 .# Plain static function
-def point::say_hello {
+def point::say_hello {point,
     "Hello world!" :P
 }
 
