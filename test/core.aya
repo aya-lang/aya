@@ -273,3 +273,6 @@ assert
 .# copy block without header
 { {a b, } .! P } assert ["{}"]
 { {a b, a b +} .! P } assert ["{a b +}"]
+
+.# type override
+{ {, {, ::foo:__type__ }:__meta__ } {x::foo, 1 } ~} assert [1]

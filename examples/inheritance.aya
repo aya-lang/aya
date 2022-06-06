@@ -1,22 +1,96 @@
-{,
-    { {,} rectangle MO }:__new__;
-    0:width;
-    0:height;
-    {self, self.width self.height *}:area;
-    {w self, w self.:width;}:setwidth;
-    {h self, h self.:height;}:setheight;
-    "rectangle":name;
-}:rectangle;
+.# create a person class
+class person
 
-{,
-    rectangleW
-    "square":name;
-}:square;
-
-square!:box;
-4 box.setwidth
-5 box.setheight
-box.area :P
+.# The class keyword is equivelent to extending the base `object`
+.# with the extend operator
+.# The following two lines are the same
+.#
+.#   class person
+.#   ::person object extend;
 
 
-  
+.# class variable
+def person::counter 0
+
+
+.# constructor
+def person::__init__ {name age self : person^,
+    name self.:name;
+    age  self.:age;
+    person.counter 1+ person.:counter;
+}
+
+
+.# member function
+def person::greet {self,
+    "Hi it's $(self.name)"
+}
+
+
+.# class function
+def person::create_anon {cls,
+    "Anon" 20 cls!
+}
+
+
+.# static methods still require the cls argument
+def person::years_to_months {years cls,
+    years 12 *
+}
+
+
+.# extend the person class
+::employee person extend;
+
+.# employee constructor
+def employee::__init__ {name age job self,
+    .# call super constructor
+    name age self super.__init__
+    .# derived-specific code
+    job self.:job;
+}
+
+
+.# overload person::greet
+def employee::greet {self : greeting,
+    .# call super greet
+    .# must pass `self` to super
+    self super.greet :greeting;
+    .# append derived-specific greeting to output
+    greeting ", I'm a $(self.job)" +
+}
+
+.{ EXAMPLE USAGE
+
+aya> "John" 25 person! :john
+(person 0x261ce424)
+
+aya> john.greet
+"Hi it's John"
+
+aya> person.counter
+1
+
+aya> person.create_anon :anon
+(person 0x32e4b981)
+
+aya> person.counter
+2
+
+aya> 3 person.years_to_months
+36
+
+aya> "Bob" 30 "Salesman" employee! :bob
+(employee 0x360deb9e)
+
+aya> bob.greet
+"Hi it's Bob, I'm a Salesman"
+
+aya> person.counter
+3
+
+aya> 4 employee.years_to_months
+48
+
+.}
+
