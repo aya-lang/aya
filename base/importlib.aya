@@ -100,36 +100,32 @@ def importlib::from_path {__file : importlib^ __mod,
 def importlib::do_export {__importname __module : importlib^,
     "$__importname <module> importlib::export" importlib._log_debug
     "  export: $(__module.__export__)" importlib._log_debug
-    {0?,
+    {
         (__module ::__export__ N!) {
             "__export__ not found in module $__importname. Was it deleted?" .D
-        },
-        (__module.__export__ 1 =) {
+        } (__module.__export__ 1 =) {
                 "Exporting all variables from $__importname..." importlib._log_debug
                 .# Introduce scope to catch any names we never want to export
                 ({: __export__ __main__ __file__,
                     __module W
                 })
-        },
-        (__module.__export__ 0 =) {
+        } (__module.__export__ 0 =) {
             (__importname :T ::sym =) {
                 "Exporting entire module as import name: $__importname" importlib._log_debug
                 __module __importname :=;
             } {
                 "Export in default state but import is not a symbol, not exporting anything" importlib._log_debug
             } .?
-        },
-        (__module.__export__ :T ::list =) {
+        } (__module.__export__ :T ::list =) {
             "Exporting variables from $__importname" importlib._log_debug
             __module.__export__ :# {var,
                 "  exporting $var..." importlib._log_debug
                 __module var I var :=;
             };
-        },
-        {
+        } {
             "Invalid value for __export__ when importing $__importname: $(__module.__export__)" .D
         }
-    }
+    } :?
 }
 
 .{
