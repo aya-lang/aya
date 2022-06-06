@@ -7,15 +7,23 @@
 
 .# New simpler test function
 {blk,
+.{
     {
         blk :!
     } {ex,
         ex.` :T ::dict = {
-            ["Test Failed: $blk"
-             "\tExpected: $(ex.expected.`)"
-             "\tReceived: $(ex.received.`)"] "\n"* :P
+            ex ::type 0 .I ::assert_err = {
+                ["Test Failed: $blk"
+                 "\tExpected: $(ex.expected.`)"
+                 "\tReceived: $(ex.received.`)"] "\n"* :P
+            } {
+                ex .D
+            } .?
         } {
-            "Error while evaluating test $blk\n$ex" .D
+            ex .D
         } .?
     } .K
+
+.}
+    blk :!
 } test.:test;
