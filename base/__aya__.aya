@@ -191,6 +191,14 @@
 ) __aya__.opt_mod :def;
 
 
+.# ----------------
+.#  CLASS / STRUCT
+.# ----------------
+
+
+.#
+.# `objcet`: Base object for class and struct
+.#
 {,
     {meta : instance,
         {,
@@ -217,28 +225,46 @@
 
 } __aya__.:object;
 
+
+.#
+.# `extend`: Keyword for extending a class
+.#
+
 {type::sym super,
     {,
         super:__meta__;
         type:__type__;
-        .# copy new
+        .# copy new from super directly
         super.__new__.` :__new__;
         0:__pushself__;
     } type :=
-}:extend;
+} __aya__.:extend;
+
+__aya__.extend.` :extend;
+
+
+.#
+.# `class`: Macro keyword for creating a default class that extends `object`
+.#
 
 {: extend^ object(__aya__.object),
     {:extend^ object^, ~:S~ object extend;} 1 :`
 }:class;
 
-{ :@ }:isinstance;
 
+.#
+.# `super`: Macro keyword for accessing super variables
+.#
 
 {{
     ~:S~
     \:&.__meta__.__meta__@ :I\; ~
 } 1 :` }:super;
 
+
+.#
+.# `struct`: Macro keyword for creating dataclasses
+.#
 
 {type__::sym members__::list super__ :
     extend__(extend.`)
