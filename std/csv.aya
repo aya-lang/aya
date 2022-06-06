@@ -14,13 +14,17 @@ def csv::open {f : csv^,
 }
 
 def csv::read { arg : csv^ ,
-    arg :T {?=,
-        ::str {, arg:filename },
-        ::dict arg,
-        {
+    {
+        (arg :T ::str =) {
+            .# convert to dict
+            {, arg :filename }
+        } (arg :T ::dict =) {
+            arg
+        } {
             "csv.read: Unsupported arg type $(arg:T). Must be ::str or ::dict" .D
         }
-    }
+    } :?
+
     csv._read_kw
 }
 

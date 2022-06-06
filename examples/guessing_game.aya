@@ -16,11 +16,18 @@
     .# Check if input was a valid number
     guess :T ::num = {
         .# Compare guess to the secret number
-        guess {?,
-            secret < {"Too small" :P 1}, .# 1: continue looping
-            secret > {"Too big"   :P 1},
-                     {"Correct!"  :P 0}  .# 0: stop looping
-        }
+        {
+            (guess secret <) {
+                "Too small" :P
+                1 .# continue looping
+            } (guess secret >) {
+                "Too big" :P
+                1 .# continue looping
+            } {
+                "Correct" :P
+                0 .# done looping
+            }
+        } :?
     } {
         "\"$guess\" is not a valid number. Please input a valid number" :P
         1 .# continue looping

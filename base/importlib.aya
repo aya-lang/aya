@@ -163,19 +163,25 @@ def importlib::from_file {filepath : importlib^ all_possible mod,
     Use __* variables so exported variables are not shadowed
 .}
 def importlib::import {__name : importlib^,
-    __name :T {?=,
-        ::sym {__name importlib.from_path},
-        ::str {
-            __name {?,
-                (".aya" N 0 :>) { __name importlib.from_file },
-                (.[0] '/ =)     { __name importlib.load_file },
-                                { __name importlib.from_path }
-            }
-        },
-        ::list {
-            __name :# { importlib.import } ;
+    {
+        (__name :T ::sym =) {
+            __name importlib.from_path
+        } (__name :T ::str =) {
+            { .# Determine load command based on string type
+                (__name ".aya" N 0 :>) {
+                    __name importlib.from_file
+                } (__name.[0] '/ =) {
+                    __name importlib.load_file
+                } {
+                    __name importlib.from_path
+                }
+            } :?
+        } (__name :T ::list =) {
+            __name :# {importlib.import} ;
+        } {
+            "Bad name type: $__name" .D
         }
-    }
+    } :?
 }
 
 
@@ -196,20 +202,17 @@ def importlib::export {vars : importlib^,
         .# If exported is default (0), set it to a list
         __export__ 0 = {[]:__export__;} ?
         .# Add new exported
-        vars {?,
-            (1 =) {
+        {
+            (vars 1 =) {
                 1 :__export__;
-            },
-            (:T ::sym =) {
+            } (vars :T ::sym =) {
                 vars __export__ .B ;
-            },
-            (:T ::list =) {
+            } (vars :T ::list =) {
                 vars __export__ J :__export__;
-            },
-            {
+            } {
                 "export error: cannot export $vars" .D
             }
-        }
+        } :?
     } ?
 }
 
