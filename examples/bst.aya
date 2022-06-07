@@ -19,7 +19,7 @@ def bst::_print {node depth : bst^,
     } { "-":P } .?
 }
 
-def bst::_insert {data node parent::bst side::sym : bst^,
+def bst::_insert {data node parent::bst side::sym bst,
     node :T ::bst = {
         data node.data > {
             data node.right node ::right bst._insert
