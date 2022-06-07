@@ -153,7 +153,7 @@ exportall
 .#? ::list makepoly\n  generate a polynomial function with the given coefficients
 .{ Examples:
     aya> [1 0 4 5] makepoly :f
-    {[ 3 2 1 0 ] ^ [ 1 0 4 :-5 ] * S}
+    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * S}
     aya> 5 f
     140
     aya> [2 0] makepoly :double
@@ -215,4 +215,4 @@ exportall
 }:factors;
 
 .# Generate a normally distributed random number using the Box-Muller transform
-{.Q Ml :2 * .^ :2p .Q * Mc * }:randnorm;
+{.Q Ml -2 * .^ :2p .Q * Mc * }:randnorm;

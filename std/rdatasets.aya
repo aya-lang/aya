@@ -28,7 +28,7 @@ def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
     "Building index..." :P
     data :# {row : pkg(row.[0]) name(row.[1]),
         .# Add to url index
-        row.[:2] index.:["$pkg/$name"]
+        row.[-2] index.:["$pkg/$name"]
 
         .# Add to package index
         .# Add package list if it does not exist

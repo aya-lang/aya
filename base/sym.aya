@@ -20,7 +20,7 @@
     {,
         "overloadable" M? :# {
             .# Get <name> <op> as strings
-            :& "overloadable:.*$" & .[0] " " |.[:1] \ " " |.[0]
+            :& "overloadable:.*$" & .[0] " " |.[-1] \ " " |.[0]
             .# Lambda to apply to each <name> <op>
             ({name op,
                 .# If the name is "__add__/__radd__", only use the first one
@@ -56,7 +56,7 @@
         :V :#{l,
             .# Assign the reversed op to the standard one
             .# If the list length is 1, standard will be assigned to itself
-            l.[:1] l.[0] :=
+            l.[-1] l.[0] :=
         }
     }:_rev_overloads;
 

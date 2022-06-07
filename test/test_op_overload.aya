@@ -256,7 +256,7 @@
 };
 
 {,
-    [:2 1 0 :3.4] vec! :v;
+    [-2 1 0 -3.4] vec! :v;
     { v .| P "< 2 1 0 3.4 >" } test.test
     { v .! P "< -1 1 0 -1 >" } test.test
 };
@@ -277,7 +277,7 @@
 {,
     [1 2 3 4 5] vec! :v;
     { v.[0] 1 } test.test
-    { v.[:1] 5 } test.test
+    { v.[-1] 5 } test.test
 };
 
 "setindex..." :P

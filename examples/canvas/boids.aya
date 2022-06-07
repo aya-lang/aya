@@ -19,7 +19,7 @@ def boid::draw {self,
     self.pos.x self.pos.y 3 c.fillcircle
     .# Draw direction vector
     self.vel [0 0] =! {
-        self.vel normal :10 * self.pos + ~
+        self.vel normal -10 * self.pos + ~
         self.pos ~
         c.line
     } ?

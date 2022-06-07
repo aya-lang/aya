@@ -94,7 +94,7 @@ def stats::hist {l::list nbins::num : min max bin_size bins counter cumsum^,
     bin_size nbins L cumsum min + :bins;
 
     .# Set last bin to max value (prevent rounding errors)
-    max bins.:[:1];
+    max bins.:[-1];
 
     .# Create a list of counters
     [nbins,; 0] :counter;

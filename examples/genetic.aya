@@ -60,7 +60,7 @@ def population::calc_fitness {target::dna self,
 
 {
     cumsum        .# Create a cumultive sum list
-    :&.[:1] .Q *  .# Generate a random number between 0 and the total sum
+    :&.[-1] .Q *  .# Generate a random number between 0 and the total sum
     <             .# All items less than the number become 1, else 0
     0 N \;        .# Find the first 0
 }:pickweighted;
@@ -88,7 +88,7 @@ def population::pick {self : fit_list,
 .# Select the DNA with the highest fithess from
 .#    the population
 def population::best {self,
-    self.pop {.fitness} .C .[:1]
+    self.pop {.fitness} .C .[-1]
 }
 
 main {

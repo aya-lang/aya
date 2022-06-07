@@ -22,8 +22,8 @@ import ::canvas
     y yspeed ydir * +:y;
 
     .# Check bounds
-    x w rad - > x rad < | { xdir :1 * :xdir;} ?
-    y h rad - > y rad < | { ydir :1 * :ydir;} ?
+    x w rad - > x rad < | { xdir -1 * :xdir;} ?
+    y h rad - > y rad < | { ydir -1 * :ydir;} ?
 
     .# Draw the circle
     x y rad c.fillcircle

@@ -47,7 +47,7 @@ import ::golf
     ] #f
     
     .# expected result
-    [ 10 :-4 21 (7 3/)]
+    [ 10 -4 21 (7 3/)]
 
 } test.test
 

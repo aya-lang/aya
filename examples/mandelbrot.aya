@@ -5,8 +5,8 @@ import ::matrix
 60 :width;
 27 :height;
 
-[:2 0.5 width.linspace] matrix! :x;
-[1 :1  height.linspace] matrix! .t :y;
+[-2 0.5 width.linspace] matrix! :x;
+[1 -1  height.linspace] matrix! .t :y;
 y :0i1 * x + :a;
 
 aE matrix.zeros :z;
