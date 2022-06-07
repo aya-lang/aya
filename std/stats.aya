@@ -14,7 +14,7 @@ def stats::mean {
 .#? ::list stats.variance\n  population variance
 def stats::variance {set : m stats^,
     set stats.mean:m;
-    set#{m-2^}S setE /
+    set#{m- 2^}S setE /
 }
 
 

@@ -155,6 +155,19 @@ public class Parser {
 				in.backup();
 				tokens.add(parseNumber(in));
 			}
+			
+			// Negative Number Literal
+			else if (current == '-' && in.hasNext() && Character.isDigit(in.peek())) {
+				in.backup();
+				tokens.add(parseNumber(in));
+			}
+			
+			// Negative Decimal Literal (starting with -.)
+			else if (current == '-' && in.hasNext()  && in.peek() == '.'
+									&& in.hasNext(1) && Character.isDigit(in.peek(1))) {
+				in.backup();
+				tokens.add(parseNumber(in));
+			}
 
 			// Dot (operator/decimal)
 			else if (current == '.') {
@@ -465,7 +478,7 @@ public class Parser {
 			} else {
 				throw new SyntaxError(in.toString() + " is not a valid number");
 			}
-		} else if (CharUtils.isDigit(start) || start == '.') {
+		} else if (CharUtils.isDigit(start) || start == '.' || start == '-') {
 			StringBuilder num = new StringBuilder("" + start);
 
 			while (in.hasNext() && Character.isDigit(in.peek())) {
