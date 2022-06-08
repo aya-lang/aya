@@ -1,4 +1,5 @@
 import ::canvas
+import ::time
 
 .# Initialize the canvas
 400:w;
@@ -13,6 +14,8 @@ import ::canvas
 2.2:yspeed;
 1:xdir;
 1:ydir;
+
+50 time.rate! :limiter;
 
 {
     c.clear
@@ -30,7 +33,7 @@ import ::canvas
 
     .# Update the canvas
     c.show
-    33:Z
+    limiter.sleep
 
     .# Check if the window is open
     c.isopen

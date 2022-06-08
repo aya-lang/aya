@@ -1,5 +1,6 @@
 import ::canvas
 import ::math
+import ::time
 
 .# Simple boid simulation
 
@@ -111,7 +112,9 @@ def boid::apply_behavior {all_boids self : seen_boids,
 }
 
 .# Create boids with random initial velocity
-[15,; [widthQ heightQ] [.Q.5- .Q.5-] [0 0] boid!]:boids;
+[30,; [widthQ heightQ] [.Q.5- .Q.5-] [0 0] boid!]:boids;
+
+50 time.rate! :limiter;
 
 {
     boids :# {boid,
@@ -122,7 +125,7 @@ def boid::apply_behavior {all_boids self : seen_boids,
     boids#.draw;
 
     c.show
-    20 :Z
+    limiter.sleep
     c.isopen
 } W
 

@@ -51,8 +51,8 @@ points 70 * :points;
     a.x a.y b.x b.y c.line
 }:draw_edge;
 
-.# Render at 30 FPS
-30 time.rate! :limiter;
+.# Render at 50 FPS
+50 time.rate! :limiter;
 
 .# Draw loop
 {

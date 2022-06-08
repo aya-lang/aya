@@ -1,4 +1,5 @@
 import ::canvas
+import ::time
 
 struct particle {
     pos   .# vector
@@ -56,6 +57,8 @@ def particle::dead {self,
 .# Initialize all lifetimes
 particles :# {255Q \.:life};
 
+60 time.rate! :limiter;
+
 .# Simulation loop
 {
     .# Update particles
@@ -68,7 +71,7 @@ particles :# {255Q \.:life};
     particles :# { .draw };
 
     c.show
-    10:Z
+    limiter.sleep
     c.isopen
 } W
 
