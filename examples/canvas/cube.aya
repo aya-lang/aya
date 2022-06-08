@@ -77,10 +77,10 @@ points 70 * :points;
 
     .# Rotate the points
     points :points_rotated;
-    rotation_y points_rotated * :points_rotated;
-    rotation_x points_rotated * :points_rotated;
-    rotation_z points_rotated * :points_rotated;
-    projection points_rotated * :points_projected;
+    rotation_y points_rotated .matmul :points_rotated;
+    rotation_x points_rotated .matmul :points_rotated;
+    rotation_z points_rotated .matmul :points_rotated;
+    projection points_rotated .matmul :points_projected;
 
     .# Apply canvas transform
     .# (Move the points to the center of the canvas)

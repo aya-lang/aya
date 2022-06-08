@@ -76,15 +76,11 @@ def matrix::__repr__ {self,
 def matrix ::__mul__ { other self,
     other :T {?=,
         ::matrix {
-            { 
-                (other.c self.r =) {
-                    other.rows self.rows :{la.mul} self.M._new
-                } (otherE selfE =) {
-                    other.rows self.rows {*} .& self.M._new
-                } {
-                    "dimension mismatch" .D
-                }
-            } :?
+            selfE otherE = {
+                other.rows self.rows {*} .& self.M._new
+            } {
+                self.rows other.rows  {{*}:*{~}O}:*{~}O self.M._new
+            } .?
         },
         ::num {
             self.rows {other *} O self.M._new
@@ -97,6 +93,9 @@ def matrix::__rmul__ {self n::num,
     self.rows [n {*}].* O self.M._new
 }
 
+def matrix::matmul {other self, 
+    other.rows self.rows :{la.mul} self.M._new
+}
 
 def matrix ::__add__ { other self,
     other :T {?=,
