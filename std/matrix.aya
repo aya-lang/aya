@@ -76,23 +76,7 @@ def matrix::__repr__ {self,
 def matrix ::__mul__ { other self,
     other :T {?=,
         ::matrix {
-            selfE otherE = {
-                other.rows self.rows {*} .& self.M._new
-            } {
-                .{ The following code does the operation:
-                    aya> x
-                    [[ 1 2 3 ]]
-                    aya> y
-                    [[ 1 ]
-                     [ 2 ]
-                     [ 3 ]]
-                    aya> x y *
-                    [[ 1 2 3 ]
-                     [ 2 4 6 ]
-                     [ 3 6 9 ]]
-                .}
-                other.rows self.rows  {{*}:*{~}O}:*{~}O self.M._new
-            } .?
+            other.rows self.rows :{la.mul} self.M._new
         },
         ::num {
             self.rows {other *} O self.M._new
