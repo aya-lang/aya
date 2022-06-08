@@ -76,7 +76,15 @@ def matrix::__repr__ {self,
 def matrix ::__mul__ { other self,
     other :T {?=,
         ::matrix {
-            other.rows self.rows :{la.mul} self.M._new
+            { 
+                (other.c self.r =) {
+                    other.rows self.rows :{la.mul} self.M._new
+                } (otherE selfE =) {
+                    other.rows self.rows {*} .& self.M._new
+                } {
+                    "dimension mismatch" .D
+                }
+            } :?
         },
         ::num {
             self.rows {other *} O self.M._new
