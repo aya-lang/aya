@@ -97,15 +97,15 @@ def dataframe::_numgetindex {index::num self : dataframe^,
 }
 
 def dataframe::__getindex__ { index self : dataframe^,
-    index :T {?=,
-        ::num {
+    {
+        (index :T ::num =) {
             index self._numgetindex
-        },
-        ::str {
+        } (index :T ::str =) {
             index self._get_col
-        },
-        {"Unsupported index: $index" .D}
-    }
+        } {
+            "Unsupported index: $index" .D
+        }
+    } :?
 }
 
 .{

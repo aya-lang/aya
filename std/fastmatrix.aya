@@ -86,15 +86,15 @@ def matrix::__repr__ {self,
     op_sym.rev :rop_sym;
 
     def matrix op_sym {other self : op^ rop^,
-        other :T {?=,
-            ::matrix {
+        {
+            (other :T ::matrix =) {
                 other._data self._data op self._ncols self.M._new_data
-            },
-            ::num {
+            } (other :T ::num =) {
                 self._data rop self._ncols self.M._new_data
-            },
-            { "TypeError: Invalid operation $(other:T) $(self:T) *" .D }
-        }
+            } {
+                "TypeError: Invalid operation $(other:T) $(self:T) *" .D
+            }
+        } :?
     }
 
     def matrix rop_sym {self n::num : op_to_n^, self._data op_to_n self._ncols self.M._new_data}
@@ -102,8 +102,8 @@ def matrix::__repr__ {self,
 
 
 def matrix ::__mul__ { other self,
-    other :T {?=,
-        ::matrix {
+    {
+        (other :T ::matrix =) {
             selfE otherE = {
                 other._data self._data * self._ncols self.M._new_data
             } {
@@ -121,12 +121,12 @@ def matrix ::__mul__ { other self,
                 .}
                 other.rows self.rows  {{*}:*{~}O}:*{~}O self.M._new
             } .?
-        },
-        ::num {
+        } (other :T ::num =) {
             self._data other * self._ncols self.M._new_data
-        },
-        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
-    }
+        } {
+            "TypeError: Invalid operation $(other:T) $(self.T) *" .D
+        }
+    } :?
 }
 
 def matrix::__rmul__ {self n::num,
@@ -135,19 +135,19 @@ def matrix::__rmul__ {self n::num,
 
 
 def matrix ::__add__ { other self,
-    other :T {?=,
-        ::matrix {
+    {
+        (other :T ::matrix =) {
             selfE otherE = {
                 other._data self._data + self._ncols self.M._new_data
             } {
                 self.rows other.rows  {{+}:*{~}O}:*{~}O self.M._new
             } .?
-        },
-        ::num {
+        } (other :T ::num =) {
             self.rows other + self.M._new_data
-        },
-        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
-    }
+        } {
+            "TypeError: Invalid operation $(other:T) $(self.T) *" .D
+        }
+    } :?
 }
 
 def matrix::__radd__ {self n::num,
@@ -471,17 +471,17 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 }
 
 def matrix::__setindex__ {val ix self : r c matrix^,
-    ix :T {?=,
-        ::matrix {
+    {
+        (ix :T ::matrix =) {
             val :T ::matrix = {val._data :val;} ?
             val self._data ix._data D;
             self
-        },
-        ::list {
+        } (ix :T ::list =) {
             val ix.[0] ix.[1] self._set
-        },
-        {"TypeError: Invalid operation $(other:T) $(self.T) *" .D}
-    }
+        } {
+            "TypeError: Invalid operation $(other:T) $(self.T) *" .D
+        }
+    } :?
 }
 
 .##############

@@ -100,36 +100,32 @@ def importlib::from_path {__file : importlib^ __mod,
 def importlib::do_export {__importname __module : importlib^,
     "$__importname <module> importlib::export" importlib._log_debug
     "  export: $(__module.__export__)" importlib._log_debug
-    {0?,
+    {
         (__module ::__export__ N!) {
             "__export__ not found in module $__importname. Was it deleted?" .D
-        },
-        (__module.__export__ 1 =) {
+        } (__module.__export__ 1 =) {
                 "Exporting all variables from $__importname..." importlib._log_debug
                 .# Introduce scope to catch any names we never want to export
                 ({: __export__ __main__ __file__,
                     __module W
                 })
-        },
-        (__module.__export__ 0 =) {
+        } (__module.__export__ 0 =) {
             (__importname :T ::sym =) {
                 "Exporting entire module as import name: $__importname" importlib._log_debug
                 __module __importname :=;
             } {
                 "Export in default state but import is not a symbol, not exporting anything" importlib._log_debug
             } .?
-        },
-        (__module.__export__ :T ::list =) {
+        } (__module.__export__ :T ::list =) {
             "Exporting variables from $__importname" importlib._log_debug
             __module.__export__ :# {var,
                 "  exporting $var..." importlib._log_debug
                 __module var I var :=;
             };
-        },
-        {
+        } {
             "Invalid value for __export__ when importing $__importname: $(__module.__export__)" .D
         }
-    }
+    } :?
 }
 
 .{
@@ -163,19 +159,25 @@ def importlib::from_file {filepath : importlib^ all_possible mod,
     Use __* variables so exported variables are not shadowed
 .}
 def importlib::import {__name : importlib^,
-    __name :T {?=,
-        ::sym {__name importlib.from_path},
-        ::str {
-            __name {?,
-                (".aya" N 0 :>) { __name importlib.from_file },
-                (.[0] '/ =)     { __name importlib.load_file },
-                                { __name importlib.from_path }
-            }
-        },
-        ::list {
-            __name :# { importlib.import } ;
+    {
+        (__name :T ::sym =) {
+            __name importlib.from_path
+        } (__name :T ::str =) {
+            { .# Determine load command based on string type
+                (__name ".aya" N 0 :>) {
+                    __name importlib.from_file
+                } (__name.[0] '/ =) {
+                    __name importlib.load_file
+                } {
+                    __name importlib.from_path
+                }
+            } :?
+        } (__name :T ::list =) {
+            __name :# {importlib.import} ;
+        } {
+            "Bad name type: $__name" .D
         }
-    }
+    } :?
 }
 
 
@@ -196,20 +198,17 @@ def importlib::export {vars : importlib^,
         .# If exported is default (0), set it to a list
         __export__ 0 = {[]:__export__;} ?
         .# Add new exported
-        vars {?,
-            (1 =) {
+        {
+            (vars 1 =) {
                 1 :__export__;
-            },
-            (:T ::sym =) {
+            } (vars :T ::sym =) {
                 vars __export__ .B ;
-            },
-            (:T ::list =) {
+            } (vars :T ::list =) {
                 vars __export__ J :__export__;
-            },
-            {
+            } {
                 "export error: cannot export $vars" .D
             }
-        }
+        } :?
     } ?
 }
 

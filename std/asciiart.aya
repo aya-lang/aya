@@ -206,18 +206,17 @@ def asciiart::__rpow__ {self num,
        def
 .}
 def asciiart::__getindex__ {index self,
-    index :T {?=,
-        ::str {
+    {
+        (index :T ::str =) {
             index self.replace
-        },
-        ::char {
+        } (index :T ::char =) {
             index self.fill
-        },
-        ::asciiart {
+        } (index :T ::asciiart =) {
             index self.replace_aa
-        },
-        { "asciiart::__getindex__ invalid index type" .D}
-    }
+        } {
+            "asciiart::__getindex__ invalid index type" .D
+        }
+    } :?
 }
 
 .{ Example:

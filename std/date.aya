@@ -23,11 +23,19 @@ export [::date ::dates ::dateunit]
     .# ].S }:__new__;
 
     {in meta,
-        in :T {?=,
-            ::num {{, in:ms} meta :M },
-            ::str {{, in "yyyy-MM-dd" :{date.parse}:ms} meta :M},
-            {"Expected ::str or ::num. recieved: $in" .D}
-        }
+        {
+            (in :T ::num =) {
+                {, 
+                    in:ms
+                } meta :M
+            } (in :T ::str =) {
+                {, 
+                    in "yyyy-MM-dd" :{date.parse} :ms;
+                } meta :M
+            } {
+                "Expected ::str or ::num. recieved: $in" .D
+            }
+        } :?
     }:__new__;
 
     {.ms "MMM dd, yyyy h:mm:ss a" :{date.format}}:__repr__;

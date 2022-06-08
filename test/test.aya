@@ -35,7 +35,6 @@
 "test/range" load_test
 "test/unicode" load_test
 "test/misc" load_test
-"test/match" load_test
 "test/test_op_overload" load_test
 
 .# Base

@@ -11,7 +11,6 @@ import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.MatchInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.obj.Obj;
@@ -41,9 +40,6 @@ public class BlockToken extends CollectionToken {
 			return new BlockLiteralInstruction(new Block(Parser.generate(blockData.get(0))));
 		} else {
 			TokenQueue header = blockData.get(0);
-			if (isMatchHeader(header)) {
-				return parseMatchInstruction(blockData);
-			}
 
 			if (blockData.size() == 2) {
 				//Empty header, dict literal
@@ -92,127 +88,6 @@ public class BlockToken extends CollectionToken {
 				throw new SyntaxError("Block " + data + " contains too many parts");
 			}
 		}
-	}
-	
-	private Instruction parseMatchInstruction(ArrayList<TokenQueue> blockData) throws ParserException {
-		TokenQueue header = blockData.get(0);
-		String orig_header = header.toString();
-		
-		// Captures
-		int num_captures = 1; // Default is 1
-		if (header.peek().isa(Token.NUMERIC)) {
-			NumberToken nt = (NumberToken)header.next();
-			try {
-				num_captures = nt.numValue().toInt();
-			} catch (NumberFormatException nfe) {
-				throw new SyntaxError("Invalid numeric token for match statement: " + nt.data);
-			}
-		}
-		
-		// '?' token
-		if (header.peek().isa(Token.OP) && header.peek().data.equals("?") ) {
-			header.next(); // Discard '?'
-		} else {
-			throw new SyntaxError("Expected '?' token in match header. Got " + orig_header);
-		} 
-
-		
-		// Test expr
-		Block test_expr = null;
-		if (header.hasNext() && !header.peek().isa(Token.VAR)) {
-			Token t = header.next();
-			// Single operator?
-			if (t.isa(Token.OP)) {
-				test_expr = new Block();
-				test_expr.add(t.getInstruction());
-			} else if (t.isa(Token.LAMBDA)) {
-				LambdaToken lt = (LambdaToken)t;
-				test_expr = new Block();
-				test_expr.addAll(lt.generateInstructionsForFirst().getInstrucionList());
-			} else if (t.isa(Token.BLOCK)) {
-				BlockToken bt = (BlockToken)t;
-				Instruction instr = bt.getInstruction();
-				if (instr instanceof BlockLiteralInstruction) {
-					BlockLiteralInstruction bli = (BlockLiteralInstruction)instr;
-					test_expr = bli.getRawBlock();
-				} else {
-					throw new SyntaxError("Invalid test ecpression: " + instr.repr(new ReprStream()).toStringOneline());
-				}
-			}
-		}
-		
-		// Initializer
-		Block initializer = null;
-		if (header.hasNext()) {
-			initializer = new Block(Parser.generate(header));
-		}
-		
-		MatchInstruction m = new MatchInstruction(num_captures, initializer, test_expr);
-		
-		blockData.remove(0);
-		parseMatchInstructionConditions(m, blockData);
-		return m;
-		
-	}
-
-
-	private void parseMatchInstructionConditions(MatchInstruction m, ArrayList<TokenQueue> blockData) throws ParserException {
-		int condition_count = 0;
-		for (int i = 0; i < blockData.size(); i++) {
-			TokenQueue tokens = blockData.get(i);
-			boolean isLast = i == blockData.size() - 1;
-		
-			// Special cases:
-			// There are no tokens in this section
-			if (tokens.size() == 0) {
-				throw new SyntaxError("Empty condition in match expression: {" + data + "}");
-			}
-			// There is exactly one token in this section
-			else if (tokens.size() == 1) {
-				if (isLast) {
-					InstructionStack is = Parser.generate(blockData.get(i));
-					if (is.size() == 1 && is.peek(0) instanceof BlockLiteralInstruction) {
-						BlockLiteralInstruction bli = (BlockLiteralInstruction)is.peek(0);
-						m.setFallback(bli.getRawBlock());
-					} else {
-						m.setFallback(new Block(is));
-					}
-					break;
-				} else {
-					throw new SyntaxError("Match condition with single instruction only permitted as last (fallback) condition."
-							+ "Condition (" + tokens.toString() + ") has one instruction but is not the last contion in the list in block\n{" + data + "}");
-				}
-			}
-		
-			Token last = tokens.popBack();
-			Instruction result = last.getInstruction();
-			Block result_block = null;
-			if (result instanceof BlockLiteralInstruction) {
-				BlockLiteralInstruction bli = (BlockLiteralInstruction)result;
-				result_block = bli.getRawBlock();
-			} else {
-				result_block = new Block();
-				result_block.add(result);
-			}
-
-			Block cond = new Block(Parser.generate(tokens));
-			
-			m.addCondition(cond, result_block);
-			condition_count++;
-		}
-		if (condition_count == 0) {
-			throw new SyntaxError("Match expression contains 0 conditions: {" + data + "}");
-		}
-	}
-
-
-	private static boolean isMatchHeader(TokenQueue ts) {
-		for (Token t : ts.getArrayList()) {
-			if (t instanceof OperatorToken && t.data.equals("?")) {
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	private Pair<BlockHeader, HashMap<Symbol, Block>> generateBlockHeader(TokenQueue tokens) throws ParserException {
