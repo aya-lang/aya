@@ -46,9 +46,9 @@
     604800:week;
     31536000:yr:year;
 
-    1e(-3):milisecond:ms;
-    1e(-6):microsecond;
-    1e(-9):nanosecond:ns;
+    :1e-3:milisecond:ms;
+    :1e-6:microsecond;
+    :1e-9:nanosecond:ns;
 
 
     .# Data

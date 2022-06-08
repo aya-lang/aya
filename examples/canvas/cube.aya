@@ -1,0 +1,117 @@
+.# 3D Projected Cube
+.#
+.# Implementation of Coding Challenge #112 by The Coding Train
+.# https://thecodingtrain.com/
+
+import ::canvas
+import ::matrix
+import ::color
+import ::time
+
+color.colors.black :black;
+color.colors.white :white;
+
+.# Create a new canvas
+{, "3D Cube":name 0:autoflush } canvas! :c;
+2 c.set_stroke_width
+
+0 :theta;
+
+.# 3D cube vertices
+[[-1 -1  1]
+ [ 1 -1  1]
+ [ 1  1  1]
+ [-1  1  1]
+ [-1 -1 -1]
+ [ 1 -1 -1]
+ [ 1  1 -1]
+ [-1  1 -1]] matrix! :points;
+
+.# transpose so each x,y,z is one column
+.# [[x0 x1 ..]
+.#  [y0 y1 ..]
+.#  [z0 z1 ..]]
+points.t :points;
+
+.# Scale the cube
+points 70 * :points;
+
+.# Tf mat
+.# Draw the cube in the middle of the screen rather than the corner
+[c.width 2/ c.height 2/] pointsE.[1] L matrix! .t :canvas_tf;
+
+.# 2D Projection
+[[1 0 0]
+ [0 1 0]] matrix! :projection;
+
+.# Function to draw an edge
+{i j points : a b,
+    points.cols.[i] :a;
+    points.cols.[j] :b;
+    a.x a.y b.x b.y c.line
+}:draw_edge;
+
+.# Render at 50 FPS
+50 time.rate! :limiter;
+
+.# Draw loop
+{
+    .#
+    .# UPDATE
+    .#
+
+    theta 0.02 + :theta;
+
+    .# Compute rotation matrices
+    [[1  0         0            ]
+     [0  theta Mc  theta Ms -1 *]
+     [0  theta Ms  theta Mc     ]] matrix! :rotation_x;
+
+    [[theta Mc  0  theta Ms -1 *]
+     [0         1  0            ]
+     [theta Ms  0  theta Mc     ]] matrix! :rotation_y;
+
+    [[theta Mc  theta Ms -1 *  0]
+     [theta Ms  theta Mc       0]
+     [0         0              1]] matrix! :rotation_z;
+
+    .# Rotate the points
+    points :points_rotated;
+    rotation_y points_rotated * :points_rotated;
+    rotation_x points_rotated * :points_rotated;
+    rotation_z points_rotated * :points_rotated;
+    projection points_rotated * :points_projected;
+
+    .# Apply canvas transform
+    .# (Move the points to the center of the canvas)
+    points_projected canvas_tf + :canvas_points;
+
+    .#
+    .# DRAW
+    .#
+
+    .# Start with a black background
+    c.clear
+    black c.set_color
+    0 0 c.width c.height c.fillrect
+    .# Use white pencil
+    white c.set_color
+
+    .# Draw points (columns)
+    canvas_points .cols :# {p,
+        p.x p.y 5 c.fillcircle
+    };
+
+    .# Draw edges
+    4.R :# {i,
+        (i, i 1+ 4%) canvas_points draw_edge
+        (i 4+, i 1+ 4% 4+) canvas_points draw_edge
+        (i, i 4+) canvas_points draw_edge
+    };
+
+    c.show
+    limiter.sleep
+    c.isopen
+} W
+
+c.close

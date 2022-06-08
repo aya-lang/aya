@@ -133,7 +133,7 @@ exportall
 {1\/MC}:asec;               .#? N asec \n  inverse secant
 {1\/MT}:acot;               .#? N acot \n  inverse cotangent
 
-{$Me\TMe-2/}:sinh;          .#? N sinh \n  hyperbolic sine
+{$Me\TMe- 2/}:sinh;          .#? N sinh \n  hyperbolic sine
 {$Me\TMe+2/}:cosh;          .#? N cosh \n  hyperbolic cosine
 [{$} sinh.` {\}
      cosh.` {/}].* :tanh;   .#? N tanh \n  hyperbolic tangent
@@ -143,17 +143,17 @@ exportall
 
 {$2^1+.^+Ml}:asinh;             .#? N asinh \n  inverse hyperbolic sine
 {$$1-.^\1+.^*+Ml}:acosh;        .#? N acosh \n  inverse hyperbolic cosine
-{$1\+Ml\1\-Ml-0.5*}:atanh;      .#? N atanh \n  inverse hyperbolic tangent
+{$1\+Ml\1\-Ml- .5*}:atanh;      .#? N atanh \n  inverse hyperbolic tangent
 {$1\/\2^1\/1+.^+Ml}:acsch;      .#? N acsch \n  inverse hyperbolic cosecant
 {1\/$$1+.^\1-.^*+Ml}:asech;     .#? N asech \n  inverse hyperbolic secant
-{1\/$1\-Ml\1+Ml\-0.5*}:acoth;   .#? N acoth \n  inverse hyperbolic cotangent
+{1\/$1\-Ml\1+Ml\- .5*}:acoth;   .#? N acoth \n  inverse hyperbolic cotangent
 
 
 
 .#? ::list makepoly\n  generate a polynomial function with the given coefficients
 .{ Examples:
     aya> [1 0 4 5] makepoly :f
-    {[ 3 2 1 0 ] ^ [ 1 0 4 :-5 ] * S}
+    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * S}
     aya> 5 f
     140
     aya> [2 0] makepoly :double
@@ -215,4 +215,4 @@ exportall
 }:factors;
 
 .# Generate a normally distributed random number using the Box-Muller transform
-{.Q Ml :2 * .^ :2p .Q * Mc * }:randnorm;
+{.Q Ml -2 * .^ :2p .Q * Mc * }:randnorm;

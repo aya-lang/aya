@@ -17,8 +17,8 @@
 
 .# Get variables as a dict
 .# pattern to get locals:
-.#  :G .[:1]
-{ {: foo, 10 :G.[:1].:foo; foo }~ 10 } test.test
+.#  :G .[-1]
+{ {: foo, 10 :G.[-1].:foo; foo }~ 10 } test.test
 
 { ["a" "b" "c"] :#{"."+} ["a." "b." "c."]} test.test
 

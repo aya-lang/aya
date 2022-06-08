@@ -2,6 +2,7 @@ import ::math
 import ::canvas
 import ::color
 import ::random
+import ::time
 
 color.colors.black :black;
 color.colors.white :white;
@@ -74,6 +75,7 @@ def attractor::show {self,
 black cvs.set_color
 0 0 cvs.width cvs.height cvs.fillrect
 
+50 time.rate! :limiter;
 {
   .# Update movers
   ms :# {m,
@@ -94,7 +96,7 @@ black cvs.set_color
   a.show
   cvs.show
 
-  10:Z
+  limiter.sleep
 
   cvs.isopen
 } W

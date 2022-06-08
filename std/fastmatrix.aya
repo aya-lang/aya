@@ -365,7 +365,7 @@ def matrix::__tail__ {self n::list : d,
     n.[0] .>
     .# create empty list equal to the length of the last element
     .# ex: cols=5 then create [0 0 0 0 0]
-    :1 dot_i E 0 \L :d;
+    -1 dot_i E 0 \L :d;
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 

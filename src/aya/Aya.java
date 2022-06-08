@@ -23,6 +23,7 @@ import aya.ext.fstream.FStreamInstructionStore;
 import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.image.ImageInstructionStore;
 import aya.ext.json.JSONInstructionStore;
+import aya.ext.la.LinearAlgebraInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
@@ -275,6 +276,7 @@ public class Aya extends Thread {
 		_namedInstructionStores.add(new DateInstructionStore());
 		_namedInstructionStores.add(new SocketInstructionStore());
 		_namedInstructionStores.add(new ColorInstructionStore());
+		_namedInstructionStores.add(new LinearAlgebraInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(getInstance());

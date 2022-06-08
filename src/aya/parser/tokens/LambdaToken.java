@@ -37,22 +37,7 @@ public class LambdaToken extends CollectionToken {
 	
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		
-		//Is it a negative number?
-		if(col.size() == 2 && col.get(0).isa(Token.OP)){
-			//Is it the negation op?
-			OperatorToken op = (OperatorToken) col.get(0);
-			if(op.getOpType() == OperatorToken.STD_OP && op.getData().charAt(0) == '-') {
 
-				//Parse the number and negate it
-				Token t = col.get(1);
-				if(t.isa(Token.NUMERIC)) {
-					return new DataInstruction(new Num(Double.parseDouble(t.getData())*-1));
-				} 
-			}
-		}
-		
-		
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> lambdaData = getLambdaData();
 		if(lambdaData.size() == 1) {

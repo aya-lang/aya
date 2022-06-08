@@ -253,7 +253,7 @@ importlib __aya__.:importlib;
 .# from ::math import [::sin ::cos]
 .# from ::io import ::path
 {
-    {:&.[0]~ \.[:1]~ __aya__.importlib.from} 3 :` 
+    {:&.[0]~ \.[-1]~ __aya__.importlib.from} 3 :` 
 }:from;
 
 .# main {do stuff...}

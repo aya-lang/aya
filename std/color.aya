@@ -172,7 +172,7 @@ def color::rgbtohsv {r g b color : h s v delta maxv minv,
         delta maxv/:s;
     } {
         0:s;
-        (-1):h;
+        -1:h;
     } .?
     [h s v]
 }

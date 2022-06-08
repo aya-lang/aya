@@ -76,23 +76,15 @@ def matrix::__repr__ {self,
 def matrix ::__mul__ { other self,
     {
         (other :T ::matrix =) {
-            selfE otherE = {
-                other.rows self.rows {*} .& self.M._new
-            } {
-                .{ The following code does the operation:
-                    aya> x
-                    [[ 1 2 3 ]]
-                    aya> y
-                    [[ 1 ]
-                     [ 2 ]
-                     [ 3 ]]
-                    aya> x y *
-                    [[ 1 2 3 ]
-                     [ 2 4 6 ]
-                     [ 3 6 9 ]]
-                .}
-                other.rows self.rows  {{*}:*{~}O}:*{~}O self.M._new
-            } .?
+            { 
+                (other.c self.r =) {
+                    other.rows self.rows :{la.mul} self.M._new
+                } (otherE selfE =) {
+                    other.rows self.rows {*} .& self.M._new
+                } {
+                    "dimension mismatch" .D
+                }
+            } :?
         } (other :T ::num =) {
             self.rows {other *} O self.M._new
         } {
@@ -337,7 +329,7 @@ def matrix::__tail__ {self n::list : d,
     n.[0] .>
     .# create empty list equal to the length of the last element
     .# ex: cols=5 then create [0 0 0 0 0]
-    :1 dot_i E 0 \L :d;
+    -1 dot_i E 0 \L :d;
     .# Replace 0s with the empty list
     :# {$ 0 = {;d} ?}
 

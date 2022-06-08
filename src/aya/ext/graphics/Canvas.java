@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,6 +38,7 @@ public class Canvas {
 	private JFrame _frame;
 	private boolean _show_on_refresh; // If true, call show() when refresh() is called, if false no-op
 	private AffineTransform _at;
+	private BufferStrategy _buf_strat;
 	
 	
 	public Canvas(String name, int width, int height, double scale) {
@@ -95,6 +97,9 @@ public class Canvas {
 			_frame.setLocationRelativeTo(comp);
 			_frame.setVisible(true);
 			
+			_frame.createBufferStrategy(2);
+			_buf_strat = _frame.getBufferStrategy();
+			
 			_frame.addWindowListener(new WindowAdapter() {
 				@Override
 		        public void windowClosing(WindowEvent event) {
@@ -102,7 +107,9 @@ public class Canvas {
 		        }
 			});
 		} else {
-			_frame.repaint();
+			do {
+				_frame.repaint();
+			} while (_buf_strat.contentsLost());
 		}
 	}
 	

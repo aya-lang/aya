@@ -1,4 +1,5 @@
 import ::canvas
+import ::time
 
 .# Initialize the canvas
 400:w;
@@ -14,6 +15,8 @@ import ::canvas
 1:xdir;
 1:ydir;
 
+50 time.rate! :limiter;
+
 {
     c.clear
 
@@ -22,15 +25,15 @@ import ::canvas
     y yspeed ydir * +:y;
 
     .# Check bounds
-    x w rad - > x rad < | { xdir :1 * :xdir;} ?
-    y h rad - > y rad < | { ydir :1 * :ydir;} ?
+    x w rad - > x rad < | { xdir -1 * :xdir;} ?
+    y h rad - > y rad < | { ydir -1 * :ydir;} ?
 
     .# Draw the circle
     x y rad c.fillcircle
 
     .# Update the canvas
     c.show
-    33:Z
+    limiter.sleep
 
     .# Check if the window is open
     c.isopen

@@ -69,7 +69,7 @@
         .!
         $:T ::str = {
             .# If it is a string, test if it has quotes and remove them
-            .trim $ [0 :1]I "\"\"" = {B;V;} ?
+            .trim $ [0 -1]I "\"\"" = {B;V;} ?
         } ?
     }:parsenum;
 
@@ -98,7 +98,7 @@
         {
             (s E 2 <) {
                 s
-            } (s.[:1] '" = s.[0] '" = &) {
+            } (s.[-1] '" = s.[0] '" = &) {
                 s $ \ ; B ; V ;
             } {
                 s

@@ -22,7 +22,7 @@ b mp.add
 "Example Multi Plot" mp.:suptitle;
 
 .# Other plot parameters
-[:2 6]   mp.y.:lim;
+[-2 6]   mp.y.:lim;
 [0 :2p]  mp.x.:lim;
 1        mp.:legend;
 "f(x)"   mp.y.:label;

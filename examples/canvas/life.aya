@@ -1,6 +1,7 @@
 import ::matrix
 import ::golf
 import ::viewmat
+import ::time
 
 .# Life function
 .# Algorithm based off the APL implementation here:
@@ -12,13 +13,15 @@ import ::viewmat
 
 mat.rows 10 viewmat_scaled :cvs;
 
+30 time.rate! :limiter;
+
 mat {
     life $
     1 \ - .# invert so viewmat draws black pixels on white canvas
     .rows cvs.viewmat
     cvs.show
 
-    10 :Z
+    limiter.sleep
     cvs.isopen
 } W
 
