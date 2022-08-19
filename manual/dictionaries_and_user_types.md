@@ -76,12 +76,13 @@ For example:
 ```
 aya> {, 0:x } :dict;
 aya> 1 dict.:[::y]
+aya> dict
 {,
   0:x;
   1:y;
 }
 
-aya> dict :# {k v, v 1 +}
+aya> dict :# {k v, v 1 + dict.:[k]}
 aya> dict
 {,
   1:x;
@@ -174,7 +175,7 @@ Using metatables, dictionaries, and overloading we can define our own types (or 
   }:repr:str;
 
   {self,
-    self.x 2^ self.y 2^ + .^
+    self.x 2^ self.y 2^ + Mq
   }:length;
 
   .# Operator Overload (+)

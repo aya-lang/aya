@@ -31,7 +31,7 @@ A comma (`,`) is used to specify that the block has a header. Anything before th
 If no colon is included in the header, all variable names will be used as arguments.
 
 ```
-{<arg1> <arg2> … <argN>, <block body>}
+{<arg1> <arg2> … <argN>, <blovk body>}
 ```
 
 If a colon is the first token in a block header, all variable names are considered local declarations.
@@ -51,7 +51,7 @@ Finally, if nothing is included in the block header, the block will be parsed as
 Arguments work like parameters in programming languages with anonymous/lambda functions. Before the block is evaluated, its arguments are popped from the stack and assigned as local variables for the block.
 
 ```
-aya> 4 {a, a 2 *}~
+aya> 4 {a, a2*}~
 8
 ```
 
@@ -65,7 +65,7 @@ aya> 8 4 {a b, [a b] R}~
 Arguments are local variables.
 
 ```
-aya> 2:n 3{n, n 2 ^}~ n
+aya> 2:n 3{n, n2^}~ n
 2 9.0 2
 ```
 
@@ -77,49 +77,40 @@ Arguments may have type assertions. Write a variable name followed by a symbol c
 1 2 {a::num b::num, a b +}~    .# => 3
 "1" 2 {a::num b::num, a b +}~   .# TYPE ERROR: Type error at ({ARGS}):
                              Expected (::num)
-                             Received ("1" )
+                             Recieved ("1" )
 ```
 
-If a user defined type defines a `__type__` key as a symbol in an objects meta, the symbol will be used for type assertions. This is done by defauld by `class` and `struct`. (See user types for more information).
+If a user defined type defines a `type` variable as a symbol. The symbol will be used for type assertions.
 
 ```
-struct point {x y}
+{,
+  ::vec :type;
 
-{p::point,
-    p.x p.y +
-}:sum_point;
+  ... define vec variables and functions ...
+}:vec;
 
-1 2 point!:p;
+{v::vec,
+  v :P
+}:printvec;
 ```
 
-The type of p is `::point`. Check using `:T` or directly accessing `.__type__`.
+The type checker will use the `.type` variable:
 
 ```
-aya> p.__type__
-::point
-aya> p :T
-::point
+aya> 1 2 vec! :v
+<1,2>
+aya> v printvec
+<1,2>
+aya> 3 printvec
+TYPE ERROR: Type error at ({ARGS}):
+	Expected (::vec)
+	Recieved (3 )
 ```
 
-The function `sum_point` can only be used with an object of type `::point`
-
-```
-aya> p sum_point
-3
-
-aya> 1 sum_point
-TYPE ERROR: {ARGS}
-
-aya> {, 2:x 3:y } sum_point
-TYPE ERROR: {ARGS}
-
-aya> {, 2:x 3:y {,::point:__type__}:__meta__ } sum_point
-5
-```
 
 ## Local Declarations
 
-Local declarations create a locally scoped variable for that block. Scope is discussed in greater detail in the Variable Scope section of this document. Local declarations can not have type declarations.
+Local declarations introduce a local scope for that variable. Scope is discussed in greater detail in the Variable Scope section of this document. Local declarations can not have type declarations.
 
 
 ```
@@ -144,44 +135,22 @@ aya> {: a(10) b c("hello") d([1 2]), [a b c d] } ~
 [ 10 0 "hello" [ 1 2 ] ]
 ```
 
-Initializers may contain variables
+Variables are initialized before run time and therefore can not be variables.
 
 ```
 aya> 99 :l
 99
-aya> {:a(l), a}
-{: a(l), a }
-aya> {:a(l), a}~
+
+aya> {: a(l), a} ~
+SYNTAX ERROR: Block header: Local Variables Initializer: Must contain only const values
+
+aya> .# define a as a function which evaluates to l
+aya> {: a({l}), a} ~
 99
-```
 
-The variable is captured in the caller's scope not the scope of where the function was defined. For capturing variables in the scope of there the block is defined, see the section below on closures.
-
-```
-aya> 3:a
-3
-aya> {:a(100),
-  "inside foo: a is $a":P  
-  {:b(a),
-    "inside bar: a is $a":P
-  }:bar;
-}:foo;
-aya> foo
-inside foo: a is 100
-aya> bar
-inside bar: a is 3
-```
-
-To capture a variable as a constant value in a block, use the `.use` block function.
-
-```
-{x :
-  double({x, 2 x *})
-  triple({x, 3 x *})
-  square({$*}),
-
-  x double triple square
-}:t
+aya> .# define a as a list which evaluates to l
+aya> {: a([l]), a} ~
+[ 99 ]
 ```
 
 ## Keyword Arguments
@@ -218,7 +187,7 @@ filename="", header=0, dtype=::num
 
 We now have the basic building blocks for defining functions: variable assignment and blocks. A function is simply a variable that is bound to a block. When the variable is called, the interpreted dumps the contents of the block onto the instruction stack and then continues evaluating. Functions can take advantage of anything that a normal block can including arguments and argument types.
 
-Here are a few examples of function definitions:  
+Here are a few examples of function definitions:
 `swapcase` takes a character and swaps its case.
 
 ```
@@ -238,24 +207,15 @@ aya> [1 2 3 4] roll;
 When used with block arguments, functions can be written in very readable ways. The following function swapitems takes a list and two indices and swaps the respective elements. It uses block arguments and type assertions.
 
 ```
-{l::list i::num j::num : tmp,
-    l.[i] :tmp;
-    l.[j] l.:[i];
-    tmp l.:[j];
-    l
+{listL i::num j::num : tmp,
+  list i I : tmp;
+  list j I  list i D
+  tmp list j D
+  list
 }:swapitems;
 
 aya> [1 2 3 4 5] 0 3 swapitems
 [ 4 2 3 1 5 ]
 ```
 
-## Closures
-
-```
-aya> {v, {x, v x +}.capture[::v] }:make_adder
-{v, {x, v x + } capture [::v] }
-aya> 5 make_adder :add_five
-{x : v(5), v x + }
-aya> 6 add_five
-11
-```
+To see more examples check out the standard library located at /base/std.aya
