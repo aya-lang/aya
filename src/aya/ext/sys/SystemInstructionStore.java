@@ -17,6 +17,9 @@ public class SystemInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
+		// Exec
+		addInstruction(new SysExecInstruction());
+		
 		// Readdir
 		addInstruction(new NamedInstruction("sys.readdir", "list files in working dir") {
 			@Override

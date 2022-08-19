@@ -210,6 +210,14 @@ public class Aya extends Thread {
 	public PrintStream getErr() {
 		return _err;
 	}
+	
+	public InputStream getIn() {
+		return _in;
+	}
+	
+	public Scanner getInScanner() {
+		return _scanner;
+	}
 
 	
 	public void setOut(OutputStream os) {
