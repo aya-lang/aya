@@ -1,8 +1,10 @@
+#!/usr/bin/env aya
+
 import ::sys
 import ::io
 
-"rst" sys.mkdir
-path.working "manual" + :p;
+path.aya "manual" + :p;
+p "rst" + P sys.mkdir
 
 .# Convert markdown files to rst files
 p sys.readdir.[{".md"N0>}] :# {file : filename out in,
