@@ -1,0 +1,9 @@
+#!/bin/sh
+#echo "$(pwd)"
+if echo $@ | grep -w -- '-i' > /dev/null; then
+    #echo "using rlrwap"
+    rlwrap java -jar "$(dirname $0)/../../aya.jar" "$(pwd)" "$@"
+else
+    #echo "not using rlrwap"
+    java -jar "$(dirname $0)/../../aya.jar" "$(pwd)" "$@"
+fi
