@@ -1,0 +1,14 @@
+import ::sys
+import ::io
+
+"rst" sys.mkdir
+path.working "manual" + :p;
+
+.# Convert markdown files to rst files
+p sys.readdir.[{".md"N0>}] :# {file : filename out in,
+    file "." |.[0] :filename;
+    p "rst/$filename.rst" + :out;
+    p file +: in;
+    "Converting $in -> $out" :P
+    ["pandoc" "--from=markdown" "--to=rst" "--output=$out"  "$in"] :{sys.exec}
+};

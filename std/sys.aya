@@ -22,6 +22,8 @@ def sys::mkdir {dir::str,
     dir :{sys.mkdir}
 }
 
-def sys::readdir {dir::str,
+def sys::readdir {dir,
+    dir P :dir;
+    dir "" = {"." :dir;} ?
     dir :{sys.readdir}
 }
