@@ -18,7 +18,8 @@ def sys::cd {dirname : path^,
 
 
 .#? ::str sys.mkdir\n  create a new directory
-def sys::mkdir {dir::str,
+def sys::mkdir {dir,
+    dir P :dir;
     dir :{sys.mkdir}
 }
 

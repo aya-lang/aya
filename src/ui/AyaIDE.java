@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import aya.Aya;
+import aya.AyaPrefs;
 import aya.InteractiveAya;
 
 
@@ -344,7 +345,11 @@ public class AyaIDE extends JFrame
 		
 		Aya aya = Aya.getInstance();
 		boolean readstdin = aya.isInputAvaiable();
-		if (args.length > 0 || readstdin) {
+		if (args.length > 0) {
+			// First arg is working directory
+			AyaPrefs.setWorkingDir(args[0]);
+		}
+		if (args.length > 1 || readstdin) {
 			// If reading from STDIN (piped input), don't use interactive mode
 			if (readstdin) InteractiveAya.setInteractive(false);
 			InteractiveAya.main(args);

@@ -53,6 +53,16 @@
 
 
 .# -------
+.# EXAMPLE
+.# -------
+
+{name,
+    [:{sys.ad} :9s "examples" :9s name ".aya"]S G~
+}:example;
+
+
+
+.# -------
 .# OPT_MOD
 .# -------
 
@@ -430,5 +440,5 @@ __aya__.extend.` :extend;
 
 ] :# {f,
     .# "Loading base/$f..." :P
-    load "base/$f"
+    load ([:{sys.ad} :9s "base/$f"]S)
 };

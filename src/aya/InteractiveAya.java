@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import aya.obj.symbol.SymbolTable;
 import aya.util.FileUtils;
@@ -25,6 +26,7 @@ public class InteractiveAya extends Thread {
 	private boolean _showBanner = true;
 	private String _initcode = null;
 	private String _usercmd = null;
+	private static ConcurrentLinkedQueue<String> _scripts;
 	
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
@@ -33,6 +35,7 @@ public class InteractiveAya extends Thread {
 	
 	public InteractiveAya(Aya aya) {
 		_aya = aya;
+		_scripts = new ConcurrentLinkedQueue<String>();
 	}
 
 	private static final String BANNER = ""
@@ -200,6 +203,7 @@ public class InteractiveAya extends Thread {
 	@Override
 	public void run() {
 		boolean running = true;
+		StringBuilder log = new StringBuilder();
 		
  		_aya.start();
  		
@@ -220,19 +224,35 @@ public class InteractiveAya extends Thread {
 		String input = "";
 		int status;
 				
-		while (running) {
+		//int num_scripts_at_start = _scripts.size();
+		log.append("_scripts.size(): " + _scripts.size() + "\n");
+
+		// interactive is set on startup. If true, this is an infinite REPL loop
+		while (running && (interactive || !_scripts.isEmpty())) {
+
+			log.append("-- in loop --\n");
+			log.append("_scripts.size(): " + _scripts.size() + "\n");
 			
 			if (_showPromptText && interactive) {
 				out.print(AyaPrefs.getPrompt());
 			}
 			
-			try {
-				input = scanner.nextLine();
-			} catch (NoSuchElementException e) {
-				// EOF Encountered
-				_aya.quit();
-				running = false;
+			// First run all scripts
+			if (_scripts.size() > 0) {
+				input = _scripts.poll();
+			} else {
+				try {
+					input = scanner.nextLine();
+				} catch (NoSuchElementException e) {
+					log.append("EOF");
+					// EOF Encountered
+					_aya.quit();
+					running = false;
+				}
 			}
+			log.append("input: {" + input + "}");
+			
+			//System.out.println("Processing input: {" + input + "}");
 			if (input.equals("")) {
 				continue;
 			}
@@ -247,6 +267,8 @@ public class InteractiveAya extends Thread {
 				
 				if (status != SKIP_WAIT) {		
 					try {
+						log.append("waiting for aya to finish...");
+						//_aya.waitForQueue();
 						_aya.wait();
 					} catch (InterruptedException e) {
 						out.println("Aya interrupted");
@@ -256,6 +278,8 @@ public class InteractiveAya extends Thread {
 					}
 				}
 			}
+
+			log.append("processing complete");
 			
 			
 			switch (status) {
@@ -269,9 +293,11 @@ public class InteractiveAya extends Thread {
 			}
 
 			_aya.getOut().flush();
-
+			
 		}
-		
+
+		//System.out.println("Not interactive and finished running all " + num_scripts_at_start + " scripts. Exiting..");
+		//System.out.println("Log: \n" + log.toString());
 	}
 	
 	private static String argCode(String[] args, int start) {
@@ -284,34 +310,46 @@ public class InteractiveAya extends Thread {
 	}
 	
 	public static void main(String[] args) {
+		//for (int i = 0; i < args.length; i++) {
+		//	System.out.println("[" + i + "]: " + "'" + args[i] + "'");
+		//}
 		
 		Aya aya = Aya.getInstance();
 		
 		//Use default system io (interactive in the terminal)
 		InteractiveAya iaya = new InteractiveAya(aya);
 		
-		if (args.length > 0) {
+		// argument[0] is always the working directory, check for args 1+
+		if (args.length > 1) {
 			
 			// Interactive Terminal
-			if (args[0].equals("-i")) {
-				iaya.initCode(argCode(args, 1));
+			if (args[1].equals("-i")) {
+				iaya.initCode(argCode(args, 2));
 			} 
 			
 			// Run a script 
-			else if (args[0].contains(".aya")) {
-				String filename = args[0];
+			else if (args[1].contains(".aya")) {
+				interactive = false;
+				String filename = args[1];
 					
-				String code = argCode(args,	1);
+				String code = argCode(args,	2);
 				
 				try {
-					String script = code + "\n" + FileUtils.readAllText(filename);
+					String script = (code + "\n" + FileUtils.readAllText(filename)).trim();
 					
-					aya.loadAyarc();
-					aya.queueInput(script);
-					aya.queueInput(Aya.QUIT);
-					
+					// Is there a shebang? If yes, drop the first line
+					if (script.charAt(0) == '#' && script.charAt(1) == '!') {
+						int line_end = script.indexOf('\n');
+						script = script.substring(line_end);
+					}
+
+					//System.out.println("Queueing script:");
+					//System.out.println(script);
+
+					iaya.queueScript(script);
 				} catch (IOException e) {
 					System.err.println("Cannot find file: " + filename);
+					System.err.println(e.getMessage());
 				} 
 
 			}
@@ -332,8 +370,10 @@ public class InteractiveAya extends Thread {
 		
 		System.exit(1);
 	}
-		
 	
+	private void queueScript(String script) {
+		_scripts.add(script);
+	}
 	
 	public final static void clearConsole() {
 	    try {

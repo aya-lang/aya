@@ -1,5 +1,6 @@
 package aya;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -91,12 +92,10 @@ public class Aya extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				
 				String input = _input.take();
 				
 				synchronized(this) {
 					if (input.equals(QUIT)) {
-						//notify();
 						break;
 					}
 					
@@ -104,7 +103,9 @@ public class Aya extends Thread {
 					_instance.run(input);
 					_lastInputRunTime = System.currentTimeMillis() - startTime;
 					
-					notify();
+					if (_input.isEmpty()) {
+						notify();
+					}
 				}
 				
 			} catch (InterruptedException e) {
@@ -186,7 +187,7 @@ public class Aya extends Thread {
 	public boolean loadAyarc() {
 		//Load the standard library
 		try {
-			getInstance().queueInput("\"" + ayarcPath + "\"G~");
+			getInstance().queueInput("\"" + AyaPrefs.getAyaDir() + File.separator + ayarcPath + "\"G~");
 		} catch (Exception e) {
 			return false;
 		}
