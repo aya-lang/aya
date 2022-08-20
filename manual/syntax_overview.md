@@ -1,8 +1,6 @@
-# Table of Contents
+# Syntax Overview
 
-*See right panel for table of contents*
-
-# Overview
+## Execution
 
 Aya is a stack based language. Execution flows from left to right
 
@@ -16,9 +14,9 @@ aya> 1 2 + 4 * 3 /
 ```
 
 
-# Comments
+## Comments
 
-## Line Comments
+### Line Comments
 
 Line comments begin with `.#`
 
@@ -29,7 +27,7 @@ aya> 1 .# comment
 aya> .#leading space optional
 ```
 
-## Block Comments
+### Block Comments
 
 Block comments start with `.{` and end with `.}`
 
@@ -49,7 +47,7 @@ aya> .{ block .{ comments cannot be .} nested .}
 SYNTAX ERROR: .} is not a valid operator
 ```
 
-# Variables
+## Variables
 
 Use `:varname` to assign a variable. Use the plain variable name to access
 
@@ -93,18 +91,18 @@ Unexpected empty stack while executing instruction: :M
    in :M .. y V ar 0}
 ```
 
-## Special Variables
+### Special Variables
 
 Double leading and trailing underscores are used for special variables
 
 *See operator overloading and metatables for examples*
 
 
-# Numbers
+## Numbers
 
 *Main Page: [Numbers](./Numbers)*
 
-## Integers & Decimals
+### Integers & Decimals
 
 ```
 aya> 1
@@ -115,7 +113,7 @@ aya> .5
 .5
 ```
 
-## Negative Numbers
+### Negative Numbers
 
 `-` is an operator, use `:-` for negative numbers. 
 ```
@@ -132,7 +130,7 @@ aya> :.5
 SYNTAX ERROR: :. is not a valid operator
 ```
 
-## Big Numbers
+### Big Numbers
 
 Arbitrary precision numbers have the form `:Nz`
 
@@ -143,7 +141,7 @@ aya> :3.141592653589793238462643383279502884197169399z
 :3.141592653589793238462643383279502884197169399z
 ```
 
-## Hexadecimal Literals
+### Hexadecimal Literals
 
 Hexadecimal literals have the form `:0xN`
 
@@ -160,7 +158,7 @@ aya> :0xdeadbeef
 ```
 
 
-## Binary Literals
+### Binary Literals
 
 Binary literals have the form `:0bN`
 
@@ -176,7 +174,7 @@ aya> :0b1011101010101001010101001010101010001011
 :801704815243z 
 ```
 
-## Scientific/"e" Notation
+### Scientific/"e" Notation
 
 Number literals of the form `:NeM` are evaluated to the literal number `N * 10^M`.
 
@@ -189,7 +187,7 @@ aya> :1.1e-3
 .0011
 ```
 
-## Fractional Numbers
+### Fractional Numbers
 
 Fractional literals have the form `:NrM`
 
@@ -202,7 +200,7 @@ aya> :-1r4
 :-1r4 
 ```
 
-## PI Times
+### PI Times
 
 Number literals of the form `:NpM` are evaluated to the literal number `(N * PI)^M`. If no `M` is provided, use the value 1.
 
@@ -215,7 +213,7 @@ aya> :3p2
 88.82643961
 ```
 
-## Root Constants
+### Root Constants
 
 Number literals of the form `:NqM` are evaluated to the literal number `N^(1/M)`. The default value of M is 2.
 
@@ -228,7 +226,7 @@ aya> :27q3
 3
 ```
 
-## Number Constants
+### Number Constants
 
 constants follow the format `:Nc`
 
@@ -245,11 +243,11 @@ constants follow the format `:Nc`
 | `:8c` | int min |
 | `:9c` | char max |
 
-# Characters
+## Characters
 
 *Main Page: [Characters & Strings](./characters-and-strings)*
 
-## Standard Characters
+### Standard Characters
 
 Characters are written with a single *single quote* to the left of the character:
 
@@ -264,7 +262,7 @@ aya> 'ÿ  .# supports unicode
 'ÿ 
 ```
 
-## Hex Character Literals
+### Hex Character Literals
 
 Hex literal characters are written using a `'\x___'` and **require closing quotes**.
 
@@ -275,7 +273,7 @@ aya> '\x00a1'
 '¡ 
 ```
 
-## Named Character Literals
+### Named Character Literals
 
 Many characters have names. All names consist only of lowercase alphabetical characters. Use `Mk` operator to add new named characters.
 
@@ -286,11 +284,11 @@ Many characters have names. All names consist only of lowercase alphabetical cha
 '\pi'        .# => 'π'
 ```
 
-# Strings
+## Strings
 
 *Main Page: [Characters & Strings](./characters-and-strings)*
 
-## Standard String Literals
+### Standard String Literals
 
 String literals are written with double quotes (`"`):
 
@@ -315,7 +313,7 @@ Strings may span multiple lines.
 	and a tab."
 ```
 
-## Special Characters in Strings
+### Special Characters in Strings
 
 Strings can contain special characters using `\{___}`. Brackets can contain named characters or Unicode literals.
 
@@ -324,7 +322,7 @@ Strings can contain special characters using `\{___}`. Brackets can contain name
 "\{x00BF}Que tal?"            .# => "¿Que tal?"
 ```
 
-## String Interpolation
+### String Interpolation
 
 Use `$` for string interpolation
 
@@ -356,7 +354,7 @@ aya> "Each apple is worth $0.50"
 "Each apple is worth $0.50"
 ```
 
-## Long String Literals
+### Long String Literals
 
 Use triple quotes for long string literals.
 
@@ -374,7 +372,7 @@ aya> """This is a long string literal $foo \{theta}"""
 "This is a long string literal $foo \{theta}"
 ```
 
-# Symbols
+## Symbols
 
 Symbols are primarily used for metaprogramming. Symbols are any valid variable name starting with `::`
 
@@ -391,11 +389,11 @@ aya> ::'My Symbol'
 ```
 
 
-# Lists
+## Lists
 
 *Main Page: [Lists](./lists)*
 
-## List Literals
+### List Literals
 
 Lists are written with square brackets (`[]`) and must not contain commas. They may contain any data type:
 
@@ -415,7 +413,7 @@ aya> [1 2 + 3 4 +]
 [ 3 7 ]
 ```
 
-## List Stack Captures
+### List Stack Captures
 
 Use `[N| ... ]` to capture items off the stack into the list
 
@@ -428,13 +426,13 @@ aya> 10 9 [2|]
 [ 10 9 ] 
 ```
 
-## List Comprehensions
+### List Comprehensions
 
 *See [list comprehensions](./lists)*
 
-## Indexing
+### Indexing
 
-### Get a value from a list
+#### Get a value from a list
 
 Use `.[ (index) ]` to get a value from a list
 
@@ -447,7 +445,7 @@ aya> list.[:-1]
 4 
 ```
 
-### Set a value at an index in a list
+#### Set a value at an index in a list
 
 Use `(value) (list) .[ (index) ]` to set a the value in a list at an index
 
@@ -458,11 +456,11 @@ aya> 10 list.:[0]
 [ 10 2 3 4 ]
 ```
 
-# Dictionaries
+## Dictionaries
 
 *Main Page: [Dictionaries and User Types](./dictionaries-and-user-types)*
 
-## Dictionary Literals
+### Dictionary Literals
 
 Dictionary literals have the form `{, ... }`. All variables assigned between `{,` and `}` are assigned to the dictionary
 
@@ -481,7 +479,7 @@ aya> {,}
 {,}
 ```
 
-## Getting Values
+### Getting Values
 
 Use dot notation to get values from a dict:
 
@@ -527,7 +525,7 @@ aya> d.'Hello, world!'
 ```
 
 
-## Setting Values
+### Setting Values
 
 Use `.:` notation to set values of a dict
 
@@ -567,11 +565,11 @@ aya> 10 d.:'Hello, world!'
 } 
 ```
 
-# Blocks
+## Blocks
 
 *Main Page: [Blocks & Functions](./blocks-and-functions)*
 
-## Basic Blocks
+### Basic Blocks
 
 Use `{...}` to define a code block.
 
@@ -589,7 +587,7 @@ aya> 4 add_two
 6 
 ```
 
-## Short Block Notation
+### Short Block Notation
 
 Any set of tokens following a tick (`\``) until an operator or variable will be parsed as a block. Useful for saving a character when golfing
 
@@ -611,7 +609,7 @@ aya> `1 x 1
 {1 x} 1 
 ```
 
-## Block Headers
+### Block Headers
 
 Use a comma in a block to create a block *header*. Block headers define local variables and block arguments
 
@@ -626,7 +624,7 @@ aya> {, 1:a }
 } 
 ```
 
-### Arguments
+#### Arguments
 
 Add arguments to a block
 
@@ -654,7 +652,7 @@ Function call traceback:
 
 ```
 
-### Local Variables
+#### Local Variables
 
 To declare local variables for a block, use a `:` in the header: `{: ... ,}`
 
@@ -694,11 +692,11 @@ aya> { arg typed_arg::str : default_locl initialized_local(10) captured_local^, 
 ```
 
 
-# Operators
+## Operators
 
 *Main Page: [Operators](./operators.md)*
 
-## Standard Operators
+### Standard Operators
 
 All single uppercase letters except `M` are operators
 
@@ -709,7 +707,7 @@ aya> 4 [5] J
 [ 4 5 ] 
 ```
 
-## "Dot" Operators
+### "Dot" Operators
 
 Most characters immediately following a dot (`.`) are an operator
 
@@ -720,7 +718,7 @@ aya> 6 .!
 1 
 ```
 
-### Exceptions
+#### Exceptions
 
 | Special Case | Description |
 |:---:|:---|
@@ -731,7 +729,7 @@ aya> 6 .!
 
 
 
-### Dereference Without Executing (`.<grave>`)
+#### Dereference Without Executing (`.<grave>`)
 
 `.<grave>` Dereference a variable without executing the block
 
@@ -754,7 +752,7 @@ aya> a.`
 ```
 
 
-## "Colon" Operators
+### "Colon" Operators
 
 Most characters immediately following a  color (`:`) are an operator
 
@@ -763,7 +761,7 @@ aya> [1 2] [2] :|
 [ 1 ] 
 ```
 
-### Exceptions
+#### Exceptions
 
 | Special Case | Description |
 |:---:|:---|
@@ -772,7 +770,7 @@ aya> [1 2] [2] :|
 | `:{` | [Extension Operator](#extension-operators) |
 
 
-## "Misc" Operators
+### "Misc" Operators
 
 `M` plus any character is an operator
 
@@ -783,9 +781,9 @@ aya> 0.5 Ms
 .47942554 
 ```
 
-## Non-Standard "Infix" Stack Operators
+### Non-Standard "Infix" Stack Operators
 
-### List Map (`:#`)
+#### List Map (`:#`)
 
 The `:#` operator takes a block on its *right* and maps it to the list on the stack
 
@@ -794,7 +792,7 @@ aya> [1 2 3] :# {1 +}
 [ 2 3 4 ] 
 ```
 
-### List Map Shorthand (`#`)
+#### List Map Shorthand (`#`)
 
 *See [Broadcast Operator](https://github.com/aya-lang/aya/wiki/Lists#the-broadcast-operator)*
 
@@ -806,7 +804,7 @@ aya> [1 2 3] # 1 +
 [2 3 4]
 ```
 
-### Capture Instructions (`:\``)
+#### Capture Instructions (`:\``)
 
 Takes a block `B` and a number `N` from the stack. Captures `N` instructions from the instruction stack. See [Metaprogramming](x) for more details
 
@@ -815,7 +813,7 @@ aya> {P} 2 :` 1 +
 "[ {1} {+} ]"
 ```
 
-## Extension Operators
+### Extension Operators
 
 Extension operators have the form `:{...}`. 
 
@@ -833,11 +831,11 @@ Jan 02, 1970 5:17:36 AM
 ```
 
 
-# User Types
+## User Types
 
-## Struct
+### Struct
 
-### Defining A Struct
+#### Defining A Struct
 
 Create a struct with the following syntax:
 
@@ -853,7 +851,7 @@ aya> point
 (struct ::point [ ::x ::y ])
 ```
 
-### Create Instance Of Struct
+#### Create Instance Of Struct
 
 To create an instance of a struct, use the `!` operator on the type. Member variables should exist on the stack
 
@@ -863,7 +861,7 @@ aya> 1 2 point!
 ( 1 2 ) point!
 ```
 
-### Accessing Values of a Struct
+#### Accessing Values of a Struct
 
 Use standard dot notation to acces user type values
 
@@ -877,7 +875,7 @@ aya> p.y
 2 
 ```
 
-### Struct Member Functions
+#### Struct Member Functions
 
 Use the `def` keyword to define member functions for structs
 
@@ -889,9 +887,9 @@ aya> p.format
 "<1, 2>" 
 ```
 
-# Golf Utilities
+## Golf Utilities
 
-## Golf Constants
+### Golf Constants
 
 Any single-character key stored in `__cdict__` can be accessed using `¢` + that character
 

@@ -152,11 +152,19 @@ def dataframe::nrows {self,
 }
 
 def dataframe::ncols {self,
-    self.data.[0] E
+    self._data.[0] E
 }
 
 def dataframe::shape {self,
     [self.nrows self.ncols]
+}
+
+def dataframe::colnames {self,
+    self._colnames
+}
+
+def dataframe::rows {self,
+    self._data
 }
 
 
@@ -197,8 +205,7 @@ def dataframe::to_html {kwargs::dict self : noindex(0) data style("") border(0),
     out S
 }
 
-
-def dataframe::_repr_lines {s : lines,
+def dataframe::_repr_lines {s::str cls : lines,
     s.lines :lines;
     lines E 24 > {
         [lines 10 .<~ "..." lines 10 .>~]"\n"*
