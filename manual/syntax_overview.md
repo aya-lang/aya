@@ -100,7 +100,7 @@ Double leading and trailing underscores are used for special variables
 
 ## Numbers
 
-*Main Page: [Numbers](./numbers)*
+*Main Page: [Numbers](./number.md)*
 
 ### Integers & Decimals
 
@@ -245,7 +245,7 @@ constants follow the format `:Nc`
 
 ## Characters
 
-*Main Page: [Characters & Strings](./characters_and_strings)*
+*Main Page: [Characters & Strings](./characters_and_strings.md)*
 
 ### Standard Characters
 
@@ -286,7 +286,7 @@ Many characters have names. All names consist only of lowercase alphabetical cha
 
 ## Strings
 
-*Main Page: [Characters & Strings](./characters_and_strings)*
+*Main Page: [Characters & Strings](./characters_and_strings.md)*
 
 ### Standard String Literals
 
@@ -391,7 +391,7 @@ aya> ::'My Symbol'
 
 ## Lists
 
-*Main Page: [Lists](./lists)*
+*Main Page: [Lists](./lists.md)*
 
 ### List Literals
 
@@ -428,7 +428,7 @@ aya> 10 9 [2|]
 
 ### List Comprehensions
 
-*See [list comprehensions](./lists)*
+*See [list comprehensions](./lists.md)*
 
 ### Indexing
 
@@ -458,7 +458,7 @@ aya> 10 list.:[0]
 
 ## Dictionaries
 
-*Main Page: [Dictionaries and User Types](./dictionaries_and_user_types)*
+*Main Page: [Dictionaries and User Types](./dictionaries_and_user_types.md)*
 
 ### Dictionary Literals
 
@@ -567,7 +567,7 @@ aya> 10 d.:'Hello, world!'
 
 ## Blocks
 
-*Main Page: [Blocks & Functions](./blocks_and_functions)*
+*Main Page: [Blocks & Functions](./blocks_and_functions.md)*
 
 ### Basic Blocks
 
@@ -613,7 +613,7 @@ aya> `1 x 1
 
 Use a comma in a block to create a block *header*. Block headers define local variables and block arguments
 
-See [Variables and Scope](./variables-and-scope) and [Blocks and Functions](./blocks-and-functions) for more details.
+See [Variables and Scope](./variables_and_scope.md) and [Blocks and Functions](./blocks_and_functions.md) for more details.
 
 If the header is empty, the block is parsed as a dict (see *Dictionary*)
 
@@ -794,7 +794,7 @@ aya> [1 2 3] :# {1 +}
 
 #### List Map Shorthand (`#`)
 
-*See [Broadcast Operator](https://github.com/aya-lang/aya/wiki/Lists#the-broadcast-operator)*
+*See [Broadcast Operator](./lists.md)*
 
 Same as `:#` but automatically creates a block using [short block notation](#short-block-notation)
 
@@ -806,7 +806,7 @@ aya> [1 2 3] # 1 +
 
 #### Capture Instructions (`:\``)
 
-Takes a block `B` and a number `N` from the stack. Captures `N` instructions from the instruction stack. See [Metaprogramming](x) for more details
+Takes a block `B` and a number `N` from the stack. Captures `N` instructions from the instruction stack.
 
 ```
 aya> {P} 2 :` 1 +

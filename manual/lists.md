@@ -97,7 +97,7 @@ which is equivalent to `list[i] = item` in C-style languages.
 
 ### Essential List Operators
 
-*See [Operators](https://github.com/aya-lang/aya/wiki/Operators)*
+*See [Operators](./operators.md)*
 
 #### Extend (`K`)
 

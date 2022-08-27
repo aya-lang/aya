@@ -1,6 +1,6 @@
 # Variables
 
-*See [Syntax Overview: Variables](./Syntax-Overview#variables)*  
+*See [Syntax Overview: Variables](./syntax_overview.md#variables)*  
 
 Variables may only contain lower case letters and underscores. They are assigned using the colon (:) operator. The value is left on the stack after the assignment has occurred.
 
