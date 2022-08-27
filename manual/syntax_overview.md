@@ -458,7 +458,7 @@ aya> 10 list.:[0]
 
 ## Dictionaries
 
-*Main Page: [Dictionaries and User Types](./dictionaries_and_user_types.md)*
+*Main Page: [Dictionaries and User Types](./dictionaries.md)*
 
 ### Dictionary Literals
 

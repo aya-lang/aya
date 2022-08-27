@@ -279,6 +279,7 @@ public class List extends Obj {
 			}
 		}
 		
+		out.promote();
 		return out;
 	}
 	
@@ -292,6 +293,7 @@ public class List extends Obj {
 			iterOut.setNext( iter.next().equiv(o) ? Num.ONE : Num.ZERO );
 		}
 		
+		out.promote();
 		return out;
 	}
 	
