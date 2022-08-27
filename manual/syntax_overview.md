@@ -100,7 +100,7 @@ Double leading and trailing underscores are used for special variables
 
 ## Numbers
 
-*Main Page: [Numbers](./Numbers)*
+*Main Page: [Numbers](./numbers)*
 
 ### Integers & Decimals
 
@@ -245,7 +245,7 @@ constants follow the format `:Nc`
 
 ## Characters
 
-*Main Page: [Characters & Strings](./characters-and-strings)*
+*Main Page: [Characters & Strings](./characters_and_strings)*
 
 ### Standard Characters
 
@@ -286,7 +286,7 @@ Many characters have names. All names consist only of lowercase alphabetical cha
 
 ## Strings
 
-*Main Page: [Characters & Strings](./characters-and-strings)*
+*Main Page: [Characters & Strings](./characters_and_strings)*
 
 ### Standard String Literals
 
@@ -458,7 +458,7 @@ aya> 10 list.:[0]
 
 ## Dictionaries
 
-*Main Page: [Dictionaries and User Types](./dictionaries-and-user-types)*
+*Main Page: [Dictionaries and User Types](./dictionaries_and_user_types)*
 
 ### Dictionary Literals
 
@@ -567,7 +567,7 @@ aya> 10 d.:'Hello, world!'
 
 ## Blocks
 
-*Main Page: [Blocks & Functions](./blocks-and-functions)*
+*Main Page: [Blocks & Functions](./blocks_and_functions)*
 
 ### Basic Blocks
 

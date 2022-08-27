@@ -1,7 +1,7 @@
 import ::matrix
 import ::viewmat
 
-400 :width;
+300 :width;
 width 0.8* :height;
 
 .# Create complex plane
@@ -10,7 +10,7 @@ width 0.8* :height;
 y :0i1 * x + :a;
 
 .# Generate the fractal
-a E matrix.zeros {2^a+} 200 % .|
+a E matrix.zeros {2^a+} 75 % .|
 
 .# Display
 {3 .>} O viewmat.show

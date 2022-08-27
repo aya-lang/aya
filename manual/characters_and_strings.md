@@ -1,6 +1,6 @@
 # Characters
 
-*See [Syntax Overview: Characters](./Syntax-Overview#characters)*
+*See [Syntax Overview: Characters](./syntax_overview.md#characters)*
 
 Character literals are created using single quotes. Most characters do not need closing quotes.
 
@@ -50,7 +50,7 @@ aya> '\integral'
 
 # Strings
 
-*See [Syntax Overview: Strings](./Syntax-Overview#strings)*
+*See [Syntax Overview: Strings](./syntax_overview.md#strings)*
 
 Strings are created using the double quote character `"`.
 

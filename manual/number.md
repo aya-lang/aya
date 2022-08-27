@@ -24,9 +24,9 @@ To write negative numbers, use a colon (with or without a -)
 :-1.5  .# => -1.5
 ```
 
-# Special Number Literals
+## Special Number Literals
 
-*See [Syntax Overview: Numbers](https://github.com/aya-lang/aya/wiki/Syntax-Overview#numbers)*
+*See [Syntax Overview: Numbers](./syntax_overview#numbers)*
 
 Special number literals always begin with a colon. Special number literals can be used to create negative numbers, **bignums**, **rationals**, and **complex numbers** *(coming soon)*. 
 
@@ -64,11 +64,11 @@ Special number literals also provide ways for creating numbers using binary and 
 :0xffffffff   .# 4294967295 (BigNum)
 ```
 
-# Misc. Number Literals
+## Misc. Number Literals
 
 Like all number literals, these values are evaluated pre-runtime. 
 
-## Scientific Notation
+### Scientific Notation
 
 Number literals of the form `:NeM` are evaluated to the literal number `N * 10^M`.
 
@@ -81,7 +81,7 @@ aya> :1.1e-3
 .0011 
 ```
 
-## PI Times
+### PI Times
 
 Number literals of the form `:NpM` are evaluated to the literal number `(N * PI)^M`. If no `M` is provided, use the value 1.
 
@@ -94,7 +94,7 @@ aya> :3p2
 88.82643961 
 ```
 
-## Root Constants
+### Root Constants
 
 Number literals of the form `:NqM` are evaluated to the literal number `N^(1/M)`. The default value of M is 2.
 

@@ -1,6 +1,6 @@
 # Lists
 
-*See [Syntax Overview: Lists](https://github.com/aya-lang/aya/wiki/Syntax-Overview#lists)*
+*See [Syntax Overview: Lists](./syntax_overview.md#lists)*
 
 List literals are created using square brackets and do not need commas. Literals are first evaluated as their own stack. The results remaining on the stack become the list items.
 
