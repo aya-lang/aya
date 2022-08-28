@@ -765,8 +765,7 @@ aya> [1 2] [2] :|
 
 | Special Case | Description |
 |:---:|:---|
-| `:'` | [Symbol](#symbols) |
-| `:-` | [Negative Numbers](#negative-numbers) |
+| `:"` | [Symbol](#symbols) |
 | `:{` | [Extension Operator](#extension-operators) |
 
 

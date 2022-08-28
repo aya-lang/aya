@@ -146,6 +146,9 @@ def person::__inc__ {self$,
     self.age B self.:age;
     self .# Leave the copy on the stack
 }
+```
+
+Usage
 
 ```
 aya> jane.age
@@ -299,7 +302,7 @@ Keywords such as `class`, `struct`, and `def` are not actually keywords at all. 
 
 Classes, structs, and object instances are simply dictionaries with special __meta__ dictionaries. If you are interested in seeing how these are implemented entirely in aya, read on.
 
-Below is an example of a 2d vector "class" definition written *from scratch* without using any convience functions. The subsections below will provide a breakdown of each section.
+Below is an example of a 2d vector "class" definition written *from scratch* without using any convience functions. Member functions and overloads work the same as they do for normal classes. The only major difference is object creation (`__new__` vs `__init__`) and the special variables `__pushself__` and `__type__` at the top of the metatable.
 
 ```
 {,
@@ -338,71 +341,30 @@ Below is an example of a 2d vector "class" definition written *from scratch* wit
 }:vec;
 ```
 
-## Object Creation
 
-In order to create a an instance of a user type, we use the MO operator to assign a metatable to a new dictionary. To create a vector object, we create a dictionary containing the default values for `x` and `y` and then assign `vec` as its metatable.
+### Special Metatable Variables
 
 ```
-.# Create a vec object
-{, 0:x 0:y} vec MO
+  1:__pushself__;
+  ::vec:__type__;
 ```
 
-This syntax can be a bit repetitive. In order to address this issue, we introduce *constructors*.
+`__pushself__` tells aya to push a reference of the object to the stack when calling functions on it. It effectively enables the use of `self`
+
+The symbol assigned to `__type__` is used for type checking and overloading the `:T` (get type) and `:@` (is instance) operators.
 
 ### Constructor
 
-If there exists a function new in the metatable definition, it will be used as the constructor for the object. The constructor can be called in the following ways:
-
 ```
-.# Calling the .new function manually
-aya> 3 6 vec.new
-<3,6>
-
-.# Using the ! operator after the name of the dictionary
-aya> 1.1 3 vec!
-<1.1,3>
-```
-Notice that when the object is printed to the console, it prints using our definition of `.repr`. Aya will automatically use `.repr` and `.str` to convert objects to strings whenever necessary ( e.g. printing to the console, calling the `P` *(cast to string)* operator, etc.). This is discussed in the next section.
-
-## String Conversion
-
-If there exists a function `str` defined for a given user type, Aya will call it whenever the type is converted into a string. If there exists a function `repr` defined for a given user type, Aya will use it whenever it prints the object to the console. Aya expects a string to be returned from these functions but does not check before converting. If they do not return a string, unexpected results may occur. In the `vec` example, we defined a `repr` and `str` function and we can see the result every time the `vec` is printed to the console.
-
-```
-aya> 1 2 vec!   .# Uses .repr
-<1,2>
-
-aya> 1 2 vec! P  .# Uses .str
-"<1,2>"
+{x y cls,
+    {,
+        x:x;
+        y:y;
+        cls:__meta__;
+    }
+}:__new__;
 ```
 
-## Operator Overloading
+Object construction with the `!` operator is just a standard operator overload that calls `__new__`. 
 
-Several operators have the capability to be overloaded be defining functions with special names. For example, the function `add` will be called if the user calls `+` on a user object The following operators may be overloaded:
-
-```
-+ - * / & | $ % P Q
-```
-
-These operators and their function names can be found by searching "overloadable" in the QuickSearch feature of aya.
-
-In our vec example, we defined the following function:
-
-```
-  {a b,
-    [a.x b.x+ a.y b.y+] vect MO
-  }:add;
-```
-
-Now the following statements are equivalent:
-
-```
-aya> 1 2 vec!  3 4 vec!.plus
-<4,6>
-aya> 1 2 vec!  3 4 vec! +
-<4,6>
-```
-
-**NOTE**: The number of arguments used in an overloaded function be greater than or equal to the number of arguments the operator normally takes. For example, the + operator must take at least two arguments and the $ operator must take at least 1.
-
-For more examples on using dictionaries and metatables as user types, see the standard library files for `matrix`, `color`, and `date`.
+Note: For classes, `__new__` creates an instance of the object (i.e. `self`) and then calls `__init__` wich takes self as an argument.
