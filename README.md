@@ -5,7 +5,7 @@
 <h1 align="center">The Aya Programming Language</h1>
 
 <p align="center">
-  <img src="images/aya-demo.png" />
+  <img src="images/example-mosaic.png" />
 </p>
 
 ## Features
