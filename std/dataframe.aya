@@ -48,7 +48,7 @@ def dataframe::_check_size {self,
     } ?
 }
 
-def dataframe::_gen_colnames {n::num,
+def dataframe::_gen_colnames {n::num cls,
     n 26 :< {
         ['a $nV+] R#P
     } {
@@ -61,7 +61,7 @@ def dataframe::_gen_colnames {n::num,
 .# CSV Utils
 .###########
 
-def dataframe::from_csv {csv_dict,
+def dataframe::from_csv {csv_dict cls,
     {,
         csv_dict.data :data;
         csv_dict.rownames :index;
@@ -69,10 +69,25 @@ def dataframe::from_csv {csv_dict,
     } dataframe!
 }
 
-def dataframe::read_csv {arg : dataframe^ csv^ ,
+def dataframe::read_csv {arg cls: dataframe^ csv^ ,
     .# csv.read takes a string or a kwargs dict
     arg csv.read dataframe.from_csv
 }
+
+def dataframe::to_csv { kwargs self : csv^ noindex(0) colnames(1) sep(","), kwargs ~
+    self._data 
+    colnames { self._colnames A \ J } ?
+    noindex! { 
+        self._index
+        colnames {[""] \ J} ?
+        \ {J} .&
+    } ?
+    sep nil
+    csv.dumps
+}
+
+.# Indexing
+.##########
 
 def dataframe::_get_col_index {colname self,
     colname :T ::sym = {colname :C :colname; } ?
@@ -152,11 +167,19 @@ def dataframe::nrows {self,
 }
 
 def dataframe::ncols {self,
-    self.data.[0] E
+    self._data.[0] E
 }
 
 def dataframe::shape {self,
     [self.nrows self.ncols]
+}
+
+def dataframe::colnames {self,
+    self._colnames
+}
+
+def dataframe::rows {self,
+    self._data
 }
 
 
@@ -197,8 +220,7 @@ def dataframe::to_html {kwargs::dict self : noindex(0) data style("") border(0),
     out S
 }
 
-
-def dataframe::_repr_lines {s : lines,
+def dataframe::_repr_lines {s::str cls : lines,
     s.lines :lines;
     lines E 24 > {
         [lines 10 .<~ "..." lines 10 .>~]"\n"*

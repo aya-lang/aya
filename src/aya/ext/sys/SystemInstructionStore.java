@@ -17,6 +17,9 @@ public class SystemInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
+		// Exec
+		addInstruction(new SysExecInstruction());
+		
 		// Readdir
 		addInstruction(new NamedInstruction("sys.readdir", "list files in working dir") {
 			@Override
@@ -48,7 +51,14 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				block.push(List.fromString(AyaPrefs.getWorkingDir()));
 			}
 		});
-		
+
+		// Get aya dir
+		addInstruction(new NamedInstruction("sys.ad", "get absolute path of aya dir") {
+			@Override
+			public void execute(Block block) {
+				block.push(List.fromString(AyaPrefs.getAyaDir()));
+			}
+		});
 		
 		// Set working dir
 		addInstruction(new NamedInstruction("sys.cd", "set the working dir (empy string resets to default)") {

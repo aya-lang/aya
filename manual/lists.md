@@ -1,5 +1,7 @@
 # Lists
 
+*See [Syntax Overview: Lists](./syntax_overview.md#lists)*
+
 List literals are created using square brackets and do not need commas. Literals are first evaluated as their own stack. The results remaining on the stack become the list items.
 
 ```
@@ -60,30 +62,31 @@ aya> list.[{E 3 =}]
 | Arg Type | Function                                               | Input              | Output  |
 |----------|--------------------------------------------------------|--------------------|---------|
 | Number   | Choose the nth item from the list (starting from 0)    | `[1 2 3].[1]`      | `2`     |
-| List     | Use each item in the second list to index the first    | `"abc".[1 1 2]`    | `"bbc"` |
+| List     | Use each item in the second list to index the first    | `"abc".[1 2 2]`    | `"bcc"` |
 | Block    | Filter the list. Take all items that satisfy the block | `[1 1 2 2].[{1=}]` | `[1 1]` |
 
-Filter examples:
 
-```
-aya> "Hello John Smith".[{.isupper}]
-"HJS"
-aya> 10R.[{2%}] .# {2%} : test if odd
-[ 1 3 5 7 9 ]
-```
-
-Lists can also be indexed using the `I` or `.I` operators. The `.I` operator will leave both the list and the element on the stack.
+Lists can also be indexed using the `I` operator:
 
 ```
 aya> ["the" "cat" "in" "the" "hat"]:list
 [ "the" "cat" "in" "the" "hat" ]
 aya> list 0 I
 "the"
-aya> list :1 .I
-[ "the" "cat" "in" "the" "hat" ] "hat"
+aya> list :1 I
+"hat"
 ```
 
-### Modifying Lists
+`.I` operator takes a default value if the index is out of bounds:
+
+```
+aya> ["hello" "world"] 0 "nope" .I
+"hello"
+aya> ["hello" "world"] 9 "nope" .I
+"nope"
+```
+
+
 
 Use the following syntax to set elements of a list
 
@@ -92,8 +95,11 @@ item list.:[i]
 ```
 which is equivalent to `list[i] = item` in C-style languages.
 
+### Essential List Operators
 
-Extend (`K`)
+*See [Operators](./operators.md)*
+
+#### Extend (`K`)
 
 ```
 aya> [1 2 3] :list
@@ -104,7 +110,19 @@ aya> list
 [ 1 2 3 4 5 6 ]
 ```
 
-Reshape (`L`)
+#### Join (`J`)
+
+*Similar to `K` but never modifies either list*
+
+```
+aya> [1 2 3] :list;
+aya> list [4 5 6] J
+[ 1 2 3 4 5 6 ]
+aya> list
+[ 1 2 3 ]
+```
+
+#### Reshape (`L`)
 
 ```
 aya> 9R [3 3] L
@@ -115,14 +133,14 @@ aya> 100R [2 3] L
 [ [ 1 2 3 ] [ 4 5 6 ] ]
 ```
 
-Flatten (`.F`)
+#### Flatten (`.F`)
 
 ```
 aya> [[1 2] [3] 4 [[5] 6]] .F
 [ 1 2 3 4 5 6 ]
 ```
 
-Pop from front / back
+#### Pop from front / back
 
 ```
 aya> [1 2 3] B
@@ -131,7 +149,7 @@ aya> [1 2 3] V
 [ 2 3 ] 1
 ```
 
-Append to front / back
+#### Append to front / back
 
 ```
 aya> 1 [2 3] .B
@@ -148,7 +166,7 @@ One item: create a range from `1` (or `'a'`) to that number.
 
 ```
 10 R    .# => [1 2 3 4 5 6 7 8 9 10]
-'d R    .# => "abcd"
+'B R    .# => "...56789:;<=>?@AB" (from char code `1` to the input char)
 ```
 
 Two items: create a range from the first to the second.
@@ -156,17 +174,19 @@ Two items: create a range from the first to the second.
 ```
 [5 10] R     .# => [5 6 7 8 9 10]
 ['z 'w] R    .# => "zyxw"
+"zw" R       .# => "zyxw"
 ```
 
 Three items: create a range from the first to the third using the second as a step.
 
 ```
 [0 0.5 2] R      .# => [0 0.5 1.0 1.5 2.0]
+[2 2.5 4] R      .# => [2 2.5 3 3.5 4]
 ```
 
 ## List comprehension
 
-When commas are used inside of a list literal, the list is created using list comprehension. List comprehension follows the format `[range, map, filter1, filter2,  ..., filterK]`. The range section is evaluated like the `R` operator. When the list is evaluated, the sections are evaluated from left to right; first create the range, then map the block to the values, then apply the filters. All filters must be satisfied for an item to be added to the list.  
+When commas are used inside of a list literal, the list is created using list comprehension. List comprehension follows the format `[range, map, filter1, filter2,  ..., filterK]`. The range section is evaluated like the `R` operator. When the list is evaluated, the sections are evaluated from left to right; first create the range, then map the block to the values, then apply the filters. All filters must be satisfied for an item to be added to the list.
 
 If the map section is left empty, the list is evaluated as a basic range.
 
@@ -194,9 +214,6 @@ aya> [10, 2*, 5<, 4=!]
 [2]
 
 .# Can grab from stack
-aya> 10 [1|,]
-[ 1 2 3 4 5 6 7 8 9 10 ]
-
 aya> 3 [1| 6 18, 2*]
 [ 6 12 18 24 30 36 ]
 ```
@@ -204,9 +221,6 @@ aya> 3 [1| 6 18, 2*]
 If a list literal is used as the first section of a list comprehension, the list comprehension is simply applied to the inner list.
 
 ```
-aya> [1 2 3]:l; [l, 2*]
-[ 2 4 6 ]
-
 aya> [ [1 2 3 4 5], 2*, 7<]
 [2 4 6]
 ```
@@ -217,7 +231,7 @@ If there are two or more lists used as the first argument of a list comprehensio
 aya> [ [1 2 3][4 5 6], +]
 [5 7 9]
 
-aya> [ "hello" "world", K]
+aya> [ "hello" "world", J]
 [ "hw" "eo" "lr" "ll" "od" ]
 ```
 
@@ -243,17 +257,17 @@ If a block is not given on the right side, `#` will collect items until an opera
 [1 2 3] 1 # + .# => [2 3 4]
 ```
 
-This operator can be used to construct for loops on variables
+This operator can be used to construct *"for loops"* on variables
 
 ```
 "hello" :str;
 str # {c,
-    c.upper
+    c toupper
 }
 => "HELLO"
 ```
 
-The `:#` operator works the same way except it always takes a list on the left and a block on the right. This can result in minor performance improvements if the complete operation is known ahead of time.
+The `:#` operator works the same way except it *always* takes a list on the left and a block on the right:
 
 ```
 list :# {block}
@@ -272,7 +286,7 @@ aya> [1 2 3] 3 # +
 aya> [1 2 3] 3 :# {+}
 TYPE ERROR: Type error at (:#):
 	Expected ((L:#B|D:#B))
-	Received ({+} 3 )
+	Recieved ({+} 3 )
 stack:
 	[ 1 2 3 ]
 just before:

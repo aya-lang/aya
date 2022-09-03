@@ -58,12 +58,17 @@ public class AyaPrefs {
 	public static String getWorkingDir() {
 		return workingDir;
 	}
+	
+	public static String getAyaDir() {
+		return defaultWorkingDir;
+	}
 
 	public static boolean setWorkingDir(String workingDir) {
+		//System.out.println("setWorkingDir(\"" + workingDir + "\")");
 		//Make sure path is a directory
 		char last = workingDir.charAt(workingDir.length()-1);
 		if (last != '/' && last != '\\') {
-			return false;
+			workingDir += File.separator;
 		}
 		try {
 			//Create a path to test if it exists
@@ -72,9 +77,11 @@ public class AyaPrefs {
 				AyaPrefs.workingDir = path.toString() + File.separator;
 				return true;
 			} else {
+				//System.out.println("setWorkingDir: error, dir does not exist: " + workingDir);
 				return false;
 			}
 		} catch (Exception e) {
+			//System.out.println("setWorkingDir: error: " + e.getMessage());
 			return false;
 		}
 	}

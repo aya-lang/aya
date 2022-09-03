@@ -24,6 +24,13 @@
   - Interactive help and Documentation
   - Metaprogramming
 
+## Links
+
+  -  [Documentation](https://readthedocs.org/projects/docs/badge/?version=latest): [![Documentation Status](https://readthedocs.org/projects/docs/badge/?version=latest)](https://aya-readthedocs.readthedocs.io/en/latest/)
+  - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
+  - [Esolang Wiki](http://esolangs.org/wiki/Aya)
+  - [Discord](https://discord.gg/gDU2wpT4) (**NEW!**) [![Discord](./images/discord.png)](https://discord.gg/gDU2wpT4)
+
 ## Overview
 
 Aya is a terse stack based programming language originally intended for code golf and programming puzzles. The original design was heavily inspired by [CJam](https://sourceforge.net/p/cjam/wiki/Home/) and [GolfScript](http://www.golfscript.com/golfscript/). Currently, Aya is much more than a golfing language as it supports user-defined types, key-value pair dictionaries, natural variable scoping rules, and many other things which allow for more complex programs and data structures than other stack based languages.
@@ -31,14 +38,6 @@ Aya is a terse stack based programming language originally intended for code gol
 Aya comes with a standard library written entirely in Aya code. The standard library features types such as matrices, sets, dates, colors and more. It also features hundreds of functions for working working on numerical computations, strings, plotting and file I/O. It even features a basic turtle library for creating drawings in the plot window.
 
 Aya also features a minimal GUI that interfaces with Aya's stdin and stdout. The GUI features plotting, tab-completion for special characters, and an interactive way to search QuickSearch help data.
-
-## Useful Links
-
-  - [A Tour of Aya](https://github.com/nick-paul/aya-lang/wiki/A-Tour-of-Aya)
-  - [Documentation / Wiki](https://github.com/nick-paul/aya-lang/wiki)
-  - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
-  - [Esolang Wiki](http://esolangs.org/wiki/Aya)
-
 
 ## Examples
 
@@ -272,25 +271,8 @@ Mc (N) V
 
 ## Installation
 
-Download the latest release from the release page ([https://github.com/nick-paul/aya-lang/releases](https://github.com/nick-paul/aya-lang/releases)) and unpack the archive.
 
-Aya requires Java 8. To run the GUI, double click the jar file or run the command:
-
-```
-java -jar aya.jar
-```
-
-To run Aya interactively from the command line use `-i`
-
-```
-java -jar aya.jar -i
-```
-
-To run scripts from the command line:
-
-```
-java -jar aya.jar filename.aya
-```
+See install instructions here: [https://aya-readthedocs.readthedocs.io/en/latest/running_and_installation.html](https://aya-readthedocs.readthedocs.io/en/latest/running_and_installation.html)
 
 ## Contributing
 

@@ -1,5 +1,7 @@
 # Characters
 
+*See [Syntax Overview: Characters](./syntax_overview.md#characters)*
+
 Character literals are created using single quotes. Most characters do not need closing quotes.
 
 ```
@@ -16,19 +18,11 @@ Using a `\` after a single quote denotes a special character. Special characters
 Hex literal characters are written using a `'\x___'` and need closing quotes.
 
 ```
-aya> '\xFF'
+aya> '\x00FF'
 'ÿ'
 aya> '\x00A1'
 '¡'
 ```
-
-Leading zeros and case do not matter.
-
-```
-aya> '\x000000fF'
-'ÿ
-```
-
 
 ### Named Characters
 
@@ -48,13 +42,15 @@ To add or override a named character from within Aya, use the `Mk` operator.
 aya> '\integral'
 SYNTAX ERROR: '\integral' is not a valid special character
 
-aya> '\x222b' "integral" Mk
+aya> '\U222b' "integral" Mk
 
 aya> '\integral'
 '∫'
 ```
 
 # Strings
+
+*See [Syntax Overview: Strings](./syntax_overview.md#strings)*
 
 Strings are created using the double quote character `"`.
 
@@ -78,7 +74,7 @@ Strings can contain special characters using `\{___}`. Brackets can contain name
 "\{x00BF}Que tal?"            .# => "¿Que tal?"
 ```
 
-Many operators treat a string as a list of characters.
+Strings are essentially a list of characters, so any list operator that can be used on lists can be can be used on strings.
 
 ```
 "Hello " "world!" K  .# => "Hello world!"

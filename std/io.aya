@@ -78,6 +78,10 @@ def path::working {path,
     :{sys.wd} path!
 }
 
+.#? path.aya\n  aya directory
+def path::aya {path,
+    :{sys.ad} path!
+}
 
 
 .#

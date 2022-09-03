@@ -6,7 +6,7 @@ def importlib::_log_debug {:importlib^,
      importlib._debug {"importlib: " \+ :P} {;} .?
 }
 
-def importlib::aya_dir :{sys.wd}
+def importlib::aya_dir :{sys.ad}
 
 .# Dictionary of files which have been imported
 def importlib::imported {,}

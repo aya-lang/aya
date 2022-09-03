@@ -11,7 +11,7 @@ def image::__init__ {data width height self,
     height self.:height;
 }
 
-def image::read {filename : img image^ path^,
+def image::read {filename cls : img image^ path^,
     filename path! P :{image.read} :img;
     img.data img.width img.height image!
 }
