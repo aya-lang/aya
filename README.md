@@ -26,10 +26,10 @@
 
 ## Links
 
-  - [![Documentation Status](https://readthedocs.org/projects/docs/badge/?version=latest)](https://aya-readthedocs.readthedocs.io/en/latest/)  
-  - [![Discord](./images/discord.png)](https://discord.gg/gDU2wpT4) **NEW!**
+  -  [Documentation](https://readthedocs.org/projects/docs/badge/?version=latest): [![Documentation Status](https://readthedocs.org/projects/docs/badge/?version=latest)](https://aya-readthedocs.readthedocs.io/en/latest/)
   - [Examples](https://github.com/nick-paul/aya-lang/tree/master/examples)
   - [Esolang Wiki](http://esolangs.org/wiki/Aya)
+  - [Discord](https://discord.gg/gDU2wpT4) (**NEW!**) [![Discord](./images/discord.png)](https://discord.gg/gDU2wpT4)
 
 ## Overview
 
