@@ -23,7 +23,6 @@ public class InteractiveAya extends Thread {
 
 	private boolean _echo = false;
 	private boolean _showPromptText = true;
-	private boolean _showBanner = true;
 	private String _initcode = null;
 	private String _usercmd = null;
 	private static ConcurrentLinkedQueue<String> _scripts;
@@ -38,14 +37,6 @@ public class InteractiveAya extends Thread {
 		_scripts = new ConcurrentLinkedQueue<String>();
 	}
 
-	private static final String BANNER = ""
-			+ "       __ _ _   _  __ _\n"
-			+ "      / _` | | | |/ _` |   | A tiny stack based programming language\n"
-			+ "     | (_| | |_| | (_| |   | Version: " + Aya.VERSION_NAME + "\n"
-			+ "      \\__,_|\\__, |\\__,_|   | Nicholas Paul\n"
-			+ "            |___/\n"
-			+ "\n";
-	
 	public static final String HELP_TEXT = "Help:\n"
 			+ "  \\QUIT or \\Q\n\tquit interactive Aya\n"
 			+ "  \\HELP or \\H\n\tview this page\n"
@@ -196,10 +187,6 @@ public class InteractiveAya extends Thread {
 		_showPromptText = false;
 	}
 	
-	public void showBanner(boolean b) {
-		_showBanner = b;
-	}
-	
 	@Override
 	public void run() {
 		boolean running = true;
@@ -219,8 +206,6 @@ public class InteractiveAya extends Thread {
 		Scanner scanner = _aya.getScanner();
 		
 		
-		if (_showBanner && interactive) _aya.print(BANNER);
-
 		String input = "";
 		int status;
 				

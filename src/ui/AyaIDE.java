@@ -368,7 +368,6 @@ public class AyaIDE extends JFrame
 			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
-			iaya.showBanner(false);
 			iaya.run();
 			
 			//Grab focus
