@@ -5,7 +5,7 @@
 
 export ::enum
 
-{(2 hold)({class::sym enums::list : dict meta,
+{class::sym enums::list : dict meta,
 
     .# The metatable for each enum member
     {,
@@ -35,4 +35,11 @@ export ::enum
 
     .# Assign the name of the enum to the enum class
     class := ;
-})}:enum;
+}:_enum_impl;
+
+
+.# enum macro
+
+{ : _enum_impl(_enum_impl.`),
+    { : _enum_impl^ , :&.[0]:S~ \.[1]~.*:#{:S~} _enum_impl } 2 :`
+}:enum;

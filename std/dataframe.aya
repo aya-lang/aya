@@ -48,7 +48,7 @@ def dataframe::_check_size {self,
     } ?
 }
 
-def dataframe::_gen_colnames {n::num,
+def dataframe::_gen_colnames {n::num cls,
     n 26 :< {
         ['a $nV+] R#P
     } {
@@ -61,7 +61,7 @@ def dataframe::_gen_colnames {n::num,
 .# CSV Utils
 .###########
 
-def dataframe::from_csv {csv_dict,
+def dataframe::from_csv {csv_dict cls,
     {,
         csv_dict.data :data;
         csv_dict.rownames :index;
@@ -69,7 +69,7 @@ def dataframe::from_csv {csv_dict,
     } dataframe!
 }
 
-def dataframe::read_csv {arg : dataframe^ csv^ ,
+def dataframe::read_csv {arg cls: dataframe^ csv^ ,
     .# csv.read takes a string or a kwargs dict
     arg csv.read dataframe.from_csv
 }
