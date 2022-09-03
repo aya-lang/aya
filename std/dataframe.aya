@@ -74,6 +74,21 @@ def dataframe::read_csv {arg cls: dataframe^ csv^ ,
     arg csv.read dataframe.from_csv
 }
 
+def dataframe::to_csv { kwargs self : csv^ noindex(0) colnames(1) sep(","), kwargs ~
+    self._data 
+    colnames { self._colnames A \ J } ?
+    noindex! { 
+        self._index
+        colnames {[""] \ J} ?
+        \ {J} .&
+    } ?
+    sep nil
+    csv.dumps
+}
+
+.# Indexing
+.##########
+
 def dataframe::_get_col_index {colname self,
     colname :T ::sym = {colname :C :colname; } ?
     self._colnames colname N\; :colindex;
