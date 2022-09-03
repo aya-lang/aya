@@ -1,7 +1,7 @@
 import ::plot
 import ::enum
 
-enum ::state [::win ::lose]
+enum state {win lose}
 
 1000      :maxbet;
 300       :games;

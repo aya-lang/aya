@@ -44,7 +44,7 @@ import ::plot
 "plot/weierstrass"
 ] :# {ex, 
     "\n## $ex:" :P
-    [ load "examples/$ex" ]; 
+    [ "$(:{sys.ad})/examples/$ex.aya" G~ ];
 } ;
 
 .# Revert supress windows
