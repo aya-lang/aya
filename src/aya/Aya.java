@@ -1,6 +1,5 @@
 package aya;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,6 +7,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
@@ -187,7 +187,8 @@ public class Aya extends Thread {
 	public boolean loadAyarc() {
 		//Load the standard library
 		try {
-			getInstance().queueInput("\"" + AyaPrefs.getAyaDir() + File.separator + ayarcPath + "\"G~");
+			String pathString = Paths.get(AyaPrefs.getAyaDir(), ayarcPath).toString().replace("\\", "\\\\");
+			getInstance().queueInput("\"" + pathString + "\"G~");
 		} catch (Exception e) {
 			return false;
 		}
