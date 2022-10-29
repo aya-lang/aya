@@ -54,7 +54,7 @@ public class CanvasCursorListener implements MouseListener, MouseMotionListener 
 		return list;
 	}
 
-	private void addEvent(Queue<CursorInfo> queue, MouseEvent e) {
+	private synchronized void addEvent(Queue<CursorInfo> queue, MouseEvent e) {
 		if (queue.size() >= maxEventHistory) {
 			queue.remove();
 		}
