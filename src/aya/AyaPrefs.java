@@ -39,8 +39,11 @@ public class AyaPrefs {
 				workingDir = workingDir.substring(0, ix+1);
 			}
 			
-			workingDir = (new File(workingDir).toPath()).toString() + File.separator;
+			workingDir = (new File(workingDir).getCanonicalPath()).toString() + File.separator;
 		} catch (URISyntaxException e) {
+			workingDir = "";
+			Aya.getInstance().printDebug("Cannot locate working dir");
+		} catch (IOException e) {
 			workingDir = "";
 			Aya.getInstance().printDebug("Cannot locate working dir");
 		}
@@ -72,9 +75,10 @@ public class AyaPrefs {
 		}
 		try {
 			//Create a path to test if it exists
+			File fwd = new File(workingDir);
 			Path path = new File(workingDir).toPath();
 			if (Files.exists(path)) {
-				AyaPrefs.workingDir = path.toString() + File.separator;
+				AyaPrefs.workingDir = fwd.getCanonicalPath() + File.separator;
 				return true;
 			} else {
 				//System.out.println("setWorkingDir: error, dir does not exist: " + workingDir);
