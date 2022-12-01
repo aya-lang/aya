@@ -15,7 +15,6 @@ import aya.instruction.TupleInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.number.Num;
 import aya.parser.Parser;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;

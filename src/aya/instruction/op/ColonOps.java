@@ -29,7 +29,6 @@ import aya.exceptions.ex.StaticAyaExceptionList;
 import aya.exceptions.runtime.AssertError;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
-import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;

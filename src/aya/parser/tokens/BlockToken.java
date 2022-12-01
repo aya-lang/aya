@@ -3,14 +3,12 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import aya.ReprStream;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.ex.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
-import aya.instruction.InstructionStack;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.obj.Obj;

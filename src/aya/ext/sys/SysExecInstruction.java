@@ -44,7 +44,6 @@ public class SysExecInstruction extends NamedInstruction {
 		    builder.redirectErrorStream(true);
 		    builder.directory(new File(AyaPrefs.getWorkingDir()));
 		    Process proc = builder.start();
-		    InputStream is = proc.getInputStream();
 
 		    BufferedReader reader = new BufferedReader(
 		            new InputStreamReader(proc.getInputStream()));

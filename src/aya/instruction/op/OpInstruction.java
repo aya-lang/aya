@@ -3,6 +3,7 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.exceptions.runtime.UnimplementedError;
 import aya.instruction.Instruction;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
@@ -37,7 +38,7 @@ public abstract class OpInstruction extends Instruction {
 		}
 		
 	}
-	
+
 	public void setOverload(int num, String name) {
 		if (num == -1) {
 			this._overload = new OpOverloadNoOp(name);

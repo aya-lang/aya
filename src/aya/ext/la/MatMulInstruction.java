@@ -8,7 +8,6 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
