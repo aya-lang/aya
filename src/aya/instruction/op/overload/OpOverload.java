@@ -21,5 +21,16 @@ public abstract class OpOverload {
 		throw new UnsupportedOperationException("Op overload '" + _name + "' does not support using one argument");
 	}
 
+	/** Returns null of the no overload exists */
+	public Obj executeAndReturn(Obj a, Obj b) {
+		throw new UnsupportedOperationException("Op overload '" + _name + "' does not support using two arguments");
+	}
+
+	/** Returns null of the no overload exists */
+	public Obj executeAndReturn(Obj a) {
+		throw new UnsupportedOperationException("Op overload '" + _name + "' does not support using one argument");
+	}
+
+
 	public abstract String getSymName();
 }

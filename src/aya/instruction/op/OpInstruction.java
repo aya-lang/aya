@@ -136,4 +136,12 @@ public abstract class OpInstruction extends Instruction {
 			return null;
 		}
 	}
+
+	public Obj exec2arg(Obj a, Obj b) {
+		throw new UnimplementedError();
+	}
+
+	public Obj exec1arg(Obj a) {
+		throw new UnimplementedError();
+	}
 }
