@@ -110,7 +110,7 @@ def color::multigrad {l n,
 
 .#? N ::color.hueshift\n  shift hue by N degrees
 def color::hueshift {n self,
-    self.hsv $\; V n + 360 % \J ~ self.M.newhsv
+    self.hsv $\; V n + 360 :% \J ~ self.M.newhsv
 }
 
 
@@ -126,7 +126,7 @@ def color::hsvtorgb {h s v color : hi p q t ff,
     } {
         .# Compute hue index
         .# floor -> mod 360 -> /60 (hh) -> floor (hi)
-        h 360 % 60 /:hh;
+        h 360 :% 60 /:hh;
         hh .\ :hi;
 
         hh hi - :ff; .# fractional part

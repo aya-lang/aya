@@ -10,10 +10,10 @@
     {\N\;0:>}:in;
 
     .#? ::list .max\n  max value of a list
-    {{.<}/}:max;
+    {{.<}%}:max;
 
     .#? ::list .min\n  min value of a list
-    {{.>}/}:min;
+    {{.>}%}:min;
 
     .#? ::list .argmax\n  return the index of the largest value in the list
     {$.maxN\;}:argmax;
@@ -41,10 +41,10 @@
     {:~E1:<}:alleq;
 
     .#? ::list .allt\n  true if all elements in list are true
-    {{&}/}:allt;
+    {{&}%}:allt;
 
     .#? ::list .allf\n  true if all elements in list are false
-    {{|}/!}:allf;
+    {{|}%!}:allf;
 
     .# Convenience functions for using a list as a vector
     {.[0]}:x;
@@ -79,7 +79,7 @@
     .}
     {
         .E@-        .# inverse so rotate in correct direction 2 5R => 3
-        \.E@\%      .# force bounds: n % length
+        \.E@\:%      .# force bounds: n % length
         F \ K       .# Split, swap, and rejoin
     }:rotate;
 
@@ -98,7 +98,7 @@
 
     .#? ::list .makesquare\n  make all lists in the given 2d lists the same length
     {list,
-        list$ #E {.<}/
+        list$ #E {.<} %
         #.<
     }:makesquare;
 
@@ -112,7 +112,7 @@
         aya> [2 3].r
         [ [ 1 2 3 ] [ 4 5 6 ] ]
     .}
-    {${*}/R\L}:r;
+    {${*}%R\L}:r;
 
     .#? ::list.zeros\n  generate a [N1 x N2 x ...] list of zeros
     .#? ::list.ones\n  generate a [N1 x N2 x ...] list of ones
@@ -122,8 +122,8 @@
         aya> [4].ones
         [ 1 1 1 1 ]
     .}
-    {${*}/0\L\L}:zeros;
-    {${*}/1\L\L}:ones;
+    {${*}%0\L\L}:zeros;
+    {${*}%1\L\L}:ones;
 
     .#? ::any ::num ::list .lpad\n  left pad list using ::any to a max length of ::num
     { .E @ \- 0.< @\L\J }:lpad;
@@ -150,7 +150,7 @@
 
     .#? ::list.dict_flatten\n  given a list of dicts, flatten the into a single dict
     {
-        {,}\J{.+}/
+        {,}\J{.+}%
     }:dict_flatten;
 
 
@@ -164,7 +164,7 @@
         hello world EE         2  
     .}
     def ::matstr {m : colmax,
-        m :#{#{PE}}.T:#{{.<}/}:colmax;      .# The max width for each column
+        m :#{#{PE}}.T:#{{.<}%}:colmax;      .# The max width for each column
         m .T colmax {#{\P\ B.<}} .& .T      .# For each colum, convert to string with
                                             .# padding equal to the max for that column + 1
         :#{SB;}                             .# Combine each row into a single string, remove trailing space

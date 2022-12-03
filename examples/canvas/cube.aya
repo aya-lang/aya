@@ -104,8 +104,8 @@ points 70 * :points;
 
     .# Draw edges
     4.R :# {i,
-        (i, i 1+ 4%) canvas_points draw_edge
-        (i 4+, i 1+ 4% 4+) canvas_points draw_edge
+        (i, i 1+ 4:%) canvas_points draw_edge
+        (i 4+, i 1+ 4:% 4+) canvas_points draw_edge
         (i, i 4+) canvas_points draw_edge
     };
 

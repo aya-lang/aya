@@ -5,13 +5,11 @@ import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
-import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
-import static aya.util.Casting.asNumberList;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
@@ -28,7 +26,9 @@ import aya.exceptions.ex.ParserException;
 import aya.exceptions.ex.StaticAyaExceptionList;
 import aya.exceptions.runtime.AssertError;
 import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;
@@ -42,8 +42,11 @@ import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
+import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
@@ -51,6 +54,7 @@ import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.DictReader;
 import aya.util.Triple;
+import aya.util.VectorizedFunctions;
 
 
 public class ColonOps {	
@@ -96,7 +100,7 @@ public class ColonOps {
 		/* 63 ?  */ new OP_Colon_Bool(),
 		/* 64 @  */ new OP_IsInstance(),
 		/* 65 A  */ new OP_Colon_A(),
-		/* 66 B  */ null,
+		/* 66 B  */ new OP_Colon_B(),
 		/* 67 C  */ new OP_Colon_C(),
 		/* 68 D  */ new OP_Colon_D(),
 		/* 69 E  */ new OP_Colon_E(),
@@ -295,19 +299,51 @@ class OP_Colon_Duplicate extends OpInstruction {
 
 // % - 38
 class OP_Colon_Percent extends OpInstruction {
-	
+
 	public OP_Colon_Percent() {
 		init(":%");
-		arg("S", "interpolate string");
+		arg("NN", "mod");
+		vect();
+		setOverload(2, "mod");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.mod(b);}
+		public NumberList nl(Number a, NumberList b) { return b.modFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.mod(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		StringToken str_token = new StringToken(block.pop().str(), true);
-		try {
-			str_token.getInstruction().execute(block);
-		} catch (ParserException e) {
-			throw new ValueError("Error when parsing string at :% " + e.getMessage());
+	public void execute(final Block block) {
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
+
+	// a b % => "a % b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj result;
+		// Vectorize?
+		result = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP);
+		if (result != null) {
+			return result;
+		}
+		// Overload?
+		result = overload().executeAndReturn(b, a); // stack order
+		if (result != null) {
+			return result;
+		}
+		// Standard operation
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			try {
+				return NumberMath.mod(asNumber(a), asNumber(b));
+			} catch (ArithmeticException e) {
+				throw new MathError("Divide by 0 in expression " + a.str() + " " + b.str() + "%" );
+			}
+		} else {
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -396,27 +432,35 @@ class OP_Colon_LessThan extends OpInstruction {
 		setOverload(2, "leq");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.leq(b);}
+		public NumberList nl(Number a, NumberList b) { return b.geq(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.leq(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj b = block.pop();
 		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, b, a)) return;
-		
+	// a b :< => "a :< b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( Num.fromBool(((Number)a).compareTo((Number)b) <= 0) );
+			return Num.fromBool(((Number)a).compareTo((Number)b) <= 0);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( Num.fromBool(((Char)a).compareTo((Char)b) <= 0) );
+			return Num.fromBool(((Char)a).compareTo((Char)b) <= 0);
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( Num.fromBool(a.str().compareTo(b.str()) <= 0) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).geq(asNumber(a))) ); // geq is opposite of leq
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( new List(asNumberList(a).leq(asNumber(b))) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( new List(asNumberList(a).leq(asNumberList(b))) );
+			return Num.fromBool(a.str().compareTo(b.str()) <= 0);
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -457,25 +501,33 @@ class OP_Colon_GreaterThan extends OpInstruction {
 		vect();
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.geq(b);}
+		public NumberList nl(Number a, NumberList b) { return b.leq(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.geq(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj b = block.pop();
 		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, b, a)) return;
+	// a b :> => "a :> b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( Num.fromBool(((Number)a).compareTo((Number)b) >= 0) );
+			return Num.fromBool(((Number)a).compareTo((Number)b) >= 0);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( Num.fromBool(((Char)a).compareTo((Char)b) >= 0) );
+			return Num.fromBool(((Char)a).compareTo((Char)b) >= 0);
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( Num.fromBool(a.str().compareTo(b.str()) >= 0) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(b).leq(asNumber(a)))); // lt is opposite of gt
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push(new List(asNumberList(a).geq(asNumber(b))));
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push(new List(asNumberList(a).geq(asNumberList(b))));
+			return Num.fromBool(a.str().compareTo(b.str()) >= 0);
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -573,6 +625,27 @@ class OP_Colon_A extends OpInstruction {
 		}
 	}
 }
+
+// B - 66
+class OP_Colon_B extends OpInstruction {
+	
+	public OP_Colon_B() {
+		init(":B");
+		arg("S", "interpolate string");
+	}
+
+	@Override
+	public void execute(Block block) {
+		StringToken str_token = new StringToken(block.pop().str(), true);
+		try {
+			str_token.getInstruction().execute(block);
+		} catch (ParserException e) {
+			throw new ValueError("Error when parsing string at :% " + e.getMessage());
+		}
+	}
+}
+
+
 
 // C - 67
 class OP_Colon_C extends OpInstruction {

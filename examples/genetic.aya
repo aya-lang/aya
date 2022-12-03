@@ -48,7 +48,7 @@ struct population { pop pop_fitness }
 }:rand_pop;
 
 def population::__repr__ {self,
-    self.pop #P "\n" *
+    self.pop #P "\n" %
 }
 
 .# Calculate the fitness for each dna and
@@ -109,7 +109,7 @@ main {
         pop.best :best;
 
         .# Only print every so often
-        generations 100 % 0 = {
+        generations 100 :% 0 = {
             "generation $generations: $(best.data) ($(best.fitness))" :P
         } ?
 

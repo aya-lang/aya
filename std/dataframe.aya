@@ -223,7 +223,7 @@ def dataframe::to_html {kwargs::dict self : noindex(0) data style("") border(0),
 def dataframe::_repr_lines {s::str cls : lines,
     s.lines :lines;
     lines E 24 > {
-        [lines 10 .<~ "..." lines 10 .>~]"\n"*
+        [lines 10 .<~ "..." lines 10 .>~]"\n" %
     } {
         s
     } .?

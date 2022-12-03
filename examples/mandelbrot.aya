@@ -15,4 +15,4 @@ aE matrix.zeros :z;
 z {2^a+} 20 % .|
 
 .# Display
-.rows {2<" #"\I} O "\n"* :P
+.rows {2<" #"\I} O "\n" % :P

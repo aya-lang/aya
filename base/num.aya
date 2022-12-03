@@ -9,7 +9,7 @@
         Z           .# Convert to bignum
         .|          .# Absolute value (ignore negative)
         P B;V;      .# Remove the ': and 'z
-        '. | V \;   .# Remove any decimal
+        '. Mu V \;   .# Remove any decimal
         #:'         .# Convert to list of ascii values
         48-         .# Subtract 48 (ascii value of '0)
     }:digits;
@@ -53,7 +53,7 @@
 
 
     .#? ::num.frac\n  the fractional part of the number
-    { 1% }:frac;
+    { 1:% }:frac;
 
 
     .#? ::num.s\n  split a decimal into two numbers
@@ -66,7 +66,7 @@
         5 0
     .}
     {
-        $1%P$.[0]'.={V;}?~ \.\ \
+        $1:%P$.[0]'.={V;}?~ \.\ \
     }:fracsplit;
 
 

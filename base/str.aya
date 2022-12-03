@@ -8,27 +8,27 @@
     [].M W
 
 
-    {"\\s+" FE0=}:iswhitespace;
+    {"\\s+" F E0=}:iswhitespace;
 
     .#? ::str.trim\n  remove whitespace from start and end of string
     {
         :& .iswhitespace {
             ; ""
         } {
-            "^\\s+" FB\; "\\s+$"FV\; 
+            "^\\s+" F B\; "\\s+$" F V\; 
         } .?
     }:trim;
 
 
     .#? ::num ::char ::str .leftpad\n  left pad string S so it is at least length I using char C
     {len::num pad::char s,
-        s.E len\- {pad\K}\%
+        s.E len\- {pad\K}\O
     }:lpad;
 
 
     .#? ICS.rightpad\n  right pad string S so it is at least length I using char C
     {len::num pad::char s,
-        s.E len\- {padK}\%
+        s.E len\- {padK}\O
     }:rpad;
 
 
@@ -57,7 +57,7 @@
 
 
     .#? S.lines\n  split a string into lines. ignore traling newlines
-    {"\n"|}:lines;
+    {"\n"Mu}:lines;
 
 
     .#? S.bytes\n  convert string to byte list
@@ -78,7 +78,7 @@
     {sep s,
         sepP:sep;
         s.lines :# {
-            sep | :# {.parsenum}
+            sep Mu :# {.parsenum}
         }
         .makesquare
     }:readdlm;

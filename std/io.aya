@@ -56,7 +56,7 @@ def path::__radd__ {\.__add__}
 
 .# String representation of the path
 def path::__str__ {self,
-    self.dirs :9s * self.M.root :9s + \+
+    self.dirs :9s % self.M.root :9s + \+
     self.isfile ! {:9s +} ?
 }
 
@@ -91,7 +91,7 @@ def path::aya {path,
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
 def path::_split {dir::str path,
-    dir "\\"|#{"/"|~}
+    dir "\\" Mu #{"/" Mu ~}
     .# Remove empties
     [""] :|
 }
@@ -151,7 +151,7 @@ def path::_clean {dirs::list path : i(0),
 .#
 
 .#? path.root\n  root dir name
-"user.dir" :{sys.getprop} :9s |.[0] path.:root;
+"user.dir" :{sys.getprop} :9s Mu .[0] path.:root;
 
 
 .# Regular expression used for splitting path strings
@@ -228,7 +228,7 @@ def file::readall {self,
 
 .#? ::file.lines\n  return a list containing the lines in the file
 def file::lines {self,
-    self.id 'a :{fstream.O} "\n" |
+    self.id 'a :{fstream.O} "\n" Mu
 }
 
 .#? ::file.flush\n  flush an output stream
@@ -253,9 +253,8 @@ def file::__repr__ {self,
         f.readll :P
     }
 .}
-def file::do {
-    ; .# pop class
-    (1 hold)(\ ._do)
+def file::do {self,
+    {:self^, ~ self._do} 0 :`
 }
 
 .# Helper function for file.do

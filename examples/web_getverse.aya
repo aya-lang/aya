@@ -24,7 +24,7 @@ G:out;
 .# '\;' to remove `out` string from the stack
 out "ERROR" N 0 < \; {
   .# Trim the header
-  out "[" N | \; :out;
+  out "[" N Mu \; :out;
 
   .# Remove newlines
   out "\n" " " .& :out;

@@ -5,11 +5,11 @@
 
 {
 .# Golfed version of the collatz conjecture (35 chars)
-$1={;0}{0\{n,Bn2%n3*Bn2/.?$1>}W;}.?
+$1={;0}{0\{n,Bn2:%n3*Bn2/.?$1>}W;}.?
 }:collatz;
 
 .# Pure stack (no variables) implementation (36 chars)
-.# { $1={;0}{0\{\B\$$2%\3*B@2/.?$1>}W;}.?  }:collatz;
+.# { $1={;0}{0\{\B\$$2:%\3*B@2/.?$1>}W;}.?  }:collatz;
 
 "Collatz function:" :P
 collatz.` :P "":P

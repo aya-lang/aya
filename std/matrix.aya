@@ -188,7 +188,7 @@ def matrix::sq { :& * }
 
 
 .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
-def matrix::issq {self, self.rowsE self.rows#E\#= {|}/}
+def matrix::issq {self, self.rowsE self.rows#E\#= `| %}
 
 .#? ::matrix matrix.tr\n  trace of a matrix as a list
 def matrix::tr {[1|.rows$ER,VI]}
@@ -503,4 +503,4 @@ def matrix::full {value::num shape::list matrix,
 
 
 .#? ::matrix.comma_str\n  print the matrix in list with comma format
-def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}
+def matrix::comma_str {.rows :#{ "," % "[" \+"]"+} "," % "["\+ "]"+}

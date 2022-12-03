@@ -10,7 +10,7 @@
 import ::asciiart
 
 {
-" 6_`|6 |` ()--()"_\L"  ~"_T*
+" 6_`|6 |` ()--()"_\L"  ~"_T.join
 }:train;
 
 3 train :P

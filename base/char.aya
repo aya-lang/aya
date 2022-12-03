@@ -29,7 +29,7 @@
 
     .#? ::str ::char .split_keep\n  split the string at the char, keep the char in the leading string
     {s c,
-        s c | #{c+} 
+        s c Mu #{c+} 
 
         .# If c is not the last char of s,
         .# remove c from the last item of the list

@@ -56,7 +56,7 @@ def asciiart::__eq__ {self c::char,
 }
 
 def asciiart::__str__ {self,
-    self.list "\n" *
+    self.list "\n" %
 }
 
 def asciiart::__repr__ {self,
@@ -177,7 +177,7 @@ def asciiart::__dec__ {self$,
     self
 }
 
-def asciiart::__mul__ {list self,
+def asciiart::join {list self,
     list :#{self} B; S
 }
 
@@ -251,7 +251,7 @@ def asciiart::fill {c self,
      #
 .}
 def asciiart::replace {s::str self,
-    s "`" | .E1={~}? :s ;
+    s "`" Mu .E1={~}? :s ;
     s V:from ; V:to ; ;
     self.list :# {from to .&}
     self.M!
@@ -314,7 +314,7 @@ def asciiart::rle {s asciiart,
 
 asciiart:aa;
 
-{asciiart.rle "`"| asciiart!}:_;
+{asciiart.rle "`" Mu asciiart!}:_;
 
 .{ Example:
     Generate a Sierpinski carpet:

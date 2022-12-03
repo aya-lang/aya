@@ -9,7 +9,7 @@
 {5 4 *} assert [20]
 {3 4 /} assert [0.75]
 {1 1 -} assert [0]
-{37 2%} assert [1]
+{37 2:%} assert [1]
 
 .# Math Functions
 {0.5 Mc} assert [0.8775825618903728]
@@ -35,13 +35,13 @@
 {3R2*} assert [[2 4 6]]
 {3R2/} assert [[0.5 1 1.5]]
 {3R2^} assert [[1 4 9]]
-{3R2%} assert [[1 0 1]]
+{3R2:%} assert [[1 0 1]]
 {1 3R+} assert [[2 3 4]]
 {1 3R-} assert [[0 -1 -2]]
 {2 3R*} assert [[2 4 6]]
 {2 3R/} assert [[2 1 (2 3/)]]
 {2 3R^} assert [[2 4 8]]
-{2 3R%} assert [[0 0 2]]
+{2 3R:%} assert [[0 0 2]]
 {[0.5] Mc} assert [[0.8775825618903728 ]]
 {[0.5] Ms} assert [[0.479425538604203  ]]
 {[0.5] Mt} assert [[0.5463024898437905 ]]
@@ -58,7 +58,7 @@
 {[3,1+]} assert [[2 3 4]]
 {[4 6,]} assert [[4 5 6]]
 {[0 0.5 2,]} assert [[0 0.5 1 1.5 2]]
-{[10,,2%0=]} assert [[2 4 6 8 10]]
+{[10,,2:%0=]} assert [[2 4 6 8 10]]
 {[[1 2] [3 4], *]} assert [[3 8]]
 
 .# Character
@@ -197,18 +197,21 @@
     {d.foo} assert [3]
     {10 20 d.bar} assert [10 20 1 2]
 
-    {, {other self, other.a self.a + other.b self.b +}:__add__ }:m;
+    {, {other self, other.a self.a + other.b self.b + J}:__add__ }:m;
     {, 1:a 2:b m:__meta__ }:x;
     {, 3:a 4:b m:__meta__ }:y;
 
     .# if self is not pushed, should have an empty stack
     { x y + } assertfail
     .# if self is not pushed, should operate on the first x and y
-    { x y y + } assert [4 6]
+    .# this is no longer the case since operator overloads are
+    .# always take the same number of args as the overloaded op
+    .# which would ignore the extra x in this case
+    .# { x y y + } assert [[4 6]]
 
     1 m.:__pushself__;
 
-    {x y +} assert [4 6]
+    {x y +} assert [[4 6]]
 })
 
 
@@ -260,7 +263,7 @@
 {{: ,} S .| ::locals N\;} assert [1]
 
 .# Split into list of blocks
-{{a, b c + [10,] $% {a b} () 1 2 :k .:k k.`} .* ""*}
+{{a, b c + [10,] $% {a b} () 1 2 :k .:k k.`} .* "" %}
 assert
 ["{b}{c}{+}{[10, ]}{$}{%}{{a b}}{()}{1}{2}{:k}{.:k}{k.`}"]
 

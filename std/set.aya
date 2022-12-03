@@ -75,7 +75,7 @@ def set::__gt__ {\.__lt__}
 .#? ::set ::set.__leq__\n subset
 def set::__leq__ {other::set self : l,
     other.list :l;
-    self.list # { l \ N \; 0 :>} {*}/
+    self.list # { l \ N \; 0 :>} {*} %
 }
 
 .#? ::set ::set.__geq__\n subset

@@ -3,7 +3,7 @@ export ::csv
 
 def csv::parse {dlm : rgx,
     "(?<=^|$dlm)(\"(?:[^\"]|\"\")*\"|[^$dlm]*)" :rgx; .#"
-    "\n"| :# {line,
+    "\n" Mu :# {line,
         line.trim :line;
         line rgx & :#{.trim .rmquote .!}
     }
@@ -82,8 +82,8 @@ def csv::dumps {list sep na,
             .# If it is a string, surround with quotes
             :& P \ ::str :@ {"\""+ "\""\+} ?
         }
-        sep *
-    } "\n" *
+        sep %
+    } "\n" %
 }
 
 
