@@ -8,6 +8,7 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumberList;
 
+import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.op.OpInstruction;
 import aya.obj.Obj;
@@ -85,7 +86,12 @@ public class VectorizedFunctions {
 			}
 			return out;	
 		} else {
-			throw new ValueError("dim mismatch");
+			ReprStream msg = new ReprStream();
+			msg.println("Dimension mismatch. Lengths must be equal but are: " + a.length() + ", " + b.length());
+			a.repr(msg);
+			msg.println();
+			b.repr(msg);
+			throw new ValueError(msg.toString());
 		}
 	}
 
