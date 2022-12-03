@@ -10,26 +10,6 @@ import aya.util.Pair;
 /** List supertype */
 public abstract class ListImpl {
 	
-
-	public Pair<ListImpl, ListImpl> splitAt(int index) {
-		ListImpl l = this;
-		if (index == 0) {
-			return new Pair<ListImpl, ListImpl>(l.similarEmpty(), l);
-		} else if(index >= l.length()) {
-			return new Pair<ListImpl, ListImpl>(l, l.similarEmpty());
-		} else if  (index*-1 >= l.length()) {
-			return new Pair<ListImpl, ListImpl>(l.similarEmpty(), l);
-		} else if (index > 0) {
-			return new Pair<ListImpl, ListImpl>(l.slice(0, index), l.slice(index, l.length()));
-		} else if (index < 0) {
-			return new Pair<ListImpl, ListImpl>(l.slice(0, l.length()+index), l.slice(l.length()+index, l.length()));
-		} else {
-			return null;
-		}
-	}
-	
-	
-	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////
