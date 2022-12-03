@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.list.numberlist.NumberList;
-import aya.util.Pair;
 
 /** List supertype */
 public abstract class ListImpl {
