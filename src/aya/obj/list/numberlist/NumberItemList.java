@@ -386,7 +386,7 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public ListImpl imag() {
+	public NumberList imag() {
 		ArrayList<Number> out = emptyAL();
 		for (Number b : _list) out.add(b.imag());
 		return new NumberItemList(out);
