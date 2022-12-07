@@ -23,7 +23,7 @@ def color::__init__ {r::num g::num b::num self,
 
 def color::newhex { color ,
     0 dot_i '#= {V;} ? .# Strip leading '# if it exists
-    16 2 H 24 .> [3 8] L #{2 10 H} ~ color!
+    16 2 .& 24 .> [3 8] L #{2 10 .&} ~ color!
 }
 
 
@@ -83,7 +83,7 @@ def color::rgb {self, [self.r self.g self.b]}
 
 
 .#? ::color.hex\n  return a hexadecimal string representation of the color
-def color::hex {.rgb #{10 16 H 2 '0 @.lpad}S}
+def color::hex {.rgb #{10 16 .& 2 '0 @.lpad}S}
 
 
 .#? ::color.hsv\n  return a list containing hue, sat, and val respectively

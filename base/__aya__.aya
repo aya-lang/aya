@@ -227,7 +227,7 @@
 
 
     {self,
-        "($(self.__type__:C) 0x$(self M# 10 16 H))"
+        "($(self.__type__:C) 0x$(self M# 10 16 .&))"
     }:__repr__;
 
     ::object:__type__;

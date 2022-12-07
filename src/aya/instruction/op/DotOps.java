@@ -54,6 +54,7 @@ import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
+import aya.obj.number.BaseConversion;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
@@ -357,6 +358,7 @@ class OP_Dot_And extends OpInstruction {
 		init(".&");
 		arg("SSS", "replace all occurances of the regex S1 with S2 in S3");
 		arg("LLB", "zip with");
+		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
 	}
 
 	@Override
@@ -365,7 +367,10 @@ class OP_Dot_And extends OpInstruction {
 		Obj b = block.pop();  // find
 		Obj c = block.pop();  // str
 
-		if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			// stack order: num from to op
+			block.push(convertBase(a, b, c));
+		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
 			Block initial = new Block();
@@ -375,6 +380,17 @@ class OP_Dot_And extends OpInstruction {
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);
+		}
+	}
+
+	private Obj convertBase(Obj to_b, Obj from_b, Obj num) {
+		try {
+			return BaseConversion.convertBase(asNumber(from_b).toInt(), asNumber(to_b).toInt(), num);
+		} catch (NumberFormatException nfe) {
+			throw new ValueError("base conversion: invalid number format (" 
+					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
+		} catch (TypeError te) {
+			throw new TypeError(this, num, from_b, to_b);
 		}
 	}
 }

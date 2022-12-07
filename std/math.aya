@@ -172,10 +172,10 @@ exportall
 
 .# BASE
 
-{2 10 H}:unbit;   .#? L unbit \n  convert a list of bits to a number
-{10 2 H}:bits;    .#? N bits \n  convert a positive number to a list of bits
-{10 16 H}:hex;    .#? N hex\n  convert an int into a hex string
-{16 10 H}:unhex;  .#? S unhex\n  convert a hex string to an int
+{2 10  .&}:unbit;   .#? L unbit \n  convert a list of bits to a number
+{10 2  .&}:bits;    .#? N bits \n  convert a positive number to a list of bits
+{10 16 .&}:hex;    .#? N hex\n  convert an int into a hex string
+{16 10 .&}:unhex;  .#? S unhex\n  convert a hex string to an int
 
 
 

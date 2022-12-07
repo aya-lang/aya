@@ -20,8 +20,6 @@ import static aya.util.Casting.asSymbol;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -119,7 +117,7 @@ public class Ops {
 		/* 69 E  */ new OP_E(),
 		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
-		/* 72 H  */ new OP_H(),
+		/* 72 H  */ null,
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
 		/* 75 K  */ new OP_K(),
@@ -1010,122 +1008,12 @@ class OP_G extends OpInstruction {
 class OP_H extends OpInstruction {
 	
 	public OP_H() {
-		init("H");
-		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
+		//init("H");
 	}
 
 	@Override
 	public void execute (final Block block) {
-		final Obj to_b = block.pop();
-		final Obj from_b = block.pop();
-		final Obj num = block.pop();
-		
-		try {
-			if (from_b.isa(NUMBER) && to_b.isa(NUMBER)) {
-				int from_base = ((Number)from_b).toInt();
-				int to_base = ((Number)to_b).toInt();
-				BigInteger out_bi = BigInteger.ZERO;
-				
-				//Check Radix Ranges
-				if ((Character.MIN_RADIX > from_base 
-						|| Character.MIN_RADIX > to_base
-						|| Character.MAX_RADIX < from_base
-						|| Character.MAX_RADIX < to_base) && (
-								from_base != 0
-								&& to_base != 0
-								)){
-					throw new ValueError("H: base out of range (" + from_base + ", " + to_base + ")");
-				}
-				
-				//String
-				if(num.isa(STR)) {
-					out_bi  = new BigInteger(num.str(), from_base);
-					
-				}
-				
-				//Always base ten
-				else if(num.isa(NUMBER)) {
-					out_bi = ((Number)num).toBigDecimal().setScale(0, RoundingMode.FLOOR).toBigInteger();
-				} 
-				
-				//Assume base 2
-				else if (num.isa(NUMBERLIST)) {
-					if (from_base == 2) {
-						NumberList bin_list = asNumberList(num);
-						StringBuilder sb = new StringBuilder(bin_list.length());
-		
-							for (int i = 0; i < bin_list.length(); i++) {
-								int c = bin_list.get(i).toInt();
-								//Check for binary only
-								if (c == 1 || c == 0) {
-									sb.append(c);
-								} else {
-									throw new ValueError("H: List must be base 2");
-								}
-								
-							}
-						out_bi = new BigInteger(sb.toString(), 2);
-					} else if (from_base == 0) {
-						NumberList nums = asNumberList(num);
-						byte[] in_bytes = new byte[nums.length()];
-						for (int i = 0; i < nums.length(); i++) {
-							int c = nums.get(i).toInt();
-							in_bytes[i] = (byte)c;
-						}
-						out_bi = new BigInteger(in_bytes);
-					} else {
-						throw new ValueError("H: List must be base 2 or bytes (base 0)");
-					}
-				}
-				
-				else {
-					throw new TypeError(this, num, from_b, to_b);
-				}
-				
-				//OUTPUT
-				
-				//Convert to best use
-				if (to_base == 10) {
-					//Larger than an int, return BigDeciaml
-					if (out_bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
-						block.push(new BigNum(new BigDecimal(out_bi)));
-					}
-					//Smaller than int 
-					else {
-						block.push(new Num(out_bi.doubleValue()));
-					}
-					return;
-				} else if (to_base == 2) {
-					String bin_str = out_bi.toString(2);
-					ArrayList<Number> out_list = new ArrayList<Number>(bin_str.length());
-					
-					for (char c : bin_str.toCharArray()) {
-						out_list.add(new Num(c-'0'));
-					}
-					block.push(new List(new NumberItemList(out_list)));
-					return;
-				} else if (to_base == 0) {
-					// Special case: byte list
-					byte[] bytes = out_bi.toByteArray();
-					ArrayList<Number> nums = new ArrayList<>(bytes.length);
-					for (byte b : bytes) {
-						nums.add(Num.fromByte(b));
-					}
-					block.push(new List(new NumberItemList(nums)));
-					return;
-				} else {
-					block.push(List.fromString(out_bi.toString(to_base)));
-					return;
-				}
-			}
-		}
-		catch (NumberFormatException nfe) {
-			throw new ValueError("H: invalid number format (" 
-					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
-		}
-		
-		
-		throw new TypeError(this, num, from_b, to_b);
+		throw new UnimplementedError();
 	}
 }
 
