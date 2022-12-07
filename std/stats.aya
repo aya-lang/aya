@@ -36,7 +36,7 @@ def stats::geomean {
 def stats::median {l,
     lC$E2/.\        .# Sort the list and get its middle index
     lE2:%0= {        .# If the list has even length,
-        $1-KIS2/    .# average the middle two
+        $1-:JIS2/    .# average the middle two
     } {
         I           .# else, take the middle item
     }  .?

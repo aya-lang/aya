@@ -47,7 +47,7 @@
     {
         $           .# dup n so we can use the sign later
         .| $TR\R    .# create negative and positive versions of the list
-        0\KK        .# join lists with a 0 between
+        0\:J:J        .# join lists with a 0 between
         \0<{U}?     .# If the sign is negative, reverse
     }:i;
 
@@ -82,7 +82,7 @@
         .?
 
         .# If the length is not equal to nums, add b to the end
-        $Enums={}{bK}.?
+        $Enums={}{b:J}.?
     }:linspace;
 
 

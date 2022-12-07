@@ -80,7 +80,7 @@
     {
         .E@-        .# inverse so rotate in correct direction 2 5R => 3
         \.E@\:%      .# force bounds: n % length
-        F \ K       .# Split, swap, and rejoin
+        F \ :J       .# Split, swap, and rejoin
     }:rotate;
 
 

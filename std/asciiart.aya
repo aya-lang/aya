@@ -117,7 +117,7 @@ def asciiart::__add__ {other self,
     other :T ::char = other :T ::str = | {
         self.list #{other \+} self.M!
     } {
-        other.list .T self.list.T K .T self.M!
+        other.list .T self.list.T :J .T self.M!
     } .?
 }
 
@@ -147,7 +147,7 @@ def asciiart::h {self,
     #..
 .}
 def asciiart::__div__ {other self,
-    other.list $\; self.list $\; K self.M!
+    other.list $\; self.list $\; :J self.M!
 }
 
 def asciiart::__rdiv__ {self other,

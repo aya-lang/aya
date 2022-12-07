@@ -108,7 +108,7 @@ def path::_fixhome {dirs::list path,
 
         .# Append the home dir to the front
         path.home.dirs $\;  .# Copy home.dirs
-        \K                  .# Append to front
+        \ :J                .# Append to front
     } {
         ;U .# Pop the -1 and put the list back
     } .?

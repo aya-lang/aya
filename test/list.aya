@@ -1,17 +1,17 @@
 [
 
 .# Transition between strings and lists
-{ "abc" 0 K ['a 'b 'c 0] }
-{ "abc" :& 0 K ; ['a 'b 'c 0] }
-{ "abc" :& 0 K ; B; "abc" }
+{ "abc" 0 :J ['a 'b 'c 0] }
+{ "abc" :& 0 :J ; ['a 'b 'c 0] }
+{ "abc" :& 0 :J ; B; "abc" }
 
-{[] 'a K "a"}
+{[] 'a :J "a"}
 {[] 'a J "a"}
 
-{'a 'b K "ab"}
+{'a 'b :J "ab"}
 {'a 'b J "ab"}
 
 {1 1 []J + [2]}
-{1 1 []K + [2]}
+{1 1 []:J + [2]}
 
 ] :# { test.test }

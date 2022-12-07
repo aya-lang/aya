@@ -189,7 +189,7 @@ exportall
 {n, [1 n,, n\:%0=]}:divisors;
 
 .#? N factors\n  compute a number's prime factors
-.# golf: {n,{2to(nV){n\:%0=}.NI$n\/fK}{n}nGn2<|?}:f;
+.# golf: {n,{2to(nV){n\:%0=}.NI$n\/f:J}{n}nGn2<|?}:f;
 {n,
     .# is the number prime
     nG n2< |
@@ -208,7 +208,7 @@ exportall
 
         .# Append this factor to the list of
         .#   factors recursively
-        I $n\/ factors K
+        I $n\/ factors :J
     }
 
     .?

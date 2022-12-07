@@ -120,7 +120,7 @@ public class Ops {
 		/* 72 H  */ null,
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
-		/* 75 K  */ new OP_K(),
+		/* 75 K  */ null,
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
 		/* 78 N  */ new OP_N(),
@@ -1163,33 +1163,12 @@ class OP_L extends OpInstruction {
 class OP_K extends OpInstruction {
 	
 	public OP_K() {
-		init("K");
-		arg("LL", "concatenate lists (modify list 1)");
-		arg("LA|AL", "add to list (modify list)");
-		arg("AA", "create list [ A A ]");
+		//init("K");
 	}
 
 	@Override
 	public void execute (final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
 
-		
-		if (a.isa(LIST) && b.isa(LIST)) {
-			asList(b).mutAddAll(asList(a));
-			block.push(b);
-		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {			
-			asList(a).mutAddExact(0, b);
-			block.push(a);
-		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
-			asList(b).mutAdd(a);
-			block.push(b);
-		} else {
-			final ArrayList<Obj> list = new ArrayList<Obj>();
-			list.add(b);  //Stack - Add in reverse order
-			list.add(a);
-			block.push(new List(list));
-		}
 	}
 }
 

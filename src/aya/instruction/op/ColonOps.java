@@ -108,7 +108,7 @@ public class ColonOps {
 		/* 71 G  */ new OP_Colon_G(),
 		/* 72 H  */ null,
 		/* 73 I  */ new OP_Colon_I(),
-		/* 74 J  */ null,
+		/* 74 J  */ new OP_Colon_J(),
 		/* 75 K  */ new OP_Colon_K(),
 		/* 76 L  */ null,
 		/* 77 M  */ new OP_Colon_M(),
@@ -791,6 +791,40 @@ class OP_Colon_I extends OpInstruction {
 		} else {
 			throw new TypeError(this, index, list);
 		}
+	}
+}
+
+// J - 74
+class OP_Colon_J extends OpInstruction {
+	
+	public OP_Colon_J() {
+		init(":J");
+		arg("LL", "concatenate lists (modify list 1)");
+		arg("LA|AL", "add to list (modify list)");
+		arg("AA", "create list [ A A ]");
+	}
+
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+		
+		if (a.isa(LIST) && b.isa(LIST)) {
+			asList(b).mutAddAll(asList(a));
+			block.push(b);
+		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {			
+			asList(a).mutAddExact(0, b);
+			block.push(a);
+		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
+			asList(b).mutAdd(a);
+			block.push(b);
+		} else {
+			final ArrayList<Obj> list = new ArrayList<Obj>();
+			list.add(b);  //Stack - Add in reverse order
+			list.add(a);
+			block.push(new List(list));
+		}
+
 	}
 }
 

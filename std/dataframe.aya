@@ -54,7 +54,7 @@ def dataframe::_gen_colnames {n::num cls,
     } {
         n 26- :n;
         "az"R#P
-        n 26 .% 'a$@+K R "az"R {\P+}.pu #~ n .< K
+        n 26 .% 'a$@+ :J R "az"R {\P+}.pu #~ n .< :J
     } .?
 }
 
