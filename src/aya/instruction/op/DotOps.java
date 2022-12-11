@@ -53,6 +53,7 @@ import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
+import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BaseConversion;
@@ -1211,6 +1212,7 @@ class OP_Dot_R extends OpInstruction {
 	public OP_Dot_R() {
 		init(".R");
 		arg("N", "range [0, 1, .., N-1]");
+		arg("L", "linspace [from to count], if count not provided, use 100");
 	}
 
 	@Override
@@ -1229,8 +1231,50 @@ class OP_Dot_R extends OpInstruction {
 				// -N .R => [N+1 ... -1 0]
 				block.push( new List(ListRangeUtils.buildRange(n.inc(), Num.ZERO)) );
 			}
+		} else if (a.isa(Obj.NUMBERLIST)) {
+			NumberList list = asNumberList(a);
+			if (list.length() == 2) {
+				block.push(new List(linspace(list.get(0), list.get(1), Num.fromInt(100))));
+			} else if (list.length() == 3) {
+				block.push(new List(linspace(list.get(0), list.get(1), list.get(2))));
+			} else {
+				throw new ValueError("Invalid linspace input. Length must be be exactly 2 or 3. Got: " + a.repr());
+			}
 		} else {
 			throw new TypeError(this, a);
+		}
+	}
+
+	
+	private NumberList linspace(Number from, Number to, Number steps) {
+		if (from.equiv(to)) {
+			ArrayList<Number> nums = new ArrayList<Number>();
+			int count = steps.toInt();
+			for (int i = 0; i < count; i++) {
+				nums.add(from);
+			}
+			return new NumberItemList(nums);
+		} else {
+			Number a = NumberMath.sub(to, from);
+			Number b = NumberMath.sub(steps, Num.ONE);
+			Number inc = NumberMath.div(a, b);
+			NumberItemList out = new NumberItemList(from, to, inc);
+
+			// Rounding error may cause off-by-one
+			int expected_len = steps.toInt();
+			if (out.length() == expected_len - 1) {
+				out.addItem(to);
+			} else if (out.length() == expected_len + 1) {
+				out.popBack();
+			}
+			
+			// Verify the list length is correct
+			if (out.length() != expected_len) {
+				// If this is ever thrown, there is a bug in the code above
+				throw new ValueError("Error creating linspace, length is incorrect");
+			} else {
+				return out;
+			}
 		}
 	}
 }

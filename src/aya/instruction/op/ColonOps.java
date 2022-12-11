@@ -369,7 +369,6 @@ class OP_Colon_Times extends OpInstruction {
 	public OP_Colon_Times() {
 		init(":*");
 		arg("LLB", "outer product of two lists using B");
-		arg("NNN", "linspace");
 	}
 
 	@Override
@@ -400,27 +399,8 @@ class OP_Colon_Times extends OpInstruction {
 			} else {
 				throw new TypeError(this, c, b, a);
 			}
-		} else if (a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
-			block.push(new List(linspace(asNumber(a), asNumber(b), asNumber(c))));
 		} else {
 			throw new TypeError(this, c, b, a);
-		}
-	}
-	
-	private NumberList linspace(Number from, Number to, Number steps) {
-		
-		if (from.equiv(to)) {
-			ArrayList<Number> nums = new ArrayList<Number>();
-			int count = steps.toInt();
-			for (int i = 0; i < count; i++) {
-				nums.add(from);
-			}
-			return new NumberItemList(nums);
-		} else {
-			Number a = NumberMath.sub(to, from);
-			Number b = NumberMath.sub(steps, Num.ONE);
-			Number inc = NumberMath.div(a, b);
-			return new NumberItemList(from, to, inc);
 		}
 	}
 }
