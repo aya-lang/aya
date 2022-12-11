@@ -281,7 +281,7 @@ def asciiart::replace_aa {a::asciiart self : l,
     self.list ' #.= #! .# Mask of filled/empty
     :#{
         :#{ l \ I }    .# Use the mask to index into the list
-        S              .# Concat each aa in the row
+        W              .# Concat each aa in the row
     } {/}/             .# Concat each row
 }
 

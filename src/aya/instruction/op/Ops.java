@@ -128,7 +128,7 @@ public class Ops {
 		/* 80 P  */ new OP_P(),
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
-		/* 83 S  */ new OP_S(),
+		/* 83 S  */ null, //new OP_S(),
 		/* 84 T  */ new OP_T(), 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
@@ -1330,22 +1330,11 @@ class OP_S extends OpInstruction {
 	
 	public OP_S() {
 		init("S");
-		arg("B", "duplicate block, add locals if they do not exist");
-		arg("J", "is defined");
 	}
 	
 	@Override
 	public void execute (final Block block) {
-		final Obj a = block.pop();
-		
-		if (a.isa(SYMBOL)) {
-			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(asSymbol(a))));
-		} else if (a.isa(BLOCK)) {
-			Block b = (Block)a;
-			block.push(b.duplicateAddLocals());
-		} else {
-			throw new TypeError(this, a);
-		}
+
 	}
 }
 

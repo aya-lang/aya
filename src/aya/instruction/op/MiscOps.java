@@ -109,7 +109,7 @@ public class MiscOps {
 		/* 95 _  */ null,
 		/* 96 `  */ null,
 		/* 97 a  */ null,
-		/* 98 b  */ null,
+		/* 98 b  */ new OP_Mb(),
 		/* 99 c  */ new OP_Cosine(),
 		/* 100 d */ new OP_CastDouble(),
 		/* 101 e */ new OP_Me(),
@@ -444,6 +444,31 @@ class OP_Atangent extends OpInstruction {
 		
 		if(a.isa(NUMBER)) {
 			return asNumber(a).atan();
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
+// b - 98
+class OP_Mb extends OpInstruction {
+	
+	public OP_Mb() {
+		init("Mb");
+		arg("B", "duplicate block, add locals if they do not exist");
+		arg("J", "is defined");
+	}
+
+	@Override
+	public void execute(Block block) {
+		final Obj a = block.pop();
+		
+		if (a.isa(Obj.SYMBOL)) {
+			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(Casting.asSymbol(a))));
+		} else if (a.isa(BLOCK)) {
+			Block b = (Block)a;
+			block.push(b.duplicateAddLocals());
 		} else {
 			throw new TypeError(this, a);
 		}

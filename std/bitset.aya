@@ -74,7 +74,7 @@ def bitset::__getindex__ {n self,
     aya> [1 1 1 1] bitset! .count
     4
 .}
-def bitset::count { .bits S }
+def bitset::count { .bits W }
 
 .#? ::bitset.__signum__\n  not each bit
 .{ Example:
