@@ -251,7 +251,7 @@ def asciiart::fill {c self,
      #
 .}
 def asciiart::replace {s::str self,
-    s "`" Mu .E1={~}? :s ;
+    s '` S .E1={~}? :s ;
     s V:from ; V:to ; ;
     self.list :# {from to .&}
     self.M!
@@ -314,7 +314,7 @@ def asciiart::rle {s asciiart,
 
 asciiart:aa;
 
-{asciiart.rle "`" Mu asciiart!}:_;
+{asciiart.rle '` S asciiart!}:_;
 
 .{ Example:
     Generate a Sierpinski carpet:

@@ -59,6 +59,7 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.util.FileUtils;
 import aya.util.Pair;
@@ -128,7 +129,7 @@ public class Ops {
 		/* 80 P  */ new OP_P(),
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
-		/* 83 S  */ null, //new OP_S(),
+		/* 83 S  */ new OP_S(),
 		/* 84 T  */ new OP_T(), 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
@@ -920,11 +921,6 @@ class OP_F extends OpInstruction {
 		for (String s : strs) out.add(List.fromString(s));
 		return new List(out);
 	}
-	private static List strsToList(ArrayList<Str> strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.size());
-		for (Str s : strs) out.add(new List(s));
-		return new List(out);
-	}
 
 	@Override
 	public void execute(Block block) {
@@ -936,7 +932,7 @@ class OP_F extends OpInstruction {
 		} else if (a.isa(STR) && b.isa(STR)) {
 			block.push(strsToList(b.str().split(a.str())));
 		} else if (a.isa(CHAR) && b.isa(STR)) {
-			block.push(strsToList(asStr(b).splitAtChar(asChar(a).charValue())));
+			block.push(asStr(b).splitAtChar(asChar(a).charValue()));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
 			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
 			block.push(lists.first());
@@ -1352,11 +1348,24 @@ class OP_S extends OpInstruction {
 	
 	public OP_S() {
 		init("S");
+		arg("SS", "split at regex");
+		arg("SC", "split at char");
 	}
 	
 	@Override
 	public void execute (final Block block) {
-
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		
+		if (a.isa(STR)) {
+			if (b.isa(STR)) {
+				block.push(asStr(a).splitRegex(b.str()));
+			} else if (b.isa(CHAR)) {
+				block.push(asStr(a).splitAtChar(asChar(b).charValue()));
+			} else {
+				throw new TypeError(this, b, a);
+			}
+		}
 	}
 }
 

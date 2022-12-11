@@ -6,7 +6,7 @@
 exportall
 
 .# Import standard library
-:{sys.ad} "/std"+ :{sys.readdir}:# {".aya" Mu W :S} :# {name,
+:{sys.ad} "/std"+ :{sys.readdir}:# {".aya" S W :S} :# {name,
     name ::golf = ! {
         import name
     } ?

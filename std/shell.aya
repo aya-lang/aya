@@ -11,7 +11,7 @@ def shellresult::__repr__ {self,
 }
 
 def shellresult::lines {self,
-    self.value "\n" Mu
+    self.value '\n' S
 }
 
 

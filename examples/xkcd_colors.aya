@@ -9,5 +9,5 @@ import ::color
 {"\t#" H} I
 .# Map over the list and print each color
 :# {
-    "\t" Mu ~ color.newhex terminal.println_color
+    '\t' S ~ color.newhex terminal.println_color
 };

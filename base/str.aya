@@ -57,7 +57,7 @@
 
 
     .#? S.lines\n  split a string into lines. ignore traling newlines
-    {"\n"Mu}:lines;
+    {"\n"S}:lines;
 
 
     .#? S.bytes\n  convert string to byte list
@@ -78,7 +78,7 @@
     {sep s,
         sepP:sep;
         s.lines :# {
-            sep Mu :# {.parsenum}
+            sep S :# {.parsenum}
         }
         .makesquare
     }:readdlm;

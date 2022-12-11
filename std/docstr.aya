@@ -50,7 +50,7 @@ def docstr::__init__ {name string::str self,
 
 def docstr::_parse {self : m("@.+:\n") d keys vals,
     self._full_str m & #{.trim B; V;} "desc" \J :keys;
-    self._full_str "@.+:\n" Mu :# {.trim.lines :# {.trim"\n"+}W.trim}:vals;
+    self._full_str "@.+:\n" S :# {.trim.lines :# {.trim"\n"+}W.trim}:vals;
 
     {,}:sections;
     vals keys {sections :D} .&;
@@ -101,7 +101,7 @@ def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     .# Names
     self.sections.args matcher & :#{B;}
     .# Desc
-    self.sections.args matcher Mu V;
+    self.sections.args matcher S V;
     .# Create list of arg objects
     {J}.& :# {~ self.M.arg!}
 }

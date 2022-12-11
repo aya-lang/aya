@@ -3,7 +3,7 @@ export ::csv
 
 def csv::parse {dlm : rgx,
     "(?<=^|$dlm)(\"(?:[^\"]|\"\")*\"|[^$dlm]*)" :rgx; .#"
-    "\n" Mu :# {line,
+    '\n' S :# {line,
         line.trim :line;
         line rgx & :#{.trim .rmquote .!}
     }

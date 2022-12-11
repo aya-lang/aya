@@ -9,7 +9,7 @@
         Z           .# Convert to bignum
         .|          .# Absolute value (ignore negative)
         P B;V;      .# Remove the ': and 'z
-        '. Mu V \;   .# Remove any decimal
+        '. S V \;   .# Remove any decimal
         #:'         .# Convert to list of ascii values
         48-         .# Subtract 48 (ascii value of '0)
     }:digits;

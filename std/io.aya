@@ -91,7 +91,7 @@ def path::aya {path,
 
 .# ::str path.split\n  split a string using the system file sepatator and remove empty dir names
 def path::_split {dir::str path,
-    dir "\\" Mu #{"/" Mu ~}
+    dir '\\' S #{'/ S ~}
     .# Remove empties
     [""] :|
 }
@@ -228,7 +228,7 @@ def file::readall {self,
 
 .#? ::file.lines\n  return a list containing the lines in the file
 def file::lines {self,
-    self.id 'a :{fstream.O} "\n" Mu
+    self.id 'a :{fstream.O} '\n' S
 }
 
 .#? ::file.flush\n  flush an output stream
