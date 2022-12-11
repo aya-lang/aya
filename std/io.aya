@@ -33,7 +33,7 @@ class path
 
 .# ::path.isfile\n  Return true if path is file (last item in the path contains a ".")
 def path::isfile {self,
-    self.dirs.[-1] "." N 0 :> \;
+    self.dirs.[-1] "." H
 }
 
 
@@ -116,9 +116,9 @@ def path::_fixhome {dirs::list path,
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
 def path::_isabs {p::str path,
-    p "/" N 0 = \;
-    p path.root :9s + N 0 = \;
-    p path.root "/" + N 0 = \;
+    p "/" H
+    p path.root :9s + H
+    p path.root "/" + H
     | |
 }
 

@@ -32,7 +32,7 @@ def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
 
         .# Add to package index
         .# Add package list if it does not exist
-        packages pkg N \; ! { [] packages.:[pkg]; } ?
+        packages pkg H ! { [] packages.:[pkg]; } ?
         .# Add name to list
         name packages.[pkg] .B ;
 

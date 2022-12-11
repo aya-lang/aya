@@ -217,7 +217,7 @@
         } :instance;
 
         .# If it has a constructor call it
-        instance ::__init__ N \; {
+        instance ::__init__ H {
             instance.__init__
         } ?
 

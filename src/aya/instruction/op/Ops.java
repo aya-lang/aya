@@ -117,7 +117,7 @@ public class Ops {
 		/* 69 E  */ new OP_E(),
 		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
-		/* 72 H  */ null,
+		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
 		/* 75 K  */ null,
@@ -1008,12 +1008,34 @@ class OP_G extends OpInstruction {
 class OP_H extends OpInstruction {
 	
 	public OP_H() {
-		//init("H");
+		init("H");
+		arg("SA", "has; 1 if string contains substring");
+		arg("LA", "has; 1 if list contains object");
+		arg("DS|DC|DJ", "has; 1 if dict contains key");
 	}
 
 	@Override
 	public void execute (final Block block) {
-		throw new UnimplementedError();
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		
+		if (a.isa(STR)) {
+			block.push(Num.fromBool(a.str().contains(b.str())));
+		} else if (a.isa(LIST)) {
+			block.push(Num.fromBool(asList(a).find(b) >= 0));
+		} else if (a.isa(DICT)) {
+			Symbol key;
+			if (b.isa(SYMBOL)) {
+				key = asSymbol(b);
+			} else if (b.isa(STR) || b.isa(CHAR)) {
+				key = Aya.getInstance().getSymbols().getSymbol(b.str());
+			} else {
+				throw new TypeError(this, b, a);
+			}
+			block.push(Num.fromBool(asDict(a).containsKey(key)));
+		} else {
+			throw new TypeError(this, b, a);
+		}
 	}
 }
 

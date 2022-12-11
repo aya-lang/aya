@@ -6,7 +6,7 @@ import ::color
 
 "https://xkcd.com/color/rgb.txt" G .lines
 .# Filter to only select lines with colors in them
-{"\t#" N\; 0 :>} I
+{"\t#" H} I
 .# Map over the list and print each color
 :# {
     "\t" Mu ~ color.newhex terminal.println_color

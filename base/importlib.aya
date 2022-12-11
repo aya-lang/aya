@@ -26,7 +26,7 @@ def importlib::get_path { : importlib^ ,
 .# If the file is already loaded, return the item from the dict
 def importlib::load_file {filename : importlib^,
     "$filename importlib::load_file" importlib._log_debug
-    importlib.imported filename N\; {
+    importlib.imported filename H {
         .# Return from the cache
         "Loading file $filename from cache" importlib._log_debug
         importlib.imported.[filename]
@@ -101,7 +101,7 @@ def importlib::do_export {__importname __module : importlib^,
     "$__importname <module> importlib::export" importlib._log_debug
     "  export: $(__module.__export__)" importlib._log_debug
     {
-        (__module ::__export__ N!) {
+        (__module ::__export__ H!) {
             "__export__ not found in module $__importname. Was it deleted?" .D
         } (__module.__export__ 1 =) {
                 "Exporting all variables from $__importname..." importlib._log_debug
@@ -164,7 +164,7 @@ def importlib::import {__name : importlib^,
             __name importlib.from_path
         } (__name :T ::str =) {
             { .# Determine load command based on string type
-                (__name ".aya" N 0 :>) {
+                (__name ".aya" H) {
                     __name importlib.from_file
                 } (__name.[0] '/ =) {
                     __name importlib.load_file

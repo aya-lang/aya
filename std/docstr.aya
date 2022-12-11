@@ -43,7 +43,7 @@ def docstr::__init__ {name string::str self,
     { self._parse self.:sections; } {err, "Error parsing docstr:\n$err" .D} .K
 
     {,} self.:_args;
-    self.sections ::args N\; {
+    self.sections ::args H {
         self._parseargs self.:_args;
     } ?
 }
@@ -149,7 +149,7 @@ def docstr::finalize {self,
 
 def docstr::_module_name {self,
     .# Try to get the name of the module
-    self._module ::__type__ N\; {
+    self._module ::__type__ H {
         self._module.__type__ :C
     } {
         "<module>"
@@ -157,7 +157,7 @@ def docstr::_module_name {self,
 }
 
 def docstr::_get_name {self,
-    self._module ::__type__ N\; {
+    self._module ::__type__ H {
         self._module.__type__ :C "." self._name :C ++
     } {
         self._name :C
@@ -195,7 +195,7 @@ def docstr::show {self : builtin docstr^,
         ""
         "example:"
         2 self.sections.example docstr._padlines
-        self.sections :K .[{builtin \N\;0<}] :# {k,
+        self.sections :K .[{builtin \ H}] :# {k,
             k :C
             2 self.sections.[k] docstr._padlines
         } ~

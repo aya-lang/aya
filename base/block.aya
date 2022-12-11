@@ -38,7 +38,7 @@
 
 
     .#? ::block.haslocals\n  return true if the block has a local variables
-    {.|::localsN\;}:haslocals;
+    {.|::locals H}:haslocals;
 
 
     .#? ::block.locals\n  get the locals of a block\n  will throw error if block does not have locals

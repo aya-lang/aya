@@ -7,7 +7,7 @@
     .###############
 
     .#? ::any ::list .in\n  tests whether or not item is in the list
-    {\N\;0:>}:in;
+    {\H}:in;
 
     .#? ::list .max\n  max value of a list
     {{.<}%}:max;

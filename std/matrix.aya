@@ -145,7 +145,7 @@ def matrix::_eq_num {n self,
 def matrix::_eq_list {l self,
     self.rows :# {
         .# Test if the current item is in the list
-        :# {l \N0:>\;}
+        :# {l \ H}
     } self.M._new
 }
 

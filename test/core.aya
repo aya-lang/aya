@@ -114,8 +114,8 @@
 {{, 5:x}.x} assert [5]
 {5 {,}.:x.x} assert [5]
 { {,{,5:x}:x;}.x.x} assert [5]
-{ {,5:x} "x" N \;} assert [1]
-{ {,5:x} "y" N \;} assert [0]
+{ {,5:x} "x" H} assert [1]
+{ {,5:x} "y" H} assert [0]
 
 .# Symbols
 { {, 1:"FOO" } ."FOO" } assert [1]
@@ -223,10 +223,10 @@
     4 d.:["foo bar"];
     5 d.:["var"];
 
-    {d "Hello!" N \; } assert [1]
-    {d "var" N \; } assert [1]
-    {d ::var N \; } assert [1]
-    {d "foo bar" N \; } assert [1]
+    {d "Hello!" H } assert [1]
+    {d "var" H } assert [1]
+    {d ::var H } assert [1]
+    {d "foo bar" H } assert [1]
     {d :E} assert [5]
     {d :V C [1 2 3 4 5] =} assert [1]
 })
@@ -259,8 +259,8 @@
 })
 
 .# ::block S: duplicate with locals
-{{} Mb .| ::locals N\;} assert [1]
-{{: ,} Mb .| ::locals N\;} assert [1]
+{{} Mb .| ::locals H} assert [1]
+{{: ,} Mb .| ::locals H} assert [1]
 
 .# Split into list of blocks
 {{a, b c + [10,] $% {a b} () 1 2 :k .:k k.`} .* "" %}

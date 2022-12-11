@@ -9,7 +9,7 @@ def defaultdict::__init__ {dict default self,
 }
 
 def defaultdict::__getindex__ {key self,
-    self.dict key N 0 = \; {
+    self.dict key H! {
         .# Make a copy
         self.default $\; self.dict.:[key];
     } ?
