@@ -15,7 +15,7 @@ struct dna {data fitness}
 .# over the length of the array
 def dna::calc_fitness {target::dna self,
     .# Leave the fitness on the stack
-    target.data self.data .= .E \S\ / $ self.:fitness;
+    target.data self.data .= .E \W\ / $ self.:fitness;
 }
 
 .# Apply a random mutation to the dna

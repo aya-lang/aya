@@ -61,10 +61,10 @@ exportall
 .# List Operations #
 .###################
 
-{:&2^S.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{:&2^W.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}/}:product;     .#? L product\n  product of a list
-{*S}:dot;           .#? LL dot\n  dot product of a list
-{2^S.^}:norm;       .#? L norm\n compute the vector norm
+{*W}:dot;           .#? LL dot\n  dot product of a list
+{2^W.^}:norm;       .#? L norm\n compute the vector norm
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
@@ -87,7 +87,7 @@ exportall
     outlist
 }:cumsum;
 .}
-{l,lER:#{l\.<S}}:cumsum;
+{l,lER:#{l\.<W}}:cumsum;
 
 
 
@@ -153,16 +153,16 @@ exportall
 .#? ::list makepoly\n  generate a polynomial function with the given coefficients
 .{ Examples:
     aya> [1 0 4 5] makepoly :f
-    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * S}
+    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * W}
     aya> 5 f
     140
     aya> [2 0] makepoly :double
-    {[ 1 0 ] ^ [ 2 0 ] * S}
+    {[ 1 0 ] ^ [ 2 0 ] * W}
     aya> [4,double]
     [ 2 4 6 8 ]
 .}
-.# {.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
-{ [1| .E .R U {^} \ {*S} ].* }:makepoly;
+.# {.E .R U {2, :c ; :p} {p ^ c * W} \ .+}:makepoly;
+{ [1| .E .R U {^} \ {*W} ].* }:makepoly;
 
 
 

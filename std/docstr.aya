@@ -50,7 +50,7 @@ def docstr::__init__ {name string::str self,
 
 def docstr::_parse {self : m("@.+:\n") d keys vals,
     self._full_str m & #{.trim B; V;} "desc" \J :keys;
-    self._full_str "@.+:\n" Mu :# {.trim.lines :# {.trim"\n"+}S.trim}:vals;
+    self._full_str "@.+:\n" Mu :# {.trim.lines :# {.trim"\n"+}W.trim}:vals;
 
     {,}:sections;
     vals keys {sections :D} .&;
@@ -91,10 +91,10 @@ def (docstr.arg)::show {margin self : n l pad,
     } .?
 
     .E :n;
-    " " margin LS :pad;
+    " " margin LW :pad;
     self.desc.lines :#{
-        " "nLS\+"\n"+ pad\+
-    }S.trim + pad \+
+        " "nLW\+"\n"+ pad\+
+    }W.trim + pad \+
 }
 
 def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
@@ -179,7 +179,7 @@ def docstr::_get__doc__ {self,
 }
 
 def docstr::_padlines {n s,
-    s.lines :#{" "nLS\+"\n"}S
+    s.lines :#{" "nLW\+"\n"} W
 }
 
 def docstr::show {self : builtin docstr^,
@@ -187,7 +187,7 @@ def docstr::show {self : builtin docstr^,
 
     [
         self._get_name
-        .E "-" \LS
+        .E "-" \LW
         self.sections.desc
         ""
         "args:"
@@ -199,12 +199,12 @@ def docstr::show {self : builtin docstr^,
             k :C
             2 self.sections.[k] docstr._padlines
         } ~
-    ] #'\n'+ S .trim
+    ] #'\n'+ W .trim
 }
 
 
 def docstr::add_to_help {self,
-    [".{?" self.show ".}"]S~
+    [".{?" self.show ".}"]W~
 }
 
 def docstr::to_html {self,
@@ -215,7 +215,7 @@ def docstr::to_html {self,
         "<h4>Args:</h4>"
         "<ul>"
         self._args
-    ] #'\n'+ S .trim
+    ] #'\n'+ W .trim
 }
 
 

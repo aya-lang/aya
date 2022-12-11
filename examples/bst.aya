@@ -12,7 +12,7 @@ def bst::__init__ {data self,
 
 
 def bst::_print {node depth bst,
-    " |" depth 1 + L S .P
+    " |" depth 1 + L W .P
     node :T ::bst = {
         node.right depth 1+ bst._print
         node.left  depth 1+ bst._print

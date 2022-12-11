@@ -138,7 +138,7 @@
     {.E.R{A.B}.&}:enumerate;
 
     .#? ::list .rank\n  rank a list from highest to lowest
-    {${>}.pu#S1+}:rank;
+    {${>}.pu#W1+}:rank;
 
     .#? ::list .irange\n generates a range of indices for the list
     {E.R}:irange;
@@ -167,7 +167,7 @@
         m :#{#{PE}}.T:#{{.<}%}:colmax;      .# The max width for each column
         m .T colmax {#{\P\ B.<}} .& .T      .# For each colum, convert to string with
                                             .# padding equal to the max for that column + 1
-        :#{SB;}                             .# Combine each row into a single string, remove trailing space
+        :#{WB;}                             .# Combine each row into a single string, remove trailing space
         '\n' *                              .# Join with newlines
     }
 

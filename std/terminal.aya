@@ -42,7 +42,7 @@ def terminal::reset_color {: color^ terminal^ ,
 def terminal::replcolor {c::color : color^ terminal^ ,
     [c terminal._setfgstr
      "aya> "
-     color.colors.white terminal._setfgstr]S
+     color.colors.white terminal._setfgstr]W
     :{sys.alterprompt}
 }
 

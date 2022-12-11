@@ -49,7 +49,7 @@ def boid::edges {self,
 
 def boid::align {boids self,
     .# compute average velocity
-    boids#.vel S boids E /
+    boids#.vel W boids E /
     .# normalize
     $ norm / self.max_speed *
     .# steering is this vec minus our current velocity
@@ -58,7 +58,7 @@ def boid::align {boids self,
 
 def boid::cohesion {boids self : com vec_to_com steering,
     .# compute average position (center of mass)
-    boids#.pos S boids E / :com;
+    boids#.pos W boids E / :com;
     .# vector pointing at center of mass
     com self.pos - :vec_to_com;
 
@@ -80,7 +80,7 @@ def boid::separation {boids self,
     .# compute average distance
     boids :# {boid,
         self.pos boid.pos - $ norm /
-    } S boids E /
+    } W boids E /
 
     self.vel - :steering;
 
@@ -107,7 +107,7 @@ def boid::apply_behavior {all_boids self : seen_boids,
             seen_boids self.cohesion
             seen_boids self.separation 5 *
         ]
-        S self.:acc;
+        W self.:acc;
     } ?
 }
 

@@ -206,7 +206,7 @@ def matrix::min {.rows#.min.min}
 def matrix::norm {:& .sq .sum .^ /}
 
 .#? ::matrix.sum\n  the sum of all values in the matrix
-def matrix::sum {.rows #SS}
+def matrix::sum {.rows #WW}
 
 .#? ::matrix.mean\n  the mean of all values in the matrix
 def matrix::mean {.E~* \.sum\/}
@@ -215,9 +215,9 @@ def matrix::dot {o self : t matrix^,
     o.c self.r =! {
         "matrix.mul: shape mismatch $(o.c) != $(self.r)".D
     } ?
-    .# (*S) is the dot product
+    .# (*W) is the dot product
     self.rows.T :t;
-    o.rows  :# {r, t :#{r *S}}
+    o.rows  :# {r, t :#{r *W}}
     matrix._new
 }
 

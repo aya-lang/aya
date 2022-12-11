@@ -4,7 +4,7 @@ import ::golf
 .# Life function
 .# Algorithm based off the APL implementation here:
 .# https://www.youtube.com/watch?v=a9xAKttWgP4
-{$1.i$@{.n}:*{.z}:*.FS$3=\4=@&|}:life;
+{$1.i$@{.n}:*{.z}:*.FW$3=\4=@&|}:life;
 
 .# Generate initial Matrix
 9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 6 \ .pad

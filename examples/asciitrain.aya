@@ -1,5 +1,5 @@
 .# Generates an ASCII train with N carts
-{n::num, [" ______  ""|      | "" ()--() ~"]#{nLSB;'\n'+}S}:train;
+{n::num, [" ______  ""|      | "" ()--() ~"]#{nLWB;'\n'+}W}:train;
 
 1 train println
 3 train println

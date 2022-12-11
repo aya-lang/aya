@@ -1330,45 +1330,16 @@ class OP_S extends OpInstruction {
 	
 	public OP_S() {
 		init("S");
-		arg("L", "sum (fold using +)");
 		arg("B", "duplicate block, add locals if they do not exist");
 		arg("J", "is defined");
 	}
-
+	
 	@Override
 	public void execute (final Block block) {
 		final Obj a = block.pop();
 		
-		if (a.isa(LIST)) {
-			
-			//Using the new Promoted list, use Str, NumberList, or ObjList
-			if (a.isa(STR)) {
-				char total = 0;
-				char[] chars = a.str().toCharArray();
-				for (char c : chars) {
-					total += c;
-				}
-				block.push(Char.valueOf(total));
-			} else if(a.isa(NUMBERLIST)) {
-				block.push( asNumberList(a).sum() );
-			} else {
-				// If a normal list, fold using '+'
-				List list = asList(a);
-				if(list.length() == 0) {
-					block.push(Num.ZERO);
-					return;
-				}
-				//Push all but the last item
-				for(int i = list.length()-1; i > 0; i--) {
-					block.add(Ops.OP_PLUS);
-					block.add(list.getExact(i));
-				}
-				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-				block.add(list.getExact(0)); 
-			}
-		} else if (a.isa(SYMBOL)) {
+		if (a.isa(SYMBOL)) {
 			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(asSymbol(a))));
-			
 		} else if (a.isa(BLOCK)) {
 			Block b = (Block)a;
 			block.push(b.duplicateAddLocals());
@@ -1496,6 +1467,7 @@ class OP_W extends OpInstruction {
 		init("W");
 		arg("B", "while loop (repeat as long as block returns true)");
 		arg("D", "export all variables");
+		arg("L", "sum (fold using +)");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1503,7 +1475,9 @@ class OP_W extends OpInstruction {
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		
-		if(a.isa(Obj.BLOCK)) {
+		if (a.isa(LIST)) {
+			block.push(sum(asList(a)));
+		} else if (a.isa(Obj.BLOCK)) {
 			Block blk = ((Block)(a)).duplicate();
 			Block state = new Block();
 			state.setStack((Stack<Obj>)block.getStack().clone());
@@ -1526,8 +1500,6 @@ class OP_W extends OpInstruction {
 			
 			//Merge the stack
 			block.setStack(state.getStack());
-			
-			return;
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
@@ -1535,10 +1507,45 @@ class OP_W extends OpInstruction {
 			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
 				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
 			}
-			return;
+		} else {
+			throw new TypeError(this, a);
 		}
-		throw new TypeError(this, a);
 	}
+
+
+	/** Generic list summation */
+	public Obj sum(List a) {
+		//Using the new Promoted list, use Str, NumberList, or ObjList
+		if (a.isa(STR)) {
+			char total = 0;
+			char[] chars = a.str().toCharArray();
+			for (char c : chars) {
+				total += c;
+			}
+			return Char.valueOf(total);
+		} else if(a.isa(NUMBERLIST)) {
+			return asNumberList(a).sum();
+		} else {
+			// If a normal list, fold using '+'
+			List list = asList(a);
+			if(list.length() == 0) {
+				return Num.ZERO;
+			}
+			//Push all but the last item
+			Block exec_block = new Block();
+			for(int i = list.length()-1; i > 0; i--) {
+				exec_block.add(Ops.OP_PLUS);
+				exec_block.add(list.getExact(i));
+			}
+			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+			exec_block.add(list.getExact(0)); 
+			exec_block.eval();
+			return exec_block.pop();
+		}
+	}
+
+
+
 }
 
 

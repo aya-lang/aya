@@ -57,7 +57,7 @@
 .# -------
 
 {name,
-    [:{sys.ad} :9s "examples" :9s name ".aya"]S G~
+    [:{sys.ad} :9s "examples" :9s name ".aya"] W G~
 }:example;
 
 
@@ -186,7 +186,7 @@
     Define a function in a submodule:
 
         aya> {, {,}:stats; }:math;
-        aya> def (math.stats)::mean {.E\S\/}
+        aya> def (math.stats)::mean {.E\W\/}
         aya> [1 2 3 4] math.stats.mean
         2.5
 .}
@@ -440,5 +440,5 @@ __aya__.extend.` :extend;
 
 ] :# {f,
     .# "Loading base/$f..." :P
-    load ([:{sys.ad} :9s "base/$f"]S)
+    load ([:{sys.ad} :9s "base/$f"]W)
 };

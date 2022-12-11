@@ -1,6 +1,6 @@
 .# Primality test in 11 chars
 {
-RB\:%0.=S1=
+RB\:%0.=W1=
 }:isprime;
 
 "Prime numbers below 100:" :P
@@ -27,12 +27,12 @@ aya> [6 7]# {$:P (RB\:%0.=) .A:P};
 [ [ 1 1 1 0 0 ] ]
 7
 [ [ 1 0 0 0 0 0 ] ]
-aya> [6 7]# {$:P (RB\:%0.=S) .A:P};
+aya> [6 7]# {$:P (RB\:%0.=W) .A:P};
 6
 [ 3 ]
 7
 [ 1 ]
-aya> [6 7]# {$:P (RB\:%0.=S1=) .A:P};
+aya> [6 7]# {$:P (RB\:%0.=W1=) .A:P};
 6
 [ 0 ]
 7
