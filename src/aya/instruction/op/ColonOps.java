@@ -369,19 +369,20 @@ class OP_Colon_Times extends OpInstruction {
 	public OP_Colon_Times() {
 		init(":*");
 		arg("LLB", "outer product of two lists using B");
+		arg("NNN", "linspace");
 	}
 
 	@Override
 	public void execute(Block block) {
-		Obj blk = block.pop();
-		Obj a  = block.pop();
+		Obj c = block.pop();
 		Obj b  = block.pop();
+		Obj a  = block.pop();
 		
-		if (blk.isa(BLOCK)) {
-			Block expr = (Block)blk;
-			if (a.isa(LIST) && b.isa(LIST)) {
-				List l1 = asList(a);
-				List l2 = asList(b);
+		if (c.isa(BLOCK)) {
+			Block expr = (Block)c;
+			if (b.isa(LIST) && a.isa(LIST)) {
+				List l1 = asList(b);
+				List l2 = asList(a);
 
 				ArrayList<Obj> out = new ArrayList<Obj>(l2.length());
 				for (int i = 0; i < l2.length(); i++) {
@@ -389,18 +390,37 @@ class OP_Colon_Times extends OpInstruction {
 				}
 				
 				block.push(new List(out));
-			} else if (a.isa(LIST)) {
-				block.push(asList(a).map1arg(expr, b));
 			} else if (b.isa(LIST)) {
+				block.push(asList(b).map1arg(expr, a));
+			} else if (a.isa(LIST)) {
 				Block e = new Block();
 				e.addAll(expr.getInstructions().getInstrucionList());
-				e.add(a);
-				block.push(asList(b).map(e));
+				e.add(b);
+				block.push(asList(a).map(e));
 			} else {
-				throw new TypeError(this, blk, a, b);
+				throw new TypeError(this, c, b, a);
 			}
+		} else if (a.isa(NUMBER) && b.isa(NUMBER) && c.isa(NUMBER)) {
+			block.push(new List(linspace(asNumber(a), asNumber(b), asNumber(c))));
 		} else {
-			throw new TypeError(this, blk, a, b);
+			throw new TypeError(this, c, b, a);
+		}
+	}
+	
+	private NumberList linspace(Number from, Number to, Number steps) {
+		
+		if (from.equiv(to)) {
+			ArrayList<Number> nums = new ArrayList<Number>();
+			int count = steps.toInt();
+			for (int i = 0; i < count; i++) {
+				nums.add(from);
+			}
+			return new NumberItemList(nums);
+		} else {
+			Number a = NumberMath.sub(to, from);
+			Number b = NumberMath.sub(steps, Num.ONE);
+			Number inc = NumberMath.div(a, b);
+			return new NumberItemList(from, to, inc);
 		}
 	}
 }
