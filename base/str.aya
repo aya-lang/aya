@@ -8,14 +8,14 @@
     [].M W
 
 
-    {"\\s+" F E0=}:iswhitespace;
+    {"\\s+" S E0=}:iswhitespace;
 
     .#? ::str.trim\n  remove whitespace from start and end of string
     {
         :& .iswhitespace {
             ; ""
         } {
-            "^\\s+" F B\; "\\s+$" F V\; 
+            "^\\s+" S B\; "\\s+$" S V\; 
         } .?
     }:trim;
 

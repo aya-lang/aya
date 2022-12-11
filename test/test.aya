@@ -64,7 +64,7 @@
 
 .# Import entire standard library
 "Importing standard library..." :P
-:{sys.ad} "/std"+ :{sys.readdir}:# {"\.aya" Mu W} :# {name, "importing $name...":P import name} ;
+:{sys.ad} "/std"+ :{sys.readdir}:# {".aya".^ S W} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
 

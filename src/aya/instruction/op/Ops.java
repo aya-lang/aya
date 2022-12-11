@@ -59,7 +59,6 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.util.FileUtils;
 import aya.util.Pair;
@@ -929,10 +928,6 @@ class OP_F extends OpInstruction {
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
-		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(strsToList(b.str().split(a.str())));
-		} else if (a.isa(CHAR) && b.isa(STR)) {
-			block.push(asStr(b).splitAtChar(asChar(a).charValue()));
 		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
 			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
 			block.push(lists.first());

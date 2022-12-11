@@ -25,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
@@ -1336,6 +1337,7 @@ class OP_Dot_Pow extends OpInstruction {
 	public OP_Dot_Pow() {
 		init(".^");
 		arg("N", "square root");
+		arg("S", "quote regex");
 		setOverload(1, "sqrt");
 		vect();
 	}
@@ -1361,6 +1363,8 @@ class OP_Dot_Pow extends OpInstruction {
 	
 		if(a.isa(NUMBER)) {
 			return ((Number)a).sqrt();
+		} else if (a.isa(STR)) {
+			return List.fromString(Pattern.quote(a.str()));
 		} else {
 			throw new TypeError(this, a);
 		}

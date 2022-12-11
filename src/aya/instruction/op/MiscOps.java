@@ -865,7 +865,7 @@ class OP_Atan2 extends OpInstruction {
 			double ny = ((Num)y).toDouble();
 			double nx = ((Num)x).toDouble();
 			block.push(new Num(Math.atan2(ny, nx)));
-		} else if (y.isa(Obj.LIST)) {
+		} else if (y.isa(Obj.LIST) && !y.isa(STR)) {
 				block.push(Casting.asList(y).split(x));
 		} else {
 			throw new TypeError(this, x, y);
