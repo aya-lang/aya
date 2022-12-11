@@ -915,12 +915,6 @@ class OP_F extends OpInstruction {
 		arg("NN", "unsigned right bitshift");
 	}
 
-	private static List strsToList(String[] strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.length);
-		for (String s : strs) out.add(List.fromString(s));
-		return new List(out);
-	}
-
 	@Override
 	public void execute(Block block) {
 		Obj a = block.pop();
@@ -928,10 +922,6 @@ class OP_F extends OpInstruction {
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
-		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
-			block.push(lists.first());
-			block.push(lists.second());
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1345,6 +1335,7 @@ class OP_S extends OpInstruction {
 		init("S");
 		arg("SS", "split at regex");
 		arg("SC", "split at char");
+		arg("LN", "split list at index");
 	}
 	
 	@Override
@@ -1352,14 +1343,18 @@ class OP_S extends OpInstruction {
 		final Obj b = block.pop();
 		final Obj a = block.pop();
 		
-		if (a.isa(STR)) {
-			if (b.isa(STR)) {
-				block.push(asStr(a).splitRegex(b.str()));
-			} else if (b.isa(CHAR)) {
-				block.push(asStr(a).splitAtChar(asChar(b).charValue()));
-			} else {
-				throw new TypeError(this, b, a);
-			}
+		if (a.isa(STR) && b.isa(STR)) {
+			block.push(asStr(a).splitRegex(b.str()));
+		} else if (a.isa(STR) && b.isa(CHAR)) {
+			block.push(asStr(a).splitAtChar(asChar(b).charValue()));
+		} else if (a.isa(LIST) && b.isa(NUMBER)) {
+			Pair<List, List> lists = asList(a).splitAtIndexed(asNumber(b).toInt());
+			List out = new List();
+			out.mutAdd(lists.first());
+			out.mutAdd(lists.second());
+			block.push(out);
+		} else {
+			throw new TypeError(this, b, a);
 		}
 	}
 }
