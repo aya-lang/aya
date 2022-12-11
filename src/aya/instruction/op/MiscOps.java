@@ -29,6 +29,7 @@ import aya.obj.number.ComplexNum;
 import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.obj.number.NumberMath;
 import aya.util.Casting;
 import aya.util.NamedCharacters;
 import aya.util.StringUtils;
@@ -634,22 +635,25 @@ class OP_AddParserChar extends OpInstruction {
 	public OP_AddParserChar() {
 		init("Mk");
 		arg("CS", "add special character");
+		arg("NN", "unsigned right bitshift");
 	}
 
 	@Override
 	public void execute(Block block) {
-		final Obj obj_name = block.pop();
-		final Obj obj_char = block.pop();
+		final Obj b = block.pop();
+		final Obj a = block.pop();
 		
-		if (obj_name.isa(STR) && obj_char.isa(CHAR)) {
-			String str = obj_name.str();
+		if (b.isa(STR) && a.isa(CHAR)) {
+			String str = b.str();
 			if (str.length() > 0 && StringUtils.lalpha(str)) {
-				NamedCharacters.addChar(str, ((Char)obj_char).charValue());
+				NamedCharacters.addChar(str, ((Char)a).charValue());
 			} else {
 				throw new ValueError("Cannot create special character using " + str);
 			}
+		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( NumberMath.unsignedRightShift((Number)a, (Number)b) );
 		} else {
-			throw new TypeError(this, obj_char, obj_name);
+			throw new TypeError(this, b, a);
 		}
 	}
 }

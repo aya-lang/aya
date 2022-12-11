@@ -115,7 +115,7 @@ public class Ops {
 		/* 67 C  */ new OP_Sort(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ new OP_F(),
+		/* 70 F  */ null,
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
@@ -910,21 +910,12 @@ class OP_E extends OpInstruction {
 class OP_F extends OpInstruction {
 	
 	public OP_F() {
-		this.name = "F";
 		init("F");
-		arg("NN", "unsigned right bitshift");
 	}
 
 	@Override
 	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
-		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
-		} else {
-			throw new TypeError(this, a, b);
-		}
+
 	}
 }
 
