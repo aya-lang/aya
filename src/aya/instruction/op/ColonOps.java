@@ -718,6 +718,7 @@ class OP_Colon_E extends OpInstruction {
 	public OP_Colon_E() {
 		init(":E");
 		arg("D", "number or items in a dict");
+		arg("L", "shape");
 	}
 
 	@Override
@@ -726,10 +727,33 @@ class OP_Colon_E extends OpInstruction {
 		
 		if (a.isa(DICT)) {
 			block.push(Num.fromInt( ((Dict)a).size()) );
+		} else if (a.isa(LIST)) {
+			block.push(shape(asList(a)));
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
+	
+	private List shape(List list) {
+		List shape = new List();
+		Obj cur = list;
+		while (true) {
+			if (cur.isa(LIST) && !cur.isa(STR)) {
+				List cur_list = asList(cur);
+				shape.mutAdd(Num.fromInt(cur_list.length()));
+				if (cur_list.length() > 0) {
+					cur = cur_list.head();
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+		
+		return shape;
+	}
+	
 }
 
 // G - 71
