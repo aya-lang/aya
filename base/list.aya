@@ -103,6 +103,9 @@
     }:makesquare;
 
 
+    { .T {*W} :* }:dot;
+
+
 
     .# Generators
     .#############
@@ -168,7 +171,7 @@
         m .T colmax {#{\P\ B.<}} .& .T      .# For each colum, convert to string with
                                             .# padding equal to the max for that column + 1
         :#{WB;}                             .# Combine each row into a single string, remove trailing space
-        '\n' *                              .# Join with newlines
+        '\n' %                              .# Join with newlines
     }
 
 }

@@ -123,7 +123,7 @@ public class DotOps {
 		/* 76 L  */ null,
 		/* 77 M  */ new OP_Dot_M(),
 		/* 78 N  */ new OP_Dot_N(),
-		/* 79 O  */ null,
+		/* 79 O  */ new OP_Dot_O(),
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
 		/* 82 R  */ new OP_Dot_R(),
@@ -1173,6 +1173,37 @@ class OP_Dot_N extends OpInstruction {
 			block.push(Num.NEG_ONE);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+// O - 79
+class OP_Dot_O extends OpInstruction {
+
+	public OP_Dot_O() {
+		init(".O");
+		arg("AB", "apply");
+		vect();
+	}
+
+	@Override
+	public void execute (Block block) {
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
+	
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
+		
+		if (b.isa(BLOCK)) {
+			Block blk = asBlock(b).duplicate();
+			blk.push(a);
+			blk.eval();
+			return blk.pop();
+		} else {
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
