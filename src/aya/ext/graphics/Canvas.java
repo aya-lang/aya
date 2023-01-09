@@ -35,6 +35,7 @@ public class Canvas {
 	private AffineTransform _at;
 	private BufferStrategy _buf_strat;
 	private CanvasCursorListener _cursor_listener;
+	private CanvasKeyListener _key_listener;
 	
 	
 	public Canvas(String name, int width, int height, double scale) {
@@ -72,7 +73,11 @@ public class Canvas {
 	public CanvasCursorListener getCursorListener() {
 		return _cursor_listener;
 	}
-	
+
+	public CanvasKeyListener getKeyListener() {
+		return _key_listener;
+	}
+
 	public void setShowOnRefresh(boolean b) {
 		_show_on_refresh = b;
 	}
@@ -96,6 +101,9 @@ public class Canvas {
 			_cursor_listener = new CanvasCursorListener();
 			contentPane.addMouseListener(_cursor_listener);
 			contentPane.addMouseMotionListener(_cursor_listener);
+
+			_key_listener = new CanvasKeyListener();
+			_frame.addKeyListener(_key_listener);
 
 			_frame.add(new ImageView(_plotImage));
 			_frame.setResizable(false);
