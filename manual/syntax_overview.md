@@ -77,7 +77,7 @@ aya> 1 :this_is_a_valid_variable
 Any string of characters can be used as a variable if the literal is quoted. They cannot be accessed directly. These types of variables are mostly useful for [dictionaries](#dictionaries).
 
 ```
-aya> 1 :'Quoted Variable!'
+aya> 1 :"Quoted Variable!"
 1 
 aya> "Quoted Variable!" :S~
 1 
@@ -115,19 +115,19 @@ aya> .5
 
 ### Negative Numbers
 
-`-` is an operator, use `:-` for negative numbers. 
+`-` is parsed as an operator unless immediately followed by a number
 ```
-aya> :-1 :-1.5 :-.5
--1 -1.5 -.5
+aya> 1 2 - 3
+-1 3 
+aya> 1 2 -3
+1 2 -3 
 ```
 
-The `-` can be omitted in some cases (useful for golfing). `-` or `0` required for decimals:
+`:` can also be used to specify a negative number
 
 ```
-aya> :1 :1.5 :-.5 :0.5
--1 -1.5 -.5 -.5
-aya> :.5
-SYNTAX ERROR: :. is not a valid operator
+aya> 1 2 :3
+1 2 -3
 ```
 
 ### Big Numbers
@@ -224,6 +224,23 @@ aya> :9q
 3
 aya> :27q3
 3
+```
+
+### Complex numbers
+
+Complex numbers are built in. `:NiM` creates the complex number `N + Mi`. Most mathematical operations are supported 
+
+```
+aya> :-1i0
+:-1i0 
+aya> :-1i0 .^
+:0i1 
+aya> :3i4 Ms
+:3.85373804i-27.01681326
+aya> :3i4 Mi .# imag part
+4 
+aya> :3i4 Md .# real part
+3 
 ```
 
 ### Number Constants
@@ -384,8 +401,8 @@ aya> ::my_symbol
 Symbols can be any string if single quotes are used immediately after the `::`
 
 ```
-aya> ::'My Symbol'
-::'My Symbol' 
+aya> ::"My Symbol"
+::"My Symbol"
 ```
 
 
@@ -516,11 +533,11 @@ aya> d "a" I
 Dot notation can be used with [quoted variables](#variables)
 
 ```
-aya> {, 1:'Hello, world!' } :d
+aya> {, 1:"Hello, world!" } :d
 {,
-  1:'Hello, world!';
+  1:"Hello, world!";
 } 
-aya> d.'Hello, world!'
+aya> d."Hello, world!"
 1 
 ```
 
@@ -559,9 +576,9 @@ This notation can be used with [quoted variables](#variables)
 ```
 aya> {,}:d
 {,} 
-aya> 10 d.:'Hello, world!'
+aya> 10 d.:"Hello, world!"
 {,
-  10:'Hello, world!';
+  10:"Hello, world!";
 } 
 ```
 
@@ -893,9 +910,9 @@ aya> p.format
 Any single-character key stored in `__cdict__` can be accessed using `¢` + that character
 
 ```
-aya> {, "Hello!":'!' 10:a }:__cdict__
+aya> {, "Hello!":"!" 10:a }:__cdict__
 {,
-  "Hello!":'!';
+  "Hello!":"!";
 } 
 aya> ¢!
 "Hello!" 
