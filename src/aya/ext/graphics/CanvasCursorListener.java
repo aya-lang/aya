@@ -10,8 +10,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CanvasCursorListener implements MouseListener, MouseMotionListener {
 
@@ -20,7 +22,7 @@ public class CanvasCursorListener implements MouseListener, MouseMotionListener 
 	private static Symbol BUTTON;
 	private static Symbol CLICKS;
 
-	private final HashSet<Integer> pressedButtons = new HashSet<>();
+	private final Set<Integer> pressedButtons = Collections.synchronizedSet(new HashSet<>());
 	private final SizeBoundedQueue<ClickInfo> clickHistory = new SizeBoundedQueue<>(16);
 	// swing seems to fire an event per single pixel movement, so the move-buffer should be a bit bigger
 	private final SizeBoundedQueue<MoveInfo> moveHistory = new SizeBoundedQueue<>(128);
@@ -34,8 +36,9 @@ public class CanvasCursorListener implements MouseListener, MouseMotionListener 
 	}
 
 	public List<Integer> getPressedButtons() {
-		// copy to static list to avoid concurrency issues
-		return new ArrayList<>(pressedButtons);
+		synchronized (pressedButtons) {
+			return new ArrayList<>(pressedButtons);
+		}
 	}
 
 	public List<ClickInfo> getClickHistory() {

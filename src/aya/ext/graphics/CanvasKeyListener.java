@@ -4,16 +4,19 @@ import aya.util.SizeBoundedQueue;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CanvasKeyListener implements KeyListener {
 
-	private final HashMap<Integer, KeyEvent> pressedKeys = new HashMap<>();
+	private final Map<Integer, KeyEvent> pressedKeys = Collections.synchronizedMap(new HashMap<>());
 	private final SizeBoundedQueue<Character> typedChars = new SizeBoundedQueue<>(16);
 
 	public ArrayList<KeyEvent> getPressedKeys() {
-		// copy to static list to avoid concurrency issues
-		return new ArrayList<>(pressedKeys.values());
+		synchronized (pressedKeys) {
+			return new ArrayList<>(pressedKeys.values());
+		}
 	}
 
 	/**
