@@ -18,7 +18,7 @@ public class MoveEventsInstruction  extends GraphicsInstruction {
 	protected void doCanvasCommand(Canvas cvs, Block block) {
 		block.push(
 				cvs.getCursorListener().getMoveHistory().stream()
-						.map(CanvasCursorListener.CursorInfo::toDict)
+						.map(CanvasCursorListener.MoveInfo::toDict)
 						.collect(new ListCollector())
 		);
 	}

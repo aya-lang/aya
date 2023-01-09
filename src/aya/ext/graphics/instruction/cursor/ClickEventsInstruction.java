@@ -18,7 +18,7 @@ public class ClickEventsInstruction extends GraphicsInstruction {
 	protected void doCanvasCommand(Canvas cvs, Block block) {
 		block.push(
 				cvs.getCursorListener().getClickHistory().stream()
-						.map(CanvasCursorListener.CursorInfo::toDict)
+						.map(CanvasCursorListener.ClickInfo::toDict)
 						.collect(new ListCollector())
 		);
 	}
