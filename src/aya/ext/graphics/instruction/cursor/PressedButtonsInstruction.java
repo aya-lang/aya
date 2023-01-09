@@ -8,10 +8,10 @@ import aya.obj.list.List;
 import aya.obj.list.ListCollector;
 import aya.obj.number.Num;
 
-public class PressedMouseButtonsInstruction extends GraphicsInstruction {
+public class PressedButtonsInstruction extends GraphicsInstruction {
 
-	public PressedMouseButtonsInstruction(CanvasTable canvas_table) {
-		super(canvas_table, "pressed_mouse_buttons", "N");
+	public PressedButtonsInstruction(CanvasTable canvas_table) {
+		super(canvas_table, "pressed_buttons", "N");
 		_doc = "canvas_id: returns a list of currently held mouse buttons (list of integers). E.g. Button_1 (left click) will be '1'";
 	}
 

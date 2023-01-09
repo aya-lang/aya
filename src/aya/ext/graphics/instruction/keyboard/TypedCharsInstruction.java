@@ -8,10 +8,10 @@ import aya.obj.list.List;
 import aya.obj.list.ListCollector;
 import aya.obj.character.Char;
 
-public class TypedKeysInstruction extends GraphicsInstruction {
+public class TypedCharsInstruction extends GraphicsInstruction {
 
-	public TypedKeysInstruction(CanvasTable canvas_table) {
-		super(canvas_table, "typed_keys", "N");
+	public TypedCharsInstruction(CanvasTable canvas_table) {
+		super(canvas_table, "typed_chars", "N");
 		_doc = "canvas_id: returns a list of unicode characters that were typed since the last time this instruction was executed.";
 	}
 

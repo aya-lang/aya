@@ -32,9 +32,9 @@ import aya.ext.graphics.instruction.TranslateGraphicsInstruction;
 import aya.ext.graphics.instruction.ViewmatGraphicsInstruction;
 import aya.ext.graphics.instruction.cursor.ClickEventsInstruction;
 import aya.ext.graphics.instruction.cursor.MoveEventsInstruction;
-import aya.ext.graphics.instruction.cursor.PressedMouseButtonsInstruction;
+import aya.ext.graphics.instruction.cursor.PressedButtonsInstruction;
 import aya.ext.graphics.instruction.keyboard.PressedKeysInstruction;
-import aya.ext.graphics.instruction.keyboard.TypedKeysInstruction;
+import aya.ext.graphics.instruction.keyboard.TypedCharsInstruction;
 import aya.instruction.named.NamedInstructionStore;
 
 public class GraphicsInstructionStore extends NamedInstructionStore {
@@ -59,7 +59,7 @@ public class GraphicsInstructionStore extends NamedInstructionStore {
 		addInstruction(new OvalGraphicsInstruction(canvas_table));
 		addInstruction(new PathGraphicsInstruction(canvas_table));
 		addInstruction(new PressedKeysInstruction(canvas_table));
-		addInstruction(new PressedMouseButtonsInstruction(canvas_table));
+		addInstruction(new PressedButtonsInstruction(canvas_table));
 		addInstruction(new RectGraphicsInstruction(canvas_table));
 		addInstruction(new RotateGraphicsInstruction(canvas_table));
 		addInstruction(new RoundRectGraphicsInstruction(canvas_table));
@@ -77,7 +77,7 @@ public class GraphicsInstructionStore extends NamedInstructionStore {
 		addInstruction(new ShowGraphicsInstruction(canvas_table));
 		addInstruction(new TextGraphicsInstruction(canvas_table));
 		addInstruction(new TranslateGraphicsInstruction(canvas_table));
-		addInstruction(new TypedKeysInstruction(canvas_table));
+		addInstruction(new TypedCharsInstruction(canvas_table));
 		addInstruction(new ViewmatGraphicsInstruction(canvas_table));
 	}
 }
