@@ -5,8 +5,7 @@ import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.block.Block;
 import aya.obj.list.List;
-import aya.obj.list.ListCollector;
-import aya.obj.character.Char;
+import java.util.stream.Collectors;
 
 public class TypedCharsInstruction extends GraphicsInstruction {
 
@@ -17,10 +16,10 @@ public class TypedCharsInstruction extends GraphicsInstruction {
 
 	@Override
 	protected void doCanvasCommand(Canvas cvs, Block block) {
-		List typedCharList = cvs.getKeyListener().consumeTypedChars().stream()
-				.map(Char::valueOf)
-				.collect(new ListCollector());
+		String typedString = cvs.getKeyListener().consumeTypedChars().stream()
+				.map(Object::toString)
+				.collect(Collectors.joining());
 
-		block.push(typedCharList);
+		block.push(List.fromString(typedString));
 	}
 }
