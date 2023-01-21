@@ -21,6 +21,9 @@ def canvas::__init__ {params::dict self : color^,
     params.width self.:width;
     params.height self.:height;
 
+    .# Input
+    {, -1:x -1:y } self.:_last_mouse_pos;
+
     .# ::new params 0 :{graphics.MG} self.:id ;
     params :{graphics.new} self.:id ;
 }
@@ -140,4 +143,22 @@ def canvas::viewmat {data self,
 .# Block until the canvas is closed
 def canvas::wait {self,
     { 100:Z self.isopen } W
+}
+
+def canvas::move_events {self,
+    self.id :{graphics.move_events}
+}
+
+.# Get the most recent mouse x/y
+.# return {, -1:x -1:y } if no updates
+def canvas::get_mouse_pos {self : move,
+    self.move_events :move;
+    move E 0 > {
+        move.[-1] self.:_last_mouse_pos;
+    } ?
+    self._last_mouse_pos
+}
+
+def canvas::pressed_buttons {self,
+    self.id :{graphics.pressed_buttons}
 }
