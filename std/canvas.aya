@@ -162,3 +162,7 @@ def canvas::get_mouse_pos {self : move,
 def canvas::pressed_buttons {self,
     self.id :{graphics.pressed_buttons}
 }
+
+def canvas::typed_chars {self,
+    self.id :{graphics.typed_chars}
+}
