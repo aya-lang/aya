@@ -1,6 +1,8 @@
 import ::canvas
 import ::time
 
+.# A simple mouse input example
+
 {,} canvas! :cvs;
 cvs.show
 
@@ -15,7 +17,7 @@ cvs.show
     } .?
 
     .# Get mouse position
-    cvs.get_mouse_pos :mouse_pos;
+    cvs.mouse_pos :mouse_pos;
 
     cvs.clear
     mouse_pos.x mouse_pos.y 10

@@ -22,7 +22,7 @@ def canvas::__init__ {params::dict self : color^,
     params.height self.:height;
 
     .# Input
-    {, -1:x -1:y } self.:_last_mouse_pos;
+    [-1 -1] self.:_last_mouse_pos;
 
     .# ::new params 0 :{graphics.MG} self.:id ;
     params :{graphics.new} self.:id ;
@@ -150,11 +150,11 @@ def canvas::move_events {self,
 }
 
 .# Get the most recent mouse x/y
-.# return {, -1:x -1:y } if no updates
-def canvas::get_mouse_pos {self : move,
+.# return [-1 -1] if no updates
+def canvas::mouse_pos {self : move,
     self.move_events :move;
     move E 0 > {
-        move.[-1] self.:_last_mouse_pos;
+        [move.[-1] :&.x\.y] self.:_last_mouse_pos;
     } ?
     self._last_mouse_pos
 }
