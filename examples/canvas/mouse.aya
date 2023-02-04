@@ -1,0 +1,29 @@
+import ::canvas
+import ::time
+
+.# A simple mouse input example
+
+{,} canvas! :cvs;
+cvs.show
+
+60 time.rate! :limiter;
+{
+    .# Get pressed buttons
+    cvs.pressed_buttons :mouse_buttons;
+    mouse_buttons 1 N0:>\; {
+        1:fill;
+    } {
+        0:fill;
+    } .?
+
+    .# Get mouse position
+    cvs.mouse_pos :mouse_pos;
+
+    cvs.clear
+    mouse_pos.x mouse_pos.y 10
+    fill {cvs.fillcircle} {cvs.circle} .?
+
+    cvs.show
+    limiter.sleep
+    cvs.isopen
+} W

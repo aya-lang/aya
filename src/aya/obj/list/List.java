@@ -730,7 +730,13 @@ public class List extends Obj {
 	 * into a NumberList)
 	 */
 	public void mutSetIndexed(int i, Obj o) {
-		mutSetExact(index(i, length()), o);
+		final int len = length();
+		final int idx = index(i, len);
+		if (idx < 0 || idx >= len) {
+			throw new IndexError(this, Num.fromInt(idx));
+		} else {
+			mutSetExact(idx, o);
+		}
 	}
 	
 	
