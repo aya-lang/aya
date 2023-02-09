@@ -60,6 +60,14 @@ public class SystemInstructionStore extends NamedInstructionStore {
 			}
 		});
 		
+		// Get aya dir
+		addInstruction(new NamedInstruction("sys.set_ad", "set absolute path of aya dir") {
+			@Override
+			public void execute(Block block) {
+				AyaPrefs.setAyaDir(block.pop().str());
+			}
+		});
+		
 		// Set working dir
 		addInstruction(new NamedInstruction("sys.cd", "set the working dir (empy string resets to default)") {
 			@Override

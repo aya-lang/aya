@@ -5,4 +5,6 @@
 
 :{sys.wd} '/ S B ; #"/"+ W $ :{sys.cd} :{sys.set_ad}
 
+.# :{sys.wd} "/"|B;#"/"+S :& :{sys.cd} :{sys.set_ad}
+
 :{sys.wd} "ayarc.aya" + G ~

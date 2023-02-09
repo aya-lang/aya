@@ -62,30 +62,48 @@ public class AyaPrefs {
 		return workingDir;
 	}
 	
+	private static String getAbsPath(String dir) {
+		//Make sure path is a directory
+		char last = dir.charAt(dir.length()-1);
+		if (last != '/' && last != '\\') {
+			dir += File.separator;
+		}
+		try {
+			//Create a path to test if it exists
+			File fwd = new File(dir);
+			Path path = new File(dir).toPath();
+			if (Files.exists(path)) {
+				return fwd.getCanonicalPath() + File.separator;
+			} else {
+				//System.out.println("setWorkingDir: error, dir does not exist: " + workingDir);
+				return null;
+			}
+		} catch (Exception e) {
+			//System.out.println("setWorkingDir: error: " + e.getMessage());
+			return null;
+		}
+	}
+	
 	public static String getAyaDir() {
 		return defaultWorkingDir;
 	}
 
 	public static boolean setWorkingDir(String workingDir) {
-		//System.out.println("setWorkingDir(\"" + workingDir + "\")");
-		//Make sure path is a directory
-		char last = workingDir.charAt(workingDir.length()-1);
-		if (last != '/' && last != '\\') {
-			workingDir += File.separator;
+		String abs_path = getAbsPath(workingDir);
+		if (abs_path != null) {
+			AyaPrefs.workingDir = abs_path;
+			return true;
+		} else {
+			return false;
 		}
-		try {
-			//Create a path to test if it exists
-			File fwd = new File(workingDir);
-			Path path = new File(workingDir).toPath();
-			if (Files.exists(path)) {
-				AyaPrefs.workingDir = fwd.getCanonicalPath() + File.separator;
-				return true;
-			} else {
-				//System.out.println("setWorkingDir: error, dir does not exist: " + workingDir);
-				return false;
-			}
-		} catch (Exception e) {
-			//System.out.println("setWorkingDir: error: " + e.getMessage());
+	}
+
+	public static boolean setAyaDir(String dir) {
+		String abs_path = getAbsPath(dir);
+		if (abs_path != null) {
+			AyaPrefs.defaultWorkingDir = abs_path;
+			return true;
+		} else {
 			return false;
 		}
 	}

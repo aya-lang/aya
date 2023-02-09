@@ -1,11 +1,6 @@
 package aya.ext.graphics;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -38,7 +33,8 @@ public class Canvas {
 	private JFrame _frame;
 	private boolean _show_on_refresh; // If true, call show() when refresh() is called, if false no-op
 	private AffineTransform _at;
-	private BufferStrategy _buf_strat;
+	private CanvasCursorListener _cursor_listener;
+	private CanvasKeyListener _key_listener;
 	
 	
 	public Canvas(String name, int width, int height, double scale) {
@@ -72,7 +68,15 @@ public class Canvas {
 	public int getHeight() {
 		return _height;
 	}
-	
+
+	public CanvasCursorListener getCursorListener() {
+		return _cursor_listener;
+	}
+
+	public CanvasKeyListener getKeyListener() {
+		return _key_listener;
+	}
+
 	public void setShowOnRefresh(boolean b) {
 		_show_on_refresh = b;
 	}
@@ -90,15 +94,21 @@ public class Canvas {
 		
 		if (_frame == null) {
 			_frame = new JFrame(_name);
-			_frame.getContentPane().setPreferredSize(new Dimension((int)(_width * _scale), (int)(_height * _scale)));
+			Container contentPane = _frame.getContentPane();
+			contentPane.setPreferredSize(new Dimension((int)(_width * _scale), (int)(_height * _scale)));
+
+			_cursor_listener = new CanvasCursorListener();
+			contentPane.addMouseListener(_cursor_listener);
+			contentPane.addMouseMotionListener(_cursor_listener);
+
+			_key_listener = new CanvasKeyListener();
+			_frame.addKeyListener(_key_listener);
+
 			_frame.add(new ImageView(_plotImage));
 			_frame.setResizable(false);
 			_frame.pack();
 			_frame.setLocationRelativeTo(comp);
 			_frame.setVisible(true);
-			
-			_frame.createBufferStrategy(2);
-			_buf_strat = _frame.getBufferStrategy();
 			
 			_frame.addWindowListener(new WindowAdapter() {
 				@Override
@@ -107,9 +117,7 @@ public class Canvas {
 		        }
 			});
 		} else {
-			do {
-				_frame.repaint();
-			} while (_buf_strat.contentsLost());
+			_frame.repaint();
 		}
 	}
 	

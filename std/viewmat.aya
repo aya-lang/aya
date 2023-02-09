@@ -29,6 +29,7 @@ def ::viewmat { data : width height scale size viewmat_scaled^,
     width height .< :size;
 
     .# Set a reasonable scale
+    1 :scale;
     size 400 :< { 2:scale; } ?
     size 100 :< { 8:scale; } ?
     size 40  :< { 16:scale; } ?
