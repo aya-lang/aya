@@ -4,7 +4,6 @@
 .# https://thecodingtrain.com/
 
 import ::canvas
-import ::matrix
 import ::color
 import ::time
 
@@ -25,29 +24,29 @@ color.colors.white :white;
  [-1 -1 -1]
  [ 1 -1 -1]
  [ 1  1 -1]
- [-1  1 -1]] matrix! :points;
+ [-1  1 -1]] :points;
 
 .# transpose so each x,y,z is one column
 .# [[x0 x1 ..]
 .#  [y0 y1 ..]
 .#  [z0 z1 ..]]
-points.t :points;
+points.T :points;
 
 .# Scale the cube
 points 70 * :points;
 
 .# Tf mat
 .# Draw the cube in the middle of the screen rather than the corner
-[c.width 2/ c.height 2/] pointsE.[1] L matrix! .t :canvas_tf;
+[c.width 2/ c.height 2/] points:E.[1] L .T :canvas_tf;
 
 .# 2D Projection
 [[1 0 0]
- [0 1 0]] matrix! :projection;
+ [0 1 0]] :projection;
 
 .# Function to draw an edge
 {i j points : a b,
-    points.cols.[i] :a;
-    points.cols.[j] :b;
+    points.T.[i] :a;
+    points.T.[j] :b;
     a.x a.y b.x b.y c.line
 }:draw_edge;
 
@@ -65,22 +64,22 @@ points 70 * :points;
     .# Compute rotation matrices
     [[1  0         0            ]
      [0  theta Mc  theta Ms -1 *]
-     [0  theta Ms  theta Mc     ]] matrix! :rotation_x;
+     [0  theta Ms  theta Mc     ]] :rotation_x;
 
     [[theta Mc  0  theta Ms -1 *]
      [0         1  0            ]
-     [theta Ms  0  theta Mc     ]] matrix! :rotation_y;
+     [theta Ms  0  theta Mc     ]] :rotation_y;
 
     [[theta Mc  theta Ms -1 *  0]
      [theta Ms  theta Mc       0]
-     [0         0              1]] matrix! :rotation_z;
+     [0         0              1]] :rotation_z;
 
     .# Rotate the points
     points :points_rotated;
-    rotation_y points_rotated .matmul :points_rotated;
-    rotation_x points_rotated .matmul :points_rotated;
-    rotation_z points_rotated .matmul :points_rotated;
-    projection points_rotated .matmul :points_projected;
+    rotation_y points_rotated :{la.mul} :points_rotated;
+    rotation_x points_rotated :{la.mul} :points_rotated;
+    rotation_z points_rotated :{la.mul} :points_rotated;
+    projection points_rotated :{la.mul} :points_projected;
 
     .# Apply canvas transform
     .# (Move the points to the center of the canvas)
@@ -98,7 +97,7 @@ points 70 * :points;
     white c.set_color
 
     .# Draw points (columns)
-    canvas_points .cols :# {p,
+    canvas_points .T :# {p,
         p.x p.y 5 c.fillcircle
     };
 
