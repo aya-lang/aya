@@ -113,12 +113,24 @@ public class GenericList extends ListImpl {
 
 	@Override
 	public ListImpl head(int n) {
-		return new GenericList(ListAlgorithms.head(_list, n, Num.ZERO)).promote();
+		Obj fill = tail();
+		if (fill.isa(Obj.LIST)) {
+			fill = asList(fill).sameShapeNull();
+		} else {
+			fill = Num.ZERO;
+		}
+		return new GenericList(ListAlgorithms.headDeepcopyPad(_list, n, fill)).promote();
 	}
 
 	@Override
 	public ListImpl tail(int n) {
-		return new GenericList(ListAlgorithms.tail(_list, n, Num.ZERO)).promote();
+		Obj fill = head();
+		if (fill.isa(Obj.LIST)) {
+			fill = asList(fill).sameShapeNull();
+		} else {
+			fill = Num.ZERO;
+		}
+		return new GenericList(ListAlgorithms.tailDeepcopyPad(_list, n, fill)).promote();
 	}
 
 	@Override
@@ -281,6 +293,20 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
+	public List sameShapeNull() {
+		if (length() == 0) {
+			return new List();
+		} else {
+			Obj head = this.head();
+			if (head.isa(Obj.LIST)) {
+				return new List(new GenericList(asList(head).sameShapeNull(), length()));
+			} else {
+				return new List(new NumberItemList(Num.ZERO, length()));
+			}
+		}
+	}
+
+	@Override
 	protected ListImpl flatten() {
 		GenericList out = new GenericList(new ArrayList<Obj>());
 		for (int i = 0; i < length(); i++) {
@@ -375,10 +401,4 @@ public class GenericList extends ListImpl {
 		} 
 	}
 	
-	public ArrayList<Obj> similarEmptyAL() {
-		return new ArrayList<Obj>(_list.size());
-	}
-
-
-
 }

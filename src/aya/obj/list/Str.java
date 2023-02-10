@@ -367,6 +367,11 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
+	public List sameShapeNull() {
+		return new List(new Str(' ', length()));
+	}
+
+	@Override
 	protected ListImpl flatten() {
 		return this; // Strs are immutable
 	}

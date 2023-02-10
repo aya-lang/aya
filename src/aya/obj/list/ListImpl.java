@@ -93,6 +93,9 @@ public abstract class ListImpl {
 	/** Return an empty list that is the same type as the callee */
 	public abstract ListImpl similarEmpty();
 
+	/** Return a null filled list that is the same shape as the callee */
+	public abstract List sameShapeNull();
+
 	/** Return a flattened version of the list */
 	protected abstract ListImpl flatten();
 	

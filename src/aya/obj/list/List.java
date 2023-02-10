@@ -706,6 +706,11 @@ public class List extends Obj {
 	public List similarEmpty() {
 		return new List(_list.similarEmpty());
 	}
+
+	/** Return a null filled list that is the same shape as the callee */
+	public List sameShapeNull() {
+		return _list.sameShapeNull();
+	}
 	
 	////////////////////////
 	// LIST MODIFICATIONS //

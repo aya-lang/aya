@@ -411,13 +411,13 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public NumberItemList head(int n) {	
-		return new NumberItemList(ListAlgorithms.head(_list, n, Num.ZERO));
+	public NumberItemList head(int n) {
+		return new NumberItemList(ListAlgorithms.headNoDeepcopyPad(_list, n, Num.ZERO));
 	}
 
 	@Override
 	public NumberItemList tail(int n) {
-		return new NumberItemList(ListAlgorithms.tail(_list, n, Num.ZERO));
+		return new NumberItemList(ListAlgorithms.tailNoDeepcopyPad(_list, n, Num.ZERO));
 	}
 
 	@Override
@@ -557,6 +557,11 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberItemList similarEmpty() {
 		return new NumberItemList(new ArrayList<Number>());
+	}
+
+	@Override
+	public List sameShapeNull() {
+		return new List(new NumberItemList(Num.ZERO, length()));
 	}
 
 	@Override

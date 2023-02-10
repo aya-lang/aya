@@ -133,6 +133,9 @@
     .#? ::any ::num ::list .rpad\n  left pad list using ::any to a max length of ::num
     { .E @ \- 0.< @\L J }:rpad;
 
+    .#? ::list ::num .pad\n 2d padding
+    {n l, lEn+$n+ \2:$ l\.>\.< \#.< \#.>}:pad;
+
 
     .#? ::any ::list .surround\n  append A to the front and back of L
     {$\; \$@J\J}:surround;
