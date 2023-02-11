@@ -1,6 +1,7 @@
 package aya.obj.list;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
@@ -240,5 +241,9 @@ public class ListAlgorithms {
 			sb.append(o.repr(new ReprStream()) + " ");
 		}
 		return sb.append(']').toString();
+	}
+
+	public static <T extends Obj> void rotate(ArrayList<T> list, int n) {
+		Collections.rotate(list, n);
 	}
 }

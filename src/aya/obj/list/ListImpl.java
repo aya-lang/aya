@@ -37,8 +37,11 @@ public abstract class ListImpl {
 	/** Remove and return the back of the list */
 	public abstract Obj popBack();
 	
-	/** Return a reversed copy of the list */
+	/** Reverse the list in place */
 	public abstract void reverse();
+
+	/** Rotate the list in place */
+	public abstract void rotate(int n);
 	
 	/** Sort the list */
 	public abstract void sort();
@@ -100,6 +103,7 @@ public abstract class ListImpl {
 	protected abstract ListImpl flatten();
 	
 	public abstract List split(Obj o);
+
 	
 	////////////////////////
 	// LIST MODIFICATIONS //
@@ -155,6 +159,7 @@ public abstract class ListImpl {
 	protected String repr() {
 		return repr(new ReprStream()).toStringOneline();
 	}
+
 
 
 

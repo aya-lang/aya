@@ -6,23 +6,27 @@ import ::time
 .# Life function
 .# Algorithm based off the APL implementation here:
 .# https://www.youtube.com/watch?v=a9xAKttWgP4
-{$1.i$@{.n}:*{.z}:*.FW$3=\4=@&|}:life;
+.#{$1.i$@{.n}:*{.z}:*.FW$3=\4=@&|}:life;
 
 .# Generate initial Matrix
-9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 24 \ .pad :mat;
+.#9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 24 \ .pad :mat;
 
-mat.rows 10 viewmat_scaled :cvs;
+{mat, mat [-1 0 1] $ {J}:* #~ :# {mat$\;\.S} W $ 3.=\4.= @&|}:life;
+
+9.R [1 2 3 4 7] {=}:*#W [3 3]L 24\.pad :mat;
+
+mat 10 viewmat_scaled :cvs;
 
 30 time.rate! :limiter;
 
 mat {
     life $
     1 \ - .# invert so viewmat draws black pixels on white canvas
-    .rows cvs.viewmat
+    cvs.viewmat
     cvs.show
 
     limiter.sleep
     cvs.isopen
-} W
+} W;
 
 cvs.close

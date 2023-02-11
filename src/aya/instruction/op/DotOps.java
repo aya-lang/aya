@@ -127,7 +127,7 @@ public class DotOps {
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
 		/* 82 R  */ new OP_Dot_R(),
-		/* 83 S  */ null,
+		/* 83 S  */ new OP_Dot_S(),
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
@@ -1309,6 +1309,52 @@ class OP_Dot_R extends OpInstruction {
 		}
 	}
 }
+
+// S - 83
+class OP_Dot_S extends OpInstruction {
+
+	public OP_Dot_S() {
+		init(".S");
+		arg("LL", "rotate [rows cols]");
+		arg("LN", "rotate]");
+	}
+
+	@Override
+	public void execute (Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+
+		if (a.isa(Obj.NUM) && b.isa(Obj.LIST)) {
+			asList(b).mutRotate(asNumber(a).toInt());
+			block.push(b);
+		} else if (a.isa(Obj.LIST) && b.isa(LIST)) {
+			final NumberList amount = asList(a).toNumberList();
+			List list = asList(b);
+			if (amount.length() == 1) {
+				list.mutRotate(amount.get(0).toInt());
+				block.push(b);
+			} else if (amount.length() == 2) {
+				rotate(list, amount.get(0).toInt(), amount.get(1).toInt());
+				block.push(b);
+			} else {
+				throw new ValueError(".S rotation amount must be length 1 or 2");
+			}
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+
+	private void rotate(List l, int rows, int cols) {
+		l.mutRotate(rows);
+		for (int i = 0; i < l.length(); i++) {
+			Obj x = l.getExact(i);
+			if (x.isa(Obj.LIST)) {
+				asList(x).mutRotate(cols);
+			}
+		}
+	}
+}
+
 
 
 //T - 84

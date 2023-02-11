@@ -164,6 +164,11 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
+	public void rotate(int n) {
+		// TODO: implement
+	}
+
+	@Override
 	public ListImpl slice(int i, int j) {
 		return new Str(_str.substring(i, j));
 	}

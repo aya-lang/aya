@@ -163,6 +163,11 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
+	public void rotate(int n) {
+		ListAlgorithms.rotate(_list, n);
+	}
+
+	@Override
 	public ListImpl slice(int i, int j) {
 		return new GenericList(ListAlgorithms.slice(_list, i, j)).promote();
 	}

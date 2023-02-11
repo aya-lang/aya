@@ -446,6 +446,11 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
+	public void rotate(int n) {
+		ListAlgorithms.rotate(_list, n);
+	}
+
+	@Override
 	public NumberItemList slice(int i, int j) {
 		return new NumberItemList(ListAlgorithms.slice(_list, i, j));
 	}

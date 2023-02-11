@@ -474,9 +474,14 @@ public class List extends Obj {
 		return o;
 	}
 	
-	/** Return a reversed copy of the list */
+	/** Reverse the list in place */
 	public void mutReverse() {
 		_list.reverse();
+	}
+
+	/** Rotate the list in place */
+	public void mutRotate(int n) {
+		_list.rotate(n);
 	}
 	
 	/** Sort the list */
