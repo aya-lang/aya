@@ -1,4 +1,3 @@
-import ::matrix
 import ::golf
 import ::viewmat
 import ::time
@@ -6,13 +5,9 @@ import ::time
 .# Life function
 .# Algorithm based off the APL implementation here:
 .# https://www.youtube.com/watch?v=a9xAKttWgP4
-.#{$1.i$@{.n}:*{.z}:*.FW$3=\4=@&|}:life;
+{m, m [-1 0 1] $ {J}:* #~ :# {m $\;\.S} W $ 3.=\4.= @&|}:life;
 
 .# Generate initial Matrix
-.#9 .R [3 3] L matrix ! [1 2 3 4 7] \ = 24 \ .pad :mat;
-
-{mat, mat [-1 0 1] $ {J}:* #~ :# {mat$\;\.S} W $ 3.=\4.= @&|}:life;
-
 9.R [1 2 3 4 7] {=}:*#W [3 3]L 24\.pad :mat;
 
 mat 10 viewmat_scaled :cvs;

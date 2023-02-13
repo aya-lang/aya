@@ -1,6 +1,6 @@
 import ::viewmat
 
-100 :width;
+400 :width;
 width 0.8* :height;
 
 .# Create complex plane
@@ -9,7 +9,7 @@ width 0.8* :height;
 y :0i1 * x `+ :* :a;
 
 .# Generate the fractal
-{0 a :E L {2^a+} 5000 % .|}.time :P
+{0 a :E L {2^a+} 30 % .|}.time :P
 
 .# Display
 {3 .>} .O viewmat.show

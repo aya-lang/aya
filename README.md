@@ -166,22 +166,21 @@ aya> 10 10 vec! v +
 Complex numbers are built in to aya's number system can can be used seamlessly with other numeric types. Aya also includes a graphics library. The `viewmat` module uses it to draw a 2d intensity image.
 
 ```
-import ::matrix
 import ::viewmat
 
 400 :width;
 width 0.8* :height;
 
 .# Create complex plane
-[:2 0.5 width.linspace] matrix! :x;
-[1 :1  height.linspace] matrix! .t :y;
-y :0i1 * x + :a;
+[-2 0.5 width]  .R :x;
+[1  -1  height] .R :y;
+y :0i1 * x `+ :* :a;
 
 .# Generate the fractal
-a E matrix.zeros {2^a+} 20 % .|
+0 a :E L {2^a+} 30 % .|
 
 .# Display
-{3 .>} O viewmat.show
+{3 .>} .O viewmat.show
 ```
 
 ![Mandelbrot Fractal](images/mandel.png)
