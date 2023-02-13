@@ -10,9 +10,9 @@ import ::plot
 }:w;
 
 plot.plot! :plt;
--0.7 0.7 5000.linspace :x;
+[-0.7 0.7 5000] .R :x;
 
-x {w} {, } plt.plot
+x {w} {,} plt.plot
 
 .# plot attributes
 "Weierstrass Function" plt.:title;

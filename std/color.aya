@@ -96,7 +96,7 @@ def color::hsv {self, self.rgb255/~ self.M.rgbtohsv}
 
 .#? ::num ::color ::color.grad\n  creates a gradient of rgb lists from color1 to color2
 def color::grad {n::num begin::color self,
-    [ [begin.rgb self.rgb, n .intspace]~, self.M!]
+    [ [begin.rgb self.rgb, [2| n] .R .\]~, self.M!]
 }
 
 .#? ::color ::color color.mid\n  returns the color in between color1 and color2 using rgb

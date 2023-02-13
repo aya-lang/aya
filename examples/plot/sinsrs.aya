@@ -3,7 +3,7 @@
 import::plot
 
 plot.plot!:plt;
-0 :4p 300.linspace :x;
+[0 :4p 300] .R :x;
 
 
 5R # {n,

@@ -5,7 +5,7 @@ plot.multiplot! :mp;
 
 
 .# The domain
-0 :4p 400.linspace :x;
+[0 :4p] .R :x;
 
 .# Upper plot
 plot.plot!:a;

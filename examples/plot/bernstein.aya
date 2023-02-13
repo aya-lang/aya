@@ -10,7 +10,7 @@ import ::math .# bin
 8 :coeff;
 
 plot.plot! :plt;
-0 1 200.linspace :x;
+[0 1] .R :x;
 
 .# generate polynomials
 coeff B .R # {i : f,

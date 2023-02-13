@@ -69,23 +69,6 @@
         $1:%P$.[0]'.={V;}?~ \.\ \
     }:fracsplit;
 
-
-    .#? start::num end::num n::num .intspace\n  create a range from start to b consisting of c ints\n  (also see .linspace)
-    { .linspace .\ }:intspace;
-
-
-    .#? start::num end::num n::num .linspace\n  create a uniform range from start to end with n steps\n  (also see .intspace)
-    {a b nums,
-        a b=
-        a numsL .# a=b, return nums a's
-        {[a b a-numsV/a+ b,]}
-        .?
-
-        .# If the length is not equal to nums, add b to the end
-        $Enums={}{b:J}.?
-    }:linspace;
-
-
 }
 .# Merge with num metatable
 0 .M \.+

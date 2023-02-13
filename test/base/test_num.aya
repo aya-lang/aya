@@ -61,7 +61,4 @@
 { 0.6 .fracsplit J [0 6] }
 { 4   .fracsplit J [4 0] }
 
-{ 1 2 3 .linspace [ 1 1.5 2 ] }
-{ 1 2 5 .linspace [ 1 1.25 1.5 1.75 2 ] }
-
 ] :# { test.test }
