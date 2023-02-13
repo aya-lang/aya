@@ -1,4 +1,3 @@
-import ::matrix
 import ::viewmat
 
 def ::julia { kwargs :
@@ -14,9 +13,7 @@ def ::julia { kwargs :
     x_width y_height
     x_from x_to
     y_from y_to
-    z m div_time
-    .# captures
-    matrix^,
+    z m div_time,
 
     .# set kwargs
     kwargs~
@@ -28,13 +25,13 @@ def ::julia { kwargs :
     y y_height zoom / - :y_from;
     y y_height zoom / + :y_to;
 
-    [x_from x_to width.linspace ] matrix!   :x;
-    [y_from y_to height.linspace] matrix!.t :y;
-    x y :0i1 * + :z;
+    [x_from x_to width ] .R :x;
+    [y_from y_to height] .R :y;
+    x y :0i1 * `+ :* .T :z;
 
-    c zE matrix.full :c;
-    zE matrix.zeros :div_time;
-    1 zE matrix.full :m; .# mask
+    c z :E L :c;
+    0 z :E L :div_time;
+    1 z :E L :m; .# mask
 
     max_iterations .R # {i,
         .# z[m] = z[m]**2 + c[m]

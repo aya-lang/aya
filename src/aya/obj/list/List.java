@@ -6,6 +6,7 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
+import java.util.ListResourceBundle;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.IndexError;
@@ -16,6 +17,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
+import aya.obj.number.Number;
 import aya.util.Casting;
 import aya.util.Pair;
 
@@ -821,7 +823,10 @@ public class List extends Obj {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {
-			NumberList l_index = asList(index).toNumberList();
+			List l_index = asList(index);
+
+			NDListIterator<Obj> list_iter = new NDListIterator<Obj>(this);
+			NDListIterator<Obj> index_iter = new NDListIterator<Obj>(l_index);
 
 			// Set index with mask
 			if (item.isa(Obj.LIST)) {
@@ -834,24 +839,32 @@ public class List extends Obj {
 							+ "items:\t" + item.repr() + "\n");
 				}
 				
-				if (l_item.length() == l_index.length() && l_item.length() == this.length())
-				{
-					for (int i = 0; i < l_index.length(); i++) {
-						if (l_index.get(i).bool()) {
-							this.mutSetExact(i, l_item.getExact(i));
+				NDListIterator<Obj> value_iter = new NDListIterator<Obj>(l_item);
+
+				try {
+					while (!list_iter.done()) {
+						if (index_iter.next().bool()) {
+							list_iter.setNext(value_iter.next());
+						} else {
+							list_iter.next();
+							value_iter.next();
 						}
 					}
-				} else {
-					throw new IndexError("Invalid mask index:\n"
-							+ "list:\t" + repr() + "\n"
-							+ "index:\t" +  index.repr() + "\n"
-							+ "items:\t" + item.repr() + "\n");
+				} catch (IndexError e) {
+					throw new IndexError("Shape mismatch for masked setindex");
 				}
+
 			} else {
-				for (int i = 0; i < l_index.length(); i++) {
-					if (l_index.get(i).bool()) {
-						this.mutSetExact(i, item);
+				try {
+					while (!list_iter.done()) {
+						if (index_iter.next().bool()) {
+							list_iter.setNext(item);
+						} else {
+							list_iter.next();
+						}
 					}
+				} catch (IndexError e) {
+					throw new IndexError("Shape mismatch for masked setindex");
 				}
 			}
 		} 
