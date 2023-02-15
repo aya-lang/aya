@@ -195,8 +195,7 @@ public class List extends Obj {
 			throw new ValueError("reshape: maximum rank of 5, recieved rank " 
 					+ dims.length() + " resulting from " + dims.repr());
 		
-		NDListIterator<Obj> iter = new NDListIterator<Obj>(this);
-		iter.setLoop(true);
+		NDListIterator iter = new NDListIterator(this, true);
 		
 		Integer[] ds = dims.toIntegerArray();
 		
@@ -216,7 +215,7 @@ public class List extends Obj {
 		throw new ValueError("reshape: invalid dimensions: " + dims.repr());
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int count) {
+	private static List reshape(NDListIterator iter, int count) {
 		ArrayList<Obj> out = new ArrayList<Obj>(count);
 		for (int i = 0; i < count; i++) {
 			out.add(iter.next());
@@ -224,7 +223,7 @@ public class List extends Obj {
 		return new List(new GenericList(out).promote());
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int r, int c) {
+	private static List reshape(NDListIterator iter, int r, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(r);
 		for (int i = 0; i < r; i++) {
 			out.add(reshape(iter, c));
@@ -232,7 +231,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c) {
+	private static List reshape(NDListIterator iter, int a, int b, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c));
@@ -240,7 +239,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d) {
+	private static List reshape(NDListIterator iter, int a, int b, int c, int d) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d));
@@ -248,7 +247,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d, int e) {
+	private static List reshape(NDListIterator iter, int a, int b, int c, int d, int e) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d, e));
@@ -262,9 +261,9 @@ public class List extends Obj {
 	/** Return a list of shape l1 whose values are 1 if l1[i,j,..] == l2[i,j,..] and 0 otherwise */
 	public List equalsElementwise(List l2) {
 		List out = deepcopy();
-		NDListIterator<Obj> iterOut = new NDListIterator<Obj>(out);
-		NDListIterator<Obj> iter1 = new NDListIterator<Obj>(this);
-		NDListIterator<Obj> iter2 = new NDListIterator<Obj>(l2);
+		NDListIterator iterOut = new NDListIterator(out);
+		NDListIterator iter1 = new NDListIterator(this);
+		NDListIterator iter2 = new NDListIterator(l2);
 		
 		while (true) {
 			if (iter1.done() && iter2.done()) {
@@ -288,8 +287,8 @@ public class List extends Obj {
 	/** Return a list of shape l whose values are 1 if l[i,j,...] == o, and 0 otherwise */
 	public List equalsElementwise(Obj o) {
 		List out = deepcopy();
-		NDListIterator<Obj> iterOut = new NDListIterator<>(out);
-		NDListIterator<Obj> iter = new NDListIterator<>(this);
+		NDListIterator iterOut = new NDListIterator(out);
+		NDListIterator iter = new NDListIterator(this);
 		
 		while (!iter.done()) {			
 			iterOut.setNext( iter.next().equiv(o) ? Num.ONE : Num.ZERO );
@@ -825,8 +824,8 @@ public class List extends Obj {
 		} else if (index.isa(Obj.LIST)) {
 			List l_index = asList(index);
 
-			NDListIterator<Obj> list_iter = new NDListIterator<Obj>(this);
-			NDListIterator<Obj> index_iter = new NDListIterator<Obj>(l_index);
+			NDListIterator list_iter = new NDListIterator(this);
+			NDListIterator index_iter = new NDListIterator(l_index);
 
 			// Set index with mask
 			if (item.isa(Obj.LIST)) {
@@ -839,15 +838,15 @@ public class List extends Obj {
 							+ "items:\t" + item.repr() + "\n");
 				}
 				
-				NDListIterator<Obj> value_iter = new NDListIterator<Obj>(l_item);
+				NDListIterator value_iter = new NDListIterator(l_item);
 
 				try {
-					while (!list_iter.done()) {
+					while (!list_iter.doneNoCheckLoop()) {
 						if (index_iter.next().bool()) {
 							list_iter.setNext(value_iter.next());
 						} else {
-							list_iter.next();
-							value_iter.next();
+							list_iter.skip();
+							value_iter.skip();
 						}
 					}
 				} catch (IndexError e) {
@@ -856,11 +855,11 @@ public class List extends Obj {
 
 			} else {
 				try {
-					while (!list_iter.done()) {
+					while (!list_iter.doneNoCheckLoop()) {
 						if (index_iter.next().bool()) {
 							list_iter.setNext(item);
 						} else {
-							list_iter.next();
+							list_iter.skip();
 						}
 					}
 				} catch (IndexError e) {
