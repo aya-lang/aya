@@ -399,7 +399,6 @@ class OP_Times extends OpInstruction {
 	public OP_Times() {
 		init("*");
 		arg("NN", "multiply");
-		arg("LS|LC", "join");
 		vect();
 		setOverload(2, "mul");
 	}
