@@ -49,7 +49,7 @@
 
     {,
         .# Get the overload list for all ops
-        ::ops :O :#{.overload}
+        ::ops Ma :#{.overload}
         .# Get all ops with non-zero length overloads
         .[{E 0 = !}]
         .# For each overload list
