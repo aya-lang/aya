@@ -905,20 +905,6 @@ class OP_E extends OpInstruction {
 	}
 }
 
-// F - 70
-class OP_F extends OpInstruction {
-	
-	public OP_F() {
-		init("F");
-	}
-
-	@Override
-	public void execute(Block block) {
-
-	}
-}
-
-
 // G - 71
 class OP_G extends OpInstruction {
 	
