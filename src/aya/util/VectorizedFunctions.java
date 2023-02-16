@@ -100,12 +100,14 @@ public class VectorizedFunctions {
 	//
 	
 	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b) {
-		if (isList(a) && !isList(b)) {
-			return vectorizeListObj(op, asList(a), b);
-		} else if (!isList(a) && isList(b)) {
-			return vectorizeObjList(op, a, asList(b));
-		} else if (isList(a) && isList(b)) {
-			return vectorizeListList(op, asList(a), Casting.asList(b));
+		final boolean a_is_list = isList(a);
+		final boolean b_is_list = isList(b);
+		if (a_is_list && !b_is_list) {
+			return vectorizeListObj(op, (List)a, b);
+		} else if (!a_is_list && b_is_list) {
+			return vectorizeObjList(op, a, (List)b);
+		} else if (a_is_list && b_is_list) {
+			return vectorizeListList(op, (List)a, (List)b);
 		} else {
 			return null;
 		}
@@ -113,12 +115,14 @@ public class VectorizedFunctions {
 
 
 	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b, NumberListOp nlop) {
-		if (isList(a) && !isList(b)) {
-			return vectorizeListObj(op, asList(a), b, nlop);
-		} else if (!isList(a) && isList(b)) {
-			return vectorizeObjList(op, a, asList(b), nlop);
-		} else if (isList(a) && isList(b)) {
-			return vectorizeListList(op, asList(a), Casting.asList(b), nlop);
+		final boolean a_is_list = isList(a);
+		final boolean b_is_list = isList(b);
+		if (a_is_list && !b_is_list) {
+			return vectorizeListObj(op, (List)a, b, nlop);
+		} else if (!a_is_list && b_is_list) {
+			return vectorizeObjList(op, a, (List)b, nlop);
+		} else if (a_is_list && b_is_list) {
+			return vectorizeListList(op, (List)a, (List)b, nlop);
 		} else {
 			return null;
 		}
