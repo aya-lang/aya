@@ -2,11 +2,32 @@ package aya.obj.list.numberlist;
 
 import java.util.ArrayList;
 
+import aya.obj.Obj;
 import aya.obj.list.ListImpl;
 import aya.obj.number.Number;
 
 /** Supertype for all lists containing only numbers */
 public abstract class NumberList extends ListImpl {
+
+	public static NumberList repeat(Number item, int repeats) {
+		if (item.isa(Obj.NUM)) {
+			return new DoubleList(item.toDouble(), repeats);
+		} else {
+			return new NumberItemList(item, repeats).promote();
+		}
+	}
+
+	public static NumberList fromNumberAL(ArrayList<Number> list) {
+		return new NumberItemList(list).promote();
+	}
+
+	public static NumberList range(Number lo, Number hi, Number inc) {
+		if (lo.isa(Obj.NUM) && hi.isa(Obj.NUM) && inc.isa(Obj.NUM)) {
+			return new DoubleList(lo.toDouble(), hi.toDouble(), inc.toDouble());
+		} else {
+			return new NumberItemList(lo, hi, inc).promote();
+		}
+	}
 
 	/////////////////////
 	// LIST OPERATIONS //
@@ -196,6 +217,9 @@ public abstract class NumberList extends ListImpl {
 	
 	@Override
 	public abstract Number get(int i);
+
+	@Override
+	public abstract NumberList promote();
 
 
 	

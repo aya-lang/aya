@@ -160,7 +160,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = _list[i] + N;
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).add(n);
+			return toNumberItemList().add(n);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = _list[i] - N;
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).sub(n);
+			return toNumberItemList().sub(n);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = _list[i] / N;
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).div(n);
+			return toNumberItemList().div(n);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = _list[i] * N;
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).mul(n);
+			return toNumberItemList().mul(n);
 		}
 	}
 
@@ -208,7 +208,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = _list[i] % N;
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).mod(n);
+			return toNumberItemList().mod(n);
 		}
 	}
 	
@@ -220,7 +220,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = Math.floor(_list[i] / N);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).idiv(n);
+			return toNumberItemList().idiv(n);
 		}
 	}
 
@@ -232,7 +232,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = Math.pow(_list[i], N);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).pow(n);
+			return toNumberItemList().pow(n);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = N - _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).subFrom(n);
+			return toNumberItemList().subFrom(n);
 		}
 	}
 
@@ -256,7 +256,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = N / _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).divFrom(n);
+			return toNumberItemList().divFrom(n);
 		}
 	}
 
@@ -268,7 +268,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = N % _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).modFrom(n);
+			return toNumberItemList().modFrom(n);
 		}
 	}
 
@@ -280,7 +280,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = Math.floor(N / _list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).idivFrom(n);
+			return toNumberItemList().idivFrom(n);
 		}
 	}
 
@@ -292,7 +292,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = Math.pow(N, _list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).powFrom(n);
+			return toNumberItemList().powFrom(n);
 		}
 	}
 
@@ -304,7 +304,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = (double)((int)_list[i] & N);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).band(n);
+			return toNumberItemList().band(n).promote();
 		}
 	}
 
@@ -316,7 +316,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = (double)(N & (int)_list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).bandFrom(n);
+			return toNumberItemList().bandFrom(n).promote();
 		}
 	}
 
@@ -328,7 +328,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = (double)((int)_list[i] | N);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).bor(n);
+			return toNumberItemList().bor(n).promote();
 		}
 	}
 
@@ -340,7 +340,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < _list.length; i++) out[i] = (double)(N | (int)_list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).borFrom(n);
+			return toNumberItemList().borFrom(n).promote();
 		}
 	}
 	
@@ -468,7 +468,7 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public NumberList imag() {
-		return NumberItemList.fromDoubles(_list).imag();
+		return toNumberItemList().imag();
 	}
 
 	@Override
@@ -786,7 +786,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = _list[i] + NS._list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).add(ns);
+			return toNumberItemList().add(ns);
 		}
 	}
 
@@ -800,7 +800,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = _list[i] - NS._list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).sub(ns);
+			return toNumberItemList().sub(ns);
 		}
 	}
 
@@ -814,7 +814,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = NS._list[i] - _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).subFrom(ns);
+			return toNumberItemList().subFrom(ns);
 		}
 	}
 
@@ -829,7 +829,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = _list[i] / NS._list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).div(ns);
+			return toNumberItemList().div(ns);
 		}
 	}
 
@@ -843,7 +843,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = NS._list[i] / _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).divFrom(ns);
+			return toNumberItemList().divFrom(ns);
 		}
 	}
 
@@ -857,7 +857,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = _list[i] * NS._list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).mul(ns);
+			return toNumberItemList().mul(ns);
 		}
 	}
 
@@ -871,7 +871,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = _list[i] % NS._list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).mod(ns);
+			return toNumberItemList().mod(ns);
 		}
 	}
 
@@ -885,7 +885,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = NS._list[i] % _list[i];
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).modFrom(ns);
+			return toNumberItemList().modFrom(ns);
 		}
 	}
 
@@ -899,7 +899,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = Math.floor(_list[i] / NS._list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).idiv(ns);
+			return toNumberItemList().idiv(ns);
 		}
 	}
 
@@ -913,7 +913,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = Math.floor(NS._list[i] / _list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).idivFrom(ns);
+			return toNumberItemList().idivFrom(ns);
 		}
 	}
 
@@ -927,7 +927,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = Math.pow(_list[i], NS._list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).pow(ns);
+			return toNumberItemList().pow(ns);
 		}
 	}
 
@@ -941,7 +941,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = Math.pow(NS._list[i], _list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).powFrom(ns);
+			return toNumberItemList().powFrom(ns);
 		}
 	}
 
@@ -955,7 +955,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = ((int)_list[i]) & ((int)NS._list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).band(ns);
+			return toNumberItemList().band(ns).promote();
 		}
 	}
 
@@ -969,7 +969,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = ((int)NS._list[i]) & ((int)_list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).bandFrom(ns);
+			return toNumberItemList().bandFrom(ns).promote();
 		}
 	}
 
@@ -983,7 +983,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = ((int)_list[i]) | ((int)NS._list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).bor(ns);
+			return toNumberItemList().bor(ns).promote();
 		}
 	}
 
@@ -997,7 +997,7 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = ((int)NS._list[i]) | ((int)_list[i]);
 			return new DoubleList(out);
 		} else {
-			return NumberItemList.fromDoubles(_list).borFrom(ns);
+			return toNumberItemList().borFrom(ns).promote();
 		}
 	}
 
@@ -1141,7 +1141,12 @@ public class DoubleList extends NumberList {
 	private NumberItemList toNumberItemList() {
 		ArrayList<Number> out = new ArrayList<Number>();
 		for (double d : _list) out.add(new Num(d));
-		return new NumberItemList(out);
+		return new NumberItemList(out, _list.length);
+	}
+
+	@Override
+	public DoubleList promote() {
+		return this;
 	}
 
 }
