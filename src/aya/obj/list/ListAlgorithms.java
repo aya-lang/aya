@@ -1,6 +1,7 @@
 package aya.obj.list;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import aya.ReprStream;
@@ -51,6 +52,26 @@ public class ListAlgorithms {
 		return out;
 	}
 
+	public static double[] headNoDeepcopyPad(double[] list, int n, double pad) {
+		double[] out = new double[n];
+		if (n <= list.length) {
+			for (int i = 0; i < n; i++) {
+				out[i] = list[i];
+			}
+		} else {
+			int ix = 0;
+			for (int i = 0; i < list.length; i++) {
+				out[ix] = list[i];
+				ix++;
+			}
+			for (int i = list.length; i < n; i++) {
+				out[ix]	= pad;
+				ix++;
+			}
+		}
+		return out;
+	}
+
 
 
 	public static <T extends Obj> ArrayList<T> tailNoDeepcopyPad(ArrayList<T> list, int n, T pad) {
@@ -67,6 +88,31 @@ public class ListAlgorithms {
 		}	
 		return out;
 	}
+
+
+	public static double[] tailNoDeepcopyPad(double[] list, int n, double pad) {
+		double[] out = new double[n];
+		if (n <= list.length) {
+			int ix = 0;
+			for (int i = list.length-n; i < list.length; i++) {
+				out[ix] = list[i];
+				ix++;
+			}
+		} else {
+			int ix = 0;
+			for (int i = list.length; i < n-list.length; i++) {
+				out[ix]	= pad;
+				ix++;
+			}
+			// copy the rest
+			for (int i = 0; i < list.length-n; i++) {
+				out[ix] = pad;
+				ix++;
+			}
+		}
+		return out;
+	}
+
 
 	public static ArrayList<Obj> tailDeepcopyPad(ArrayList<Obj> list, int n, Obj pad) {
 		ArrayList<Obj> out = new ArrayList<Obj>(n);
@@ -142,6 +188,14 @@ public class ListAlgorithms {
 		int count = 0;
 		for (int i = 0; i < list.size(); i++) {
 			count += list.get(i).equiv(o) ? 1 : 0;
+		}
+		return count;
+	}
+
+	public static int count(double[] list, double o) {
+		int count = 0;
+		for (int i = 0; i < list.length; i++) {
+			count += list[i] == o ? 1 : 0;
 		}
 		return count;
 	}

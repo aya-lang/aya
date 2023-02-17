@@ -491,12 +491,12 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public DoubleList head(int n) {
-		return new DoubleList(ListAlgorithms.headNoDeepcopyPad(_list, n, Num.ZERO));
+		return new DoubleList(ListAlgorithms.headNoDeepcopyPad(_list, n, 0));
 	}
 
 	@Override
 	public DoubleList tail(int n) {
-		return new DoubleList(ListAlgorithms.tailNoDeepcopyPad(_list, n, Num.ZERO));
+		return new DoubleList(ListAlgorithms.tailNoDeepcopyPad(_list, n, 0));
 	}
 
 	@Override
@@ -511,76 +511,96 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public Number pop() {
-		return _list.remove(0);
+		NumberItemList ns = toNumberItemList();
+		Number n = ns.pop();
+		_list = ns.todoubleArray();
+		return n;
 	}
 
 	@Override
 	public Number popBack() {
-		return _list.remove(_list.length-1);
+		NumberItemList ns = toNumberItemList();
+		Number n = ns.popBack();
+		_list = ns.todoubleArray();
+		return n;
 	}
 
 	@Override
 	public void reverse() {
-		Collections.reverse(_list);
+		NumberItemList ns = toNumberItemList();
+		ns.reverse();
+		_list = ns.todoubleArray();
 	}
 
 	@Override
 	public void rotate(int n) {
-		ListAlgorithms.rotate(_list, n);
+		NumberItemList ns = toNumberItemList();
+		ns.rotate(n);
+		_list = ns.todoubleArray();
 	}
 
 	@Override
 	public DoubleList slice(int i, int j) {
-		return new DoubleList(ListAlgorithms.slice(_list, i, j));
+		NumberItemList ns = toNumberItemList();
+		return new DoubleList(ns.slice(i, j).todoubleArray());
 	}
 
 	@Override
 	public Number get(int i) {
-		return _list[i];
+		return new Num(_list[i]);
 	}
 	
 	@Override
 	public DoubleList get(int[] is) {
-		ArrayList<Number> out = new ArrayList<Number>(is.length);
-		for (int i : is) {
-			out.add(_list[i]);
+		double[] out = new double[is.length];
+		for (int i = 0; i < is.length; i++) {
+			out[i] = _list[i];
 		}
 		return new DoubleList(out);
 	}
 	
 	@Override
 	public Number remove(int i) {
-		return _list.remove(i);
+		NumberItemList ns = toNumberItemList();
+		Number n = ns.remove(i);
+		_list = ns.todoubleArray();
+		return n;
 	}
 	
 	@Override
 	public void removeAll(int[] ixs) {
-		ListAlgorithms.removeAll(_list, ixs);
+		NumberItemList ns = toNumberItemList();
+		ns.removeAll(ixs);
+		_list = ns.todoubleArray();
 	}
 
 	@Override
 	public int find(Obj o) {
-		return ListAlgorithms.find(_list, o);
+		return toNumberItemList().find(o);
 	}
 
 	@Override
 	public DoubleList findAll(Obj o) {
-		return new DoubleList(ListAlgorithms.findAll(_list, o));
+		return new DoubleList(toNumberItemList().findAll(o).todoubleArray());
 	}
 
 	@Override
 	public int findBack(Obj o) {
-		return ListAlgorithms.findBack(_list, o);
+		return toNumberItemList().findBack(o);
 	}
 
 	@Override
 	public int count(Obj o) {
-		return ListAlgorithms.count(_list, o);
+		if (o.isa(Obj.NUMBER)) {
+			return ListAlgorithms.count(_list, asNumber(o).toDouble());
+		} else {
+			return 0;
+		}
 	}
 	
 	@Override
 	public void sort() {
-		Collections.sort(_list);
+		Arrays.sort(_list);
 	}
 	
 	@Override
@@ -599,7 +619,7 @@ public class DoubleList extends NumberList {
 	
 	@Override
 	public DoubleList unique() {
-		return new DoubleList(ListAlgorithms.unique(_list));
+		return new DoubleList(toNumberItemList().unique().todoubleArray());
 	}
 	
 	
@@ -611,12 +631,16 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public void addItem(Obj o) {
-		_list.add((Number)o);
+		double[] list = Arrays.copyOf(_list, _list.length + 1);
+		list[list.length - 1] = asNumber(o).toDouble();
+		_list = list;
 	}
 	
 	@Override
 	public void addItem(int i, Obj o) {
-		_list.add(i, (Number)o);
+		NumberItemList ns = toNumberItemList();
+		ns.addItem(i, o);
+		_list = ns.todoubleArray();
 	}
 
 	@Override
@@ -655,11 +679,7 @@ public class DoubleList extends NumberList {
 	
 	@Override
 	public List split(Obj o) {
-		if (o.isa(Obj.NUMBER)) {
-			return List.from2DTemplate(ListAlgorithms.split(this._list, Casting.asNumber(o)));
-		} else {
-			return new List();
-		}
+		return toNumberItemList().split(o);
 	}
 	
 	
@@ -680,12 +700,12 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		return ListAlgorithms.reprCompact(stream, _list);
+		return toNumberItemList().repr(stream);
 	}
 
 	@Override
 	public String str() {
-		return ListAlgorithms.str(_list);
+		return toNumberItemList().str();
 	}
 
 	@Override
@@ -1116,6 +1136,12 @@ public class DoubleList extends NumberList {
 			for (int i = 0; i < len; i++) out[i] = new Num(_list[i]).compareTo(ns.get(i)) == 0 ? 1 : 0;
 		}
 		return new DoubleList(out);
+	}
+
+	private NumberItemList toNumberItemList() {
+		ArrayList<Number> out = new ArrayList<Number>();
+		for (double d : _list) out.add(new Num(d));
+		return new NumberItemList(out);
 	}
 
 }
