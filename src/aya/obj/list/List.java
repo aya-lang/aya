@@ -6,7 +6,6 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
-import java.util.ListResourceBundle;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.IndexError;
@@ -17,7 +16,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
-import aya.obj.number.Number;
 import aya.util.Casting;
 import aya.util.Pair;
 
