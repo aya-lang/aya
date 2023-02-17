@@ -1,7 +1,6 @@
 package aya.obj.list;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import aya.ReprStream;
@@ -283,6 +282,16 @@ public class ListAlgorithms {
 		stream.print("[ ");
 		for (T o : list) {
 			o.repr(stream);
+			stream.print(" ");
+		}
+		stream.print("]");
+		return stream;
+    }
+
+	public static ReprStream reprCompact(ReprStream stream, double[] list) {
+		stream.print("[ ");
+		for (double o : list) {
+			new Num(o).repr(stream);
 			stream.print(" ");
 		}
 		stream.print("]");

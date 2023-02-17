@@ -4,7 +4,6 @@ import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
@@ -14,8 +13,6 @@ import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
-import aya.obj.number.NumberMath;
-import aya.util.Casting;
 import aya.util.MathUtils;
 
 /** List containing a list of Number objects */
@@ -580,8 +577,8 @@ public class DoubleList extends NumberList {
 	}
 
 	@Override
-	public DoubleList findAll(Obj o) {
-		return new DoubleList(toNumberItemList().findAll(o).todoubleArray());
+	public NumberList findAll(Obj o) {
+		return toNumberItemList().findAll(o);
 	}
 
 	@Override
@@ -605,7 +602,7 @@ public class DoubleList extends NumberList {
 	
 	@Override
 	public void set(int i, Obj o) {
-		_list[i] = asNumber(o).toDouble();
+		_list[i] = ((Num)o).toDouble();
 	}
 	
 	@Override
@@ -619,7 +616,7 @@ public class DoubleList extends NumberList {
 	
 	@Override
 	public DoubleList unique() {
-		return new DoubleList(toNumberItemList().unique().todoubleArray());
+		return new DoubleList(toNumberItemList().unique().toNumberList().todoubleArray());
 	}
 	
 	
@@ -632,14 +629,14 @@ public class DoubleList extends NumberList {
 	@Override
 	public void addItem(Obj o) {
 		double[] list = Arrays.copyOf(_list, _list.length + 1);
-		list[list.length - 1] = asNumber(o).toDouble();
+		list[list.length - 1] = ((Num)o).toDouble();
 		_list = list;
 	}
 	
 	@Override
 	public void addItem(int i, Obj o) {
 		NumberItemList ns = toNumberItemList();
-		ns.addItem(i, o);
+		ns.addItem(i, (Num)o);
 		_list = ns.todoubleArray();
 	}
 
@@ -700,7 +697,8 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		return toNumberItemList().repr(stream);
+		stream.print("d");
+		return ListAlgorithms.reprCompact(stream, _list);
 	}
 
 	@Override

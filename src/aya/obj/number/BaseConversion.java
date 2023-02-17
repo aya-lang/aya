@@ -3,13 +3,12 @@ package aya.obj.number;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.list.List;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.util.Casting;
 
@@ -81,20 +80,15 @@ public class BaseConversion {
 			}
 		} else if (to_base == 2) {
 			String bin_str = out_bi.toString(2);
-			ArrayList<Number> out_list = new ArrayList<Number>(bin_str.length());
-			
-			for (char c : bin_str.toCharArray()) {
-				out_list.add(new Num(c-'0'));
+			char[] cs = bin_str.toCharArray();
+			double[] out = new double[cs.length];
+			for (int i = 0; i < out.length; i++) {
+				out[i] = (double)(cs[i] - '0');
 			}
-			return new List(new NumberItemList(out_list));
+			return new List(new DoubleList(out));
 		} else if (to_base == 0) {
 			// Special case: byte list
-			byte[] bytes = out_bi.toByteArray();
-			ArrayList<Number> nums = new ArrayList<>(bytes.length);
-			for (byte b : bytes) {
-				nums.add(Num.fromByte(b));
-			}
-			return new List(new NumberItemList(nums));
+			return new List(NumberList.fromBytes(out_bi.toByteArray()));
 		} else {
 			return List.fromString(out_bi.toString(to_base));
 		}

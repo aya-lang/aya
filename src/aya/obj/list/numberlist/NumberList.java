@@ -29,6 +29,18 @@ public abstract class NumberList extends ListImpl {
 		}
 	}
 
+	public static DoubleList fromBytes(byte[] bytes) {
+		return DoubleList.fromBytes(bytes);
+	}
+
+	public static DoubleList fromChars(char[] chars) {
+		double[] out = new double[chars.length];
+		for (int i = 0; i < chars.length; i++) {
+			out[i] = (char)chars[i];
+		}
+		return new DoubleList(out);
+	}
+
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////

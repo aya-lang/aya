@@ -11,7 +11,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.util.Casting;
@@ -221,7 +221,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 		return found;
 	}
 	
-	public NumberItemList findAll(Obj o) {
+	public NumberList findAll(Obj o) {
 		ArrayList<Number> out = new ArrayList<Number>();
 		if (o instanceof Char) {
 			char c = Casting.asChar(o).charValue();
@@ -231,7 +231,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 				}
 			}
 		} 
-		return new NumberItemList(out);
+		return NumberList.fromNumberAL(out);
 	}
 
 	@Override
@@ -297,13 +297,8 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
-	public NumberItemList toNumberList() {
-		char[] chars = _str.toCharArray();
-		ArrayList<Number> nums = new ArrayList<Number>(chars.length);
-		for (char c : chars) {
-			nums.add(new Num(c));
-		}
-		return new NumberItemList(nums);
+	public NumberList toNumberList() {
+		return NumberList.fromChars(_str.toCharArray());
 	}
 	
 	

@@ -36,7 +36,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.Num;
@@ -229,12 +229,12 @@ class OP_Colon_Quote extends OpInstruction {
 			block.push(Num.fromInt(c & 0xff));
 		} else if (a.isa(STR)) {
 			Str s = asStr(a);
-			ArrayList<Number> nums = new ArrayList<Number>(s.length());
 			byte[] bytes = s.getBytes();
-			for (byte b : bytes) {
-				nums.add(Num.fromByte(b));
+			double[] nums = new double[bytes.length];
+			for (int i = 0; i < bytes.length; i++) {
+				nums[i] = bytes[i];
 			}
-			block.push(new List(new NumberItemList(nums)));
+			block.push(new List(new DoubleList(nums)));
 		} else {
 			throw new TypeError(this, a);
 		}

@@ -3,7 +3,6 @@ package aya.obj.list.numberlist;
 import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import aya.ReprStream;
@@ -510,8 +509,8 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public NumberItemList findAll(Obj o) {
-		return new NumberItemList(ListAlgorithms.findAll(_list, o));
+	public NumberList findAll(Obj o) {
+		return NumberList.fromNumberAL(ListAlgorithms.findAll(_list, o));
 	}
 
 	@Override

@@ -5,27 +5,27 @@ import static aya.util.Casting.asList;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 
 public class ListRangeUtils {
 
-	public static NumberItemList buildRange(Number n) {
+	public static NumberList buildRange(Number n) {
 		if(n.compareTo(n.zero()) < 0) {
 			// :4 R => [-4 -3 -2 -1]
-			return new NumberItemList(n, n.negOne(), n.one());
+			return NumberList.range(n, n.negOne(), n.one());
 		} else {
 			// r R => [1 2 3 4]
-			return new NumberItemList(n.one(), n, n.one());
+			return NumberList.range(n.one(), n, n.one());
 		}
 	}
 
 	
-	public static NumberItemList buildRange(Number lo, Number hi) {
+	public static NumberList buildRange(Number lo, Number hi) {
 		Number inc = lo.one();
 		if(lo.compareTo(hi) > 0) inc = lo.negOne();
-		return new NumberItemList(lo, hi, inc);
+		return NumberList.range(lo, hi, inc);
 	}
 	
 	
@@ -114,7 +114,7 @@ public class ListRangeUtils {
 				Number lo = (Number)x;
 				Number hi = (Number)z;
 				Number inc = NumberMath.sub((Number)y, lo);
-				return new NumberItemList(lo, hi, inc);
+				return NumberList.range(lo, hi, inc);
 			} else if(x.isa(Obj.CHAR) || y.isa(Obj.CHAR) || z.isa(Obj.CHAR)) {
 				return new Str(charRange(((Char)x).charValue(), ((Char)z).charValue(), ((Char)y).charValue() - (((Char)x)).charValue()));
 			} else {

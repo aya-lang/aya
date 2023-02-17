@@ -53,7 +53,6 @@ import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BaseConversion;
@@ -1284,12 +1283,12 @@ class OP_Dot_R extends OpInstruction {
 			for (int i = 0; i < count; i++) {
 				nums.add(from);
 			}
-			return new NumberItemList(nums);
+			return NumberList.fromNumberAL(nums);
 		} else {
 			Number a = NumberMath.sub(to, from);
 			Number b = NumberMath.sub(steps, Num.ONE);
 			Number inc = NumberMath.div(a, b);
-			NumberItemList out = new NumberItemList(from, to, inc);
+			NumberList out = NumberList.range(from, to, inc);
 
 			// Rounding error may cause off-by-one
 			int expected_len = steps.toInt();

@@ -9,7 +9,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.util.Casting;
@@ -71,7 +71,7 @@ public class GenericList extends ListImpl {
 	}
 	
 	@Override
-	public NumberItemList toNumberList() {
+	public NumberList toNumberList() {
 		ArrayList<Number> out = new ArrayList<Number>(_list.size());
 		for (int i = 0; i < _list.size(); i++) {
 			if (!_list.get(i).isa(Obj.NUMBER)) {
@@ -80,7 +80,7 @@ public class GenericList extends ListImpl {
 				out.add((Number)(_list.get(i)));
 			}
 		}
-		return new NumberItemList(out);
+		return NumberList.fromNumberAL(out);
 	}
 
 	/** If all items in the list are a Number, convert this list to a
@@ -202,8 +202,8 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
-	public NumberItemList findAll(Obj o) {
-		return new NumberItemList(ListAlgorithms.findAll(_list, o));
+	public NumberList findAll(Obj o) {
+		return NumberList.fromNumberAL(ListAlgorithms.findAll(_list, o));
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class GenericList extends ListImpl {
 			if (head.isa(Obj.LIST)) {
 				return new List(new GenericList(asList(head).sameShapeNull(), length()));
 			} else {
-				return new List(new NumberItemList(Num.ZERO, length()));
+				return new List(NumberList.repeat(Num.ZERO, length()));
 			}
 		}
 	}

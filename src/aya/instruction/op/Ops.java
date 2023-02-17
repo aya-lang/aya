@@ -50,7 +50,6 @@ import aya.obj.list.GenericList;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BigNum;
@@ -1113,7 +1112,7 @@ class OP_L extends OpInstruction {
 			if (item.isa(CHAR)) {
 				block.push( new List(new Str( ((Char)item).charValue(), repeats)) );
 			} else if (item.isa(NUMBER)) {
-				block.push( new List(new NumberItemList((Number)item, repeats)) );
+				block.push( new List(NumberList.repeat((Number)item, repeats)) );
 			} else  {
 				block.push( new List(new GenericList(item, repeats)) );
 			}
