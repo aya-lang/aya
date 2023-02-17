@@ -74,6 +74,14 @@ public class NumberItemList extends NumberList {
 		return new NumberItemList(out);
 	}
 
+	public static NumberItemList fromDoubles(double[] doubles) {
+		ArrayList<Number> out = new ArrayList<Number>(doubles.length);
+		for (int i = 0; i < doubles.length; i++) {
+			out.add(new Num(doubles[i]));
+		}
+		return new NumberItemList(out);
+	}
+
 	//////////////////////////
 	// NUMBERLIST OVERRIDES //
 	//////////////////////////
