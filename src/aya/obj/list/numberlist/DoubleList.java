@@ -551,7 +551,7 @@ public class DoubleList extends NumberList {
 	public DoubleList get(int[] is) {
 		double[] out = new double[is.length];
 		for (int i = 0; i < is.length; i++) {
-			out[i] = _list[i];
+			out[i] = _list[is[i]];
 		}
 		return new DoubleList(out);
 	}

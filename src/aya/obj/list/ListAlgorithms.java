@@ -99,14 +99,16 @@ public class ListAlgorithms {
 			}
 		} else {
 			int ix = 0;
-			for (int i = list.length; i < n-list.length; i++) {
+			for (int i = 0; i < n-list.length; i++) {
 				out[ix]	= pad;
 				ix++;
 			}
 			// copy the rest
-			for (int i = 0; i < list.length-n; i++) {
-				out[ix] = pad;
+			int i = 0;
+			while (ix < out.length) {
+				out[ix] = list[i];
 				ix++;
+				i++;
 			}
 		}
 		return out;

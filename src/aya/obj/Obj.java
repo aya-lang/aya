@@ -68,6 +68,8 @@ public abstract class Obj {
 			return "STR";
 		case NUMBERITEMLIST:
 			return "NUMBERITEMLIST";
+		case DOUBLELIST:
+			return "DOUBLELIST";
 		case LIST:
 			return "LIST";
 		case BLOCK: 
@@ -101,6 +103,7 @@ public abstract class Obj {
 		case NUMBERITEMLIST : return SymbolConstants.LIST;
 		case OBJLIST : return SymbolConstants.LIST;
 		case STRLIST : return SymbolConstants.LIST;
+		case DOUBLELIST : return SymbolConstants.LIST;
 		
 		case SYMBOL : return SymbolConstants.SYM;
 		case STR : return SymbolConstants.STR;
