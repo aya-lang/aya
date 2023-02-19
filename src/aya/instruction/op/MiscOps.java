@@ -27,7 +27,7 @@ import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.ComplexNum;
@@ -795,7 +795,7 @@ class OP_Primes extends OpInstruction {
 			if (i < 0) {
 				throw new ValueError("Mp: Input must be positive");
 			}
-			block.push(new List(NumberItemList.primes(i)));
+			block.push(new List(DoubleList.primes(i)));
 		} else {
 			throw new TypeError(this, a);
 		}

@@ -13,7 +13,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
 
 public class ReadImageInstruction extends NamedInstruction {
 	
@@ -54,7 +54,7 @@ public class ReadImageInstruction extends NamedInstruction {
 		 DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
 
 		 return new AyaImage(
-				 NumberItemList.fromBytes(data.getData()),
+				 NumberList.fromBytes(data.getData()),
 				 bufferedImage.getWidth(),
 				 bufferedImage.getHeight());
 	}		
