@@ -1147,4 +1147,17 @@ public class DoubleList extends NumberList {
 		return this;
 	}
 
+	public static List transpose2d(ArrayList<DoubleList> lists) {
+		final int in_rows = lists.size();
+		final int in_cols = lists.get(0).length();
+		double[][] trans = new double[in_cols][in_rows];
+		ArrayList<Obj> out = new ArrayList<Obj>(in_cols);
+		for (int i = 0; i < in_cols; i++) {
+			for (int j = 0; j < in_rows; j++) {
+				trans[i][j] = lists.get(j)._list[i];
+			}
+			out.add(new List(new DoubleList(trans[i])));
+		}
+		return new List(out);
+	}
 }

@@ -14,6 +14,7 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.util.Casting;
@@ -159,31 +160,42 @@ public class List extends Obj {
 	private List _transpose2d() {
 		// Convert to list of lists
 		ArrayList<List> lists = new ArrayList<List>(length());
+		ArrayList<DoubleList> double_lists = new ArrayList<DoubleList>();
+		boolean all_double_lists = true;
 		for (int i = 0; i < length(); i++) {
-			lists.add( Casting.asList(getExact(i)) );
+			List list = Casting.asList(getExact(i));
+			if (all_double_lists && list.isa(Obj.DOUBLELIST)) {
+				double_lists.add((DoubleList)list.toNumberList());
+			} else {
+				all_double_lists = false;
+			}
+			lists.add(list);
 		}
-		
-		int cols = lists.get(0).length();
-		
-		if (cols == 0) {
+
+		if (all_double_lists) {
+			return DoubleList.transpose2d(double_lists);
+		} else {
+			int cols = lists.get(0).length();
+			
+			if (cols == 0) {
+				List out = new List();
+				out.mutAdd(new List());
+				return out;
+			}
+			
 			List out = new List();
-			out.mutAdd(new List());
+			for (int i = 0; i < cols; i++) {
+				List os = new List();
+				for (int j = 0; j < lists.size(); j++) {
+					os.mutAdd(lists.get(j).getExact(i));
+				}
+				out.mutAdd(os);
+			}
+			
 			return out;
 		}
-		
-		List out = new List();
-		for (int i = 0; i < cols; i++) {
-			List os = new List();
-			for (int j = 0; j < lists.size(); j++) {
-				os.mutAdd(lists.get(j).getExact(i));
-			}
-			out.mutAdd(os);
-		}
-		
-		return out;
 	}
-	
-	
+
 	//Yes I know this is gross, i'll fix it later...
 	public List reshape(NumberList dims) {
 		if (dims.length() == 0)
