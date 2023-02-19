@@ -9,6 +9,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -20,18 +21,20 @@ public class GenericList extends ListImpl {
 	private ArrayList<Obj> _list;
 	private int _chars;
 	private int _nums;
+	private int _doubles;
 	
 	public GenericList(ArrayList<Obj> l) {
 		_list = l;
 		_chars = 0;
 		_nums = 0;
+		_doubles = 0;
 		
 		for (Obj o : _list) {
 			incCharNumCounter(o);
 		}
 	}
 	
-	/** Create a new numeric list by repeating item, repeats times. 
+	/** Create a new list by repeating item, repeats times. 
 	 * Uses deepcopy() to copy the items into the list 
 	 */
 	public GenericList(Obj item, int repeats) {
@@ -50,16 +53,6 @@ public class GenericList extends ListImpl {
 	////////////////////////////
 	// CONVERSION & PROMOTION //
 	////////////////////////////
-	
-	/** Return true if all elements are of type Char */
-	private boolean isStr() {
-		return _list.size() != 0 && _chars == _list.size();
-	}
-	
-	/** Return true if all elements are of type Number */
-	private boolean isNumericList() {
-		return _list.size() != 0 && _nums == _list.size();
-	}
 	
 	/** Convert to string assuming all items are Char */
 	private Str asStr() {
@@ -83,6 +76,16 @@ public class GenericList extends ListImpl {
 		return NumberList.fromNumberAL(out);
 	}
 
+	private DoubleList toDoubleList() {
+		final int len = length();
+		double[] ds = new double[len];
+		for (int i = 0; i < len; i++) {
+			ds[i] = ((Number)(_list.get(i))).toDouble();
+		}
+		return new DoubleList(ds);
+	}
+
+
 	/** If all items in the list are a Number, convert this list to a
 	 * NumericItemList, if all items in the list are a Char, convert
 	 * to a Str, otherwise, return <code>this</code>.
@@ -90,14 +93,20 @@ public class GenericList extends ListImpl {
 	 * @return
 	 */
 	public ListImpl promote() {
-		if (isStr()) {
-			return asStr();
-		} else if (isNumericList()) {
-			return toNumberList();
-		} else {
+		final int len = _list.size();
+		if (len == 0) {
 			return this;
+		} else {
+			if (_chars == len) {
+				return asStr();
+			} else if (_doubles == len) {
+				return toDoubleList();
+			} else if (_nums == len) {
+				return toNumberList();
+			} else {
+				return this;
+			}
 		}
-		
 	}
 	
 	
@@ -393,6 +402,9 @@ public class GenericList extends ListImpl {
 	private void incCharNumCounter(Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			_chars += 1;
+		} else if (o.isa(Obj.NUM)) {
+			_nums += 1;
+			_doubles += 1;
 		} else if (o.isa(Obj.NUMBER)) {
 			_nums += 1;
 		} 
@@ -401,6 +413,9 @@ public class GenericList extends ListImpl {
 	private void decCharNumCounter(Obj o) {
 		if (o.isa(Obj.CHAR)) {
 			_chars -= 1;
+		} else if (o.isa(Obj.NUM)) {
+			_nums -= 1;
+			_doubles -= 1;
 		} else if (o.isa(Obj.NUMBER)) {
 			_nums -= 1;
 		} 
