@@ -13,6 +13,7 @@ import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
+import aya.util.Casting;
 import aya.util.MathUtils;
 
 /** List containing a list of Number objects */
@@ -530,10 +531,22 @@ public class DoubleList extends NumberList {
 	}
 
 	@Override
-	public void rotate(int n) {
-		NumberItemList ns = toNumberItemList();
-		ns.rotate(n);
-		_list = ns.todoubleArray();
+	public ListImpl rotate(int n) {
+		if (n == 0) {
+			return new DoubleList(Arrays.copyOf(_list, _list.length));
+		} else {
+			final int len = _list.length;
+			double[] out = new double[len];
+			if (n > 0) {
+				System.arraycopy(_list, 0, out, n, len - n);
+				System.arraycopy(_list, len-n, out, 0, n);
+			} else {
+				n *= -1;
+				System.arraycopy(_list, 0, out, len-n, n);
+				System.arraycopy(_list, n, out, 0, len-n);
+			}
+			return new DoubleList(out);
+		}
 	}
 
 	@Override

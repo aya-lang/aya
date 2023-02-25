@@ -172,8 +172,10 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
-	public void rotate(int n) {
-		ListAlgorithms.rotate(_list, n);
+	public ListImpl rotate(int n) {
+		ArrayList<Obj> l = new ArrayList<>(_list); // Copy
+		ListAlgorithms.rotate(l, n);
+		return new GenericList(l).promote();
 	}
 
 	@Override

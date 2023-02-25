@@ -470,6 +470,11 @@ public class List extends Obj {
 	public Obj tail() {
 		return _list.tail();
 	}
+
+	/** Return a rotated copy of the list */
+	public List rotate(int n) {
+		return new List(_list.rotate(n));
+	}
 	
 	/** Remove and return the head of the list */
 	public Obj mutPop() {
@@ -490,10 +495,6 @@ public class List extends Obj {
 		_list.reverse();
 	}
 
-	/** Rotate the list in place */
-	public void mutRotate(int n) {
-		_list.rotate(n);
-	}
 	
 	/** Sort the list */
 	public void mutSort() {

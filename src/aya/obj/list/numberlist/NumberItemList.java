@@ -28,6 +28,10 @@ public class NumberItemList extends NumberList {
 		for (Number n : list) incDoubleCounter(n);
 	}
 
+	public static NumberItemList test_fromAL(ArrayList<Number> list) {
+		return new NumberItemList(list);
+	}
+
 	// Use NumberList.fromNumberAL outside of package
 	protected NumberItemList(ArrayList<Number> list, int num_doubles) {
 		_list = list;
@@ -465,8 +469,10 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public void rotate(int n) {
-		ListAlgorithms.rotate(_list, n);
+	public ListImpl rotate(int n) {
+		ArrayList<Number> out = new ArrayList<>(_list);
+		ListAlgorithms.rotate(out, n);
+		return new NumberItemList(out);
 	}
 
 	@Override
