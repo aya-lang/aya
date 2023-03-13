@@ -43,14 +43,14 @@ def docstr::__init__ {name string::str self,
     { self._parse self.:sections; } {err, "Error parsing docstr:\n$err" .D} .K
 
     {,} self.:_args;
-    self.sections ::args N\; {
+    self.sections ::args H {
         self._parseargs self.:_args;
     } ?
 }
 
 def docstr::_parse {self : m("@.+:\n") d keys vals,
     self._full_str m & #{.trim B; V;} "desc" \J :keys;
-    self._full_str "@.+:\n" | :# {.trim.lines :# {.trim"\n"+}S.trim}:vals;
+    self._full_str "@.+:\n" S :# {.trim.lines :# {.trim"\n"+}W.trim}:vals;
 
     {,}:sections;
     vals keys {sections :D} .&;
@@ -91,17 +91,17 @@ def (docstr.arg)::show {margin self : n l pad,
     } .?
 
     .E :n;
-    " " margin LS :pad;
+    " " margin LW :pad;
     self.desc.lines :#{
-        " "nLS\+"\n"+ pad\+
-    }S.trim + pad \+
+        " "nLW\+"\n"+ pad\+
+    }W.trim + pad \+
 }
 
 def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
     .# Names
     self.sections.args matcher & :#{B;}
     .# Desc
-    self.sections.args matcher F V;
+    self.sections.args matcher S V;
     .# Create list of arg objects
     {J}.& :# {~ self.M.arg!}
 }
@@ -149,7 +149,7 @@ def docstr::finalize {self,
 
 def docstr::_module_name {self,
     .# Try to get the name of the module
-    self._module ::__type__ N\; {
+    self._module ::__type__ H {
         self._module.__type__ :C
     } {
         "<module>"
@@ -157,7 +157,7 @@ def docstr::_module_name {self,
 }
 
 def docstr::_get_name {self,
-    self._module ::__type__ N\; {
+    self._module ::__type__ H {
         self._module.__type__ :C "." self._name :C ++
     } {
         self._name :C
@@ -179,7 +179,7 @@ def docstr::_get__doc__ {self,
 }
 
 def docstr::_padlines {n s,
-    s.lines :#{" "nLS\+"\n"}S
+    s.lines :#{" "nLW\+"\n"} W
 }
 
 def docstr::show {self : builtin docstr^,
@@ -187,7 +187,7 @@ def docstr::show {self : builtin docstr^,
 
     [
         self._get_name
-        .E "-" \LS
+        .E "-" \LW
         self.sections.desc
         ""
         "args:"
@@ -195,16 +195,16 @@ def docstr::show {self : builtin docstr^,
         ""
         "example:"
         2 self.sections.example docstr._padlines
-        self.sections :K .[{builtin \N\;0<}] :# {k,
+        self.sections :K .[{builtin \ H}] :# {k,
             k :C
             2 self.sections.[k] docstr._padlines
         } ~
-    ] #'\n'+ S .trim
+    ] #'\n'+ W .trim
 }
 
 
 def docstr::add_to_help {self,
-    [".{?" self.show ".}"]S~
+    [".{?" self.show ".}"]W~
 }
 
 def docstr::to_html {self,
@@ -215,7 +215,7 @@ def docstr::to_html {self,
         "<h4>Args:</h4>"
         "<ul>"
         self._args
-    ] #'\n'+ S .trim
+    ] #'\n'+ W .trim
 }
 
 

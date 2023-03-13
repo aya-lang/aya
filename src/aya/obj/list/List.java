@@ -6,6 +6,7 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
+import java.util.ListResourceBundle;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.IndexError;
@@ -16,6 +17,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
+import aya.obj.number.Number;
 import aya.util.Casting;
 import aya.util.Pair;
 
@@ -193,8 +195,7 @@ public class List extends Obj {
 			throw new ValueError("reshape: maximum rank of 5, recieved rank " 
 					+ dims.length() + " resulting from " + dims.repr());
 		
-		NDListIterator<Obj> iter = new NDListIterator<Obj>(this);
-		iter.setLoop(true);
+		NDListIterator iter = new NDListIterator(this, true);
 		
 		Integer[] ds = dims.toIntegerArray();
 		
@@ -214,7 +215,7 @@ public class List extends Obj {
 		throw new ValueError("reshape: invalid dimensions: " + dims.repr());
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int count) {
+	private static List reshape(NDListIterator iter, int count) {
 		ArrayList<Obj> out = new ArrayList<Obj>(count);
 		for (int i = 0; i < count; i++) {
 			out.add(iter.next());
@@ -222,7 +223,7 @@ public class List extends Obj {
 		return new List(new GenericList(out).promote());
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int r, int c) {
+	private static List reshape(NDListIterator iter, int r, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(r);
 		for (int i = 0; i < r; i++) {
 			out.add(reshape(iter, c));
@@ -230,7 +231,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c) {
+	private static List reshape(NDListIterator iter, int a, int b, int c) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c));
@@ -238,7 +239,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d) {
+	private static List reshape(NDListIterator iter, int a, int b, int c, int d) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d));
@@ -246,7 +247,7 @@ public class List extends Obj {
 		return new List(new GenericList(out));
 	}
 	
-	private static List reshape(NDListIterator<Obj> iter, int a, int b, int c, int d, int e) {
+	private static List reshape(NDListIterator iter, int a, int b, int c, int d, int e) {
 		ArrayList<Obj> out = new ArrayList<Obj>(a);
 		for (int i = 0; i < a; i++) {
 			out.add(reshape(iter, b, c, d, e));
@@ -260,9 +261,9 @@ public class List extends Obj {
 	/** Return a list of shape l1 whose values are 1 if l1[i,j,..] == l2[i,j,..] and 0 otherwise */
 	public List equalsElementwise(List l2) {
 		List out = deepcopy();
-		NDListIterator<Obj> iterOut = new NDListIterator<Obj>(out);
-		NDListIterator<Obj> iter1 = new NDListIterator<Obj>(this);
-		NDListIterator<Obj> iter2 = new NDListIterator<Obj>(l2);
+		NDListIterator iterOut = new NDListIterator(out);
+		NDListIterator iter1 = new NDListIterator(this);
+		NDListIterator iter2 = new NDListIterator(l2);
 		
 		while (true) {
 			if (iter1.done() && iter2.done()) {
@@ -286,8 +287,8 @@ public class List extends Obj {
 	/** Return a list of shape l whose values are 1 if l[i,j,...] == o, and 0 otherwise */
 	public List equalsElementwise(Obj o) {
 		List out = deepcopy();
-		NDListIterator<Obj> iterOut = new NDListIterator<>(out);
-		NDListIterator<Obj> iter = new NDListIterator<>(this);
+		NDListIterator iterOut = new NDListIterator(out);
+		NDListIterator iter = new NDListIterator(this);
 		
 		while (!iter.done()) {			
 			iterOut.setNext( iter.next().equiv(o) ? Num.ONE : Num.ZERO );
@@ -474,9 +475,14 @@ public class List extends Obj {
 		return o;
 	}
 	
-	/** Return a reversed copy of the list */
+	/** Reverse the list in place */
 	public void mutReverse() {
 		_list.reverse();
+	}
+
+	/** Rotate the list in place */
+	public void mutRotate(int n) {
+		_list.rotate(n);
 	}
 	
 	/** Sort the list */
@@ -706,6 +712,11 @@ public class List extends Obj {
 	public List similarEmpty() {
 		return new List(_list.similarEmpty());
 	}
+
+	/** Return a null filled list that is the same shape as the callee */
+	public List sameShapeNull() {
+		return _list.sameShapeNull();
+	}
 	
 	////////////////////////
 	// LIST MODIFICATIONS //
@@ -811,7 +822,10 @@ public class List extends Obj {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {
-			NumberList l_index = asList(index).toNumberList();
+			List l_index = asList(index);
+
+			NDListIterator list_iter = new NDListIterator(this);
+			NDListIterator index_iter = new NDListIterator(l_index);
 
 			// Set index with mask
 			if (item.isa(Obj.LIST)) {
@@ -824,24 +838,32 @@ public class List extends Obj {
 							+ "items:\t" + item.repr() + "\n");
 				}
 				
-				if (l_item.length() == l_index.length() && l_item.length() == this.length())
-				{
-					for (int i = 0; i < l_index.length(); i++) {
-						if (l_index.get(i).bool()) {
-							this.mutSetExact(i, l_item.getExact(i));
+				NDListIterator value_iter = new NDListIterator(l_item);
+
+				try {
+					while (!list_iter.doneNoCheckLoop()) {
+						if (index_iter.next().bool()) {
+							list_iter.setNext(value_iter.next());
+						} else {
+							list_iter.skip();
+							value_iter.skip();
 						}
 					}
-				} else {
-					throw new IndexError("Invalid mask index:\n"
-							+ "list:\t" + repr() + "\n"
-							+ "index:\t" +  index.repr() + "\n"
-							+ "items:\t" + item.repr() + "\n");
+				} catch (IndexError e) {
+					throw new IndexError("Shape mismatch for masked setindex");
 				}
+
 			} else {
-				for (int i = 0; i < l_index.length(); i++) {
-					if (l_index.get(i).bool()) {
-						this.mutSetExact(i, item);
+				try {
+					while (!list_iter.doneNoCheckLoop()) {
+						if (index_iter.next().bool()) {
+							list_iter.setNext(item);
+						} else {
+							list_iter.skip();
+						}
 					}
+				} catch (IndexError e) {
+					throw new IndexError("Shape mismatch for masked setindex");
 				}
 			}
 		} 

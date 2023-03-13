@@ -6,13 +6,13 @@ import ::plot
 2 :b;
 
 {x : nn(500),
-    [1 nn, {n, a n ^ :1p* x* Mc b n ^ /}]S
+    [1 nn, {n, a n ^ :1p* x* Mc b n ^ /}] W
 }:w;
 
 plot.plot! :plt;
--0.7 0.7 5000.linspace :x;
+[-0.7 0.7 5000] .R :x;
 
-x {w} {, } plt.plot
+x {w} {,} plt.plot
 
 .# plot attributes
 "Weierstrass Function" plt.:title;

@@ -19,7 +19,7 @@
     {$ '0 :> \ '9 :< &}:isdigit;
 
     .#? C.iswhitespace\n  tests if a character is a whitespace character
-    { " \f\n\r\t\v\{x00A0}\{x2028}\{x2029}" \ N 0 :> \;}:iswhitespace;
+    { " \f\n\r\t\v\{x00A0}\{x2028}\{x2029}" \ H}:iswhitespace;
 
     .#? C.isascii\n  test if character is ascii
     {:' 127 <}:isascii;
@@ -29,7 +29,7 @@
 
     .#? ::str ::char .split_keep\n  split the string at the char, keep the char in the leading string
     {s c,
-        s c | #{c+} 
+        s c S #{c+} 
 
         .# If c is not the last char of s,
         .# remove c from the last item of the list

@@ -386,7 +386,7 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public ListImpl imag() {
+	public NumberList imag() {
 		ArrayList<Number> out = emptyAL();
 		for (Number b : _list) out.add(b.imag());
 		return new NumberItemList(out);
@@ -411,13 +411,13 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public NumberItemList head(int n) {	
-		return new NumberItemList(ListAlgorithms.head(_list, n, Num.ZERO));
+	public NumberItemList head(int n) {
+		return new NumberItemList(ListAlgorithms.headNoDeepcopyPad(_list, n, Num.ZERO));
 	}
 
 	@Override
 	public NumberItemList tail(int n) {
-		return new NumberItemList(ListAlgorithms.tail(_list, n, Num.ZERO));
+		return new NumberItemList(ListAlgorithms.tailNoDeepcopyPad(_list, n, Num.ZERO));
 	}
 
 	@Override
@@ -443,6 +443,11 @@ public class NumberItemList extends NumberList {
 	@Override
 	public void reverse() {
 		Collections.reverse(_list);
+	}
+
+	@Override
+	public void rotate(int n) {
+		ListAlgorithms.rotate(_list, n);
 	}
 
 	@Override
@@ -557,6 +562,11 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberItemList similarEmpty() {
 		return new NumberItemList(new ArrayList<Number>());
+	}
+
+	@Override
+	public List sameShapeNull() {
+		return new List(new NumberItemList(Num.ZERO, length()));
 	}
 
 	@Override

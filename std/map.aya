@@ -19,7 +19,7 @@ def map::__init__ {self,
 
 .#? key map.haskey\n  true if map contains key
 def map::haskey {key self,
-    self.keys key N 0 :> \;
+    self.keys key H
 }
 
 

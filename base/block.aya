@@ -18,7 +18,7 @@
         aya> 10R {5<}.tw
         [ 1 2 3 4 ]
     .}
-    {e,{e!}.N $0= {;;[]} {F;} .? }:tw;
+    {e,{e!}.N $0= {;;[]} {S~;} .? }:tw;
 
 
     .#? ::any ::list ::block.el\n  apply block to `any` and `i` for each element across list
@@ -38,7 +38,7 @@
 
 
     .#? ::block.haslocals\n  return true if the block has a local variables
-    {.|::localsN\;}:haslocals;
+    {.|::locals H}:haslocals;
 
 
     .#? ::block.locals\n  get the locals of a block\n  will throw error if block does not have locals

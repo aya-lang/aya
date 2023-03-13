@@ -165,9 +165,3 @@ import ::matrix
 
 matrix test_matrix
 };
-
-{,
-import ::fastmatrix
-
-fastmatrix test_matrix
-};

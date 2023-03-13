@@ -89,29 +89,21 @@ public class Str extends ListImpl implements Comparable<Str> {
 		return levenshteinDistance(_str, other._str);
 	}
 	
-	/** Split a string at all instances of the given character
-	 * 
-	 * "a.b.c".splitAtChar('.') => ["a" "b" "c"]
-	 * "a.b.c.".splitAtChar('.') => ["a" "b" "c" ""]
-	 * @param splitter
-	 * @return
-	 */
-	public ArrayList<Str> splitAtChar(char splitter) {
-		ArrayList<Str> strs = new ArrayList<Str>();
-		StringBuilder current_str = new StringBuilder();
-		char[] chars = this._str.toCharArray();
-		for (char c : chars) {
-			if (c == splitter) {
-				strs.add(new Str(current_str.toString()));
-				current_str = new StringBuilder();
-			} else {
-				current_str.append(c);
-			}
-		}
-		if (current_str.length() > 0 || chars[chars.length-1] == splitter) {
-			strs.add(new Str(current_str.toString()));
+	/** Split a string at all instances of the given character */
+	public List splitAtChar(char splitter) {
+		List strs = new List();
+		for (String s : this._str.split(Pattern.quote(""+splitter))) {
+			strs.mutAdd(List.fromString(s));
 		}
 		return strs;
+	}
+	
+	public List splitRegex(String regex) {
+		List out = new List();
+		for (String s : this._str.split(regex)) {
+			out.mutAdd(List.fromString(s));
+		}
+		return out;
 	}
 
 	
@@ -169,6 +161,11 @@ public class Str extends ListImpl implements Comparable<Str> {
 	@Override
 	public void reverse() {
 		_str = new StringBuilder(_str).reverse().toString();
+	}
+
+	@Override
+	public void rotate(int n) {
+		// TODO: implement
 	}
 
 	@Override
@@ -372,6 +369,11 @@ public class Str extends ListImpl implements Comparable<Str> {
 	@Override
 	public Str similarEmpty() {
 		return EMPTY;
+	}
+
+	@Override
+	public List sameShapeNull() {
+		return new List(new Str(' ', length()));
 	}
 
 	@Override

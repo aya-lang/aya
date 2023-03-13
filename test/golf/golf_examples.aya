@@ -10,7 +10,7 @@ import ::golf
 {:f,
 
     {
-        ì¢V\ÑB"an"\.<
+        ì¢V\HB"an"\.<
     }:f;
 
     .# test cases
@@ -35,7 +35,7 @@ import ::golf
 
 {
     {
-        '-':.&' |~\ì:'5%"/*+ -"\I.A' *~
+        '-':.&' S~\ì:'5:%"/*+ -"\I.A' %~
     }:f;
     
     .# test cases
@@ -82,7 +82,7 @@ import ::golf
 
 {
 
-    ¢A$`.<:*n*
+    ¢A$`.<:*n%
 
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ
 BBCDEFGHIJKLMNOPQRSTUVWXYZ

@@ -23,7 +23,7 @@ def set::__init__ {l::list self,
 
 .#? ::any ::set.__add__\n  add an item to a set
 def set::__add__ {item self,
-    item self.in ! {self.list [item] K;} ? self
+    item self.in ! {self.list [item] :J;} ? self
 }
 
 .#? ::any ::set.__sub__\n  remove an item from a set
@@ -39,7 +39,7 @@ def set::__sub__ {item self,
 
 .#? ::set ::set.__or__\n  set union
 def set::__or__ {other::set self,
-    other.list $ \; self.list K :~ self.M!
+    other.list $ \; self.list :J :~ self.M!
 }
 
 .#? ::set ::set.__and__\n  set intersection
@@ -75,7 +75,7 @@ def set::__gt__ {\.__lt__}
 .#? ::set ::set.__leq__\n subset
 def set::__leq__ {other::set self : l,
     other.list :l;
-    self.list # { l \ N \; 0 :>} {*}/
+    self.list # { l \ N \; 0 :>} {*} %
 }
 
 .#? ::set ::set.__geq__\n subset

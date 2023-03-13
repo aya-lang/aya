@@ -5,16 +5,15 @@ import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.NUM;
 import static aya.obj.Obj.NUMBER;
-import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.util.Casting.asNumber;
-import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
 
 import aya.Aya;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
@@ -24,13 +23,17 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
+import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.ComplexNum;
 import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
-import aya.obj.symbol.SymbolConstants;
+import aya.obj.number.NumberMath;
+import aya.util.Casting;
 import aya.util.NamedCharacters;
 import aya.util.StringUtils;
+import aya.util.VectorizedFunctions;
 
 public class MiscOps {	
 
@@ -107,7 +110,7 @@ public class MiscOps {
 		/* 95 _  */ null,
 		/* 96 `  */ null,
 		/* 97 a  */ null,
-		/* 98 b  */ null,
+		/* 98 b  */ new OP_Mb(),
 		/* 99 c  */ new OP_Cosine(),
 		/* 100 d */ new OP_CastDouble(),
 		/* 101 e */ new OP_Me(),
@@ -167,19 +170,30 @@ class OP_Fact extends OpInstruction {
 		setOverload(1, "fact");
 		vect();
 	}
-	
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.factorial(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
-		if (overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)){
-			block.push(((Number)n).factorial());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(n).factorial()) );
+		if(a.isa(NUMBER)){
+			return asNumber(a).factorial();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -277,18 +291,29 @@ class OP_Acosine extends OpInstruction {
 		vect();
 	}
 
-	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.acos(); }
+	};
 
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).acos());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(n).acos()) );
+	@Override
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+		
+		if(a.isa(NUMBER)) {
+			return asNumber(a).acos();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -324,16 +349,27 @@ class OP_Log extends OpInstruction {
 		vect();
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.log(); }
+	};
+
 	@Override
-	public void execute(Block block) {
+	public void execute(final Block block) {
 		Obj a = block.pop();
-		
-		if (overload().execute(block, a)) return;
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
 		if(a.isa(NUMBER)) {
-			block.push(((Number)a).log());
-		} else if (a.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(a).log()));
+			return asNumber(a).log();
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -351,18 +387,29 @@ class OP_Asine extends OpInstruction {
 		setOverload(1, "asin");
 	}
 
-	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.asin(); }
+	};
 
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).asin());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).asin()));
+	@Override
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+		
+		if(a.isa(NUMBER)) {
+			return asNumber(a).asin();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -377,18 +424,54 @@ class OP_Atangent extends OpInstruction {
 		setOverload(1, "atan");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.atan(); }
+	};
+
+	@Override
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+		
+		if(a.isa(NUMBER)) {
+			return asNumber(a).atan();
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
+// b - 98
+class OP_Mb extends OpInstruction {
+	
+	public OP_Mb() {
+		init("Mb");
+		arg("B", "duplicate block, add locals if they do not exist");
+		arg("J", "is defined");
+	}
+
 	@Override
 	public void execute(Block block) {
-		Obj n = block.pop();
-	
-		if (overload().execute(block, n)) return;
+		final Obj a = block.pop();
 		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).atan());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).atan()));
+		if (a.isa(Obj.SYMBOL)) {
+			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(Casting.asSymbol(a))));
+		} else if (a.isa(BLOCK)) {
+			Block b = (Block)a;
+			block.push(b.duplicateAddLocals());
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -404,19 +487,29 @@ class OP_Cosine extends OpInstruction {
 		setOverload(1, "cos");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.cos(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if(overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).cos());
-			return;
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).cos()));
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+	
+		if(a.isa(NUMBER)) {
+			return asNumber(a).cos();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -433,25 +526,28 @@ class OP_CastDouble extends OpInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
-		
-		if (overload().execute(block, a)) return;
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
 		if(a.isa(STR)) {
 			try {
-				block.push(new Num(Double.parseDouble(a.str())));
+				return new Num(Double.parseDouble(a.str()));
 			} catch (NumberFormatException e) {
 				throw new ValueError("Cannot cast string \""+ a.repr() + "\" to a double.");
 			}
 		} else if (a.isa(NUM)) {
-			block.push(a); //Already a double
+			return a; // already a double
 		} else if (a.isa(NUMBER)){
-			block.push(new Num(((Number)a).toDouble()));
-		} else if (a.isa(DICT)) {
-			block.callVariable((Dict)a, SymbolConstants.KEYVAR_FLOAT);
-		}
-		else {
+			return new Num(((Number)a).toDouble());
+		} else {
 			throw new TypeError(this, a);
 		}
 	}
@@ -467,18 +563,29 @@ class OP_Me extends OpInstruction {
 		setOverload(1, "exp");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.exp(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-	
-		if (overload().execute(block, n)) return;
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).exp());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).exp()));
+		if(a.isa(NUMBER)) {
+			return asNumber(a).exp();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -493,18 +600,29 @@ class OP_Mi extends OpInstruction {
 		setOverload(1, "imag");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.imag(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-	
-		if (overload().execute(block, n)) return;
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
-		if(n.isa(NUMBER)) {
-			block.push(asNumber(n).imag());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).imag()));
+		if(a.isa(NUMBER)) {
+			return asNumber(a).imag();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -517,22 +635,25 @@ class OP_AddParserChar extends OpInstruction {
 	public OP_AddParserChar() {
 		init("Mk");
 		arg("CS", "add special character");
+		arg("NN", "unsigned right bitshift");
 	}
 
 	@Override
 	public void execute(Block block) {
-		final Obj obj_name = block.pop();
-		final Obj obj_char = block.pop();
+		final Obj b = block.pop();
+		final Obj a = block.pop();
 		
-		if (obj_name.isa(STR) && obj_char.isa(CHAR)) {
-			String str = obj_name.str();
+		if (b.isa(STR) && a.isa(CHAR)) {
+			String str = b.str();
 			if (str.length() > 0 && StringUtils.lalpha(str)) {
-				NamedCharacters.addChar(str, ((Char)obj_char).charValue());
+				NamedCharacters.addChar(str, ((Char)a).charValue());
 			} else {
 				throw new ValueError("Cannot create special character using " + str);
 			}
+		} else if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			block.push( NumberMath.unsignedRightShift((Number)a, (Number)b) );
 		} else {
-			throw new TypeError(this, obj_char, obj_name);
+			throw new TypeError(this, b, a);
 		}
 	}
 }
@@ -548,18 +669,29 @@ class OP_Ln extends OpInstruction {
 		setOverload(1, "ln");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.ln(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).ln());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).ln()));
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+
+		if(a.isa(NUMBER)) {
+			return asNumber(a).ln();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -619,28 +751,24 @@ class OP_To_Rat extends OpInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a)) != null) return res;
 		
-		if(n.isa(NUMBER)) {
-			if (n.isa(Obj.RATIONAL_NUMBER)) {
-				block.push(n);
+		if(a.isa(NUMBER)) {
+			if (a.isa(Obj.RATIONAL_NUMBER)) {
+				return a;
 			} else {
-				block.push( new FractionNum(((Number)n).toDouble()) );
+				return new FractionNum(asNumber(a).toDouble());
 			}
-		} else if (n.isa(NUMBERLIST)) {
-			ArrayList<Number> nl = asNumberList(n).toArrayList();
-			ArrayList<Number> ns = new ArrayList<Number>(nl.size());
-			for (Number j : nl) {
-				if (j.isa(Obj.RATIONAL_NUMBER)) {
-					ns.add(j);
-				} else {
-					ns.add( new FractionNum(((Number)j).toDouble()) );
-				}
-			}
-			block.push(new List(new NumberItemList(ns)));
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -656,18 +784,29 @@ class OP_Sine extends OpInstruction {
 		setOverload(1, "sin");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.sin(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
-		if (overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).sin());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).sin()));
+		if(a.isa(NUMBER)) {
+			return asNumber(a).sin();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -685,18 +824,29 @@ class OP_Tangent extends OpInstruction {
 		setOverload(1, "tan");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.tan(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
-		
-		if (n.isa(NUMBER)) {
-			block.push(asNumber(n).tan());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push(new List(asNumberList(n).tan()));
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
+
+		if (a.isa(NUMBER)) {
+			return asNumber(a).tan();
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -722,6 +872,7 @@ class OP_Atan2 extends OpInstruction {
 		} else {
 			throw new TypeError(this, x, y);
 		}
+
 	}
 }
 

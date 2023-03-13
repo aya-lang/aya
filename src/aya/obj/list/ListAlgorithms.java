@@ -1,6 +1,7 @@
 package aya.obj.list;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
@@ -10,7 +11,15 @@ import aya.obj.number.Number;
 
 public class ListAlgorithms {
 
-	public static <T extends Obj> ArrayList<T> head(ArrayList<T> list, int n, T pad) {
+	/*
+	 * Two head functions are provided:
+	 *   headNoDeepcopyPad: Use this function if no objects in the list are containers.
+	 *                      This function does not call deepcopy on the filler
+	 *   headDeepcopyPad:   Use this function if objects may or may not be containers.
+	 * 			            deepcopy is called on all filler objects
+	 */
+
+	public static <T extends Obj> ArrayList<T> headNoDeepcopyPad(ArrayList<T> list, int n, T pad) {
 		ArrayList<T> out = new ArrayList<T>(n);
 		
 		if (n <= list.size()) {
@@ -26,7 +35,25 @@ public class ListAlgorithms {
 		return out;
 	}
 
-	public static <T extends Obj> ArrayList<T> tail(ArrayList<T> list, int n, T pad) {
+	public static ArrayList<Obj> headDeepcopyPad(ArrayList<Obj> list, int n, Obj pad) {
+		ArrayList<Obj> out = new ArrayList<Obj>(n);
+		
+		if (n <= list.size()) {
+			for (int i = 0; i < n; i++) {
+				out.add(list.get(i));
+			}
+		} else {
+			out.addAll(list);
+			for (int i = list.size(); i < n; i++) {
+				out.add(pad.deepcopy());
+			}
+		}
+		return out;
+	}
+
+
+
+	public static <T extends Obj> ArrayList<T> tailNoDeepcopyPad(ArrayList<T> list, int n, T pad) {
 		ArrayList<T> out = new ArrayList<T>(n);
 		if (n <= list.size()) {
 			for (int i = list.size()-n; i < list.size(); i++) {
@@ -34,7 +61,22 @@ public class ListAlgorithms {
 			}
 		} else {
 			for (int i = 0; i < n-list.size(); i++) {
-				out.add(pad); //Pad with 0s
+				out.add(pad);
+			}
+			out.addAll(list);
+		}	
+		return out;
+	}
+
+	public static ArrayList<Obj> tailDeepcopyPad(ArrayList<Obj> list, int n, Obj pad) {
+		ArrayList<Obj> out = new ArrayList<Obj>(n);
+		if (n <= list.size()) {
+			for (int i = list.size()-n; i < list.size(); i++) {
+				out.add(list.get(i));
+			}
+		} else {
+			for (int i = 0; i < n-list.size(); i++) {
+				out.add(pad.deepcopy());
 			}
 			out.addAll(list);
 		}	
@@ -201,4 +243,7 @@ public class ListAlgorithms {
 		return sb.append(']').toString();
 	}
 
+	public static <T extends Obj> void rotate(ArrayList<T> list, int n) {
+		Collections.rotate(list, n);
+	}
 }

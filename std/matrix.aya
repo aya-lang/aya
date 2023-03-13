@@ -145,7 +145,7 @@ def matrix::_eq_num {n self,
 def matrix::_eq_list {l self,
     self.rows :# {
         .# Test if the current item is in the list
-        :# {l \N0:>\;}
+        :# {l \ H}
     } self.M._new
 }
 
@@ -188,7 +188,7 @@ def matrix::sq { :& * }
 
 
 .#? ::matrix matrix.issq\n  returns true if the list is a square matrix
-def matrix::issq {self, self.rowsE self.rows#E\#= {|}/}
+def matrix::issq {self, self.rowsE self.rows#E\#= `| %}
 
 .#? ::matrix matrix.tr\n  trace of a matrix as a list
 def matrix::tr {[1|.rows$ER,VI]}
@@ -206,7 +206,7 @@ def matrix::min {.rows#.min.min}
 def matrix::norm {:& .sq .sum .^ /}
 
 .#? ::matrix.sum\n  the sum of all values in the matrix
-def matrix::sum {.rows #SS}
+def matrix::sum {.rows #WW}
 
 .#? ::matrix.mean\n  the mean of all values in the matrix
 def matrix::mean {.E~* \.sum\/}
@@ -215,9 +215,9 @@ def matrix::dot {o self : t matrix^,
     o.c self.r =! {
         "matrix.mul: shape mismatch $(o.c) != $(self.r)".D
     } ?
-    .# (*S) is the dot product
+    .# (*W) is the dot product
     self.rows.T :t;
-    o.rows  :# {r, t :#{r *S}}
+    o.rows  :# {r, t :#{r *W}}
     matrix._new
 }
 
@@ -452,13 +452,13 @@ def matrix::__setindex__ {val ix self : r c matrix^,
 
 .#? N matrix.eye\n  generate an Nd identity matrix
 def matrix::eye {matrix,
-    $0\L1\K\$KL  matrix._new
+    $0\L1\:J\$:JL  matrix._new
 }
 
 .# generates the next row of a pascal matrix
 def matrix::_nextpascal {prev::list matrix : new len ix,
     prevE:len;
-    1 0 lenVLK:new;
+    1 0 lenVL:J:new;
     1:ix;
     {prev ixI new ixVI+ new.:[ix]; ::ix B}lenV%
     new
@@ -503,4 +503,4 @@ def matrix::full {value::num shape::list matrix,
 
 
 .#? ::matrix.comma_str\n  print the matrix in list with comma format
-def matrix::comma_str {.rows :#{ ","* "[" \+"]"+} ","* "["\+ "]"+}
+def matrix::comma_str {.rows :#{ "," % "[" \+"]"+} "," % "["\+ "]"+}

@@ -24,8 +24,8 @@
   {o self, o:T ::vec = {o.l} {o} .? self.l ^ self.M!}:__pow__;
   {self o, self.l o:T ::vec = {o.l} {o} .? ^ self.M!}:__rpow__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l % self.M!}:__mod__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? % self.M!}:__rmod__;
+  {o self, o:T ::vec = {o.l} {o} .? self.l :% self.M!}:__mod__;
+  {self o, self.l o:T ::vec = {o.l} {o} .? :% self.M!}:__rmod__;
 
   {o self, o:T ::vec = {o.l} {o} .? self.l .% self.M!}:__idiv__;
   {self o, self.l o:T ::vec = {o.l} {o} .? .% self.M!}:__ridiv__;
@@ -83,7 +83,7 @@
     { v P "< 1 2 3 >" } test.test
     { 3 v + P "< 4 5 6 >" } test.test
     { v 3 + P "< 4 5 6 >" } test.test
-    { [10 10 10] v + P "< 11 12 13 >" } test.test
+    { [1 2 3] v + P "[ < 2 3 4 > < 3 4 5 > < 4 5 6 > ]" } test.test
     { v v + P "< 2 4 6 >" } test.test
 };
 
@@ -94,8 +94,8 @@
     { 3 v - P "< 2 1 0 >" } test.test
     { v 3 - P "< -2 -1 0 >" } test.test
     { v v - P "< 0 0 0 >" } test.test
-    { [10 10 10] v - P "< 9 8 7 >" } test.test
-    { v [10 10 10] - P "< -9 -8 -7 >" } test.test
+    { [1 2 3] v - P "[ < 0 -1 -2 > < 1 0 -1 > < 2 1 0 > ]" } test.test
+    { v [1 2 3] - P "[ < 0 1 2 > < -1 0 1 > < -2 -1 0 > ]" } test.test
 };
 
 "mul/rmul..." :P
@@ -103,19 +103,18 @@
     [1 2 3] vec! :v;
     { 3 v * P "< 3 6 9 >" } test.test
     { v 3 * P "< 3 6 9 >" } test.test
-    { [10 10 10] v * P "< 10 20 30 >" } test.test
-    { v [10 10 10] * P "< 10 20 30 >" } test.test
+    { [1 2 3] v * P "[ < 1 2 3 > < 2 4 6 > < 3 6 9 > ]" } test.test
+    { v [1 2 3] * P "[ < 1 2 3 > < 2 4 6 > < 3 6 9 > ]" } test.test
     { v v * P "< 1 4 9 >" } test.test
 };
 
 "div/rdiv..." :P
 {,
-    [1 2 3] vec! :v;
-    { [2 4 6] vec! :v P "< 2 4 6 >" } test.test
+    [2 4 6] vec! :v;
     { 24 v / P "< 12 6 4 >" } test.test
     { v 2 / P "< 1 2 3 >" } test.test
-    { [24 24 24] v / P "< 12 6 4 >" } test.test
-    { v [2 2 2] / P "< 1 2 3 >" } test.test
+    { [12 24] v / P "[ < 6 3 2 > < 12 6 4 > ]" } test.test
+    { v [1 2] / P "[ < 2 4 6 > < 1 2 3 > ]" } test.test
     { v v / P "< 1 1 1 >" } test.test
 };
 
@@ -124,11 +123,11 @@
 "mod/rmod..." :P
 {,
     [1 2 3] vec! :v;
-    { 2 v % P "< 0 0 2 >" } test.test
-    { v 2 % P "< 1 0 1 >" } test.test
-    { [2 2 2] v % P "< 0 0 2 >" } test.test
-    { v [2 2 2] % P "< 1 0 1 >" } test.test
-    { v v % P "< 0 0 0 >" } test.test
+    { 2 v :% P "< 0 0 2 >" } test.test
+    { v 2 :% P "< 1 0 1 >" } test.test
+    { [2 3 4] v :% P "[ < 0 0 2 > < 0 1 0 > < 0 0 1 > ]" } test.test
+    { v [2 3 4] :% P "[ < 1 0 1 > < 1 2 0 > < 1 2 3 > ]" } test.test
+    { v v :% P "< 0 0 0 >" } test.test
 };
 
 
@@ -137,8 +136,8 @@
     [1 2 3] vec! :v;
     { 2 v .% P "< 2 1 0 >" } test.test
     { v 2 .% P "< 0 1 1 >" } test.test
-    { [2 2 2] v .% P "< 2 1 0 >" } test.test
-    { v [2 2 2] .% P "< 0 1 1 >" } test.test
+    { [2 3 4] v .% P "[ < 2 1 0 > < 3 1 1 > < 4 2 1 > ]" } test.test
+    { v [2 3 4] .% P "[ < 0 1 1 > < 0 0 1 > < 0 0 0 > ]" } test.test
     { v v .% P "< 1 1 1 >" } test.test
 };
 
@@ -146,28 +145,28 @@
 {,
     [1 2 3] vec! :v;
     { 3 v < P "< 0 0 0 >" } test.test
-    { [3 3 3] v < P "< 0 0 0 >" } test.test
+    { [1 2 3] v < P "[ < 0 1 1 > < 0 0 1 > < 0 0 0 > ]" } test.test
 };
 
 "gt..." :P
 {,
     [1 2 3] vec! :v;
     { 3 v > P "< 1 1 0 >" } test.test
-    { [3 3 3] v > P "< 1 1 0 >" } test.test
+    { [1 2 3] v > P "[ < 0 0 0 > < 1 0 0 > < 1 1 0 > ]" } test.test
 };
 
 "leq..." :P
 {,
     [1 2 3] vec! :v;
     { 3 v :< P "< 0 0 1 >" } test.test
-    { [3 3 3] v :< P "< 0 0 1 >" } test.test
+    { [1 2 3] v :< P "[ < 1 1 1 > < 0 1 1 > < 0 0 1 > ]" } test.test
 };
 
 "geq..." :P
 {,
     [1 2 3] vec! :v;
     { 3 v :> P "< 1 1 1 >" } test.test
-    { [3 3 3] v :> P "< 1 1 1 >" } test.test
+    { [1 2 3] v :> P "[ < 1 0 0 > < 1 1 0 > < 1 1 1 > ]" } test.test
 };
 
 "eq..." :P

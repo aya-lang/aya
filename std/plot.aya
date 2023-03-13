@@ -124,7 +124,7 @@ def ::line {x::list y::list : p plot^,
 .# Create a line plot with default paramaters and x,y as a dataset
 def ::fns {fns::list a::num b::num : x p plot^,
     plot! :p;
-    a b 300.linspace :x;
+    [a b 300] .R :x;
     fns {f, 
         x :& f.` O {, f.`P:label} p.plot
     } O;

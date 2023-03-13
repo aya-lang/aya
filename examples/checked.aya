@@ -1,6 +1,6 @@
 .# https://codegolf.stackexchange.com/questions/120009/is-the-checkbox-not-not-unchecked
 
-{$"N|U|!"&E2%'!\L\-8RI"isC"\++}:ischecked;
+{$"N|U|!"&E2:%'!\L\-8RI"isC"\++}:ischecked;
 
 [
     "isChecked()"

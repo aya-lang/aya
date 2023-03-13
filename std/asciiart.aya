@@ -33,7 +33,7 @@
 https://codegolf.stackexchange.com/questions/101684/all-aboard-the-ascii-train
 "hello"
 ({
-.E"3 3_`  | # |`  |3_|`_|5\"|"_ "\"`-0-0-'"/\L\{'#\JI}.&S"4 o O O`3 o`  TS__[O]` {6=|" _"./o--000'"/\+
+.E"3 3_`  | # |`  |3_|`_|5\"|"_ "\"`-0-0-'"/\L\{'#\JI}.&W"4 o O O`3 o`  TW__[O]` {6=|" _"./o--000'"/\+
 })
 .}
 
@@ -56,7 +56,7 @@ def asciiart::__eq__ {self c::char,
 }
 
 def asciiart::__str__ {self,
-    self.list "\n" *
+    self.list "\n" %
 }
 
 def asciiart::__repr__ {self,
@@ -107,7 +107,7 @@ def asciiart::__negate__ {self,
     ...)>
     #..)>
 
-    aya> ["3#`3.`#.."_ $ '~\] S
+    aya> ["3#`3.`#.."_ $ '~\] W
     asciiart:
     ###~###
     ...~...
@@ -117,7 +117,7 @@ def asciiart::__add__ {other self,
     other :T ::char = other :T ::str = | {
         self.list #{other \+} self.M!
     } {
-        other.list .T self.list.T K .T self.M!
+        other.list .T self.list.T :J .T self.M!
     } .?
 }
 
@@ -147,7 +147,7 @@ def asciiart::h {self,
     #..
 .}
 def asciiart::__div__ {other self,
-    other.list $\; self.list $\; K self.M!
+    other.list $\; self.list $\; :J self.M!
 }
 
 def asciiart::__rdiv__ {self other,
@@ -177,8 +177,8 @@ def asciiart::__dec__ {self$,
     self
 }
 
-def asciiart::__mul__ {list self,
-    list :#{self} B; S
+def asciiart::join {list self,
+    list :#{self} B; W
 }
 
 def asciiart::__rpow__ {self num,
@@ -251,7 +251,7 @@ def asciiart::fill {c self,
      #
 .}
 def asciiart::replace {s::str self,
-    s "`" | .E1={~}? :s ;
+    s '` S .E1={~}? :s ;
     s V:from ; V:to ; ;
     self.list :# {from to .&}
     self.M!
@@ -281,12 +281,12 @@ def asciiart::replace_aa {a::asciiart self : l,
     self.list ' #.= #! .# Mask of filled/empty
     :#{
         :#{ l \ I }    .# Use the mask to index into the list
-        S              .# Concat each aa in the row
+        W              .# Concat each aa in the row
     } {/}/             .# Concat each row
 }
 
 def asciiart::rle {s asciiart,
-    s $ "\\d+" F \ "\\d+" &  .# Split into lists of string sections and runs
+    s $ "\\d+" S \ "\\d+" &  .# Split into lists of string sections and runs
                             .# Ex: "3a 4b" => ["" "a " "b"] ["3" "4"]
     .E 0 = {
         ;;s                 .# If no rle to do, just return the string
@@ -299,7 +299,7 @@ def asciiart::rle {s asciiart,
             \+              .# join with original string
         }
         .&                  .# Apply the above block to each pair in the list
-        S+                  .# Combine everything
+        W+                  .# Combine everything
     } .?
 }
 
@@ -314,7 +314,7 @@ def asciiart::rle {s asciiart,
 
 asciiart:aa;
 
-{asciiart.rle "`"| asciiart!}:_;
+{asciiart.rle '` S asciiart!}:_;
 
 .{ Example:
     Generate a Sierpinski carpet:

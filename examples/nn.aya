@@ -1,5 +1,3 @@
-import ::matrix
-
 .# Sigmoid helper functions
 {-1 * Me 1+ 1\/}:sigmoid;
 {:& 1\- *}:dsigmoid;
@@ -10,10 +8,10 @@ class nn
 def nn::__init__ {x y self,
     x self.:input;
     y self.:y;
-    yE matrix.zeros self.:output;
+    0 yE L self.:output;
     .# Randomly initialize weights
-    [xE1I 4] matrixQ self.:weights_a;
-    [4    1] matrixQ self.:weights_b;
+    0 [x:E1I 4] L {;.Q} .O self.:weights_a;
+    0 [4     1] L {;.Q} .O self.:weights_b;
 }
 
 
@@ -26,10 +24,10 @@ def nn::feedforward {self : sigmoid^,
 def nn::backprop {self : dsigmoid^ d d_weights_a d_weights_b,
     self.y self.output - 2 * self.output dsigmoid * :d;
 
-    self.layer_a.t d .dot :d_weights_b;
+    self.layer_a.T d .dot :d_weights_b;
 
-    self.input.t
-    d self.weights_b.t .dot self.layer_a dsigmoid *
+    self.input.T
+    d self.weights_b.T .dot self.layer_a dsigmoid *
     .dot :d_weights_a;
 
     self.weights_a d_weights_a + self.:weights_a;
@@ -38,15 +36,16 @@ def nn::backprop {self : dsigmoid^ d d_weights_a d_weights_b,
 
 
 def nn::loss {self,
-    self.y self.output - 2^ .mean
+    self.y self.output - 2^
+    .F :& E \W\/ .# mean
 }
 
 main {
     import ::plot
 
     .# Data
-    [[0 0 1][0 1 1][1 0 1][1 1 1]] matrix! :x;
-    [[0][1][1][0]] matrix!:y;
+    [[0 0 1][0 1 1][1 0 1][1 1 1]] :x;
+    [[0][1][1][0]] :y;
 
     x y nn! :net;
     []:loss;

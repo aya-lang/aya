@@ -11,7 +11,7 @@ def shellresult::__repr__ {self,
 }
 
 def shellresult::lines {self,
-    self.value "\n" |
+    self.value '\n' S
 }
 
 
@@ -19,7 +19,7 @@ module shell_impl
 
 def shell_impl::grep {res::shellresult rgx::str : shellresult^ ,
     res.lines {rgx &E0>} I
-    "\n" * shellresult!
+    "\n" % shellresult!
 }
 
 def shell_impl::cat {filename::str : shellresult^ ,
@@ -37,7 +37,7 @@ def ::ls {: shellresult^ ,
     .E 0 = {
         ; "  <no files>"
     } {
-        C "\n" *
+        C "\n" %
     } .?
 
     shellresult!
@@ -82,7 +82,7 @@ def (__aya__.interpreter)::shell {str : cmd args,
     str ' N $ 0 :> {
         ;; str~
     } {
-        | trim :args; :cmd;
+        Mu trim :args; :cmd;
         cmd~ args
     } .?
 }

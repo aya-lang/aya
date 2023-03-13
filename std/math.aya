@@ -44,7 +44,7 @@ exportall
 {ML2ML/}:lg;        .#? N lg\n  base-2 log
 {Ml}:ln;            .#? N ln\n  natural log
 {ML}:log;           .#? N log\n  base-10 log
-{%}:mod;            .#? N mod\n  modulo
+{:%}:mod;            .#? N mod\n  modulo
 {Mp}:primes;        .#? N primes\n  returns a list containing the primes up to and including N
 {.!}:signnum;       .#? N signnum \n  returns the sign of a number (1,0,-1)
 {.^}:sqrt;          .#? N sqrt\n  square root
@@ -61,10 +61,10 @@ exportall
 .# List Operations #
 .###################
 
-{:&2^S.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
+{:&2^W.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}/}:product;     .#? L product\n  product of a list
-{*S}:dot;           .#? LL dot\n  dot product of a list
-{2^S.^}:norm;       .#? L norm\n compute the vector norm
+{*W}:dot;           .#? LL dot\n  dot product of a list
+{2^W.^}:norm;       .#? L norm\n compute the vector norm
 
 
 .#? NN lcm\n least common multiple of two numbers or a list of numbers
@@ -87,7 +87,7 @@ exportall
     outlist
 }:cumsum;
 .}
-{l,lER:#{l\.<S}}:cumsum;
+{l,lER:#{l\.<W}}:cumsum;
 
 
 
@@ -153,16 +153,16 @@ exportall
 .#? ::list makepoly\n  generate a polynomial function with the given coefficients
 .{ Examples:
     aya> [1 0 4 5] makepoly :f
-    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * S}
+    {[ 3 2 1 0 ] ^ [ 1 0 4 -5 ] * W}
     aya> 5 f
     140
     aya> [2 0] makepoly :double
-    {[ 1 0 ] ^ [ 2 0 ] * S}
+    {[ 1 0 ] ^ [ 2 0 ] * W}
     aya> [4,double]
     [ 2 4 6 8 ]
 .}
-.# {.E .R U {2, :c ; :p} {p ^ c * S} \ .+}:makepoly;
-{ [1| .E .R U {^} \ {*S} ].* }:makepoly;
+.# {.E .R U {2, :c ; :p} {p ^ c * W} \ .+}:makepoly;
+{ [1| .E .R U {^} \ {*W} ].* }:makepoly;
 
 
 
@@ -172,10 +172,10 @@ exportall
 
 .# BASE
 
-{2 10 H}:unbit;   .#? L unbit \n  convert a list of bits to a number
-{10 2 H}:bits;    .#? N bits \n  convert a positive number to a list of bits
-{10 16 H}:hex;    .#? N hex\n  convert an int into a hex string
-{16 10 H}:unhex;  .#? S unhex\n  convert a hex string to an int
+{2 10  .&}:unbit;   .#? L unbit \n  convert a list of bits to a number
+{10 2  .&}:bits;    .#? N bits \n  convert a positive number to a list of bits
+{10 16 .&}:hex;    .#? N hex\n  convert an int into a hex string
+{16 10 .&}:unhex;  .#? S unhex\n  convert a hex string to an int
 
 
 
@@ -186,10 +186,10 @@ exportall
 {n r, nM! n r- M!/ rM!/}:bin;  .#? NN bin\n binomial (combinations)
 
 .#? N divisors \n  returns a list of the numbers factors
-{n, [1 n,, n\%0=]}:divisors;
+{n, [1 n,, n\:%0=]}:divisors;
 
 .#? N factors\n  compute a number's prime factors
-.# golf: {n,{2to(nV){n\%0=}.NI$n\/fK}{n}nGn2<|?}:f;
+.# golf: {n,{2to(nV){n\:%0=}.NI$n\/f:J}{n}nGn2<|?}:f;
 {n,
     .# is the number prime
     nG n2< |
@@ -204,11 +204,11 @@ exportall
         [2nV.^./]R
 
         .# Find the next factor
-        {n\%0=}.N
+        {n\:%0=}.N
 
         .# Append this factor to the list of
         .#   factors recursively
-        I $n\/ factors K
+        I $n\/ factors :J
     }
 
     .?

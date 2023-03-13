@@ -54,6 +54,24 @@ public class OpOverload2Arg extends OpOverload {
 	}
 
 	@Override
+	public Obj executeAndReturn(Obj a, Obj b) {
+		if (a.isa(Obj.DICT)) {
+			Block block = new Block();
+			block.push(b);
+			block.callVariable((Dict)a, _var);
+			block.eval();
+			return block.pop();
+		} else if (b.isa(Obj.DICT)) {
+			Block block = new Block();
+			block.callVariable((Dict)b, _rvar, a);
+			block.eval();
+			return block.pop();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public String getSymName() {
 		return _var.name();
 	}

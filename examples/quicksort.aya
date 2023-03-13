@@ -45,7 +45,7 @@ lst qs :P
 .# {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i _ @@_ JJ} ?} {1, :_} :+
 
 .# Quicksort benchmark and example output
-.# aya> 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \S\/
+.# aya> 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \W\/
 .# [ 497 496 504 518 502 495 525 508 498 521 ] 506.4 
 
 .# Sorting 100,000 items

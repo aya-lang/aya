@@ -161,7 +161,7 @@ public abstract class NumberList extends ListImpl {
 	public abstract NumberList floor();
 
 	/** Imag */
-	public abstract ListImpl imag();
+	public abstract NumberList imag();
 
 	/** Return the list as an arrayList of numbers */
 	public abstract ArrayList<Number> toArrayList();

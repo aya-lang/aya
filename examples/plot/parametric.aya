@@ -2,7 +2,7 @@
 
 import ::plot
 
-0 100 1000.linspace:t;
+[0 100 1000] .R :t;
 t#{n,nMs nMs 1 2/*-}:x;
 t#{n,n17 8/*Mc nMc-}:y;
 

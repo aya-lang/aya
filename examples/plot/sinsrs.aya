@@ -3,11 +3,11 @@
 import::plot
 
 plot.plot!:plt;
-0 :4p 300.linspace :x;
+[0 :4p 300] .R :x;
 
 
 5R # {n,
-  x {x, [nR [nR, x*Ms], *] S} {, nP:label } plt.plot
+  x {x, [nR [nR, x*Ms], *] W} {, nP:label } plt.plot
 };
 
 "Sine Series" plt.:title;

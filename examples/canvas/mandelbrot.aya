@@ -1,16 +1,15 @@
-import ::matrix
 import ::viewmat
 
-300 :width;
+400 :width;
 width 0.8* :height;
 
 .# Create complex plane
-[-2 0.5 width.linspace] matrix! :x;
-[1 -1  height.linspace] matrix! .t :y;
-y :0i1 * x + :a;
+[-2 0.5 width]  .R :x;
+[1  -1  height] .R :y;
+y :0i1 * x `+ :* :a;
 
 .# Generate the fractal
-a E matrix.zeros {2^a+} 75 % .|
+{0 a :E L {2^a+} 30 % .|}.time :P
 
 .# Display
-{3 .>} O viewmat.show
+{3 .>} .O viewmat.show

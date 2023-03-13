@@ -7,14 +7,14 @@ from ::math import ::cumsum
 
 .#? ::list stats.mean\n  average of a list of numbers
 def stats::mean {
-    .E\S\/
+    .E\W\/
 }
 
 
 .#? ::list stats.variance\n  population variance
 def stats::variance {set : m stats^,
     set stats.mean:m;
-    set#{m- 2^}S setE /
+    set#{m- 2^} W setE /
 }
 
 
@@ -28,15 +28,15 @@ def stats::stdev {: stats^,
 .# the nth root of the product of n numbers
 .# compute by summing the logarithms of the values
 def stats::geomean {
-    Ml.E\S\/Me
+    Ml.E\W\/Me
 }
 
 
 .#? L stats.median\n  median value of a list
 def stats::median {l,
     lC$E2/.\        .# Sort the list and get its middle index
-    lE2%0= {        .# If the list has even length,
-        $1-KIS2/    .# average the middle two
+    lE2:%0= {        .# If the list has even length,
+        $1-:JIW2/    .# average the middle two
     } {
         I           .# else, take the middle item
     }  .?
@@ -51,10 +51,10 @@ def stats::regression {x y :
     sumxytimes,
 
     xE:n;
-    x2#^S:sumxsq;
-    [x y,*]S:sumxytimes;
-    xS:sumx;
-    yS:sumy;
+    x2#^W:sumxsq;
+    [x y,*]W:sumxytimes;
+    xW:sumx;
+    yW:sumy;
 
 
     sumy sumxsq *  sumx sumxytimes * -
@@ -72,12 +72,12 @@ def stats::regression {x y :
 .#? ::list ::list stats.pearson\n  pearson correlation coefficient between 2 datasets
 def stats::pearson {x y : n xs ys,
     xE:n;
-    xS:xs;
-    yS:ys;
+    xW:xs;
+    yW:ys;
 
-    [x y,*]Sn* xs ys*-
-     x2^Sn* xs2^ -
-     y2^Sn* ys2^ -
+    [x y,*]Wn* xs ys*-
+     x2^Wn* xs2^ -
+     y2^Wn* ys2^ -
      * .^
     /
 }
@@ -100,7 +100,7 @@ def stats::hist {l::list nbins::num : min max bin_size bins counter cumsum^,
     [nbins,; 0] :counter;
 
     .# Map each item to it's bin index
-    l #{bins>S}
+    l #{bins>W}
     .# count all bin indices
     :# {i, counter.[i] 1 + counter.:[i]};
 

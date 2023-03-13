@@ -5,30 +5,9 @@ import java.util.ArrayList;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.list.numberlist.NumberList;
-import aya.util.Pair;
 
 /** List supertype */
 public abstract class ListImpl {
-	
-
-	public Pair<ListImpl, ListImpl> splitAt(int index) {
-		ListImpl l = this;
-		if (index == 0) {
-			return new Pair<ListImpl, ListImpl>(l.similarEmpty(), l);
-		} else if(index >= l.length()) {
-			return new Pair<ListImpl, ListImpl>(l, l.similarEmpty());
-		} else if  (index*-1 >= l.length()) {
-			return new Pair<ListImpl, ListImpl>(l.similarEmpty(), l);
-		} else if (index > 0) {
-			return new Pair<ListImpl, ListImpl>(l.slice(0, index), l.slice(index, l.length()));
-		} else if (index < 0) {
-			return new Pair<ListImpl, ListImpl>(l.slice(0, l.length()+index), l.slice(l.length()+index, l.length()));
-		} else {
-			return null;
-		}
-	}
-	
-	
 	
 	/////////////////////
 	// LIST OPERATIONS //
@@ -58,8 +37,11 @@ public abstract class ListImpl {
 	/** Remove and return the back of the list */
 	public abstract Obj popBack();
 	
-	/** Return a reversed copy of the list */
+	/** Reverse the list in place */
 	public abstract void reverse();
+
+	/** Rotate the list in place */
+	public abstract void rotate(int n);
 	
 	/** Sort the list */
 	public abstract void sort();
@@ -114,10 +96,14 @@ public abstract class ListImpl {
 	/** Return an empty list that is the same type as the callee */
 	public abstract ListImpl similarEmpty();
 
+	/** Return a null filled list that is the same shape as the callee */
+	public abstract List sameShapeNull();
+
 	/** Return a flattened version of the list */
 	protected abstract ListImpl flatten();
 	
 	public abstract List split(Obj o);
+
 	
 	////////////////////////
 	// LIST MODIFICATIONS //
@@ -173,6 +159,7 @@ public abstract class ListImpl {
 	protected String repr() {
 		return repr(new ReprStream()).toStringOneline();
 	}
+
 
 
 

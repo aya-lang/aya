@@ -27,7 +27,7 @@ import ::plot
 
 t fn.` tangent_line :f_;
 
-a b 200.linspace :x;
+[a b] .R :x;
 
 plot.plot! :p;
 

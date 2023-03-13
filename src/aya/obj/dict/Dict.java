@@ -15,7 +15,6 @@ import aya.obj.symbol.SymbolConstants;
 import aya.util.Callable;
 import aya.util.Casting;
 import aya.util.Pair;
-import aya.util.Sym;
 /**
  * A set of key-value pairs accessible as a runtime object
  * @author Nick

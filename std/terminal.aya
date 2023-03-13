@@ -7,7 +7,7 @@ def terminal::fg (color.colors.white)
 def terminal::bg (color.colors.black)
 
 def terminal::clear {"\{x1b}[2J".P}
-def terminal::clearline {"\{x1b}[1K\{x1b}[1G".P}
+def terminal::clearline {"\{x1b}[1:J\{x1b}[1G".P}
 
 def terminal::_setfgstr {c::color, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }
 def terminal::_setbgstr {c::color, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }
@@ -42,7 +42,7 @@ def terminal::reset_color {: color^ terminal^ ,
 def terminal::replcolor {c::color : color^ terminal^ ,
     [c terminal._setfgstr
      "aya> "
-     color.colors.white terminal._setfgstr]S
+     color.colors.white terminal._setfgstr]W
     :{sys.alterprompt}
 }
 

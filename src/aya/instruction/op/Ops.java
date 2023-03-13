@@ -8,6 +8,7 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
+import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
@@ -19,8 +20,6 @@ import static aya.util.Casting.asSymbol;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,8 +37,8 @@ import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;
-import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
 import aya.obj.Obj;
@@ -53,6 +52,7 @@ import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
+import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BigNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
@@ -60,9 +60,9 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
-import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
+import aya.util.VectorizedFunctions;
 
 public class Ops {
 	
@@ -115,12 +115,12 @@ public class Ops {
 		/* 67 C  */ new OP_Sort(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ new OP_F(),
+		/* 70 F  */ null,
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
-		/* 75 K  */ new OP_K(),
+		/* 75 K  */ null,
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
 		/* 78 N  */ new OP_N(),
@@ -288,40 +288,56 @@ class OP_Percent extends OpInstruction {
 	
 	public OP_Percent() {
 		init("%");
-		arg("NN", "mod");
-		arg("BN", "repeat B N times");
-		setOverload(2, "mod");
+		arg("LB", "fold");
+		arg("LS", "join");
+		arg("LC", "join");
+		arg("BN", "repeat");
 	}
-
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
-		
-		if (overload().execute(block, a, b)) return;
-		
-		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			try {
-				//b mod a
-				block.push(NumberMath.mod(asNumber(b), asNumber(a)));
-			} catch (ArithmeticException e) {
-				throw new MathError("Divide by 0 in expression " + b.str() + " " + a.str() + "%" );
-			}
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).modFrom((Number)b)) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).mod((Number)a)) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).mod(asNumberList(a))) );
-		} else if (a.isa(NUMBER) && b.isa(BLOCK)) {
-			int repeats = ((Number)(a)).toInt();
-			Block blk = ((Block)b);
+		final Obj a = block.pop();
+	
+		if (a.isa(LIST) && b.isa(BLOCK)) {
+			fold(asList(a), asBlock(b), block);
+		} else if (a.isa(BLOCK) && b.isa(NUMBER)) {
+			int repeats = ((Number)(b)).toInt();
+			Block blk = ((Block)a);
 			for (int i = 0; i < repeats; i ++) {
 				block.addAll(blk.getInstructions().getInstrucionList());
 			}
 			return;
+		} else if (a.isa(LIST) && ((b.isa(STR) || b.isa(CHAR)))) {
+			block.push(List.fromString(strJoin(asList(a), b.str())));
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
+		}
+	}
+
+	private static String strJoin(List list, String sep) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < list.length()-1; i++) {
+			sb.append(list.getExact(i).str());
+			sb.append(sep);
+		}
+		if (list.length() > 0) sb.append(list.tail().str());
+		return sb.toString();
+	}
+
+	private static void fold(List list, Block foldBlock, Block resultBlock) {
+		int length = list.length();
+		if(length == 0) {
+			resultBlock.push(Num.ZERO);
+		} else {
+			//Push all but the last item
+			//for(int i = 0; i < list.size()-1; i++) {
+			for(int i = length-1; i > 0; i--) {
+				resultBlock.addAll(foldBlock.getInstructions().getInstrucionList());
+				resultBlock.add(list.getExact(i));
+			}
+			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+			//block.add(list.get(list.size()-1));
+			resultBlock.add(list.getExact(0));
 		}
 	}
 }
@@ -336,31 +352,44 @@ class OP_And extends OpInstruction {
 		arg("NN", "bitwise and");
 		arg("SS", "list all expressions matching the regex");
 		setOverload(2, "and");
-
+		vect();
 	}
+
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.band(b);}
+		public NumberList nl(Number a, NumberList b) { return b.bandFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.band(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
 		
-		if (overload().execute(block, a, b)) return;
-		
+	// a b & => "a & b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( NumberMath.band((Number)a, (Number)b) );
-		} else if (a.isa(SYMBOL)) {
-			Aya.getInstance().getVars().setVar(asSymbol(a), b);
-			block.push(b);
+			return NumberMath.band((Number)a, (Number)b);
 		} else if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
 			ArrayList<Obj> allMatches = new ArrayList<Obj>();
-			Matcher m = Pattern.compile(a.str()).matcher(b.str());
+			Matcher m = Pattern.compile(b.str()).matcher(a.str());
 			while (m.find()) {
 				 allMatches.add(List.fromString(m.group()));
 			}
-			block.push(new List(allMatches));
+			return new List(allMatches);
 		} else {
-			throw new TypeError(this, a);
+			throw new TypeError(this, b, a); // stack order
 		}
 
+		
 	}
 }
 
@@ -370,38 +399,35 @@ class OP_Times extends OpInstruction {
 	public OP_Times() {
 		init("*");
 		arg("NN", "multiply");
-		arg("LS|LC", "join");
 		vect();
 		setOverload(2, "mul");
 	}
+	
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.mul(b);}
+		public NumberList nl(Number a, NumberList b) { return b.mul(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.mul(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
 
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, a, b)) return;
+	// a b * => "a * b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push(NumberMath.mul(asNumber(a), asNumber(b)));
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).mul((Number)b)) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).mul(asNumber(a))) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).mul(asNumberList(b))) );
-		} else if ((a.isa(STR) || a.isa(CHAR)) && b.isa(LIST)) {
-			StringBuilder sb = new StringBuilder();
-			List lb = asList(b);
-			String sep = a.str();
-			for (int i = 0; i < lb.length()-1; i++) {
-				sb.append(lb.getExact(i).str());
-				sb.append(sep);
-			}
-			if (lb.length() > 0) sb.append(lb.tail().str());
-			block.push(List.fromString(sb.toString()));
-		} else {	
-			throw new TypeError(this, a,b);
+			return NumberMath.mul(asNumber(a), asNumber(b));
+		} else {
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -418,32 +444,39 @@ class OP_Plus extends OpInstruction {
 		setOverload(2, "add");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.add(b);}
+		public NumberList nl(Number a, NumberList b) { return b.add(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.add(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, a, b)) return;
-		
+	// a b + => "a + b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push(NumberMath.add(asNumber(a), asNumber(b)));
+			return NumberMath.add(asNumber(a), asNumber(b));
 		} else if (a.isa(STR) || b.isa(STR)) {
-			//Must reverse order
-			block.push(List.fromString(b.str() + a.str()));
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).add(asNumber(b))) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).add(asNumber(a))) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).add(asNumberList(b))) );
+			return List.fromString(a.str() + b.str());
 		} else if (a.isa(Obj.NUMBER) && b.isa(CHAR)) {
-			block.push( ((Char)b).add((Number)a) );
+			return ((Char)b).add((Number)a);
 		} else if (a.isa(CHAR) && b.isa(NUMBER)) {
-			block.push( ((Char)a).add((Number)b) );
+			return ((Char)a).add((Number)b);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( ((Char)a).add((Char)b) );
+			return ((Char)a).add((Char)b);
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -458,29 +491,37 @@ class OP_Minus extends OpInstruction {
 		setOverload(2, "sub");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.sub(b);}
+		public NumberList nl(Number a, NumberList b) { return b.subFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.sub(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj b = block.pop();	//Pop in reverse order
+		final Obj b = block.pop();
 		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, b, a)) return;
-		
+	// a b - => "a - b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push(NumberMath.sub(asNumber(a), asNumber(b)));
+			return NumberMath.sub(asNumber(a), asNumber(b));
 		} else if (a.isa(NUMBER) && b.isa(CHAR)) {
-			block.push(((Char)b).subFrom((Number)a));
+			return ((Char)b).subFrom((Number)a);
 		} else if (a.isa(CHAR) && b.isa(Obj.NUMBER)) {
-			block.push( ((Char)a).sub((Number)b) );
+			return ((Char)a).sub((Number)b);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( ((Char)a).sub((Char)b) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).sub(asNumber(b))) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).subFrom(asNumber(a))) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).sub(asNumberList(b))) );
+			return ((Char)a).sub((Char)b);
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -491,50 +532,35 @@ class OP_Divide extends OpInstruction {
 	public OP_Divide() {
 		init("/");
 		arg("NN", "divide");
-		arg("LB", "fold");
 		vect();
 		setOverload(2, "div");
-
 	}
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.div(b);}
+		public NumberList nl(Number a, NumberList b) { return b.divFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.div(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
 
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 		
-		if (overload().execute(block, a, b)) return;
-		
+	// a b / => "a / b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push(NumberMath.div(asNumber(b), asNumber(a)));
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).divFrom(asNumber(b))) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).div(asNumber(a))) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).div(asNumberList(a))) );
-		} else if(a.isa(BLOCK) && b.isa(LIST)) {
-			List blist = asList(b);
-			
-			int length = blist.length();
-			if(length == 0) {
-				block.push(Num.ZERO);
-				return;
-			}
-			
-			Block foldBlock = ((Block)(a));
-			
-			//Push all but the last item
-			//for(int i = 0; i < list.size()-1; i++) {
-			for(int i = length-1; i > 0; i--) {
-				block.addAll(foldBlock.getInstructions().getInstrucionList());
-				block.add(blist.getExact(i));
-			}
-			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-			//block.add(list.get(list.size()-1));
-			block.add(blist.getExact(0));
-			return;
+			return NumberMath.div(asNumber(a), asNumber(b));
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -564,25 +590,33 @@ class OP_LessThan extends OpInstruction {
 		setOverload(2, "lt");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.lt(b);}
+		public NumberList nl(Number a, NumberList b) { return b.gt(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.lt(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj b = block.pop();
 		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 		
-		if (overload().execute(block, b, a)) return;
+	// a b < => "a < b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( Num.fromBool(((Number)a).compareTo((Number)b) < 0) );
+			return Num.fromBool(((Number)a).compareTo((Number)b) < 0);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( Num.fromBool(((Char)a).compareTo((Char)b) < 0) );
+			return Num.fromBool(((Char)a).compareTo((Char)b) < 0);
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( Num.fromBool(a.str().compareTo(b.str()) < 0) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).gt(asNumber(a))) ); // gt is opposite of lt
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( new List(asNumberList(a).lt(asNumber(b))) ); 
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( new List(asNumberList(a).lt(asNumberList(b))) ); 
+			return Num.fromBool(a.str().compareTo(b.str()) < 0);
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -637,25 +671,33 @@ class OP_GreaterThan extends OpInstruction {
 		setOverload(2, "gt");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.gt(b);}
+		public NumberList nl(Number a, NumberList b) { return b.lt(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.gt(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj b = block.pop();			// Popped in Reverse Order
+		final Obj b = block.pop();
 		final Obj a = block.pop();
-
-		if (overload().execute(block, b, a)) return;
+		block.push(exec2arg(a, b));
+	}
 		
+	// a b > => "a > b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( Num.fromBool(((Number)a).compareTo((Number)b) > 0) );
+			return Num.fromBool(((Number)a).compareTo((Number)b) > 0);
 		} else if (a.isa(CHAR) && b.isa(CHAR)) {
-			block.push( Num.fromBool(((Char)a).compareTo((Char)b) > 0) );
+			return Num.fromBool(((Char)a).compareTo((Char)b) > 0);
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push( Num.fromBool(a.str().compareTo(b.str()) > 0) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).lt((Number)a)) ); // lt is opposite of gt
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER) ) {
-			block.push( new List(asNumberList(a).gt((Number)b)) ); 
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) ) {
-			block.push( new List(asNumberList(a).gt(asNumberList(b))) ); 
+			return Num.fromBool(a.str().compareTo(b.str()) > 0);
 		} else {
 			throw new TypeError(this, a,b);
 		}
@@ -863,48 +905,6 @@ class OP_E extends OpInstruction {
 	}
 }
 
-// F - 70
-class OP_F extends OpInstruction {
-	
-	public OP_F() {
-		this.name = "F";
-		init("F");
-		arg("NN", "unsigned right bitshift");
-	}
-
-	private static List strsToList(String[] strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.length);
-		for (String s : strs) out.add(List.fromString(s));
-		return new List(out);
-	}
-	private static List strsToList(ArrayList<Str> strs) {
-		ArrayList<Obj> out = new ArrayList<Obj>(strs.size());
-		for (Str s : strs) out.add(new List(s));
-		return new List(out);
-	}
-
-	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
-		
-		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( NumberMath.unsignedRightShift((Number)b, (Number)a) );
-		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(strsToList(b.str().split(a.str())));
-		} else if (a.isa(CHAR) && b.isa(STR)) {
-			block.push(strsToList(asStr(b).splitAtChar(asChar(a).charValue())));
-		} else if (a.isa(Obj.NUMBER) && b.isa(Obj.LIST)) {
-			Pair<List, List> lists = asList(b).splitAtIndexed(asNumber(a).toInt());
-			block.push(lists.first());
-			block.push(lists.second());
-		} else {
-			throw new TypeError(this, a, b);
-		}
-	}
-}
-
-
 // G - 71
 class OP_G extends OpInstruction {
 	
@@ -966,121 +966,33 @@ class OP_H extends OpInstruction {
 	
 	public OP_H() {
 		init("H");
-		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
+		arg("SA", "has; 1 if string contains substring");
+		arg("LA", "has; 1 if list contains object");
+		arg("DS|DC|DJ", "has; 1 if dict contains key");
 	}
 
 	@Override
 	public void execute (final Block block) {
-		final Obj to_b = block.pop();
-		final Obj from_b = block.pop();
-		final Obj num = block.pop();
+		final Obj b = block.pop();
+		final Obj a = block.pop();
 		
-		try {
-			if (from_b.isa(NUMBER) && to_b.isa(NUMBER)) {
-				int from_base = ((Number)from_b).toInt();
-				int to_base = ((Number)to_b).toInt();
-				BigInteger out_bi = BigInteger.ZERO;
-				
-				//Check Radix Ranges
-				if ((Character.MIN_RADIX > from_base 
-						|| Character.MIN_RADIX > to_base
-						|| Character.MAX_RADIX < from_base
-						|| Character.MAX_RADIX < to_base) && (
-								from_base != 0
-								&& to_base != 0
-								)){
-					throw new ValueError("H: base out of range (" + from_base + ", " + to_base + ")");
-				}
-				
-				//String
-				if(num.isa(STR)) {
-					out_bi  = new BigInteger(num.str(), from_base);
-					
-				}
-				
-				//Always base ten
-				else if(num.isa(NUMBER)) {
-					out_bi = ((Number)num).toBigDecimal().setScale(0, RoundingMode.FLOOR).toBigInteger();
-				} 
-				
-				//Assume base 2
-				else if (num.isa(NUMBERLIST)) {
-					if (from_base == 2) {
-						NumberList bin_list = asNumberList(num);
-						StringBuilder sb = new StringBuilder(bin_list.length());
-		
-							for (int i = 0; i < bin_list.length(); i++) {
-								int c = bin_list.get(i).toInt();
-								//Check for binary only
-								if (c == 1 || c == 0) {
-									sb.append(c);
-								} else {
-									throw new ValueError("H: List must be base 2");
-								}
-								
-							}
-						out_bi = new BigInteger(sb.toString(), 2);
-					} else if (from_base == 0) {
-						NumberList nums = asNumberList(num);
-						byte[] in_bytes = new byte[nums.length()];
-						for (int i = 0; i < nums.length(); i++) {
-							int c = nums.get(i).toInt();
-							in_bytes[i] = (byte)c;
-						}
-						out_bi = new BigInteger(in_bytes);
-					} else {
-						throw new ValueError("H: List must be base 2 or bytes (base 0)");
-					}
-				}
-				
-				else {
-					throw new TypeError(this, num, from_b, to_b);
-				}
-				
-				//OUTPUT
-				
-				//Convert to best use
-				if (to_base == 10) {
-					//Larger than an int, return BigDeciaml
-					if (out_bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
-						block.push(new BigNum(new BigDecimal(out_bi)));
-					}
-					//Smaller than int 
-					else {
-						block.push(new Num(out_bi.doubleValue()));
-					}
-					return;
-				} else if (to_base == 2) {
-					String bin_str = out_bi.toString(2);
-					ArrayList<Number> out_list = new ArrayList<Number>(bin_str.length());
-					
-					for (char c : bin_str.toCharArray()) {
-						out_list.add(new Num(c-'0'));
-					}
-					block.push(new List(new NumberItemList(out_list)));
-					return;
-				} else if (to_base == 0) {
-					// Special case: byte list
-					byte[] bytes = out_bi.toByteArray();
-					ArrayList<Number> nums = new ArrayList<>(bytes.length);
-					for (byte b : bytes) {
-						nums.add(Num.fromByte(b));
-					}
-					block.push(new List(new NumberItemList(nums)));
-					return;
-				} else {
-					block.push(List.fromString(out_bi.toString(to_base)));
-					return;
-				}
+		if (a.isa(STR)) {
+			block.push(Num.fromBool(a.str().contains(b.str())));
+		} else if (a.isa(LIST)) {
+			block.push(Num.fromBool(asList(a).find(b) >= 0));
+		} else if (a.isa(DICT)) {
+			Symbol key;
+			if (b.isa(SYMBOL)) {
+				key = asSymbol(b);
+			} else if (b.isa(STR) || b.isa(CHAR)) {
+				key = Aya.getInstance().getSymbols().getSymbol(b.str());
+			} else {
+				throw new TypeError(this, b, a);
 			}
+			block.push(Num.fromBool(asDict(a).containsKey(key)));
+		} else {
+			throw new TypeError(this, b, a);
 		}
-		catch (NumberFormatException nfe) {
-			throw new ValueError("H: invalid number format (" 
-					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
-		}
-		
-		
-		throw new TypeError(this, num, from_b, to_b);
 	}
 }
 
@@ -1230,33 +1142,12 @@ class OP_L extends OpInstruction {
 class OP_K extends OpInstruction {
 	
 	public OP_K() {
-		init("K");
-		arg("LL", "concatenate lists (modify list 1)");
-		arg("LA|AL", "add to list (modify list)");
-		arg("AA", "create list [ A A ]");
+		//init("K");
 	}
 
 	@Override
 	public void execute (final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
 
-		
-		if (a.isa(LIST) && b.isa(LIST)) {
-			asList(b).mutAddAll(asList(a));
-			block.push(b);
-		} else if (a.isa(LIST)){//&& !a.isa(Obj.STR)) {			
-			asList(a).mutAddExact(0, b);
-			block.push(a);
-		} else if (b.isa(LIST)){//&& !b.isa(Obj.STR)) {
-			asList(b).mutAdd(a);
-			block.push(b);
-		} else {
-			final ArrayList<Obj> list = new ArrayList<Obj>();
-			list.add(b);  //Stack - Add in reverse order
-			list.add(a);
-			block.push(new List(list));
-		}
 	}
 }
 
@@ -1304,25 +1195,35 @@ class OP_O extends OpInstruction {
 		final Obj blk_obj = block.pop();
 		final Obj container = block.pop();
 
-		Block blk = null;
-		try {
-			blk = (Block)blk_obj;
-		} catch (ClassCastException e) {
-			throw new TypeError(this, blk_obj, container);
-		}
-		
-		if (container.isa(Obj.LIST)) {
-			block.push(asList(container).map(blk));
-		} else if (container.isa(Obj.DICT)) {
-			Dict d = (Dict)container;
-			if (d.pushSelf() && d.containsKey(SymbolConstants.KEYVAR_EACH)) {
-				block.push(blk);
-				block.callVariable(d, SymbolConstants.KEYVAR_EACH);
-			} else {
-				block.push(DictIndexing.map((Dict)container, (Block)blk));
+		// Repeat
+		if (blk_obj.isa(NUMBER) && container.isa(BLOCK)) {
+			int repeats = ((Number)(blk_obj)).toInt();
+			Block blk = ((Block)container);
+			for (int i = 0; i < repeats; i ++) {
+				block.addAll(blk.getInstructions().getInstrucionList());
 			}
+			return;
 		} else {
-			throw new TypeError(this, blk_obj, container);
+			Block blk = null;
+			try {
+				blk = (Block)blk_obj;
+			} catch (ClassCastException e) {
+				throw new TypeError(this, blk_obj, container);
+			}
+			
+			if (container.isa(Obj.LIST)) {
+				block.push(asList(container).map(blk));
+			} else if (container.isa(Obj.DICT)) {
+				Dict d = (Dict)container;
+				if (d.pushSelf() && d.containsKey(SymbolConstants.KEYVAR_EACH)) {
+					block.push(blk);
+					block.callVariable(d, SymbolConstants.KEYVAR_EACH);
+				} else {
+					block.push(DictIndexing.map((Dict)container, (Block)blk));
+				}
+			} else {
+				throw new TypeError(this, blk_obj, container);
+			}
 		}
 	}
 }
@@ -1408,50 +1309,28 @@ class OP_S extends OpInstruction {
 	
 	public OP_S() {
 		init("S");
-		arg("L", "sum (fold using +)");
-		arg("B", "duplicate block, add locals if they do not exist");
-		arg("J", "is defined");
+		arg("SS", "split at regex");
+		arg("SC", "split at char");
+		arg("LN", "split list at index");
 	}
-
+	
 	@Override
 	public void execute (final Block block) {
+		final Obj b = block.pop();
 		final Obj a = block.pop();
 		
-		if (a.isa(LIST)) {
-			
-			//Using the new Promoted list, use Str, NumberList, or ObjList
-			if (a.isa(STR)) {
-				char total = 0;
-				char[] chars = a.str().toCharArray();
-				for (char c : chars) {
-					total += c;
-				}
-				block.push(Char.valueOf(total));
-			} else if(a.isa(NUMBERLIST)) {
-				block.push( asNumberList(a).sum() );
-			} else {
-				// If a normal list, fold using '+'
-				List list = asList(a);
-				if(list.length() == 0) {
-					block.push(Num.ZERO);
-					return;
-				}
-				//Push all but the last item
-				for(int i = list.length()-1; i > 0; i--) {
-					block.add(Ops.OP_PLUS);
-					block.add(list.getExact(i));
-				}
-				//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-				block.add(list.getExact(0)); 
-			}
-		} else if (a.isa(SYMBOL)) {
-			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(asSymbol(a))));
-			
-		} else if (a.isa(BLOCK)) {
-			Block b = (Block)a;
-			block.push(b.duplicateAddLocals());
+		if (a.isa(STR) && b.isa(STR)) {
+			block.push(asStr(a).splitRegex(b.str()));
+		} else if (a.isa(STR) && b.isa(CHAR)) {
+			block.push(asStr(a).splitAtChar(asChar(b).charValue()));
+		} else if (a.isa(LIST) && b.isa(NUMBER)) {
+			Pair<List, List> lists = asList(a).splitAtIndexed(asNumber(b).toInt());
+			List out = new List();
+			out.mutAdd(lists.first());
+			out.mutAdd(lists.second());
+			block.push(out);
 		} else {
-			throw new TypeError(this, a);
+			throw new TypeError(this, b, a);
 		}
 	}
 }
@@ -1466,16 +1345,27 @@ class OP_T extends OpInstruction {
 		setOverload(1, "negate");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.negate(); }
+	};
+
 	@Override
-	public void execute (final Block block) {
+	public void execute(final Block block) {
 		Obj a = block.pop();
-	
-		if (overload().execute(block, a)) return;
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res;
 		
 		if (a.isa(NUMBER)) {
-			block.push(((Number)a).negate());
-		} else if (a.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).negate()) );
+			return ((Number)a).negate();
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1563,6 +1453,7 @@ class OP_W extends OpInstruction {
 		init("W");
 		arg("B", "while loop (repeat as long as block returns true)");
 		arg("D", "export all variables");
+		arg("L", "sum (fold using +)");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1570,7 +1461,9 @@ class OP_W extends OpInstruction {
 	public void execute(final Block block) {
 		final Obj a = block.pop();
 		
-		if(a.isa(Obj.BLOCK)) {
+		if (a.isa(LIST)) {
+			block.push(sum(asList(a)));
+		} else if (a.isa(Obj.BLOCK)) {
 			Block blk = ((Block)(a)).duplicate();
 			Block state = new Block();
 			state.setStack((Stack<Obj>)block.getStack().clone());
@@ -1593,8 +1486,6 @@ class OP_W extends OpInstruction {
 			
 			//Merge the stack
 			block.setStack(state.getStack());
-			
-			return;
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
@@ -1602,10 +1493,45 @@ class OP_W extends OpInstruction {
 			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
 				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
 			}
-			return;
+		} else {
+			throw new TypeError(this, a);
 		}
-		throw new TypeError(this, a);
 	}
+
+
+	/** Generic list summation */
+	public Obj sum(List a) {
+		//Using the new Promoted list, use Str, NumberList, or ObjList
+		if (a.isa(STR)) {
+			char total = 0;
+			char[] chars = a.str().toCharArray();
+			for (char c : chars) {
+				total += c;
+			}
+			return Char.valueOf(total);
+		} else if(a.isa(NUMBERLIST)) {
+			return asNumberList(a).sum();
+		} else {
+			// If a normal list, fold using '+'
+			List list = asList(a);
+			if(list.length() == 0) {
+				return Num.ZERO;
+			}
+			//Push all but the last item
+			Block exec_block = new Block();
+			for(int i = list.length()-1; i > 0; i--) {
+				exec_block.add(Ops.OP_PLUS);
+				exec_block.add(list.getExact(i));
+			}
+			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
+			exec_block.add(list.getExact(0)); 
+			exec_block.eval();
+			return exec_block.pop();
+		}
+	}
+
+
+
 }
 
 
@@ -1691,26 +1617,33 @@ class OP_Caret extends OpInstruction {
 		setOverload(2, "pow");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.pow(b);}
+		public NumberList nl(Number a, NumberList b) { return b.powFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.pow(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute (final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 		
-		if (overload().execute(block, a, b)) return;
+	// a b ^ => "a ^ b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)){
-			//Raise b to the ath power
-			block.push(NumberMath.pow(asNumber(b), asNumber(a)));
+			return NumberMath.pow(asNumber(a), asNumber(b));
 		} else if (a.isa(STR) && b.isa(STR)) {
-			block.push(Num.fromInt( (asStr(a)).levDist(asStr(b)) ));
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).powFrom((Number)b)) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).pow((Number)a)) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).pow(asNumberList(a))) );
+			return Num.fromInt( (asStr(b)).levDist(asStr(a)));
 		} else {
-			throw new TypeError(this, a, b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -1721,28 +1654,34 @@ class OP_Bar extends OpInstruction {
 	public OP_Bar() {
 		init("|");
 		arg("NN", "logical or");
-		arg("SS", "split S1 using regex S2");
-		arg("SC", "split str using char");
-		arg("LN", "cut L at index N");
 		setOverload(2,  "or");
 	}
-	
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.bor(b); }
+		public NumberList nl(Number a, NumberList b) { return b.borFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.bor(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
 
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
 		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, a, b)) return;
+	// a b | => "a | b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 		
-		//Bitwise or
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
-			block.push( NumberMath.bor((Number)a, (Number)b) );
-		} else if (b.isa(LIST)) {
-			block.push(Casting.asList(b).split(a));
+			return NumberMath.bor((Number)a, (Number)b);
 		} else {
-			throw new TypeError(this, a, b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 	

@@ -3,7 +3,6 @@ package aya.ext.sys;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -44,7 +43,6 @@ public class SysExecInstruction extends NamedInstruction {
 		    builder.redirectErrorStream(true);
 		    builder.directory(new File(AyaPrefs.getWorkingDir()));
 		    Process proc = builder.start();
-		    InputStream is = proc.getInputStream();
 
 		    BufferedReader reader = new BufferedReader(
 		            new InputStreamReader(proc.getInputStream()));

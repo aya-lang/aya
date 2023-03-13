@@ -20,11 +20,11 @@
     {,
         "overloadable" M? :# {
             .# Get <name> <op> as strings
-            :& "overloadable:.*$" & .[0] " " |.[-1] \ " " |.[0]
+            :& "overloadable:.*$" & .[0] " " S .[-1] \ " " S .[0]
             .# Lambda to apply to each <name> <op>
             ({name op,
                 .# If the name is "__add__/__radd__", only use the first one
-                name "/" |.[0]:name;
+                name '/ S .[0]:name;
                 .# Attempt to parse the op ( operator __each__ ":#" will fail)
                 .# And assign the op to its name
                 {op.~ name :=} {;} .K

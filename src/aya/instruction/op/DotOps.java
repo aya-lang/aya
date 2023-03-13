@@ -6,7 +6,6 @@ import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
-import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 import static aya.util.Casting.asBlock;
@@ -26,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
@@ -36,6 +36,7 @@ import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;
 import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
+import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
@@ -52,6 +53,10 @@ import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
+import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
+import aya.obj.list.numberlist.NumberListOp;
+import aya.obj.number.BaseConversion;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
@@ -60,6 +65,7 @@ import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.util.Casting;
+import aya.util.VectorizedFunctions;
 
 public class DotOps {
 
@@ -117,11 +123,11 @@ public class DotOps {
 		/* 76 L  */ null,
 		/* 77 M  */ new OP_Dot_M(),
 		/* 78 N  */ new OP_Dot_N(),
-		/* 79 O  */ null,
+		/* 79 O  */ new OP_Dot_O(),
 		/* 80 P  */ new OP_Dot_Print(),
 		/* 81 Q  */ new OP_Dot_Rand(),
 		/* 82 R  */ new OP_Dot_R(),
-		/* 83 S  */ null,
+		/* 83 S  */ new OP_Dot_S(),
 		/* 84 T  */ new OP_Dot_T(),
 		/* 85 U  */ new OP_RequestString(),
 		/* 86 V  */ new OP_Dot_AppendBack(),
@@ -200,37 +206,47 @@ class OP_Dot_Bang extends OpInstruction {
 		vect();
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.signnum(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		Obj o = block.pop();
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
 
-		if (overload().execute(block, o)) return;
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
 
-		if (o.isa(NUMBER)) {
-			block.push(((Number)o).signnum());
-		} else if (o.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(o).signnum()) );
-		} else if (o.isa(STR)) {
-			String numStr = o.str().trim();
+		if (a.isa(NUMBER)) {
+			return ((Number)a).signnum();
+		} else if (a.isa(STR)) {
+			String numStr = a.str().trim();
 			ParserString ps = new ParserString(numStr);
 			Number n;
 			try {
 				n = Parser.parseNumber(ps).numValue();
 			} catch (ParserException e) {
 				// Error converting to number
-				block.push(o);
-				return;
+				return a;
 			}
 			if (ps.hasNext()) {
 				// The full string wasn't used, it is not completely a number
-				block.push(o);
+				return a;
 			} else {
-				block.push(n);
+				return n;
 			}
-		} else if (o.isa(BLOCK)) {
-			block.push(((Block)o).duplicateNoHeader());
+		} else if (a.isa(BLOCK)) {
+			return ((Block)a).duplicateNoHeader();
 		} else {
-			throw new TypeError(this,o);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -302,28 +318,35 @@ class OP_Dot_Percent extends OpInstruction {
 		setOverload(2, "idiv");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.idiv(b);}
+		public NumberList nl(Number a, NumberList b) { return b.idivFrom(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.idiv(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
 
-		if (overload().execute(block, a, b)) return;
+	// a b .% => "a .% b"
+	@Override
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
-				//b idiv a
-				block.push(NumberMath.idiv(asNumber(b), asNumber(a)));
+				return NumberMath.idiv(asNumber(a), asNumber(b));
 			} catch (ArithmeticException e) {
-				throw new MathError("Divide by 0 in expression " + b.str() + " " + a.str() + " .%");
+				throw new MathError("Divide by 0 in expression " + b.str() + " " + a.str() + " .%"); // stack order
 			}
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
-			block.push( new List(asNumberList(a).idivFrom((Number)b)) );
-		} else if (a.isa(NUMBER) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).idiv((Number)a)) );
-		} else if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(b).idiv(asNumberList(a))) );
 		} else {
-			throw new TypeError(this, a,b);
+			throw new TypeError(this, b, a); // stack order
 		}
 	}
 }
@@ -337,6 +360,7 @@ class OP_Dot_And extends OpInstruction {
 		init(".&");
 		arg("SSS", "replace all occurances of the regex S1 with S2 in S3");
 		arg("LLB", "zip with");
+		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
 	}
 
 	@Override
@@ -345,7 +369,10 @@ class OP_Dot_And extends OpInstruction {
 		Obj b = block.pop();  // find
 		Obj c = block.pop();  // str
 
-		if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
+		if (a.isa(NUMBER) && b.isa(NUMBER)) {
+			// stack order: num from to op
+			block.push(convertBase(a, b, c));
+		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
 			Block initial = new Block();
@@ -355,6 +382,17 @@ class OP_Dot_And extends OpInstruction {
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);
+		}
+	}
+
+	private Obj convertBase(Obj to_b, Obj from_b, Obj num) {
+		try {
+			return BaseConversion.convertBase(asNumber(from_b).toInt(), asNumber(to_b).toInt(), num);
+		} catch (NumberFormatException nfe) {
+			throw new ValueError("base conversion: invalid number format (" 
+					+ num.repr() + ", " + from_b.repr() + ", " + to_b.repr() + ")");
+		} catch (TypeError te) {
+			throw new TypeError(this, num, from_b, to_b);
 		}
 	}
 }
@@ -568,16 +606,27 @@ class OP_Dot_FwdSlash extends OpInstruction {
 		setOverload(1, "ceil");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.ceil(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
 
-		if (overload().execute(block, a)) return;
-
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		
 		if (a.isa(NUMBER)) {
-			block.push(((Number)a).ceil());
-		} else if (a.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).ceil()) );
+			return ((Number)a).ceil();
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1128,6 +1177,37 @@ class OP_Dot_N extends OpInstruction {
 	}
 }
 
+// O - 79
+class OP_Dot_O extends OpInstruction {
+
+	public OP_Dot_O() {
+		init(".O");
+		arg("AB", "apply");
+		vect();
+	}
+
+	@Override
+	public void execute (Block block) {
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+		block.push(exec2arg(a, b));
+	}
+	
+	public Obj exec2arg(final Obj a, final Obj b) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
+		
+		if (b.isa(BLOCK)) {
+			Block blk = asBlock(b).duplicate();
+			blk.push(a);
+			blk.eval();
+			return blk.pop();
+		} else {
+			throw new TypeError(this, b, a); // stack order
+		}
+	}
+}
+
 
 // P - 80
 class OP_Dot_Print extends OpInstruction {
@@ -1163,6 +1243,7 @@ class OP_Dot_R extends OpInstruction {
 	public OP_Dot_R() {
 		init(".R");
 		arg("N", "range [0, 1, .., N-1]");
+		arg("L", "linspace [from to count], if count not provided, use 100");
 	}
 
 	@Override
@@ -1181,11 +1262,99 @@ class OP_Dot_R extends OpInstruction {
 				// -N .R => [N+1 ... -1 0]
 				block.push( new List(ListRangeUtils.buildRange(n.inc(), Num.ZERO)) );
 			}
+		} else if (a.isa(Obj.NUMBERLIST)) {
+			NumberList list = asNumberList(a);
+			if (list.length() == 2) {
+				block.push(new List(linspace(list.get(0), list.get(1), Num.fromInt(100))));
+			} else if (list.length() == 3) {
+				block.push(new List(linspace(list.get(0), list.get(1), list.get(2))));
+			} else {
+				throw new ValueError("Invalid linspace input. Length must be be exactly 2 or 3. Got: " + a.repr());
+			}
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
+
+	
+	private NumberList linspace(Number from, Number to, Number steps) {
+		if (from.equiv(to)) {
+			ArrayList<Number> nums = new ArrayList<Number>();
+			int count = steps.toInt();
+			for (int i = 0; i < count; i++) {
+				nums.add(from);
+			}
+			return new NumberItemList(nums);
+		} else {
+			Number a = NumberMath.sub(to, from);
+			Number b = NumberMath.sub(steps, Num.ONE);
+			Number inc = NumberMath.div(a, b);
+			NumberItemList out = new NumberItemList(from, to, inc);
+
+			// Rounding error may cause off-by-one
+			int expected_len = steps.toInt();
+			if (out.length() == expected_len - 1) {
+				out.addItem(to);
+			} else if (out.length() == expected_len + 1) {
+				out.popBack();
+			}
+			
+			// Verify the list length is correct
+			if (out.length() != expected_len) {
+				// If this is ever thrown, there is a bug in the code above
+				throw new ValueError("Error creating linspace, length is incorrect");
+			} else {
+				return out;
+			}
+		}
+	}
 }
+
+// S - 83
+class OP_Dot_S extends OpInstruction {
+
+	public OP_Dot_S() {
+		init(".S");
+		arg("LL", "rotate [rows cols]");
+		arg("LN", "rotate]");
+	}
+
+	@Override
+	public void execute (Block block) {
+		final Obj a = block.pop();
+		final Obj b = block.pop();
+
+		if (a.isa(Obj.NUM) && b.isa(Obj.LIST)) {
+			asList(b).mutRotate(asNumber(a).toInt());
+			block.push(b);
+		} else if (a.isa(Obj.LIST) && b.isa(LIST)) {
+			final NumberList amount = asList(a).toNumberList();
+			List list = asList(b);
+			if (amount.length() == 1) {
+				list.mutRotate(amount.get(0).toInt());
+				block.push(b);
+			} else if (amount.length() == 2) {
+				rotate(list, amount.get(0).toInt(), amount.get(1).toInt());
+				block.push(b);
+			} else {
+				throw new ValueError(".S rotation amount must be length 1 or 2");
+			}
+		} else {
+			throw new TypeError(this, a, b);
+		}
+	}
+
+	private void rotate(List l, int rows, int cols) {
+		l.mutRotate(rows);
+		for (int i = 0; i < l.length(); i++) {
+			Obj x = l.getExact(i);
+			if (x.isa(Obj.LIST)) {
+				asList(x).mutRotate(cols);
+			}
+		}
+	}
+}
+
 
 
 //T - 84
@@ -1255,16 +1424,27 @@ class OP_Dot_BackSlash extends OpInstruction {
 		vect();
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.floor(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
-		
-		if (overload().execute(block, a)) return;
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER)) {
-			block.push(((Number)a).floor());
-		} else if (a.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).floor()) );
+			return ((Number)a).floor();
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1278,22 +1458,36 @@ class OP_Dot_Pow extends OpInstruction {
 	public OP_Dot_Pow() {
 		init(".^");
 		arg("N", "square root");
+		arg("S", "quote regex");
 		setOverload(1, "sqrt");
 		vect();
 	}
-	
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.sqrt(); }
+	};
+
 	@Override
-	public void execute(Block block) {
-		Obj n = block.pop();
-		
-		if (overload().execute(block, n)) return;
-		
-		if(n.isa(NUMBER)) {
-			block.push(((Number)n).sqrt());
-		} else if (n.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(n).sqrt()) );
+	public void execute(final Block block) {
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+	
+		if(a.isa(NUMBER)) {
+			return ((Number)a).sqrt();
+		} else if (a.isa(STR)) {
+			return List.fromString(Pattern.quote(a.str()));
 		} else {
-			throw new TypeError(this, n);
+			throw new TypeError(this, a);
 		}
 	}
 }
@@ -1316,18 +1510,29 @@ class OP_Dot_Bar extends OpInstruction {
 		setOverload(1, "abs");
 	}
 
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.abs(); }
+	};
+
 	@Override
 	public void execute(final Block block) {
-		final Obj a = block.pop();
-		
-		if (overload().execute(block, a)) return;
+		Obj a = block.pop();
+		block.push(exec1arg(a));
+	}
+
+	@Override
+	public Obj exec1arg(final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER)) {
-			block.push( ((Number)a).abs() );
-		} else if (a.isa(NUMBERLIST)) {
-			block.push( new List(asNumberList(a).abs()) );
+			return ((Number)a).abs();
 		} else if (a.isa(BLOCK)) {
-			block.push(getBlockMeta((Block)a));
+			return getBlockMeta((Block)a);
 		} else {
 			throw new TypeError(this, a);
 		}

@@ -8,7 +8,7 @@ import ::math
     {3.4 acoth 3.fixed  0.303 }
 
     .# List operations
-    {10R normal $S/S .\  1 }
+    {10R normal $W/W .\  1 }
     {5R product  120 }
     {[] product  0 }
     {[1 2 3][4 5 6] dot  32 }
@@ -24,10 +24,10 @@ import ::math
     {[1 1 0 0] unbit  12 }
     {98476 hex  "180ac" }
     {"180ac" unhex  98476 }
-    {100R #isprime S  25 }
+    {100R #isprime W  25 }
     {9 4 npr  3024 }
     {9 4 bin  126 }
-    {5R $ bin S  5 }
+    {5R $ bin W  5 }
     {12 divisors  [1 2 3 4 6 12] }
     {12 factors  [2 2 3] }
 
