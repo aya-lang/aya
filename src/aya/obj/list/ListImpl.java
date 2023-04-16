@@ -32,7 +32,7 @@ public abstract class ListImpl {
 	public abstract Obj tail();
 
 	/** Return a rotated copy of the list */
-	public abstract  rotate(int n);
+	public abstract ListImpl rotate(int n);
 	
 	/** Remove and return the head of the list */
 	public abstract Obj pop();

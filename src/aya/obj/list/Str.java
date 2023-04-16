@@ -165,7 +165,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
-	public void rotate(int n) {
+	public ListImpl rotate(int n) {
 		// TODO: implement
 		throw new RuntimeException("Str.rotate unimplemented");
 	}
