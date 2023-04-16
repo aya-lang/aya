@@ -3,7 +3,6 @@ package aya;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.Stack;
 
 import aya.instruction.variable.GetVariableInstruction;
 
@@ -14,14 +13,17 @@ import aya.instruction.variable.GetVariableInstruction;
  */
 public class CallStack {
 
-	public static final CallStackFrame CHECKPOINT = new CallStackFrame(null);
+	private final static int MAX_STACK_DEPTH = 128;
 
 	public static class CallStackFrame {
 		private GetVariableInstruction _instruction;
 		private boolean _is_checkpoint;
 		
-		
-		public CallStackFrame(GetVariableInstruction instruction) {
+		public CallStackFrame() {
+			reset(null);
+		}
+
+		public void reset(GetVariableInstruction instruction) {
 			_instruction = instruction;
 			_is_checkpoint = instruction == null;
 		}
@@ -38,27 +40,47 @@ public class CallStack {
 			}
 		}
 	}
+
 	
-	private Stack<CallStackFrame> _stack;
+	private CallStackFrame[] _stack;
+	// Points to the most recently filled stack frame
+	// -1 for empty stack
+	private int _stack_index;
 	
 	public CallStack() {
-		_stack = new Stack<CallStackFrame>();
+		_stack = new CallStackFrame[MAX_STACK_DEPTH];
+		for (int i = 0; i < MAX_STACK_DEPTH; i++) {
+			_stack[i] = new CallStackFrame();
+		}
+		_stack_index = -1;
 	}
 	
 	public void push(GetVariableInstruction var) {
-		_stack.push(new CallStackFrame(var));
+		if (_stack_index < _stack.length) {
+			_stack_index++;
+			_stack[_stack_index].reset(var);
+		} else {
+			throw new StackOverflowError("Call stack overflow");
+		}
 	}
 	
-	public void pop() {
-		_stack.pop();
+	public CallStackFrame pop() {
+		// >= : stack_index is allowed to get to -1 (empty stack)
+		if (_stack_index >= 0) {
+			CallStackFrame frame = _stack[_stack_index];
+			_stack_index--;
+			return frame;
+		} else {
+			throw new EmptyStackException();
+		}
 	}
 	
 	public void setCheckpoint() {
-		_stack.push(CHECKPOINT);
+		push(null);
 	}
 	
 	public void popCheckpoint() {
-		CallStackFrame csf = _stack.pop();
+		CallStackFrame csf = pop();
 		if (!csf.isCheckpoint()) {
 			throw new RuntimeException("Attempted to pop callstack checkpoint but the top of the stack was " + csf);
 		}
@@ -66,27 +88,31 @@ public class CallStack {
 	
 	public void rollbackCheckpoint() {
 		try {
-			CallStackFrame csf = _stack.pop();
+			CallStackFrame csf = pop();
 			// If this loop throws an exception, there is a bug somewhere that
 			// is either rolling back when there is no checkpoint or removing a checkpoint
 			// when it should not be
 			while (!csf.isCheckpoint()) {
-				csf = _stack.pop();
+				csf = pop();
 			}
 		} catch (EmptyStackException e) {
-			throw new RuntimeException("Failed attempt to rollback chackpoint in call stack");
+			throw new RuntimeException("Failed attempt to rollback checkpoint in call stack");
 		}
 	}
 	
 	public void reset() {
-		_stack.clear();
+		_stack_index = -1;
+	}
+
+	public int size() {
+		return _stack_index + 1;
 	}
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Function call traceback:\n  Error ");
-		ArrayList<CallStackFrame> stack_list = new ArrayList<CallStackFrame>(_stack.size());
-		for (CallStackFrame l : _stack) stack_list.add(l);
-		Collections.reverse(stack_list);
+		ArrayList<CallStackFrame> stack_list = new ArrayList<CallStackFrame>(size());
+		for (int i = size()-1; i >= 0; i--) { stack_list.add(_stack[i]); }
+
 		for (CallStackFrame l : stack_list)
 		{
 			if (l.isCheckpoint()) continue;
@@ -99,6 +125,7 @@ public class CallStack {
 	}
 
 	public boolean isEmpty() {
-		return _stack.isEmpty();
+		// -1 means empty stack
+		return _stack_index < 0;
 	}
 }
