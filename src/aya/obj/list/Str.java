@@ -166,8 +166,22 @@ public class Str extends ListImpl implements Comparable<Str> {
 
 	@Override
 	public ListImpl rotate(int n) {
-		// TODO: implement
-		throw new RuntimeException("Str.rotate unimplemented");
+		if (n == 0) {
+			return new Str(_str);
+		} else {
+			final int len = _str.length();
+			char[] out = new char[len];
+			char[] ch_list = _str.toCharArray();
+			if (n > 0) {
+				System.arraycopy(ch_list, 0, out, n, len - n);
+				System.arraycopy(ch_list, len-n, out, 0, n);
+			} else {
+				n *= -1;
+				System.arraycopy(ch_list, 0, out, len-n, n);
+				System.arraycopy(ch_list, n, out, 0, len-n);
+			}
+			return new Str(out);
+		}
 	}
 
 	@Override
