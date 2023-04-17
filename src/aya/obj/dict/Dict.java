@@ -184,6 +184,10 @@ public class Dict extends Obj {
 		out.addAll(_vars.values());
 		return out;
 	}
+
+	public Obj getOrNullNoMeta(Symbol key) {
+		return _vars.get(key);
+	}
 	
 	/////////////
 	// SETTERS //
