@@ -12,7 +12,6 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.util.Callable;
 import aya.util.Casting;
 import aya.util.Pair;
 /**
@@ -344,9 +343,8 @@ public class Dict extends Obj {
 		if (!stream.isSafeMode()) repr = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR);
 
 		if (repr != null) {
-			Block callable = Callable.getCallable(repr);
-			if (callable != null) {
-				Block blk_repr = callable.duplicate();
+			if (repr.isa(Obj.BLOCK)) {
+				Block blk_repr = Casting.asBlock(repr).duplicate();
 				blk_repr.push(this);
 				try {
 					blk_repr.eval();
