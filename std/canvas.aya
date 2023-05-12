@@ -166,3 +166,11 @@ def canvas::pressed_buttons {self,
 def canvas::typed_chars {self,
     self.id :{graphics.typed_chars}
 }
+
+def canvas::pressed_keys {self,
+    self.id :{graphics.pressed_keys}
+}
+
+def canvas::text {self,
+    self.id :{graphics.text}
+}
