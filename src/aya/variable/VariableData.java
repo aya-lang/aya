@@ -187,7 +187,7 @@ public class VariableData {
 	private Obj getVarOrNull(Symbol id) {
 		Obj res = null;
 		for(int i = _var_sets.size()-1; i >= 0; i--) {
-			res = _var_sets.get(i).dict.get(id, null);
+			res = _var_sets.get(i).dict.getOrNullNoMeta(id);
 			if(res != null) {
 				return res;
 			}
