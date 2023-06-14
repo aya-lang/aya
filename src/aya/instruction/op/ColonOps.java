@@ -613,7 +613,7 @@ class OP_Colon_D extends OpInstruction {
 			Symbol s = Aya.getInstance().getSymbols().getSymbol(key.str());
 			d.set(s, value);
 		} else {
-			throw new TypeError(this, value, key, d);
+			throw new TypeError(this, d, key, value);
 		}
 	}
 
@@ -625,7 +625,7 @@ class OP_Colon_D extends OpInstruction {
 
 		if (dict.isa(DICT)) {
 			Dict d = (Dict)dict;
-			if (index.isa(LIST)) {
+			if (index.isa(LIST) && !index.isa(STR)) {
 				List list = asList(index);
 				for (int i = 0; i < list.length(); i++) {
 					set(d, list.getExact(i), item);
@@ -635,7 +635,7 @@ class OP_Colon_D extends OpInstruction {
 			}
 			block.push(d);
 		} else {
-			throw new TypeError(this, item, index, dict);
+			throw new TypeError(this, dict, index, item);
 		}
 	}
 }
