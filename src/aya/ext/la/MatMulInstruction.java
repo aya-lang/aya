@@ -9,7 +9,6 @@ import aya.instruction.named.NamedInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
-import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.NumberMath;
@@ -46,10 +45,10 @@ public class MatMulInstruction extends NamedInstruction {
 		}
 	}
 	
-	private static ArrayList<NumberItemList> newEmpty(int rows, int cols) {
-		ArrayList<NumberItemList> out = new ArrayList<NumberItemList>();
+	private static ArrayList<NumberList> newEmpty(int rows, int cols) {
+		ArrayList<NumberList> out = new ArrayList<NumberList>();
 		for (int r = 0; r < rows; r++) {
-			out.add(new NumberItemList(Num.ZERO, cols));
+			out.add(NumberList.repeat(Num.ZERO, cols));
 		}
 		return out;
 	}
@@ -62,7 +61,7 @@ public class MatMulInstruction extends NamedInstruction {
 		int p = b.length();
 		int q = Casting.asList(b.getExact(0)).length();
 		// C is (m x q)
-		ArrayList<NumberItemList> c = newEmpty(m, q);
+		ArrayList<NumberList> c = newEmpty(m, q);
 		
 		// Store b_k casting operations so we don't have to do it in the innermost loop
 		ArrayList<NumberList> b_k = new ArrayList<NumberList>();
@@ -83,7 +82,7 @@ public class MatMulInstruction extends NamedInstruction {
 		
 		// Convert to List
 		List out = new List();
-		for (NumberItemList x : c) out.mutAdd(new List(x));
+		for (NumberList x : c) out.mutAdd(new List(x));
 		return out;
 	}
 

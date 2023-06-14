@@ -3,7 +3,6 @@ package aya.obj.list.numberlist;
 import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import aya.ReprStream;
@@ -21,20 +20,52 @@ import aya.util.Casting;
 public class NumberItemList extends NumberList {
 	
 	ArrayList<Number> _list;
+	private int _doubles = 0;
 	
-	public NumberItemList(ArrayList<Number> list) {
+	// Use NumberList.fromNumberAL outside of package
+	protected NumberItemList(ArrayList<Number> list) {
 		_list = list;
+		for (Number n : list) incDoubleCounter(n);
+	}
+
+	public static NumberItemList test_fromAL(ArrayList<Number> list) {
+		return new NumberItemList(list);
+	}
+
+	// Use NumberList.fromNumberAL outside of package
+	protected NumberItemList(ArrayList<Number> list, int num_doubles) {
+		_list = list;
+		_doubles = num_doubles;
+	}
+
+	@Override
+	public NumberList promote() {
+		final int len = _list.size();
+		if (_doubles == len) {
+			double[] out = new double[len];
+			for (int i = 0; i < len; i++) {
+				out[i] = _list.get(i).toDouble();
+			}
+			return new DoubleList(out);
+		} else {
+			return this;
+		}
 	}
 	
+
 	/** Create a new numeric list by repeating item, repeats times */
-	public NumberItemList(Number item, int repeats) {
+	// Use NumberList.repeat outside of package
+	protected NumberItemList(Number item, int repeats) {
 		_list = new ArrayList<Number>(repeats);
 		for (int i = 0; i < repeats; i++) {
 			_list.add(item);
 		}
+		if (item.isa(Obj.NUM)) {
+			_doubles = _list.size();
+		}
 	}
 	
-	public NumberItemList(Number lo, Number hi, Number inc) {
+	protected NumberItemList(Number lo, Number hi, Number inc) {
 		//Calculate the number of items, this will return a negative value if array creation is impossible
  		int numOfItems = NumberMath.div(NumberMath.sub(hi, lo), inc).floor().toInt() + 1;
 	
@@ -62,18 +93,6 @@ public class NumberItemList extends NumberList {
 	}
 	
 	
-	//////////////
-	// Creation //
-	//////////////
-
-	public static NumberItemList fromBytes(byte[] bytes) {
-		ArrayList<Number> out = new ArrayList<Number>(bytes.length);
-		for (int i = 0; i < bytes.length; i++) {
-			out.add(Num.fromByte(bytes[i]));
-		}
-		return new NumberItemList(out);
-	}
-
 	//////////////////////////
 	// NUMBERLIST OVERRIDES //
 	//////////////////////////
@@ -432,12 +451,16 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public Number pop() {
-		return _list.remove(0);
+		final Number n = _list.remove(0);
+		decDoubleCounter(n);
+		return n;
 	}
 
 	@Override
 	public Number popBack() {
-		return _list.remove(_list.size()-1);
+		final Number n = _list.remove(_list.size()-1);
+		decDoubleCounter(n);
+		return n;
 	}
 
 	@Override
@@ -446,8 +469,10 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public void rotate(int n) {
-		ListAlgorithms.rotate(_list, n);
+	public ListImpl rotate(int n) {
+		ArrayList<Number> out = new ArrayList<>(_list);
+		ListAlgorithms.rotate(out, n);
+		return new NumberItemList(out);
 	}
 
 	@Override
@@ -471,12 +496,17 @@ public class NumberItemList extends NumberList {
 	
 	@Override
 	public Number remove(int i) {
-		return _list.remove(i);
+		Number n = _list.remove(i);
+		decDoubleCounter(n);
+		return n;
 	}
 	
 	@Override
 	public void removeAll(int[] ixs) {
 		ListAlgorithms.removeAll(_list, ixs);
+		// Re-compute counters
+		_doubles = 0;
+		for (Number n : _list) incDoubleCounter(n);
 	}
 
 	@Override
@@ -485,8 +515,8 @@ public class NumberItemList extends NumberList {
 	}
 
 	@Override
-	public NumberItemList findAll(Obj o) {
-		return new NumberItemList(ListAlgorithms.findAll(_list, o));
+	public NumberList findAll(Obj o) {
+		return NumberList.fromNumberAL(ListAlgorithms.findAll(_list, o));
 	}
 
 	@Override
@@ -532,12 +562,16 @@ public class NumberItemList extends NumberList {
 
 	@Override
 	public void addItem(Obj o) {
-		_list.add((Number)o);
+		final Number n = (Number)o;
+		_list.add(n);
+		incDoubleCounter(n);
 	}
 	
 	@Override
 	public void addItem(int i, Obj o) {
-		_list.add(i, (Number)o);
+		final Number n = (Number)o;
+		_list.add(i, n);
+		incDoubleCounter(n);
 	}
 
 	@Override
@@ -551,7 +585,7 @@ public class NumberItemList extends NumberList {
 	public NumberItemList copy() {
 		ArrayList<Number> out = emptyAL();
 		out.addAll(_list);
-		return new NumberItemList(out);
+		return new NumberItemList(out, _doubles);
 	}
 	
 	@Override
@@ -595,7 +629,7 @@ public class NumberItemList extends NumberList {
 		for (int i = 0; i < _list.size(); i++) {
 			copy.add(_list.get(i).deepcopy());
 		}
-		return new NumberItemList(copy);	
+		return new NumberItemList(copy, _doubles);	
 	}
 
 	@Override
@@ -643,33 +677,6 @@ public class NumberItemList extends NumberList {
 	// HELPER FUNCTIONS //
 	//////////////////////
 	
-	/** Primes up to n **/
-	public static NumberItemList primes(int n) {
-		boolean[] flags = new boolean[n];
-		Arrays.fill(flags, true);
-		
-		//Mark every space that is not prime
-		for (int i = 2; i <= n; i++) {
-			int z = 2*i;
-			while (z <= n) {
-				flags[z-1] = false; //zero index, so sub 1
-				z += i;
-			}
-		}
-		
-		//Allocate new array
-		ArrayList<Number> primeList = new ArrayList<Number>();
-		
-		//Add primes into array
-		for (int i = 2; i <= n; i++) {
-			if (flags[i-1]) {
-				primeList.add(Num.fromInt(i));
-			}
-		}
-		
-		return new NumberItemList(primeList);
-	}
-
 	private void boundsCheck(NumberList a, NumberList b) {
 		if (a.length() != b.length())
 			throw new ValueError("List length mismatch\n"
@@ -808,48 +815,51 @@ public class NumberItemList extends NumberList {
 		return new NumberItemList(out);
 	}
 
+
+
+
 	@Override
 	public NumberList band(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = ns.length();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(NumberMath.band(this.get(i), ns.get(i)));
+			out[i] = NumberMath.band(this.get(i), ns.get(i)).toDouble();
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList bandFrom(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = ns.length();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(NumberMath.band(ns.get(i), this.get(i)));
+			out[i] = NumberMath.band(ns.get(i), this.get(i)).toDouble();
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList bor(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = ns.length();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(NumberMath.bor(this.get(i), ns.get(i)));
+			out[i] = NumberMath.bor(this.get(i), ns.get(i)).toDouble();
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList borFrom(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = ns.length();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(NumberMath.bor(ns.get(i), this.get(i)));
+			out[i] = NumberMath.bor(ns.get(i), this.get(i)).toDouble();
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	
@@ -857,106 +867,120 @@ public class NumberItemList extends NumberList {
 	@Override
 	public NumberList lt(Number n) {
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(n) < 0));
+			out[i] = _list.get(i).compareTo(n) < 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList lt(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) < 0));
+			out[i] = _list.get(i).compareTo(ns.get(i)) < 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList leq(Number n) {
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(n) <= 0));
+			out[i] = _list.get(i).compareTo(n) <= 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList leq(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) <= 0));
+			out[i] = _list.get(i).compareTo(ns.get(i)) <= 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList gt(Number n) {
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(n) > 0));
+			out[i] = _list.get(i).compareTo(n) > 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList gt(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) > 0));
+			out[i] = _list.get(i).compareTo(ns.get(i)) > 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList geq(Number n) {
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(n) >= 0));
+			out[i] = _list.get(i).compareTo(n) >= 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList geq(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) >= 0));
+			out[i] = _list.get(i).compareTo(ns.get(i)) >= 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList eq(Number n) {
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(n) == 0));
+			out[i] = _list.get(i).compareTo(n) == 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
 
 	@Override
 	public NumberList eq(NumberList ns) {
 		boundsCheck(this, ns);
 		int len = _list.size();
-		ArrayList<Number> out = new ArrayList<Number>(len);
+		double[] out = new double[len];
 		for (int i = 0; i < len; i++) {
-			out.add(Num.fromBool(_list.get(i).compareTo(ns.get(i)) == 0));
+			out[i] = _list.get(i).compareTo(ns.get(i)) == 0 ? 1 : 0;
 		}
-		return new NumberItemList(out);
+		return new DoubleList(out);
 	}
+
+
+	private void incDoubleCounter(Number n) {
+		if (n.isa(Obj.NUM)) {
+			_doubles++;
+		}
+	}
+
+	private void decDoubleCounter(Number n) {
+		if (n.isa(Obj.NUM)) {
+			_doubles--;
+		}
+	}
+
 
 }

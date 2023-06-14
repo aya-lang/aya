@@ -8,10 +8,11 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import aya.ReprStream;
+import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.util.Casting;
@@ -164,8 +165,23 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
-	public void rotate(int n) {
-		// TODO: implement
+	public ListImpl rotate(int n) {
+		if (n == 0) {
+			return new Str(_str);
+		} else {
+			final int len = _str.length();
+			char[] out = new char[len];
+			char[] ch_list = _str.toCharArray();
+			if (n > 0) {
+				System.arraycopy(ch_list, 0, out, n, len - n);
+				System.arraycopy(ch_list, len-n, out, 0, n);
+			} else {
+				n *= -1;
+				System.arraycopy(ch_list, 0, out, len-n, n);
+				System.arraycopy(ch_list, n, out, 0, len-n);
+			}
+			return new Str(out);
+		}
 	}
 
 	@Override
@@ -221,7 +237,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 		return found;
 	}
 	
-	public NumberItemList findAll(Obj o) {
+	public NumberList findAll(Obj o) {
 		ArrayList<Number> out = new ArrayList<Number>();
 		if (o instanceof Char) {
 			char c = Casting.asChar(o).charValue();
@@ -231,7 +247,7 @@ public class Str extends ListImpl implements Comparable<Str> {
 				}
 			}
 		} 
-		return new NumberItemList(out);
+		return NumberList.fromNumberAL(out);
 	}
 
 	@Override
@@ -297,13 +313,8 @@ public class Str extends ListImpl implements Comparable<Str> {
 	}
 
 	@Override
-	public NumberItemList toNumberList() {
-		char[] chars = _str.toCharArray();
-		ArrayList<Number> nums = new ArrayList<Number>(chars.length);
-		for (char c : chars) {
-			nums.add(new Num(c));
-		}
-		return new NumberItemList(nums);
+	public NumberList toNumberList() {
+		return NumberList.fromChars(_str.toCharArray());
 	}
 	
 	

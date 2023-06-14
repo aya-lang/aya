@@ -14,7 +14,7 @@ public class NumberItemListTest extends Test {
 		for (Double d : doubles) {
 			ns.add(new Num(d));
 		}
-		return new NumberItemList(ns);
+		return NumberItemList.test_fromAL(ns);
 	}
 	
 	private static NumberItemList ls(Integer...ints) {
@@ -22,11 +22,11 @@ public class NumberItemListTest extends Test {
 		for (Integer i : ints) {
 			ns.add(new Num(i));
 		}
-		return new NumberItemList(ns);
+		return NumberItemList.test_fromAL(ns);
 	}
 	
 	private static NumberItemList ls() {
-		return new NumberItemList(new ArrayList<Number>(0));
+		return NumberItemList.test_fromAL(new ArrayList<Number>(0));
 	}
 	
 	private static Num num(int i) {
@@ -80,12 +80,12 @@ public class NumberItemListTest extends Test {
 			lnOneSix_AL.add(num(Math.log(i)));
 			sqrtOneSix_AL.add(num(Math.sqrt(i)));
 		}
-		NumberItemList sinOneSix  = new NumberItemList(sinOneSix_AL);
-		NumberItemList cosOneSix  = new NumberItemList(cosOneSix_AL);
-		NumberItemList tanOneSix  = new NumberItemList(tanOneSix_AL);
-		NumberItemList logOneSix  = new NumberItemList(logOneSix_AL);
-		NumberItemList lnOneSix   = new NumberItemList(lnOneSix_AL);
-		NumberItemList sqrtOneSix = new NumberItemList(sqrtOneSix_AL);
+		NumberItemList sinOneSix  = NumberItemList.test_fromAL(sinOneSix_AL);
+		NumberItemList cosOneSix  = NumberItemList.test_fromAL(cosOneSix_AL);
+		NumberItemList tanOneSix  = NumberItemList.test_fromAL(tanOneSix_AL);
+		NumberItemList logOneSix  = NumberItemList.test_fromAL(logOneSix_AL);
+		NumberItemList lnOneSix   = NumberItemList.test_fromAL(lnOneSix_AL);
+		NumberItemList sqrtOneSix = NumberItemList.test_fromAL(sqrtOneSix_AL);
 		
 		Test.eq(oneSix.sin() , sinOneSix , "sin" );
 		Test.eq(oneSix.cos() , cosOneSix , "cos" );

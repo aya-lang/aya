@@ -134,7 +134,7 @@
     { .E @ \- 0.< @\L J }:rpad;
 
     .#? ::list ::num .pad\n 2d padding
-    {n l, lEn+$n+ \2:$ l\.>\.< \#.< \#.>}:pad;
+    {n l, l:En+$n+\~ l\#.>\.> \~@ \#.<\.<}:pad;
 
 
     .#? ::any ::list .surround\n  append A to the front and back of L
@@ -177,6 +177,8 @@
         '\n' %                              .# Join with newlines
     }
 
+    {\.S}:rotate_rows;
+    {\0\J.S}:rotate_cols;
 }
 .# Merge with list metatable
 [] .M \.+

@@ -53,7 +53,6 @@ import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BaseConversion;
@@ -1284,12 +1283,12 @@ class OP_Dot_R extends OpInstruction {
 			for (int i = 0; i < count; i++) {
 				nums.add(from);
 			}
-			return new NumberItemList(nums);
+			return NumberList.fromNumberAL(nums);
 		} else {
 			Number a = NumberMath.sub(to, from);
 			Number b = NumberMath.sub(steps, Num.ONE);
 			Number inc = NumberMath.div(a, b);
-			NumberItemList out = new NumberItemList(from, to, inc);
+			NumberList out = NumberList.range(from, to, inc);
 
 			// Rounding error may cause off-by-one
 			int expected_len = steps.toInt();
@@ -1325,17 +1324,17 @@ class OP_Dot_S extends OpInstruction {
 		final Obj b = block.pop();
 
 		if (a.isa(Obj.NUM) && b.isa(Obj.LIST)) {
-			asList(b).mutRotate(asNumber(a).toInt());
-			block.push(b);
+			List out = asList(b).rotate(asNumber(a).toInt());
+			block.push(out);
 		} else if (a.isa(Obj.LIST) && b.isa(LIST)) {
 			final NumberList amount = asList(a).toNumberList();
 			List list = asList(b);
 			if (amount.length() == 1) {
-				list.mutRotate(amount.get(0).toInt());
-				block.push(b);
+				List out = list.rotate(amount.get(0).toInt());
+				block.push(out);
 			} else if (amount.length() == 2) {
-				rotate(list, amount.get(0).toInt(), amount.get(1).toInt());
-				block.push(b);
+				List out = rotate(list, amount.get(0).toInt(), amount.get(1).toInt());
+				block.push(out);
 			} else {
 				throw new ValueError(".S rotation amount must be length 1 or 2");
 			}
@@ -1344,14 +1343,15 @@ class OP_Dot_S extends OpInstruction {
 		}
 	}
 
-	private void rotate(List l, int rows, int cols) {
-		l.mutRotate(rows);
+	private List rotate(List l, int rows, int cols) {
+		l = l.rotate(rows);
 		for (int i = 0; i < l.length(); i++) {
 			Obj x = l.getExact(i);
 			if (x.isa(Obj.LIST)) {
-				asList(x).mutRotate(cols);
+				l.mutSetExact(i, asList(x).rotate(cols));
 			}
 		}
+		return l;
 	}
 }
 

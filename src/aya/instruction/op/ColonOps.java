@@ -15,17 +15,12 @@ import static aya.util.Casting.asSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.StaticAyaExceptionList;
 import aya.exceptions.runtime.AssertError;
-import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
@@ -41,7 +36,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.Str;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.Num;
@@ -234,12 +229,12 @@ class OP_Colon_Quote extends OpInstruction {
 			block.push(Num.fromInt(c & 0xff));
 		} else if (a.isa(STR)) {
 			Str s = asStr(a);
-			ArrayList<Number> nums = new ArrayList<Number>(s.length());
 			byte[] bytes = s.getBytes();
-			for (byte b : bytes) {
-				nums.add(Num.fromByte(b));
+			double[] nums = new double[bytes.length];
+			for (int i = 0; i < bytes.length; i++) {
+				nums[i] = bytes[i];
 			}
-			block.push(new List(new NumberItemList(nums)));
+			block.push(new List(new DoubleList(nums)));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -984,52 +979,51 @@ class OP_Colon_O extends OpInstruction {
 	
 	public OP_Colon_O() {
 		init(":O");
-		arg("J", "Aya meta information");
+		arg("AAB", "apply (2-arg)");
 	}
+
+	private class BlockOpInstruction extends OpInstruction {
+		private final Block _block;
+		public BlockOpInstruction(Block block) {
+			_block = block;
+		}
+		@Override
+		public void execute(Block block) {
+			final Obj b = block.pop();
+			final Obj a = block.pop();
+			block.push(exec2arg(a, b));
+		}
+		@Override
+		public Obj exec2arg(final Obj a, final Obj b) {
+			Obj res;
+			if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) {
+				return res;
+			} else {
+				Block blk = _block.duplicate();
+				blk.push(a);
+				blk.push(b);
+				blk.eval();
+				return blk.pop();
+			}
+		}
+	}
+
 
 	@Override
-	public void execute (Block block) {		
-		Obj a = block.pop();
-		
-		if (a.isa(SYMBOL)) {
-			Symbol sym = (Symbol)a;
-			if (sym.name().equals("ops")) {
-				block.push(OpInfo.getDict());
-			} else if (sym.name().equals("ex")) {
-				block.push(getExInfo());
-			} else {
-				throw new ValueError("':O': Unknown symbol " + sym.name());
-			}
+	public void execute(final Block block) {
+		final Obj c = block.pop(); // block
+		final Obj b = block.pop();
+		final Obj a = block.pop();
+
+		if (c.isa(Obj.BLOCK)) {
+			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asBlock(c));
+			block.push(VectorizedFunctions.vectorize2arg(block_op, a, b));
 		} else {
-			throw new TypeError(this, a);
-		}
-	}
-	
-	/**
-	 * Get list of all built-in exception types
-	 * @return
-	 */
-	public Dict getExInfo() {
-		Dict ex_info = new Dict();
-		HashMap<Symbol, AyaException> exceptions = StaticAyaExceptionList.getExceptions();
-		HashMap<Symbol, AyaRuntimeException> rt_exceptions = StaticAyaExceptionList.getRuntimeExceptions();
-		
-		for (Map.Entry<Symbol, AyaException> entry : exceptions.entrySet()) {
-			Dict d = new Dict();
-			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
-			d.set(SymbolConstants.SOURCE, SymbolConstants.EXCEPTION);
-			ex_info.set(entry.getKey(), d);
+			throw new TypeError(this, c, b, a);
 		}
 
-		for (Map.Entry<Symbol, AyaRuntimeException> entry : rt_exceptions.entrySet()) {
-			Dict d = new Dict();
-			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
-			d.set(SymbolConstants.SOURCE, SymbolConstants.RUNTIME_EXCEPTION);
-			ex_info.set(entry.getKey(), d);
-		}
-
-		return ex_info;
 	}
+
 }
 
 

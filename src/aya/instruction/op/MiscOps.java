@@ -9,9 +9,14 @@ import static aya.obj.Obj.STR;
 import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import aya.Aya;
+import aya.exceptions.ex.AyaException;
 import aya.exceptions.ex.NotAnOperatorError;
+import aya.exceptions.ex.StaticAyaExceptionList;
+import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
@@ -22,7 +27,7 @@ import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
-import aya.obj.list.numberlist.NumberItemList;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.ComplexNum;
@@ -30,6 +35,8 @@ import aya.obj.number.FractionNum;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
+import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
 import aya.util.NamedCharacters;
 import aya.util.StringUtils;
@@ -109,7 +116,7 @@ public class MiscOps {
 		/* 94 ^  */ null,
 		/* 95 _  */ null,
 		/* 96 `  */ null,
-		/* 97 a  */ null,
+		/* 97 a  */ new OP_Ma(),
 		/* 98 b  */ new OP_Mb(),
 		/* 99 c  */ new OP_Cosine(),
 		/* 100 d */ new OP_CastDouble(),
@@ -451,6 +458,61 @@ class OP_Atangent extends OpInstruction {
 	}
 }
 
+// a - 97
+class OP_Ma extends OpInstruction {
+	
+	public OP_Ma() {
+		init("Ma");
+		arg("J", "Aya meta information");
+	}
+
+	@Override
+	public void execute (Block block) {		
+		Obj a = block.pop();
+		
+		if (a.isa(Obj.SYMBOL)) {
+			Symbol sym = (Symbol)a;
+			if (sym.name().equals("ops")) {
+				block.push(OpInfo.getDict());
+			} else if (sym.name().equals("ex")) {
+				block.push(getExInfo());
+			} else {
+				throw new ValueError("'Ma': Unknown symbol " + sym.name());
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+	
+	/**
+	 * Get list of all built-in exception types
+	 * @return
+	 */
+	public Dict getExInfo() {
+		Dict ex_info = new Dict();
+		HashMap<Symbol, AyaException> exceptions = StaticAyaExceptionList.getExceptions();
+		HashMap<Symbol, AyaRuntimeException> rt_exceptions = StaticAyaExceptionList.getRuntimeExceptions();
+		
+		for (Map.Entry<Symbol, AyaException> entry : exceptions.entrySet()) {
+			Dict d = new Dict();
+			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
+			d.set(SymbolConstants.SOURCE, SymbolConstants.EXCEPTION);
+			ex_info.set(entry.getKey(), d);
+		}
+
+		for (Map.Entry<Symbol, AyaRuntimeException> entry : rt_exceptions.entrySet()) {
+			Dict d = new Dict();
+			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
+			d.set(SymbolConstants.SOURCE, SymbolConstants.RUNTIME_EXCEPTION);
+			ex_info.set(entry.getKey(), d);
+		}
+
+		return ex_info;
+	}
+
+}
+
+
 
 // b - 98
 class OP_Mb extends OpInstruction {
@@ -733,7 +795,7 @@ class OP_Primes extends OpInstruction {
 			if (i < 0) {
 				throw new ValueError("Mp: Input must be positive");
 			}
-			block.push(new List(NumberItemList.primes(i)));
+			block.push(new List(DoubleList.primes(i)));
 		} else {
 			throw new TypeError(this, a);
 		}

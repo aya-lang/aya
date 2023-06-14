@@ -30,6 +30,9 @@ public abstract class ListImpl {
 	
 	/** Return the back of the list */
 	public abstract Obj tail();
+
+	/** Return a rotated copy of the list */
+	public abstract ListImpl rotate(int n);
 	
 	/** Remove and return the head of the list */
 	public abstract Obj pop();
@@ -39,9 +42,6 @@ public abstract class ListImpl {
 	
 	/** Reverse the list in place */
 	public abstract void reverse();
-
-	/** Rotate the list in place */
-	public abstract void rotate(int n);
 	
 	/** Sort the list */
 	public abstract void sort();

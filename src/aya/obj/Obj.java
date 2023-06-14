@@ -33,6 +33,8 @@ public abstract class Obj {
 	public static final byte NUMBERITEMLIST = 23;
 	public static final byte OBJLIST = 24;
 	public static final byte STRLIST = 25;
+	public static final byte DOUBLELIST = 26;
+
 
 	public static final byte CHAR = 3;
 	
@@ -66,6 +68,8 @@ public abstract class Obj {
 			return "STR";
 		case NUMBERITEMLIST:
 			return "NUMBERITEMLIST";
+		case DOUBLELIST:
+			return "DOUBLELIST";
 		case LIST:
 			return "LIST";
 		case BLOCK: 
@@ -99,6 +103,7 @@ public abstract class Obj {
 		case NUMBERITEMLIST : return SymbolConstants.LIST;
 		case OBJLIST : return SymbolConstants.LIST;
 		case STRLIST : return SymbolConstants.LIST;
+		case DOUBLELIST : return SymbolConstants.LIST;
 		
 		case SYMBOL : return SymbolConstants.SYM;
 		case STR : return SymbolConstants.STR;
