@@ -625,7 +625,7 @@ class OP_Colon_D extends OpInstruction {
 
 		if (dict.isa(DICT)) {
 			Dict d = (Dict)dict;
-			if (index.isa(LIST)) {
+			if (index.isa(LIST) && !index.isa(STR)) {
 				List list = asList(index);
 				for (int i = 0; i < list.length(); i++) {
 					set(d, list.getExact(i), item);
