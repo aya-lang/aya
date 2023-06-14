@@ -15,6 +15,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import aya.exceptions.runtime.ValueError;
+
 /**
  * A very basic plotting tool. Plots an arbitrary number of doubles to a graph
  * where the x location is the location in the array and the y location
@@ -70,11 +72,19 @@ public class Canvas {
 	}
 
 	public CanvasCursorListener getCursorListener() {
-		return _cursor_listener;
+		if (_cursor_listener != null) {
+			return _cursor_listener;
+		} else {
+			throw new ValueError("Cannot get mouse information: canvas has not yet been opened");
+		}
 	}
 
 	public CanvasKeyListener getKeyListener() {
-		return _key_listener;
+		if (_key_listener != null) {
+			return _key_listener;
+		} else {
+			throw new ValueError("Cannot get keyboard information: canvas has not yet been opened");
+		}
 	}
 
 	public void setShowOnRefresh(boolean b) {

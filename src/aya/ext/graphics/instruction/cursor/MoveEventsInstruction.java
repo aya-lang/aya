@@ -1,5 +1,6 @@
 package aya.ext.graphics.instruction.cursor;
 
+import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasCursorListener;
 import aya.ext.graphics.CanvasTable;
@@ -16,10 +17,14 @@ public class MoveEventsInstruction  extends GraphicsInstruction {
 
 	@Override
 	protected void doCanvasCommand(Canvas cvs, Block block) {
-		block.push(
-				cvs.getCursorListener().getMoveHistory().stream()
-						.map(CanvasCursorListener.MoveInfo::toDict)
-						.collect(new ListCollector())
-		);
+		try {
+			block.push(
+					cvs.getCursorListener().getMoveHistory().stream()
+							.map(CanvasCursorListener.MoveInfo::toDict)
+							.collect(new ListCollector())
+			);
+		} catch (NullPointerException e) {
+			throw new ValueError(e.getMessage());
+		}
 	}
 }

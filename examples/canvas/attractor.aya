@@ -7,7 +7,7 @@ import ::time
 color.colors.black :black;
 color.colors.white :white;
 
-"running!":P
+"Click to move the attractor":P
 1 :g;
 
 .# Mover
@@ -74,9 +74,14 @@ def attractor::show {self,
 .# Start with a black background
 black cvs.set_color
 0 0 cvs.width cvs.height cvs.fillrect
+cvs.show
 
 50 time.rate! :limiter;
 {
+  cvs.pressed_buttons 1 N 0:>\; {
+    cvs.mouse_pos a.:pos;
+  } ?
+
   .# Update movers
   ms :# {m,
     m.update
