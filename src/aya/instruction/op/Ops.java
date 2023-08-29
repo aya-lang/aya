@@ -1269,6 +1269,10 @@ class OP_Q extends OpInstruction {
 			} else {
 				block.push(Num.fromInt(Ops.RAND.nextInt()));
 			}
+		} else if (a.isa(Obj.LIST)) {
+			List l = asList(a);
+			int i = Ops.RAND.nextInt(l.length());
+			block.push(l.getExact(i));
 		} else {
 			throw new TypeError(this, a);
 		}
