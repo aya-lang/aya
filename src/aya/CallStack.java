@@ -3,6 +3,7 @@ package aya;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 
+import aya.exceptions.runtime.AyaStackOverflowError;
 import aya.instruction.variable.GetVariableInstruction;
 
 /**
@@ -12,7 +13,7 @@ import aya.instruction.variable.GetVariableInstruction;
  */
 public class CallStack {
 
-	private final static int MAX_STACK_DEPTH = 128;
+	private static int MAX_STACK_DEPTH = 1024;
 
 	public static class CallStackFrame {
 		private GetVariableInstruction _instruction;
@@ -55,11 +56,11 @@ public class CallStack {
 	}
 	
 	public void push(GetVariableInstruction var) {
-		if (_stack_index < _stack.length) {
+		if (_stack_index < _stack.length-1) {
 			_stack_index++;
 			_stack[_stack_index].reset(var);
 		} else {
-			throw new StackOverflowError("Call stack overflow");
+			throw new AyaStackOverflowError("Call stack overflow");
 		}
 	}
 	
@@ -110,7 +111,10 @@ public class CallStack {
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Function call traceback:\n  Error ");
 		ArrayList<CallStackFrame> stack_list = new ArrayList<CallStackFrame>(size());
-		for (int i = size()-1; i >= 0; i--) { stack_list.add(_stack[i]); }
+		for (int i = size()-1; i >= 0; i--) {
+			if (i == MAX_STACK_DEPTH) return "Overflow";
+			stack_list.add(_stack[i]);
+		}
 
 		for (CallStackFrame l : stack_list)
 		{
