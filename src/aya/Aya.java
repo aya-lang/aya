@@ -142,6 +142,7 @@ public class Aya extends Thread {
 			try
 			{
 			  loadOps(Ops.OPS);
+			  loadOps(Ops.EXTRA_OPS);
 			  loadOps(MiscOps.MATH_OPS);
 			  loadOps(ColonOps.COLON_OPS);
 			  loadOps(DotOps.DOT_OPS);

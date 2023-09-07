@@ -146,6 +146,8 @@ public class Ops {
 	/* 124 | */ public static final OpInstruction BAR = new OP_Bar();
 	/* 126 ~ */ public static final OpInstruction TILDE = new OP_Tilde();
 	
+	public static final OpInstruction[] EXTRA_OPS = { BAR, TILDE };
+
 	//Special Ops
 	//public static final Operation APPLY_TO = new OP_ApplyTo();
 	public static final OpInstruction GETINDEX = new OP_GetIndex();

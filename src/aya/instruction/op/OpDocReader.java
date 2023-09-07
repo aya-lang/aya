@@ -35,6 +35,7 @@ public class OpDocReader {
 	public static ArrayList<String> getAllOpDescriptions() {
 		ArrayList<String> out = new ArrayList<String>();
 		out.addAll(toStrings(Ops.OPS));
+		out.addAll(toStrings(Ops.EXTRA_OPS));
 		out.addAll(toStrings(DotOps.DOT_OPS));
 		out.addAll(toStrings(ColonOps.COLON_OPS));
 		out.addAll(toStrings(MiscOps.MATH_OPS));
@@ -44,6 +45,7 @@ public class OpDocReader {
 	public static ArrayList<Obj> getAllOpDicts() {
 		ArrayList<Obj> out = new ArrayList<Obj>();
 		out.addAll(toDicts(Ops.OPS));
+		out.addAll(toDicts(Ops.EXTRA_OPS));
 		out.addAll(toDicts(DotOps.DOT_OPS));
 		out.addAll(toDicts(ColonOps.COLON_OPS));
 		out.addAll(toDicts(MiscOps.MATH_OPS));
