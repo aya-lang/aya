@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import aya.ReprStream;
-import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.character.Char;

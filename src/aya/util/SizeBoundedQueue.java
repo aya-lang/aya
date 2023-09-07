@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("serial")
 public class SizeBoundedQueue<T> extends ArrayDeque<T> {
 
 	private final int maxNumElements;
