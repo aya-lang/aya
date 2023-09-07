@@ -739,7 +739,6 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("d");
 		return ListAlgorithms.reprCompact(stream, _list);
 	}
 
