@@ -3,10 +3,7 @@ import ::io
 [
 
     { "/a/b/c" path!.dirs  ["a""b""c"] }
-    { "/a/b/c/.." path!.dirs  ["a""b"] }
-    { "/a/b/c" path! ".." + .dirs  ["a""b"] }
-    { "/a/./b/././c" path!.dirs  ["a""b""c"] }
+    { "./a/b/c" path!.dirs  [".""a""b""c"] }
     { "/a/b/c" path! V .dirs  ["a""b"] }
-    { "~/a" path!.__str__  path.home.__str__ "a" + :9s + }
 
 ] :# { test.test }

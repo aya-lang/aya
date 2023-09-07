@@ -12,7 +12,7 @@ class path
 
 .# Create a new path (accepts relative or abs paths)
 .# Custom constructor
-{dir meta,
+{dir meta : absolute_path(0),
     .# Already a path?
     dir:T ::path = {
         dir
@@ -21,9 +21,14 @@ class path
         dir:T ::str = {
             .# If direct path
             dir meta._isabs ! {
-                meta.workingP "/"+ dir + :dir;
-            } ?
-            {, dir meta._split meta._fixhome meta._clean :dirs} meta :M
+                0 :absolute_path;
+            } {
+                1 :absolute_path;
+            } .?
+            {,
+                dir meta._split :dirs;
+                absolute_path :is_absolute_path;
+            } meta :M
         } {
             "Cannot create path from $dir" .D
         } .?
@@ -56,8 +61,12 @@ def path::__radd__ {\.__add__}
 
 .# String representation of the path
 def path::__str__ {self,
-    self.dirs :9s % self.M.root :9s + \+
-    self.isfile ! {:9s +} ?
+    self.dirs "/" %
+    self.is_absolute_path {
+        "/" \ +
+    } ?
+    .#self.dirs :9s % self.M.root :9s + \+
+    .#self.isfile ! {:9s +} ?
 }
 
 (path.__str__.`,0); path.:__repr__;
@@ -81,6 +90,10 @@ def path::working {path,
 .#? path.aya\n  aya directory
 def path::aya {path,
     :{sys.ad} path!
+}
+
+def path::clean {self,
+    self.dirs self._clean self.:dirs;
 }
 
 
@@ -116,9 +129,9 @@ def path::_fixhome {dirs::list path,
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
 def path::_isabs {p::str path,
-    p "/" H
-    p path.root :9s + H
-    p path.root "/" + H
+    p "/" N0=\;
+    p path.root :9s + N0=\;
+    p path.root "/" + N0=\;
     | |
 }
 
