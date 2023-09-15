@@ -5,8 +5,6 @@ export [
     ::stdin
 ]
 
-def ::iswindows {:9s"\\"=}
-
 
 class path
 
@@ -62,7 +60,7 @@ def path::__radd__ {\.__add__}
 .# String representation of the path
 def path::__str__ {self,
     self.dirs "/" %
-    self.is_absolute_path {
+    self.is_absolute_path self._iswindows ! & {
         "/" \ +
     } ?
     .#self.dirs :9s % self.M.root :9s + \+
@@ -129,10 +127,11 @@ def path::_fixhome {dirs::list path,
 
 .# ::str path._isabs\n  return true of the given string is an absolute path
 def path::_isabs {p::str path,
-    p "/" N0=\;
-    p path.root :9s + N0=\;
-    p path.root "/" + N0=\;
-    | |
+	path._iswindows {
+		p 1 I ': =
+	} {
+		p "/" N0=\;
+	} .?
 }
 
 .# Remove all ".." by traversing the directories
@@ -157,6 +156,10 @@ def path::_clean {dirs::list path : i(0),
     dirs
 }
 
+def path::_iswindows {self,
+	:9s "\\" =
+}
+
 
 
 .#
@@ -165,12 +168,6 @@ def path::_clean {dirs::list path : i(0),
 
 .#? path.root\n  root dir name
 "user.dir" :{sys.getprop} :9s .^ S .[0] path.:root;
-
-
-.# Regular expression used for splitting path strings
-.# If :9s is "\", return escaped "\\" otherwise return :9s
-.#? path.filesplit\n  constant "\\" if windows, "/" if unix
-iswindows {:9s$+} {:9s} .? path.:filesplit;
 
 
 
