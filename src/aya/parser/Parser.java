@@ -228,7 +228,7 @@ public class Parser {
 					}
 
 				} else {
-					throw new SyntaxError("Unexpected end of input after '.'" + in.toString());
+					throw new SyntaxError("Unexpected end of input after '.'", in);
 				}
 			}
 
@@ -237,7 +237,7 @@ public class Parser {
 				try {
 					tokens.add(new OperatorToken("" + in.next(), OperatorToken.MATH_OP));
 				} catch (EndOfInputError e) {
-					throw new SyntaxError("Expected op name after 'M'" + in.toString());
+					throw new SyntaxError("Expected op name after 'M'", in);
 				}
 			}
 			
@@ -275,7 +275,7 @@ public class Parser {
 					}
 					// Incomplete
 					else {
-						throw new SyntaxError("Incomplete long string literal: " + str.toString());
+						throw new SyntaxError("Incomplete long string literal: " + str.toString(), in);
 					}
 				}
 			}
@@ -289,7 +289,7 @@ public class Parser {
 			// Character Literals
 			else if (current == '\'') {
 				if (!in.hasNext()) {
-					throw new SyntaxError("Expected character name after '''" + in.toString());
+					throw new SyntaxError("Expected character name after '''" + in.toString(), in);
 				}
 				// Special Character
 				if (in.peek() == '\\') {
@@ -305,7 +305,7 @@ public class Parser {
 						sb.append("" + in.next());
 					}
 					if (!complete) {
-						throw new SyntaxError("Expected closing quote after character literal '\\" + sb.toString());
+						throw new SyntaxError("Expected closing quote after character literal '\\" + sb.toString(), in);
 					}
 
 					char specialChar;
@@ -316,7 +316,7 @@ public class Parser {
 					}
 
 					if (specialChar == CharacterParser.INVALID) {
-						throw new SyntaxError("'\\" + sb.toString() + "' is not a valid special character");
+						throw new SyntaxError("'\\" + sb.toString() + "' is not a valid special character", in);
 					}
 
 					tokens.add(new CharToken("" + specialChar));
@@ -377,7 +377,7 @@ public class Parser {
 									}
 									
 								} else {
-									throw new SyntaxError("Expected symbol name");
+									throw new SyntaxError("Expected symbol name", in);
 								}
 							}
 						}
@@ -402,7 +402,7 @@ public class Parser {
 						if (done) {
 							tokens.add(new NamedOpToken(sb.toString()));
 						} else {
-							throw new SyntaxError("Expected '}' after :{" + sb.toString());
+							throw new SyntaxError("Expected '}' after :{" + sb.toString(), in);
 						}
 					}
 
@@ -461,7 +461,7 @@ public class Parser {
 
 	public static NumberToken parseNumber(ParserString in) throws EndOfInputError, SyntaxError {
 		if (!in.hasNext()) {
-			throw new SyntaxError("Attempted to parse empty number string");
+			throw new SyntaxError("Attempted to parse empty number string", in);
 		}
 		char start = in.next();
 		if (start == ':') {
@@ -476,7 +476,7 @@ public class Parser {
 				}
 				return new NumberToken(specNum.toString(), true);
 			} else {
-				throw new SyntaxError(in.toString() + " is not a valid number");
+				throw new SyntaxError(in.toString() + " is not a valid number", in);
 			}
 		} else if (CharUtils.isDigit(start) || start == '.' || start == '-') {
 			StringBuilder num = new StringBuilder("" + start);
@@ -497,7 +497,7 @@ public class Parser {
 			}
 			return new NumberToken(num.toString());
 		} else {
-			throw new SyntaxError(in.toString() + " is not a valid number");
+			throw new SyntaxError(in.toString() + " is not a valid number", in);
 		}
 	}
 

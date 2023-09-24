@@ -3,10 +3,12 @@ package aya.parser;
 import aya.exceptions.ex.EndOfInputError;
 
 public class ParserString {
+	SourceString source;
 	char[] chars;
 	int ix;
 	
 	public ParserString(String s) {
+		this.source = new SourceString(s, "<anon>");
 		this.chars = s.toCharArray();
 		ix = 0;
 	}
@@ -51,30 +53,18 @@ public class ParserString {
 	public boolean hasNext() {
 		return ix < chars.length;
 	}
-	
-	
-	
-	public String toString() {
-		String s = new String(chars);
-		StringBuilder sb = new StringBuilder();
-		int i = 0;
-		while (i < ix-1) {
-			sb.append(' ');
-			i++;
-		}
-		sb.append('^');
-		
-		return "\n" + s + '\n' + sb.toString();
-	}
 
-	public String lookAround(int i) {
-		int start = Math.max(0, ix - i);
-		int end = Math.min(ix + i, chars.length);
-		//char[] out = new char[(end - start) + 1];
-		String out = "";
-		for (int k = start; k < end - 1; k++)
-			out += chars[k];
-		return new String(out);
+	@Override
+	public String toString() {
+		return new String(this.chars);
+	}
+	
+	public SourceString getSource() {
+		return this.source;
+	}
+	
+	public int currentIndex() {
+		return this.ix-1;
 	}
 
 }
