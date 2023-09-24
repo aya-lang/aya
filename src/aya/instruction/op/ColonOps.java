@@ -45,6 +45,7 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
+import aya.parser.SourceString;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.DictReader;
@@ -631,7 +632,10 @@ class OP_Colon_B extends OpInstruction {
 
 	@Override
 	public void execute(Block block) {
-		StringToken str_token = new StringToken(block.pop().str(), true);
+		// TODO: SourceStringRef
+		String s = block.pop().str();
+		SourceString source = new SourceString(s, "<:B>");
+		StringToken str_token = new StringToken(s, true, source.ref(0));
 		try {
 			str_token.getInstruction().execute(block);
 		} catch (ParserException e) {

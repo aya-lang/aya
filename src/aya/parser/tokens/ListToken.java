@@ -11,12 +11,13 @@ import aya.instruction.ListBuilderInstruction;
 import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 
 public class ListToken extends CollectionToken {
 	
-	public ListToken(String data, ArrayList<Token> col) {
-		super(Token.LIST, data, col);
+	public ListToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.LIST, data, col, source);
 	}
 
 	

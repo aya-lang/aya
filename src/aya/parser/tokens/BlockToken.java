@@ -18,6 +18,7 @@ import aya.obj.block.BlockHeaderArg;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
 
@@ -25,8 +26,8 @@ public class BlockToken extends CollectionToken {
 	
 	public static final Obj DEFAULT_LOCAL_VAR = Num.ZERO;
 		
-	public BlockToken(String data, ArrayList<Token> col) {
-		super(Token.BLOCK, data, col);
+	public BlockToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.BLOCK, data, col, source);
 	}
 
 	

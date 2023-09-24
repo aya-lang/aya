@@ -4,11 +4,12 @@ import aya.Aya;
 import aya.exceptions.ex.ParserException;
 import aya.instruction.Instruction;
 import aya.instruction.named.NamedInstruction;
+import aya.parser.SourceStringRef;
 
 public class NamedOpToken extends StdToken {
 
-	public NamedOpToken(String data) {
-		super(data, Token.NAMED_OP);
+	public NamedOpToken(String data, SourceStringRef source) {
+		super(data, Token.NAMED_OP, source);
 	}
 
 	@Override

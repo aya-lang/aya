@@ -7,9 +7,9 @@ public class ParserString {
 	char[] chars;
 	int ix;
 	
-	public ParserString(String s) {
-		this.source = new SourceString(s, "<anon>");
-		this.chars = s.toCharArray();
+	public ParserString(SourceString source) {
+		this.source = source;
+		this.chars = source.getRawString().toCharArray();
 		ix = 0;
 	}
 	
@@ -65,6 +65,10 @@ public class ParserString {
 	
 	public int currentIndex() {
 		return this.ix-1;
+	}
+	
+	public SourceStringRef currentRef() {
+		return new SourceStringRef(this.source, this.currentIndex());
 	}
 
 }

@@ -16,6 +16,7 @@ import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
 
@@ -23,8 +24,8 @@ public class LambdaToken extends CollectionToken {
 	
 	ArrayList<TokenQueue> _lambdaData;
 	
-	public LambdaToken(String data, ArrayList<Token> col) {
-		super(Token.LAMBDA, data, col);
+	public LambdaToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.LAMBDA, data, col, source);
 	}
 
 	private ArrayList<TokenQueue> getLambdaData() {

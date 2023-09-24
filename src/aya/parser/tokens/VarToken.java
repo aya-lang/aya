@@ -4,11 +4,12 @@ import aya.Aya;
 import aya.instruction.Instruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class VarToken extends StdToken {
 		
-	public VarToken(String data) {
-		super(data, Token.VAR);
+	public VarToken(String data, SourceStringRef source) {
+		super(data, Token.VAR, source);
 	}
 	
 	public Symbol getSymbol() {

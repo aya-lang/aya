@@ -4,10 +4,12 @@ import aya.TypeIDs;
 import aya.exceptions.ex.ParserException;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
+import aya.parser.SourceStringRef;
 
 public abstract class Token {
 	int type;
 	String data;
+	SourceStringRef source;
 	
 	//IDs
 	public static final int STRING 		= Obj.STR;
@@ -45,8 +47,9 @@ public abstract class Token {
 	public static final int NAMED_OP        = TypeIDs.T_NAMED_OP;
 	
 	
-	protected Token(int type) {
+	protected Token(int type, SourceStringRef source) {
 		this.type = type;
+		this.source = source;
 	}
 	
 	public boolean isa(int type) {
@@ -66,6 +69,10 @@ public abstract class Token {
 	
 	public String toString() {
 		return data;
+	}
+	
+	public SourceStringRef getSourceStringRef() {
+		return this.source;
 	}
 	
 }

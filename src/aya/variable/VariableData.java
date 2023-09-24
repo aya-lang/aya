@@ -18,6 +18,7 @@ import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
+import aya.parser.SourceString;
 
 /**
  * Static class containing all variables for the current session.
@@ -72,7 +73,7 @@ public class VariableData {
 		
 		Block nil_eq = null;
 		try {
-			nil_eq = Parser.compile("; :T ::__nil =", aya);
+			nil_eq = Parser.compile(new SourceString("; :T ::__nil =", "<nil_eq>"), aya);
 		} catch (ParserException e) {
 			throw new RuntimeException(e);
 		}

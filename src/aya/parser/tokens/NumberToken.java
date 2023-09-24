@@ -5,17 +5,18 @@ import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.number.Num;
+import aya.parser.SourceStringRef;
 import aya.parser.SpecialNumberParser;
 
 public class NumberToken extends StdToken {
 	private boolean isSpecNum = false;
 	
-	public NumberToken(String data) {
-		super(data, Token.NUMERIC);
+	public NumberToken(String data, SourceStringRef source) {
+		super(data, Token.NUMERIC, source);
 	}
 
-	public NumberToken(String data, boolean b) {
-		super(data, Token.NUMERIC);
+	public NumberToken(String data, boolean b, SourceStringRef source) {
+		super(data, Token.NUMERIC, source);
 		isSpecNum = true;
 	}
 

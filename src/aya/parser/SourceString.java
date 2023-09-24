@@ -71,7 +71,7 @@ public class SourceString {
 		return this.source.charAt(charIndex);
 	}
 	
-	public String getFullSource() {
+	public String getRawString() {
 		return this.source;
 	}
 	
@@ -118,6 +118,10 @@ public class SourceString {
 		
 		return sb.toString();
 	}
+	
+	public SourceStringRef ref(int index) {
+		return new SourceStringRef(this, index);
+	}
 
 	
 	@Override
@@ -128,7 +132,7 @@ public class SourceString {
 	public static void main(String[] args) {
 		SourceString ss = new SourceString("\n\n\n\n\n\n\n\n1 :x;\n{y,\n  y y +\n}:double;\nx double :P", "main");
 		System.out.println(ss);
-		System.out.println(ss.getFullSource());
+		System.out.println(ss.getRawString());
 		
 		for (int i = 0; i < ss.length(); i++) {
 			System.out.println(i + ": " + ss.getIndexedLine(i));

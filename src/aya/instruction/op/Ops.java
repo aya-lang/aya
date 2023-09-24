@@ -59,6 +59,7 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
+import aya.parser.SourceString;
 import aya.util.FileUtils;
 import aya.util.Pair;
 import aya.util.VectorizedFunctions;
@@ -1711,7 +1712,7 @@ class OP_Tilde extends OpInstruction {
 			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
 		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				block.addAll(Parser.compile(a.str(), Aya.getInstance()).getInstructions().getInstrucionList());
+				block.addAll(Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()).getInstructions().getInstrucionList());
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}

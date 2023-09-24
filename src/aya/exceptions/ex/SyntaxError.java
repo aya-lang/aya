@@ -1,7 +1,7 @@
 package aya.exceptions.ex;
 
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.ParserString;
+import aya.parser.SourceStringRef;
 
 @SuppressWarnings("serial")
 public class SyntaxError extends ParserException {
@@ -10,7 +10,7 @@ public class SyntaxError extends ParserException {
 		super(SymbolConstants.SYNTAX_ERR, msg);
 	}
 	
-	public SyntaxError(String msg, ParserString in) {
-		super(SymbolConstants.SYNTAX_ERR, msg + "\n" + in.getSource().getContextStr(in.currentIndex()));
+	public SyntaxError(String msg, SourceStringRef source) {
+		super(SymbolConstants.SYNTAX_ERR, msg + "\n" + source.getContextStr());
 	}
 }

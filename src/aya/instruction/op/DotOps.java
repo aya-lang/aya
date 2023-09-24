@@ -63,6 +63,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.ParserString;
+import aya.parser.SourceString;
 import aya.util.Casting;
 import aya.util.VectorizedFunctions;
 
@@ -228,7 +229,7 @@ class OP_Dot_Bang extends OpInstruction {
 			return ((Number)a).signnum();
 		} else if (a.isa(STR)) {
 			String numStr = a.str().trim();
-			ParserString ps = new ParserString(numStr);
+			ParserString ps = new ParserString(new SourceString(numStr, ".!"));
 			Number n;
 			try {
 				n = Parser.parseNumber(ps).numValue();
@@ -1581,7 +1582,7 @@ class OP_Dot_Tilde extends OpInstruction {
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				block.push( Parser.compile(a.str(), Aya.getInstance()) );
+				block.push( Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()) );
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}

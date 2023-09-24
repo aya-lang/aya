@@ -8,6 +8,7 @@ import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpInstruction;
 import aya.instruction.op.Ops;
+import aya.parser.SourceStringRef;
 
 public class OperatorToken extends StdToken {
 	
@@ -18,8 +19,8 @@ public class OperatorToken extends StdToken {
 	
 	private int op_type;
 	
-	public OperatorToken(String data, int op_type) {
-		super(data, Token.OP);
+	public OperatorToken(String data, int op_type, SourceStringRef source) {
+		super(data, Token.OP, source);
 		this.op_type = op_type;
 	}
 

@@ -41,6 +41,7 @@ import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
+import aya.parser.SourceString;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 import aya.variable.VariableData;
@@ -100,7 +101,7 @@ public class Aya extends Thread {
 					}
 					
 					long startTime = System.currentTimeMillis();
-					_instance.run(input);
+					_instance.run(new SourceString(input, "<interactive>"));
 					_lastInputRunTime = System.currentTimeMillis() - startTime;
 					
 					if (_input.isEmpty()) {
@@ -253,7 +254,7 @@ public class Aya extends Thread {
 	// THREAD OVERRIDES //
 	//////////////////////
 	
-	private void run(String str) {
+	private void run(SourceString str) {
 		try {
 			run(Parser.compile(str, this));
 		} catch (ParserException e) {

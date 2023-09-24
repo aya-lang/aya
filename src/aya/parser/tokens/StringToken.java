@@ -13,18 +13,20 @@ import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.ParserString;
+import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 
 public class StringToken extends StdToken {
 		
 	private boolean interpolate; //If true, interpolate string at runtime
 	
-	public StringToken(String data) {
-		super(data, Token.STRING);
+	public StringToken(String data, SourceStringRef source) {
+		super(data, Token.STRING, source);
 		this.interpolate = true;
 	}
 	
-	public StringToken(String data, boolean interpolate) {
-		super(data, Token.STRING);
+	public StringToken(String data, boolean interpolate, SourceStringRef source) {
+		super(data, Token.STRING, source);
 		this.interpolate = interpolate;
 	}
 	
@@ -36,7 +38,7 @@ public class StringToken extends StdToken {
 	}
 
 	private InterpolateStringInstruction parseInterpolateStr(String data) throws ParserException {
-		ParserString in = new ParserString(data);
+		ParserString in = new ParserString(new SourceString(data, "StringToken.parseInterpolateStr"));
 		StringBuilder sb = new StringBuilder();
 		InstructionStack instrs = new InstructionStack();
 		
@@ -112,7 +114,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the block
-					instrs.insert(0, new Block(Parser.compileIS(block.toString(), Aya.getInstance())));
+					instrs.insert(0, new Block(Parser.compileIS(new SourceString(block.toString(), "StringToken.parseInterpolateString.B"), Aya.getInstance())));
 					
 				}
 				
