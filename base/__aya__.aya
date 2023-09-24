@@ -19,7 +19,15 @@
 
 }:__aya__;
 
-
+{,
+    {, 
+        ::__nil :__type__;
+        "nil" :__str__;
+        "nil" :__repr__'
+        1 :__pushself__;
+        {:T ::__nil =}:__eq__;
+    }:__meta__;
+}:nil;
 
 .#######################################
 .# DEFINE __aya__ KEYWORDS AND GLOBALS #
