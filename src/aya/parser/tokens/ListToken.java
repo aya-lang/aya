@@ -64,7 +64,7 @@ public class ListToken extends CollectionToken {
 			Block[] filters = new Block[listData.size()-2];
 			for(int k = 2; k < listData.size(); k++) {
 				if (listData.get(k).size() == 0) {
-					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]");
+					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]", this.getSourceStringRef());
 				}
 				//filters[k-2] = new Block(generate(listData.get(k)));
 				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
@@ -93,7 +93,7 @@ public class ListToken extends CollectionToken {
 			try {
 				pops = nt.numValue().toInt();
 			} catch (NumberFormatException e) {
-				throw new SyntaxError(nt + " is not a valid number in the block header");
+				throw new SyntaxError(nt + " is not a valid number in the block header", nt.getSourceStringRef());
 			}
 			
 			arr.remove(0); 

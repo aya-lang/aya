@@ -60,6 +60,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.util.FileUtils;
 import aya.util.Pair;
 import aya.util.VectorizedFunctions;
@@ -81,12 +82,13 @@ public class Ops {
 	public static final char MAX_OP = (char)126;
 	protected static final OpInstruction OP_PLUS = new OP_Plus();
 	public static final OpInstruction OP_I_INSTANCE = new OP_GetIndex();
+	public static final OpInstruction OP_POUND = new OP_Pound();
 
 	
 	public static final OpInstruction[] OPS = {
 		/* 33 !  */ new OP_Bang(),
 		/* 34 "  */ null, // String
-		/* 35 #  */ new OP_Pound(),
+		/* 35 #  */ OP_POUND,
 		/* 36 $  */ new OP_Duplicate(),
 		/* 37 %  */ new OP_Percent(),
 		/* 38 &  */ new OP_And(),
@@ -182,7 +184,7 @@ public class Ops {
 				|| c == '~';
 	}
 	
-	public static OpInstruction getOp(char op) throws NotAnOperatorError {
+	public static OpInstruction getOp(char op, SourceStringRef source) throws NotAnOperatorError {
 		if ((op >= 33 && op <= 47) || (op >= 59 && op <= 96)) {
 			return OPS[op-FIRST_OP];
 		} else if (op == '~') {
@@ -190,7 +192,7 @@ public class Ops {
 		} else if (op == '|') {
 			return BAR;
 		} else {
-			throw new NotAnOperatorError(""+op);
+			throw new NotAnOperatorError(""+op, source);
 		}
 	}
 	

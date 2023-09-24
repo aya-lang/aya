@@ -13,6 +13,7 @@ import aya.exceptions.runtime.UndefVarException;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceString;
 
 public class StaticAyaExceptionList {
 	static HashMap<Symbol, AyaException> exceptions = null;
@@ -22,17 +23,20 @@ public class StaticAyaExceptionList {
 		if (exceptions == null) {
 			exceptions = new HashMap<Symbol, AyaException>();
 			AyaException ex;
+			SourceString ss = new SourceString(" ", "<STATIC EXCEPTION>");
 
-			ex = new EndOfInputError("");
+			ex = new EndOfInputError("", ss.ref(0));
 			exceptions.put(ex.typeSymbol(), ex);
 
-			ex = new NotAnOperatorError("");
+			ex = new NotAnOperatorError("", ss.ref(0));
 			exceptions.put(ex.typeSymbol(), ex);
 
-			ex = new ParserException("");
+			ex = new ParserException("", ss.ref(0));
 			exceptions.put(ex.typeSymbol(), ex);
 
-			ex = new SyntaxError("");
+			// TODO: SourceStringRef
+			ex = new SyntaxError("", ss.ref(0));
+
 			exceptions.put(ex.typeSymbol(), ex);
 		}
 		return exceptions;

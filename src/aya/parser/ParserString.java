@@ -16,7 +16,7 @@ public class ParserString {
 	/** "Removes" and returns the first character in the string */
 	public char next() throws EndOfInputError {
 		if(ix >= chars.length) {
-			throw new EndOfInputError("Unexpected End of Input");
+			throw new EndOfInputError("Unexpected End of Input", currentRef());
 		}
 		char c = chars[ix];
 		ix++;

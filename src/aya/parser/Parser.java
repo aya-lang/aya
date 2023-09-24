@@ -248,6 +248,7 @@ public class Parser {
 			// Long String Literals
 			else if (current == '"' && in.hasNext(1) && in.peek(0) == '"' && in.peek(1) == '"') {
 				StringBuilder str = new StringBuilder();
+				SourceStringRef startRef = in.currentRef();
 
 				// Skip other quote chars
 				in.next();
@@ -275,7 +276,7 @@ public class Parser {
 					}
 					// Incomplete
 					else {
-						throw new SyntaxError("Incomplete long string literal: " + str.toString(), in.currentRef());
+						throw new SyntaxError("Unterminated long string literal (missing ending \"\"\")", startRef);
 					}
 				}
 			}
@@ -289,7 +290,7 @@ public class Parser {
 			// Character Literals
 			else if (current == '\'') {
 				if (!in.hasNext()) {
-					throw new SyntaxError("Expected character name after '''" + in.toString(), in.currentRef());
+					throw new SyntaxError("Expected character name after open single quote", in.currentRef());
 				}
 				// Special Character
 				if (in.peek() == '\\') {
@@ -312,7 +313,7 @@ public class Parser {
 					if (sb.length() == 0) {
 						specialChar = '\\';
 					} else {
-						specialChar = CharacterParser.parse(sb.toString());
+						specialChar = CharacterParser.parse(sb.toString(), in.currentRef());
 					}
 
 					if (specialChar == CharacterParser.INVALID) {
@@ -509,23 +510,23 @@ public class Parser {
 
 			switch (current.getType()) {
 			case Token.OPEN_CURLY:
-				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, Token.BLOCK, in, out);
+				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, Token.BLOCK, in, out, current.getSourceStringRef());
 				break;
 			case Token.OPEN_SQBRACKET:
-				closeDelim(Token.OPEN_SQBRACKET, Token.CLOSE_SQBRACKET, Token.LIST, in, out);
+				closeDelim(Token.OPEN_SQBRACKET, Token.CLOSE_SQBRACKET, Token.LIST, in, out, current.getSourceStringRef());
 				break;
 			case Token.OPEN_PAREN:
-				closeDelim(Token.OPEN_PAREN, Token.CLOSE_PAREN, Token.LAMBDA, in, out);
+				closeDelim(Token.OPEN_PAREN, Token.CLOSE_PAREN, Token.LAMBDA, in, out, current.getSourceStringRef());
 				break;
 
 			// At this point, all delims should be balanced
 			// If they aren't, throw an error
 			case Token.CLOSE_CURLY:
-				throw new SyntaxError("Unexpected token '}'");
+				throw new SyntaxError("Unexpected token '}'", current.getSourceStringRef());
 			case Token.CLOSE_PAREN:
-				throw new SyntaxError("Unexpected token ')'");
+				throw new SyntaxError("Unexpected token ')'", current.getSourceStringRef());
 			case Token.CLOSE_SQBRACKET:
-				throw new SyntaxError("Unexpected token ']'");
+				throw new SyntaxError("Unexpected token ']'", current.getSourceStringRef());
 
 			default:
 				out.add(current);
@@ -541,7 +542,7 @@ public class Parser {
 	 * @throws EndOfInputError 
 	 * @throws SyntaxError 
 	 */
-	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out) throws EndOfInputError, SyntaxError {
+	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out, SourceStringRef source) throws EndOfInputError, SyntaxError {
 		TokenQueue innerTokens = new TokenQueue();
 		StringBuilder debugStr = new StringBuilder();
 		boolean complete = false;
@@ -566,22 +567,23 @@ public class Parser {
 			innerTokens.add(in.next());
 		}
 
+		
 		if (!complete) {
 			throw new SyntaxError(
-					"Expected closing delimiter after " + debugStr.toString());
+					"No closing delimiter found", source);
 		}
 
 		innerTokens = assemble(innerTokens);
 
 		switch (type) {
 		case Token.BLOCK:
-			out.add(new BlockToken(debugStr.toString(), innerTokens.getArrayList(), in.peek().getSourceStringRef()));
+			out.add(new BlockToken(debugStr.toString(), innerTokens.getArrayList(), source));
 			break;
 		case Token.LIST:
-			out.add(new ListToken(debugStr.toString(), innerTokens.getArrayList(), in.peek().getSourceStringRef()));
+			out.add(new ListToken(debugStr.toString(), innerTokens.getArrayList(), source));
 			break;
 		case Token.LAMBDA:
-			out.add(new LambdaToken(debugStr.toString(), innerTokens.getArrayList(), in.peek().getSourceStringRef()));
+			out.add(new LambdaToken(debugStr.toString(), innerTokens.getArrayList(), source));
 		}
 
 	}
@@ -596,7 +598,7 @@ public class Parser {
 			// COLON
 			if (current.isa(Token.COLON)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after ':' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after ':'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Variable Assignment
@@ -604,13 +606,13 @@ public class Parser {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
 					is.push(new SetVariableInstruction(v.getSymbol()));
 				} else {
-					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("':' not followed by operator", current.getSourceStringRef());
 				}
 			}
 
 			else if (current.isa(Token.DOT)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after '.' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after '.'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 
@@ -626,7 +628,7 @@ public class Parser {
 							}
 						} else {
 							throw new SyntaxError(
-									"Invalid index: " + l.repr() + ": Index must contain exactly one element");
+									"Invalid index: " + l.repr() + ": Index must contain exactly one element", current.getSourceStringRef());
 						}
 					} else {
 						ListLiteralInstruction lli = (ListLiteralInstruction) next;
@@ -643,7 +645,7 @@ public class Parser {
 
 			else if (current.isa(Token.DOT_COLON)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after '.:' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after '.:'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Key Variable Assignment
@@ -665,7 +667,7 @@ public class Parser {
 							}
 						} else {
 							throw new SyntaxError(
-									"Invalid index: " + l.repr() + ": Index must contain exactly one element");
+									"Invalid index: " + l.repr() + ": Index must contain exactly one element", current.getSourceStringRef());
 						}
 					} else {
 						ListLiteralInstruction lli = (ListLiteralInstruction) next;
@@ -683,7 +685,7 @@ public class Parser {
 			// POUND
 			else if (current.isa(Token.POUND)) {
 				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
-				is.push(Ops.getOp('#'));
+				is.push(Ops.OP_POUND);
 				is.push(blk_ins);
 			}
 
@@ -695,11 +697,11 @@ public class Parser {
 			// COLON POUND
 			else if (current.isa(Token.COLON_POUND)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after ':#' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after infix operator ':#'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Apply a block to a list or dict
-				is.push(ColonOps.getOp('#'));
+				is.push(ColonOps.OP_COLON_POUND);
 				is.push(next);
 			}
 
@@ -712,15 +714,15 @@ public class Parser {
 						KeyVarToken t = (KeyVarToken) stk.pop();
 						is.push(new QuoteGetKeyVariableInstruction(t.getSymbol()));
 					} else {
-						throw new SyntaxError("Expected var or keyvar before quote (.`) token");
+						throw new SyntaxError("Expected var or keyvar before quote (.`) token", current.getSourceStringRef());
 					}
 				} else {
-					throw new SyntaxError("Expected var or keyvar before quote (.`) token");
+					throw new SyntaxError("Expected var or keyvar before quote (.`) token", current.getSourceStringRef());
 				}
 			}
 
 			else if (current.typeString().equals("special")) {
-				throw new SyntaxError("Unexpected token in:\n\t" + tokens_in.toString());
+				throw new SyntaxError("Unexpected token", current.getSourceStringRef());
 			}
 
 			// Std Token
@@ -736,13 +738,13 @@ public class Parser {
 	
 	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
 		if (is.isEmpty()) {
-			throw new SyntaxError("Expected token when assembling block in:\n\t" + tokens_in.toString());
+			throw new SyntaxError("Expected token when assembling block", tokens_in.peek().getSourceStringRef());
 		} else {
 			Instruction next = is.pop();
 
 			// Apply a block to a list
 			if (next instanceof DataInstruction && ((DataInstruction) next).objIsa(Obj.BLOCK)) {
-				throw new SyntaxError("Assertion Failed!!");
+				throw new SyntaxError("Assertion Failed!!", tokens_in.peek().getSourceStringRef());
 			} else if (next instanceof BlockLiteralInstruction) {
 				return (BlockLiteralInstruction)next;
 			} else {
@@ -775,6 +777,7 @@ public class Parser {
 	private static String parseString(ParserString in, char termination) throws EndOfInputError, SyntaxError {
 		boolean complete = false;
 		StringBuilder str = new StringBuilder();
+		SourceStringRef startRef = in.currentRef();
 		while (in.hasNext()) {
 			char c = in.next();
 			if (c == '\\') {
@@ -828,7 +831,7 @@ public class Parser {
 					} else {
 
 						// Parse the character
-						char specChar = CharacterParser.parse(sc.toString());
+						char specChar = CharacterParser.parse(sc.toString(), in.currentRef());
 						if (specChar == CharacterParser.INVALID) {
 							// throw new SyntaxError("'\\" + sc.toString() + "' is not a valid special
 							// character");
@@ -855,7 +858,7 @@ public class Parser {
 		if (complete) {
 			return str.toString();
 		} else {
-			throw new SyntaxError("Expected closing quote after string \"" + str.toString());
+			throw new SyntaxError("String missing closing quote", startRef);
 		}
 	}
 

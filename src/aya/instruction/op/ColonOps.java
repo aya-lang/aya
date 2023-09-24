@@ -46,6 +46,7 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.DictReader;
@@ -56,6 +57,8 @@ import aya.util.VectorizedFunctions;
 public class ColonOps {	
 	
 	private static final char FIRST_OP = '!';
+	
+	public static final OP_Colon_Pound OP_COLON_POUND = new OP_Colon_Pound();
 
 	
 	/** A list of all valid single character operations. 
@@ -65,7 +68,7 @@ public class ColonOps {
 	public static OpInstruction[] COLON_OPS = {
 		/* 33 !  */ new OP_Colon_Bang(),
 		/* 34 "  */ null, // Quoted Symbol
-		/* 35 #  */ new OP_Colon_Pound(),
+		/* 35 #  */ OP_COLON_POUND,
 		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ new OP_Colon_Percent(),
 		/* 38 &  */ new OP_Colon_And(),
@@ -172,10 +175,10 @@ public class ColonOps {
 	}
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) throws NotAnOperatorError {
+	public static OpInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new NotAnOperatorError(":" + c);
+			throw new NotAnOperatorError(":" + c, source);
 		} else {
 			return op;
 		}

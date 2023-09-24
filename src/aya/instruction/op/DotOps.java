@@ -64,6 +64,7 @@ import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.VectorizedFunctions;
 
@@ -174,10 +175,10 @@ public class DotOps {
 	};
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) throws NotAnOperatorError {
+	public static OpInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new NotAnOperatorError("." + c);
+			throw new NotAnOperatorError("." + c, source);
 		} else {
 			return op;
 		}

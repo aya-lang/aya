@@ -105,7 +105,7 @@ public class StringToken extends StdToken {
 					}
 					
 					if(!complete) {
-						throw new SyntaxError("Incomplete interpolation in \"" + data + "\"");
+						throw new SyntaxError("Incomplete interpolation in \"" + data + "\"", in.currentRef());
 					}
 					
 					

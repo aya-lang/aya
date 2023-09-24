@@ -37,6 +37,7 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.NamedCharacters;
 import aya.util.StringUtils;
@@ -149,10 +150,10 @@ public class MiscOps {
 	};
 	
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) throws NotAnOperatorError {
+	public static OpInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
 		OpInstruction op = getOpOrNull(c);
 		if (op == null) {
-			throw new NotAnOperatorError("M" + c);
+			throw new NotAnOperatorError("M" + c, source);
 		} else {
 			return op;
 		}

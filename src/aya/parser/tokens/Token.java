@@ -50,6 +50,9 @@ public abstract class Token {
 	protected Token(int type, SourceStringRef source) {
 		this.type = type;
 		this.source = source;
+		if (this.source == null) {
+			throw new AssertionError();
+		}
 	}
 	
 	public boolean isa(int type) {

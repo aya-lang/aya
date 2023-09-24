@@ -13,7 +13,7 @@ public class CharacterParser {
 	/**  
 	 * Returns Character.MAX_VALUE if char is invalid 
 	 * @throws SyntaxError */
-	public static char parse(String in) throws SyntaxError {
+	public static char parse(String in, SourceStringRef source) throws SyntaxError {
 		String s = in;
 
 		//Invalid Character
@@ -50,7 +50,7 @@ public class CharacterParser {
 				try {
 					return (char)Integer.parseInt(s, 16);
 				} catch (NumberFormatException e) {
-					throw new SyntaxError("Cannot parse character as hex value in " + in);
+					throw new SyntaxError("Cannot parse character as hex value in " + in, source);
 				}
 			} else {
 				return INVALID;
@@ -63,7 +63,7 @@ public class CharacterParser {
 			try {
 				return (char)Integer.parseInt(s);
 			} catch (NumberFormatException e) {
-				throw new SyntaxError("Cannot parse decimal character value in " + in);
+				throw new SyntaxError("Cannot parse decimal character value in " + in, source);
 			}
 		} 
 		
@@ -104,7 +104,8 @@ public class CharacterParser {
 		
 		char c = INVALID;
 		try {
-			c = parse(charName.toString());
+			SourceString ss = new SourceString(s, "<CharacterParser.convertCharTabPress>");
+			c = parse(charName.toString(), ss.ref(0));
 		} catch (SyntaxError e) {
 			c = INVALID; //Don't tab complete
 		}

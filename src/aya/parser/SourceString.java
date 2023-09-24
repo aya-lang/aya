@@ -41,30 +41,34 @@ public class SourceString {
 	}
 	
 	public IndexedSourceLine getIndexedLine(int charIndex) {
-		StringBuilder line = new StringBuilder();
-		int idx = charIndex;
-		// Forward
-		char c = getChar(idx);
-		while (c != '\n') {
-			line.append(c);
-			idx++;
-			if (idx > this.source.length()-1) break;
-			c = getChar(idx);
-		}
-		// Backward
-		int indexInLine = 0;
-		idx = charIndex-1;
-		if (idx >= 0) {
-			c = getChar(idx);
+		if (this.length() == 0) {
+			return new IndexedSourceLine("", 0, 0);
+		} else {
+			StringBuilder line = new StringBuilder();
+			int idx = charIndex;
+			// Forward
+			char c = getChar(idx);
 			while (c != '\n') {
-				line.insert(0, c);
-				idx--;
-				indexInLine++;
-				if (idx < 0) break;
+				line.append(c);
+				idx++;
+				if (idx > this.source.length()-1) break;
 				c = getChar(idx);
 			}
+			// Backward
+			int indexInLine = 0;
+			idx = charIndex-1;
+			if (idx >= 0) {
+				c = getChar(idx);
+				while (c != '\n') {
+					line.insert(0, c);
+					idx--;
+					indexInLine++;
+					if (idx < 0) break;
+					c = getChar(idx);
+				}
+			}
+			return new IndexedSourceLine(line.toString(), indexInLine, this.getLineNumber(charIndex));
 		}
-		return new IndexedSourceLine(line.toString(), indexInLine, this.getLineNumber(charIndex));
 	}
 	
 	public char getChar(int charIndex) {
@@ -77,8 +81,10 @@ public class SourceString {
 	
 	public int getLineNumber(int charIndex) {
 		int lineCount = 0;
-		for (int i = 0; i < charIndex; i++) {
-			if (this.source.charAt(i) == '\n') lineCount++;
+		if (this.length() > 0) {
+			for (int i = 0; i < charIndex; i++) {
+				if (this.source.charAt(i) == '\n') lineCount++;
+			}
 		}
 		return lineCount;
 	}
@@ -87,13 +93,13 @@ public class SourceString {
 		StringBuilder sb = new StringBuilder();
 		IndexedSourceLine line = this.getIndexedLine(charIndex);
 		
-		if (this.lines.length == 1) {
+		if (this.lines.length <= 1) {
 			sb.append(line.line + "\n" + line.pointerStr());
 		} else {
 			sb.append("> file '" + this.filename + "', line " + line.lineNumber + ", col " + (line.index+1) + ":\n");
 			
 			int slen = ("" + line.lineNumber+1).length();
-			String formatStr = "%-" + slen + "." + slen + "s|";
+			String formatStr = "%-" + slen + "." + slen + "s| ";
 	
 			if (line.lineIndex > 0) {
 				sb.append(String.format(formatStr, line.lineNumber - 1));
@@ -143,6 +149,8 @@ public class SourceString {
 		System.out.println((new SourceString("{x, x x *}:square;", "main").getContextStr(3)));
 		System.out.println((new SourceString("[1 2]\n{x, x x *}:square;", "main").getContextStr(3)));
 		System.out.println((new SourceString("[1 2]\n{x, x x *}:square;", "main").getContextStr(10)));
+
+		System.out.println((new SourceString("", "main").getContextStr(0)));
 
 
 		

@@ -18,7 +18,7 @@ public class NamedOpToken extends StdToken {
 		if (instruction != null) {
 			return instruction;
 		} else {
-			throw new ParserException("Named instruction :{" + data + "} does not exist");
+			throw new ParserException("Named instruction :{" + data + "} does not exist", source);
 		}
 	}
 

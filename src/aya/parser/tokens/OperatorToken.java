@@ -34,19 +34,19 @@ public class OperatorToken extends StdToken {
 		OpInstruction op = null;
 		switch (op_type) {
 		case STD_OP:
-			op = Ops.getOp(data.charAt(0));
+			op = Ops.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case DOT_OP:
-			op = DotOps.getOp(data.charAt(0));
+			op = DotOps.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case MATH_OP:
-			op = MiscOps.getOp(data.charAt(0));
+			op = MiscOps.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case COLON_OP:
-			op = ColonOps.getOp(data.charAt(0));
+			op = ColonOps.getOp(data.charAt(0), this.getSourceStringRef());
 		}
 		if (op == null) {
-			throw new SyntaxError("Operator '" + getOpTypeLetter() + data.charAt(0) + "' does not exist");
+			throw new SyntaxError("Operator '" + getOpTypeLetter() + data.charAt(0) + "' does not exist", this.getSourceStringRef());
 		}
 		return op;
 	}
