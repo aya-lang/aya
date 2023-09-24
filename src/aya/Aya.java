@@ -257,7 +257,7 @@ public class Aya extends Thread {
 		try {
 			run(Parser.compile(str, this));
 		} catch (ParserException e) {
-			_instance._err.println("SYNTAX ERROR: " + e.getSimpleMessage());
+			_instance._err.println("Syntax Error: " + e.getSimpleMessage());
 		}
 	}
 	
