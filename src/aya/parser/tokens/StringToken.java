@@ -13,7 +13,6 @@ import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.ParserString;
-import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
 
 public class StringToken extends StdToken {
@@ -33,12 +32,12 @@ public class StringToken extends StdToken {
 	@Override
 	public Instruction getInstruction() throws ParserException {
 		if (interpolate && data.contains("$"))
-			return parseInterpolateStr(data);
+			return parseInterpolateStr(data, this.getSourceStringRef());
 		return new StringLiteralInstruction(data);
 	}
 
-	private InterpolateStringInstruction parseInterpolateStr(String data) throws ParserException {
-		ParserString in = new ParserString(new SourceString(data, "StringToken.parseInterpolateStr"));
+	private InterpolateStringInstruction parseInterpolateStr(String data, SourceStringRef source) throws ParserException {
+		ParserString in = new ParserString(this.getSourceStringRef(), data);
 		StringBuilder sb = new StringBuilder();
 		InstructionStack instrs = new InstructionStack();
 		
@@ -76,6 +75,7 @@ public class StringToken extends StdToken {
 					int braces = 1;
 					StringBuilder block = new StringBuilder();
 					boolean complete = false;
+					SourceStringRef start_interpolation = in.currentRef();
 					while (in.hasNext()) {
 						
 						//Close
@@ -114,7 +114,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the block
-					instrs.insert(0, new Block(Parser.compileIS(new SourceString(block.toString(), "StringToken.parseInterpolateString.B"), Aya.getInstance())));
+					instrs.insert(0, new Block(Parser.compileIS(new ParserString(in.currentRef(), block.toString()), Aya.getInstance())));
 					
 				}
 				

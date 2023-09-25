@@ -3,19 +3,37 @@ package aya.parser;
 import aya.exceptions.ex.EndOfInputError;
 
 public class ParserString {
-	SourceString source;
-	char[] chars;
-	int ix;
+	private SourceString source;
+	private char[] chars;
+	private int ix;
+	private int end_ix;
+	private int start_ix;
 	
 	public ParserString(SourceString source) {
+		this(source, 0, source.length());
+	}
+
+	public ParserString(SourceStringRef source, String substr) {
+		this(source.getSource(), source.getIndex()-substr.length(), substr.length());
+		String substr_test = source.getSource().getSource().substring(this.start_ix, this.end_ix);
+		if (!substr_test.equals(substr)) {
+			System.out.println(substr);
+			System.out.println(substr_test);
+			throw new AssertionError();
+		}
+	}
+	
+	private ParserString(SourceString source, int offset, int length) {
 		this.source = source;
 		this.chars = source.getRawString().toCharArray();
-		ix = 0;
+		this.ix = offset;
+		this.start_ix = offset;
+		this.end_ix = offset + length;
 	}
 	
 	/** "Removes" and returns the first character in the string */
 	public char next() throws EndOfInputError {
-		if(ix >= chars.length) {
+		if(ix >= this.end_ix) {
 			throw new EndOfInputError("Unexpected End of Input", currentRef());
 		}
 		char c = chars[ix];
@@ -41,22 +59,22 @@ public class ParserString {
 	
 	/** Returns false if there is no more data to be parsed by looking ahead i characters. hasNext() == hasNext(0) */
 	public boolean hasNext(int i) {
-		return (ix + i) < chars.length;
+		return (ix + i) < this.end_ix;
 	}
 	
 	/** Returns true if there is no more data to be parsed */
 	public boolean isEmpty() {
-		return ix >= chars.length;
+		return ix >= this.end_ix;
 	}
 	
 	/** Returns false if there is no more data to be parsed (opposite of isEmpty)*/
 	public boolean hasNext() {
-		return ix < chars.length;
+		return ix < this.end_ix;
 	}
 
 	@Override
 	public String toString() {
-		return new String(this.chars);
+		return new String(this.source.getRawString().substring(this.start_ix, this.end_ix));
 	}
 	
 	public SourceString getSource() {

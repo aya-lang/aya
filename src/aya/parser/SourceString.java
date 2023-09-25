@@ -40,6 +40,13 @@ public class SourceString {
 		return this.source.length();
 	}
 	
+	public String getSource() {
+		return this.source;
+	}
+	public String getFilename() {
+		return this.filename;
+	}
+	
 	public IndexedSourceLine getIndexedLine(int charIndex) {
 		if (this.length() == 0) {
 			return new IndexedSourceLine("", 0, 0);

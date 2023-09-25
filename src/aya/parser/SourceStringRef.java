@@ -13,4 +13,17 @@ public class SourceStringRef {
 	public String getContextStr() {
 		return this.source.getContextStr(this.idx);
 	}
+	
+	public int getIndex() {
+		return this.idx;
+	}
+
+	public SourceString getSource() {
+		return this.source;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getContextStr();
+	}
 }

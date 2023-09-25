@@ -67,9 +67,8 @@ public class Parser {
 	
 	public static char CDICT_CHAR = (char)162; // cent
 
-	public static TokenQueue tokenize(Aya aya, SourceString source) throws ParserException {
+	public static TokenQueue tokenize(Aya aya, ParserString in) throws ParserException {
 		TokenQueue tokens = new TokenQueue();
-		ParserString in = new ParserString(source);
 
 		while (!in.isEmpty()) {
 			char current = in.next();
@@ -871,8 +870,9 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static Block compile(SourceString s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		return new Block(generate(assemble(tokenize(aya, s))));
+	public static Block compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		ParserString ps = new ParserString(source);
+		return new Block(generate(assemble(tokenize(aya, ps))));
 	}
 
 	/**
@@ -882,8 +882,13 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static InstructionStack compileIS(SourceString s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		return generate(assemble(tokenize(aya, s)));
+	public static InstructionStack compileIS(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		ParserString ps = new ParserString(source);
+		return compileIS(ps, aya);
+	}
+
+	public static InstructionStack compileIS(ParserString ps, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		return generate(assemble(tokenize(aya, ps)));
 	}
 
 	private static boolean isMultiCharOpPrefix(char c) {

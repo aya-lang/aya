@@ -8,17 +8,13 @@ import java.util.Stack;
 
 import aya.Aya;
 import aya.InteractiveAya;
-import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.Parser;
-import aya.parser.SourceString;
 
 /**
  * Static class containing all variables for the current session.
