@@ -15,11 +15,15 @@ public class ParserString {
 
 	public ParserString(SourceStringRef source, String substr) {
 		this(source.getSource(), source.getIndex()-substr.length(), substr.length());
-		String substr_test = source.getSource().getSource().substring(this.start_ix, this.end_ix);
-		if (!substr_test.equals(substr)) {
-			System.out.println(substr);
-			System.out.println(substr_test);
-			throw new AssertionError();
+		try {
+			String substr_test = source.getSource().getSource().substring(this.start_ix, this.end_ix);
+			if (!substr_test.equals(substr)) {
+				System.out.println("input<" + substr + ">");
+				System.out.println("source<" + substr_test + ">");
+				throw new AssertionError();
+			}
+		} catch (StringIndexOutOfBoundsException e) {
+			throw e;
 		}
 	}
 	

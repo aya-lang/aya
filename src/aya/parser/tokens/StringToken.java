@@ -14,6 +14,7 @@ import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.parser.SourceStringRef;
+import aya.parser.StringParseUtils;
 
 public class StringToken extends StdToken {
 		
@@ -31,9 +32,13 @@ public class StringToken extends StdToken {
 	
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		if (interpolate && data.contains("$"))
+		if (interpolate && data.contains("$")) {
 			return parseInterpolateStr(data, this.getSourceStringRef());
-		return new StringLiteralInstruction(data);
+		} else {
+			SourceStringRef ref = this.getSourceStringRef();
+			String unescaped = StringParseUtils.unescape(new ParserString(ref, this.getData()));
+			return new StringLiteralInstruction(unescaped);
+		}
 	}
 
 	private InterpolateStringInstruction parseInterpolateStr(String data, SourceStringRef source) throws ParserException {
@@ -46,7 +51,7 @@ public class StringToken extends StdToken {
 			
 			//Escaped dollar sign
 			if (c == '\\' && in.hasNext() && in.peek() == '$') {
-				sb.append('$');
+				sb.append("\\$");
 				in.next(); //Skip the $
 			} 
 			
@@ -62,7 +67,10 @@ public class StringToken extends StdToken {
 					}
 					
 					//Add and reset the string builder
-					instrs.insert(0, List.fromString(sb.toString()));
+					SourceStringRef ref = in.currentRef();
+					ref.dec(var_name.length()); // Don't include $
+					String str_literal = StringParseUtils.unescape(new ParserString(ref, sb.toString()));
+					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
 					//Add the variable
@@ -75,7 +83,6 @@ public class StringToken extends StdToken {
 					int braces = 1;
 					StringBuilder block = new StringBuilder();
 					boolean complete = false;
-					SourceStringRef start_interpolation = in.currentRef();
 					while (in.hasNext()) {
 						
 						//Close
@@ -110,7 +117,11 @@ public class StringToken extends StdToken {
 					
 					
 					//Add and reset the string builder
-					instrs.insert(0, List.fromString(sb.toString()));
+					SourceStringRef ref = in.currentRef();
+					ref.dec(block.toString().length());
+					ref.dec(2); // Open and close paren
+					String str_literal = StringParseUtils.unescape(new ParserString(ref, sb.toString()));
+					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
 					//Add the block
@@ -130,7 +141,8 @@ public class StringToken extends StdToken {
 			}
 		}
 		
-		instrs.insert(0, List.fromString(sb.toString()));
+		String str_literal = StringParseUtils.unescape(new ParserString(in.currentRef().inc(), sb.toString()));
+		instrs.insert(0, List.fromString(str_literal));
 		return new InterpolateStringInstruction(data, instrs);
 	}
 

@@ -76,31 +76,24 @@ public class Parser {
 			// Line Comment
 			if (current == '.' && in.hasNext() && in.peek() == '#') {
 				in.next(); // skip the '#'
+				StringBuilder comment = new StringBuilder();
 
-				// Help Text
-				if (in.hasNext() && in.peek() == '?') {
-					in.next(); // Skip the '?'
-					StringBuilder sb = new StringBuilder();
-					while (in.hasNext() && in.peek() != '\n') {
-						sb.append(in.next());
-					}
-					// Append the last character
-					if (in.hasNext()) {
-						sb.append(in.next());
-					}
-					String doc = formatString(in.currentRef().inc(), sb.toString()).trim();
-					aya.addHelpText(doc);
+				while (in.hasNext() && in.peek() != '\n') {
+					comment.append(in.next());
 				}
 
-				else {
-					while (in.hasNext() && in.peek() != '\n') {
-						in.next();
-					}
-					// Skip the last character
-					if (in.hasNext()) {
-						in.next();
-					}
+				// Skip the last character
+				if (in.hasNext()) {
+					comment.append(in.next());
 				}
+
+				// Documentation comment?
+				String comment_str = comment.toString();
+				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
+					comment_str = comment_str.substring(1);
+					aya.addHelpText(comment_str);
+				}
+
 				continue;
 			}
 
@@ -108,17 +101,7 @@ public class Parser {
 			if (current == '.' && in.hasNext() && in.peek() == '{') {
 				in.next(); // Skip the '{'
 
-				// Determine if the block is documentation
-				boolean isDocCode = false;
-				StringBuilder docs = null;
-				if (in.hasNext() && in.peek() == '?') {
-					in.next(); // Skip the '?'
-					isDocCode = true;
-					docs = new StringBuilder();
-
-				}
-
-				// Skip or collect the block
+				StringBuilder comment = new StringBuilder();
 				boolean complete = false;
 				while (in.hasNext(1)) {
 					if (in.peek(0) == '.' && in.peek(1) == '}') {
@@ -127,25 +110,21 @@ public class Parser {
 						complete = true;
 						break;
 					}
-
-					if (isDocCode) {
-						docs.append(in.next());
-					} else {
-						in.next();
-					}
+					comment.append(in.next());
 				}
 
 				// Early input termination
 				if (!complete) {
 					while (in.hasNext()) {
-						in.next();
+						comment.append(in.next());
 					}
 				}
 
 				// Add the documentation to Aya
-				if (isDocCode) {
-					String doc = formatString(in.currentRef().dec(), docs.toString()).trim();
-					aya.addHelpText(doc);
+				String comment_str = comment.toString();
+				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
+					comment_str = comment_str.substring(1);
+					aya.addHelpText(comment_str);
 				}
 			}
 
@@ -187,8 +166,8 @@ public class Parser {
 					}
 
 					else if (in.peek() == '"') {
-						in.next(); // Skip opening '
-						String varname = parseString(in, '"');
+						in.next(); // Skip opening "
+						String varname = StringParseUtils.goToEnd(in, '"');
 						tokens.add(new KeyVarToken(varname, in.currentRef()));
 					}
 
@@ -207,7 +186,7 @@ public class Parser {
 						// Quoted variable
 						if (in.peek() == '"') {
 							in.next(); // Skip open '
-							String str = parseString(in, '"');
+							String str = StringParseUtils.goToEnd(in, '"');
 							tokens.add(new VarToken(str, in.currentRef()));
 						}
 					}
@@ -258,7 +237,9 @@ public class Parser {
 					if (in.hasNext(2) && in.peek(0) == '"' && in.peek(1) == '"' && in.peek(2) == '"') {
 
 						// false = do not interpolate
-						tokens.add(new StringToken(str.toString(), false, in.currentRef()));
+						SourceStringRef ref = in.currentRef();
+						ref.inc(); // Go to end of string
+						tokens.add(new StringToken(str.toString(), false, ref));
 
 						// Skip closing quotes
 						in.next();
@@ -282,7 +263,7 @@ public class Parser {
 
 			// String Literals
 			else if (current == '"') {
-				String str = parseString(in);
+				String str = StringParseUtils.goToEnd(in, '"');
 				tokens.add(new StringToken(str, in.currentRef()));
 			}
 
@@ -355,7 +336,7 @@ public class Parser {
 						if (in.hasNext() && in.peek() == '"') {
 							// Quoted symbol
 							in.next(); // Skip '
-							sym = parseString(in, '"');
+							sym = StringParseUtils.goToEnd(in, '"');
 						} else {
 
 							// Fist, try to parse as simple variable
@@ -415,8 +396,8 @@ public class Parser {
 					// Quoted variable
 					else if (in.peek() == '"') {
 						tokens.add(new SpecialToken(Token.COLON, ":", in.currentRef()));
-						in.next(); // Skip open '
-						String varname = parseString(in, '"');
+						in.next(); // Skip open "
+						String varname = StringParseUtils.goToEnd(in, '"');
 						tokens.add(new VarToken(varname, in.currentRef()));
 					}
 
@@ -763,107 +744,6 @@ public class Parser {
 			}
 		}
 	}
-	
-	private static String formatString(SourceStringRef source, String input) throws EndOfInputError, SyntaxError {
-		ParserString in = new ParserString(source, input);
-		return parseString(in);
-	}
-
-	private static String parseString(ParserString in) throws EndOfInputError, SyntaxError {
-		return parseString(in, '"');
-	}
-
-	private static String parseString(ParserString in, char termination) throws EndOfInputError, SyntaxError {
-		boolean complete = false;
-		StringBuilder str = new StringBuilder();
-		SourceStringRef startRef = in.currentRef();
-		while (in.hasNext()) {
-			char c = in.next();
-			if (c == '\\') {
-				char escape = in.next();
-				switch (escape) {
-				case '$':
-					str.append("\\$");
-					break;
-				case '}':
-					str.append("}"); // For escaping documented comments
-					break;
-				case 'n':
-					str.append('\n');
-					break;
-				case 't':
-					str.append('\t');
-					break;
-				case 'r':
-					str.append('\r');
-					break;
-				case 'b':
-					str.append('\b');
-					break;
-				case 'f':
-					str.append('\f');
-					break;
-				case '"':
-					str.append('"');
-					break;
-				case '?':
-					throw new SyntaxError("test", in.currentRef());
-				case '\\':
-					str.append('\\');
-					break;
-				case '{':
-					StringBuilder sc = new StringBuilder(); // Special Char
-					boolean specialComplete = false;
-
-					while (in.hasNext()) {
-						if (in.peek() == '}') {
-							specialComplete = true;
-							in.next(); // Skip the closing '}'
-							break;
-						}
-						sc.append(in.next());
-					}
-
-					if (!specialComplete) {
-						// throw new SyntaxError("Early termination of special character in string
-						// literal: " + str.toString());
-						// Always return a valid result
-						str.append("\\{").append(sc);
-					} else {
-
-						// Parse the character
-						char specChar = CharacterParser.parse(sc.toString(), in.currentRef());
-						if (specChar == CharacterParser.INVALID) {
-							// throw new SyntaxError("'\\" + sc.toString() + "' is not a valid special
-							// character");
-							// Always return a valid result
-							str.append("\\{").append(sc).append("}");
-						}
-
-						str.append(specChar);
-					}
-					break;
-
-				default:
-					// throw new SyntaxError("'" + escape + "' is not a valid escape character....
-					// Always return a valid result
-					str.append('\\').append(escape);
-				}
-			} else if (c == termination) {
-				complete = true;
-				break;
-			} else {
-				str.append(c);
-			}
-		}
-		if (complete) {
-			return str.toString();
-		} else {
-			throw new SyntaxError("String missing closing quote", startRef);
-		}
-	}
-
-
 
 	/**
 	 * Compiles a string into a code block using input => tokenize => assemble =>

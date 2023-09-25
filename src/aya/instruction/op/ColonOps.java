@@ -13,6 +13,8 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -21,6 +23,8 @@ import aya.ReprStream;
 import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.AssertError;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.InternalAyaRuntimeException;
 import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
@@ -45,11 +49,13 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
+import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.DictReader;
+import aya.util.FileUtils;
 import aya.util.Triple;
 import aya.util.VectorizedFunctions;
 
@@ -103,7 +109,7 @@ public class ColonOps {
 		/* 67 C  */ new OP_Colon_C(),
 		/* 68 D  */ new OP_Colon_D(),
 		/* 69 E  */ new OP_Colon_E(),
-		/* 70 F  */ null,
+		/* 70 F  */ new OP_Colon_F(),
 		/* 71 G  */ new OP_Colon_G(),
 		/* 72 H  */ null,
 		/* 73 I  */ new OP_Colon_I(),
@@ -638,7 +644,7 @@ class OP_Colon_B extends OpInstruction {
 		// TODO: SourceStringRef
 		String s = block.pop().str();
 		SourceString source = new SourceString(s, "<:B>");
-		StringToken str_token = new StringToken(s, true, source.ref(0));
+		StringToken str_token = new StringToken(s, true, source.ref(source.length()));
 		try {
 			str_token.getInstruction().execute(block);
 		} catch (ParserException e) {
@@ -757,6 +763,39 @@ class OP_Colon_E extends OpInstruction {
 	}
 	
 }
+
+// F - 70
+class OP_Colon_F extends OpInstruction {
+	
+	public OP_Colon_F() {
+		init(":F");
+		arg("S", "load aya source file");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(STR)) {
+			String path = new File(FileUtils.workingRelative(a.str())).getAbsolutePath();
+			String content;
+			try {
+				content = FileUtils.readAllText(path);
+			} catch (IOException e) {
+				throw new IOError(":F", path, e);
+			}
+			SourceString source = new SourceString(content, path);
+			try {
+				block.addAll(Parser.compile(source, Aya.getInstance()).getInstructions().getInstrucionList());
+			} catch (ParserException e) {
+				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
 
 // G - 71
 class OP_Colon_G extends OpInstruction {

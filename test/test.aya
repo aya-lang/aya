@@ -21,7 +21,7 @@
 {fname,
     {, 
     "* Running tests '$fname'..." :P
-    "$(:{sys.ad})$fname.aya" G~
+    "$(:{sys.ad})$fname.aya" :F
     "  Tests complete: '$fname'" :P
     };
 }:load_test;

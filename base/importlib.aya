@@ -45,7 +45,7 @@ def importlib::load_file {filename : importlib^,
                 .# []: export nothing
                 .# [syms...] export given names
                 0:__export__;
-                filename G ~
+                filename :F
             } :& importlib.imported.:[filename];
             "Loaded file $filename" importlib._log_debug
         } {e,

@@ -28,7 +28,11 @@ public class SourceStringRef {
 	}
 
 	public SourceStringRef dec() {
-		this.idx -= 1;
+		return dec(1);
+	}
+
+	public SourceStringRef dec(int n) {
+		this.idx -= n;
 		return this;
 	}
 	

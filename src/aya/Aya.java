@@ -190,7 +190,7 @@ public class Aya extends Thread {
 		//Load the standard library
 		try {
 			String pathString = Paths.get(AyaPrefs.getAyaDir(), ayarcPath).toString().replace("\\", "\\\\");
-			getInstance().queueInput("\"" + pathString + "\"G~");
+			getInstance().queueInput("\"" + pathString + "\":F");
 		} catch (Exception e) {
 			return false;
 		}

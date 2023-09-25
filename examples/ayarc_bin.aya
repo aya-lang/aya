@@ -7,4 +7,4 @@
 
 .# :{sys.wd} "/"|B;#"/"+S :& :{sys.cd} :{sys.set_ad}
 
-:{sys.wd} "ayarc.aya" + G ~
+:{sys.wd} "ayarc.aya" + :F

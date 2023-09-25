@@ -6,7 +6,7 @@
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
-{:{sys.ad} "test/test.aya" + G ~}:tt;
+{:{sys.ad} "test/test.aya" + :F}:tt;
 
 .# Global __aya__ table
 {,
@@ -57,7 +57,7 @@
 .# ----
 
 .#? load S\n  Load a script
-{{~".aya"+G~} 0 :`}:load;
+{{~".aya"+:F} 0 :`}:load;
 
 
 .# -------
@@ -65,7 +65,7 @@
 .# -------
 
 {name,
-    [:{sys.ad} :9s "examples" :9s name ".aya"] W G~
+    [:{sys.ad} :9s "examples" :9s name ".aya"] W :F
 }:example;
 
 
