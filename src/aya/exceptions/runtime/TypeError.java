@@ -1,7 +1,7 @@
 package aya.exceptions.runtime;
 
 import aya.instruction.named.NamedInstruction;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Operator;
 import aya.obj.Obj;
 import aya.obj.symbol.SymbolConstants;
 
@@ -13,7 +13,7 @@ public class TypeError extends InternalAyaRuntimeException {
 		return msg;
 	}
 	
-	public TypeError(OpInstruction op, Obj... recieved) {
+	public TypeError(Operator op, Obj... recieved) {
 		super(SymbolConstants.TYPE_ERR, "Type error at (" + op.name + "):\n\tExpected (" 
 				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved));
@@ -23,7 +23,7 @@ public class TypeError extends InternalAyaRuntimeException {
 				+ ")\n\tReceived (" + listStr(recieved);
 	}
 
-	public TypeError(OpInstruction op, String message, Obj... recieved) {
+	public TypeError(Operator op, String message, Obj... recieved) {
 		super(SymbolConstants.TYPE_ERR, "Type error at (" + op.name + "):\n\t" + message + "\n\tExpected (" 
 				+ op.getDocTypeStr()
 				+ ")\n\tReceived (" + listStr(recieved));

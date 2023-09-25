@@ -20,7 +20,7 @@ import aya.instruction.index.SetNumberIndexInstruction;
 import aya.instruction.index.SetObjIndexInstruction;
 import aya.instruction.index.SetVarIndexInstruction;
 import aya.instruction.op.ColonOps;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.OperatorInstruction;
 import aya.instruction.op.Ops;
 import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
@@ -665,7 +665,7 @@ public class Parser {
 			// POUND
 			else if (current.isa(Token.POUND)) {
 				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
-				is.push(Ops.OP_POUND);
+				is.push(new OperatorInstruction(Ops.OP_POUND));
 				is.push(blk_ins);
 			}
 
@@ -681,7 +681,7 @@ public class Parser {
 				}
 				Instruction next = is.pop();
 				// Apply a block to a list or dict
-				is.push(ColonOps.OP_COLON_POUND);
+				is.push(new OperatorInstruction(ColonOps.OP_COLON_POUND));
 				is.push(next);
 			}
 
@@ -735,7 +735,7 @@ public class Parser {
 				while (!is.isEmpty()) {
 					Instruction o = is.pop();
 					colonBlock.getInstructions().insert(0, o);
-					if (o instanceof OpInstruction || o instanceof GetVariableInstruction
+					if (o instanceof OperatorInstruction || o instanceof GetVariableInstruction
 							|| o instanceof GetKeyVariableInstruction) {
 						break;
 					}

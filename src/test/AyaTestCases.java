@@ -2,7 +2,7 @@ package test;
 
 import java.util.ArrayList;
 
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Operator;
 
 public class AyaTestCases {
 	private static ArrayList<TestCase> testCases = new ArrayList<TestCase>();
@@ -12,7 +12,7 @@ public class AyaTestCases {
 		testCases.add(new TestCase(in, res, null));
 	}
 	
-	public static void add(String in, String res, OpInstruction op) {
+	public static void add(String in, String res, Operator op) {
 		testCases.add(new TestCase(in, res, op));
 	}
 	

@@ -34,7 +34,7 @@ import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -178,8 +178,8 @@ public class Aya extends Thread {
 	/* This function does nothing but force java to load
 	 * the operators and call the static blocks
 	 */
-	private void loadOps(OpInstruction[] ops) {
-		for (OpInstruction o : ops) {
+	private void loadOps(Operator[] ops) {
+		for (Operator o : ops) {
 			if (o != null) o.getClass();
 		}
 	}

@@ -52,7 +52,7 @@ public class MiscOps {
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static OpInstruction[] MATH_OPS = {
+	public static Operator[] MATH_OPS = {
 		/* 33 !  */ new OP_Fact(),
 		/* 34 "  */ null,
 		/* 35 #  */ new OP_HashCode(),
@@ -150,8 +150,8 @@ public class MiscOps {
 	};
 	
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
-		OpInstruction op = getOpOrNull(c);
+	public static OperatorInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
+		OperatorInstruction op = getOpOrNull(c, source);
 		if (op == null) {
 			throw new NotAnOperatorError("M" + c, source);
 		} else {
@@ -159,9 +159,14 @@ public class MiscOps {
 		}
 	}
 	
-	public static OpInstruction getOpOrNull(char op) {
+	public static OperatorInstruction getOpOrNull(char op, SourceStringRef source) {
 		if(op >= 33 && op <= 126) {
-			return MATH_OPS[op-FIRST_OP];
+			Operator operator = MATH_OPS[op-FIRST_OP];
+			if (operator == null) {
+				return null;
+			} else {
+				return new OperatorInstruction(operator);
+			}
 		} else {
 			return null;
 		}
@@ -170,7 +175,7 @@ public class MiscOps {
 }
 
 // ! - 33
-class OP_Fact extends OpInstruction {
+class OP_Fact extends Operator {
 	
 	public OP_Fact() {
 		init("M!");
@@ -207,7 +212,7 @@ class OP_Fact extends OpInstruction {
 }
 
 // # - 35
-class OP_HashCode extends OpInstruction {
+class OP_HashCode extends Operator {
 	
 	public OP_HashCode() {
 		init("M#");
@@ -221,7 +226,7 @@ class OP_HashCode extends OpInstruction {
 }
 
 // $ - 36
-class OP_SysTime extends OpInstruction {
+class OP_SysTime extends Operator {
 	
 	public OP_SysTime() {
 		init("M$");
@@ -237,7 +242,7 @@ class OP_SysTime extends OpInstruction {
 
 
 // ? - 63
-class OP_Help extends OpInstruction {
+class OP_Help extends Operator {
 	
 	public OP_Help() {
 		init("M?");
@@ -275,8 +280,8 @@ class OP_Help extends OpInstruction {
 				throw new ValueError("Empty block");
 			} else {
 				Instruction i = instructions.pop();
-				if (i instanceof OpInstruction) {
-					OpInstruction op = (OpInstruction)i;
+				if (i instanceof OperatorInstruction) {
+					Operator op = ((OperatorInstruction)i).getOperator();
 					block.push(op.getDoc().toDict());
 				} else {
 					throw new ValueError("No doc found for " + s.str());
@@ -290,7 +295,7 @@ class OP_Help extends OpInstruction {
 }
 
 // C - 67
-class OP_Acosine extends OpInstruction {
+class OP_Acosine extends Operator {
 	
 	public OP_Acosine() {
 		init("MC");
@@ -327,7 +332,7 @@ class OP_Acosine extends OpInstruction {
 }
 
 // I - 73
-class OP_CreateComplex extends OpInstruction {
+class OP_CreateComplex extends Operator {
 	
 	public OP_CreateComplex() {
 		init("MI");
@@ -348,7 +353,7 @@ class OP_CreateComplex extends OpInstruction {
 }
 
 // L - 76
-class OP_Log extends OpInstruction {
+class OP_Log extends Operator {
 	
 	public OP_Log() {
 		init("ML");
@@ -386,7 +391,7 @@ class OP_Log extends OpInstruction {
 
 
 // S - 83
-class OP_Asine extends OpInstruction {
+class OP_Asine extends Operator {
 	
 	public OP_Asine() {
 		init("MS");
@@ -423,7 +428,7 @@ class OP_Asine extends OpInstruction {
 }
 
 // T - 84
-class OP_Atangent extends OpInstruction {
+class OP_Atangent extends Operator {
 	
 	public OP_Atangent() {
 		init("MT");
@@ -460,7 +465,7 @@ class OP_Atangent extends OpInstruction {
 }
 
 // a - 97
-class OP_Ma extends OpInstruction {
+class OP_Ma extends Operator {
 	
 	public OP_Ma() {
 		init("Ma");
@@ -516,7 +521,7 @@ class OP_Ma extends OpInstruction {
 
 
 // b - 98
-class OP_Mb extends OpInstruction {
+class OP_Mb extends Operator {
 	
 	public OP_Mb() {
 		init("Mb");
@@ -541,7 +546,7 @@ class OP_Mb extends OpInstruction {
 
 
 // c - 99
-class OP_Cosine extends OpInstruction {
+class OP_Cosine extends Operator {
 	
 	public OP_Cosine() {
 		init("Mc");
@@ -578,7 +583,7 @@ class OP_Cosine extends OpInstruction {
 }
 
 //d - 100
-class OP_CastDouble extends OpInstruction {
+class OP_CastDouble extends Operator {
 	
 	public OP_CastDouble() {
 		init("Md");
@@ -617,7 +622,7 @@ class OP_CastDouble extends OpInstruction {
 }
 
 // e - 100
-class OP_Me extends OpInstruction {
+class OP_Me extends Operator {
 	
 	public OP_Me() {
 		init("Me");
@@ -654,7 +659,7 @@ class OP_Me extends OpInstruction {
 }
 
 // i - 105
-class OP_Mi extends OpInstruction {
+class OP_Mi extends Operator {
 	
 	public OP_Mi() {
 		init("Mi");
@@ -693,7 +698,7 @@ class OP_Mi extends OpInstruction {
 
 
 // k - 107
-class OP_AddParserChar extends OpInstruction {
+class OP_AddParserChar extends Operator {
 	
 	public OP_AddParserChar() {
 		init("Mk");
@@ -723,7 +728,7 @@ class OP_AddParserChar extends OpInstruction {
 
 
 // l - 108
-class OP_Ln extends OpInstruction {
+class OP_Ln extends Operator {
 	
 	public OP_Ln() {
 		init("Ml");
@@ -760,7 +765,7 @@ class OP_Ln extends OpInstruction {
 }
 
 // m - 109
-class OP_HasMeta extends OpInstruction {
+class OP_HasMeta extends Operator {
 	
 	public OP_HasMeta() {
 		init("Mm");
@@ -780,7 +785,7 @@ class OP_HasMeta extends OpInstruction {
 }
 
 // p - 112
-class OP_Primes extends OpInstruction {
+class OP_Primes extends Operator {
 	
 	public OP_Primes() {
 		init("Mp");
@@ -805,7 +810,7 @@ class OP_Primes extends OpInstruction {
 }
 
 // r - 114
-class OP_To_Rat extends OpInstruction {
+class OP_To_Rat extends Operator {
 	
 	public OP_To_Rat() {
 		init("Mr");
@@ -838,7 +843,7 @@ class OP_To_Rat extends OpInstruction {
 
 
 // s - 115
-class OP_Sine extends OpInstruction {
+class OP_Sine extends Operator {
 	
 	public OP_Sine() {
 		init("Ms");
@@ -878,7 +883,7 @@ class OP_Sine extends OpInstruction {
 
 
 // t - 116
-class OP_Tangent extends OpInstruction {
+class OP_Tangent extends Operator {
 	
 	public OP_Tangent() {
 		init("Mt");
@@ -916,7 +921,7 @@ class OP_Tangent extends OpInstruction {
 
 
 // u - 117
-class OP_Atan2 extends OpInstruction {
+class OP_Atan2 extends Operator {
 	
 	public OP_Atan2() {
 		init("Mu");

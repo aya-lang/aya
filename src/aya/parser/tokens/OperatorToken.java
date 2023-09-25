@@ -6,7 +6,7 @@ import aya.instruction.Instruction;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.OperatorInstruction;
 import aya.instruction.op.Ops;
 import aya.parser.SourceStringRef;
 
@@ -31,7 +31,7 @@ public class OperatorToken extends StdToken {
 	
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		OpInstruction op = null;
+		OperatorInstruction op = null;
 		switch (op_type) {
 		case STD_OP:
 			op = Ops.getOp(data.charAt(0), this.getSourceStringRef());

@@ -77,7 +77,7 @@ public class DotOps {
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static OpInstruction[] DOT_OPS = {
+	public static Operator[] DOT_OPS = {
 		/* 33 !  */ new OP_Dot_Bang(),
 		/* 34 "  */ null, // String symbol literal
 		/* 35 #  */ null, //Comment
@@ -175,8 +175,8 @@ public class DotOps {
 	};
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
-		OpInstruction op = getOpOrNull(c);
+	public static OperatorInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
+		OperatorInstruction op = getOpOrNull(c, source);
 		if (op == null) {
 			throw new NotAnOperatorError("." + c, source);
 		} else {
@@ -184,9 +184,14 @@ public class DotOps {
 		}
 	}
 	
-	public static OpInstruction getOpOrNull(char op) {
+	public static OperatorInstruction getOpOrNull(char op, SourceStringRef source) {
 		if(op >= 33 && op <= 126) {
-			return DOT_OPS[op-FIRST_OP];
+			Operator operator = DOT_OPS[op-FIRST_OP];
+			if (operator == null) {
+				return null;
+			} else  {
+				return new OperatorInstruction(operator);
+			}
 		} else {
 			return null;
 		}
@@ -195,7 +200,7 @@ public class DotOps {
 }
 
 // ! - 33
-class OP_Dot_Bang extends OpInstruction {
+class OP_Dot_Bang extends Operator {
 
 	public OP_Dot_Bang() {
 		this.name = ".!";
@@ -253,7 +258,7 @@ class OP_Dot_Bang extends OpInstruction {
 }
 
 // " - 34
-class OP_Dot_CastChar extends OpInstruction {
+class OP_Dot_CastChar extends Operator {
 
 	public OP_Dot_CastChar() {
 		init(".'");
@@ -282,7 +287,7 @@ class OP_Dot_CastChar extends OpInstruction {
 
 
 // $ - 36
-class OP_Dot_Duplicate extends OpInstruction {
+class OP_Dot_Duplicate extends Operator {
 
 	public OP_Dot_Duplicate() {
 		init(".$");
@@ -311,7 +316,7 @@ class OP_Dot_Duplicate extends OpInstruction {
 
 
 // % - 37
-class OP_Dot_Percent extends OpInstruction {
+class OP_Dot_Percent extends Operator {
 
 	public OP_Dot_Percent() {
 		init(".%");
@@ -355,7 +360,7 @@ class OP_Dot_Percent extends OpInstruction {
 
 
 // & - 38
-class OP_Dot_And extends OpInstruction {
+class OP_Dot_And extends Operator {
 
 	public OP_Dot_And() {
 		init(".&");
@@ -399,7 +404,7 @@ class OP_Dot_And extends OpInstruction {
 }
 
 // ( - 40
-class OP_Dot_OParen extends OpInstruction {
+class OP_Dot_OParen extends Operator {
 
 	public OP_Dot_OParen() {
 		init(".(");
@@ -421,7 +426,7 @@ class OP_Dot_OParen extends OpInstruction {
 }
 
 // ) - 41
-class OP_Dot_CParen extends OpInstruction {
+class OP_Dot_CParen extends Operator {
 
 
 	public OP_Dot_CParen() {
@@ -444,7 +449,7 @@ class OP_Dot_CParen extends OpInstruction {
 }
 
 // * - 42 
-class OP_Dot_Star extends OpInstruction {
+class OP_Dot_Star extends Operator {
 
 	public OP_Dot_Star() {
 		init(".*");
@@ -478,7 +483,7 @@ class OP_Dot_Star extends OpInstruction {
 
 
 // + - 43
-class OP_Dot_Plus extends OpInstruction {
+class OP_Dot_Plus extends Operator {
 
 	public OP_Dot_Plus() {
 		init(".+");
@@ -544,7 +549,7 @@ class OP_Dot_Plus extends OpInstruction {
 }
 
 // - - 45
-class OP_Dot_Minus extends OpInstruction {
+class OP_Dot_Minus extends Operator {
 
 	public OP_Dot_Minus() {
 		init(".-");
@@ -599,7 +604,7 @@ class OP_Dot_Minus extends OpInstruction {
 }
 
 // / - 47
-class OP_Dot_FwdSlash extends OpInstruction {
+class OP_Dot_FwdSlash extends Operator {
 
 	public OP_Dot_FwdSlash() {
 		init("./");
@@ -635,7 +640,7 @@ class OP_Dot_FwdSlash extends OpInstruction {
 }
 
 // ; - 59
-class OP_Dot_ClearAll extends OpInstruction {
+class OP_Dot_ClearAll extends Operator {
 
 	public OP_Dot_ClearAll() {
 		init(".;");
@@ -649,7 +654,7 @@ class OP_Dot_ClearAll extends OpInstruction {
 }
 
 // < - 60
-class OP_Dot_LessThan extends OpInstruction {
+class OP_Dot_LessThan extends Operator {
 
 	public OP_Dot_LessThan() {
 		init(".<");
@@ -694,7 +699,7 @@ class OP_Dot_LessThan extends OpInstruction {
 
 
 // > - 62
-class OP_Dot_GreaterThan extends OpInstruction {
+class OP_Dot_GreaterThan extends Operator {
 
 	public OP_Dot_GreaterThan() {
 		init(".>");
@@ -741,7 +746,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 }
 
 // = 61 new OP_Dot_Equals(),
-class OP_Dot_Equals extends OpInstruction {
+class OP_Dot_Equals extends Operator {
 
 	public OP_Dot_Equals() {
 		init(".=");
@@ -770,7 +775,7 @@ class OP_Dot_Equals extends OpInstruction {
 
 
 // ? - 63
-class OP_Dot_Conditional extends OpInstruction {
+class OP_Dot_Conditional extends Operator {
 
 	public OP_Dot_Conditional() {
 		init(".?");
@@ -803,7 +808,7 @@ class OP_Dot_Conditional extends OpInstruction {
 }
 
 // @ - 64
-class OP_Dot_At extends OpInstruction {
+class OP_Dot_At extends Operator {
 
 	public OP_Dot_At() {
 		init(".@");
@@ -833,7 +838,7 @@ class OP_Dot_At extends OpInstruction {
 
 
 // A - 65
-class OP_Dot_ArrayAll extends OpInstruction {
+class OP_Dot_ArrayAll extends Operator {
 
 	public OP_Dot_ArrayAll() {
 		init(".A");
@@ -851,7 +856,7 @@ class OP_Dot_ArrayAll extends OpInstruction {
 }
 
 // B - 66
-class OP_Dot_Append extends OpInstruction {
+class OP_Dot_Append extends Operator {
 
 	public OP_Dot_Append() {
 		init(".B");
@@ -873,7 +878,7 @@ class OP_Dot_Append extends OpInstruction {
 }
 
 // C - 67
-class OP_Dot_SortUsing extends OpInstruction {
+class OP_Dot_SortUsing extends Operator {
 
 	public OP_Dot_SortUsing() {
 		init(".C");
@@ -942,7 +947,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 }
 
 // D - 68
-class OP_Dot_Error extends OpInstruction {
+class OP_Dot_Error extends Operator {
 
 	public OP_Dot_Error() {
 		init(".D");
@@ -956,7 +961,7 @@ class OP_Dot_Error extends OpInstruction {
 }
 
 //E - 69
-class OP_Dot_Len extends OpInstruction {
+class OP_Dot_Len extends Operator {
 
 	public OP_Dot_Len() {
 		init(".E");
@@ -981,7 +986,7 @@ class OP_Dot_Len extends OpInstruction {
 
 
 //F - 70
-class OP_Dot_Flatten extends OpInstruction {
+class OP_Dot_Flatten extends Operator {
 
 	public OP_Dot_Flatten() {
 		init(".F");
@@ -1004,7 +1009,7 @@ class OP_Dot_Flatten extends OpInstruction {
 
 
 // G - 71
-class OP_Dot_Write extends OpInstruction {
+class OP_Dot_Write extends Operator {
 
 	public OP_Dot_Write() {
 		init(".G");
@@ -1055,7 +1060,7 @@ class OP_Dot_Write extends OpInstruction {
 
 // I - 73
 //NOTE: If updating this operator, also update I
-class OP_Dot_I extends OpInstruction {
+class OP_Dot_I extends Operator {
 
 	public OP_Dot_I() {
 		init(".I");
@@ -1080,7 +1085,7 @@ class OP_Dot_I extends OpInstruction {
 }
 
 //K - 75
-class OP_Dot_TryCatch extends OpInstruction {
+class OP_Dot_TryCatch extends Operator {
 
 	public OP_Dot_TryCatch() {
 		init(".K");
@@ -1119,7 +1124,7 @@ class OP_Dot_TryCatch extends OpInstruction {
 
 
 //M- 77
-class OP_Dot_M extends OpInstruction {
+class OP_Dot_M extends Operator {
 
 	public OP_Dot_M() {
 		init(".M");
@@ -1141,7 +1146,7 @@ class OP_Dot_M extends OpInstruction {
 }
 
 // N - 78
-class OP_Dot_N extends OpInstruction {
+class OP_Dot_N extends Operator {
 
 	public OP_Dot_N() {
 		init(".N");
@@ -1179,7 +1184,7 @@ class OP_Dot_N extends OpInstruction {
 }
 
 // O - 79
-class OP_Dot_O extends OpInstruction {
+class OP_Dot_O extends Operator {
 
 	public OP_Dot_O() {
 		init(".O");
@@ -1211,7 +1216,7 @@ class OP_Dot_O extends OpInstruction {
 
 
 // P - 80
-class OP_Dot_Print extends OpInstruction {
+class OP_Dot_Print extends Operator {
 
 	public OP_Dot_Print() {
 		init(".P");
@@ -1225,7 +1230,7 @@ class OP_Dot_Print extends OpInstruction {
 }
 
 // Q - 81
-class OP_Dot_Rand extends OpInstruction {
+class OP_Dot_Rand extends Operator {
 
 	public OP_Dot_Rand() {
 		init(".Q");
@@ -1239,7 +1244,7 @@ class OP_Dot_Rand extends OpInstruction {
 }
 
 // R - 82
-class OP_Dot_R extends OpInstruction {
+class OP_Dot_R extends Operator {
 
 	public OP_Dot_R() {
 		init(".R");
@@ -1312,7 +1317,7 @@ class OP_Dot_R extends OpInstruction {
 }
 
 // S - 83
-class OP_Dot_S extends OpInstruction {
+class OP_Dot_S extends Operator {
 
 	public OP_Dot_S() {
 		init(".S");
@@ -1360,7 +1365,7 @@ class OP_Dot_S extends OpInstruction {
 
 
 //T - 84
-class OP_Dot_T extends OpInstruction {
+class OP_Dot_T extends Operator {
 
 	public OP_Dot_T() {
 		init(".T");
@@ -1380,7 +1385,7 @@ class OP_Dot_T extends OpInstruction {
 }
 
 // U - 85
-class OP_RequestString extends OpInstruction {
+class OP_RequestString extends Operator {
 
 	public OP_RequestString() {
 		init(".U");
@@ -1394,7 +1399,7 @@ class OP_RequestString extends OpInstruction {
 }
 
 // V - 86
-class OP_Dot_AppendBack extends OpInstruction {
+class OP_Dot_AppendBack extends Operator {
 
 	public OP_Dot_AppendBack() {
 		init(".V");
@@ -1417,7 +1422,7 @@ class OP_Dot_AppendBack extends OpInstruction {
 
 
 // \ - 92
-class OP_Dot_BackSlash extends OpInstruction {
+class OP_Dot_BackSlash extends Operator {
 
 	public OP_Dot_BackSlash() {
 		init(".\\");
@@ -1455,7 +1460,7 @@ class OP_Dot_BackSlash extends OpInstruction {
 
 // ^ - 94
 
-class OP_Dot_Pow extends OpInstruction {
+class OP_Dot_Pow extends Operator {
 
 	public OP_Dot_Pow() {
 		init(".^");
@@ -1501,7 +1506,7 @@ class OP_Dot_Pow extends OpInstruction {
 
 
 // | - 124
-class OP_Dot_Bar extends OpInstruction {
+class OP_Dot_Bar extends Operator {
 
 	
 
@@ -1567,7 +1572,7 @@ class OP_Dot_Bar extends OpInstruction {
 
 
 // ~ - 126
-class OP_Dot_Tilde extends OpInstruction {
+class OP_Dot_Tilde extends Operator {
 
 	public OP_Dot_Tilde() {
 		init(".~");
