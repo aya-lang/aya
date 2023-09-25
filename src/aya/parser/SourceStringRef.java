@@ -22,6 +22,16 @@ public class SourceStringRef {
 		return this.source;
 	}
 	
+	public SourceStringRef inc() {
+		this.idx += 1;
+		return this;
+	}
+
+	public SourceStringRef dec() {
+		this.idx -= 1;
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		return this.getContextStr();

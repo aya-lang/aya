@@ -88,7 +88,7 @@ public class Parser {
 					if (in.hasNext()) {
 						sb.append(in.next());
 					}
-					String doc = formatString(sb.toString()).trim();
+					String doc = formatString(in.currentRef().inc(), sb.toString()).trim();
 					aya.addHelpText(doc);
 				}
 
@@ -144,7 +144,7 @@ public class Parser {
 
 				// Add the documentation to Aya
 				if (isDocCode) {
-					String doc = formatString(docs.toString()).trim();
+					String doc = formatString(in.currentRef().dec(), docs.toString()).trim();
 					aya.addHelpText(doc);
 				}
 			}
@@ -764,8 +764,8 @@ public class Parser {
 		}
 	}
 	
-	private static String formatString(String input) throws EndOfInputError, SyntaxError {
-		ParserString in = new ParserString(new SourceString(input + "\"", "<Parser.formatString>"));
+	private static String formatString(SourceStringRef source, String input) throws EndOfInputError, SyntaxError {
+		ParserString in = new ParserString(source, input);
 		return parseString(in);
 	}
 
@@ -806,6 +806,8 @@ public class Parser {
 				case '"':
 					str.append('"');
 					break;
+				case '?':
+					throw new SyntaxError("test", in.currentRef());
 				case '\\':
 					str.append('\\');
 					break;
