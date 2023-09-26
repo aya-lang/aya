@@ -37,7 +37,7 @@ public class StringToken extends StdToken {
 		} else {
 			SourceStringRef ref = this.getSourceStringRef();
 			String unescaped = StringParseUtils.unescape(new ParserString(ref, this.getData()));
-			return new StringLiteralInstruction(unescaped);
+			return new StringLiteralInstruction(this.getSourceStringRef(), unescaped);
 		}
 	}
 
@@ -143,7 +143,7 @@ public class StringToken extends StdToken {
 		
 		String str_literal = StringParseUtils.unescape(new ParserString(in.currentRef().inc(), sb.toString()));
 		instrs.insert(0, List.fromString(str_literal));
-		return new InterpolateStringInstruction(data, instrs);
+		return new InterpolateStringInstruction(this.getSourceStringRef(), data, instrs);
 	}
 
 	@Override

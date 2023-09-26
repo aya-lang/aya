@@ -99,7 +99,8 @@ public abstract class Operator {
 
 		// {op}:call
 		Block call = new Block();
-		call.add(new OperatorInstruction(this));
+		// TODO Source
+		call.add(new OperatorInstruction(null, this));
 		info.set(SymbolConstants.CALL, call);
 		
 		// [::sym]:symbols;

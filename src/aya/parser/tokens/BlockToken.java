@@ -36,7 +36,7 @@ public class BlockToken extends CollectionToken {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
-			return new BlockLiteralInstruction(new Block(Parser.generate(blockData.get(0))));
+			return new BlockLiteralInstruction(this.getSourceStringRef(), new Block(Parser.generate(blockData.get(0))));
 		} else {
 			TokenQueue header = blockData.get(0);
 
@@ -48,7 +48,7 @@ public class BlockToken extends CollectionToken {
 					if (b.isEmpty()) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(b);
+						return new DictLiteralInstruction(this.getSourceStringRef(), b);
 					}
 				}
 				// Single number in header, create a dict factory with a capture
@@ -69,7 +69,7 @@ public class BlockToken extends CollectionToken {
 					if (n == 0 && b.isEmpty()) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(b, n);
+						return new DictLiteralInstruction(this.getSourceStringRef(), b, n);
 					}
 				}
 				//Non-empty header, args and local variables
@@ -81,7 +81,7 @@ public class BlockToken extends CollectionToken {
 					BlockHeader block_header = p.first();
 					HashMap<Symbol, Block> captures = p.second();
 					b.add(block_header);
-					return new BlockLiteralInstruction(b, captures);
+					return new BlockLiteralInstruction(this.getSourceStringRef(), b, captures);
 				}
 			} else {
 				throw new SyntaxError("Block contains too many parts", getSourceStringRef());
@@ -90,7 +90,7 @@ public class BlockToken extends CollectionToken {
 	}
 	
 	private Pair<BlockHeader, HashMap<Symbol, Block>> generateBlockHeader(TokenQueue tokens) throws ParserException {
-		BlockHeader header = new BlockHeader();
+		BlockHeader header = new BlockHeader(this.getSourceStringRef());
 		
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
@@ -149,7 +149,7 @@ public class BlockToken extends CollectionToken {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
 						Block b = new Block();
-						b.add(new QuoteGetVariableInstruction(var.getSymbol()));
+						b.add(new QuoteGetVariableInstruction(current.getSourceStringRef(), var.getSymbol()));
 						captures.put(var.getSymbol(), b);
 					} else {
 						generateBlockHeaderDefaultsError(orig, current.getSourceStringRef());

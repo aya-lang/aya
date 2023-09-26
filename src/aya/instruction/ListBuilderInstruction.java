@@ -9,6 +9,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
+import aya.parser.SourceStringRef;
 
 public class ListBuilderInstruction extends Instruction {
 
@@ -18,7 +19,8 @@ public class ListBuilderInstruction extends Instruction {
 	private Block[] filters;
 	private int num_captures;
 
-	public ListBuilderInstruction(Block initial, Block map, Block[] filters, int num_captures) {
+	public ListBuilderInstruction(SourceStringRef source, Block initial, Block map, Block[] filters, int num_captures) {
+		super(source);
 		this.initialList = initial;
 		this.map = map;
 		this.filters = filters;

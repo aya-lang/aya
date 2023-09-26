@@ -3,12 +3,14 @@ package aya.instruction.index;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.parser.SourceStringRef;
 
 public class SetExprIndexInstruction extends SetIndexInstruction {
 	
 	Block _index;
 	
-	public SetExprIndexInstruction(Block index) {
+	public SetExprIndexInstruction(SourceStringRef source, Block index) {
+		super(source);
 		_index = index;
 	}
 	

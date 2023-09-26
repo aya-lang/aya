@@ -165,7 +165,7 @@ public class MiscOps {
 			if (operator == null) {
 				return null;
 			} else {
-				return new OperatorInstruction(operator);
+				return new OperatorInstruction(source, operator);
 			}
 		} else {
 			return null;

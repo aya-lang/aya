@@ -186,11 +186,11 @@ public class Ops {
 	
 	public static OperatorInstruction getOp(char op, SourceStringRef source) throws NotAnOperatorError {
 		if ((op >= 33 && op <= 47) || (op >= 59 && op <= 96)) {
-			return new OperatorInstruction(OPS[op-FIRST_OP]);
+			return new OperatorInstruction(source, OPS[op-FIRST_OP]);
 		} else if (op == '~') {
-			return new OperatorInstruction(TILDE);
+			return new OperatorInstruction(source, TILDE);
 		} else if (op == '|') {
-			return new OperatorInstruction(BAR);
+			return new OperatorInstruction(source, BAR);
 		} else {
 			throw new NotAnOperatorError(""+op, source);
 		}
@@ -1528,7 +1528,7 @@ class OP_W extends Operator {
 			//Push all but the last item
 			Block exec_block = new Block();
 			for(int i = list.length()-1; i > 0; i--) {
-				exec_block.add(new OperatorInstruction(Ops.OP_PLUS));
+				exec_block.add(new OperatorInstruction(null, Ops.OP_PLUS));
 				exec_block.add(list.getExact(i));
 			}
 			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)

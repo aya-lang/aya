@@ -584,7 +584,7 @@ public class Parser {
 				// Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetVariableInstruction(v.getSymbol()));
+					is.push(new SetVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
 				} else {
 					throw new SyntaxError("':' not followed by operator", current.getSourceStringRef());
 				}
@@ -602,9 +602,9 @@ public class Parser {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
 							if (first.isa(Obj.NUMBER)) {
-								is.push(new GetNumberIndexInstruction(((Number)first).toInt()));
+								is.push(new GetNumberIndexInstruction(current.getSourceStringRef(), ((Number)first).toInt()));
 							} else {
-								is.push(new GetObjIndexInstruction(first));
+								is.push(new GetObjIndexInstruction(current.getSourceStringRef(), first));
 							}
 						} else {
 							throw new SyntaxError(
@@ -615,9 +615,9 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							is.push(new GetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new GetExprIndexInstruction(new Block(lli.getInstructions())));
+							is.push(new GetExprIndexInstruction(current.getSourceStringRef(), new Block(lli.getInstructions())));
 						}
 					}
 				}
@@ -631,7 +631,7 @@ public class Parser {
 				// Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetKeyVariableInstruction(v.getSymbol()));
+					is.push(new SetKeyVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
 				}
 
 				// Index assignment
@@ -641,9 +641,9 @@ public class Parser {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
 							if (first.isa(Obj.NUMBER)) {
-								is.push(new SetNumberIndexInstruction(((Number)first).toInt()));
+								is.push(new SetNumberIndexInstruction(current.getSourceStringRef(), ((Number)first).toInt()));
 							} else {
-								is.push(new SetObjIndexInstruction(first));
+								is.push(new SetObjIndexInstruction(current.getSourceStringRef(), first));
 							}
 						} else {
 							throw new SyntaxError(
@@ -654,9 +654,9 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new SetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							is.push(new SetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new SetExprIndexInstruction(new Block(lli.getInstructions())));
+							is.push(new SetExprIndexInstruction(current.getSourceStringRef(), new Block(lli.getInstructions())));
 						}
 					}
 				}
@@ -665,7 +665,7 @@ public class Parser {
 			// POUND
 			else if (current.isa(Token.POUND)) {
 				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
-				is.push(new OperatorInstruction(Ops.OP_POUND));
+				is.push(new OperatorInstruction(current.getSourceStringRef(), Ops.OP_POUND));
 				is.push(blk_ins);
 			}
 
@@ -681,7 +681,7 @@ public class Parser {
 				}
 				Instruction next = is.pop();
 				// Apply a block to a list or dict
-				is.push(new OperatorInstruction(ColonOps.OP_COLON_POUND));
+				is.push(new OperatorInstruction(current.getSourceStringRef(), ColonOps.OP_COLON_POUND));
 				is.push(next);
 			}
 
@@ -689,10 +689,10 @@ public class Parser {
 				if (stk.hasNext()) {
 					if (stk.peek().isa(Token.VAR)) {
 						VarToken t = (VarToken) stk.pop();
-						is.push(new QuoteGetVariableInstruction(t.getSymbol()));
+						is.push(new QuoteGetVariableInstruction(t.getSourceStringRef(), t.getSymbol()));
 					} else if (stk.peek().isa(Token.KEY_VAR)) {
 						KeyVarToken t = (KeyVarToken) stk.pop();
-						is.push(new QuoteGetKeyVariableInstruction(t.getSymbol()));
+						is.push(new QuoteGetKeyVariableInstruction(t.getSourceStringRef(), t.getSymbol()));
 					} else {
 						throw new SyntaxError("Expected var or keyvar before quote (.`) token", current.getSourceStringRef());
 					}
@@ -717,8 +717,9 @@ public class Parser {
 	}
 	
 	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
+		SourceStringRef ref = tokens_in.peek().getSourceStringRef();
 		if (is.isEmpty()) {
-			throw new SyntaxError("Expected token when assembling block", tokens_in.peek().getSourceStringRef());
+			throw new SyntaxError("Expected token when assembling block", ref);
 		} else {
 			Instruction next = is.pop();
 
@@ -740,7 +741,7 @@ public class Parser {
 						break;
 					}
 				}
-				return new BlockLiteralInstruction(colonBlock);
+				return new BlockLiteralInstruction(ref, colonBlock);
 			}
 		}
 	}

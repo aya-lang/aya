@@ -3,12 +3,14 @@ package aya.instruction.op;
 import aya.ReprStream;
 import aya.instruction.Instruction;
 import aya.obj.block.Block;
+import aya.parser.SourceStringRef;
 
 public class OperatorInstruction extends Instruction {
 
 	private Operator op;
 	
-	public OperatorInstruction(Operator op) {
+	public OperatorInstruction(SourceStringRef source, Operator op) {
+		super(source);
 		if (op == null) throw new AssertionError();
 		this.op = op;
 	}

@@ -8,6 +8,7 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.parser.SourceStringRef;
 
 /** DictFactories sit on the instruction stack. When evoked, they generate a dict
  * given the current scope of variables
@@ -19,12 +20,14 @@ public class DictLiteralInstruction extends Instruction {
 	Block _block;
 	private int num_captures;
 	
-	public DictLiteralInstruction(Block b) {
+	public DictLiteralInstruction(SourceStringRef source, Block b) {
+		super(source);
 		this._block = b;
 		this.num_captures = 0;
 	}
 	
-	public DictLiteralInstruction(Block b, int num_captures) {
+	public DictLiteralInstruction(SourceStringRef source, Block b, int num_captures) {
+		super(source);
 		this._block = b;
 		this.num_captures = num_captures;
 	}

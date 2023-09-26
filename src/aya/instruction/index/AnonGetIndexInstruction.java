@@ -11,6 +11,10 @@ import aya.util.Casting;
 
 public class AnonGetIndexInstruction extends GetIndexInstruction {
 	
+	public AnonGetIndexInstruction() {
+		super(null);
+	}
+	
 	@Override
 	public void execute (final Block block) {
 		Obj index = block.pop();

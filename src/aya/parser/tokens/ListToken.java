@@ -35,7 +35,7 @@ public class ListToken extends CollectionToken {
 		
 		switch(listData.size()) {
 		case 1:			
-			ListLiteralInstruction ll = new ListLiteralInstruction(Parser.generate(listData.get(0)), pops);
+			ListLiteralInstruction ll = new ListLiteralInstruction(this.getSourceStringRef(), Parser.generate(listData.get(0)), pops);
 			return ll;
 		case 2:
 		{
@@ -51,7 +51,7 @@ public class ListToken extends CollectionToken {
 				bli.setAutoEval();
 			}
 			
-		return new ListBuilderInstruction(initialList, map, null, pops);
+		return new ListBuilderInstruction(this.getSourceStringRef(), initialList, map, null, pops);
 		}
 		default:
 		{ 
@@ -77,7 +77,7 @@ public class ListToken extends CollectionToken {
 				
 				filters[k-2] = tmpFilter;
 			}
-			return new ListBuilderInstruction(initialList2, map2, filters, pops);
+			return new ListBuilderInstruction(this.getSourceStringRef(), initialList2, map2, filters, pops);
 		} //End default scope
 		} //End switch
 	}

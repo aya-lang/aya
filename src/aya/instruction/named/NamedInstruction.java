@@ -9,11 +9,13 @@ public abstract class NamedInstruction extends Instruction {
 	protected String _doc;
 	
 	public NamedInstruction(String name) {
+		super(null); // TODO
 		this._name = name;
 		this._doc = null;
 	}
 
 	public NamedInstruction(String name, String doc) {
+		super(null); // TODO
 		this._name = name;
 		this._doc = doc;
 	}

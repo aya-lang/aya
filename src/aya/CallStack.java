@@ -1,6 +1,7 @@
 package aya;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EmptyStackException;
 
 import aya.exceptions.runtime.AyaStackOverflowError;
@@ -129,6 +130,7 @@ public class CallStack {
 			stack_list.add(_stack[i]);
 		}
 
+		Collections.reverse(stack_list);
 		for (CallStackFrame l : stack_list)
 		{
 			if (l.isCheckpoint()) continue;

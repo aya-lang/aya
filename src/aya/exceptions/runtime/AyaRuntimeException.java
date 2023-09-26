@@ -48,30 +48,43 @@ public abstract class AyaRuntimeException extends RuntimeException implements Ay
 		return d;
 	}
 
-	public void addContext(Block block) {
-		addContext(null, block);
-	}
-
-	public void addContext(Instruction instr, Block block) {
+	public void addContext(String str) {
 		if (context == null) context = new ArrayList<String>();
-		try {
-			String ctx = "";
-			if (instr != null) {
-				ctx += instr.repr(new ReprStream()) + " ";
+		context.add(str);
+	}
+	
+	public void addContext(Instruction instr) {
+		if (instr.getSource() != null) {
+			addContext(instr.getSource().getContextStr());
+		}
+	}
+	
+	public void addContext(Instruction instr, Block block) {
+		if (instr.getSource() != null) {
+			addContext(instr);
+		} else {
+			// Legacy version
+			try {
+				String ctx = "> ";
+				if (instr != null) {
+					ctx += instr.repr(new ReprStream()) + " ";
+				}
+				ctx += ".. " + block.repr(new ReprStream(), false).toStringOneline() + "}";
+				addContext(ctx);
+			} catch (Exception e) {
+				addContext("<exception occurred: " + e.getMessage() + ">");
 			}
-			ctx += ".. " + block.repr(new ReprStream(), false).toStringOneline() + "}";
-			context.add(ctx);
-		} catch (Exception e) {
-			context.add("<exception occurred: " + e.getMessage() + ">");
 		}
 	}
 
 	public void print(PrintStream stream) {
 		stream.println(getMessage());
-		if (context != null) {
-			for (String s : context) {
-				stream.println("   in " + s);
-			}
+		if (context != null && context.size() > 0) {
+			stream.println("");
+			stream.println(context.get(0));
+			//for (String s : context) {
+			//	stream.println(s);
+			//}
 		}
 	}
 	

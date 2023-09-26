@@ -12,8 +12,7 @@ import aya.util.Casting;
 public class GetVariableInstruction extends VariableInstruction {
 
 	public GetVariableInstruction(SourceStringRef source, Symbol var) {
-		super(var);
-		this.setSource(source);
+		super(source, var);
 	}
 	
 	@Override

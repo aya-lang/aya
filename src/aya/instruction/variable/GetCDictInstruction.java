@@ -13,7 +13,7 @@ public class GetCDictInstruction extends VariableInstruction {
 	GetKeyVariableInstruction get_key_;
 	
 	public GetCDictInstruction(SourceStringRef source, Symbol var) {
-		super(var);
+		super(source, var);
 		
 		get_key_ = new GetKeyVariableInstruction(source, var);
 		get_cdict_ = new GetVariableInstruction(source, SymbolConstants.__CDICT__);

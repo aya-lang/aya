@@ -5,11 +5,12 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class SetKeyVariableInstruction extends VariableInstruction {
 
-	public SetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public SetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

@@ -190,7 +190,7 @@ public class DotOps {
 			if (operator == null) {
 				return null;
 			} else  {
-				return new OperatorInstruction(operator);
+				return new OperatorInstruction(source, operator);
 			}
 		} else {
 			return null;
@@ -384,7 +384,7 @@ class OP_Dot_And extends Operator {
 			Block initial = new Block();
 			initial.push(c);
 			initial.push(b);
-			ListBuilderInstruction lb = new ListBuilderInstruction(initial, (Block)a, null, 0);
+			ListBuilderInstruction lb = new ListBuilderInstruction(null, initial, (Block)a, null, 0);
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);

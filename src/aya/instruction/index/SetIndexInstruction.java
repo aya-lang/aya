@@ -7,9 +7,14 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public abstract class SetIndexInstruction extends Instruction {
+	
+	public SetIndexInstruction(SourceStringRef source) {
+		super(source);
+	}
 	
 	protected abstract Obj getIndex();
 	

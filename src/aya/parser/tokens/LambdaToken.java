@@ -49,14 +49,14 @@ public class LambdaToken extends CollectionToken {
 				bli.setAutoEval();
 				return bli;
 			} else {
-				return new LambdaInstruction(lambdaIL);
+				return new LambdaInstruction(this.getSourceStringRef(), lambdaIL);
 			}
 		} else {
 			Block[] elements = new Block[lambdaData.size()];
 			for (int k = 0; k < elements.length; k++) {
 				elements[k] = new Block(Parser.generate(lambdaData.get(k)));
 			}
-			return new TupleInstruction(elements);
+			return new TupleInstruction(this.getSourceStringRef(), elements);
 		}
 	}
 	

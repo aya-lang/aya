@@ -196,7 +196,7 @@ public class ColonOps {
 			if (operator == null) {
 				return null;
 			} else {
-				return new OperatorInstruction(operator);
+				return new OperatorInstruction(source, operator);
 			}
 		} else {
 			return null;
@@ -957,12 +957,12 @@ class OP_Colon_M extends Operator {
 			Obj o = meta.get(SymbolConstants.LOCALS);
 			if (o.isa(DICT)) {
 				Dict locals = (Dict)o;
-				bh = new BlockHeader(locals);
+				bh = new BlockHeader(null, locals);
 			} else {
 				throw new ValueError("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
 			}
 		} else {
-			bh = new BlockHeader();
+			bh = new BlockHeader(null);
 		}
 		
 		// Args

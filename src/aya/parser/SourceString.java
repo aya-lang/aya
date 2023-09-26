@@ -103,7 +103,7 @@ public class SourceString {
 		if (this.lines.length <= 1) {
 			sb.append(line.line + "\n" + line.pointerStr());
 		} else {
-			sb.append("> file '" + this.filename + "', line " + line.lineNumber + ", col " + (line.index+1) + ":\n");
+			sb.append("> File '" + this.filename + "', line " + line.lineNumber + ", col " + (line.index+1) + ":\n");
 			
 			int slen = ("" + line.lineNumber+1).length();
 			String formatStr = "%-" + slen + "." + slen + "s| ";

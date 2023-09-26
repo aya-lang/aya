@@ -7,13 +7,15 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
+import aya.parser.SourceStringRef;
 
 public class ListLiteralInstruction extends Instruction {
 	//The number of items that should be popped from the stack and added to the front of this list
 	int num_captures;
 	Block block;
 	
-	public ListLiteralInstruction(InstructionStack is, int num_pops) {
+	public ListLiteralInstruction(SourceStringRef source, InstructionStack is, int num_pops) {
+		super(source);
 		this.num_captures = num_pops;
 		block = new Block(is);
 	}
@@ -55,7 +57,7 @@ public class ListLiteralInstruction extends Instruction {
 	}
 	
 	public ListLiteralInstruction duplicate() {
-		ListLiteralInstruction ll = new ListLiteralInstruction(block.getInstructions().duplicate(), num_captures);
+		ListLiteralInstruction ll = new ListLiteralInstruction(getSource(), block.getInstructions().duplicate(), num_captures);
 		ll.block.getStack().addAll(this.block.getStack());
 		return ll;
 	}

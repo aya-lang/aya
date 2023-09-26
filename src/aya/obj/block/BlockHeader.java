@@ -12,6 +12,7 @@ import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class BlockHeader extends Instruction {
@@ -20,14 +21,15 @@ public class BlockHeader extends Instruction {
 	private ArrayList<BlockHeaderArg> _args;
 
 	
-	public BlockHeader(Dict vars) {
+	public BlockHeader(SourceStringRef source, Dict vars) {
+		super(source);
 		_vars = vars;
 		_args = new ArrayList<BlockHeaderArg>();
 	}
 
 
-	public BlockHeader() {
-		this(new Dict());
+	public BlockHeader(SourceStringRef source) {
+		this(source, new Dict());
 	}
 
 	
@@ -129,7 +131,7 @@ public class BlockHeader extends Instruction {
 	}
 
 	public BlockHeader copy() {
-		BlockHeader b = new BlockHeader();
+		BlockHeader b = new BlockHeader(this.getSource());
 		b._args = _args;
 		b._vars = Casting.asDict(_vars.deepcopy());
 		return b;

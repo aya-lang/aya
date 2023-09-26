@@ -8,10 +8,6 @@ public abstract class Instruction {
 	
 	private SourceStringRef source;
 
-	public Instruction() {
-		this.source = null;
-	}
-	
 	public Instruction(SourceStringRef source) {
 		this.source = source;
 	}
@@ -22,10 +18,6 @@ public abstract class Instruction {
 	
 	public SourceStringRef getSource() {
 		return this.source;
-	}
-	
-	public void setSource(SourceStringRef source) {
-		this.source = source;
 	}
 	
 	@Override
