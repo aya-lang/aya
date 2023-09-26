@@ -18,7 +18,7 @@ public class CDictToken extends StdToken {
 
 	@Override
 	public Instruction getInstruction() {
-		return new GetCDictInstruction(getSymbol());
+		return new GetCDictInstruction(getSourceStringRef(), getSymbol());
 	}
 
 	@Override

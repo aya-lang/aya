@@ -18,7 +18,7 @@ public class KeyVarToken extends StdToken {
 
 	@Override
 	public Instruction getInstruction() {
-		return new GetKeyVariableInstruction(getSymbol());
+		return new GetKeyVariableInstruction(getSourceStringRef(), getSymbol());
 	}
 
 	@Override

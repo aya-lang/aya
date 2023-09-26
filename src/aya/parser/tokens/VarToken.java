@@ -18,7 +18,7 @@ public class VarToken extends StdToken {
 
 	@Override
 	public Instruction getInstruction() {
-		return new GetVariableInstruction(getSymbol());
+		return new GetVariableInstruction(this.getSourceStringRef(), getSymbol());
 	}
 
 	@Override
