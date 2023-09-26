@@ -8,12 +8,12 @@ import java.util.Locale;
 
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.number.Num;
 
-public class ParseDateInstruction extends NamedInstruction {
+public class ParseDateInstruction extends NamedOperator {
 	
 	public ParseDateInstruction() {
 		super("date.parse");

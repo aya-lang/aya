@@ -3,7 +3,7 @@ package aya.ext.date;
 import java.util.Calendar;
 
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
@@ -11,7 +11,7 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolConstants;
 
-public class DescribeDateInstruction extends NamedInstruction {
+public class DescribeDateInstruction extends NamedOperator {
 
 	private Calendar cal; 
 	

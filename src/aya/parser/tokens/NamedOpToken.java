@@ -3,7 +3,8 @@ package aya.parser.tokens;
 import aya.Aya;
 import aya.exceptions.ex.ParserException;
 import aya.instruction.Instruction;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
+import aya.instruction.named.NamedOperatorInstruction;
 import aya.parser.SourceStringRef;
 
 public class NamedOpToken extends StdToken {
@@ -14,9 +15,9 @@ public class NamedOpToken extends StdToken {
 
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		NamedInstruction instruction = Aya.getInstance().getNamedInstruction(data);
+		NamedOperator instruction = Aya.getInstance().getNamedInstruction(data);
 		if (instruction != null) {
-			return instruction;
+			return new NamedOperatorInstruction(this.getSourceStringRef(), instruction);
 		} else {
 			throw new ParserException("Named instruction :{" + data + "} does not exist", source);
 		}

@@ -28,7 +28,7 @@ import aya.ext.la.LinearAlgebraInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
@@ -295,9 +295,9 @@ public class Aya extends Thread {
 		}
 		
 	}
-	public NamedInstruction getNamedInstruction(String name) {
+	public NamedOperator getNamedInstruction(String name) {
 		for (NamedInstructionStore x : _namedInstructionStores) {
-			NamedInstruction i = x.getInstruction(name);
+			NamedOperator i = x.getInstruction(name);
 			if (i != null) {
 				return i;
 			}

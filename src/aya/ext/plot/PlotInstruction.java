@@ -1,12 +1,12 @@
 package aya.ext.plot;
 
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 
-public class PlotInstruction extends NamedInstruction {
+public class PlotInstruction extends NamedOperator {
 	
 	public PlotInstruction() {
 		super("plot.plot");

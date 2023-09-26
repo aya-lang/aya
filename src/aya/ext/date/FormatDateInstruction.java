@@ -7,13 +7,13 @@ import java.util.Locale;
 
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Number;
 
-public class FormatDateInstruction extends NamedInstruction {
+public class FormatDateInstruction extends NamedOperator {
 	
 	public FormatDateInstruction() {
 		super("date.format");

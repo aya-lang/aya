@@ -3,7 +3,7 @@ package aya.ext.color;
 import java.awt.Color;
 
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
@@ -17,7 +17,7 @@ public class ColorInstructionStore extends NamedInstructionStore {
 	@Override
 	protected void init() {
 
-		addInstruction(new NamedInstruction("color.fromstr", "color::str: convert an html valid color to an rgba dict") {
+		addInstruction(new NamedOperator("color.fromstr", "color::str: convert an html valid color to an rgba dict") {
 			@Override
 			public void execute(Block block) {
 				String color_str = block.pop().str();
@@ -35,7 +35,7 @@ public class ColorInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("color.name_list", "return a list of all named colors") {
+		addInstruction(new NamedOperator("color.name_list", "return a list of all named colors") {
 			@Override
 			public void execute(Block block) {
 				List named_colors = new List();
