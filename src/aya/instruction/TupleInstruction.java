@@ -7,6 +7,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.parser.SourceStringRef;
 
 public class TupleInstruction extends Instruction {	
 	Block[] elements;
@@ -15,7 +16,8 @@ public class TupleInstruction extends Instruction {
 	 * Tuples will not need to be resized during runtime
 	 * @param blocks
 	 */
-	public TupleInstruction(Block[] blocks) {
+	public TupleInstruction(SourceStringRef source, Block[] blocks) {
+		super(source);
 		elements = blocks;
 	}
 	
@@ -32,7 +34,8 @@ public class TupleInstruction extends Instruction {
 				b.eval();
 			} catch (EmptyStackException e) {
 				EmptyStackError e2 = new EmptyStackError("Empty stack during evaluation of tuple");
-				e2.addContext(elements[i]);
+				e2.setSource(this.getSource());
+				throw e2;
 			}
 			out.add(b.pop());
 		}

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
@@ -14,7 +14,7 @@ import aya.obj.number.Num;
 import aya.obj.number.NumberMath;
 import aya.util.Casting;
 
-public class MatMulInstruction extends NamedInstruction {
+public class MatMulInstruction extends NamedOperator {
 	
 	public MatMulInstruction() {
 		super("la.mul");

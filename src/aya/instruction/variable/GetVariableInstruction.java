@@ -6,12 +6,13 @@ import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetVariableInstruction extends VariableInstruction {
 
-	public GetVariableInstruction(Symbol var) {
-		super(var);
+	public GetVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

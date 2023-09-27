@@ -7,10 +7,15 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public abstract class GetIndexInstruction extends Instruction {
 	
+	public GetIndexInstruction(SourceStringRef source) {
+		super(source);
+	}
+
 	protected abstract Obj getIndex();
 	
 	public void execute(Block block) {

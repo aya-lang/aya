@@ -4,12 +4,14 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.parser.SourceStringRef;
 
 public class GetExprIndexInstruction extends GetIndexInstruction {
 	
 	private Block _index;
 
-	public GetExprIndexInstruction(Block index) {
+	public GetExprIndexInstruction(SourceStringRef source, Block index) {
+		super(source);
 		_index = index;
 	}
 

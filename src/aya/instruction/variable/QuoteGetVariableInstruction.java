@@ -5,11 +5,12 @@ import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class QuoteGetVariableInstruction extends VariableInstruction {
 
-	public QuoteGetVariableInstruction(Symbol var) {
-		super(var);
+	public QuoteGetVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

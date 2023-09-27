@@ -4,11 +4,12 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class SetVariableInstruction extends VariableInstruction {
 	
-	public SetVariableInstruction(Symbol var) {
-		super(var);
+	public SetVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

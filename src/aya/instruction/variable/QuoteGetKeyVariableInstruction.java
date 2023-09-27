@@ -7,11 +7,12 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
-	public QuoteGetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public QuoteGetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

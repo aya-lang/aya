@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.util.Casting;
 
-public class SysExecInstruction extends NamedInstruction {
+public class SysExecInstruction extends NamedOperator {
 	
 	public SysExecInstruction() {
 		super("sys.exec");

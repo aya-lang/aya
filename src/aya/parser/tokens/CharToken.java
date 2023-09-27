@@ -3,11 +3,12 @@ package aya.parser.tokens;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.character.Char;
+import aya.parser.SourceStringRef;
 
 public class CharToken extends StdToken {
 		
-	public CharToken(String data) {
-		super(data, Token.CHAR);
+	public CharToken(String data, SourceStringRef source) {
+		super(data, Token.CHAR, source);
 	}
 
 	

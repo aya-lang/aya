@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -20,7 +20,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 	@Override
 	protected void init() {
 
-		addInstruction(new NamedInstruction("dialog.getstr", "message::str: popup window with a a text input field") {
+		addInstruction(new NamedOperator("dialog.getstr", "message::str: popup window with a a text input field") {
 			@Override
 			public void execute(Block block) {
 				final Obj title = block.pop();
@@ -28,7 +28,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("dialog.getnum", "message::str: popup window with a number input field") {
+		addInstruction(new NamedOperator("dialog.getnum", "message::str: popup window with a number input field") {
 			@Override
 			public void execute(Block block) {
 				final Obj title = block.pop();
@@ -36,7 +36,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 		
-		addInstruction(new NamedInstruction("dialog.alert", "message::str title::str type::sym show an alert dialog") {
+		addInstruction(new NamedOperator("dialog.alert", "message::str title::str type::sym show an alert dialog") {
 			@Override
 			public void execute(Block block) {
 				final Obj type_obj = block.pop();
@@ -50,7 +50,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("dialog.confirm", "message::str options::list title::str type::sym show an alert dialog") {
+		addInstruction(new NamedOperator("dialog.confirm", "message::str options::list title::str type::sym show an alert dialog") {
 			@Override
 			public void execute(Block block) {
 				final Obj type_obj = block.pop();
@@ -76,7 +76,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 		
-		addInstruction(new NamedInstruction("dialog.buttons", "message::str options::list title::str type::sym: show a dialog with several option buttons") {
+		addInstruction(new NamedOperator("dialog.buttons", "message::str options::list title::str type::sym: show a dialog with several option buttons") {
 			@Override
 			public void execute(Block block) {
 				final Obj type_obj = block.pop();
@@ -106,7 +106,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("dialog.dropdown", "message::str options::list title::str type::sym: show a dialog with several options as a dropdown") {
+		addInstruction(new NamedOperator("dialog.dropdown", "message::str options::list title::str type::sym: show a dialog with several options as a dropdown") {
 			@Override
 			public void execute(Block block) {
 				final Obj type_obj = block.pop();
@@ -137,7 +137,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 			}
 		});
 		
-		addInstruction(new NamedInstruction("dialog.choosefile") {
+		addInstruction(new NamedOperator("dialog.choosefile") {
 			@Override
 			public void execute(Block block) {
 				block.push(List.fromString(QuickDialog.chooseFile()));

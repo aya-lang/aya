@@ -39,7 +39,7 @@ public class FileUtils {
 	}
 	
 	public static String workingRelative(String dir) {
-		if (dir.startsWith("/") || dir.startsWith("C:")) {
+		if (dir.startsWith("/") || dir.contains(":\\") || dir.contains(":/")) {
 			return dir;
 		} else {
 			return pathAppend(AyaPrefs.getWorkingDir(), dir);

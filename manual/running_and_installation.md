@@ -44,7 +44,7 @@ All arguments are optional.
 $ ls my_scripts/aya_scripts/
 hello.aya
 $ rlwrap java -jar ~/git/aya/aya.jar my_scripts/aya_scripts/ -i
-aya> "hello.aya" G~
+aya> "hello.aya" :F
 Hello world!
 ```
 

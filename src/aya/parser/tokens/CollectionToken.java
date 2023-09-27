@@ -2,13 +2,14 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 
 public abstract class CollectionToken extends StdToken{
 	protected ArrayList<Token> col;
 	
-	public CollectionToken(int type, String data, ArrayList<Token> col) {
-		super(data, type);
+	public CollectionToken(int type, String data, ArrayList<Token> col, SourceStringRef source) {
+		super(data, type, source);
 		this.col = col;
 	}
 	

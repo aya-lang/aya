@@ -2,6 +2,7 @@ package aya.instruction;
 
 import aya.ReprStream;
 import aya.obj.block.Block;
+import aya.parser.SourceStringRef;
 
 /**
  * The Lambda class is nothing more than a block that automatically
@@ -13,7 +14,8 @@ import aya.obj.block.Block;
 public class LambdaInstruction extends Instruction {
 	InstructionStack instructions;
 	
-	public LambdaInstruction(InstructionStack instructions) {
+	public LambdaInstruction(SourceStringRef source, InstructionStack instructions) {
+		super(source);
 		this.instructions = instructions;
 	}
 	

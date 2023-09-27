@@ -15,7 +15,7 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	public static final EmptyDictLiteralInstruction INSTANCE = new EmptyDictLiteralInstruction();
 	
 	protected EmptyDictLiteralInstruction() {
-		super(new Block());
+		super(null, new Block());
 	}
 	
 	@Override

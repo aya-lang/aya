@@ -13,14 +13,18 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.ex.NotAnOperatorError;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AssertError;
+import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.InternalAyaRuntimeException;
 import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
@@ -45,9 +49,13 @@ import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
+import aya.parser.Parser;
+import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.DictReader;
+import aya.util.FileUtils;
 import aya.util.Triple;
 import aya.util.VectorizedFunctions;
 
@@ -55,16 +63,18 @@ import aya.util.VectorizedFunctions;
 public class ColonOps {	
 	
 	private static final char FIRST_OP = '!';
+	
+	public static final OP_Colon_Pound OP_COLON_POUND = new OP_Colon_Pound();
 
 	
 	/** A list of all valid single character operations. 
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static OpInstruction[] COLON_OPS = {
+	public static Operator[] COLON_OPS = {
 		/* 33 !  */ new OP_Colon_Bang(),
 		/* 34 "  */ null, // Quoted Symbol
-		/* 35 #  */ new OP_Colon_Pound(),
+		/* 35 #  */ OP_COLON_POUND,
 		/* 36 $  */ new OP_Colon_Duplicate(),
 		/* 37 %  */ new OP_Colon_Percent(),
 		/* 38 &  */ new OP_Colon_And(),
@@ -99,7 +109,7 @@ public class ColonOps {
 		/* 67 C  */ new OP_Colon_C(),
 		/* 68 D  */ new OP_Colon_D(),
 		/* 69 E  */ new OP_Colon_E(),
-		/* 70 F  */ null,
+		/* 70 F  */ new OP_Colon_F(),
 		/* 71 G  */ new OP_Colon_G(),
 		/* 72 H  */ null,
 		/* 73 I  */ new OP_Colon_I(),
@@ -171,18 +181,23 @@ public class ColonOps {
 	}
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) throws NotAnOperatorError {
-		OpInstruction op = getOpOrNull(c);
+	public static OperatorInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
+		OperatorInstruction op = getOpOrNull(c, source);
 		if (op == null) {
-			throw new NotAnOperatorError(":" + c);
+			throw new NotAnOperatorError(":" + c, source);
 		} else {
 			return op;
 		}
 	}
 	
-	private static OpInstruction getOpOrNull(char op) {
+	private static OperatorInstruction getOpOrNull(char op, SourceStringRef source) {
 		if(op >= 33 && op <= 126) {
-			return COLON_OPS[op-FIRST_OP];
+			Operator operator = COLON_OPS[op-FIRST_OP];
+			if (operator == null) {
+				return null;
+			} else {
+				return new OperatorInstruction(source, operator);
+			}
 		} else {
 			return null;
 		}
@@ -191,7 +206,7 @@ public class ColonOps {
 }
 
 // ! - 33
-class OP_Colon_Bang extends OpInstruction {
+class OP_Colon_Bang extends Operator {
 	
 	public OP_Colon_Bang() {
 		init(":!");
@@ -209,7 +224,7 @@ class OP_Colon_Bang extends OpInstruction {
 }
 
 // " - 34
-class OP_Colon_Quote extends OpInstruction {
+class OP_Colon_Quote extends Operator {
 
 	public OP_Colon_Quote() {
 		init(":'");
@@ -243,7 +258,7 @@ class OP_Colon_Quote extends OpInstruction {
 
 
 // # - 35
-class OP_Colon_Pound extends OpInstruction {
+class OP_Colon_Pound extends Operator {
 	
 	private OP_O op = new OP_O();
 	
@@ -261,7 +276,7 @@ class OP_Colon_Pound extends OpInstruction {
 }
 
 // $ - 36
-class OP_Colon_Duplicate extends OpInstruction {
+class OP_Colon_Duplicate extends Operator {
 	
 	public OP_Colon_Duplicate() {
 		init(":$");
@@ -293,7 +308,7 @@ class OP_Colon_Duplicate extends OpInstruction {
 }
 
 // % - 38
-class OP_Colon_Percent extends OpInstruction {
+class OP_Colon_Percent extends Operator {
 
 	public OP_Colon_Percent() {
 		init(":%");
@@ -344,7 +359,7 @@ class OP_Colon_Percent extends OpInstruction {
 }
 
 // & - 39
-class OP_Colon_And extends OpInstruction {
+class OP_Colon_And extends Operator {
 	
 	public OP_Colon_And() {
 		init(":&");
@@ -359,7 +374,7 @@ class OP_Colon_And extends OpInstruction {
 }
 
 //* - 42
-class OP_Colon_Times extends OpInstruction {
+class OP_Colon_Times extends Operator {
 	
 	public OP_Colon_Times() {
 		init(":*");
@@ -401,7 +416,7 @@ class OP_Colon_Times extends OpInstruction {
 }
 
 // / - 47
-class OP_Colon_Semicolon extends OpInstruction {
+class OP_Colon_Semicolon extends Operator {
 	
 	public OP_Colon_Semicolon() {
 		init(":;");
@@ -418,7 +433,7 @@ class OP_Colon_Semicolon extends OpInstruction {
 
 
 // < - 60
-class OP_Colon_LessThan extends OpInstruction {
+class OP_Colon_LessThan extends Operator {
 	
 	public OP_Colon_LessThan() {
 		init(":<");
@@ -461,7 +476,7 @@ class OP_Colon_LessThan extends OpInstruction {
 }
 
 // = - 61
-class OP_Colon_Equals extends OpInstruction {
+class OP_Colon_Equals extends Operator {
 	
 	public OP_Colon_Equals() {
 		init(":=");
@@ -487,7 +502,7 @@ class OP_Colon_Equals extends OpInstruction {
 }
 
 // > - 62
-class OP_Colon_GreaterThan extends OpInstruction {
+class OP_Colon_GreaterThan extends Operator {
 	
 	public OP_Colon_GreaterThan() {
 		init(":>");
@@ -530,7 +545,7 @@ class OP_Colon_GreaterThan extends OpInstruction {
 }
 
 // ? - 63
-class OP_Colon_Bool extends OpInstruction {
+class OP_Colon_Bool extends Operator {
 	
 	public OP_Colon_Bool() {
 		init(":?");
@@ -596,7 +611,7 @@ class OP_Colon_Bool extends OpInstruction {
 
 
 // A - 65
-class OP_Colon_A extends OpInstruction {
+class OP_Colon_A extends Operator {
 	
 	public OP_Colon_A() {
 		init(":A");
@@ -622,7 +637,7 @@ class OP_Colon_A extends OpInstruction {
 }
 
 // B - 66
-class OP_Colon_B extends OpInstruction {
+class OP_Colon_B extends Operator {
 	
 	public OP_Colon_B() {
 		init(":B");
@@ -631,7 +646,10 @@ class OP_Colon_B extends OpInstruction {
 
 	@Override
 	public void execute(Block block) {
-		StringToken str_token = new StringToken(block.pop().str(), true);
+		// TODO: SourceStringRef
+		String s = block.pop().str();
+		SourceString source = new SourceString(s, "<:B>");
+		StringToken str_token = new StringToken(s, true, source.ref(source.length()));
 		try {
 			str_token.getInstruction().execute(block);
 		} catch (ParserException e) {
@@ -643,7 +661,7 @@ class OP_Colon_B extends OpInstruction {
 
 
 // C - 67
-class OP_Colon_C extends OpInstruction {
+class OP_Colon_C extends Operator {
 	
 	public OP_Colon_C() {
 		init(":C");
@@ -666,7 +684,7 @@ class OP_Colon_C extends OpInstruction {
 }
 
 // D - 68
-class OP_Colon_D extends OpInstruction {
+class OP_Colon_D extends Operator {
 	
 	public OP_Colon_D() {
 		init(":D");
@@ -708,7 +726,7 @@ class OP_Colon_D extends OpInstruction {
 }
 
 // E - 69
-class OP_Colon_E extends OpInstruction {
+class OP_Colon_E extends Operator {
 	
 	public OP_Colon_E() {
 		init(":E");
@@ -751,8 +769,41 @@ class OP_Colon_E extends OpInstruction {
 	
 }
 
+// F - 70
+class OP_Colon_F extends Operator {
+	
+	public OP_Colon_F() {
+		init(":F");
+		arg("S", "load aya source file");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+		
+		if (a.isa(STR)) {
+			String path = new File(FileUtils.workingRelative(a.str())).getAbsolutePath();
+			String content;
+			try {
+				content = FileUtils.readAllText(path);
+			} catch (IOException e) {
+				throw new IOError(":F", path, e);
+			}
+			SourceString source = new SourceString(content, path);
+			try {
+				block.addAll(Parser.compile(source, Aya.getInstance()).getInstructions().getInstrucionList());
+			} catch (ParserException e) {
+				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
+			}
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 // G - 71
-class OP_Colon_G extends OpInstruction {
+class OP_Colon_G extends Operator {
 	
 	public OP_Colon_G() {
 		init(":G");
@@ -766,7 +817,7 @@ class OP_Colon_G extends OpInstruction {
 }
 
 // I - 73  
-class OP_Colon_I extends OpInstruction {
+class OP_Colon_I extends Operator {
 	
 	public OP_Colon_I() {
 		init(":I");
@@ -814,7 +865,7 @@ class OP_Colon_I extends OpInstruction {
 }
 
 // J - 74
-class OP_Colon_J extends OpInstruction {
+class OP_Colon_J extends Operator {
 	
 	public OP_Colon_J() {
 		init(":J");
@@ -848,7 +899,7 @@ class OP_Colon_J extends OpInstruction {
 }
 
 // K - 75
-class OP_Colon_K extends OpInstruction {
+class OP_Colon_K extends Operator {
 	
 	public OP_Colon_K() {
 		init(":K");
@@ -871,7 +922,7 @@ class OP_Colon_K extends OpInstruction {
 }
 
 // M - 77
-class OP_Colon_M extends OpInstruction {
+class OP_Colon_M extends Operator {
 	
 	public OP_Colon_M() {
 		init(":M");
@@ -906,12 +957,12 @@ class OP_Colon_M extends OpInstruction {
 			Obj o = meta.get(SymbolConstants.LOCALS);
 			if (o.isa(DICT)) {
 				Dict locals = (Dict)o;
-				bh = new BlockHeader(locals);
+				bh = new BlockHeader(null, locals);
 			} else {
 				throw new ValueError("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
 			}
 		} else {
-			bh = new BlockHeader();
+			bh = new BlockHeader(null);
 		}
 		
 		// Args
@@ -950,7 +1001,7 @@ class OP_Colon_M extends OpInstruction {
 }
 
 // N - 79
-class OP_Colon_N extends OpInstruction {
+class OP_Colon_N extends Operator {
 	
 	public OP_Colon_N() {
 		init(":N");
@@ -975,14 +1026,14 @@ class OP_Colon_N extends OpInstruction {
 
 
 // O - 80
-class OP_Colon_O extends OpInstruction {
+class OP_Colon_O extends Operator {
 	
 	public OP_Colon_O() {
 		init(":O");
 		arg("AAB", "apply (2-arg)");
 	}
 
-	private class BlockOpInstruction extends OpInstruction {
+	private class BlockOpInstruction extends Operator {
 		private final Block _block;
 		public BlockOpInstruction(Block block) {
 			_block = block;
@@ -1030,7 +1081,7 @@ class OP_Colon_O extends OpInstruction {
 
 
 // P - 80
-class OP_Colon_P extends OpInstruction {
+class OP_Colon_P extends Operator {
 	
 	public OP_Colon_P() {
 		init(":P");
@@ -1044,7 +1095,7 @@ class OP_Colon_P extends OpInstruction {
 }
 
 //R - 82
-class OP_Colon_R extends OpInstruction {
+class OP_Colon_R extends Operator {
 	
 	public OP_Colon_R() {
 		init(":R");
@@ -1059,7 +1110,7 @@ class OP_Colon_R extends OpInstruction {
 
 
 // S - 83
-class OP_Colon_S extends OpInstruction {
+class OP_Colon_S extends Operator {
 	
 	public OP_Colon_S() {
 		init(":S");
@@ -1087,8 +1138,8 @@ class OP_Colon_S extends OpInstruction {
 			Instruction i = instructions.get(0);
 			if (i instanceof VariableInstruction) {
 				out.add( ((VariableInstruction)i).getSymbol() );
-			} else if (i instanceof OpInstruction) {
-				OpInstruction op = (OpInstruction)i;
+			} else if (i instanceof OperatorInstruction) {
+				Operator op = ((OperatorInstruction)i).getOperator();
 				if (op.overload() != null) {
 					out.addAll(op.overload().getSymbols());
 				}
@@ -1101,7 +1152,7 @@ class OP_Colon_S extends OpInstruction {
 
 
 //T - 84
-class OP_Colon_T extends OpInstruction {
+class OP_Colon_T extends Operator {
 	
 	public OP_Colon_T() {
 		init(":T");
@@ -1131,7 +1182,7 @@ class OP_Colon_T extends OpInstruction {
 
 
 //V - 86
-class OP_Colon_V extends OpInstruction {
+class OP_Colon_V extends Operator {
 	
 	public OP_Colon_V() {
 		init(":V");
@@ -1152,7 +1203,7 @@ class OP_Colon_V extends OpInstruction {
 
 
 //Z - 90
-class OP_Colon_Zed extends OpInstruction {
+class OP_Colon_Zed extends Operator {
 	
 	public OP_Colon_Zed() {
 		init(":Z");
@@ -1178,7 +1229,7 @@ class OP_Colon_Zed extends OpInstruction {
 
 
 //` - 96
-class OP_Colon_Tick extends OpInstruction {
+class OP_Colon_Tick extends Operator {
 	
 	public OP_Colon_Tick() {
 		init(":`");
@@ -1226,7 +1277,7 @@ class OP_Colon_Tick extends OpInstruction {
 
 
 // | - 124
-class OP_SetMinus extends OpInstruction {
+class OP_SetMinus extends Operator {
 	
 	public OP_SetMinus() {
 		init(":|");
@@ -1246,7 +1297,7 @@ class OP_SetMinus extends OpInstruction {
 	}
 }
 
-class OP_IsInstance extends OpInstruction {
+class OP_IsInstance extends Operator {
 	
 	public OP_IsInstance() {
 		init(":@");
@@ -1275,7 +1326,7 @@ class OP_IsInstance extends OpInstruction {
 }
 	
 // ~ - 126
-class OP_Colon_Tilde extends OpInstruction {
+class OP_Colon_Tilde extends Operator {
 	
 	public OP_Colon_Tilde() {
 		init(":~");

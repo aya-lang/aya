@@ -2,7 +2,7 @@ package aya.parser.token;
 
 import java.util.Stack;
 
-import aya.exceptions.ex.EndOfInputError;
+import aya.exceptions.parser.EndOfInputError;
 import aya.parser.tokens.Token;
 
 public class TokenStack {

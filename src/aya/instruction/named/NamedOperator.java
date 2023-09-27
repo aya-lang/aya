@@ -1,22 +1,24 @@
 package aya.instruction.named;
 
 import aya.ReprStream;
-import aya.instruction.Instruction;
+import aya.obj.block.Block;
 
-public abstract class NamedInstruction extends Instruction {
+public abstract class NamedOperator {
 	
 	protected String _name;
 	protected String _doc;
 	
-	public NamedInstruction(String name) {
+	public NamedOperator(String name) {
 		this._name = name;
 		this._doc = null;
 	}
 
-	public NamedInstruction(String name, String doc) {
+	public NamedOperator(String name, String doc) {
 		this._name = name;
 		this._doc = doc;
 	}
+
+	public abstract void execute(Block block);
 	
 	public String getName() {
 		return this._name;
@@ -26,7 +28,6 @@ public abstract class NamedInstruction extends Instruction {
 		return ":{" + _name + "}";
 	}
 
-	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(opName());
 		return stream;

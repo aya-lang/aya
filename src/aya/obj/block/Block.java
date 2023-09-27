@@ -163,12 +163,12 @@ public class Block extends Obj {
 				instr.execute(this);
 			} catch (EmptyStackException es) {
 				EmptyStackError es2 = new EmptyStackError("Unexpected empty stack while executing instruction: " + instr);
-				es2.addContext(instr, this);
+				es2.setSource(instr.getSource());
 				throw es2;
 			} catch (NullPointerException npe) {
 				throw new RuntimeException(npe);
 			} catch (AyaRuntimeException are) {
-				are.addContext(instr, this);
+				are.setSource(instr.getSource());
 				throw are;
 			}
 		}
@@ -243,7 +243,7 @@ public class Block extends Obj {
 	/** Adds a block to this block (does not duplicate the block) */
 	public void addBlock(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.push(new LambdaInstruction(b.getInstructions()));
+			this.instructions.push(new LambdaInstruction(null, b.getInstructions()));
 		} else {
 			this.instructions.addAll(b.getInstructions().getInstrucionList());
 		}
@@ -251,7 +251,7 @@ public class Block extends Obj {
 	
 	public void addBlockBack(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.insert(0, new LambdaInstruction(b.getInstructions()));
+			this.instructions.insert(0, new LambdaInstruction(null, b.getInstructions()));
 		} else {
 			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
 		}
@@ -344,7 +344,6 @@ public class Block extends Obj {
 					}
 				}
 			}
-
 		}
 		
 		return b;
@@ -357,7 +356,7 @@ public class Block extends Obj {
 		 Block b = duplicate();
 		 BlockHeader bh = b.getHeader();
 		 if (bh == null) {
-			 bh = new BlockHeader();
+			 bh = new BlockHeader(null);
 			 b.add(bh);
 			 b.add(0, PopVarFlagInstruction.INSTANCE);
 		 }

@@ -8,12 +8,13 @@ import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
 
-	public GetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public GetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override

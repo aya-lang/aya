@@ -2,8 +2,8 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
@@ -11,12 +11,13 @@ import aya.instruction.ListBuilderInstruction;
 import aya.instruction.ListLiteralInstruction;
 import aya.obj.block.Block;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 
 public class ListToken extends CollectionToken {
 	
-	public ListToken(String data, ArrayList<Token> col) {
-		super(Token.LIST, data, col);
+	public ListToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.LIST, data, col, source);
 	}
 
 	
@@ -34,7 +35,7 @@ public class ListToken extends CollectionToken {
 		
 		switch(listData.size()) {
 		case 1:			
-			ListLiteralInstruction ll = new ListLiteralInstruction(Parser.generate(listData.get(0)), pops);
+			ListLiteralInstruction ll = new ListLiteralInstruction(this.getSourceStringRef(), Parser.generate(listData.get(0)), pops);
 			return ll;
 		case 2:
 		{
@@ -50,7 +51,7 @@ public class ListToken extends CollectionToken {
 				bli.setAutoEval();
 			}
 			
-		return new ListBuilderInstruction(initialList, map, null, pops);
+		return new ListBuilderInstruction(this.getSourceStringRef(), initialList, map, null, pops);
 		}
 		default:
 		{ 
@@ -63,7 +64,7 @@ public class ListToken extends CollectionToken {
 			Block[] filters = new Block[listData.size()-2];
 			for(int k = 2; k < listData.size(); k++) {
 				if (listData.get(k).size() == 0) {
-					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]");
+					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]", this.getSourceStringRef());
 				}
 				//filters[k-2] = new Block(generate(listData.get(k)));
 				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
@@ -76,7 +77,7 @@ public class ListToken extends CollectionToken {
 				
 				filters[k-2] = tmpFilter;
 			}
-			return new ListBuilderInstruction(initialList2, map2, filters, pops);
+			return new ListBuilderInstruction(this.getSourceStringRef(), initialList2, map2, filters, pops);
 		} //End default scope
 		} //End switch
 	}
@@ -92,7 +93,7 @@ public class ListToken extends CollectionToken {
 			try {
 				pops = nt.numValue().toInt();
 			} catch (NumberFormatException e) {
-				throw new SyntaxError(nt + " is not a valid number in the block header");
+				throw new SyntaxError(nt + " is not a valid number in the block header", nt.getSourceStringRef());
 			}
 			
 			arr.remove(0); 

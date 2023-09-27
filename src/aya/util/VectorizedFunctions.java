@@ -10,7 +10,7 @@ import static aya.util.Casting.asNumberList;
 
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Operator;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberListOp;
@@ -26,7 +26,7 @@ public class VectorizedFunctions {
 	// List, Obj
 	//
 
-	private static List vectorizeListObj(OpInstruction op, List a, Obj b, NumberListOp nlop) {
+	private static List vectorizeListObj(Operator op, List a, Obj b, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			return new List(nlop.ln(asNumberList(a), asNumber(b)));
 		} else {
@@ -34,7 +34,7 @@ public class VectorizedFunctions {
 		}
 	}
 
-	private static List vectorizeListObj(OpInstruction op, List a, Obj b) {
+	private static List vectorizeListObj(Operator op, List a, Obj b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
@@ -48,7 +48,7 @@ public class VectorizedFunctions {
 	// Obj, List
 	//
 
-	private static List vectorizeObjList(OpInstruction op, Obj a, List b, NumberListOp nlop) {
+	private static List vectorizeObjList(Operator op, Obj a, List b, NumberListOp nlop) {
 		if (b.isa(NUMBERLIST) && a.isa(NUMBER)) {
 			return new List(nlop.nl(asNumber(a), asNumberList(b)));
 		} else {
@@ -56,7 +56,7 @@ public class VectorizedFunctions {
 		}
 	}
 
-	private static List vectorizeObjList(OpInstruction op, Obj a, List b) {
+	private static List vectorizeObjList(Operator op, Obj a, List b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < b.length(); i++) {
@@ -70,7 +70,7 @@ public class VectorizedFunctions {
 	// List, List
 	//
 
-	private static List vectorizeListList(OpInstruction op, List a, List b, NumberListOp nlop) {
+	private static List vectorizeListList(Operator op, List a, List b, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			return new List(nlop.ll(asNumberList(a), asNumberList(b)));
 		} else {
@@ -78,7 +78,7 @@ public class VectorizedFunctions {
 		}
 	}
 
-	private static List vectorizeListList(OpInstruction op, List a, List b) {
+	private static List vectorizeListList(Operator op, List a, List b) {
 		List out = new List();
 		if (a.length() == b.length()) {
 			for (int i = 0; i < a.length(); i++) {
@@ -99,7 +99,7 @@ public class VectorizedFunctions {
 	// 2 Arg Driver Functions
 	//
 	
-	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b) {
+	public static Obj vectorize2arg(Operator op, Obj a, Obj b) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
@@ -114,7 +114,7 @@ public class VectorizedFunctions {
 	}
 
 
-	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b, NumberListOp nlop) {
+	public static Obj vectorize2arg(Operator op, Obj a, Obj b, NumberListOp nlop) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
@@ -134,7 +134,7 @@ public class VectorizedFunctions {
 	//
 
 	
-	private static List vectorizeList(OpInstruction op, List a, NumberListOp nlop) {
+	private static List vectorizeList(Operator op, List a, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST)) {
 			return new List(nlop.l(asNumberList(a)));
 		} else {
@@ -143,7 +143,7 @@ public class VectorizedFunctions {
 	}
 
 
-	private static List vectorizeList(OpInstruction op, List a) {
+	private static List vectorizeList(Operator op, List a) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
@@ -154,7 +154,7 @@ public class VectorizedFunctions {
 
 
 
-	public static Obj vectorize1arg(OpInstruction op, Obj a) {
+	public static Obj vectorize1arg(Operator op, Obj a) {
 		if (isList(a)) {
 			return vectorizeList(op, asList(a));
 		} else {
@@ -163,7 +163,7 @@ public class VectorizedFunctions {
 	}
 
 
-	public static Obj vectorize1arg(OpInstruction op, Obj a, NumberListOp nlop) {
+	public static Obj vectorize1arg(Operator op, Obj a, NumberListOp nlop) {
 		if (isList(a)) {
 			if (a.isa(NUMBERLIST)) {
 				return vectorizeList(op, asList(a), nlop);

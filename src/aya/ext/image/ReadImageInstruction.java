@@ -10,12 +10,12 @@ import javax.imageio.ImageIO;
 
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 
-public class ReadImageInstruction extends NamedInstruction {
+public class ReadImageInstruction extends NamedOperator {
 	
 	public ReadImageInstruction() {
 		super("image.read");

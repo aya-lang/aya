@@ -3,7 +3,7 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
@@ -16,6 +16,7 @@ import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
 
@@ -23,8 +24,8 @@ public class LambdaToken extends CollectionToken {
 	
 	ArrayList<TokenQueue> _lambdaData;
 	
-	public LambdaToken(String data, ArrayList<Token> col) {
-		super(Token.LAMBDA, data, col);
+	public LambdaToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.LAMBDA, data, col, source);
 	}
 
 	private ArrayList<TokenQueue> getLambdaData() {
@@ -48,14 +49,14 @@ public class LambdaToken extends CollectionToken {
 				bli.setAutoEval();
 				return bli;
 			} else {
-				return new LambdaInstruction(lambdaIL);
+				return new LambdaInstruction(this.getSourceStringRef(), lambdaIL);
 			}
 		} else {
 			Block[] elements = new Block[lambdaData.size()];
 			for (int k = 0; k < elements.length; k++) {
 				elements[k] = new Block(Parser.generate(lambdaData.get(k)));
 			}
-			return new TupleInstruction(elements);
+			return new TupleInstruction(this.getSourceStringRef(), elements);
 		}
 	}
 	

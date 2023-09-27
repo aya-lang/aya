@@ -24,6 +24,7 @@ public class DataInstruction extends Instruction {
 	}*/
 	
 	public DataInstruction(Obj data) {
+		super(null); // Don't need to keep track of source for data instructions
 		_data = data;
 	}
 	

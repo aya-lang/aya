@@ -6,6 +6,7 @@ import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 /** DictFactories sit on the instruction stack. When evoked, they generate a dict
  * given the current scope of variables
@@ -19,7 +20,8 @@ public class BlockLiteralInstruction extends Instruction {
 	HashMap<Symbol, Block> _defaults;
 	boolean _auto_eval;
 	
-	public BlockLiteralInstruction(Block b, HashMap<Symbol, Block> defaults) {
+	public BlockLiteralInstruction(SourceStringRef source, Block b, HashMap<Symbol, Block> defaults) {
+		super(source);
 		if (defaults.size() == 0) _defaults = null;
 		_block = b;
 		_defaults = defaults;
@@ -28,12 +30,13 @@ public class BlockLiteralInstruction extends Instruction {
 		// If the block does not have a header but it has captures, create an empty one
 		if (_defaults != null) {
 			if (_block.getHeader() == null) {
-				_block = _block.duplicateNewHeader(new BlockHeader());
+				_block = _block.duplicateNewHeader(new BlockHeader(this.getSource()));
 			}
 		}
 	}
 	
-	public BlockLiteralInstruction(Block b) {
+	public BlockLiteralInstruction(SourceStringRef source, Block b) {
+		super(source);
 		_block = b;
 		_defaults = null;
 		_auto_eval = false;

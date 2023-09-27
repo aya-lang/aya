@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -18,7 +18,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 	protected void init() {
 		SocketManager socket_manager = new SocketManager();
 		
-		addInstruction(new NamedInstruction("socket.open_server", "ip::str port::int: Open a socket server") {
+		addInstruction(new NamedOperator("socket.open_server", "ip::str port::int: Open a socket server") {
 			@Override
 			public void execute(Block block) {
 				final Obj obj_port = block.pop();
@@ -43,7 +43,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 		});
 		
 		
-		addInstruction(new NamedInstruction("socket.accept", "server_id::int: Open a connection on the server") {
+		addInstruction(new NamedOperator("socket.accept", "server_id::int: Open a connection on the server") {
 			@Override
 			public void execute(Block block) {
 				int id = getSingleIntArg(this, block);
@@ -52,7 +52,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("socket.open_client", "ip::str port::int: Open a socket client") {
+		addInstruction(new NamedOperator("socket.open_client", "ip::str port::int: Open a socket client") {
 			@Override
 			public void execute(Block block) {
 				final Obj obj_port = block.pop();
@@ -74,7 +74,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 		});
 
 
-		addInstruction(new NamedInstruction("socket.send", "data::str id::int: Send data on a socket") {
+		addInstruction(new NamedOperator("socket.send", "data::str id::int: Send data on a socket") {
 			@Override
 			public void execute(Block block) {
 				final Obj obj_id = block.pop();
@@ -95,7 +95,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 		});
 		
 		
-		addInstruction(new NamedInstruction("socket.close", "id::num: Close a socket or server") {
+		addInstruction(new NamedOperator("socket.close", "id::num: Close a socket or server") {
 			@Override
 			public void execute(Block block) {
 				int id = getSingleIntArg(this, block);
@@ -106,7 +106,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 		});
 
 		
-		addInstruction(new NamedInstruction("socket.recv", "id::num: Read from a socket") {
+		addInstruction(new NamedOperator("socket.recv", "id::num: Read from a socket") {
 			@Override
 			public void execute(Block block) {
 				int id = getSingleIntArg(this, block);
@@ -115,7 +115,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("socket.get_addr", "id::num: Get the socket's connection addr") {
+		addInstruction(new NamedOperator("socket.get_addr", "id::num: Get the socket's connection addr") {
 			@Override
 			public void execute(Block block) {
 				int id = getSingleIntArg(this, block);
@@ -123,7 +123,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 			}
 		});
 
-		addInstruction(new NamedInstruction("socket.get_port", "id::num: Get the socket's connection port") {
+		addInstruction(new NamedOperator("socket.get_port", "id::num: Get the socket's connection port") {
 			@Override
 			public void execute(Block block) {
 				int id = getSingleIntArg(this, block);
@@ -133,7 +133,7 @@ public class SocketInstructionStore extends NamedInstructionStore {
 
 	}
 	
-	private static int getSingleIntArg(NamedInstruction i, Block block) {
+	private static int getSingleIntArg(NamedOperator i, Block block) {
 		final Obj obj_id = block.pop();
 		if (obj_id.isa(Obj.NUM)) {
 			return Casting.asNumber(obj_id).toInt();
