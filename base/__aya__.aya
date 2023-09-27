@@ -441,7 +441,6 @@ __aya__.extend.` :extend;
 
     .# required libraries
     "importlib"
-    "exception"
 
     .# Interpreter commands
     "interpreter"

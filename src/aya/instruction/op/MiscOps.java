@@ -9,14 +9,9 @@ import static aya.obj.Obj.STR;
 import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import aya.Aya;
-import aya.exceptions.ex.AyaException;
-import aya.exceptions.ex.StaticAyaExceptionList;
 import aya.exceptions.parser.NotAnOperatorError;
-import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
@@ -36,7 +31,6 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.NamedCharacters;
@@ -480,8 +474,6 @@ class OP_Ma extends Operator {
 			Symbol sym = (Symbol)a;
 			if (sym.name().equals("ops")) {
 				block.push(OpInfo.getDict());
-			} else if (sym.name().equals("ex")) {
-				block.push(getExInfo());
 			} else {
 				throw new ValueError("'Ma': Unknown symbol " + sym.name());
 			}
@@ -489,33 +481,6 @@ class OP_Ma extends Operator {
 			throw new TypeError(this, a);
 		}
 	}
-	
-	/**
-	 * Get list of all built-in exception types
-	 * @return
-	 */
-	public Dict getExInfo() {
-		Dict ex_info = new Dict();
-		HashMap<Symbol, AyaException> exceptions = StaticAyaExceptionList.getExceptions();
-		HashMap<Symbol, AyaRuntimeException> rt_exceptions = StaticAyaExceptionList.getRuntimeExceptions();
-		
-		for (Map.Entry<Symbol, AyaException> entry : exceptions.entrySet()) {
-			Dict d = new Dict();
-			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
-			d.set(SymbolConstants.SOURCE, SymbolConstants.EXCEPTION);
-			ex_info.set(entry.getKey(), d);
-		}
-
-		for (Map.Entry<Symbol, AyaRuntimeException> entry : rt_exceptions.entrySet()) {
-			Dict d = new Dict();
-			d.set(SymbolConstants.TYPE, entry.getValue().typeSymbol());
-			d.set(SymbolConstants.SOURCE, SymbolConstants.RUNTIME_EXCEPTION);
-			ex_info.set(entry.getKey(), d);
-		}
-
-		return ex_info;
-	}
-
 }
 
 
