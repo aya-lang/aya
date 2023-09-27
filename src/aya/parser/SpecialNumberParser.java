@@ -4,7 +4,7 @@ import java.io.File;
 import java.math.BigInteger;
 
 import aya.AyaPrefs;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.Str;

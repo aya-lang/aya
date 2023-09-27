@@ -1,7 +1,7 @@
 package aya.parser;
 
-import aya.exceptions.ex.EndOfInputError;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.EndOfInputError;
+import aya.exceptions.parser.SyntaxError;
 
 public class StringParseUtils {
 

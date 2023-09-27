@@ -2,8 +2,8 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;

@@ -1,6 +1,6 @@
 package aya.parser;
 
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.SyntaxError;
 import aya.util.NamedCharacters;
 import aya.util.StringUtils;
 

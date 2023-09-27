@@ -4,7 +4,7 @@ import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
 
 @SuppressWarnings("serial")
-public abstract class AyaException extends Exception {
+public abstract class AyaException extends Exception implements AyaExceptionInterface {
 	String msg;
 	Symbol type;
 	private SourceStringRef source;

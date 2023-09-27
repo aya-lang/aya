@@ -1,7 +1,7 @@
 package aya.parser.tokens;
 
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;

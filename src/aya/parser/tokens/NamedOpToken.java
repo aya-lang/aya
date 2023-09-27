@@ -1,7 +1,7 @@
 package aya.parser.tokens;
 
 import aya.Aya;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.Instruction;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedOperatorInstruction;

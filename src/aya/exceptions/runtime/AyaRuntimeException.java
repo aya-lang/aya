@@ -3,7 +3,6 @@ package aya.exceptions.runtime;
 import java.io.PrintStream;
 
 import aya.exceptions.ex.AyaExceptionInterface;
-import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
@@ -41,7 +40,7 @@ public abstract class AyaRuntimeException extends RuntimeException implements Ay
 	
 	public abstract Symbol typeSymbol();
 	
-	public Obj getObj() {
+	public Dict getDict() {
 		Dict d = new Dict();
 		d.set(SymbolConstants.TYPE, typeSymbol());
 		d.set(SymbolConstants.MSG, List.fromString(msg));
@@ -64,6 +63,10 @@ public abstract class AyaRuntimeException extends RuntimeException implements Ay
 		if (this.source == null) {
 			this.source = source;
 		}
+	}
+	
+	public SourceStringRef getSource() {
+		return this.source;
 	}
 
 	public void print(PrintStream stream) {

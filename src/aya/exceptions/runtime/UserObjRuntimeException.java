@@ -1,7 +1,9 @@
 package aya.exceptions.runtime;
 
 import aya.obj.Obj;
+import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 
 /**
  * A special runtime exception with a basic message. The exception is
@@ -22,8 +24,11 @@ public class UserObjRuntimeException extends AyaRuntimeException {
 		return obj.str();
 	}
 
-	public Obj getObj() {
-		return obj;
+	@Override
+	public Dict getDict() {
+		Dict d = super.getDict();
+		d.set(SymbolConstants.DATA, obj);
+		return d;
 	}
 
 	@Override

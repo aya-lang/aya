@@ -2,6 +2,10 @@ package aya.exceptions.ex;
 
 import java.util.HashMap;
 
+import aya.exceptions.parser.EndOfInputError;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.EmptyStackError;
 import aya.exceptions.runtime.IOError;

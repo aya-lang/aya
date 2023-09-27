@@ -14,8 +14,8 @@ import java.util.Map;
 
 import aya.Aya;
 import aya.exceptions.ex.AyaException;
-import aya.exceptions.ex.NotAnOperatorError;
 import aya.exceptions.ex.StaticAyaExceptionList;
+import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;

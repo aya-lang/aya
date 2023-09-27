@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.exceptions.ex.NotAnOperatorError;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;

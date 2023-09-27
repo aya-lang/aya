@@ -1,8 +1,8 @@
 package aya.parser.tokens;
 
 import aya.Aya;
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.InterpolateStringInstruction;

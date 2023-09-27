@@ -1,7 +1,7 @@
 package aya.parser.tokens;
 
 import aya.TypeIDs;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.parser.SourceStringRef;

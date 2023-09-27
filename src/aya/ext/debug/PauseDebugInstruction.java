@@ -2,7 +2,7 @@ package aya.ext.debug;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.named.NamedOperator;
 import aya.obj.block.Block;
 import aya.parser.Parser;

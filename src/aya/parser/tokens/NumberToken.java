@@ -1,6 +1,6 @@
 package aya.parser.tokens;
 
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.Obj;

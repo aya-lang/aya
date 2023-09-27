@@ -1,6 +1,6 @@
 package aya.parser;
 
-import aya.exceptions.ex.EndOfInputError;
+import aya.exceptions.parser.EndOfInputError;
 
 public class ParserString {
 	private SourceString source;

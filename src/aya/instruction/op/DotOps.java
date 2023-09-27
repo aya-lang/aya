@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.exceptions.ex.NotAnOperatorError;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;
@@ -1111,7 +1111,7 @@ class OP_Dot_TryCatch extends Operator {
 				Aya.getInstance().getVars().rollbackCheckpoint();
 				Block b = ((Block)catchBlock).duplicate();
 				//b.push(Aya.exceptionToObj(e));
-				b.push(e.getObj());
+				b.push(e.getDict());
 				b.eval();
 				block.appendToStack(b.getStack());
 			} catch (Exception e2) {

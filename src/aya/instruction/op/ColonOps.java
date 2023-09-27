@@ -20,8 +20,8 @@ import java.util.Collections;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.ex.NotAnOperatorError;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AssertError;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;

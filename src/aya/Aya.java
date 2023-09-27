@@ -13,9 +13,8 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
-import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
@@ -28,17 +27,15 @@ import aya.ext.la.LinearAlgebraInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
-import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
-import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -385,15 +382,6 @@ public class Aya extends Thread {
 			return _instance._in.available() > 0;
 		} catch (IOException e) {
 			return false;
-		}
-	}
-
-
-	public static Obj exceptionToObj(Exception e) {
-		if (e instanceof UserObjRuntimeException) {
-			return ((UserObjRuntimeException)e).getObj();
-		} else {
-			return List.fromString(exToString(e));
 		}
 	}
 

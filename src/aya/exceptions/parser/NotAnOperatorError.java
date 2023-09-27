@@ -1,4 +1,4 @@
-package aya.exceptions.ex;
+package aya.exceptions.parser;
 
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;

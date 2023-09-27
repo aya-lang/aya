@@ -3,9 +3,9 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.exceptions.ex.EndOfInputError;
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.EndOfInputError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
