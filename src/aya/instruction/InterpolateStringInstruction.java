@@ -35,7 +35,7 @@ public class InterpolateStringInstruction extends Instruction  {
 				try {
 					sb.append(Aya.getInstance().getVars().getVar(var.getSymbol()).str());
 				} catch (UndefVarException e) {
-					e.addContext(var);
+					e.setSource(var.getSource());
 					throw e;
 				}
 			} else if (current instanceof DataInstruction) {

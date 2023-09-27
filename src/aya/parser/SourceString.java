@@ -24,6 +24,10 @@ public class SourceString {
 			return s + "^";
 		}
 		
+		public int colNumber() {
+			return this.index + 1;
+		}
+		
 		@Override
 		public String toString() {
 			return "IndexedSourceLine(line " + this.lineIndex + ", col " + this.index + ":\n" + this.line + "\n)";

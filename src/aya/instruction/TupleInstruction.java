@@ -34,7 +34,8 @@ public class TupleInstruction extends Instruction {
 				b.eval();
 			} catch (EmptyStackException e) {
 				EmptyStackError e2 = new EmptyStackError("Empty stack during evaluation of tuple");
-				e2.addContext(this, elements[i]);
+				e2.setSource(this.getSource());
+				throw e2;
 			}
 			out.add(b.pop());
 		}

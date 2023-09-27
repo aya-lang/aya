@@ -67,6 +67,10 @@ public class SymbolConstants {
 	public static final Symbol OPTYPE 		= S.getSymbol("optype");
 	public static final Symbol VECTORIZED   = S.getSymbol("vectorized");
 	public static final Symbol OPS          = S.getSymbol("ops");
+	public static final Symbol FILE         = S.getSymbol("file");
+	public static final Symbol LINE         = S.getSymbol("line");
+	public static final Symbol COL          = S.getSymbol("col");
+	public static final Symbol CONTEXT      = S.getSymbol("context");
 
 	public static final Symbol KEYVAR_EQ		= S.getSymbol("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S.getSymbol("__new__");

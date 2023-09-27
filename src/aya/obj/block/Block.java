@@ -163,12 +163,12 @@ public class Block extends Obj {
 				instr.execute(this);
 			} catch (EmptyStackException es) {
 				EmptyStackError es2 = new EmptyStackError("Unexpected empty stack while executing instruction: " + instr);
-				es2.addContext(instr, this);
+				es2.setSource(instr.getSource());
 				throw es2;
 			} catch (NullPointerException npe) {
 				throw new RuntimeException(npe);
 			} catch (AyaRuntimeException are) {
-				are.addContext(instr, this);
+				are.setSource(instr.getSource());
 				throw are;
 			}
 		}
