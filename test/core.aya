@@ -238,18 +238,22 @@
           ::any:type;
           0:copy;
           ::a:name;
+          ::plain:argtype;
         } {,
           ::num:type;
           1:copy;
           ::b:name;
+          ::plain:argtype;
         } {,
           ::str:type;
           0:copy;
           ::c:name;
+          ::plain:argtype;
         } {,
           ::any:type;
           1:copy;
           ::d:name;
+          ::plain:argtype;
         }
     ]:args;
 

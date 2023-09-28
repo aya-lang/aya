@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -18,13 +17,13 @@ import aya.util.Casting;
 public class BlockHeader extends Instruction {
 	
 	private Dict _vars;
-	private ArrayList<BlockHeaderArg> _args;
+	private ArrayList<AbstractBlockHeaderArg> _args;
 
 	
 	public BlockHeader(SourceStringRef source, Dict vars) {
 		super(source);
 		_vars = vars;
-		_args = new ArrayList<BlockHeaderArg>();
+		_args = new ArrayList<AbstractBlockHeaderArg>();
 	}
 
 
@@ -34,7 +33,7 @@ public class BlockHeader extends Instruction {
 
 	
 	/** Add an argument to the top of the argument stack */
-	public void addArg(BlockHeaderArg arg) {
+	public void addArg(AbstractBlockHeaderArg arg) {
 		_args.add(0, arg);
 	}
 
@@ -51,25 +50,11 @@ public class BlockHeader extends Instruction {
 	
 	
 	
-	private static void setArgs(ArrayList<BlockHeaderArg> args, Dict vars, Block b) {
-		if (args.size() == 0) return;
-		
-		for (BlockHeaderArg arg : args) {
-			final Obj o = b.pop();
-			if (Obj.isInstance(o, arg.type)) {
-				if (arg.copy) {
-					vars.set(arg.var, o.deepcopy());
-				} else {
-					vars.set(arg.var, o);
-				}
-			} else {
-				throw new TypeError("{ARGS}\n\tExpected:" + arg.type.repr()
-							+ "\n\tReceived:" + o);
-			}
+	private static void setArgs(ArrayList<AbstractBlockHeaderArg> args, Dict vars, Block b) {
+		for (AbstractBlockHeaderArg arg : args) {
+			arg.assign(vars, b.pop());
 		}	
 	}
-	
-	
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
@@ -78,7 +63,7 @@ public class BlockHeader extends Instruction {
 	
 	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> defaults) {
 		for (int i = _args.size()-1; i >= 0; i--) {
-			stream.print(_args.get(i).str());
+			stream.print(_args.get(i).toString());
 			stream.print(" ");
 		}
 		
@@ -137,7 +122,7 @@ public class BlockHeader extends Instruction {
 		return b;
 	}
 	
-	public ArrayList<BlockHeaderArg> getArgs() {
+	public ArrayList<AbstractBlockHeaderArg> getArgs() {
 		return _args;
 	}
 
