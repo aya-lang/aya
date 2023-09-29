@@ -37,6 +37,7 @@ public class SymbolConstants {
 	public static final Symbol COLON	= S.getSymbol("colon");
 	public static final Symbol MISC		= S.getSymbol("misc");
 	public static final Symbol ARGS 	= S.getSymbol("args");
+	public static final Symbol ARG  	= S.getSymbol("arg");
 	public static final Symbol ARGTYPES = S.getSymbol("argtypes");
 	public static final Symbol LOCALS 	= S.getSymbol("locals");
 	public static final Symbol COPY 	= S.getSymbol("copy");

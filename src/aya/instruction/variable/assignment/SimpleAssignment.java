@@ -27,5 +27,10 @@ public class SimpleAssignment extends Assignment {
 	public Symbol assignmentType() {
 		return SymbolConstants.SIMPLE;
 	}
+	
+	@Override
+	public String toString() {
+		return _var.name();
+	}
 
 }

@@ -18,16 +18,16 @@ public class UnpackAssignment extends Assignment {
 
 
 	public static class Arg {
-		public Symbol symbol;
+		public Assignment assignment;
 		public boolean slurp;
 		
-		public Arg(Symbol symbol, boolean slurp) {
-			this.symbol = symbol;
+		public Arg(Assignment assignment, boolean slurp) {
+			this.assignment = assignment;
 			this.slurp = slurp;
 		}
 		
 		public String toString() {
-			String out = symbol.name();
+			String out = this.assignment.toString();
 			if (slurp) out += "~";
 			return out;
 		}
@@ -102,7 +102,8 @@ public class UnpackAssignment extends Assignment {
 				// Easy case, one-to-one mapping between args and list elements
 				if (l.length() == _args.size()) {
 					for (int i = 0; i < l.length(); i++) {
-						vars.set(_args.get(i).symbol, l.getExact(i));
+						Arg a = _args.get(i);
+						a.assignment.assign(vars, l.getExact(i));
 					}
 				} else {
 					if (_catchall == null) {
@@ -114,17 +115,18 @@ public class UnpackAssignment extends Assignment {
 				if (l.length() >= _before_slurp.size() + _after_slurp.size()) {
 					// Before Slurp
 					for (int i = 0; i < _before_slurp.size(); i++) {
-						vars.set(_before_slurp.get(i).symbol, l.getExact(i));
+						Arg a = _before_slurp.get(i);
+						a.assignment.assign(vars, l.getExact(i));
 					}
 					// After Slurp
 					for (int i = 0; i < _after_slurp.size(); i++) {
 						Arg arg = _after_slurp.get((_after_slurp.size()-1) - i);
 						Obj x = l.getExact((l.length()-1) - i);
-						vars.set(arg.symbol, x);
+						arg.assignment.assign(vars, x);
 					}
 					// Slurp itself
 					List slurp = l.sliceExact(_before_slurp.size(), l.length() - _after_slurp.size());
-					vars.set(_slurp.symbol, slurp);
+					_slurp.assignment.assign(vars, slurp);
 				} else {
 					if (_catchall == null) {
 						throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
@@ -147,7 +149,7 @@ public class UnpackAssignment extends Assignment {
 		List args = new List();
 		for (UnpackAssignment.Arg arg : _args) {
 			Dict a = new Dict();
-			a.set(SymbolConstants.NAME, arg.symbol);
+			a.set(SymbolConstants.ARG, arg.assignment.toDict());
 			a.set(SymbolConstants.SLURP, Num.fromBool(arg.slurp));
 			args.mutAdd(a);
 		}

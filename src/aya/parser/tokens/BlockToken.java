@@ -3,6 +3,7 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
@@ -11,6 +12,7 @@ import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.instruction.variable.assignment.SimpleAssignment;
 import aya.instruction.variable.assignment.TypedAssignment;
 import aya.instruction.variable.assignment.UnpackAssignment;
@@ -107,65 +109,94 @@ public class BlockToken extends CollectionToken {
 	
 	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
 		while (tokens.hasNext()) {
-			Token current = tokens.next();
-			if (current.isa(Token.VAR)) {
-				VarToken var = (VarToken)current;
-				boolean copy = false;
-				Symbol arg_type = null;
-				
-				// Copy?
-				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
-					tokens.next(); // Discard $
-					copy = true;
-				}
+			Assignment arg = nextArg(tokens);
+			header.addArg(arg);
+		}
+	}
+	
+	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError {
+		Token current = tokens.next();
+		if (current.isa(Token.VAR)) {
+			VarToken var = (VarToken)current;
+			boolean copy = false;
+			Symbol arg_type = null;
 			
-				// Type annotation?
-				if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
-					SymbolToken sym_token = (SymbolToken)tokens.next();
-					arg_type = sym_token.getSymbol();
-				}
-				
-				if (copy || arg_type != null) {
-					header.addArg(new TypedAssignment(var.getSymbol(), arg_type, copy));
-				} else {
-					header.addArg(new SimpleAssignment(var.getSymbol()));
-				}
-			} else if (current.isa(Token.LIST)) {
-				ListToken unpack = (ListToken)current;
-				TokenQueue tq = new TokenQueue(unpack.col);
-				ArrayList<UnpackAssignment.Arg> args = new ArrayList<UnpackAssignment.Arg>();
-				Symbol catchall = null;
-				while (tq.hasNext()) {
-					Token t = tq.next();
-					if (t.isa(Token.VAR)) {
-						VarToken vt = (VarToken)t;
-						boolean slurp = false;
-						if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
-							slurp = true;
-							tq.next(); // skip the ~
-						}
-						args.add(new UnpackAssignment.Arg(vt.getSymbol(), slurp));
-					} else if (t.isa(Token.COLON) && tq.hasNext() && tq.peek().isa(Token.VAR)) {
-						t = tq.next(); // Variable
-						catchall = ((VarToken)t).getSymbol();
-						// Catchall must be last
-						if (tq.hasNext()) {
-							throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
-						}
-					} else  {
-						throw new SyntaxError("Unexpected token in argument unpack", current.getSourceStringRef());
+			// Copy?
+			if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
+				tokens.next(); // Discard $
+				copy = true;
+			}
+		
+			// Type annotation?
+			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
+				SymbolToken sym_token = (SymbolToken)tokens.next();
+				arg_type = sym_token.getSymbol();
+			}
+			
+			if (copy || arg_type != null) {
+				return new TypedAssignment(var.getSymbol(), arg_type, copy);
+			} else {
+				return new SimpleAssignment(var.getSymbol());
+			}
+		} else if (current.isa(Token.LIST)) {
+			ListToken unpack = (ListToken)current;
+			TokenQueue tq = new TokenQueue(unpack.col);
+			ArrayList<UnpackAssignment.Arg> args = new ArrayList<UnpackAssignment.Arg>();
+			Symbol catchall = null;
+			while (tq.hasNext()) {
+				// Catch-all
+				if (tq.peek().isa(Token.COLON)) {
+					Token colon = tq.next(); // colon
+					if (tq.hasNext() && tq.peek().isa(Token.VAR)) {
+						Token var = tq.next();
+						catchall = ((VarToken)var).getSymbol();
+					} else {
+						throw new SyntaxError("Expected varname after catchall assignment", colon.getSourceStringRef());
 					}
+					
+					if (tq.hasNext()) {
+						throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
+					}
+				} else {
+					Assignment a = nextArg(tq);
+					boolean slurp = false;
+					if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
+						slurp = true;
+						tq.next(); // Skip ~
+					}
+
+					args.add(new UnpackAssignment.Arg(a, slurp));
 				}
 
-				if (args.size() == 0) {
-					throw new SyntaxError("Unpack args must contain at least one element", current.getSourceStringRef());
-				} else {
-					UnpackAssignment ua = UnpackAssignment.fromArgList(args, catchall, current.getSourceStringRef());
-					header.addArg(ua);
-				}
-			} else {
-				throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());
+//				Token t = tq.next();
+//				if (t.isa(Token.VAR)) {
+//					VarToken vt = (VarToken)t;
+//					boolean slurp = false;
+//					if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
+//						slurp = true;
+//						tq.next(); // skip the ~
+//					}
+//					args.add(new UnpackAssignment.Arg(new SimpleAssignment(vt.getSymbol()), slurp));
+//				} else if (t.isa(Token.COLON) && tq.hasNext() && tq.peek().isa(Token.VAR)) {
+//					t = tq.next(); // Variable
+//					catchall = ((VarToken)t).getSymbol();
+//					// Catchall must be last
+//					if (tq.hasNext()) {
+//						throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
+//					}
+//				} else  {
+//					throw new SyntaxError("Unexpected token in argument unpack", current.getSourceStringRef());
+//				}
 			}
+
+			if (args.size() == 0) {
+				throw new SyntaxError("Unpack args must contain at least one element", current.getSourceStringRef());
+			} else {
+				UnpackAssignment ua = UnpackAssignment.fromArgList(args, catchall, current.getSourceStringRef());
+				return ua;
+			}
+		} else {
+			throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());
 		}
 	}
 	
