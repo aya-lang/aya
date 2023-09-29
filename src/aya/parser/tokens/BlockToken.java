@@ -167,26 +167,6 @@ public class BlockToken extends CollectionToken {
 
 					args.add(new UnpackAssignment.Arg(a, slurp));
 				}
-
-//				Token t = tq.next();
-//				if (t.isa(Token.VAR)) {
-//					VarToken vt = (VarToken)t;
-//					boolean slurp = false;
-//					if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
-//						slurp = true;
-//						tq.next(); // skip the ~
-//					}
-//					args.add(new UnpackAssignment.Arg(new SimpleAssignment(vt.getSymbol()), slurp));
-//				} else if (t.isa(Token.COLON) && tq.hasNext() && tq.peek().isa(Token.VAR)) {
-//					t = tq.next(); // Variable
-//					catchall = ((VarToken)t).getSymbol();
-//					// Catchall must be last
-//					if (tq.hasNext()) {
-//						throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
-//					}
-//				} else  {
-//					throw new SyntaxError("Unexpected token in argument unpack", current.getSourceStringRef());
-//				}
 			}
 
 			if (args.size() == 0) {
