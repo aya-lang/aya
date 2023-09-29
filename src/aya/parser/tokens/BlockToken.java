@@ -134,9 +134,9 @@ public class BlockToken extends CollectionToken {
 			}
 			
 			if (copy || arg_type != null) {
-				return new TypedAssignment(var.getSymbol(), arg_type, copy);
+				return new TypedAssignment(var.getSourceStringRef(), var.getSymbol(), arg_type, copy);
 			} else {
-				return new SimpleAssignment(var.getSymbol());
+				return new SimpleAssignment(var.getSourceStringRef(), var.getSymbol());
 			}
 		} else if (current.isa(Token.LIST)) {
 			ListToken unpack = (ListToken)current;

@@ -66,11 +66,17 @@ public class UnpackAssignment extends Assignment {
 			}
 		}
 		
-		return new UnpackAssignment(args, before_slurp, after_slurp, slurp, catchall);
+		return new UnpackAssignment(source, args, before_slurp, after_slurp, slurp, catchall);
 	}
 
 	
-	private UnpackAssignment(ArrayList<Arg> args, ArrayList<Arg> before_slurp, ArrayList<Arg> after_slurp, Arg slurp, Symbol catchall) {
+	private UnpackAssignment(SourceStringRef source,
+							 ArrayList<Arg> args,
+							 ArrayList<Arg> before_slurp,
+							 ArrayList<Arg> after_slurp,
+							 Arg slurp,
+							 Symbol catchall) {
+		super(source);
 		_args = args;
 		_before_slurp = before_slurp;
 		_after_slurp = after_slurp;
@@ -107,7 +113,9 @@ public class UnpackAssignment extends Assignment {
 					}
 				} else {
 					if (_catchall == null) {
-						throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args");
+						ValueError e = new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args");
+						e.setSource(getSource());
+						throw e;
 					}
 				}
 			} else {
@@ -129,12 +137,17 @@ public class UnpackAssignment extends Assignment {
 					_slurp.assignment.assign(vars, slurp);
 				} else {
 					if (_catchall == null) {
-						throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
+						ValueError e = new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
+						e.setSource(getSource());
+						throw e;
 					}
 				}
 			}
 		} else {
-			throw new TypeError("Cannot unpack " + o.repr() + ". Argument must be a list");
+			TypeError e = new TypeError("Cannot unpack " + o.repr() + ". Argument must be a list");
+			e.setSource(getSource());
+			throw e;
+
 		}
 	}
 

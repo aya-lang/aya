@@ -6,6 +6,7 @@ import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 
 public class TypedAssignment extends Assignment {
 
@@ -13,13 +14,15 @@ public class TypedAssignment extends Assignment {
 	public Symbol type;
 	public boolean copy;
 	
-	public TypedAssignment(Symbol var) {
+	public TypedAssignment(SourceStringRef source, Symbol var) {
+		super(source);
 		this.var = var;
 		this.type = SymbolConstants.ANY;
 		this.copy = false;
 	}
 	
-	public TypedAssignment(Symbol var, Symbol type, boolean copy) {
+	public TypedAssignment(SourceStringRef source, Symbol var, Symbol type, boolean copy) {
+		super(source);
 		if (type == null) type = SymbolConstants.ANY;
 		this.var = var;
 		this.type = type;
@@ -34,8 +37,10 @@ public class TypedAssignment extends Assignment {
 				vars.set(this.var, o);
 			}
 		} else {
-			throw new TypeError("{ARGS}\n\tExpected:" + this.type.repr()
+			TypeError e = new TypeError("{ARGS}\n\tExpected:" + this.type.repr()
 						+ "\n\tReceived:" + o);
+			e.setSource(getSource());
+			throw e;
 		}
 	}
 	

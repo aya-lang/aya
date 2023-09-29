@@ -4,12 +4,14 @@ import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 
 public class SimpleAssignment extends Assignment {
 	
 	private Symbol _var;
 	
-	public SimpleAssignment(Symbol var) {
+	public SimpleAssignment(SourceStringRef source, Symbol var) {
+		super(source);
 		_var = var;
 	}
 
