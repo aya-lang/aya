@@ -15,9 +15,14 @@ import aya.util.Casting;
 public class UnpackAssignment {
 
 
-	public class Arg {
+	public static class Arg {
 		public Symbol symbol;
 		public boolean slurp;
+		
+		public Arg(Symbol symbol, boolean slurp) {
+			this.symbol = symbol;
+			this.slurp = slurp;
+		}
 		
 		public String toString() {
 			String out = symbol.name();
@@ -31,9 +36,10 @@ public class UnpackAssignment {
 	private ArrayList<Arg> _before_slurp;
 	private ArrayList<Arg> _after_slurp;
 	private Arg _slurp;
+	private Symbol _catchall;
 
 
-	public static UnpackAssignment fromArgList(ArrayList<Arg> args, SourceStringRef source) throws SyntaxError {
+	public static UnpackAssignment fromArgList(ArrayList<Arg> args, Symbol catchall, SourceStringRef source) throws SyntaxError {
 		ArrayList<Arg> before_slurp = null;
 		ArrayList<Arg> after_slurp = null;
 		Arg slurp = null;
@@ -42,22 +48,32 @@ public class UnpackAssignment {
 			Arg a = args.get(i);
 			if (a.slurp) {
 				if (slurp == null) {
+					// Before slurp
+					before_slurp = new ArrayList<Arg>();
+					before_slurp.addAll(args.subList(0, i));
+
+					// After slurp
+					after_slurp = new ArrayList<Arg>();
+					after_slurp.addAll(args.subList(i+1, args.size()));
 					
+					// Slurp
+					slurp = args.get(i);
 				} else {
 					throw new SyntaxError("Cannot have multiple slurps", source);
 				}
 			}
 		}
 		
-		return new UnpackAssignment(args, before_slurp, after_slurp, slurp);
+		return new UnpackAssignment(args, before_slurp, after_slurp, slurp, catchall);
 	}
 
 	
-	private UnpackAssignment(ArrayList<Arg> args, ArrayList<Arg> before_slurp, ArrayList<Arg> after_slurp, Arg slurp) {
+	private UnpackAssignment(ArrayList<Arg> args, ArrayList<Arg> before_slurp, ArrayList<Arg> after_slurp, Arg slurp, Symbol catchall) {
 		_args = args;
 		_before_slurp = before_slurp;
 		_after_slurp = after_slurp;
 		_slurp = slurp;
+		_catchall = catchall;
 	}
 	
 	public String toString() {
@@ -75,6 +91,11 @@ public class UnpackAssignment {
 	public void assign(Dict vars, Obj o) {
 		if (o.isa(Obj.LIST)) {
 			List l = Casting.asList(o);
+
+			if (_catchall != null) {
+				vars.set(_catchall, l);
+			}
+
 			if (_slurp == null) {
 				// Easy case, one-to-one mapping between args and list elements
 				if (l.length() == _args.size()) {
@@ -82,7 +103,9 @@ public class UnpackAssignment {
 						vars.set(_args.get(i).symbol, l.getExact(i));
 					}
 				} else {
-					throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args");
+					if (_catchall == null) {
+						throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args");
+					}
 				}
 			} else {
 				// _slurp itself may be an empty list so only before and after are required
@@ -101,7 +124,9 @@ public class UnpackAssignment {
 					List slurp = l.sliceExact(_before_slurp.size(), l.length() - _after_slurp.size());
 					vars.set(_slurp.symbol, slurp);
 				} else {
-					throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
+					if (_catchall == null) {
+						throw new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
+					}
 				}
 			}
 		} else {

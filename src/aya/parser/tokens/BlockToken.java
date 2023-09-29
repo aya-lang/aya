@@ -15,6 +15,8 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
 import aya.obj.block.BlockHeaderArg;
+import aya.obj.block.BlockHeaderArgUnpack;
+import aya.obj.block.UnpackAssignment;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
@@ -104,7 +106,6 @@ public class BlockToken extends CollectionToken {
 	}
 	
 	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
-		String orig = tokens.toString(); // For error reporting
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
 			if (current.isa(Token.VAR)) {
@@ -124,9 +125,41 @@ public class BlockToken extends CollectionToken {
 				}
 				
 				header.addArg(arg);
+			} else if (current.isa(Token.LIST)) {
+				ListToken unpack = (ListToken)current;
+				TokenQueue tq = new TokenQueue(unpack.col);
+				ArrayList<UnpackAssignment.Arg> args = new ArrayList<UnpackAssignment.Arg>();
+				Symbol catchall = null;
+				while (tq.hasNext()) {
+					Token t = tq.next();
+					if (t.isa(Token.VAR)) {
+						VarToken vt = (VarToken)t;
+						boolean slurp = false;
+						if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
+							slurp = true;
+							tq.next(); // skip the ~
+						}
+						args.add(new UnpackAssignment.Arg(vt.getSymbol(), slurp));
+					} else if (t.isa(Token.COLON) && tq.hasNext() && tq.peek().isa(Token.VAR)) {
+						t = tq.next(); // Variable
+						catchall = ((VarToken)t).getSymbol();
+						// Catchall must be last
+						if (tq.hasNext()) {
+							throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
+						}
+					} else  {
+						throw new SyntaxError("Unexpected token in argument unpack", current.getSourceStringRef());
+					}
+				}
+
+				if (args.size() == 0) {
+					throw new SyntaxError("Unpack args must contain at least one element", current.getSourceStringRef());
+				} else {
+					UnpackAssignment ua = UnpackAssignment.fromArgList(args, catchall, current.getSourceStringRef());
+					header.addArg(new BlockHeaderArgUnpack(ua));
+				}
 			} else {
-				throw new SyntaxError("All arguments should follow the format name[$][::type].\n" +
-									  "Got: " + orig, current.getSourceStringRef());
+				throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());
 			}
 		}
 	}
