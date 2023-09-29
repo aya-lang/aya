@@ -1,0 +1,159 @@
+[
+
+.# simple case
+{ [1 2] {[a b], "$a, $b"}~ "1, 2"}
+
+
+.# nested
+{ [1 [2 3]] {[a [b c]], "$a, $b, $c"}~ "1, 2, 3"}
+
+
+.# catchall
+{ [1 2] {[a b :c], "$a, $b, $c"}~ "1, 2, [ 1 2 ]"}
+
+
+.# ERROR: length mismatch
+
+.# Error: List length does not match argument length
+.# { [1] {[a b], }~ }
+
+.# Error: List length does not match argument length
+.# { [1 2 3] {[a b], }~ }
+
+
+.# Slurp
+{ [1 2 3 4] {[a b~], "$a, $b"}~ "1, [ 2 3 4 ]"}
+{ [1 2 3 4] {[a~ b], "$a, $b"}~ "[ 1 2 3 ], 4"}
+{ [1 2] {[a b~], "$a, $b"}~ "1, [ 2 ]"}
+{ [1 2] {[a~ b], "$a, $b"}~ "[ 1 ], 2"}
+{ [1 2 3 4] {[a b~ c], "$a, $b, $c"}~ "1, [ 2 3 ], 4"}
+{ [1 2 3 4] {[a b~ c d], "$a, $b, $c, $d"}~ "1, [ 2 ], 3, 4"}
+
+.# Slurp can be empty
+{ [1] {[a b~], "$a, $b"}~ "1, [ ]"}
+{ [1] {[a~ b], "$a, $b"}~ "[ ], 1"}
+
+.# Must at least be one list element per non-slurp variable
+{ [1 2] {[a b~ c], "$a, $b, $c"}~ "1, [ ], 2"}
+.# ERROR: list length does not match argument length
+.# { [1] {[a b~ c], }~ }
+
+.# If a catchall is provided, do not raise an error for list length mismatch
+.# all non-catchall variables will be undefined
+.# ERROR: list length does not match argument length
+.# { [1] {[a b], }~ }
+{ [1] {[a b :l], "$l"} "[ 1 ]"}
+
+
+.# first/last
+{[x _~], x}:first;
+{[_~ x], x}:last;
+
+{[1 2 3] first 1}
+{[1] first 1}
+{[1 2 3] last  3}
+{[1] last 1}
+
+
+.# len
+{[_ xs~ :l], l [] = 0 {xs len 1 +} .? }:len;
+
+{[1 2 3] len 3}
+{[1] len 1}
+{[] len 0}
+
+
+.# sum
+{[x xs~ :l], l [] = 0 {xs sum x +} .? }:sum;
+
+{[1 2 3] sum 6}
+{[1] sum 1}
+{[] sum 0}
+
+
+.# map
+{[x xs~ :l] fn, 
+    l [] = [] 
+    {[(x fn) (xs fn.` map)~]}
+    .?
+}:map;
+
+{[1 2 3] {2*} map [2 4 6]}
+{[1] {2*} map [2]}
+{[] {2*} map []}
+
+
+.# quicksort
+{[x xs~ :l], 
+    l [] = []
+    {[ (xs.[{x:<}] quicksort)~ x (xs.[{x>}] quicksort)~ ]}
+    .?
+}:quicksort;
+
+{[1 3 2 5 4 1] quicksort [1 1 2 3 4 5]}
+{[1] quicksort [1]}
+{[] quicksort []}
+
+
+.# filter
+{[x xs~ :l] fn,
+    l [] = []
+    {[x fn x ? (xs fn.` filter)~]}
+    .?
+}:filter;
+
+{[1 2 3 4 5] {3<} filter [1 2]}
+{[1 2 3 4 5] {0=} filter []}
+{[1 2 3 4 5] {0=!} filter [1 2 3 4 5]}
+{[] {0=} filter []}
+
+
+.# head/tail
+{[_ xs~ :l], lE 1 :< l {xs} .?}:tail;
+{[xs~ _ :l], lE 1 :< l {xs} .?}:head;
+
+{[1 2 3] head [1 2]}
+{[1] head [1]}
+{[] head []}
+{[1 2 3] tail  [2 3]}
+{[1] tail [1]}
+{[] tail []}
+
+
+.# loops
+{:m,
+    [[1 2 3]
+     [4 5 6]
+     [7 8 9]]:m;
+
+    m :# {[x y z],
+        "($x, $y, $z)"
+    }
+
+    ["(1, 2, 3)" "(4, 5, 6)" "(7, 8, 9)"]
+}
+
+
+.# enumerate
+{
+    "ABC".enumerate :# {[i v], "$i: $v"}
+    ["0: A" "1: B" "2: C"]
+}
+
+
+.# nested enumerate
+{:m,
+    [[1 2]
+     [3 4]
+     [5 6]]:m;
+
+    m.enumerate :# {[i [x y]],
+        "$i: ($x, $y)"
+    }
+
+    ["0: (1, 2)" "1: (3, 4)" "2: (5, 6)"]
+}
+
+
+] :# {test.test};
+
