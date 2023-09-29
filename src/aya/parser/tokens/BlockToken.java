@@ -11,12 +11,12 @@ import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
+import aya.instruction.variable.assignment.SimpleAssignment;
+import aya.instruction.variable.assignment.TypedAssignment;
+import aya.instruction.variable.assignment.UnpackAssignment;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
-import aya.obj.block.BlockHeaderArg;
-import aya.obj.block.BlockHeaderArgUnpack;
-import aya.obj.block.UnpackAssignment;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
@@ -110,21 +110,26 @@ public class BlockToken extends CollectionToken {
 			Token current = tokens.next();
 			if (current.isa(Token.VAR)) {
 				VarToken var = (VarToken)current;
-				BlockHeaderArg arg = new BlockHeaderArg(var.getSymbol());
+				boolean copy = false;
+				Symbol arg_type = null;
 				
 				// Copy?
 				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
 					tokens.next(); // Discard $
-					arg.copy = true;
+					copy = true;
 				}
 			
 				// Type annotation?
 				if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
 					SymbolToken sym_token = (SymbolToken)tokens.next();
-					arg.type = sym_token.getSymbol();
+					arg_type = sym_token.getSymbol();
 				}
 				
-				header.addArg(arg);
+				if (copy || arg_type != null) {
+					header.addArg(new TypedAssignment(var.getSymbol(), arg_type, copy));
+				} else {
+					header.addArg(new SimpleAssignment(var.getSymbol()));
+				}
 			} else if (current.isa(Token.LIST)) {
 				ListToken unpack = (ListToken)current;
 				TokenQueue tq = new TokenQueue(unpack.col);
@@ -156,7 +161,7 @@ public class BlockToken extends CollectionToken {
 					throw new SyntaxError("Unpack args must contain at least one element", current.getSourceStringRef());
 				} else {
 					UnpackAssignment ua = UnpackAssignment.fromArgList(args, catchall, current.getSourceStringRef());
-					header.addArg(new BlockHeaderArgUnpack(ua));
+					header.addArg(ua);
 				}
 			} else {
 				throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());

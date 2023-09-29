@@ -1,19 +1,19 @@
-package aya.obj.block;
+package aya.instruction.variable.assignment;
 
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 
-public abstract class AbstractBlockHeaderArg {
+public abstract class Assignment {
 	public abstract void assign(Dict vars, Obj o);
 
-	protected abstract void toDict(Dict d);
-	protected abstract Symbol blockHeaderArgType();
-
+	public abstract void toDict(Dict d);
+	public abstract Symbol assignmentType();
+	
 	public Dict toDict() {
 		Dict d = new Dict();
-		d.set(SymbolConstants.ARGTYPE, blockHeaderArgType());
+		d.set(SymbolConstants.ARGTYPE, assignmentType());
 		toDict(d);
 		return d;
 	}

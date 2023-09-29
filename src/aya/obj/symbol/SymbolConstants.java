@@ -75,6 +75,8 @@ public class SymbolConstants {
 	public static final Symbol SLURP        = S.getSymbol("slurp");
 	public static final Symbol UNPACK       = S.getSymbol("unpack");
 	public static final Symbol ARGTYPE      = S.getSymbol("argtype");
+	public static final Symbol SIMPLE       = S.getSymbol("simple");
+	public static final Symbol TYPED        = S.getSymbol("typed");
 
 	public static final Symbol KEYVAR_EQ		= S.getSymbol("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S.getSymbol("__new__");
@@ -115,6 +117,7 @@ public class SymbolConstants {
 	public static final Symbol RUNTIME_EXCEPTION    = S.getSymbol("runtime_exception");
 
 	public static final Symbol __CDICT__    = S.getSymbol("__cdict__");
+
 
 
 }

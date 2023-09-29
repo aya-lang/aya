@@ -16,6 +16,7 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -301,12 +302,12 @@ public class Block extends Obj {
 
 	
 	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<AbstractBlockHeaderArg> getArgsAndTypes() {
+	public ArrayList<Assignment> getArgsAndTypes() {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			return header.getArgs();
 		} else {
-			return new ArrayList<AbstractBlockHeaderArg>();
+			return new ArrayList<Assignment>();
 		}
 	}
 

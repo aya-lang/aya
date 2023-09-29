@@ -1,4 +1,4 @@
-package aya.obj.block;
+package aya.instruction.variable.assignment;
 
 import java.util.ArrayList;
 
@@ -8,11 +8,13 @@ import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
+import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
-public class UnpackAssignment {
+public class UnpackAssignment extends Assignment {
 
 
 	public static class Arg {
@@ -138,4 +140,25 @@ public class UnpackAssignment {
 	public ArrayList<Arg> getArgs() {
 		return _args;
 	}
+
+
+	@Override
+	public void toDict(Dict d) {
+		List args = new List();
+		for (UnpackAssignment.Arg arg : _args) {
+			Dict a = new Dict();
+			a.set(SymbolConstants.NAME, arg.symbol);
+			a.set(SymbolConstants.SLURP, Num.fromBool(arg.slurp));
+			args.mutAdd(a);
+		}
+		d.set(SymbolConstants.ARGS, args);
+	}
+
+
+	@Override
+	public Symbol assignmentType() {
+		return SymbolConstants.UNPACK;
+	}
+	
+	
 }

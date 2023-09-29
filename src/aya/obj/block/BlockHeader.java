@@ -7,6 +7,7 @@ import java.util.Iterator;
 import aya.Aya;
 import aya.ReprStream;
 import aya.instruction.Instruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
@@ -17,13 +18,13 @@ import aya.util.Casting;
 public class BlockHeader extends Instruction {
 	
 	private Dict _vars;
-	private ArrayList<AbstractBlockHeaderArg> _args;
+	private ArrayList<Assignment> _args;
 
 	
 	public BlockHeader(SourceStringRef source, Dict vars) {
 		super(source);
 		_vars = vars;
-		_args = new ArrayList<AbstractBlockHeaderArg>();
+		_args = new ArrayList<Assignment>();
 	}
 
 
@@ -33,7 +34,7 @@ public class BlockHeader extends Instruction {
 
 	
 	/** Add an argument to the top of the argument stack */
-	public void addArg(AbstractBlockHeaderArg arg) {
+	public void addArg(Assignment arg) {
 		_args.add(0, arg);
 	}
 
@@ -50,8 +51,8 @@ public class BlockHeader extends Instruction {
 	
 	
 	
-	private static void setArgs(ArrayList<AbstractBlockHeaderArg> args, Dict vars, Block b) {
-		for (AbstractBlockHeaderArg arg : args) {
+	private static void setArgs(ArrayList<Assignment> args, Dict vars, Block b) {
+		for (Assignment arg : args) {
 			arg.assign(vars, b.pop());
 		}	
 	}
@@ -122,7 +123,7 @@ public class BlockHeader extends Instruction {
 		return b;
 	}
 	
-	public ArrayList<AbstractBlockHeaderArg> getArgs() {
+	public ArrayList<Assignment> getArgs() {
 		return _args;
 	}
 

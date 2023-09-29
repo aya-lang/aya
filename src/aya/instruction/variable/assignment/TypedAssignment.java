@@ -1,4 +1,4 @@
-package aya.obj.block;
+package aya.instruction.variable.assignment;
 
 import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
@@ -7,19 +7,20 @@ import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 
-public class BlockHeaderArg extends AbstractBlockHeaderArg {
+public class TypedAssignment extends Assignment {
 
 	public Symbol var;
 	public Symbol type;
 	public boolean copy;
 	
-	public BlockHeaderArg(Symbol var) {
+	public TypedAssignment(Symbol var) {
 		this.var = var;
 		this.type = SymbolConstants.ANY;
 		this.copy = false;
 	}
 	
-	public BlockHeaderArg(Symbol var, Symbol type, boolean copy) {
+	public TypedAssignment(Symbol var, Symbol type, boolean copy) {
+		if (type == null) type = SymbolConstants.ANY;
 		this.var = var;
 		this.type = type;
 		this.copy = copy;
@@ -50,14 +51,15 @@ public class BlockHeaderArg extends AbstractBlockHeaderArg {
 
 	
 	@Override
-	protected void toDict(Dict d) {
+	public void toDict(Dict d) {
 		d.set(SymbolConstants.NAME, this.var);
 		d.set(SymbolConstants.COPY, Num.fromBool(this.copy));
 		d.set(SymbolConstants.TYPE, this.type);
 	}
 
 	@Override
-	protected Symbol blockHeaderArgType() {
-		return SymbolConstants.PLAIN;
+	public Symbol assignmentType() {
+		return SymbolConstants.TYPED;
 	}
+
 }

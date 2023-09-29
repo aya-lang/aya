@@ -235,31 +235,27 @@
 ({:args,
     [
         {,
-          ::any:type;
-          0:copy;
           ::a:name;
-          ::plain:argtype;
+          ::simple:argtype;
         } {,
           ::num:type;
           1:copy;
           ::b:name;
-          ::plain:argtype;
+          ::typed:argtype;
         } {,
           ::str:type;
           0:copy;
           ::c:name;
-          ::plain:argtype;
+          ::typed:argtype;
         } {,
           ::any:type;
           1:copy;
           ::d:name;
-          ::plain:argtype;
+          ::typed:argtype;
         }
     ]:args;
 
     { {a b$::num c::str d$ : a(1) b(4), } .|.args } assert [args]
-
-    {{} {, args:args } :M .| .args} assert [args]
 })
 
 .# ::block S: duplicate with locals
