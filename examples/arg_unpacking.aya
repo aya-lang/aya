@@ -42,7 +42,7 @@
 .# all non-catchall variables will be undefined
 .# ERROR: list length does not match argument length
 .# { [1] {[a b], }~ }
-{ [1] {[a b :l], "$l"} "[ 1 ]"}
+{ [1] {[a b :l], "$l"}~ "[ 1 ]"}
 
 
 .# first/last
