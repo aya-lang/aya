@@ -9,9 +9,10 @@ import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.symbol.Symbol;
 
 public class StaticBlock extends Obj {
+	
+	public static StaticBlock EMPTY = new StaticBlock(new ArrayList<Instruction>());
 	
 	private Dict _locals;
 	private ArrayList<Instruction> _instructions;
@@ -30,6 +31,10 @@ public class StaticBlock extends Obj {
 			_locals = new Dict();
 		}
 	}
+
+	public StaticBlock(ArrayList<Instruction> instructions) {
+		this(instructions, null, null);
+	}
 	
 	public void dumpToBlockEvaluator(Block b) {
 		if (_locals != null) {
@@ -46,68 +51,28 @@ public class StaticBlock extends Obj {
 			b.addAll(_instructions);
 		}
 	}
-
-	///////////////////////
-	// String Conversion //
-	///////////////////////
-
-	/** If true, return "{instructions}" else just "instructions" */
-	private ReprStream _repr(ReprStream stream, boolean print_braces) {
-		if (print_braces) stream.print("{");
-		
-		// Header
-		if (_locals != null) {
-			// Args
-			for (int i = _args.size()-1; i >= 0; i--) {
-				stream.print(_args.get(i).toString());
-				stream.print(" ");
-			}
-			
-			// Non-arg locals
-			if (_locals.size() != 0) {
-				stream.print(": ");
-			
-				// Print locals
-				for (Symbol key : _locals.keys()) {
-					stream.print(key.name());
-					stream.print("(");
-					_locals.get(key).repr(stream);
-					stream.print(")");
-				}
-			}
-			
-			// Trim off the final space
-			stream.delTrailingSpaces();
-			stream.print(",");
-		}
-
-		for(Instruction i : _instructions) {
-			i.repr(stream);
-			stream.print(" ");
-		}
-
-		// Remove trailing space
-		stream.delTrailingSpaces();
-
-		if (print_braces) stream.print("}");
-		return stream;
+	
+	public boolean hasLocals() {
+		return _locals != null;
 	}
 	
-
-	public ReprStream repr(ReprStream stream, boolean print_braces) {
-		if (stream.visit(this)) {
-			_repr(stream, print_braces);
-			stream.popVisited(this);
-		} else {
-			stream.print("{...}");
-		}
-		return stream;
-	}
+	//////////////////////
+	// Used By BlockOps //
+	//////////////////////
 	
-	@Override
-	public String toString() {
-		return repr(new ReprStream(), true).toStringOneline();
+	protected Dict getLocals() {
+		return _locals;
 	}
+
+	protected ArrayList<Instruction> getInstructions() {
+		return _instructions;
+	}
+
+	protected ArrayList<Assignment> getArgs() {
+		return _args;
+	}
+
+
 
 	///////////////////
 	// OBJ OVERRIDES //
@@ -126,12 +91,12 @@ public class StaticBlock extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		return repr(stream, true);
+		return BlockUtils.repr(stream, this, true, null);
 	}
 
 	@Override
 	public String str() {
-		return repr(new ReprStream(), true).toStringOneline();
+		return BlockUtils.repr(new ReprStream(), this, true, null).toStringOneline();
 	}
 
 	@Override
@@ -148,6 +113,11 @@ public class StaticBlock extends Obj {
 	@Override
 	public byte type() {
 		return Obj.BLOCK;
+	}
+	
+	@Override
+	public String toString() {
+		return this.str();
 	}
 
 }

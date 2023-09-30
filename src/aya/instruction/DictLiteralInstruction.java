@@ -7,6 +7,8 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.parser.SourceStringRef;
 
@@ -17,16 +19,16 @@ import aya.parser.SourceStringRef;
  */
 public class DictLiteralInstruction extends Instruction {
 	
-	Block _block;
+	StaticBlock _block;
 	private int num_captures;
 	
-	public DictLiteralInstruction(SourceStringRef source, Block b) {
+	public DictLiteralInstruction(SourceStringRef source, StaticBlock b) {
 		super(source);
 		this._block = b;
 		this.num_captures = 0;
 	}
 	
-	public DictLiteralInstruction(SourceStringRef source, Block b, int num_captures) {
+	public DictLiteralInstruction(SourceStringRef source, StaticBlock b, int num_captures) {
 		super(source);
 		this._block = b;
 		this.num_captures = num_captures;
@@ -42,13 +44,14 @@ public class DictLiteralInstruction extends Instruction {
 		Aya.getInstance().getVars().add(new Dict(), true);
 		
 		//Run the block
-		Block b2 = _block.duplicate();
+		Block evaluator = new Block();
+		evaluator.dump(_block);
 		if (q != null) {
 			while (!q.isEmpty()) {
-				b2.push(q.poll());
+				evaluator.push(q.poll());
 			}
 		}
-		b2.eval();
+		evaluator.eval();
 		
 		//Retrieve the Dict
 		return Aya.getInstance().getVars().popGet();
@@ -74,7 +77,7 @@ public class DictLiteralInstruction extends Instruction {
 		} else {
 			stream.print("{" + num_captures + ",");
 		}
-		_block.repr(stream, false);
+		BlockUtils.repr(stream, _block, false, null);
 		stream.print("}");
 		return stream;
 	}

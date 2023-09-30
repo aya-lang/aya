@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 
 /** Specialization of a DictLiteralInstruction which always returns an empty dict
@@ -15,7 +16,7 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	public static final EmptyDictLiteralInstruction INSTANCE = new EmptyDictLiteralInstruction();
 	
 	protected EmptyDictLiteralInstruction() {
-		super(null, new Block());
+		super(null, StaticBlock.EMPTY);
 	}
 	
 	@Override

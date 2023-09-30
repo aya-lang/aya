@@ -7,6 +7,8 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.list.ListRangeUtils;
 import aya.parser.SourceStringRef;
@@ -14,12 +16,12 @@ import aya.parser.SourceStringRef;
 public class ListBuilderInstruction extends Instruction {
 
 	
-	private Block initialList;
-	private Block map;
-	private Block[] filters;
+	private StaticBlock initialList;
+	private StaticBlock map;
+	private StaticBlock[] filters;
 	private int num_captures;
 
-	public ListBuilderInstruction(SourceStringRef source, Block initial, Block map, Block[] filters, int num_captures) {
+	public ListBuilderInstruction(SourceStringRef source, StaticBlock initial, StaticBlock map, StaticBlock[] filters, int num_captures) {
 		super(source);
 		this.initialList = initial;
 		this.map = map;
@@ -28,16 +30,16 @@ public class ListBuilderInstruction extends Instruction {
 	}
 	
 	public List createList(Stack<Obj> outerStack) {
-		Block initial = initialList.duplicate();
+		Block evaluator = new Block(initialList);
 
 		for (int p = 0; p < num_captures; p++) {
-			initial.add(outerStack.pop());
+			evaluator.add(outerStack.pop());
 		}
 		
-		initial.eval();
+		evaluator.eval();
 		
 		ArrayList<Obj> res = new ArrayList<Obj>();			//Initialize the argument list
-		res.addAll(initial.getStack());						//Copy the results into the argument list
+		res.addAll(evaluator.getStack());					//Copy the results into the argument list
 		
 		boolean allLists = false;							//Check if all arguments are lists
 		if(res.size() > 1) {
@@ -80,7 +82,7 @@ public class ListBuilderInstruction extends Instruction {
 				
 				//Apply the map
 				if(map != null) {
-					b.addAll(map.getInstructions().getInstrucionList());
+					b.dump(map);
 					b.eval();		
 				}
 				list.addAll(b.getStack());
@@ -96,7 +98,7 @@ public class ListBuilderInstruction extends Instruction {
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
-			for (Block filter : filters) {
+			for (StaticBlock filter : filters) {
 				outList = outList.filter(filter);
 			}
 		}
@@ -117,18 +119,18 @@ public class ListBuilderInstruction extends Instruction {
 			stream.print("| ");
 		}
 
-		initialList.repr(stream, false);
+		BlockUtils.repr(stream, initialList, false);
 		stream.print(", ");
 
 		boolean has_body = false;
 		if(map != null) {
-			map.repr(stream, false);
+			BlockUtils.repr(stream, map, false);
 			stream.print(", ");
 			has_body = true;
 		}
 		if(filters != null) {
-			for (Block b : filters) {
-				b.repr(stream, false);
+			for (StaticBlock b : filters) {
+				BlockUtils.repr(stream, b, false);
 				stream.print(", ");
 			}
 			has_body = true;

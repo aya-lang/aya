@@ -6,6 +6,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
+import aya.util.Casting;
 
 public class QuoteGetVariableInstruction extends VariableInstruction {
 
@@ -24,11 +25,12 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	 * @param o
 	 * @param b
 	 */
-	public static void addOrDumpVar(Obj o, Block b) {
+	public static void addOrDumpVar(Obj o, Block evaluator) {
 		if (o.isa(Obj.BLOCK)) {
-			b.getInstructions().addAll(((Block)o).getInstructions().getInstrucionList());
+			//evaluator.getInstructions().addAll(((Block)o).getInstructions().getInstrucionList());
+			evaluator.dump(Casting.asStaticBlock(o));
 		} else {
-			b.push(o);
+			evaluator.push(o);
 		}
 	}
 	

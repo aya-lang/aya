@@ -14,6 +14,7 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -338,13 +339,13 @@ public class List extends Obj {
 	/** 
 	 * Maps a block to a list and returns the new list. The block is not effected
 	 */
-	public List map(Block block) {
+	public List map(StaticBlock map) {
 		int len = length();
 		if (len > 0) {
 			ArrayList<Obj> out = new ArrayList<Obj>(len);
 			Block b = new Block();
 			for (int i = 0; i < len; i++) {
-				b.addAll(block.getInstructions().getInstrucionList());
+				b.dump(map);
 				b.add(new DataInstruction(getExact(i)));
 				b.eval();
 				out.addAll(b.getStack());
@@ -377,16 +378,16 @@ public class List extends Obj {
 	/**
 	 * Filter a list using the block
 	 * 
-	 * @param block
+	 * @param filter
 	 * @param list
 	 * @return
 	 */
-	public List filter(Block block) {
+	public List filter(StaticBlock filter) {
 		ArrayList<Obj> out = new ArrayList<Obj>();
 		Block b = new Block();
 		for (int i = 0; i < length(); i++) {
 			final Obj o = getExact(i);
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.dump(filter);
 			b.add(new DataInstruction(o));
 			b.eval();
 			if(b.peek().bool()) {

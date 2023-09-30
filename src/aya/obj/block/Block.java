@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.Stack;
 
 import aya.ReprStream;
@@ -19,15 +18,15 @@ import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
+import aya.util.Casting;
 
 /** 
  * Block contain instructions and the resulting stacks 
  * @author Nick
  *
  */
-public class Block extends Obj {
+public class Block {
 	
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
@@ -42,6 +41,11 @@ public class Block extends Obj {
 	public Block(InstructionStack il) {
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
+	}
+	
+	public Block(StaticBlock b) {
+		super();
+		this.dump(b);
 	}
 
 	/** Returns the output stack */
@@ -271,7 +275,7 @@ public class Block extends Obj {
 	 */
 	public void addOrDumpVar(Obj o) {
 		if (o.isa(Obj.BLOCK)) {
-			instructions.addAll(((Block)o).getInstructions().getInstrucionList());
+			this.dump(Casting.asStaticBlock(o));
 		} else {
 			stack.push(o);
 
@@ -294,8 +298,8 @@ public class Block extends Obj {
 		Obj obj = dict.get(keyVar);
 		
 		if(obj.isa(Obj.BLOCK)) {
-			Block blk = ((Block)obj).duplicate();
-			instructions.addAll(blk.getInstructions().getInstrucionList());
+			StaticBlock blk = Casting.asStaticBlock(obj);
+			this.dump(blk);
 		} else {
 			stack.push(obj);
 		}
@@ -355,19 +359,7 @@ public class Block extends Obj {
 		 }
 		 return b;
 	}
-	
-	/** Split a block into a list of blocks, 1 per instruction */
-	public List split() {
-		ArrayList<Obj> blocks = new ArrayList<Obj>();
-		ArrayList<Instruction> instructions = duplicateNoHeader().instructions.getInstrucionList();
-		for (Instruction instr : instructions)
-		{
-			Block b = new Block();
-			b.add(instr);
-			blocks.add(0, b);
-		}
-		return new List(blocks);
-	}
+
 	
 	/** Allow access to modify the block's local variables directly
 	 *  If there are no locals, return null
@@ -381,84 +373,5 @@ public class Block extends Obj {
 			return null;
 		}
 	}
-
 	
-	///////////////////////
-	// String Conversion //
-	///////////////////////
-	
-
-	/** If true, return "{instructions}" else just "instructions" */
-	private ReprStream blockRepr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
-		if (print_braces) stream.print("{");
-		instructions.repr(stream, defaults);
-		if (print_braces) stream.print("}");
-		return stream;
-	}
-	
-	public String toString() {
-		return blockRepr(new ReprStream(), true, null).toStringOneline();
-	}
-
-
-	public ReprStream repr(ReprStream stream, boolean print_braces) {
-		return repr(stream, print_braces, null);
-	}
-	
-	public ReprStream repr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
-		if (stream.visit(this)) {
-			blockRepr(stream, print_braces, defaults);
-			stream.popVisited(this);
-		} else {
-			stream.print("{...}");
-		}
-		return stream;
-	}
-	
-
-
-	///////////////////
-	// OBJ OVERRIDES //
-	///////////////////
-	
-	
-	@Override
-	public Obj deepcopy() {
-		return this.duplicate();
-	}
-
-	@Override
-	public boolean bool() {
-		return true;
-	}
-
-	@Override
-	public ReprStream repr(ReprStream stream) {
-		return repr(stream, true, null);
-	}
-
-	@Override
-	public String str() {
-		return repr(new ReprStream(), true).toStringOneline();
-	}
-
-	@Override
-	public boolean equiv(Obj o) {
-		// Always return false
-		return false;
-	}
-
-	@Override
-	public boolean isa(byte type) {
-		return type == Obj.BLOCK;
-	}
-
-	@Override
-	public byte type() {
-		return Obj.BLOCK;
-	}
-
-
-
-
 }
