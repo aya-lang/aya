@@ -143,7 +143,10 @@ public class Block extends Obj {
 		return flag instanceof PopVarFlagInstruction;
 	}
 	
-
+	public void dump(StaticBlock block) {
+		block.dumpToBlockEvaluator(this);
+	}
+	
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
 	public void eval() {
 		while (!instructions.isEmpty()) {
