@@ -43,7 +43,7 @@ public class BlockToken extends CollectionToken {
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
 			InstructionStack instructions = Parser.generate(blockData.get(0));
-			return new BlockLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()));
+			return new BlockLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
 		} else {
 			TokenQueue header = blockData.get(0);
 
@@ -54,7 +54,7 @@ public class BlockToken extends CollectionToken {
 					if (instructions.size() == 0) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()));
+						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
 					}
 				}
 				// Single number in header, create a dict factory with a capture
@@ -74,14 +74,14 @@ public class BlockToken extends CollectionToken {
 					if (n == 0 && instructions.isEmpty()) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()), n);
+						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions), n);
 					}
 				}
 				//Non-empty header, args and local variables
 				else {
 					InstructionStack main_instructions = Parser.generate(blockData.get(1));
 					Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = generateBlockHeader(blockData.get(0));
-					StaticBlock blk = new StaticBlock(main_instructions.getInstrucionList(), p.second(), p.first());
+					StaticBlock blk = BlockUtils.fromIS(main_instructions, p.second(), p.first());
 					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
 				}
 			} else {
@@ -202,7 +202,7 @@ public class BlockToken extends CollectionToken {
 					locals.set(var.getSymbol(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					captures.put(var.getSymbol(), new StaticBlock(lambda.generateInstructionsForFirst().getInstrucionList()));
+					captures.put(var.getSymbol(), BlockUtils.fromIS(lambda.generateInstructionsForFirst()));
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {

@@ -23,7 +23,7 @@ public class BlockLiteralInstruction extends Instruction {
 	
 	public BlockLiteralInstruction(SourceStringRef source, StaticBlock b, HashMap<Symbol, StaticBlock> defaults) {
 		super(source);
-		if (defaults.size() == 0) _defaults = null;
+		if (defaults != null && defaults.size() == 0) _defaults = null;
 		_block = b;
 		_defaults = defaults;
 		_auto_eval = false;

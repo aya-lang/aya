@@ -8,7 +8,7 @@ import aya.instruction.InstructionStack;
 import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.StringLiteralInstruction;
 import aya.instruction.variable.GetVariableInstruction;
-import aya.obj.block.StaticBlock;
+import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
@@ -126,7 +126,7 @@ public class StringToken extends StdToken {
 					
 					//Add the block
 					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()) , Aya.getInstance());
-					instrs.insert(0, new StaticBlock(is.getInstrucionList()));
+					instrs.insert(0, BlockUtils.fromIS(is));
 					
 				}
 				

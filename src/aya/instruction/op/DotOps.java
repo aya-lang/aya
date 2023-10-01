@@ -41,7 +41,6 @@ import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
 import aya.instruction.DataInstruction;
-import aya.instruction.Instruction;
 import aya.instruction.ListBuilderInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -381,7 +380,7 @@ class OP_Dot_And extends Operator {
 		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
-			StaticBlock initial = new StaticBlock(new ArrayList<Instruction>());
+			StaticBlock initial = StaticBlock.EMPTY;
 			BlockUtils.addObjToStack(initial, c);
 			BlockUtils.addObjToStack(initial, b);
 			ListBuilderInstruction lb = new ListBuilderInstruction(null, initial, asStaticBlock(a), null, 0);

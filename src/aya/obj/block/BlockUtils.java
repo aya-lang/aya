@@ -76,8 +76,8 @@ public class BlockUtils {
 			// Header
 			if (locals != null) {
 				// Args
-				for (int i = args.size()-1; i >= 0; i--) {
-					stream.print(args.get(i).toString());
+				for (Assignment arg : args) {
+					stream.print(arg.toString());
 					stream.print(" ");
 				}
 				
@@ -108,9 +108,10 @@ public class BlockUtils {
 				stream.delTrailingSpaces();
 				stream.print(",");
 			}
-
-			for(Instruction i : block.getInstructions()) {
-				i.repr(stream);
+			
+			ArrayList<Instruction> is = block.getInstructions();
+			for(int i = is.size() - 1; i >= 0; i--) {
+				is.get(i).repr(stream);
 				stream.print(" ");
 			}
 
@@ -141,7 +142,17 @@ public class BlockUtils {
 	}
 	
 	public static StaticBlock fromIS(InstructionStack is) {
-		return new StaticBlock(is.getInstrucionList());
+		return fromIS(is, null, null);
+	}
+
+	public static StaticBlock fromIS(InstructionStack is, Dict locals, ArrayList<Assignment> args) {
+		ArrayList<Instruction> instructions = is.getInstrucionList();
+		ArrayList<Instruction> block_instructions = new ArrayList<Instruction>();
+		//for (int i = instructions.size()-1; i >= 0; i--) {
+		//	block_instructions.add(instructions.get(i));
+		//}
+		block_instructions.addAll(instructions); // copy
+		return new StaticBlock(block_instructions, locals, args);
 	}
 	
 	public static StaticBlock stripHeader(StaticBlock block) {
@@ -293,4 +304,5 @@ public class BlockUtils {
 			}
 		}
 	}
+
 }
