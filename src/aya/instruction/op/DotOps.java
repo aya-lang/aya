@@ -498,7 +498,7 @@ class OP_Dot_Plus extends Operator {
 			StaticBlock blk = asStaticBlock(b);
 			// Constant capture from dict
 			if (a.isa(DICT)) {
-				Dict.assignVarValues((Dict)a, blk);
+				blk = BlockUtils.assignVarValues(Casting.asDict(a), blk);
 			}
 			// Constant capture from scope
 			else if (a.isa(SYMBOL)) {

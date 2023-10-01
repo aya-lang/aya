@@ -1,6 +1,5 @@
 package aya.obj.list;
 
-import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
@@ -366,7 +365,7 @@ public class List extends Obj {
 		Block b = new Block();
 		for (int i = 0; i < len; i++) {
 			b.push(obj);
-			b.addAll(expr.getInstructions().getInstrucionList());
+			b.dump(expr);
 			b.add(new DataInstruction(getExact(i)));
 			b.eval();
 			out.addAll(b.getStack());
@@ -401,15 +400,15 @@ public class List extends Obj {
 	/**
 	 * Filter a list using the block
 	 * 
-	 * @param block
+	 * @param staticBlock
 	 * @param list
 	 * @return
 	 */
-	public List filter(Block block, Obj dflt) {
+	public List filter(StaticBlock staticBlock, Obj dflt) {
 		ArrayList<Obj> out = new ArrayList<Obj>(length());
 		Block b = new Block();
 		for (int i = 0; i < length(); i++) {
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.dump(staticBlock);
 			b.add(new DataInstruction(getExact(i)));
 			b.eval();
 			if(b.peek().bool()) {
@@ -428,12 +427,12 @@ public class List extends Obj {
 	 * @param list
 	 * @return
 	 */
-	public boolean[] filterIndex(Block block) {
+	public boolean[] filterIndex(StaticBlock staticBlock) {
 		final int len = length();
 		boolean[] out = new boolean[len];
 		Block b = new Block();
 		for (int i = 0; i < len; i++) {
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.dump(staticBlock);
 			b.add(new DataInstruction(getExact(i)));
 			b.eval();
 			out[i] = b.peek().bool();
@@ -632,7 +631,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter((Block)index);
+			return filter(Casting.asStaticBlock(index));
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -664,7 +663,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter((Block)index, dflt);
+			return filter(Casting.asStaticBlock(index), dflt);
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -886,7 +885,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			boolean[] truthIdxs = filterIndex(asBlock(index));
+			boolean[] truthIdxs = filterIndex(Casting.asStaticBlock(index));
 			for (int i = 0; i < length(); i++) {
 				if (truthIdxs[i]) {
 					mutSetExact(i, item);
