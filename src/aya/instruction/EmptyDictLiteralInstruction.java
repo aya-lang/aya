@@ -3,7 +3,6 @@ package aya.instruction;
 import java.util.Queue;
 
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 

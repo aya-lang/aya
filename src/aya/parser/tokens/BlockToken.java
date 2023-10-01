@@ -10,21 +10,23 @@ import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
-import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.instruction.variable.assignment.SimpleAssignment;
 import aya.instruction.variable.assignment.TypedAssignment;
 import aya.instruction.variable.assignment.UnpackAssignment;
 import aya.obj.Obj;
-import aya.obj.block.Block;
-import aya.obj.block.BlockHeader;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
+import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
 import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
+import aya.util.Triple;
 
 public class BlockToken extends CollectionToken {
 	
@@ -40,19 +42,19 @@ public class BlockToken extends CollectionToken {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
-			return new BlockLiteralInstruction(this.getSourceStringRef(), new Block(Parser.generate(blockData.get(0))));
+			InstructionStack instructions = Parser.generate(blockData.get(0));
+			return new BlockLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()));
 		} else {
 			TokenQueue header = blockData.get(0);
 
 			if (blockData.size() == 2) {
 				//Empty header, dict literal
 				if (!header.hasNext()) {
-					Block b = new Block();
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-					if (b.isEmpty()) {
+					InstructionStack instructions = Parser.generate(blockData.get(1));
+					if (instructions.size() == 0) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(this.getSourceStringRef(), b);
+						return new DictLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()));
 					}
 				}
 				// Single number in header, create a dict factory with a capture
@@ -68,24 +70,19 @@ public class BlockToken extends CollectionToken {
 					if (n < 1) {
 						throw new SyntaxError("Cannot capture less than 1 elements from outer stack in a dict literal", nt.getSourceStringRef());
 					}
-					Block b = new Block();
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-					if (n == 0 && b.isEmpty()) {
+					InstructionStack instructions = Parser.generate(blockData.get(1));
+					if (n == 0 && instructions.isEmpty()) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(this.getSourceStringRef(), b, n);
+						return new DictLiteralInstruction(this.getSourceStringRef(), new StaticBlock(instructions.getInstrucionList()), n);
 					}
 				}
 				//Non-empty header, args and local variables
 				else {
-					Block b = new Block();
-					b.add(PopVarFlagInstruction.INSTANCE);
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-					Pair<BlockHeader, HashMap<Symbol, Block>> p = generateBlockHeader(blockData.get(0));
-					BlockHeader block_header = p.first();
-					HashMap<Symbol, Block> captures = p.second();
-					b.add(block_header);
-					return new BlockLiteralInstruction(this.getSourceStringRef(), b, captures);
+					InstructionStack main_instructions = Parser.generate(blockData.get(1));
+					Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = generateBlockHeader(blockData.get(0));
+					StaticBlock blk = new StaticBlock(main_instructions.getInstrucionList(), p.second(), p.first());
+					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
 				}
 			} else {
 				throw new SyntaxError("Block contains too many parts", getSourceStringRef());
@@ -93,25 +90,35 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
-	private Pair<BlockHeader, HashMap<Symbol, Block>> generateBlockHeader(TokenQueue tokens) throws ParserException {
-		BlockHeader header = new BlockHeader(this.getSourceStringRef());
-		
+	// args, locals, captures
+	private Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> generateBlockHeader(TokenQueue tokens) throws ParserException {
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
-		TokenQueue default_tokens = split_tokens.second();
-		HashMap<Symbol, Block> captures = new HashMap<Symbol, Block>();
+		TokenQueue locals_and_captures_tokens = split_tokens.second();
 	
-		generateBlockHeaderArgs(header, arg_tokens);
-		generateBlockHeaderDefaults(header, default_tokens, captures);
+		// Args
+		ArrayList<Assignment> args = generateBlockHeaderArgs(arg_tokens);
+
+		// Locals & Captures
+		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens);
+		Dict locals = locals_and_captures.first();
+		HashMap<Symbol, StaticBlock> captures = locals_and_captures.second();
 		
-		return new Pair<BlockHeader, HashMap<Symbol, Block>>(header, captures);
+		// Null checks
+		if (args.size() == 0) args = null;
+		if (locals.size() == 0) locals = null;
+		if (captures.size() == 0) captures = null;
+
+		return new Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>>(args, locals, captures);
 	}
 	
-	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
+	private static ArrayList<Assignment> generateBlockHeaderArgs(TokenQueue tokens) throws ParserException {
+		ArrayList<Assignment> out = new ArrayList<Assignment>();
 		while (tokens.hasNext()) {
 			Assignment arg = nextArg(tokens);
-			header.addArg(arg);
+			out.add(arg);
 		}
+		return out;
 	}
 	
 	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError {
@@ -183,37 +190,41 @@ public class BlockToken extends CollectionToken {
 	/** Assumes args have already been set 
 	 * @param captures 
 	 * @throws ParserException */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, HashMap<Symbol, Block> captures) throws ParserException {
-		String orig = tokens.toString();
+	private static Pair<Dict, HashMap<Symbol, StaticBlock>> generateBlockHeaderDefaults(TokenQueue tokens) throws ParserException {
+		Dict locals = new Dict();
+		HashMap<Symbol, StaticBlock> captures = new HashMap<Symbol, StaticBlock>();
+
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
 			if (current.isa(VAR)) {
 				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					header.addDefault(var.getSymbol(), Num.ZERO);
+					locals.set(var.getSymbol(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					captures.put(var.getSymbol(), new Block(lambda.generateInstructionsForFirst()));
+					captures.put(var.getSymbol(), new StaticBlock(lambda.generateInstructionsForFirst().getInstrucionList()));
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
-						Block b = new Block();
-						b.add(new QuoteGetVariableInstruction(current.getSourceStringRef(), var.getSymbol()));
+						Instruction i = new QuoteGetVariableInstruction(current.getSourceStringRef(), var.getSymbol());
+						StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(i);
 						captures.put(var.getSymbol(), b);
 					} else {
-						generateBlockHeaderDefaultsError(orig, current.getSourceStringRef());
+						generateBlockHeaderDefaultsError(current.getSourceStringRef());
 					}
 				} else {
-					generateBlockHeaderDefaultsError(orig, current.getSourceStringRef());
+					generateBlockHeaderDefaultsError(current.getSourceStringRef());
 				}
 			} else {
-				generateBlockHeaderDefaultsError(orig, current.getSourceStringRef());
+				generateBlockHeaderDefaultsError(current.getSourceStringRef());
 			}
 		}
+		
+		return new Pair<Dict, HashMap<Symbol, StaticBlock>>(locals, captures);
 	}
 	
-	private static void generateBlockHeaderDefaultsError(String orig, SourceStringRef source) throws SyntaxError {
-		throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig, source);
+	private static void generateBlockHeaderDefaultsError(SourceStringRef source) throws SyntaxError {
+		throw new SyntaxError("All variable initializers should follow the format name()", source);
 	}
 		
 	

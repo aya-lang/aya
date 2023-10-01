@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import aya.ReprStream;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -116,5 +117,9 @@ public class BlockUtils {
 		ArrayList<Instruction> is = new ArrayList<Instruction>();
 		is.add(i);
 		return new StaticBlock(is);
+	}
+	
+	public static StaticBlock fromIS(InstructionStack is) {
+		return new StaticBlock(is.getInstrucionList());
 	}
 }
