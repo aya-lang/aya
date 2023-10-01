@@ -10,6 +10,7 @@ import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
@@ -425,11 +426,11 @@ public class Dict extends Obj {
 	/** Given a block, swap all references to variables defined in the dict
 	 * with the values corresponding to the keys in the dict.
 	 * @param d
-	 * @param b
+	 * @param blk
 	 */
-	public static void assignVarValues(Dict d, Block b) {
-		for (Pair<Symbol, Obj> pair : d.getAllVars()) {
-			b.getInstructions().assignVarValue(pair.first(), pair.second());
+	public static void assignVarValues(Dict d, StaticBlock blk) {
+		for (Pair<Symbol, Obj> pair : d.items()) {
+			blk.getInstructions().assignVarValue(pair.first(), pair.second());
 		}
 	}
 
@@ -456,17 +457,6 @@ public class Dict extends Obj {
 	
 
 
-	/** Return all variables as a list of pairs */
-	private ArrayList<Pair<Symbol, Obj>> getAllVars() {
-		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
-		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
-	    while (it.hasNext()) {
-	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
-	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
-	    }
-	    return out;
-	}
-	
 	private HashMap<Symbol, Obj> deepcopyHashMap() {
 		// Copy the hash map
 		HashMap<Symbol, Obj> vars_copy = new HashMap<Symbol, Obj>();

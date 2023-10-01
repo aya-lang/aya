@@ -8,12 +8,12 @@ import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
@@ -40,13 +40,13 @@ import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
+import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.ListBuilderInstruction;
-import aya.instruction.variable.VariableInstruction;
-import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.block.BlockHeader;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
@@ -250,7 +250,7 @@ class OP_Dot_Bang extends Operator {
 				return n;
 			}
 		} else if (a.isa(BLOCK)) {
-			return ((Block)a).duplicateNoHeader();
+			return BlockUtils.stripHeader(Casting.asStaticBlock(a));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -381,10 +381,10 @@ class OP_Dot_And extends Operator {
 		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
-			Block initial = new Block();
-			initial.push(c);
-			initial.push(b);
-			ListBuilderInstruction lb = new ListBuilderInstruction(null, initial, (Block)a, null, 0);
+			StaticBlock initial = new StaticBlock(new ArrayList<Instruction>());
+			BlockUtils.addObjToStack(initial, c);
+			BlockUtils.addObjToStack(initial, b);
+			ListBuilderInstruction lb = new ListBuilderInstruction(null, initial, asStaticBlock(a), null, 0);
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);
@@ -462,19 +462,9 @@ class OP_Dot_Star extends Operator {
 		final Obj a = block.pop();
 
 		if (a.isa(LIST)) {
-			List l = asList(a);
-			Block b = new Block();
-			for (int i = 0; i < l.length(); i++) {
-				final Obj k = l.getExact(i);
-				if (k.isa(BLOCK)) {
-					b.addBlockBack((Block)k);
-				} else {
-					b.addBack(k);
-				}
-			}
-			block.push(b);
+			block.push(BlockUtils.fromList(asList(a)));
 		} else if (a.isa(BLOCK)) {
-			block.push(asBlock(a).split());
+			block.push(BlockUtils.split(asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -494,18 +484,7 @@ class OP_Dot_Plus extends Operator {
 		arg("DD", "update D1 with the values from D2 (modify D1)");
 	}
 
-	private Block capture(Block b, Symbol s) {
-		Obj o = Aya.getInstance().getVars().getVar(s);
-		BlockHeader bh = b.getHeader();
-		Block dup;
-		if (bh == null) {
-			dup = b.duplicate();
-		} else {
-			dup = b.duplicateNewHeader(bh.copy());
-		}
-		dup.getInstructions().assignVarValue(s, o);
-		return dup;
-	}
+
 
 	@Override
 	public void execute(Block block) {
@@ -516,14 +495,14 @@ class OP_Dot_Plus extends Operator {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.gcd((Number)a, (Number)b));
 		} else if (b.isa(BLOCK)) {
-			Block blk = (Block)(b.deepcopy());
+			StaticBlock blk = asStaticBlock(b);
 			// Constant capture from dict
 			if (a.isa(DICT)) {
 				Dict.assignVarValues((Dict)a, blk);
 			}
 			// Constant capture from scope
 			else if (a.isa(SYMBOL)) {
-				blk = capture(blk, (Symbol)a);
+				blk = BlockUtils.capture(blk, (Symbol)a);
 			}
 			// Constant capture from scope (list)
 			else if (a.isa(LIST)) {
@@ -531,7 +510,7 @@ class OP_Dot_Plus extends Operator {
 				for (int i = 0; i < l.length(); i++) {
 					final Obj s = l.getExact(i);
 					if (s.isa(SYMBOL)) {
-						blk = capture(blk, (Symbol)s);
+						blk = BlockUtils.capture(blk, (Symbol)s);
 					} else {
 						throw new ValueError(".+ Expected list of symbols. Got:\n" + a.repr());
 					}
@@ -792,13 +771,13 @@ class OP_Dot_Conditional extends Operator {
 
 		if(c.bool()) {
 			if(b.isa(BLOCK)) {
-				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
+				block.dump(asStaticBlock(b));
 			} else {
 				block.push(b);
 			}
 		} else {
 			if(a.isa(BLOCK)) {
-				block.addAll(((Block)a).duplicate().getInstructions().getInstrucionList());
+				block.dump(asStaticBlock(a));
 			} else {
 				block.push(a);
 			}
@@ -896,7 +875,7 @@ class OP_Dot_SortUsing extends Operator {
 			block.push(NumberMath.bxor((Number)a, (Number)b));
 		}
 		else if (a.isa(BLOCK) && b.isa(LIST)) {
-			final Block blk = ((Block)a).duplicate();
+			final StaticBlock blk = asStaticBlock(a);
 			List objs = asList(b);
 			List key_obj = objs.map(blk);
 
@@ -1099,21 +1078,20 @@ class OP_Dot_TryCatch extends Operator {
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				Block b = ((Block)tryBlock).duplicate();
+				Block evaluator = new Block(asStaticBlock(tryBlock));
 				Aya.getInstance().getCallStack().setCheckpoint();
 				Aya.getInstance().getVars().setCheckpoint();
-				b.eval();
+				evaluator.eval();
 				Aya.getInstance().getCallStack().popCheckpoint();
 				Aya.getInstance().getVars().popCheckpoint();
-				block.appendToStack(b.getStack());
+				block.appendToStack(evaluator.getStack());
 			} catch (AyaRuntimeException e) {
 				Aya.getInstance().getCallStack().rollbackCheckpoint();
 				Aya.getInstance().getVars().rollbackCheckpoint();
-				Block b = ((Block)catchBlock).duplicate();
-				//b.push(Aya.exceptionToObj(e));
-				b.push(e.getDict());
-				b.eval();
-				block.appendToStack(b.getStack());
+				Block evaluator = new Block(asStaticBlock(catchBlock));
+				evaluator.push(e.getDict());
+				evaluator.eval();
+				block.appendToStack(evaluator.getStack());
 			} catch (Exception e2) {
 				// An actual bug
 				throw e2;
@@ -1163,10 +1141,10 @@ class OP_Dot_N extends Operator {
 
 			block.push(b); //Push the list
 
-			final Block blk = (Block)a;
+			final StaticBlock blk = asStaticBlock(a);
 			List l = asList(b);
 			for (int i = 0; i < l.length(); i++) {
-				Block cond = blk.duplicate();
+				Block cond = new Block(blk);
 				cond.push(l.getExact(i));
 				cond.eval();
 				Obj result = cond.pop();
@@ -1204,7 +1182,7 @@ class OP_Dot_O extends Operator {
 		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
 		
 		if (b.isa(BLOCK)) {
-			Block blk = asBlock(b).duplicate();
+			Block blk = new Block(asStaticBlock(b));
 			blk.push(a);
 			blk.eval();
 			return blk.pop();
@@ -1539,30 +1517,12 @@ class OP_Dot_Bar extends Operator {
 		if (a.isa(NUMBER)) {
 			return ((Number)a).abs();
 		} else if (a.isa(BLOCK)) {
-			return getBlockMeta((Block)a);
+			return BlockUtils.getBlockMeta(asStaticBlock(a));
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
 
-	private Dict getBlockMeta(Block b) {
-		Dict d = new Dict();
-		// Arg Names
-		final ArrayList<Assignment> args_and_types = b.getArgsAndTypes();
-
-		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (Assignment a : args_and_types) {
-			args_list.add(a.toDict());
-		}
-		Collections.reverse(args_list);
-		d.set(SymbolConstants.ARGS, new List(args_list));
-		final Dict vars = b.getLocals();
-		if (vars != null) {
-			d.set(SymbolConstants.LOCALS, vars);
-		}
-				
-		return d;
-	}
 }
 
 
@@ -1584,7 +1544,8 @@ class OP_Dot_Tilde extends Operator {
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				block.push( Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()) );
+				StaticBlock sb = BlockUtils.fromIS( Parser.compileIS(new SourceString(a.str(), "~"), Aya.getInstance()) );
+				block.push(sb);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}
@@ -1593,8 +1554,7 @@ class OP_Dot_Tilde extends Operator {
 		} else if (a.isa(SYMBOL)) {
 			Obj e = Aya.getInstance().getVars().getVar(asSymbol(a));
 			if (!e.isa(BLOCK)) {
-				Block b = new Block();
-				b.add(e);
+				StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(new DataInstruction(e));
 				block.push(b);
 			} else {
 				block.push(e);
@@ -1604,14 +1564,7 @@ class OP_Dot_Tilde extends Operator {
 			// Set all vars in the dict
 			Aya.getInstance().getVars().setVars(asDict(a));
 		} else if (a.isa(BLOCK)) {
-			Block b = Casting.asBlock(a);
-			Instruction i = b.getInstructions().pop();
-			if (i instanceof VariableInstruction) {
-				VariableInstruction v = (VariableInstruction)i;
-				block.push(v.getSymbol());
-			} else {
-				block.push(b);
-			}
+			block.push(BlockUtils.convertSingleVariableToSymbol(asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}

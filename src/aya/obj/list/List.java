@@ -360,13 +360,13 @@ public class List extends Obj {
 	 * Same as map but push 1 additional item to the stack (shallow copied)
 	 * Maps a block to a list and returns the new list. The block is not effected
 	 */
-	public List map1arg(Block block, Obj obj) {
+	public List map1arg(StaticBlock expr, Obj obj) {
 		int len = length();
 		ArrayList<Obj> out = new ArrayList<Obj>(len);
 		Block b = new Block();
 		for (int i = 0; i < len; i++) {
 			b.push(obj);
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.addAll(expr.getInstructions().getInstrucionList());
 			b.add(new DataInstruction(getExact(i)));
 			b.eval();
 			out.addAll(b.getStack());

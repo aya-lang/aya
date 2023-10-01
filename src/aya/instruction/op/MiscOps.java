@@ -15,10 +15,9 @@ import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.Instruction;
-import aya.instruction.InstructionStack;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -269,18 +268,7 @@ class OP_Help extends Operator {
 		} else if (s.isa(NUMBER)) {
 			block.push(new List(OpDocReader.getAllOpDicts()));
 		} else if (s.isa(BLOCK)) {
-			InstructionStack instructions = ((Block)s).getInstructions();
-			if (instructions.isEmpty()) {
-				throw new ValueError("Empty block");
-			} else {
-				Instruction i = instructions.pop();
-				if (i instanceof OperatorInstruction) {
-					Operator op = ((OperatorInstruction)i).getOperator();
-					block.push(op.getDoc().toDict());
-				} else {
-					throw new ValueError("No doc found for " + s.str());
-				}
-			}
+			block.push(BlockUtils.getHelpDataForOperator(Casting.asStaticBlock(s)));
 		}
 		else {
 			throw new TypeError(this, s);
@@ -501,8 +489,7 @@ class OP_Mb extends Operator {
 		if (a.isa(Obj.SYMBOL)) {
 			block.push(Num.fromBool(Aya.getInstance().getVars().isDefined(Casting.asSymbol(a))));
 		} else if (a.isa(BLOCK)) {
-			Block b = (Block)a;
-			block.push(b.duplicateAddLocals());
+			block.push(BlockUtils.addLocals(Casting.asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}

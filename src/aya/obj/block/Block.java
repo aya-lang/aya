@@ -259,7 +259,6 @@ public class Block {
 	/** Adds an item to the back of the instruction stack. (opposite of add()) */
 	public void addBack(Obj b) {
 		instructions.insert(0, new DataInstruction(b));
-		
 	}
 	
 	/** Adds a stack to this block. Reverses the stack before adding */

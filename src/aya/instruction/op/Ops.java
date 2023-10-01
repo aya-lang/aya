@@ -8,7 +8,7 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-import static aya.util.Casting.asBlock;
+import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
@@ -43,6 +43,8 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
@@ -61,6 +63,7 @@ import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
+import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
 import aya.util.VectorizedFunctions;
@@ -249,13 +252,14 @@ class OP_Pound extends Operator {
 		final Obj a = block.pop();
 		
 		if(a.isa(Obj.BLOCK)) {
-			final Block map = ((Block)a).duplicate();
+			//final Block map = ((Block)a).duplicate();
+			StaticBlock map = Casting.asStaticBlock(a);
 						
 			Obj popped = block.pop();
 			
 			//Capture all non-list items from the left of the #
 			while (!popped.isa(Obj.LIST)) {
-				map.add(popped);
+				map = BlockUtils.addObjToStack(map, popped);
 				
 				if (block.stackEmpty()) {
 					throw new ValueError("Could not find list to map to\n"
@@ -303,12 +307,12 @@ class OP_Percent extends Operator {
 		final Obj a = block.pop();
 	
 		if (a.isa(LIST) && b.isa(BLOCK)) {
-			fold(asList(a), asBlock(b), block);
+			fold(asList(a), asStaticBlock(b), block);
 		} else if (a.isa(BLOCK) && b.isa(NUMBER)) {
 			int repeats = ((Number)(b)).toInt();
-			Block blk = ((Block)a);
+			StaticBlock blk = asStaticBlock(a);
 			for (int i = 0; i < repeats; i ++) {
-				block.addAll(blk.getInstructions().getInstrucionList());
+				block.dump(blk);
 			}
 			return;
 		} else if (a.isa(LIST) && ((b.isa(STR) || b.isa(CHAR)))) {
@@ -328,7 +332,7 @@ class OP_Percent extends Operator {
 		return sb.toString();
 	}
 
-	private static void fold(List list, Block foldBlock, Block resultBlock) {
+	private static void fold(List list, StaticBlock foldBlock, Block resultBlock) {
 		int length = list.length();
 		if(length == 0) {
 			resultBlock.push(Num.ZERO);
@@ -336,7 +340,7 @@ class OP_Percent extends Operator {
 			//Push all but the last item
 			//for(int i = 0; i < list.size()-1; i++) {
 			for(int i = length-1; i > 0; i--) {
-				resultBlock.addAll(foldBlock.getInstructions().getInstrucionList());
+				resultBlock.dump(foldBlock);
 				resultBlock.add(list.getExact(i));
 			}
 			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
@@ -726,7 +730,7 @@ class OP_Conditional extends Operator {
 
 		if(b.bool()) {			
 			if(a.isa(BLOCK)) {
-				block.addAll(((Block)a).duplicate().getInstructions().getInstrucionList());
+				block.dump(asStaticBlock(a));
 			} else {
 				block.push(a);
 			}
@@ -1202,15 +1206,15 @@ class OP_O extends Operator {
 		// Repeat
 		if (blk_obj.isa(NUMBER) && container.isa(BLOCK)) {
 			int repeats = ((Number)(blk_obj)).toInt();
-			Block blk = ((Block)container);
+			StaticBlock blk = asStaticBlock(container);
 			for (int i = 0; i < repeats; i ++) {
-				block.addAll(blk.getInstructions().getInstrucionList());
+				block.dump(blk);
 			}
 			return;
 		} else {
-			Block blk = null;
+			StaticBlock blk = null;
 			try {
-				blk = (Block)blk_obj;
+				blk = asStaticBlock(blk_obj);
 			} catch (ClassCastException e) {
 				throw new TypeError(this, blk_obj, container);
 			}
@@ -1223,7 +1227,7 @@ class OP_O extends Operator {
 					block.push(blk);
 					block.callVariable(d, SymbolConstants.KEYVAR_EACH);
 				} else {
-					block.push(DictIndexing.map((Dict)container, (Block)blk));
+					block.push(DictIndexing.map((Dict)container, asStaticBlock(blk)));
 				}
 			} else {
 				throw new TypeError(this, blk_obj, container);
@@ -1472,14 +1476,14 @@ class OP_W extends Operator {
 		if (a.isa(LIST)) {
 			block.push(sum(asList(a)));
 		} else if (a.isa(Obj.BLOCK)) {
-			Block blk = ((Block)(a)).duplicate();
+			StaticBlock blk = asStaticBlock(a);
 			Block state = new Block();
 			state.setStack((Stack<Obj>)block.getStack().clone());
 			
 			boolean condition = false;
 			
 			do {
-				state.addAll(blk.getInstructions().getInstrucionList());
+				state.dump(blk);
 				state.eval();
 				
 				final Obj cond = state.pop();
@@ -1711,7 +1715,7 @@ class OP_Tilde extends Operator {
 		final Obj a = block.pop();
 		
 		if(a.isa(BLOCK)) {
-			block.addAll(((Block)(a)).getInstructions().getInstrucionList());
+			block.dump(asStaticBlock(a));
 		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
 				block.addAll(Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()).getInstructions().getInstrucionList());
