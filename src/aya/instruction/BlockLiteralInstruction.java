@@ -46,6 +46,7 @@ public class BlockLiteralInstruction extends Instruction {
 	public void execute(Block b) {
 		StaticBlock blk = _block;
 
+		// If there are defaults, evaluate them and push a new block
 		if (_defaults != null) {
 			Dict defaults = new Dict();
 			for (Symbol var : _defaults.keySet()) {

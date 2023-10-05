@@ -44,7 +44,7 @@ public class Block {
 	}
 	
 	public Block(StaticBlock b) {
-		super();
+		this();
 		this.dump(b);
 	}
 

@@ -76,9 +76,11 @@ public class BlockUtils {
 			// Header
 			if (locals != null) {
 				// Args
-				for (Assignment arg : args) {
-					stream.print(arg.toString());
-					stream.print(" ");
+				if (args != null) {
+					for (Assignment arg : args) {
+						stream.print(arg.toString());
+						stream.print(" ");
+					}
 				}
 				
 				// Non-arg locals
@@ -195,12 +197,17 @@ public class BlockUtils {
 	public static Dict getBlockMeta(StaticBlock b) {
 		Dict d = new Dict();
 
-		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (Assignment a : b.getArgs()) {
-			args_list.add(a.toDict());
+		ArrayList<Assignment> args = b.getArgs();
+		if (args != null) {
+			ArrayList<Obj> args_list = new ArrayList<Obj>();
+			for (Assignment a : b.getArgs()) {
+				args_list.add(a.toDict());
+			}
+			d.set(SymbolConstants.ARGS, new List(args_list));
+		} else {
+			d.set(SymbolConstants.ARGS, new List());
 		}
-		Collections.reverse(args_list);
-		d.set(SymbolConstants.ARGS, new List(args_list));
+			
 		final Dict vars = copyLocals(b);
 		if (vars != null) {
 			d.set(SymbolConstants.LOCALS, vars);
@@ -229,8 +236,10 @@ public class BlockUtils {
 		for (int i = 0; i < l.length(); i++) {
 			final Obj k = l.getExact(i);
 			if (k.isa(Obj.BLOCK)) {
-				for (Instruction j : Casting.asStaticBlock(k).getInstructions()) {
-					is.add(0, j);
+				// Add these in reverse
+				ArrayList<Instruction> blk_is = Casting.asStaticBlock(k).getInstructions();
+				for (int j = blk_is.size()-1; j >= 0; j--) {
+					is.add(0, blk_is.get(j));
 				}
 			} else {
 				is.add(0, new DataInstruction(k));
