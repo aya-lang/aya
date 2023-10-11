@@ -43,11 +43,6 @@ public class Block {
 		this.instructions = il;
 	}
 	
-	public Block(StaticBlock b) {
-		this();
-		this.dump(b);
-	}
-
 	/** Returns the output stack */
 	public Stack<Obj> getStack() {
 		return this.stack;
@@ -162,8 +157,9 @@ public class Block {
 				EmptyStackError es2 = new EmptyStackError("Unexpected empty stack while executing instruction: " + instr);
 				es2.setSource(instr.getSource());
 				throw es2;
-			} catch (NullPointerException npe) {
-				throw new RuntimeException(npe);
+			//}// catch (NullPointerException npe) {
+			//	throw npe;
+			//	throw new RuntimeException(npe);
 			} catch (AyaRuntimeException are) {
 				are.setSource(instr.getSource());
 				throw are;

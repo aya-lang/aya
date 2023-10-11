@@ -15,6 +15,13 @@
         aya> ::"Ms" .op
         Error
     .}
+    {sym, 
+        ::ops Ma
+        .# filter out items where the symbol doesn't match
+        :# {k v, v.overload sym H {v}?}
+        .# Grab the `call` block
+        :V.[0].call.`
+    }:op;
 
     .# Get a dict of all operator/symbol pairs
     {,

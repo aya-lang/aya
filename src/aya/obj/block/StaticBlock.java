@@ -2,7 +2,6 @@ package aya.obj.block;
 
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
@@ -17,6 +16,7 @@ public class StaticBlock extends Obj {
 	private Dict _locals;
 	private ArrayList<Instruction> _instructions;
 	private ArrayList<Assignment> _args;
+	private NewLocalsInstruction _new_locals_instruction;
 	
 	protected StaticBlock(ArrayList<Instruction> instructions, Dict locals, ArrayList<Assignment> args) {
 		// If args is empty, just use null
@@ -30,6 +30,12 @@ public class StaticBlock extends Obj {
 		if (_args != null && _locals == null) {
 			_locals = new Dict();
 		}
+		
+		if (_locals == null) {
+			_new_locals_instruction = null;
+		} else {
+			_new_locals_instruction = new NewLocalsInstruction(_locals, _args);
+		}
 	}
 
 	protected StaticBlock(ArrayList<Instruction> instructions) {
@@ -38,23 +44,10 @@ public class StaticBlock extends Obj {
 	
 	public void dumpToBlockEvaluator(Block b) {
 		if (_locals != null) {
-			Dict locals = _locals.clone();
-
-			if (_args != null) {
-				// Assign in reverse order
-				// aya> 1 2 3 {a b c, a b}
-				// 1 2
-				for (int i = _args.size()-1; i >= 0; i--) {
-					_args.get(i).assign(locals, b.pop());
-				}	
-			}
-
-			// Add a new variable frame to the variable stack
-			Aya.getInstance().getVars().add(locals);
 			// Pop the variable frame when the block is done
 			b.add(PopVarFlagInstruction.INSTANCE);
-			
 			b.addAll(_instructions);
+			b.add(_new_locals_instruction);
 		} else {
 			b.addAll(_instructions);
 		}

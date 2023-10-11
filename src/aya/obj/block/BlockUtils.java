@@ -2,7 +2,6 @@ package aya.obj.block;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 import aya.Aya;
@@ -164,8 +163,8 @@ public class BlockUtils {
 	// Not optimized, should refactor later
 	public static StaticBlock addObjToStack(StaticBlock block, Obj o) {
 		ArrayList<Instruction> is = new ArrayList<Instruction>();
-		is.add(new DataInstruction(o));
 		is.addAll(block.getInstructions());
+		is.add(new DataInstruction(o));
 		return replaceInstructions(block, is);
 	}
 	
@@ -175,8 +174,7 @@ public class BlockUtils {
 
 
 	public static StaticBlock assignVarValues(Dict d, StaticBlock blk) {
-		ArrayList<Instruction> new_is = new ArrayList<Instruction>();
-		Collections.copy(blk.getInstructions(), new_is);
+		ArrayList<Instruction> new_is = new ArrayList<Instruction>(blk.getInstructions());
 
 		for (Pair<Symbol, Obj> pair : d.items()) {
 			Symbol var = pair.first();

@@ -380,10 +380,10 @@ class OP_Dot_And extends Operator {
 		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
-			StaticBlock initial = StaticBlock.EMPTY;
-			BlockUtils.addObjToStack(initial, c);
-			BlockUtils.addObjToStack(initial, b);
-			ListBuilderInstruction lb = new ListBuilderInstruction(null, initial, asStaticBlock(a), null, 0);
+			StaticBlock zip_block = StaticBlock.EMPTY;
+			zip_block = BlockUtils.addObjToStack(zip_block, b);
+			zip_block = BlockUtils.addObjToStack(zip_block, c);
+			ListBuilderInstruction lb = new ListBuilderInstruction(null, zip_block, asStaticBlock(a), null, 0);
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);
@@ -1077,9 +1077,10 @@ class OP_Dot_TryCatch extends Operator {
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				Block evaluator = new Block(asStaticBlock(tryBlock));
+				Block evaluator = new Block();
 				Aya.getInstance().getCallStack().setCheckpoint();
 				Aya.getInstance().getVars().setCheckpoint();
+				evaluator.dump(asStaticBlock(tryBlock));
 				evaluator.eval();
 				Aya.getInstance().getCallStack().popCheckpoint();
 				Aya.getInstance().getVars().popCheckpoint();
@@ -1087,8 +1088,9 @@ class OP_Dot_TryCatch extends Operator {
 			} catch (AyaRuntimeException e) {
 				Aya.getInstance().getCallStack().rollbackCheckpoint();
 				Aya.getInstance().getVars().rollbackCheckpoint();
-				Block evaluator = new Block(asStaticBlock(catchBlock));
+				Block evaluator = new Block();
 				evaluator.push(e.getDict());
+				evaluator.dump(asStaticBlock(catchBlock));
 				evaluator.eval();
 				block.appendToStack(evaluator.getStack());
 			} catch (Exception e2) {
@@ -1143,8 +1145,9 @@ class OP_Dot_N extends Operator {
 			final StaticBlock blk = asStaticBlock(a);
 			List l = asList(b);
 			for (int i = 0; i < l.length(); i++) {
-				Block cond = new Block(blk);
+				Block cond = new Block();
 				cond.push(l.getExact(i));
+				cond.dump(blk);
 				cond.eval();
 				Obj result = cond.pop();
 				if (result.bool()) {
@@ -1181,8 +1184,9 @@ class OP_Dot_O extends Operator {
 		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
 		
 		if (b.isa(BLOCK)) {
-			Block blk = new Block(asStaticBlock(b));
+			Block blk = new Block();
 			blk.push(a);
+			blk.dump(asStaticBlock(b));
 			blk.eval();
 			return blk.pop();
 		} else {

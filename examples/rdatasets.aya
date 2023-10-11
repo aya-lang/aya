@@ -9,16 +9,16 @@ import ::csv
 
     "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv":url;
 
-    {name::str,
+    {name::str : url^,
         "/" `in name {
             "$url/$name.csv"
         } {
             "$url/datasets/$name.csv"
         } .?
-    }.capture[::url]:make_url;
+    }:make_url;
 
-    {name::str,
+    {name::str : make_url^,
         name make_url csv.open
-    }.capture[::make_url]:load_csv;
+    }:load_csv;
 
 }:rdatasets;

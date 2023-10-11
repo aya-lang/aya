@@ -880,7 +880,7 @@ class OP_Colon_M extends Operator {
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
-		arg("BD", "duplicate block with the given metadata");
+		arg("BD", "update a copy of the block locals with the dict");
 	}
 
 	@Override
@@ -891,6 +891,9 @@ class OP_Colon_M extends Operator {
 		if(obj.isa(DICT) && meta.isa(DICT)) {
 			((Dict)obj).setMetaTable((Dict)meta);
 			block.push(obj);
+		} else if(obj.isa(BLOCK) && meta.isa(DICT)) {
+			StaticBlock new_block = BlockUtils.mergeLocals(Casting.asStaticBlock(obj), asDict(meta));
+			block.push(new_block);
 		} else {
 			throw new TypeError(this, meta, obj);
 		}
@@ -947,9 +950,10 @@ class OP_Colon_O extends Operator {
 			if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) {
 				return res;
 			} else {
-				Block blk = new Block(_block);
+				Block blk = new Block();
 				blk.push(a);
 				blk.push(b);
+				blk.dump(_block);
 				blk.eval();
 				return blk.pop();
 			}

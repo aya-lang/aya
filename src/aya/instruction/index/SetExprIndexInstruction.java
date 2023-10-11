@@ -16,7 +16,8 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 	}
 	
 	protected Obj getIndex() {
-		Block index = new Block(_index);
+		Block index = new Block();
+		index.dump(_index);
 		index.eval();
 		if (index.getStack().size() == 1) {
 			return index.getStack().pop();

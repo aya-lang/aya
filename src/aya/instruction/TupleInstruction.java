@@ -31,7 +31,8 @@ public class TupleInstruction extends Instruction {
 	public ArrayList<Obj> evalToResults() {
 		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
-			Block evaluator = new Block(elements[i]);
+			Block evaluator = new Block();
+			evaluator.dump(elements[i]);
 			try {
 				evaluator.eval();
 			} catch (EmptyStackException e) {

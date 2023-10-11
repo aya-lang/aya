@@ -45,12 +45,12 @@ public class DictLiteralInstruction extends Instruction {
 		
 		//Run the block
 		Block evaluator = new Block();
-		evaluator.dump(_block);
 		if (q != null) {
 			while (!q.isEmpty()) {
 				evaluator.push(q.poll());
 			}
 		}
+		evaluator.dump(_block);
 		evaluator.eval();
 		
 		//Retrieve the Dict

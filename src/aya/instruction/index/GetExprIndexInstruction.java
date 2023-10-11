@@ -26,7 +26,8 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 	}
 	
 	protected Obj getIndex() {
-		Block evaluator = new Block(_index);
+		Block evaluator = new Block();
+		evaluator.dump(_index);
 		evaluator.eval();
 		if (evaluator.getStack().size() == 1) {
 			return evaluator.getStack().pop();

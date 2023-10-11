@@ -30,7 +30,8 @@ public class ListBuilderInstruction extends Instruction {
 	}
 	
 	public List createList(Stack<Obj> outerStack) {
-		Block evaluator = new Block(initialList);
+		Block evaluator = new Block();
+		evaluator.dump(initialList);
 
 		for (int p = 0; p < num_captures; p++) {
 			evaluator.add(outerStack.pop());

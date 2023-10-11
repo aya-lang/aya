@@ -238,8 +238,9 @@ public class Dict extends Obj {
 			return true;
 		} else {
 			if (bool.isa(Obj.BLOCK)) {
-				Block blk_bool = new Block(Casting.asStaticBlock(bool));
+				Block blk_bool = new Block();
 				blk_bool.push(this);
+				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
 				Obj obj_res = blk_bool.pop();
 				return obj_res.bool();
@@ -267,8 +268,9 @@ public class Dict extends Obj {
 			return dictStr();
 		} else {
 			if (str.isa(Obj.BLOCK)) {
-				Block blk_str = new Block(Casting.asStaticBlock(str));
+				Block blk_str = new Block();
 				blk_str.push(this);
+				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
 				Obj obj_res = blk_str.pop();
 				return obj_res.str();
@@ -348,8 +350,9 @@ public class Dict extends Obj {
 
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
-				Block blk_repr = new Block(Casting.asStaticBlock(repr));
+				Block blk_repr = new Block();
 				blk_repr.push(this);
+				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {
 					blk_repr.eval();
 				} catch (AyaRuntimeException ex) {

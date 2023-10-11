@@ -42,7 +42,8 @@ public class InterpolateStringInstruction extends Instruction  {
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {
-					Block b = new Block(Casting.asStaticBlock(data));
+					Block b = new Block();
+					b.dump(Casting.asStaticBlock(data));
 					b.eval();
 					if (b.getStack().size() == 1) {
 						sb.append(b.getStack().pop().str());
