@@ -1,14 +1,6 @@
 .# This file is a part of aya: https://github.com/aya-lang/aya
 
 
-.# Load tests
-{f,
-    "Loading $f..." :P
-    [:{sys.ad} :9s "$f.aya"]W :F
-}:_load;
-
-"base/test" _load
-
 .# __aya__
 .# Defines the __aya__ namespace and keywords
 
