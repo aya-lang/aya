@@ -321,6 +321,11 @@ public class GenericList extends ListImpl {
 			}
 		}
 	}
+	
+	@Override
+	public List permutations() {
+		return Permutations.allPermutations(_list);
+	}
 
 	@Override
 	protected ListImpl flatten() {
