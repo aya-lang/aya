@@ -578,6 +578,8 @@ class OP_CastDouble extends Operator {
 			}
 		} else if (a.isa(NUM)) {
 			return a; // already a double
+		} else if (a.isa(CHAR)) {
+			return Num.fromInt(Casting.asChar(a).charValue() - '0');
 		} else if (a.isa(NUMBER)){
 			return new Num(((Number)a).toDouble());
 		} else {
