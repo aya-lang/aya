@@ -729,6 +729,10 @@ public class List extends Obj {
 		return _list.sameShapeNull();
 	}
 	
+	public List permutations() {
+		return _list.permutations();
+	}
+	
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////

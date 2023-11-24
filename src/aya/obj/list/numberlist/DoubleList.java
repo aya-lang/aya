@@ -11,6 +11,7 @@ import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
+import aya.obj.list.Permutations;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.util.Casting;
@@ -71,6 +72,12 @@ public class DoubleList extends NumberList {
 			out[i] = (double)bytes[i];
 		}
 		return new DoubleList(out);
+	}
+	
+	public static DoubleList copyOf(double[] elements) {
+		double[] list = new double[elements.length];
+		System.arraycopy(elements, 0, list, 0, elements.length);
+		return new DoubleList(list);
 	}
 
 	//////////////////////////
@@ -713,6 +720,11 @@ public class DoubleList extends NumberList {
 	@Override
 	protected ListImpl flatten() {
 		return copy();
+	}
+	
+	@Override
+	public List permutations() {
+		return Permutations.allPermutations(_list);
 	}
 	
 	@Override

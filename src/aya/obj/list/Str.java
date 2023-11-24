@@ -385,6 +385,11 @@ public class Str extends ListImpl implements Comparable<Str> {
 	public List sameShapeNull() {
 		return new List(new Str(' ', length()));
 	}
+	
+	@Override
+	public List permutations() {
+		return Permutations.allPermutations(_str.toCharArray());
+	}
 
 	@Override
 	protected ListImpl flatten() {
