@@ -2,7 +2,6 @@ package aya.obj.list;
 
 import java.util.ArrayList;
 
-import aya.ReprStream;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.numberlist.DoubleList;
