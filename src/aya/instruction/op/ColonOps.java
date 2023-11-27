@@ -1068,7 +1068,12 @@ class OP_Colon_O extends Operator {
 
 		if (c.isa(Obj.BLOCK)) {
 			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asBlock(c));
-			block.push(VectorizedFunctions.vectorize2arg(block_op, a, b));
+			final Obj result = VectorizedFunctions.vectorize2arg(block_op, a, b);
+			if (result == null) {
+				throw new ValueError("Cannot vectorize over args: " + a.repr() + ", " + b.repr());
+			} else {
+				block.push(result);
+			}
 		} else {
 			throw new TypeError(this, c, b, a);
 		}
