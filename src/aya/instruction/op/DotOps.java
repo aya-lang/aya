@@ -1422,7 +1422,7 @@ class OP_Dot_AppendBack extends Operator {
 
 
 // Z - 90
-class OP_Dot_Z extends OpInstruction {
+class OP_Dot_Z extends Operator {
 
 	public OP_Dot_Z() {
 		init(".Z");

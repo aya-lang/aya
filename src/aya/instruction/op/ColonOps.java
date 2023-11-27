@@ -1172,7 +1172,7 @@ class OP_Colon_Zed extends Operator {
 }
 
 // ^ - 94
-class OP_Colon_Carat extends OpInstruction {
+class OP_Colon_Carat extends Operator {
 	
 	public OP_Colon_Carat() {
 		init(":^");
