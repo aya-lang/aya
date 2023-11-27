@@ -34,8 +34,6 @@ import aya.instruction.Instruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.block.BlockHeader;
-import aya.obj.block.BlockHeaderArg;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -54,9 +52,7 @@ import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
-import aya.util.DictReader;
 import aya.util.FileUtils;
-import aya.util.Triple;
 import aya.util.VectorizedFunctions;
 
 
@@ -938,64 +934,8 @@ class OP_Colon_M extends Operator {
 		if(obj.isa(DICT) && meta.isa(DICT)) {
 			((Dict)obj).setMetaTable((Dict)meta);
 			block.push(obj);
-		} else if (obj.isa(BLOCK) && meta.isa(DICT)) {
-			block.push(makeBlockWithMeta((Block)obj, (Dict)meta));
 		} else {
 			throw new TypeError(this, meta, obj);
-		}
-	}
-
-	private Block makeBlockWithMeta(Block b, Dict meta) {
-		BlockHeader header = headerFromDict(meta);
-		return b.duplicateNewHeader(header);
-	}
-	
-	private BlockHeader headerFromDict(Dict meta) {
-		BlockHeader bh;
-
-		if (meta.containsKey(SymbolConstants.LOCALS)) {
-			Obj o = meta.get(SymbolConstants.LOCALS);
-			if (o.isa(DICT)) {
-				Dict locals = (Dict)o;
-				bh = new BlockHeader(null, locals);
-			} else {
-				throw new ValueError("::dict ::block .M:, key 'locals' must be a dict in " + meta.repr());
-			}
-		} else {
-			bh = new BlockHeader(null);
-		}
-		
-		// Args
-		if (meta.containsKey(SymbolConstants.ARGS)) {
-			Obj args = meta.get(SymbolConstants.ARGS);
-			if (args.isa(LIST)) {
-				List args_list = asList(args);
-				for (int i = 0; i < args_list.length(); i++) {
-					Triple<Symbol, Symbol, Boolean> info = argInfo(args_list.getExact(i));
-					bh.addArg(new BlockHeaderArg(info.first(), info.second(), info.third()));
-				}
-			} else {
-				throw new ValueError("::dict ::block .M:, key 'args' must be a list in " + meta.repr());
-			}
-		}
-		
-		return bh;
-	}
-		
-	private Triple<Symbol, Symbol, Boolean> argInfo(Obj obj) {
-		if (obj.isa(DICT)) {
-			Dict d = (Dict)obj;
-			DictReader dr = new DictReader(d);
-			dr.setErrorName("::dict ::block .M");
-			return new Triple<Symbol, Symbol, Boolean>(
-					dr.getSymbolEx(SymbolConstants.NAME),
-					dr.getSymbol(SymbolConstants.TYPE, SymbolConstants.ANY),
-					dr.getBool(SymbolConstants.COPY, false));
-			
-		} else if (obj.isa(SYMBOL)) {
-			return new Triple<Symbol, Symbol, Boolean>((Symbol)obj, SymbolConstants.ANY, false);
-		} else {
-			throw new ValueError("::dict ::block .M: key 'args' must be a list of dicts or symbols");
 		}
 	}
 }

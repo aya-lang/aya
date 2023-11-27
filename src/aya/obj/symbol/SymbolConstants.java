@@ -37,6 +37,7 @@ public class SymbolConstants {
 	public static final Symbol COLON	= S.getSymbol("colon");
 	public static final Symbol MISC		= S.getSymbol("misc");
 	public static final Symbol ARGS 	= S.getSymbol("args");
+	public static final Symbol ARG  	= S.getSymbol("arg");
 	public static final Symbol ARGTYPES = S.getSymbol("argtypes");
 	public static final Symbol LOCALS 	= S.getSymbol("locals");
 	public static final Symbol COPY 	= S.getSymbol("copy");
@@ -72,6 +73,11 @@ public class SymbolConstants {
 	public static final Symbol COL          = S.getSymbol("col");
 	public static final Symbol CONTEXT      = S.getSymbol("context");
 	public static final Symbol DATA         = S.getSymbol("data");
+	public static final Symbol SLURP        = S.getSymbol("slurp");
+	public static final Symbol UNPACK       = S.getSymbol("unpack");
+	public static final Symbol ARGTYPE      = S.getSymbol("argtype");
+	public static final Symbol SIMPLE       = S.getSymbol("simple");
+	public static final Symbol TYPED        = S.getSymbol("typed");
 
 	public static final Symbol KEYVAR_EQ		= S.getSymbol("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S.getSymbol("__new__");
@@ -112,4 +118,7 @@ public class SymbolConstants {
 	public static final Symbol RUNTIME_EXCEPTION    = S.getSymbol("runtime_exception");
 
 	public static final Symbol __CDICT__    = S.getSymbol("__cdict__");
+
+
+
 }

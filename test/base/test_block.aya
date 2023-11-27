@@ -20,8 +20,8 @@
 { {a b, }.haslocals 1 }
 
 { {a b$::str,}.args
-  [ {, 0:copy; ::a:name; ::any:type; }
-    {, 1:copy; ::b:name; ::str:type; } ] 
+  [ {, ::a:name; ::simple:argtype; }
+    {, 1:copy; ::b:name; ::str:type; ::typed:argtype; } ] 
 }
 
 { {}.makelocals .locals {,} }

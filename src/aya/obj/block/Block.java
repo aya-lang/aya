@@ -16,6 +16,7 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -142,18 +143,7 @@ public class Block extends Obj {
 		return flag instanceof PopVarFlagInstruction;
 	}
 	
-	/** Get a list of args for this block */
-	public ArrayList<Symbol> getArgs() {
-		ArrayList<Symbol> list = new ArrayList<>();
-		BlockHeader header = getHeader();
-		if (header != null) {
-			for (BlockHeaderArg arg : header.getArgs()) {
-				list.add(arg.var);
-			}
-		}
-		return list;
-	}
-	
+
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
 	public void eval() {
 		while (!instructions.isEmpty()) {
@@ -312,12 +302,12 @@ public class Block extends Obj {
 
 	
 	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<BlockHeaderArg> getArgsAndTypes() {
+	public ArrayList<Assignment> getArgsAndTypes() {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			return header.getArgs();
 		} else {
-			return new ArrayList<BlockHeaderArg>();
+			return new ArrayList<Assignment>();
 		}
 	}
 

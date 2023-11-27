@@ -43,10 +43,10 @@ import aya.ext.dialog.QuickDialog;
 import aya.instruction.Instruction;
 import aya.instruction.ListBuilderInstruction;
 import aya.instruction.variable.VariableInstruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.block.BlockHeader;
-import aya.obj.block.BlockHeaderArg;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
@@ -1569,15 +1569,11 @@ class OP_Dot_Bar extends Operator {
 	private Dict getBlockMeta(Block b) {
 		Dict d = new Dict();
 		// Arg Names
-		final ArrayList<BlockHeaderArg> args_and_types = b.getArgsAndTypes();
+		final ArrayList<Assignment> args_and_types = b.getArgsAndTypes();
 
 		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (BlockHeaderArg a : args_and_types) {
-			Dict arg = new Dict();
-			arg.set(SymbolConstants.NAME, a.var);
-			arg.set(SymbolConstants.TYPE, a.type);
-			arg.set(SymbolConstants.COPY, a.copy ? Num.ONE : Num.ZERO);
-			args_list.add(arg);
+		for (Assignment a : args_and_types) {
+			args_list.add(a.toDict());
 		}
 		Collections.reverse(args_list);
 		d.set(SymbolConstants.ARGS, new List(args_list));
