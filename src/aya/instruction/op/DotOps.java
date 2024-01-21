@@ -357,7 +357,7 @@ class OP_Dot_And extends OpInstruction {
 
 	public OP_Dot_And() {
 		init(".&");
-		arg("SSS", "replace all occurances of the regex S1 with S2 in S3");
+		arg("SSS", "replace all occurrences of the regex S2 with S3 in S1");
 		arg("LLB", "zip with");
 		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
 	}
