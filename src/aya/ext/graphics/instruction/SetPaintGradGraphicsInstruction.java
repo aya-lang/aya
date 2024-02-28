@@ -6,7 +6,7 @@ import java.awt.GradientPaint;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class SetPaintGradGraphicsInstruction extends GraphicsInstruction {
 
@@ -17,7 +17,7 @@ public class SetPaintGradGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		boolean cycle = _reader.popBool();
 		int end_a = _reader.popInt();
 		int end_b = _reader.popInt();

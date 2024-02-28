@@ -4,7 +4,7 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
@@ -18,7 +18,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		final Obj kv_obj = b.pop();
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;

@@ -4,7 +4,7 @@ import aya.Aya;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.ListCollector;
@@ -33,7 +33,7 @@ public class PressedKeysInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		List keyList = cvs.getKeyListener().getPressedKeys().stream()
 				.map(event -> {
 					Dict keyDict = new Dict();
@@ -50,6 +50,6 @@ public class PressedKeysInstruction extends GraphicsInstruction {
 				})
 				.collect(new ListCollector());
 
-		block.push(keyList);
+		blockEvaluator.push(keyList);
 	}
 }

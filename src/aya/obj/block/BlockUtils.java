@@ -25,7 +25,7 @@ import aya.util.Pair;
 
 public class BlockUtils {
 
-	/** Split a block into a list of blocks, 1 per instruction */
+	/** Split a blockEvaluator into a list of blocks, 1 per instruction */
 	public static List split(StaticBlock block) {
 		ArrayList<Obj> blocks = new ArrayList<Obj>();
 		for (Instruction instr : block.getInstructions())
@@ -96,7 +96,7 @@ public class BlockUtils {
 				}
 				
 				// Defaults
-				// These are only ever provided if this block is printed from a BlockLiteralInstruction
+				// These are only ever provided if this blockEvaluator is printed from a BlockLiteralInstruction
 				if (defaults != null) {
 					for (Symbol v : defaults.keySet()) {
 						stream.print(v.name() + "(");
@@ -214,8 +214,8 @@ public class BlockUtils {
 		return d;
 	}
 	
-	// If the block has a single variable, convert it to a symbol
-	// otherwise return the block
+	// If the blockEvaluator has a single variable, convert it to a symbol
+	// otherwise return the blockEvaluator
 	public static Obj convertSingleVariableToSymbol(StaticBlock b) {
 		ArrayList<Instruction> is = b.getInstructions();
 		if (is.size() > 0) {
@@ -300,7 +300,7 @@ public class BlockUtils {
 
 	public static Dict getHelpDataForOperator(StaticBlock block) {
 		if (block.getInstructions().size() == 0) {
-			throw new ValueError("Empty block");
+			throw new ValueError("Empty blockEvaluator");
 		} else {
 			Instruction i = block.getInstructions().get(0);
 			if (i instanceof OperatorInstruction) {

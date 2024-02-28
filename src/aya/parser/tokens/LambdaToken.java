@@ -44,7 +44,7 @@ public class LambdaToken extends CollectionToken {
 		if(lambdaData.size() == 1) {
 			InstructionStack lambdaIL = Parser.generate(lambdaData.get(0));
 			
-			//If contains only block, set to auto eval
+			//If contains only blockEvaluator, set to auto eval
 			BlockLiteralInstruction bli = lambdaIL.getIfSingleBlockInstruction();
 			if (bli != null) {
 				bli.setAutoEval();
@@ -64,7 +64,7 @@ public class LambdaToken extends CollectionToken {
 
 	@Override
 	public String typeString() {
-		return "block";
+		return "blockEvaluator";
 	}
 	
 	/** Does not generate instructions for sections after the first (if they exist) 

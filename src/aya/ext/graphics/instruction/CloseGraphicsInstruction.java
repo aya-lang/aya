@@ -5,7 +5,7 @@ import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.util.Casting;
 
 public class CloseGraphicsInstruction extends GraphicsInstruction {
@@ -16,8 +16,8 @@ public class CloseGraphicsInstruction extends GraphicsInstruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
-		final Obj o_id = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj o_id = blockEvaluator.pop();
 
 		if (o_id.isa(Obj.NUMBER)) {
 			_canvas_table.close(Casting.asNumber(o_id).toInt());
@@ -28,7 +28,7 @@ public class CloseGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		// noop
 	}
 	

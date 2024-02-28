@@ -16,7 +16,7 @@ public class SymbolConstants {
 	public static final Symbol ANY 		= S.getSymbol("any");
 	public static final Symbol CHAR 	= S.getSymbol("char");
 	public static final Symbol NUM 		= S.getSymbol("num");
-	public static final Symbol BLOCK 	= S.getSymbol("block");
+	public static final Symbol BLOCK 	= S.getSymbol("blockEvaluator");
 	public static final Symbol LIST 	= S.getSymbol("list");
 	public static final Symbol STR 		= S.getSymbol("str");
 	public static final Symbol DICT 	= S.getSymbol("dict");

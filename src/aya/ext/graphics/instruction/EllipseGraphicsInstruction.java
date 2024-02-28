@@ -5,7 +5,7 @@ import java.awt.geom.Ellipse2D;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class EllipseGraphicsInstruction extends GraphicsInstruction {
 
@@ -16,7 +16,7 @@ public class EllipseGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		boolean fill = _reader.popBool();
 		double h = _reader.popDouble();
 		double w = _reader.popDouble();

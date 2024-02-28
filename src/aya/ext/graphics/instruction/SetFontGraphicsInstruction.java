@@ -5,7 +5,7 @@ import java.awt.Font;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class SetFontGraphicsInstruction extends GraphicsInstruction {
 
@@ -16,7 +16,7 @@ public class SetFontGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		int size = _reader.popInt();
 		int style =  strToStyle(_reader.popString());
 		String name = _reader.popString();

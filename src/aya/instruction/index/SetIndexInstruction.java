@@ -4,7 +4,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
@@ -18,9 +18,9 @@ public abstract class SetIndexInstruction extends Instruction {
 	
 	protected abstract Obj getIndex();
 	
-	public void execute(Block block) {
-		final Obj container = block.pop();
-		final Obj value = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj container = blockEvaluator.pop();
+		final Obj value = blockEvaluator.pop();
 		
 		Obj index = getIndex();
 		boolean keyvar = false;
@@ -31,9 +31,9 @@ public abstract class SetIndexInstruction extends Instruction {
 			Dict d = Casting.asDict(container);
 			if (d.hasMetaKey(SymbolConstants.KEYVAR_SETINDEX)) {
 				keyvar = true;
-				block.push(value);
-				block.push(index);
-				block.callVariable(d, SymbolConstants.KEYVAR_SETINDEX);
+				blockEvaluator.push(value);
+				blockEvaluator.push(index);
+				blockEvaluator.callVariable(d, SymbolConstants.KEYVAR_SETINDEX);
 			} else {
 				Dict.setIndex((Dict)container, index, value);
 			}
@@ -42,7 +42,7 @@ public abstract class SetIndexInstruction extends Instruction {
 		}
 		
 		// Add the container back to the stack
-		if (!keyvar) block.push(container);
+		if (!keyvar) blockEvaluator.push(container);
 	}
 
 	@Override

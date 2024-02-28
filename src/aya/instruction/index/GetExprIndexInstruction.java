@@ -3,7 +3,7 @@ package aya.instruction.index;
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
@@ -26,7 +26,7 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 	}
 	
 	protected Obj getIndex() {
-		Block evaluator = new Block();
+		BlockEvaluator evaluator = new BlockEvaluator();
 		evaluator.dump(_index);
 		evaluator.eval();
 		if (evaluator.getStack().size() == 1) {

@@ -6,7 +6,7 @@ import java.io.IOException;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.number.Num;
 import aya.util.FileUtils;
 
@@ -19,17 +19,17 @@ public class SaveGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		String filename = _reader.popString();
 		
 		try {
 			File f = new File(FileUtils.workingRelative(filename));
 			cvs.save(f);
 		} catch (IOException e) {
-			block.push(Num.ZERO);
+			blockEvaluator.push(Num.ZERO);
 		}
 		
-		block.push(Num.ONE);
+		blockEvaluator.push(Num.ONE);
 	}
 	
 }

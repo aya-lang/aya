@@ -6,7 +6,7 @@ import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class SetStrokeGraphicsInstruction extends GraphicsInstruction {
 
@@ -17,7 +17,7 @@ public class SetStrokeGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		int join = strToJoin(_reader.popString());
 		int cap  = strToCap(_reader.popString());
 		float width = (float)(_reader.popDouble());

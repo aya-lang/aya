@@ -5,7 +5,7 @@ import java.awt.GraphicsEnvironment;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 
 public class ListFontsGraphicsInstruction extends GraphicsInstruction {
@@ -16,19 +16,19 @@ public class ListFontsGraphicsInstruction extends GraphicsInstruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
+	public void execute(BlockEvaluator blockEvaluator) {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		String[] font_names = ge.getAvailableFontFamilyNames();
 		List l = new List();
 		for (int i = 0; i < font_names.length; i++) {
 			l.mutAdd(List.fromString(font_names[i]));
 		}
-		block.push(l);
+		blockEvaluator.push(l);
 	}
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		// noop
 	}
 	

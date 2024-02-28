@@ -1,7 +1,7 @@
 package aya.instruction.variable;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
@@ -20,7 +20,7 @@ public class GetCDictInstruction extends VariableInstruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.add(get_key_);
 		b.add(get_cdict_);
 	}

@@ -3,7 +3,7 @@ package aya.ext.graphics.instruction.cursor;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.list.ListCollector;
 import aya.obj.number.Num;
@@ -16,11 +16,11 @@ public class PressedButtonsInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		List buttonList = cvs.getCursorListener().getPressedButtons().stream()
 				.map(Num::fromInt)
 				.collect(new ListCollector());
 
-		block.push(buttonList);
+		blockEvaluator.push(buttonList);
 	}
 }

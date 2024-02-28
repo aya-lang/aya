@@ -11,7 +11,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.util.DictReader;
 
@@ -23,8 +23,8 @@ public class WriteImageInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		Dict info = null;
 		
 		try {

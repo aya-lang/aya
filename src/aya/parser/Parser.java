@@ -29,7 +29,7 @@ import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.number.Number;
@@ -57,7 +57,7 @@ import aya.util.CharUtils;
  * 0. Input String 1. tokenize: Converts characters and character sets to tokens
  * - Parses string and character literals - Identifies Operators - detects dot
  * operators - Identifies opening and closing delimiters 2. assemble: Assembles
- * the tokens into token groups based on context - Assembles list and block
+ * the tokens into token groups based on context - Assembles list and blockEvaluator
  * literals - parses decimal numbers 3. generate: Generate Aya code based on the
  * tokens
  * 
@@ -98,7 +98,7 @@ public class Parser {
 				continue;
 			}
 
-			// Block Comment
+			// BlockEvaluator Comment
 			if (current == '.' && in.hasNext() && in.peek() == '{') {
 				in.next(); // Skip the '{'
 
@@ -681,7 +681,7 @@ public class Parser {
 					throw new SyntaxError("Expected token after infix operator ':#'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
-				// Apply a block to a list or dict
+				// Apply a blockEvaluator to a list or dict
 				is.push(new OperatorInstruction(current.getSourceStringRef(), ColonOps.OP_COLON_POUND));
 				is.push(next);
 			}
@@ -720,17 +720,17 @@ public class Parser {
 	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
 		SourceStringRef ref = tokens_in.peek().getSourceStringRef();
 		if (is.isEmpty()) {
-			throw new SyntaxError("Expected token when assembling block", ref);
+			throw new SyntaxError("Expected token when assembling blockEvaluator", ref);
 		} else {
 			Instruction next = is.pop();
 
-			// Apply a block to a list
+			// Apply a blockEvaluator to a list
 			if (next instanceof DataInstruction && ((DataInstruction) next).objIsa(Obj.BLOCK)) {
 				throw new SyntaxError("Assertion Failed!!", tokens_in.peek().getSourceStringRef());
 			} else if (next instanceof BlockLiteralInstruction) {
 				return (BlockLiteralInstruction)next;
 			} else {
-				// Create a block and apply it to a list
+				// Create a blockEvaluator and apply it to a list
 				InstructionStack colonBlock = new InstructionStack();
 				is.push(next); // Add next back in
 
@@ -748,15 +748,15 @@ public class Parser {
 	}
 
 	/**
-	 * Compiles a string into a code block using input => tokenize => assemble =>
+	 * Compiles a string into a code blockEvaluator using input => tokenize => assemble =>
 	 * generate
 	 * @throws ParserException 
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static Block compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+	public static BlockEvaluator compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
 		ParserString ps = new ParserString(source);
-		return new Block(generate(assemble(tokenize(aya, ps))));
+		return new BlockEvaluator(generate(assemble(tokenize(aya, ps))));
 	}
 
 	/**

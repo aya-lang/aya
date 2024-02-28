@@ -78,7 +78,7 @@ public class StringToken extends StdToken {
 					
 				}
 				
-				//Block Interpolation
+				//BlockEvaluator Interpolation
 				else if (c == '(') {
 					int braces = 1;
 					StringBuilder block = new StringBuilder();
@@ -124,7 +124,7 @@ public class StringToken extends StdToken {
 					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
-					//Add the block
+					//Add the blockEvaluator
 					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()) , Aya.getInstance());
 					instrs.insert(0, BlockUtils.fromIS(is));
 					

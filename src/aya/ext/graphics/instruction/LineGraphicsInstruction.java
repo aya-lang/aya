@@ -3,7 +3,7 @@ package aya.ext.graphics.instruction;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class LineGraphicsInstruction extends GraphicsInstruction {
 
@@ -14,7 +14,7 @@ public class LineGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		int y2 = _reader.popInt();
 		int x2 = _reader.popInt();
 		int y1 = _reader.popInt();

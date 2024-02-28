@@ -9,7 +9,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
@@ -238,7 +238,7 @@ public class Dict extends Obj {
 			return true;
 		} else {
 			if (bool.isa(Obj.BLOCK)) {
-				Block blk_bool = new Block();
+				BlockEvaluator blk_bool = new BlockEvaluator();
 				blk_bool.push(this);
 				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
@@ -268,7 +268,7 @@ public class Dict extends Obj {
 			return dictStr();
 		} else {
 			if (str.isa(Obj.BLOCK)) {
-				Block blk_str = new Block();
+				BlockEvaluator blk_str = new BlockEvaluator();
 				blk_str.push(this);
 				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
@@ -350,7 +350,7 @@ public class Dict extends Obj {
 
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
-				Block blk_repr = new Block();
+				BlockEvaluator blk_repr = new BlockEvaluator();
 				blk_repr.push(this);
 				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {

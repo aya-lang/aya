@@ -3,7 +3,7 @@ package aya.ext.graphics.instruction;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class ScaleGraphicsInstruction extends GraphicsInstruction {
 
@@ -13,7 +13,7 @@ public class ScaleGraphicsInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		double y = _reader.popDouble();
 		double x = _reader.popDouble();
 	

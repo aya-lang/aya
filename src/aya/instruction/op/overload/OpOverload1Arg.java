@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 
@@ -35,9 +35,9 @@ public class OpOverload1Arg extends OpOverload {
 	}
 	
 	@Override
-	public boolean execute(Block block, Obj a) {
+	public boolean execute(BlockEvaluator blockEvaluator, Obj a) {
 		if (a.isa(Obj.DICT)) {
-			block.callVariable((Dict)a, _var);
+			blockEvaluator.callVariable((Dict)a, _var);
 			return true;
 		} else {
 			return false;
@@ -47,10 +47,10 @@ public class OpOverload1Arg extends OpOverload {
 	@Override
 	public Obj executeAndReturn(Obj a) {
 		if (a.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.callVariable((Dict)a, _var);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = new BlockEvaluator();
+			blockEvaluator.callVariable((Dict)a, _var);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else {
 			return null;
 		}

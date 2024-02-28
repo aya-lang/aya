@@ -3,7 +3,7 @@ package aya.instruction.variable;
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
@@ -15,19 +15,19 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Obj o = Aya.getInstance().getVars().getVar(variable_);
 		b.push(o);
 	}
 	
 	/**
-	 * If o is a block, dump it's instructions. Otherwise, add it to the stack
+	 * If o is a blockEvaluator, dump it's instructions. Otherwise, add it to the stack
 	 * @param o
 	 * @param b
 	 */
-	public static void addOrDumpVar(Obj o, Block evaluator) {
+	public static void addOrDumpVar(Obj o, BlockEvaluator evaluator) {
 		if (o.isa(Obj.BLOCK)) {
-			//evaluator.getInstructions().addAll(((Block)o).getInstructions().getInstrucionList());
+			//evaluator.getInstructions().addAll(((BlockEvaluator)o).getInstructions().getInstrucionList());
 			evaluator.dump(Casting.asStaticBlock(o));
 		} else {
 			evaluator.push(o);

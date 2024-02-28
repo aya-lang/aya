@@ -5,7 +5,7 @@ import java.awt.Color;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class SetColorGraphicsInstruction extends GraphicsInstruction {
 
@@ -16,7 +16,7 @@ public class SetColorGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		int b = _reader.popInt();
 		int g = _reader.popInt();
 		int r = _reader.popInt();

@@ -11,7 +11,7 @@ import aya.obj.Obj;
 public class ConditionalUtils {
 
 	private static boolean evalCondition(Instruction instruction) {
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		b.add(instruction);
 		b.eval();
 		if (!b.getStack().isEmpty()) {
@@ -24,7 +24,7 @@ public class ConditionalUtils {
 	}
 	
 	private static Obj evalResult(Instruction instruction) {
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		if (instruction instanceof BlockLiteralInstruction) {
 			b.dump(((BlockLiteralInstruction)instruction).getRawBlock());
 		} else {

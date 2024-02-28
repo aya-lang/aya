@@ -12,7 +12,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
@@ -352,13 +352,13 @@ public class List extends Obj {
 	}
 
 	/** 
-	 * Maps a block to a list and returns the new list. The block is not effected
+	 * Maps a blockEvaluator to a list and returns the new list. The blockEvaluator is not effected
 	 */
 	public List map(StaticBlock map) {
 		int len = length();
 		if (len > 0) {
 			ArrayList<Obj> out = new ArrayList<Obj>(len);
-			Block b = new Block();
+			BlockEvaluator b = new BlockEvaluator();
 			for (int i = 0; i < len; i++) {
 				b.dump(map);
 				b.add(new DataInstruction(getExact(i)));
@@ -373,12 +373,12 @@ public class List extends Obj {
 	}
 	/** 
 	 * Same as map but push 1 additional item to the stack (shallow copied)
-	 * Maps a block to a list and returns the new list. The block is not effected
+	 * Maps a blockEvaluator to a list and returns the new list. The blockEvaluator is not effected
 	 */
 	public List map1arg(StaticBlock expr, Obj obj) {
 		int len = length();
 		ArrayList<Obj> out = new ArrayList<Obj>(len);
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		for (int i = 0; i < len; i++) {
 			b.push(obj);
 			b.dump(expr);
@@ -391,7 +391,7 @@ public class List extends Obj {
 	}
 
 	/**
-	 * Filter a list using the block
+	 * Filter a list using the blockEvaluator
 	 * 
 	 * @param filter
 	 * @param list
@@ -399,7 +399,7 @@ public class List extends Obj {
 	 */
 	public List filter(StaticBlock filter) {
 		ArrayList<Obj> out = new ArrayList<Obj>();
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		for (int i = 0; i < length(); i++) {
 			final Obj o = getExact(i);
 			b.dump(filter);
@@ -414,7 +414,7 @@ public class List extends Obj {
 	}
 	
 	/**
-	 * Filter a list using the block
+	 * Filter a list using the blockEvaluator
 	 * 
 	 * @param staticBlock
 	 * @param list
@@ -422,7 +422,7 @@ public class List extends Obj {
 	 */
 	public List filter(StaticBlock staticBlock, Obj dflt) {
 		ArrayList<Obj> out = new ArrayList<Obj>(length());
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		for (int i = 0; i < length(); i++) {
 			b.dump(staticBlock);
 			b.add(new DataInstruction(getExact(i)));
@@ -439,14 +439,14 @@ public class List extends Obj {
 
 	/**
 	 * Like filter but returns a list of true/false values representing
-	 * the outcome of each applying the block to each item in the list
+	 * the outcome of each applying the blockEvaluator to each item in the list
 	 * @param list
 	 * @return
 	 */
 	public boolean[] filterIndex(StaticBlock staticBlock) {
 		final int len = length();
 		boolean[] out = new boolean[len];
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 		for (int i = 0; i < len; i++) {
 			b.dump(staticBlock);
 			b.add(new DataInstruction(getExact(i)));
@@ -554,7 +554,7 @@ public class List extends Obj {
 	
 	public List split(Obj o) {
 		if (o.isa(Obj.BLOCK)) {
-			// TODO: Split wherever the block evaluates to true
+			// TODO: Split wherever the blockEvaluator evaluates to true
 			return new List();
 		} else {
 			return _list.split(o);

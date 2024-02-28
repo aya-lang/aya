@@ -43,7 +43,7 @@ public class BlockHeader extends Instruction {
 	}
 	
 	
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Dict vars = _vars.clone();
 		setArgs(_args, vars, b);
 		Aya.getInstance().getVars().add(vars);
@@ -51,7 +51,7 @@ public class BlockHeader extends Instruction {
 	
 	
 	
-	private static void setArgs(ArrayList<Assignment> args, Dict vars, Block b) {
+	private static void setArgs(ArrayList<Assignment> args, Dict vars, BlockEvaluator b) {
 		for (Assignment arg : args) {
 			arg.assign(vars, b.pop());
 		}	
@@ -62,7 +62,7 @@ public class BlockHeader extends Instruction {
 		return repr(stream, null);
 	}
 	
-	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> defaults) {
+	public ReprStream repr(ReprStream stream, HashMap<Symbol, BlockEvaluator> defaults) {
 		return stream;
 		/*
 		for (int i = _args.size()-1; i >= 0; i--) {

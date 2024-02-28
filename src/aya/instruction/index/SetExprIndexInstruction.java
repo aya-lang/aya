@@ -2,7 +2,7 @@ package aya.instruction.index;
 
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
 
@@ -16,7 +16,7 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 	}
 	
 	protected Obj getIndex() {
-		Block index = new Block();
+		BlockEvaluator index = new BlockEvaluator();
 		index.dump(_index);
 		index.eval();
 		if (index.getStack().size() == 1) {

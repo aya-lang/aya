@@ -1,7 +1,7 @@
 package aya.instruction.flag;
 
 import aya.Aya;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 /**
  *  Pop a variable set from the variable scope stack
@@ -13,7 +13,7 @@ public class PopVarFlagInstruction extends FlagInstruction {
 	private PopVarFlagInstruction() { }
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Aya.getInstance().getVars().pop();
 	}
 	

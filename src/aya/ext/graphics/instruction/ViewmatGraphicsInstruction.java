@@ -8,7 +8,7 @@ import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -32,8 +32,8 @@ public class ViewmatGraphicsInstruction extends GraphicsInstruction {
 	}
 	
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
-		final Obj o_data = block.pop();
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
+		final Obj o_data = blockEvaluator.pop();
 
 		NumberList data;
 		int width;

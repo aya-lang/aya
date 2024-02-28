@@ -2,7 +2,7 @@ package aya.instruction.named;
 
 import aya.ReprStream;
 import aya.instruction.Instruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.parser.SourceStringRef;
 
 public class NamedOperatorInstruction extends Instruction {
@@ -15,8 +15,8 @@ public class NamedOperatorInstruction extends Instruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		this.op.execute(block);
+	public void execute(BlockEvaluator blockEvaluator) {
+		this.op.execute(blockEvaluator);
 		
 	}
 

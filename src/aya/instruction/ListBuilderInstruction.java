@@ -6,7 +6,7 @@ import java.util.Stack;
 import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
@@ -30,7 +30,7 @@ public class ListBuilderInstruction extends Instruction {
 	}
 	
 	public List createList(Stack<Obj> outerStack) {
-		Block evaluator = new Block();
+		BlockEvaluator evaluator = new BlockEvaluator();
 		evaluator.dump(initialList);
 
 		for (int p = 0; p < num_captures; p++) {
@@ -56,7 +56,7 @@ public class ListBuilderInstruction extends Instruction {
 		ArrayList<Obj> list = null;
 		List outList = null;
 		
-		//If all arguments are lists, dump each list's respective element onto the stack of the map block
+		//If all arguments are lists, dump each list's respective element onto the stack of the map blockEvaluator
 		// [[1 2][3 4], +] => 1 3 +, 2 4 + => [4 6]
 		if (allLists) {
 			ArrayList<List> listArgs = new ArrayList<List>(res.size());
@@ -76,7 +76,7 @@ public class ListBuilderInstruction extends Instruction {
 			
 			//Dump items from the lists into the blocks and apply the map if needed
 			for(int i = 0; i < size; i++) {
-				Block b = new Block();
+				BlockEvaluator b = new BlockEvaluator();
 				for (int j = 0; j < listArgs.size(); j++) {
 					b.push(listArgs.get(j).getExact(i));
 				}
@@ -108,7 +108,7 @@ public class ListBuilderInstruction extends Instruction {
 	
 
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.push(createList(b.getStack()));
 	}
 

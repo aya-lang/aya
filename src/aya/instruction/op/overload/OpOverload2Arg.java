@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 
@@ -40,13 +40,13 @@ public class OpOverload2Arg extends OpOverload {
 	
 
 	@Override
-	public boolean execute(Block block, Obj a, Obj b) {
+	public boolean execute(BlockEvaluator blockEvaluator, Obj a, Obj b) {
 		if (a.isa(Obj.DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, _var);
+			blockEvaluator.push(b);
+			blockEvaluator.callVariable((Dict)a, _var);
 			return true;
 		} else if (b.isa(Obj.DICT)) {
-			block.callVariable((Dict)b, _rvar, a);
+			blockEvaluator.callVariable((Dict)b, _rvar, a);
 			return true;
 		} else {
 			return false;
@@ -56,16 +56,16 @@ public class OpOverload2Arg extends OpOverload {
 	@Override
 	public Obj executeAndReturn(Obj a, Obj b) {
 		if (a.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.push(b);
-			block.callVariable((Dict)a, _var);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = new BlockEvaluator();
+			blockEvaluator.push(b);
+			blockEvaluator.callVariable((Dict)a, _var);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else if (b.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.callVariable((Dict)b, _rvar, a);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = new BlockEvaluator();
+			blockEvaluator.callVariable((Dict)b, _rvar, a);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else {
 			return null;
 		}

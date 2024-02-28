@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import aya.Aya;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
@@ -27,7 +27,7 @@ public class DictIndexing {
 	 */
 	public static Obj getIndex(Dict dict, Obj index) {
 		if (dict.hasMetaKey(SymbolConstants.KEYVAR_GETINDEX)) {
-			Block b = new Block();
+			BlockEvaluator b = new BlockEvaluator();
 			b.push(index);
 			b.callVariable(dict, SymbolConstants.KEYVAR_GETINDEX);
 			b.eval();
@@ -62,7 +62,7 @@ public class DictIndexing {
 	
 	public static Dict map(Dict dict, StaticBlock mapBlock) {
 		Dict out = new Dict();
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {
@@ -81,7 +81,7 @@ public class DictIndexing {
 
 	public static Dict filter(Dict dict, StaticBlock filterBlock) {
 		Dict out = new Dict();
-		Block b = new Block();
+		BlockEvaluator b = new BlockEvaluator();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {

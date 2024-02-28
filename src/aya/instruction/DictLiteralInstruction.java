@@ -6,7 +6,7 @@ import java.util.Queue;
 import aya.Aya;
 import aya.ReprStream;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
@@ -43,8 +43,8 @@ public class DictLiteralInstruction extends Instruction {
 		//Add the variable set to the stack
 		Aya.getInstance().getVars().add(new Dict(), true);
 		
-		//Run the block
-		Block evaluator = new Block();
+		//Run the blockEvaluator
+		BlockEvaluator evaluator = new BlockEvaluator();
 		if (q != null) {
 			while (!q.isEmpty()) {
 				evaluator.push(q.poll());
@@ -58,7 +58,7 @@ public class DictLiteralInstruction extends Instruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Queue<Obj> q = null;
 		int n = this.numCaptures();
 		if (n > 0) {

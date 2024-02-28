@@ -22,23 +22,23 @@ import aya.obj.symbol.Symbol;
 import aya.util.Casting;
 
 /** 
- * Block contain instructions and the resulting stacks 
+ * BlockEvaluator contain instructions and the resulting stacks 
  * @author Nick
  *
  */
-public class Block {
+public class BlockEvaluator {
 	
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
 	
-	/** Create a new block with empty instructions and stack */
-	public Block() {
+	/** Create a new blockEvaluator with empty instructions and stack */
+	public BlockEvaluator() {
 		this.stack = new Stack<Obj>();
 		this.instructions = new InstructionStack();
 	}
 	
-	/** Create a new block with empty stack */
-	public Block(InstructionStack il) {
+	/** Create a new blockEvaluator with empty stack */
+	public BlockEvaluator(InstructionStack il) {
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
 	}
@@ -49,7 +49,7 @@ public class Block {
 	}
 	
 	/** Copy stack */
-	public void addStack(Block other) {
+	public void addStack(BlockEvaluator other) {
 		stack.addAll(other.getStack());
 	}
 	
@@ -119,7 +119,7 @@ public class Block {
 		return instructions.isEmpty();
 	}
 	
-	/** Get the block's header, return null if it does not have one */
+	/** Get the blockEvaluator's header, return null if it does not have one */
 	public BlockHeader getHeader() {
 		if (instructions.size() > 0) {
 			Instruction i = instructions.peek(0);
@@ -135,7 +135,7 @@ public class Block {
 		return stack.isEmpty();
 	}
 
-	/** Test if this block has a local variable set */
+	/** Test if this blockEvaluator has a local variable set */
 	public boolean hasLocals() {
 		if (instructions.isEmpty()) return false;
 		final Instruction flag = instructions.getInstrucionList().get(0);
@@ -167,27 +167,27 @@ public class Block {
 		}
 	}
 	
-	/** Creates a duplicate of a block without interfering with the block */
-	public Block duplicate() {
-		Block out = new Block(this.instructions.duplicate());
+	/** Creates a duplicate of a blockEvaluator without interfering with the blockEvaluator */
+	public BlockEvaluator duplicate() {
+		BlockEvaluator out = new BlockEvaluator(this.instructions.duplicate());
 		out.stack.addAll(this.stack);
 		return out;
 	}
 	
-	/** Create a new block with the given header */
-	public Block duplicateNewHeader(BlockHeader header) {
+	/** Create a new blockEvaluator with the given header */
+	public BlockEvaluator duplicateNewHeader(BlockHeader header) {
 		if (getHeader() == null) {
-			Block dup = duplicate();
+			BlockEvaluator dup = duplicate();
 			dup._addHeader(header);
 			return dup;
 		} else {
-			Block dup = duplicateNoHeader();
+			BlockEvaluator dup = duplicateNoHeader();
 			dup._addHeader(header);
 			return dup;
 		}
 	}
 	
-	/** Assumes this block does not already have a header! */
+	/** Assumes this blockEvaluator does not already have a header! */
 	private void _addHeader(BlockHeader bh) {
 		add(bh);
 		add(0, PopVarFlagInstruction.INSTANCE);
@@ -228,13 +228,13 @@ public class Block {
 		return sb.toString();
 	}
 	
-	/** Returns the instruction object for this block */
+	/** Returns the instruction object for this blockEvaluator */
 	public InstructionStack getInstructions() {
 		return instructions;
 	}
 	
-	/** Adds a block to this block (does not duplicate the block) */
-	public void addBlock(Block b) {
+	/** Adds a blockEvaluator to this blockEvaluator (does not duplicate the blockEvaluator) */
+	public void addBlock(BlockEvaluator b) {
 		if (b.hasLocals()) {
 			this.instructions.push(new LambdaInstruction(null, b.getInstructions()));
 		} else {
@@ -242,7 +242,7 @@ public class Block {
 		}
 	}
 	
-	public void addBlockBack(Block b) {
+	public void addBlockBack(BlockEvaluator b) {
 		if (b.hasLocals()) {
 			this.instructions.insert(0, new LambdaInstruction(null, b.getInstructions()));
 		} else {
@@ -257,7 +257,7 @@ public class Block {
 		instructions.insert(0, new DataInstruction(b));
 	}
 	
-	/** Adds a stack to this block. Reverses the stack before adding */
+	/** Adds a stack to this blockEvaluator. Reverses the stack before adding */
 	public void appendToStack(Stack<Obj> stk) {
 		Collections.reverse(stk);
 		while (!stk.empty()) {
@@ -265,7 +265,7 @@ public class Block {
 		}
 	}
 	
-	/** If the variable is a block, dump to the instructions
+	/** If the variable is a blockEvaluator, dump to the instructions
 	 * else add the item to the stack
 	 */
 	public void addOrDumpVar(Obj o) {
@@ -278,7 +278,7 @@ public class Block {
 
 	}
 	
-	/** Calls the variable and dumps the result to the stack existing in the input block */
+	/** Calls the variable and dumps the result to the stack existing in the input blockEvaluator */
 	public void callVariable(Dict dict, Symbol keyVar, Obj... push_first) {
 		//Push self
 		if (dict.pushSelf()) {
@@ -313,11 +313,11 @@ public class Block {
 		}
 	}
 
-	/** Return a list of instructions not including the block header or pop var instruction */
-	public Block duplicateNoHeader() {
-		Block b = duplicate();
+	/** Return a list of instructions not including the blockEvaluator header or pop var instruction */
+	public BlockEvaluator duplicateNoHeader() {
+		BlockEvaluator b = duplicate();
 		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
-		// Remove block header
+		// Remove blockEvaluator header
 		int len = instructions.size();
 		if (len > 0) {
 			int last = len-1;
@@ -341,11 +341,11 @@ public class Block {
 		return b;
 	}
 
-	/** Return a copy of the block. If the original does not have a block header with local variables
+	/** Return a copy of the blockEvaluator. If the original does not have a blockEvaluator header with local variables
 	 * create an empty local variables in the copy
 	 */
-	public Block duplicateAddLocals() {
-		 Block b = duplicate();
+	public BlockEvaluator duplicateAddLocals() {
+		 BlockEvaluator b = duplicate();
 		 BlockHeader bh = b.getHeader();
 		 if (bh == null) {
 			 bh = new BlockHeader(null);
@@ -356,7 +356,7 @@ public class Block {
 	}
 
 	
-	/** Allow access to modify the block's local variables directly
+	/** Allow access to modify the blockEvaluator's local variables directly
 	 *  If there are no locals, return null
 	 * @return
 	 */

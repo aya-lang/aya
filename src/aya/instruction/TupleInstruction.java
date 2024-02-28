@@ -6,7 +6,7 @@ import java.util.EmptyStackException;
 import aya.ReprStream;
 import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
@@ -31,7 +31,7 @@ public class TupleInstruction extends Instruction {
 	public ArrayList<Obj> evalToResults() {
 		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
-			Block evaluator = new Block();
+			BlockEvaluator evaluator = new BlockEvaluator();
 			evaluator.dump(elements[i]);
 			try {
 				evaluator.eval();
@@ -46,7 +46,7 @@ public class TupleInstruction extends Instruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.getStack().addAll(evalToResults());
 	}
 

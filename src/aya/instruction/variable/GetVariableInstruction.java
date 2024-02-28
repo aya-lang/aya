@@ -4,7 +4,7 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
@@ -17,17 +17,17 @@ public class GetVariableInstruction extends VariableInstruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Obj o = Aya.getInstance().getVars().getVar(variable_);
 		this.addOrDumpVar(o, b);
 	}
 	
 	/**
-	 * If o is a block, dump it's instructions. Otherwise, add it to the stack
+	 * If o is a blockEvaluator, dump it's instructions. Otherwise, add it to the stack
 	 * @param o
 	 * @param b
 	 */
-	public void addOrDumpVar(Obj o, Block b) {
+	public void addOrDumpVar(Obj o, BlockEvaluator b) {
 		if (o.isa(Obj.BLOCK)) {
 			dumpBlock(Casting.asStaticBlock(o), b);
 		} else {
@@ -35,7 +35,7 @@ public class GetVariableInstruction extends VariableInstruction {
 		}
 	}
 
-	public void dumpBlock(StaticBlock block_to_dump, Block evaluator) {
+	public void dumpBlock(StaticBlock block_to_dump, BlockEvaluator evaluator) {
 		Aya.getInstance().getCallStack().push(this);
 		evaluator.add(PopCallstackInstruction.INSTANCE);
 		//b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());

@@ -6,7 +6,7 @@ import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class SetStrokeWidthGraphicsInstruction extends GraphicsInstruction {
 
@@ -17,7 +17,7 @@ public class SetStrokeWidthGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		float width = (float)(_reader.popDouble());
 
 		BasicStroke prev = (BasicStroke)(cvs.getG2D().getStroke());

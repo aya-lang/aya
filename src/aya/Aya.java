@@ -35,7 +35,7 @@ import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -225,7 +225,7 @@ public class Aya extends Thread {
 		try {
 			_out = new PrintStream(os, true, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockEvaluator
 			e1.printStackTrace();
 		}
 	}
@@ -234,7 +234,7 @@ public class Aya extends Thread {
 		try {
 			_err = new PrintStream(os, true, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockEvaluator
 			e1.printStackTrace();
 		}
 	}
@@ -315,8 +315,8 @@ public class Aya extends Thread {
 	// PRIVATE METHODS //
 	/////////////////////
 	
-	/** Run a block */
-	private void run(Block b) {
+	/** Run a blockEvaluator */
+	private void run(BlockEvaluator b) {
 		try {
 			b.eval();
 			String s = b.getPrintOutputState();
@@ -341,7 +341,7 @@ public class Aya extends Thread {
 			} catch (Exception e2) {
 				_instance._err.println("An additional error was thrown when attempting to print the stack state:");
 				_instance._err.println(exToString(e2));
-				_instance._err.println("This is likely caused by an error in an overloaded __str__ or __repr__ block.");
+				_instance._err.println("This is likely caused by an error in an overloaded __str__ or __repr__ blockEvaluator.");
 			} 
 		} finally {
 			_instance._variables.reset();

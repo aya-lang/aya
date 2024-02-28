@@ -3,7 +3,7 @@ package aya.ext.graphics.instruction.keyboard;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import java.util.stream.Collectors;
 
@@ -15,11 +15,11 @@ public class TypedCharsInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		String typedString = cvs.getKeyListener().consumeTypedChars().stream()
 				.map(Object::toString)
 				.collect(Collectors.joining());
 
-		block.push(List.fromString(typedString));
+		blockEvaluator.push(List.fromString(typedString));
 	}
 }

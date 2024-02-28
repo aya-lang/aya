@@ -4,7 +4,7 @@ import aya.Aya;
 import aya.ReprStream;
 import aya.exceptions.parser.ParserException;
 import aya.instruction.named.NamedOperator;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 
@@ -20,10 +20,10 @@ public class PauseDebugInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
+	public void execute(BlockEvaluator blockEvaluator) {
 		print("Execution paused, enter '.' to continue");
-		print("Stack: " + block.getOutputStateDebug());
-		String instructions_state = block.getInstructions().repr(new ReprStream()).toString();
+		print("Stack: " + blockEvaluator.getOutputStateDebug());
+		String instructions_state = blockEvaluator.getInstructions().repr(new ReprStream()).toString();
 		if (instructions_state.length() > 100) {
 			instructions_state = instructions_state.substring(0, 100) + "...";
 		}
@@ -36,7 +36,7 @@ public class PauseDebugInstruction extends NamedOperator {
 				break;
 			}
 			
-			Block b = null;
+			BlockEvaluator b = null;
 			try {
 				b = Parser.compile(new SourceString(input, "<debug>"), Aya.getInstance());
 			} catch (ParserException e) {

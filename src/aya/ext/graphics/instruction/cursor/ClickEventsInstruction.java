@@ -4,7 +4,7 @@ import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasCursorListener;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.ListCollector;
 
 public class ClickEventsInstruction extends GraphicsInstruction {
@@ -15,8 +15,8 @@ public class ClickEventsInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
-		block.push(
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
+		blockEvaluator.push(
 				cvs.getCursorListener().getClickHistory().stream()
 						.map(CanvasCursorListener.ClickInfo::toDict)
 						.collect(new ListCollector())

@@ -5,23 +5,23 @@ import java.util.Stack;
 
 import aya.ReprStream;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
 
 public class ListLiteralInstruction extends Instruction {
 	//The number of items that should be popped from the stack and added to the front of this list
 	int num_captures;
-	Block block;
+	BlockEvaluator blockEvaluator;
 	
 	public ListLiteralInstruction(SourceStringRef source, InstructionStack is, int num_pops) {
 		super(source);
 		this.num_captures = num_pops;
-		block = new Block(is);
+		blockEvaluator = new BlockEvaluator(is);
 	}
 	
 	public InstructionStack getInstructions() {
-		return block.getInstructions();
+		return blockEvaluator.getInstructions();
 	}
 	
 	public int getPops() {
@@ -29,7 +29,7 @@ public class ListLiteralInstruction extends Instruction {
 	}
 	
 	public List getListCopy(Stack<Obj> outerStack) {
-		Block b = block.duplicate();
+		BlockEvaluator b = blockEvaluator.duplicate();
 		int p = num_captures;
 		
 		//Remove the pops from the outer stack
@@ -45,7 +45,7 @@ public class ListLiteralInstruction extends Instruction {
 	/** Returns null if is not list literal */
 	public List toList() {
 		ArrayList<Obj> items = new ArrayList<Obj>();
-		ArrayList<Instruction> instrs = block.getInstructions().getInstrucionList();
+		ArrayList<Instruction> instrs = blockEvaluator.getInstructions().getInstrucionList();
 		for (int i = instrs.size()-1; i>=0; i--) {
 			if (instrs.get(i) instanceof DataInstruction) {
 				items.add(((DataInstruction)(instrs.get(i))).getData());
@@ -57,14 +57,14 @@ public class ListLiteralInstruction extends Instruction {
 	}
 	
 	public ListLiteralInstruction duplicate() {
-		ListLiteralInstruction ll = new ListLiteralInstruction(getSource(), block.getInstructions().duplicate(), num_captures);
-		ll.block.getStack().addAll(this.block.getStack());
+		ListLiteralInstruction ll = new ListLiteralInstruction(getSource(), blockEvaluator.getInstructions().duplicate(), num_captures);
+		ll.blockEvaluator.getStack().addAll(this.blockEvaluator.getStack());
 		return ll;
 	}
 	
 
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.push(getListCopy(b.getStack()));
 		
 	}
@@ -75,7 +75,7 @@ public class ListLiteralInstruction extends Instruction {
 		if (num_captures > 0) {
 			stream.print(num_captures + "| ");
 		}
-		block.getInstructions().repr(stream);
+		blockEvaluator.getInstructions().repr(stream);
 		stream.print("]");
 		return stream;
 	}

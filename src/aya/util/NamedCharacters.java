@@ -235,7 +235,7 @@ public class NamedCharacters {
 		addChar("deg","b0"); //Â°
 		addChar("square","b2"); //Â²
 		addChar("cube","b3"); //Â³
-		addChar("block","2588"); //â–ˆ
+		addChar("blockEvaluator","2588"); //â–ˆ
 		addChar("rarrow","21a6"); //â†¦
 		addChar("larrow","21a4"); //â†¤
 		addChar("plane","2708"); //âœˆ

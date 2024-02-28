@@ -71,10 +71,10 @@ public class ListToken extends CollectionToken {
 				if (listData.get(k).size() == 0) {
 					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]", this.getSourceStringRef());
 				}
-				//filters[k-2] = new Block(generate(listData.get(k)));
+				//filters[k-2] = new BlockEvaluator(generate(listData.get(k)));
 				InstructionStack tmpFilter_is = Parser.generate(listData.get(k));
 				
-				//If the filter clause only contains a single block, set them to auto eval
+				//If the filter clause only contains a single blockEvaluator, set them to auto eval
 				BlockLiteralInstruction bli = tmpFilter_is.getIfSingleBlockInstruction();
 				if (bli != null) {
 					bli.setAutoEval();
@@ -98,7 +98,7 @@ public class ListToken extends CollectionToken {
 			try {
 				pops = nt.numValue().toInt();
 			} catch (NumberFormatException e) {
-				throw new SyntaxError(nt + " is not a valid number in the block header", nt.getSourceStringRef());
+				throw new SyntaxError(nt + " is not a valid number in the blockEvaluator header", nt.getSourceStringRef());
 			}
 			
 			arr.remove(0); 

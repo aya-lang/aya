@@ -4,7 +4,7 @@ import aya.ReprStream;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.parser.SourceStringRef;
@@ -18,15 +18,15 @@ public abstract class GetIndexInstruction extends Instruction {
 
 	protected abstract Obj getIndex();
 	
-	public void execute(Block block) {
-		final Obj o = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj o = blockEvaluator.pop();
 		
 		Obj index = getIndex();
 		
 		if (o.isa(Obj.LIST)) {
-			block.push(Casting.asList(o).getIndexed(index));
+			blockEvaluator.push(Casting.asList(o).getIndexed(index));
 		} else if (o.isa(Obj.DICT)) {
-			block.push(DictIndexing.getIndex((Dict)o, index));
+			blockEvaluator.push(DictIndexing.getIndex((Dict)o, index));
 		} else {
 			throw new TypeError("Cannot index object:\n  " + o.repr() + repr(new ReprStream()));
 		}

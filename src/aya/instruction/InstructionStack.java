@@ -9,7 +9,7 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
 
@@ -110,7 +110,7 @@ public class InstructionStack {
 	}
 	
 	
-	/** If the instruction stack consists of a single block instruction, return it. Else return null */
+	/** If the instruction stack consists of a single blockEvaluator instruction, return it. Else return null */
 	public BlockLiteralInstruction getIfSingleBlockInstruction() {
 		if (size() == 1 && peek(0) instanceof BlockLiteralInstruction) {
 			return (BlockLiteralInstruction)peek(0);
@@ -133,7 +133,7 @@ public class InstructionStack {
 		if (instructions.get(i) instanceof BlockHeader) {
 			instructions.set(i, bh);
 		} else {
-			throw new RuntimeException("Cannot replace block header, block does not already contain one");
+			throw new RuntimeException("Cannot replace blockEvaluator header, blockEvaluator does not already contain one");
 		}
 	}
 
@@ -164,7 +164,7 @@ public class InstructionStack {
 		return repr(stream, null);
 	}
 	
-	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> captures) {
+	public ReprStream repr(ReprStream stream, HashMap<Symbol, BlockEvaluator> captures) {
 		if (captures != null) {
 			reprWithCaptures(stream, captures);
 		} else {
@@ -177,8 +177,8 @@ public class InstructionStack {
 		return stream;
 	}
 
-	/** Called from a block literal instruction */
-	private ReprStream reprWithCaptures(ReprStream stream, HashMap<Symbol, Block> captures) {
+	/** Called from a blockEvaluator literal instruction */
+	private ReprStream reprWithCaptures(ReprStream stream, HashMap<Symbol, BlockEvaluator> captures) {
 		if (instructions.size() == 0) return stream;
 
 		Instruction inst = instructions.get(instructions.size()-1);

@@ -5,7 +5,7 @@ import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.number.Num;
 import aya.util.Casting;
 
@@ -17,15 +17,15 @@ public class IsOpenGraphicsInstruction extends GraphicsInstruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
-		final Obj o_id = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj o_id = blockEvaluator.pop();
 
 		if (o_id.isa(Obj.NUMBER)) {
 			Canvas cvs = _canvas_table.getCanvas(Casting.asNumber(o_id).toInt());
 			if (cvs == null || !cvs.isOpen()) {
-				block.push(Num.ZERO);
+				blockEvaluator.push(Num.ZERO);
 			} else {
-				block.push(Num.ONE);
+				blockEvaluator.push(Num.ONE);
 			}
 		} else {
 			throw new TypeError(this, "N", o_id);
@@ -34,7 +34,7 @@ public class IsOpenGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) { }
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) { }
 	
 }
 

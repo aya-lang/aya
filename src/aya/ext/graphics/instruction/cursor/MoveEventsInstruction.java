@@ -5,7 +5,7 @@ import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasCursorListener;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 import aya.obj.list.ListCollector;
 
 public class MoveEventsInstruction  extends GraphicsInstruction {
@@ -16,9 +16,9 @@ public class MoveEventsInstruction  extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		try {
-			block.push(
+			blockEvaluator.push(
 					cvs.getCursorListener().getMoveHistory().stream()
 							.map(CanvasCursorListener.MoveInfo::toDict)
 							.collect(new ListCollector())

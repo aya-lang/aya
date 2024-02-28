@@ -2,7 +2,7 @@ package aya.instruction;
 
 import aya.ReprStream;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockEvaluator;
 
 public class DataInstruction extends Instruction {
 	
@@ -12,10 +12,10 @@ public class DataInstruction extends Instruction {
 		return i instanceof DataInstruction && ((DataInstruction)i).objIsa(type);
 	}
 	
-	/** If i is a DataInstruction with a single block, add the block instructions,
+	/** If i is a DataInstruction with a single blockEvaluator, add the blockEvaluator instructions,
 	 * otherwise add the instruction
 	 */
-	/*public static void addOrMergeInstruction(Block b, Instruction i) {
+	/*public static void addOrMergeInstruction(BlockEvaluator b, Instruction i) {
 		if (i instanceof DataInstruction && ((DataInstruction)i).objIsa(Obj.BLOCK)) {
 			b.addAll(DataInstruction.getBlock(i).getInstructions().getInstrucionList());
 		} else {
@@ -37,7 +37,7 @@ public class DataInstruction extends Instruction {
 	}
 
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.push(_data);
 
 	}
