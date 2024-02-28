@@ -98,6 +98,10 @@ public abstract class ListImpl {
 
 	/** Return a null filled list that is the same shape as the callee */
 	public abstract List sameShapeNull();
+	
+	/** Return a list of all permutations of this list. May contain
+	 * duplicates if the source list contains duplicates */
+	public abstract List permutations();
 
 	/** Return a flattened version of the list */
 	protected abstract ListImpl flatten();

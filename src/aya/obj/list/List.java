@@ -100,6 +100,22 @@ public class List extends Obj {
 		
 		return out;
 	}
+
+	// Compute the intersection of the two lists */
+	public List intersect(List objs) {
+		List out = new List();
+		List uniq = objs.unique();
+		
+		for (int i = 0; i < length(); i++) {
+			Obj o = getExact(i);
+			if (uniq.find(o) >= 0) {
+				out.mutAdd(o);
+			}
+		}
+		
+		return out;
+	}
+	
 	
 	/** Is the list a rectangular 2d list? */
 	public boolean isRect() {
@@ -729,6 +745,10 @@ public class List extends Obj {
 		return _list.sameShapeNull();
 	}
 	
+	public List permutations() {
+		return _list.permutations();
+	}
+	
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////
@@ -967,6 +987,7 @@ public class List extends Obj {
 	public byte type() {
 		return _list.type();
 	}
-	
+
+
 	
 }

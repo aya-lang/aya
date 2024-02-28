@@ -134,7 +134,7 @@ public class DotOps {
 		/* 87 W  */ null,
 		/* 88 X  */ null,
 		/* 89 Y  */ null,
-		/* 90 Z  */ null,
+		/* 90 Z  */ new OP_Dot_Z(),
 		/* 91 [  */ null,
 		/* 92 \  */ new OP_Dot_BackSlash(),
 		/* 93 ]  */ null,
@@ -363,7 +363,7 @@ class OP_Dot_And extends Operator {
 
 	public OP_Dot_And() {
 		init(".&");
-		arg("SSS", "replace all occurances of the regex S1 with S2 in S3");
+		arg("SSS", "replace all occurrences of the regex S2 with S3 in S1");
 		arg("LLB", "zip with");
 		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
 	}
@@ -1397,6 +1397,27 @@ class OP_Dot_AppendBack extends Operator {
 			block.push(a);
 		} else {
 			throw new TypeError(this, a, b);
+		}
+	}
+}
+
+
+// Z - 90
+class OP_Dot_Z extends Operator {
+
+	public OP_Dot_Z() {
+		init(".Z");
+		arg("L", "permutations");
+	}
+
+	@Override
+	public void execute(Block block) {
+		Obj a = block.pop();
+
+		if (a.isa(LIST)) {
+			block.push(asList(a).permutations());
+		} else {
+			throw new TypeError(this, a);
 		}
 	}
 }

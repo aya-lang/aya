@@ -128,7 +128,7 @@ public class ColonOps {
 		/* 91 [  */ null,
 		/* 92 \  */ null,
 		/* 93 ]  */ null,
-		/* 94 ^  */ null,
+		/* 94 ^  */ new OP_Colon_Carat(),
 		/* 95 _  */ null, // Assignment
 		/* 96 `  */ new OP_Colon_Tick(),
 		/* 97 a  */ null, // Assignment
@@ -969,7 +969,12 @@ class OP_Colon_O extends Operator {
 
 		if (c.isa(Obj.BLOCK)) {
 			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asStaticBlock(c));
-			block.push(VectorizedFunctions.vectorize2arg(block_op, a, b));
+			final Obj result = VectorizedFunctions.vectorize2arg(block_op, a, b);
+			if (result == null) {
+				throw new ValueError("Cannot vectorize over args: " + a.repr() + ", " + b.repr());
+			} else {
+				block.push(result);
+			}
 		} else {
 			throw new TypeError(this, c, b, a);
 		}
@@ -1110,6 +1115,29 @@ class OP_Colon_Zed extends Operator {
 		}
 	}
 }
+
+// ^ - 94
+class OP_Colon_Carat extends Operator {
+	
+	public OP_Colon_Carat() {
+		init(":^");
+		arg("LL", "set intersection");
+	}
+
+	@Override
+	public void execute (Block block) {
+		Obj a = block.pop();
+		Obj b = block.pop();
+		
+		if(a.isa(LIST) && b.isa(LIST)) {
+			block.push(asList(a).intersect(asList(b)));
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 
 
 

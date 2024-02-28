@@ -11,6 +11,7 @@ import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.ListAlgorithms;
 import aya.obj.list.ListImpl;
+import aya.obj.list.Permutations;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
@@ -606,6 +607,11 @@ public class NumberItemList extends NumberList {
 	@Override
 	protected ListImpl flatten() {
 		return copy();
+	}
+	
+	@Override
+	public List permutations() {
+		return Permutations.allPermutations(_list);
 	}
 	
 	@Override
