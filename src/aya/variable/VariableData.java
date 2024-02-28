@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import aya.Aya;
+import aya.AyaThread;
 import aya.InteractiveAya;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
@@ -55,11 +56,10 @@ public class VariableData {
 
 	public final Dict OBJ_NIL = new Dict();
 
-	public VariableData(Aya aya) {
-		initGlobals(aya);
+	public VariableData() {
 	}
 	
-	public void initGlobals(Aya aya) {
+	public void initGlobals(AyaThread aya) {
 		Dict globals = new Dict();
 		
 		globals.set(SymbolConstants.VERSION, List.fromString(Aya.VERSION_NAME));

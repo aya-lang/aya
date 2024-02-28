@@ -996,7 +996,7 @@ class OP_Colon_P extends Operator {
 
 	@Override
 	public void execute (BlockEvaluator blockEvaluator) {		
-		Aya.getInstance().println(blockEvaluator.pop().str());
+		Aya.getInstance().getOut().println(blockEvaluator.pop().str());
 	}
 }
 

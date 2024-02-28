@@ -14,7 +14,7 @@ public class PopCallstackInstruction extends FlagInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Aya.getInstance().getCallStack().pop();
+		Aya.getInstance().deleteme_getRoot().getCallStack().pop();
 	}
 	
 	@Override

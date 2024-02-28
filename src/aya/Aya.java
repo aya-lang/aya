@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,7 +11,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.exceptions.parser.ParserException;
-import aya.exceptions.runtime.AyaRuntimeException;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
@@ -35,7 +31,6 @@ import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -52,39 +47,38 @@ public class Aya extends Thread {
 	
 	public static boolean PRINT_LARGE_ERRORS = true;
 	
-	private PrintStream _out = System.out;
-	private PrintStream _err = System.err;
-	private InputStream _in = System.in;
-	private Scanner _scanner = new Scanner(_in, "UTF-8");
+	private AyaStdIO _io;
+	private Scanner _scanner; 
 	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
 	private StringSearch _helpData;
-	private VariableData _variables;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
 	private ArrayList<NamedInstructionStore> _namedInstructionStores = new ArrayList<NamedInstructionStore>();
 	private SymbolTable _symbolTable = new SymbolTable();
+	private AyaThread _root = null;
 	
-	private CallStack _callstack = new CallStack();
-	
-	public CallStack getCallStack() {
-		return _callstack;
-	}
 	
 	protected Aya() {
-		//Exists only to defeat instantiation
+		_io = new AyaStdIO(System.out, System.err, System.in);
+		_scanner = new Scanner(_io.in(), "UTF-8");
 	}
 	
 	
 	public static Aya getInstance() {
 		if(_instance == null) {
 			_instance = new Aya();
-			_instance._variables = new VariableData(_instance);
+			_instance._root = new AyaThread(_instance._io);
+			// Init global vars
+			_instance._root.getVars().initGlobals(_instance._root);
 			AyaPrefs.init();
 			_instance.initNamedInstructions();
 		}
 		return _instance;
 	}
-
+	
+	public AyaThread deleteme_getRoot() {
+		return _root;
+	}
 
 	@Override
 	public void run() {
@@ -125,7 +119,7 @@ public class Aya extends Thread {
 	}
 	
 	public VariableData getVars() {
-		return _instance._variables;
+		return _instance._root.getVars();
 	}
 
 	
@@ -205,43 +199,32 @@ public class Aya extends Thread {
 	////////////////////////
 	
 	public PrintStream getOut() {
-		return _out;
+		return _io.out();
 	}
 	
 	public PrintStream getErr() {
-		return _err;
+		return _io.err();
 	}
 	
 	public InputStream getIn() {
-		return _in;
+		return _io.in();
 	}
 	
 	public Scanner getInScanner() {
 		return _scanner;
 	}
 
-	
 	public void setOut(OutputStream os) {
-		try {
-			_out = new PrintStream(os, true, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch blockEvaluator
-			e1.printStackTrace();
-		}
+		_io.setOut(os);
 	}
 	
 	public void setErr(OutputStream os) {
-		try {
-			_err = new PrintStream(os, true, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch blockEvaluator
-			e1.printStackTrace();
-		}
+		_io.setErr(os);
 	}
 	
 	public void setIn(InputStream is) {
-		_in = is;
-		_scanner = new Scanner(_in, "UTF-8");
+		_io.setIn(is);
+		_scanner = new Scanner(_io.in(), "UTF-8");
 	}
 	
 	
@@ -253,9 +236,9 @@ public class Aya extends Thread {
 	
 	private void run(SourceString str) {
 		try {
-			run(Parser.compile(str, this));
+			_root.run(Parser.compile(str, this));
 		} catch (ParserException e) {
-			_instance._err.println("Syntax Error: " + e.getSimpleMessage());
+			_io.err().println("Syntax Error: " + e.getSimpleMessage());
 		}
 	}
 	
@@ -264,10 +247,7 @@ public class Aya extends Thread {
 	// PRINTING METHODS //
 	//////////////////////
 	
-	public void print(Object o) {_instance._out.print(o.toString());}
-	public void println(Object o) {_instance._out.println(o.toString());}
-	public void printDebug(Object o) {if (DEBUG) _instance._out.println(o.toString());}
-	public void printEx(Object o) {_instance._err.print(o.toString());}
+	public void printDebug(Object o) {if (DEBUG) _io.out().println(o.toString());}
 	
 	////////////////////////
 	// Named Instructions //
@@ -315,60 +295,11 @@ public class Aya extends Thread {
 	// PRIVATE METHODS //
 	/////////////////////
 	
-	/** Run a blockEvaluator */
-	private void run(BlockEvaluator b) {
-		try {
-			b.eval();
-			String s = b.getPrintOutputState();
-			if (!s.equals("")) {
-				println(s);
-			}
-		} catch (AyaRuntimeException ex) {
-			ex.print(_instance._err);
-			if (!_callstack.isEmpty()) {
-				_instance._err.print(_callstack.toString());
-			}
-		} catch (Exception e) {
-			_instance._err.println(exToString(e));
-			try {
-				
-				if (b.hasOutputState())
-					_instance._err.println("stack:\n\t" + b.getPrintOutputState());
-				if (b.getInstructions().size() > 0)
-					_instance._err.println("just before:\n\t" + b.getInstructions().toString());
-				if (!_callstack.isEmpty())
-					_instance._err.print(_callstack.toString());
-			} catch (Exception e2) {
-				_instance._err.println("An additional error was thrown when attempting to print the stack state:");
-				_instance._err.println(exToString(e2));
-				_instance._err.println("This is likely caused by an error in an overloaded __str__ or __repr__ blockEvaluator.");
-			} 
-		} finally {
-			_instance._variables.reset();
-			_instance._callstack.reset();
-		}
-	}
+
 	
 	////////////////////
 	// HELPER METHODS //
 	////////////////////
-	
-	public static String exToString(Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		pw.println(AyaPrefs.BUG_MESSAGE);
-		e.printStackTrace(pw);
-		return sw.toString();
-	}
-	
-	/*
-	private static String exToSimpleStr(Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		e.printStackTrace(pw);
-		return sw.toString().split("\n")[0];
-	}
-	*/
 
 
 	public void quit() {
@@ -379,7 +310,7 @@ public class Aya extends Thread {
 	/** Return true if input is ready to be read */
 	public boolean isInputAvaiable() {
 		try {
-			return _instance._in.available() > 0;
+			return _io.in().available() > 0;
 		} catch (IOException e) {
 			return false;
 		}

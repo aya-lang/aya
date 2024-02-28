@@ -84,7 +84,7 @@ public class InteractiveAya extends Thread {
 			
 			//Help
 			else if(command.equals("H") || command.equals("HELP")) {
-				_aya.println(HELP_TEXT);
+				_aya.getOut().println(HELP_TEXT);
 				return SKIP_WAIT;
 			}
 			
@@ -99,10 +99,10 @@ public class InteractiveAya extends Thread {
 				_aya.getHelpData().clearFilter();
 				_aya.getHelpData().applyNewFilter(searchText);
 				if(_aya.getHelpData().getFilteredItems().size() == 0) {
-					_aya.println("No help data matching \"" + searchText + "\"");
+					_aya.getOut().println("No help data matching \"" + searchText + "\"");
 				} else {
 					for(String s : Aya.getInstance().getHelpData().getFilteredItems()) {
-						_aya.println(s.replace("\n", "\n   "));
+						_aya.getOut().println(s.replace("\n", "\n   "));
 					}
 				}
 				
@@ -111,7 +111,7 @@ public class InteractiveAya extends Thread {
 			
 			//Version
 			else if(command.equals("V") || command.equals("VERSION")) {
-				_aya.println(Aya.VERSION_NAME);
+				_aya.getOut().println(Aya.VERSION_NAME);
 				return SKIP_WAIT;
 			}
 			

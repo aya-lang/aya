@@ -16,7 +16,7 @@ public class PauseDebugInstruction extends NamedOperator {
 	}
 	
 	private static void print(Object o) {
-		Aya.getInstance().println(o);
+		Aya.getInstance().getOut().println(o);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class PauseDebugInstruction extends NamedOperator {
 		}
 		print("Next instructions: " + instructions_state);
 		while (true) {
-			Aya.getInstance().print("aya (debug)> ");
+			Aya.getInstance().getOut().print("aya (debug)> ");
 			String input = Aya.getInstance().nextLine();
 			if (input.equals(".")) {
 				print(""); // newline
