@@ -2,6 +2,7 @@ package aya.instruction;
 
 import java.util.Stack;
 
+import aya.eval.AyaThread;
 import aya.obj.Obj;
 import aya.obj.list.List;
 
@@ -20,20 +21,20 @@ public class EmptyListLiteralInstruction extends ListLiteralInstruction {
 	}
 	
 	@Override
-	public List getListCopy(Stack<Obj> outerStack) {
+	public List getListCopy(AyaThread context, Stack<Obj> outerStack) {
 		return new List();
 	}
 	
 	@Override
-	public List toList() {
+	public List toListNoEval() {
 		return new List();
 	}
 	
-	@Override
-	public EmptyListLiteralInstruction duplicate() {
-		// State is never modified, okay to return self
-		return this;
-	}
+//	@Override
+//	public EmptyListLiteralInstruction duplicate() {
+//		// State is never modified, okay to return self
+//		return this;
+//	}
 	
 	@Override
 	public String toString() {

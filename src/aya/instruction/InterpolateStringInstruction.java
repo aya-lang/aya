@@ -2,6 +2,7 @@ package aya.instruction;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
@@ -24,7 +25,7 @@ public class InterpolateStringInstruction extends Instruction  {
 		return new InterpolateStringInstruction(getSource(), orig, instructions);
 	}
 	
-	public String evalString() {
+	public String evalString(AyaThread context) {
 		InstructionStack is = this.instructions.duplicate();
 		StringBuilder sb = new StringBuilder();
 		
@@ -42,7 +43,7 @@ public class InterpolateStringInstruction extends Instruction  {
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {
-					BlockEvaluator b = new BlockEvaluator();
+					BlockEvaluator b = context.createEvaluator();
 					b.dump(Casting.asStaticBlock(data));
 					b.eval();
 					if (b.getStack().size() == 1) {
@@ -73,7 +74,7 @@ public class InterpolateStringInstruction extends Instruction  {
 
 	@Override
 	public void execute(BlockEvaluator b) {
-		b.push(List.fromString(evalString()));
+		b.push(List.fromString(evalString(b.getContext())));
 		
 	}
 

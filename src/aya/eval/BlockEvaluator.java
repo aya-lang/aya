@@ -25,19 +25,26 @@ import aya.util.Casting;
  */
 public class BlockEvaluator {
 	
+	private AyaThread _context;
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
 	
 	/** Create a new blockEvaluator with empty instructions and stack */
-	public BlockEvaluator() {
+	protected BlockEvaluator(AyaThread context) {
+		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = new InstructionStack();
 	}
 	
 	/** Create a new blockEvaluator with empty stack */
-	public BlockEvaluator(InstructionStack il) {
+	protected BlockEvaluator(AyaThread context, InstructionStack il) {
+		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
+	}
+	
+	public AyaThread getContext() {
+		return _context;
 	}
 	
 	/** Returns the output stack */
@@ -145,14 +152,7 @@ public class BlockEvaluator {
 			}
 		}
 	}
-	
-	/** Creates a duplicate of a blockEvaluator without interfering with the blockEvaluator */
-	public BlockEvaluator duplicate() {
-		BlockEvaluator out = new BlockEvaluator(this.instructions.duplicate());
-		out.stack.addAll(this.stack);
-		return out;
-	}
-	
+
 
 	/** Sets the stack */
 	public void setStack(Stack<Obj> dupStack) {

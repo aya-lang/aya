@@ -1077,7 +1077,7 @@ class OP_Dot_TryCatch extends Operator {
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				BlockEvaluator evaluator = new BlockEvaluator();
+				BlockEvaluator evaluator = blockEvaluator.getContext().createEvaluator();
 				Aya.getInstance().deleteme_getRoot().getCallStack().setCheckpoint();
 				Aya.getInstance().getVars().setCheckpoint();
 				evaluator.dump(asStaticBlock(tryBlock));
@@ -1088,7 +1088,7 @@ class OP_Dot_TryCatch extends Operator {
 			} catch (AyaRuntimeException e) {
 				Aya.getInstance().deleteme_getRoot().getCallStack().rollbackCheckpoint();
 				Aya.getInstance().getVars().rollbackCheckpoint();
-				BlockEvaluator evaluator = new BlockEvaluator();
+				BlockEvaluator evaluator = blockEvaluator.getContext().createEvaluator();
 				evaluator.push(e.getDict());
 				evaluator.dump(asStaticBlock(catchBlock));
 				evaluator.eval();
@@ -1145,7 +1145,7 @@ class OP_Dot_N extends Operator {
 			final StaticBlock blk = asStaticBlock(a);
 			List l = asList(b);
 			for (int i = 0; i < l.length(); i++) {
-				BlockEvaluator cond = new BlockEvaluator();
+				BlockEvaluator cond = blockEvaluator.getContext().createEvaluator();
 				cond.push(l.getExact(i));
 				cond.dump(blk);
 				cond.eval();
@@ -1179,6 +1179,7 @@ class OP_Dot_O extends Operator {
 		blockEvaluator.push(exec2arg(a, b));
 	}
 	
+	@Override
 	public Obj exec2arg(final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;

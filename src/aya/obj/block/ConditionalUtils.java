@@ -3,6 +3,7 @@ package aya.obj.block;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.BlockLiteralInstruction;
@@ -11,8 +12,8 @@ import aya.obj.Obj;
 
 public class ConditionalUtils {
 
-	private static boolean evalCondition(Instruction instruction) {
-		BlockEvaluator b = new BlockEvaluator();
+	private static boolean evalCondition(AyaThread context, Instruction instruction) {
+		BlockEvaluator b = context.createEvaluator();
 		b.add(instruction);
 		b.eval();
 		if (!b.getStack().isEmpty()) {
@@ -24,8 +25,8 @@ public class ConditionalUtils {
 		}
 	}
 	
-	private static Obj evalResult(Instruction instruction) {
-		BlockEvaluator b = new BlockEvaluator();
+	private static Obj evalResult(AyaThread context, Instruction instruction) {
+		BlockEvaluator b = context.createEvaluator();
 		if (instruction instanceof BlockLiteralInstruction) {
 			b.dump(((BlockLiteralInstruction)instruction).getRawBlock());
 		} else {
@@ -39,16 +40,16 @@ public class ConditionalUtils {
 		}
 	}
 	
-	public static Obj runConditional(StaticBlock block) {
+	public static Obj runConditional(AyaThread context, StaticBlock block) {
 		ArrayList<Instruction> instructions = block.getInstructions();
 		int i;
 		for (i = instructions.size()-1; i > 0; i-=2) {
-			if (evalCondition(instructions.get(i))) {
-				return evalResult(instructions.get(i-1));
+			if (evalCondition(context, instructions.get(i))) {
+				return evalResult(context, instructions.get(i-1));
 			}
 		}
 		if (i == 0) {
-			return evalResult(instructions.get(i));
+			return evalResult(context, instructions.get(i));
 		} else {
 			return null;
 		}

@@ -4,6 +4,7 @@ import aya.AyaStdIO;
 import aya.CallStack;
 import aya.DebugUtils;
 import aya.exceptions.runtime.AyaRuntimeException;
+import aya.obj.block.StaticBlock;
 import aya.variable.VariableData;
 
 public class AyaThread {
@@ -29,6 +30,10 @@ public class AyaThread {
 		return child;
 	}
 	
+	public BlockEvaluator createEvaluator() {
+		return new BlockEvaluator(this);
+	}
+	
 	public VariableData getVars() {
 		return _variables;
 	}
@@ -38,7 +43,9 @@ public class AyaThread {
 	}
 	
 	/** Run a blockEvaluator */
-	public void run(BlockEvaluator b) {
+	public void run(StaticBlock block) {
+		BlockEvaluator b = createEvaluator();
+		b.dump(block);
 		try {
 			b.eval();
 			String s = b.getPrintOutputState();

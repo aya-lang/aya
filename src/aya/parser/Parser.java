@@ -3,7 +3,6 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
@@ -31,6 +30,7 @@ import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolTable;
@@ -598,7 +598,7 @@ public class Parser {
 				Instruction next = is.pop();
 
 				if (next instanceof ListLiteralInstruction) {
-					List l = ((ListLiteralInstruction) next).toList();
+					List l = ((ListLiteralInstruction) next).toListNoEval();
 					if (l != null) {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
@@ -637,7 +637,7 @@ public class Parser {
 
 				// Index assignment
 				else if (next instanceof ListLiteralInstruction) {
-					List l = ((ListLiteralInstruction) next).toList();
+					List l = ((ListLiteralInstruction) next).toListNoEval();
 					if (l != null) {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
@@ -754,9 +754,9 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static BlockEvaluator compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		ParserString ps = new ParserString(source);
-		return new BlockEvaluator(generate(assemble(tokenize(aya, ps))));
+	public static StaticBlock compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		InstructionStack is = compileIS(source, aya);
+		return BlockUtils.fromIS(is);
 	}
 
 	/**

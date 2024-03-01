@@ -5,6 +5,7 @@ import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.ParserException;
 import aya.instruction.named.NamedOperator;
+import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 
@@ -36,16 +37,18 @@ public class PauseDebugInstruction extends NamedOperator {
 				break;
 			}
 			
-			BlockEvaluator b = null;
+			StaticBlock block = null;
 			try {
-				b = Parser.compile(new SourceString(input, "<debug>"), Aya.getInstance());
+				block = Parser.compile(new SourceString(input, "<debug>"), Aya.getInstance());
 			} catch (ParserException e) {
 				print("Error parsing expression '" + input + "':\n" + e.getMessage());
 			}
 			
-			if (b != null) {
-				b.eval();
-				print(b.getPrintOutputState());
+			if (block != null) {
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(block);
+				be.eval();
+				print(be.getPrintOutputState());
 			}
 		}
 	}

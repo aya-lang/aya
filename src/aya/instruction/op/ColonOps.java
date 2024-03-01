@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -551,7 +552,7 @@ class OP_Colon_Bool extends Operator {
 	public void execute (BlockEvaluator blockEvaluator) {		
 		Obj a = blockEvaluator.pop();
 		if (a.isa(Obj.BLOCK)) {
-			Obj result = ConditionalUtils.runConditional(Casting.asStaticBlock(a));
+			Obj result = ConditionalUtils.runConditional(blockEvaluator.getContext(), Casting.asStaticBlock(a));
 			if (result != null) {
 				blockEvaluator.push(result);
 			}
@@ -744,7 +745,8 @@ class OP_Colon_F extends Operator {
 			}
 			SourceString source = new SourceString(content, path);
 			try {
-				blockEvaluator.addAll(Parser.compile(source, Aya.getInstance()).getInstructions().getInstrucionList());
+				StaticBlock block = Parser.compile(source, Aya.getInstance());
+				blockEvaluator.dump(block);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}
@@ -938,19 +940,20 @@ class OP_Colon_O extends Operator {
 		public BlockOpInstruction(StaticBlock block) {
 			_block = block;
 		}
+		
 		@Override
 		public void execute(BlockEvaluator blockEvaluator) {
 			final Obj b = blockEvaluator.pop();
 			final Obj a = blockEvaluator.pop();
-			blockEvaluator.push(exec2arg(a, b));
+			blockEvaluator.push(exec2argContext(blockEvaluator.getContext(), a, b));
 		}
-		@Override
-		public Obj exec2arg(final Obj a, final Obj b) {
+
+		public Obj exec2argContext(AyaThread context, final Obj a, final Obj b) {
 			Obj res;
 			if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) {
 				return res;
 			} else {
-				BlockEvaluator blk = new BlockEvaluator();
+				BlockEvaluator blk = context.createEvaluator();
 				blk.push(a);
 				blk.push(b);
 				blk.dump(_block);

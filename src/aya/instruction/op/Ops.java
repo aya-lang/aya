@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -1474,10 +1475,10 @@ class OP_W extends Operator {
 		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(LIST)) {
-			blockEvaluator.push(sum(asList(a)));
+			blockEvaluator.push(sum(blockEvaluator.getContext(), asList(a)));
 		} else if (a.isa(Obj.BLOCK)) {
 			StaticBlock blk = asStaticBlock(a);
-			BlockEvaluator state = new BlockEvaluator();
+			BlockEvaluator state = blockEvaluator.getContext().createEvaluator();
 			state.setStack((Stack<Obj>)blockEvaluator.getStack().clone());
 			
 			boolean condition = false;
@@ -1512,7 +1513,7 @@ class OP_W extends Operator {
 
 
 	/** Generic list summation */
-	public Obj sum(List a) {
+	public Obj sum(AyaThread context, List a) {
 		//Using the new Promoted list, use Str, NumberList, or ObjList
 		if (a.isa(STR)) {
 			char total = 0;
@@ -1530,7 +1531,7 @@ class OP_W extends Operator {
 				return Num.ZERO;
 			}
 			//Push all but the last item
-			BlockEvaluator exec_block = new BlockEvaluator();
+			BlockEvaluator exec_block = context.createEvaluator();
 			for(int i = list.length()-1; i > 0; i--) {
 				exec_block.add(new OperatorInstruction(null, Ops.OP_PLUS));
 				exec_block.add(list.getExact(i));
@@ -1718,7 +1719,8 @@ class OP_Tilde extends Operator {
 			blockEvaluator.dump(asStaticBlock(a));
 		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				blockEvaluator.addAll(Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()).getInstructions().getInstrucionList());
+				StaticBlock compiled_str = Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance());
+				blockEvaluator.dump(compiled_str);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}

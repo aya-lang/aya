@@ -50,7 +50,7 @@ public class BlockLiteralInstruction extends Instruction {
 		if (_defaults != null) {
 			Dict defaults = new Dict();
 			for (Symbol var : _defaults.keySet()) {
-				BlockEvaluator evaluator = new BlockEvaluator();
+				BlockEvaluator evaluator = b.getContext().createEvaluator();
 				evaluator.dump(_defaults.get(var));
 				evaluator.eval();
 				defaults.set(var, evaluator.pop());
