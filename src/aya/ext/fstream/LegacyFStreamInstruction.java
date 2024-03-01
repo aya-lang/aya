@@ -1,10 +1,10 @@
 package aya.ext.fstream;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.character.Char;
 import aya.obj.list.List;
 import aya.obj.number.Num;

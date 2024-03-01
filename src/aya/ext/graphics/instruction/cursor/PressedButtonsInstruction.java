@@ -1,9 +1,9 @@
 package aya.ext.graphics.instruction.cursor;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.list.ListCollector;
 import aya.obj.number.Num;

@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
 

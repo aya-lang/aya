@@ -2,7 +2,7 @@ package aya.instruction.variable;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.obj.block.BlockEvaluator;
+import aya.eval.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
 

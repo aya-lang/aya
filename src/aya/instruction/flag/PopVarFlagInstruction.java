@@ -1,7 +1,7 @@
 package aya.instruction.flag;
 
 import aya.Aya;
-import aya.obj.block.BlockEvaluator;
+import aya.eval.BlockEvaluator;
 
 /**
  *  Pop a variable set from the variable scope stack

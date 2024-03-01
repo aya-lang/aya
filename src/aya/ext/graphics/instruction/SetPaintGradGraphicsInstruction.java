@@ -3,10 +3,10 @@ package aya.ext.graphics.instruction;
 import java.awt.Color;
 import java.awt.GradientPaint;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.BlockEvaluator;
 
 public class SetPaintGradGraphicsInstruction extends GraphicsInstruction {
 

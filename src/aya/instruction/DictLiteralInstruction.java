@@ -5,8 +5,8 @@ import java.util.Queue;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;

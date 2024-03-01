@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.dict.Dict;

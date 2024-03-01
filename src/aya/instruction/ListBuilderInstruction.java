@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;

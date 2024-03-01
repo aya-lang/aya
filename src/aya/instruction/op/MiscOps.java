@@ -11,12 +11,12 @@ import static aya.util.Casting.asNumber;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;

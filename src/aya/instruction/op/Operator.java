@@ -3,13 +3,13 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
 import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.op.overload.OpOverloadNoOp;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;

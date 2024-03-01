@@ -1,11 +1,11 @@
 package aya.ext.graphics.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.util.Casting;
 
 public class CloseGraphicsInstruction extends GraphicsInstruction {

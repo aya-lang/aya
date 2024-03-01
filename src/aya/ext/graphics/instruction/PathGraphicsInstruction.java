@@ -2,11 +2,11 @@ package aya.ext.graphics.instruction;
 
 import java.awt.geom.GeneralPath;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.BlockEvaluator;
 
 public class PathGraphicsInstruction extends GraphicsInstruction {
 

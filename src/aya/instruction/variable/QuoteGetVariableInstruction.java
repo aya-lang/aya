@@ -2,8 +2,8 @@ package aya.instruction.variable;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;

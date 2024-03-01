@@ -7,12 +7,12 @@ import static aya.util.Casting.asNumberList;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;

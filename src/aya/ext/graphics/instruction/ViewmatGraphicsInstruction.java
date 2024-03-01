@@ -3,12 +3,12 @@ package aya.ext.graphics.instruction;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;

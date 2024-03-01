@@ -5,9 +5,9 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;

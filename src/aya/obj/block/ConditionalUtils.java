@@ -3,6 +3,7 @@ package aya.obj.block;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;

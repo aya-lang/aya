@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.util.Casting;
 

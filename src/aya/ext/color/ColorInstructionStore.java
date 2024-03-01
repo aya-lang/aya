@@ -2,10 +2,10 @@ package aya.ext.color;
 
 import java.awt.Color;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;

@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
@@ -43,7 +44,6 @@ import aya.ext.dialog.QuickDialog;
 import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilderInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;

@@ -1,6 +1,5 @@
-package aya.obj.block;
+package aya.eval;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
@@ -13,10 +12,8 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.LambdaInstruction;
-import aya.instruction.flag.PopVarFlagInstruction;
-import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.util.Casting;
@@ -119,27 +116,9 @@ public class BlockEvaluator {
 		return instructions.isEmpty();
 	}
 	
-	/** Get the blockEvaluator's header, return null if it does not have one */
-	public BlockHeader getHeader() {
-		if (instructions.size() > 0) {
-			Instruction i = instructions.peek(0);
-			if (i instanceof BlockHeader) {
-				return (BlockHeader)i;
-			}
-		}
-		return null;
-	}
-	
 	/** Returns true if there are no items remaining in the stack */
 	public boolean stackEmpty() {
 		return stack.isEmpty();
-	}
-
-	/** Test if this blockEvaluator has a local variable set */
-	public boolean hasLocals() {
-		if (instructions.isEmpty()) return false;
-		final Instruction flag = instructions.getInstrucionList().get(0);
-		return flag instanceof PopVarFlagInstruction;
 	}
 	
 	public void dump(StaticBlock block) {
@@ -174,24 +153,6 @@ public class BlockEvaluator {
 		return out;
 	}
 	
-	/** Create a new blockEvaluator with the given header */
-	public BlockEvaluator duplicateNewHeader(BlockHeader header) {
-		if (getHeader() == null) {
-			BlockEvaluator dup = duplicate();
-			dup._addHeader(header);
-			return dup;
-		} else {
-			BlockEvaluator dup = duplicateNoHeader();
-			dup._addHeader(header);
-			return dup;
-		}
-	}
-	
-	/** Assumes this blockEvaluator does not already have a header! */
-	private void _addHeader(BlockHeader bh) {
-		add(bh);
-		add(0, PopVarFlagInstruction.INSTANCE);
-	}
 
 	/** Sets the stack */
 	public void setStack(Stack<Obj> dupStack) {
@@ -233,24 +194,6 @@ public class BlockEvaluator {
 		return instructions;
 	}
 	
-	/** Adds a blockEvaluator to this blockEvaluator (does not duplicate the blockEvaluator) */
-	public void addBlock(BlockEvaluator b) {
-		if (b.hasLocals()) {
-			this.instructions.push(new LambdaInstruction(null, b.getInstructions()));
-		} else {
-			this.instructions.addAll(b.getInstructions().getInstrucionList());
-		}
-	}
-	
-	public void addBlockBack(BlockEvaluator b) {
-		if (b.hasLocals()) {
-			this.instructions.insert(0, new LambdaInstruction(null, b.getInstructions()));
-		} else {
-			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
-		}
-	}
-	
-
 
 	/** Adds an item to the back of the instruction stack. (opposite of add()) */
 	public void addBack(Obj b) {
@@ -297,75 +240,6 @@ public class BlockEvaluator {
 			this.dump(blk);
 		} else {
 			stack.push(obj);
-		}
-	}
-	
-
-
-	
-	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<Assignment> getArgsAndTypes() {
-		BlockHeader header = getHeader();
-		if (header != null) {
-			return header.getArgs();
-		} else {
-			return new ArrayList<Assignment>();
-		}
-	}
-
-	/** Return a list of instructions not including the blockEvaluator header or pop var instruction */
-	public BlockEvaluator duplicateNoHeader() {
-		BlockEvaluator b = duplicate();
-		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
-		// Remove blockEvaluator header
-		int len = instructions.size();
-		if (len > 0) {
-			int last = len-1;
-			Instruction i = instructions.get(last);
-			if (i instanceof BlockHeader) {
-				instructions.remove(last);
-
-				// There was a header, remove popvar flag instruction
-				len = instructions.size();
-				if (len > 0) {
-					i = instructions.get(0);
-					if (i instanceof PopVarFlagInstruction) {
-						instructions.remove(0);
-					} else {
-						throw new RuntimeException("Expected popvar instruction in duplicateNoHeader");
-					}
-				}
-			}
-		}
-		
-		return b;
-	}
-
-	/** Return a copy of the blockEvaluator. If the original does not have a blockEvaluator header with local variables
-	 * create an empty local variables in the copy
-	 */
-	public BlockEvaluator duplicateAddLocals() {
-		 BlockEvaluator b = duplicate();
-		 BlockHeader bh = b.getHeader();
-		 if (bh == null) {
-			 bh = new BlockHeader(null);
-			 b.add(bh);
-			 b.add(0, PopVarFlagInstruction.INSTANCE);
-		 }
-		 return b;
-	}
-
-	
-	/** Allow access to modify the blockEvaluator's local variables directly
-	 *  If there are no locals, return null
-	 * @return
-	 */
-	public Dict getLocals() {
-		BlockHeader header = getHeader();
-		if (header != null) {
-			return header.getVars();
-		} else {
-			return null;
 		}
 	}
 	

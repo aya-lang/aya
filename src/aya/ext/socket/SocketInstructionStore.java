@@ -2,12 +2,12 @@ package aya.ext.socket;
 
 import java.io.IOException;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.util.Casting;

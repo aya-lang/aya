@@ -1,10 +1,9 @@
-package aya;
+package aya.eval;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
+import aya.AyaStdIO;
+import aya.CallStack;
+import aya.DebugUtils;
 import aya.exceptions.runtime.AyaRuntimeException;
-import aya.obj.block.BlockEvaluator;
 import aya.variable.VariableData;
 
 public class AyaThread {
@@ -13,14 +12,17 @@ public class AyaThread {
 	private VariableData _variables;
 	private CallStack _callstack;
 
-	protected AyaThread(AyaStdIO io) {
+	private AyaThread(AyaStdIO io) {
 		_io = io;
 		_variables = new VariableData();
 		_callstack = new CallStack();
 	}
-
 	
-	public AyaThread spawnChild() {
+	public static AyaThread createRoot(AyaStdIO io) {
+		return new AyaThread(io);
+	}
+	
+	public AyaThread createChild() {
 		AyaThread child = new AyaThread(_io);
 		// TODO: This must be changed
 		child._variables = _variables;
@@ -36,7 +38,7 @@ public class AyaThread {
 	}
 	
 	/** Run a blockEvaluator */
-	protected void run(BlockEvaluator b) {
+	public void run(BlockEvaluator b) {
 		try {
 			b.eval();
 			String s = b.getPrintOutputState();
@@ -49,7 +51,7 @@ public class AyaThread {
 				_io.err().print(_callstack.toString());
 			}
 		} catch (Exception e) {
-			_io.err().println(exToString(e));
+			_io.err().println(DebugUtils.exToString(e));
 			try {
 				
 				if (b.hasOutputState())
@@ -60,7 +62,7 @@ public class AyaThread {
 					_io.err().print(_callstack.toString());
 			} catch (Exception e2) {
 				_io.err().println("An additional error was thrown when attempting to print the stack state:");
-				_io.err().println(exToString(e2));
+				_io.err().println(DebugUtils.exToString(e2));
 				_io.err().println("This is likely caused by an error in an overloaded __str__ or __repr__ blockEvaluator.");
 			} 
 		} finally {
@@ -68,15 +70,5 @@ public class AyaThread {
 			_callstack.reset();
 		}
 	}
-	
-	// TODO move to utils
-	public static String exToString(Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		pw.println(AyaPrefs.BUG_MESSAGE);
-		e.printStackTrace(pw);
-		return sw.toString();
-	}
-	
 
 }

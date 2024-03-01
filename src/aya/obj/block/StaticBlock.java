@@ -3,6 +3,7 @@ package aya.obj.block;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.assignment.Assignment;

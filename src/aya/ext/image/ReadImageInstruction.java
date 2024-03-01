@@ -8,11 +8,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.numberlist.NumberList;
 
 public class ReadImageInstruction extends NamedOperator {

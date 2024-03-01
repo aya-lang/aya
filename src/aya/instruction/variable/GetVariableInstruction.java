@@ -2,9 +2,9 @@ package aya.instruction.variable;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;

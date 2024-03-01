@@ -1,8 +1,8 @@
 package aya.instruction.index;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.number.Num;

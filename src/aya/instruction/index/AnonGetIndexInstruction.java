@@ -1,10 +1,10 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.op.Ops;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.util.Casting;

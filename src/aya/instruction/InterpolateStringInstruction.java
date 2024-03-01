@@ -2,10 +2,10 @@ package aya.instruction;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;

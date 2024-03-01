@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.IOError;
@@ -42,7 +43,6 @@ import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;

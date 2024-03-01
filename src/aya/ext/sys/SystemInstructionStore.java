@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import aya.AyaPrefs;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.util.FileUtils;

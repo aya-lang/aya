@@ -3,6 +3,7 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
@@ -29,7 +30,6 @@ import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.number.Number;

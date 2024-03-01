@@ -3,7 +3,7 @@ package aya.instruction;
 import java.util.HashMap;
 
 import aya.ReprStream;
-import aya.obj.block.BlockEvaluator;
+import aya.eval.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;

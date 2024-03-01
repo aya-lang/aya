@@ -1,7 +1,7 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.obj.block.BlockEvaluator;
+import aya.eval.BlockEvaluator;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
 

@@ -6,10 +6,10 @@ import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;

@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import aya.Aya;
-import aya.AyaThread;
 import aya.InteractiveAya;
+import aya.eval.AyaThread;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;

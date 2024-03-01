@@ -1,8 +1,8 @@
 package aya.instruction.named;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
-import aya.obj.block.BlockEvaluator;
 import aya.parser.SourceStringRef;
 
 public class NamedOperatorInstruction extends Instruction {

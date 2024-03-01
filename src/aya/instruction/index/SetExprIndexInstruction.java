@@ -1,8 +1,8 @@
 package aya.instruction.index;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
 

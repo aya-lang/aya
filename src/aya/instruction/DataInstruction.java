@@ -1,8 +1,8 @@
 package aya.instruction;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 
 public class DataInstruction extends Instruction {
 	

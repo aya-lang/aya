@@ -6,12 +6,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.dict.Dict;
 import aya.util.DictReader;
 

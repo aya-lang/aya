@@ -1,11 +1,11 @@
 package aya.ext.graphics;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.InvalidReferenceError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.util.BlockReader;
 import aya.util.Casting;
 

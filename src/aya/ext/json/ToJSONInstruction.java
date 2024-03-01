@@ -1,9 +1,9 @@
 package aya.ext.json;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.BlockEvaluator;
 import aya.obj.list.List;
 
 public class ToJSONInstruction extends NamedOperator {
