@@ -572,7 +572,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter(Casting.asStaticBlock(index), dflt);
+			return filter(context, Casting.asStaticBlock(index), dflt);
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"

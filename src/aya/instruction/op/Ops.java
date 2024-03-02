@@ -1229,7 +1229,7 @@ class OP_O extends Operator {
 					blockEvaluator.push(blk);
 					blockEvaluator.callVariable(d, SymbolConstants.KEYVAR_EACH);
 				} else {
-					blockEvaluator.push(DictIndexing.map((Dict)container, asStaticBlock(blk)));
+					blockEvaluator.push(DictIndexing.map(blockEvaluator.getContext(), (Dict)container, asStaticBlock(blk)));
 				}
 			} else {
 				throw new TypeError(this, blk_obj, container);

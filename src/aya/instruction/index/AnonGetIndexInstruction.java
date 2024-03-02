@@ -23,7 +23,7 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 		if(list.isa(Obj.LIST)) {		
 			blockEvaluator.push(Casting.asList(list).getIndexed(index));
 		} else if (list.isa(Obj.DICT)) {
-			blockEvaluator.push(DictIndexing.getIndex((Dict)list, index));
+			blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), (Dict)list, index));
 		} else {
 			throw new TypeError(Ops.OP_I_INSTANCE, index, list);
 		}

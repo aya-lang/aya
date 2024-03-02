@@ -1,6 +1,7 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
@@ -18,11 +19,15 @@ public abstract class SetIndexInstruction extends Instruction {
 	
 	protected abstract Obj getIndex();
 	
+	protected Obj getEvaluatedIndex(AyaThread context) {
+		return getIndex();
+	}
+	
 	public void execute(BlockEvaluator blockEvaluator) {
 		final Obj container = blockEvaluator.pop();
 		final Obj value = blockEvaluator.pop();
 		
-		Obj index = getIndex();
+		Obj index = getEvaluatedIndex(blockEvaluator.getContext());
 		boolean keyvar = false;
 		
 		if (container.isa(Obj.LIST)) {

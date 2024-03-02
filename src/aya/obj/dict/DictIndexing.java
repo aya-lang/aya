@@ -5,6 +5,7 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
@@ -22,12 +23,13 @@ public class DictIndexing {
 
 	/**
 	 * Generic getindex interface
+	 * @param context TODO
 	 * @param dict
 	 * @param index
 	 */
-	public static Obj getIndex(Dict dict, Obj index) {
+	public static Obj getIndex(AyaThread context, Dict dict, Obj index) {
 		if (dict.hasMetaKey(SymbolConstants.KEYVAR_GETINDEX)) {
-			BlockEvaluator b = new BlockEvaluator();
+			BlockEvaluator b = context.createEvaluator();
 			b.push(index);
 			b.callVariable(dict, SymbolConstants.KEYVAR_GETINDEX);
 			b.eval();
@@ -41,28 +43,28 @@ public class DictIndexing {
 			ArrayList<Obj> out = new ArrayList<Obj>(l.length());
 			for (int i = 0; i < l.length(); i++) {
 				Obj idx = l.getExact(i);
-				out.add(getIndex(dict, idx));
+				out.add(getIndex(context, dict, idx));
 			}
 			return new List(out);
 		} else if (index.isa(Obj.BLOCK)) {
-			return filter(dict, Casting.asStaticBlock(index));
+			return filter(context, dict, Casting.asStaticBlock(index));
 		} else {
 			throw new IndexError(dict, index, true);
 		}
 	}
 
-	public static Obj getIndex(Dict list, Obj index, Obj dflt_val) {
+	public static Obj getIndex(AyaThread context, Dict list, Obj index, Obj dflt_val) {
 		try {
-			return getIndex(list, index);
+			return getIndex(context, list, index);
 		} catch (IndexError e) {
 			return dflt_val;
 		}
 	}
 	
 	
-	public static Dict map(Dict dict, StaticBlock mapBlock) {
+	public static Dict map(AyaThread context, Dict dict, StaticBlock mapBlock) {
 		Dict out = new Dict();
-		BlockEvaluator b = new BlockEvaluator();
+		BlockEvaluator b = context.createEvaluator();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {
@@ -79,9 +81,9 @@ public class DictIndexing {
 	}
 
 
-	public static Dict filter(Dict dict, StaticBlock filterBlock) {
+	public static Dict filter(AyaThread context, Dict dict, StaticBlock filterBlock) {
 		Dict out = new Dict();
-		BlockEvaluator b = new BlockEvaluator();
+		BlockEvaluator b = context.createEvaluator();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {

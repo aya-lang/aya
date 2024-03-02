@@ -32,7 +32,7 @@ public class GetNumberIndexInstruction extends GetIndexInstruction {
 		} catch (ClassCastException e) {
 			// Not a list, is it a dict?
 			if (o.isa(Obj.DICT)) {
-				blockEvaluator.push(DictIndexing.getIndex((Dict)o, Num.fromInt(_index)));
+				blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), (Dict)o, Num.fromInt(_index)));
 			} else {
 				throw new TypeError("Unable to access object at numeric index [" + _index + "]:\n" + o.repr() );
 			}

@@ -1,5 +1,6 @@
 package aya.instruction.index;
 
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -15,8 +16,8 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 		_index = index;
 	}
 	
-	protected Obj getIndex() {
-		BlockEvaluator index = new BlockEvaluator();
+	protected Obj getEvaluatedIndex(AyaThread context) {
+		BlockEvaluator index = context.createEvaluator();
 		index.dump(_index);
 		index.eval();
 		if (index.getStack().size() == 1) {
@@ -29,5 +30,9 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 										  + ". Expression returned nothing");
 		}
 		
+	}
+	
+	protected Obj getIndex() {
+		return _index;
 	}
 }
