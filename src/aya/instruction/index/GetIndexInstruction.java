@@ -28,7 +28,7 @@ public abstract class GetIndexInstruction extends Instruction {
 		Obj index = getEvaluatedIndex(blockEvaluator.getContext());
 		
 		if (o.isa(Obj.LIST)) {
-			blockEvaluator.push(Casting.asList(o).getIndexed(index));
+			blockEvaluator.push(Casting.asList(o).getIndexed(blockEvaluator.getContext(), index));
 		} else if (o.isa(Obj.DICT)) {
 			blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), Casting.asDict(o), index));
 		} else {

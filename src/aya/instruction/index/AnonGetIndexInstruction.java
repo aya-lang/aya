@@ -21,7 +21,7 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 		final Obj list = blockEvaluator.pop();
 				
 		if(list.isa(Obj.LIST)) {		
-			blockEvaluator.push(Casting.asList(list).getIndexed(index));
+			blockEvaluator.push(Casting.asList(list).getIndexed(blockEvaluator.getContext(), index));
 		} else if (list.isa(Obj.DICT)) {
 			blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), (Dict)list, index));
 		} else {

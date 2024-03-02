@@ -7,13 +7,11 @@ import static aya.util.Casting.asNumberList;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.eval.BlockEvaluator;
+import aya.eval.AyaThread;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.DataInstruction;
 import aya.obj.Obj;
-import aya.obj.block.StaticBlock;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -515,8 +513,9 @@ public class List extends Obj {
 		return getExact(is, dflt);
 	}
 
-	/** General list indexing */
-	public Obj getIndexed(Obj index) {
+	/** General list indexing 
+	 * @param context TODO*/
+	public Obj getIndexed(AyaThread context, Obj index) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt());
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -533,14 +532,14 @@ public class List extends Obj {
 					List index_list = asList(index);
 					List out = new List();
 					for (int i = 0; i < index_list.length(); i++) {
-						out.mutAdd(getIndexed(index_list.getExact(i)));
+						out.mutAdd(getIndexed(context, index_list.getExact(i)));
 					}
 					return out;
 				}
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter(Casting.asStaticBlock(index));
+			return ListIterationFunctions.filter(context, this, Casting.asStaticBlock(index));
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -548,7 +547,7 @@ public class List extends Obj {
 		}
 	}
 
-	public Obj getIndexed(Obj index, Obj dflt) {
+	public Obj getIndexed(AyaThread context, Obj index, Obj dflt) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt(), dflt);
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -565,14 +564,14 @@ public class List extends Obj {
 					List index_list = asList(index);
 					List out = new List();
 					for (int i = 0; i < index_list.length(); i++) {
-						out.mutAdd(getIndexed(index_list.getExact(i), dflt));
+						out.mutAdd(getIndexed(context, index_list.getExact(i), dflt));
 					}
 					return out;
 				}
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter(context, Casting.asStaticBlock(index), dflt);
+			return ListIterationFunctions.filter(context, this, Casting.asStaticBlock(index), dflt);
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -747,8 +746,9 @@ public class List extends Obj {
 		return l;
 	}
 
-	/** General list setting **/
-	public void mutSetIndexed(Obj index, Obj item) {
+	/** General list setting 
+	 * @param context TODO**/
+	public void mutSetIndexed(AyaThread context, Obj index, Obj item) {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {
@@ -798,7 +798,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			boolean[] truthIdxs = filterIndex(Casting.asStaticBlock(index));
+			boolean[] truthIdxs = ListIterationFunctions.filterIndex(context, this, Casting.asStaticBlock(index));
 			for (int i = 0; i < length(); i++) {
 				if (truthIdxs[i]) {
 					mutSetExact(i, item);

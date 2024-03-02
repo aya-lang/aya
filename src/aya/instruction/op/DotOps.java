@@ -1055,7 +1055,7 @@ class OP_Dot_I extends Operator {
 		final Obj list = blockEvaluator.pop();
 
 		if(list.isa(LIST)) {		
-			blockEvaluator.push(asList(list).getIndexed(index, dflt_val));
+			blockEvaluator.push(asList(list).getIndexed(blockEvaluator.getContext(), index, dflt_val));
 		} else if (list.isa(DICT)) {
 			blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), asDict(list), index, dflt_val));
 		} else {

@@ -31,7 +31,7 @@ public abstract class SetIndexInstruction extends Instruction {
 		boolean keyvar = false;
 		
 		if (container.isa(Obj.LIST)) {
-			Casting.asList(container).mutSetIndexed(index, value);
+			Casting.asList(container).mutSetIndexed(blockEvaluator.getContext(), index, value);
 		} else if (container.isa(Obj.DICT)) {
 			Dict d = Casting.asDict(container);
 			if (d.hasMetaKey(SymbolConstants.KEYVAR_SETINDEX)) {

@@ -876,7 +876,7 @@ class OP_D extends Operator {
 			blockEvaluator.callVariable((Dict)b, SymbolConstants.KEYVAR_SETINDEX);
 		}
 		else if (b.isa(LIST)) {
-			asList(b).mutSetIndexed(a, o);
+			asList(b).mutSetIndexed(blockEvaluator.getContext(), a, o);
 			blockEvaluator.push(b);
 		}
 		else {		
@@ -1044,7 +1044,7 @@ class OP_SetIndex extends Operator {
 		
 		// If it is a list, run the standard setindex method
 		if(list.isa(LIST)) {		
-			asList(list).mutSetIndexed(index, item);
+			asList(list).mutSetIndexed(blockEvaluator.getContext(), index, item);
 		}
 		
 		// If it is a dictionary check to see if has a metamethod first
