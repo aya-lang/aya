@@ -64,7 +64,7 @@ public class LambdaToken extends CollectionToken {
 
 	@Override
 	public String typeString() {
-		return "blockEvaluator";
+		return "block";
 	}
 	
 	/** Does not generate instructions for sections after the first (if they exist) 

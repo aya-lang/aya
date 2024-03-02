@@ -272,6 +272,6 @@ public class BlockToken extends CollectionToken {
 
 	@Override
 	public String typeString() {
-		return "blockEvaluator";
+		return "block";
 	}
 }
