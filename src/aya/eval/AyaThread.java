@@ -19,6 +19,10 @@ public class AyaThread {
 		_callstack = new CallStack();
 	}
 	
+	public static AyaThread createIsolatedContext() {
+		return new AyaThread(new AyaStdIO(System.out, System.err, System.in));
+	}
+	
 	public static AyaThread createRoot(AyaStdIO io) {
 		return new AyaThread(io);
 	}
