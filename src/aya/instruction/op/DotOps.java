@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -50,6 +51,7 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
@@ -876,7 +878,7 @@ class OP_Dot_SortUsing extends Operator {
 		else if (a.isa(BLOCK) && b.isa(LIST)) {
 			final StaticBlock blk = asStaticBlock(a);
 			List objs = asList(b);
-			List key_obj = objs.map(blk);
+			List key_obj = ListIterationFunctions.map(blockEvaluator.getContext(), objs, blk);
 
 			//Convert keys to int array
 			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
@@ -1176,16 +1178,15 @@ class OP_Dot_O extends Operator {
 	public void execute (BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(a, b));
+		blockEvaluator.push(exec2argWithContext(blockEvaluator.getContext(), a, b));
 	}
 	
-	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2argWithContext(AyaThread context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
 		
 		if (b.isa(BLOCK)) {
-			BlockEvaluator blk = new BlockEvaluator();
+			BlockEvaluator blk = context.createEvaluator();
 			blk.push(a);
 			blk.dump(asStaticBlock(b));
 			blk.eval();

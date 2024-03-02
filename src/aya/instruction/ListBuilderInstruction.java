@@ -11,6 +11,7 @@ import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.parser.SourceStringRef;
 
@@ -95,13 +96,13 @@ public class ListBuilderInstruction extends Instruction {
 		} else {
 			outList = new List(ListRangeUtils.buildRange(new List(res)));							//Create the initial range
 			if(map != null) {
-				outList = outList.map(this.map);
+				outList = ListIterationFunctions.map(context, outList, this.map);
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
 			for (StaticBlock filter : filters) {
-				outList = outList.filter(filter);
+				outList = ListIterationFunctions.filter(context, outList, filter);
 			}
 		}
 		return outList;

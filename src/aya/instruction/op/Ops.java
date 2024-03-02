@@ -51,6 +51,7 @@ import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
@@ -271,7 +272,7 @@ class OP_Pound extends Operator {
 				}
 			}
 			
-			blockEvaluator.push(asList(popped).map(map));
+			blockEvaluator.push(ListIterationFunctions.map(blockEvaluator.getContext(), asList(popped), map));
 			
 			return;
 		} 	
@@ -1221,7 +1222,7 @@ class OP_O extends Operator {
 			}
 			
 			if (container.isa(Obj.LIST)) {
-				blockEvaluator.push(asList(container).map(blk));
+				blockEvaluator.push(ListIterationFunctions.map(blockEvaluator.getContext(), asList(container), blk));
 			} else if (container.isa(Obj.DICT)) {
 				Dict d = (Dict)container;
 				if (d.pushSelf() && d.containsKey(SymbolConstants.KEYVAR_EACH)) {

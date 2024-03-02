@@ -37,6 +37,7 @@ import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
@@ -391,17 +392,17 @@ class OP_Colon_Times extends Operator {
 
 				ArrayList<Obj> out = new ArrayList<Obj>(l2.length());
 				for (int i = 0; i < l2.length(); i++) {
-					out.add(l1.map1arg(expr, l2.getExact(i)));
+					out.add(ListIterationFunctions.map1arg(blockEvaluator.getContext(), l1, expr, l2.getExact(i)));
 				}
 				
 				blockEvaluator.push(new List(out));
 			} else if (b.isa(LIST)) {
-				blockEvaluator.push(asList(b).map1arg(expr, a));
+				blockEvaluator.push(ListIterationFunctions.map1arg(blockEvaluator.getContext(), asList(b), expr, a));
 			} else if (a.isa(LIST)) {
 				StaticBlock e = StaticBlock.EMPTY;
 				e = BlockUtils.addAll(e, expr);
 				e = BlockUtils.add(e, b);
-				blockEvaluator.push(asList(a).map(e));
+				blockEvaluator.push(ListIterationFunctions.map(blockEvaluator.getContext(), asList(a), e));
 			} else {
 				throw new TypeError(this, c, b, a);
 			}
