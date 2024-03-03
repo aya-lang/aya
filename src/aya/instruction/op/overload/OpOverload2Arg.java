@@ -2,12 +2,12 @@ package aya.instruction.op.overload;
 
 import java.util.ArrayList;
 
-import aya.Aya;
-import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 
 public class OpOverload2Arg extends OpOverload {
 	
@@ -21,8 +21,8 @@ public class OpOverload2Arg extends OpOverload {
 			throw new IllegalArgumentException();
 		}
 		
-		_var  =  Aya.getInstance().getSymbols().getSymbol("__" + name + "__");
-		_rvar =  Aya.getInstance().getSymbols().getSymbol("__r" + name + "__");
+		_var  =  SymbolTable.getSymbol("__" + name + "__");
+		_rvar =  SymbolTable.getSymbol("__r" + name + "__");
 	}
 
 	public ArrayList<String> getNames() {

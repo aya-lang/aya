@@ -62,6 +62,7 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.parser.SourceString;
@@ -546,7 +547,7 @@ class OP_Dot_Minus extends Operator {
 		if (idx.isa(SYMBOL)) {
 			d.remove((Symbol)idx);
 		} else if (idx.isa(STR)) {
-			Symbol s = Aya.getInstance().getSymbols().getSymbol(idx.str());
+			Symbol s = SymbolTable.getSymbol(idx.str());
 			d.remove(s);
 		} else if (idx.isa(LIST)) {
 			List l = asList(idx);

@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import aya.Aya;
 import aya.ReprStream;
-import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
 /**
@@ -440,7 +440,7 @@ public class Dict extends Obj {
 	/** General setindex */
 	public static void setIndex(Dict dict, Obj index, Obj value) {
 		if (index.isa(Obj.STR)) {
-			dict.set(Aya.getInstance().getSymbols().getSymbol(index.str()), value);
+			dict.set(SymbolTable.getSymbol(index.str()), value);
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set((Symbol)index, value);
 		} else {

@@ -1,6 +1,5 @@
 package aya.ext.graphics.instruction.keyboard;
 
-import aya.Aya;
 import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
@@ -25,11 +24,10 @@ public class PressedKeysInstruction extends GraphicsInstruction {
 		super(canvas_table, "pressed_keys", "N");
 		_doc = "canvas_id: returns a list of dictionaries containing the currently held keys {keycode; key_name; location; location_name;}";
 
-		SymbolTable symbols = Aya.getInstance().getSymbols();
-		KEYCODE = symbols.getSymbol("keycode");
-		KEY_NAME = symbols.getSymbol("key_name");
-		LOCATION = symbols.getSymbol("location");
-		LOCATION_NAME = symbols.getSymbol("location_name");
+		KEYCODE = SymbolTable.getSymbol("keycode");
+		KEY_NAME = SymbolTable.getSymbol("key_name");
+		LOCATION = SymbolTable.getSymbol("location");
+		LOCATION_NAME = SymbolTable.getSymbol("location_name");
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.eval.ExecutionContext;
 import aya.exceptions.parser.ParserException;
-import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 
@@ -29,7 +28,6 @@ public class Aya extends Thread {
 	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
-	private SymbolTable _symbolTable = new SymbolTable();
 	private ExecutionContext _root = null;
 	
 	
@@ -174,20 +172,6 @@ public class Aya extends Thread {
 	
 	public void printDebug(Object o) {if (DEBUG) _io.out().println(o.toString());}
 	
-	/////////////////////
-	// SYMBOL TABLE    //
-	/////////////////////
-	
-	public SymbolTable getSymbols() {
-		return _symbolTable;
-	}
-	
-	
-	/////////////////////
-	// PRIVATE METHODS //
-	/////////////////////
-	
-
 	
 	////////////////////
 	// HELPER METHODS //

@@ -62,6 +62,7 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
@@ -997,7 +998,7 @@ class OP_H extends Operator {
 			if (b.isa(SYMBOL)) {
 				key = asSymbol(b);
 			} else if (b.isa(STR) || b.isa(CHAR)) {
-				key = Aya.getInstance().getSymbols().getSymbol(b.str());
+				key = SymbolTable.getSymbol(b.str());
 			} else {
 				throw new TypeError(this, b, a);
 			}
@@ -1182,7 +1183,7 @@ class OP_N extends Operator {
 		} else if(b.isa(Obj.LIST)) {			
 			blockEvaluator.push(Num.fromInt(asList(b).find(a)));
 		} else if (b.isa(DICT) && a.isa(STR)) {
-			Symbol s = Aya.getInstance().getSymbols().getSymbol(a.str());
+			Symbol s = SymbolTable.getSymbol(a.str());
 			blockEvaluator.push( Num.fromBool(((Dict)b).containsKey(s)) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
 			blockEvaluator.push( Num.fromBool(((Dict)b).containsKey(asSymbol(a))) );

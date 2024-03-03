@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.XML;
 
-import aya.Aya;
 import aya.exceptions.ex.AyaException;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -26,9 +25,9 @@ public class JSONUtils {
 	public static class JSONParams {
 		private static JSONParams default_encode = null;
 		private static JSONParams default_decode = null;
-		private static Symbol FALSE_SYM = Aya.getInstance().getSymbols().getSymbol("__json_false");
-		private static Symbol TRUE_SYM =  Aya.getInstance().getSymbols().getSymbol("__json_true");
-		private static Symbol NULL_SYM =  Aya.getInstance().getSymbols().getSymbol("__json_null");
+		private static Symbol FALSE_SYM = SymbolTable.getSymbol("__json_false");
+		private static Symbol TRUE_SYM =  SymbolTable.getSymbol("__json_true");
+		private static Symbol NULL_SYM =  SymbolTable.getSymbol("__json_null");
 		
 		public JSONParams(Obj obj_null, Obj obj_true, Obj obj_false, boolean parse_symbol) {
 			this.obj_null = obj_null;
@@ -103,7 +102,7 @@ public class JSONUtils {
 			JSONObject json = (JSONObject)object;
 			Dict d = new Dict();
 			for (String key : json.keySet()) {
-				Symbol sym = Aya.getInstance().getSymbols().getSymbol(key);
+				Symbol sym = SymbolTable.getSymbol(key);
 				if (json.isNull(key)) {
 					d.set(sym, params.obj_null);
 				} else {
@@ -132,7 +131,7 @@ public class JSONUtils {
 			if (params.parse_symbol && str.startsWith("::")) {
 				String name = str.substring(2);
 				if (SymbolTable.isBasicSymbolString(name)) {
-					return Aya.getInstance().getSymbols().getSymbol(name);
+					return SymbolTable.getSymbol(name);
 				} else {
 					return List.fromString(str);
 				}

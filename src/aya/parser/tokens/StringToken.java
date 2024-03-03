@@ -74,7 +74,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new GetVariableInstruction(ref, Aya.getInstance().getSymbols().getSymbol(var_name)));
+					instrs.insert(0, new GetVariableInstruction(ref, SymbolTable.getSymbol(var_name)));
 					
 				}
 				

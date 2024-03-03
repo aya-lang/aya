@@ -4,23 +4,19 @@ import static aya.util.Casting.asList;
 
 import java.util.ArrayList;
 
-import aya.Aya;
-import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 
 public class DictIndexing {
 	
-	public static Symbol getSym(String str) {
-		return Aya.getInstance().getSymbols().getSymbol(str);
-	}
-
 	/**
 	 * Generic getindex interface
 	 * @param context TODO
@@ -35,7 +31,7 @@ public class DictIndexing {
 			b.eval();
 			return b.pop();
 		} else if (index.isa(Obj.STR)) {
-			return dict.get(getSym(index.str()));
+			return dict.get(SymbolTable.getSymbol(index.str()));
 		} else if (index.isa(Obj.SYMBOL)) {
 			return dict.get((Symbol)index);
 		} else if (index.isa(Obj.LIST)) {

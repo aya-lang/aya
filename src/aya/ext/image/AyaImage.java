@@ -7,7 +7,6 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 
-import aya.Aya;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -28,10 +27,9 @@ public class AyaImage {
 	private static Symbol HEIGHT;
 	
 	public AyaImage(NumberList bytes, int width, int height) {
-		SymbolTable syms = Aya.getInstance().getSymbols();
-		DATA = syms.getSymbol("data");
-		WIDTH = syms.getSymbol("width");
-		HEIGHT = syms.getSymbol("height");
+		DATA = SymbolTable.getSymbol("data");
+		WIDTH = SymbolTable.getSymbol("width");
+		HEIGHT = SymbolTable.getSymbol("height");
 		
 		this.bytes = bytes;
 		this.width = width;

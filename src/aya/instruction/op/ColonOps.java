@@ -491,7 +491,7 @@ class OP_Colon_Equals extends Operator {
 			context.getVars().setVar((Symbol)sym, obj);
 		} else if (sym.isa(CHAR) || sym.isa(STR)) {
 			String s = sym.str();
-			context.getVars().setVar(Aya.getInstance().getSymbols().getSymbol(s), obj);
+			context.getVars().setVar(SymbolTable.getSymbol(s), obj);
 		} else {
 			throw new TypeError(this, sym, obj);
 		}
@@ -650,7 +650,7 @@ class OP_Colon_D extends Operator {
 		if (key.isa(SYMBOL)) {
 			d.set((Symbol)key, value);
 		} else if (key.isa(STR)) {
-			Symbol s = Aya.getInstance().getSymbols().getSymbol(key.str());
+			Symbol s = SymbolTable.getSymbol(key.str());
 			d.set(s, value);
 		} else {
 			throw new TypeError(this, d, key, value);
@@ -791,7 +791,7 @@ class OP_Colon_I extends Operator {
 			final Dict d = ((Dict)list);
 			
 			if (index.isa(STR)) {
-				Symbol s = Aya.getInstance().getSymbols().getSymbol(index.str());
+				Symbol s = SymbolTable.getSymbol(index.str());
 				out = d.get(s);
 			} else if (index.isa(SYMBOL)) {
 				out = d.get( (Symbol)index );
@@ -1029,7 +1029,7 @@ class OP_Colon_S extends Operator {
 		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(STR) || a.isa(CHAR)) {
-			blockEvaluator.push(Aya.getInstance().getSymbols().getSymbol(a.str()));
+			blockEvaluator.push(SymbolTable.getSymbol(a.str()));
 		} else if (a.isa(BLOCK)) {
 			blockEvaluator.push(BlockUtils.singleToSymbolList(Casting.asStaticBlock(a)));
 		} else {
@@ -1049,7 +1049,7 @@ class OP_Colon_T extends Operator {
 		arg("A", "type of (returns a symbol)");
 	}
 	
-	private static final Symbol TYPE_ID = Aya.getInstance().getSymbols().getSymbol("__type__");
+	private static final Symbol TYPE_ID = SymbolTable.getSymbol("__type__");
 	
 	@Override
 	public void execute(BlockEvaluator blockEvaluator) {
