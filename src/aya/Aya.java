@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.ParserException;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
@@ -55,7 +55,7 @@ public class Aya extends Thread {
 	private long _lastInputRunTime = 0;
 	private ArrayList<NamedInstructionStore> _namedInstructionStores = new ArrayList<NamedInstructionStore>();
 	private SymbolTable _symbolTable = new SymbolTable();
-	private AyaThread _root = null;
+	private ExecutionContext _root = null;
 	
 	
 	protected Aya() {
@@ -67,7 +67,7 @@ public class Aya extends Thread {
 	public static Aya getInstance() {
 		if(_instance == null) {
 			_instance = new Aya();
-			_instance._root = AyaThread.createRoot(_instance._io);
+			_instance._root = ExecutionContext.createRoot(_instance._io);
 			// Init global vars
 			_instance._root.getVars().initGlobals(_instance._root);
 			AyaPrefs.init();

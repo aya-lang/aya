@@ -3,7 +3,7 @@ package aya.instruction.op.overload;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -46,7 +46,7 @@ public class OpOverload1Arg extends OpOverload {
 	}
 	
 	@Override
-	public Obj executeAndReturn(AyaThread context, Obj a) {
+	public Obj executeAndReturn(ExecutionContext context, Obj a) {
 		if (a.isa(Obj.DICT)) {
 			BlockEvaluator blockEvaluator = context.createEvaluator();
 			blockEvaluator.callVariable((Dict)a, _var);

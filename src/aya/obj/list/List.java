@@ -7,7 +7,7 @@ import static aya.util.Casting.asNumberList;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
@@ -515,7 +515,7 @@ public class List extends Obj {
 
 	/** General list indexing 
 	 * @param context TODO*/
-	public Obj getIndexed(AyaThread context, Obj index) {
+	public Obj getIndexed(ExecutionContext context, Obj index) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt());
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -547,7 +547,7 @@ public class List extends Obj {
 		}
 	}
 
-	public Obj getIndexed(AyaThread context, Obj index, Obj dflt) {
+	public Obj getIndexed(ExecutionContext context, Obj index, Obj dflt) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt(), dflt);
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -748,7 +748,7 @@ public class List extends Obj {
 
 	/** General list setting 
 	 * @param context TODO**/
-	public void mutSetIndexed(AyaThread context, Obj index, Obj item) {
+	public void mutSetIndexed(ExecutionContext context, Obj index, Obj item) {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {

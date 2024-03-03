@@ -8,30 +8,30 @@ import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.variable.VariableData;
 
-public class AyaThread {
+public class ExecutionContext {
 
 	private AyaStdIO _io;
 	private VariableData _variables;
 	private CallStack _callstack;
 
-	private AyaThread(AyaStdIO io) {
+	private ExecutionContext(AyaStdIO io) {
 		_io = io;
 		_variables = new VariableData();
 		_callstack = new CallStack();
 	}
 	
-	public static AyaThread createIsolatedContext() {
-		final AyaThread at = new AyaThread(new AyaStdIO(System.out, System.err, System.in));
+	public static ExecutionContext createIsolatedContext() {
+		final ExecutionContext at = new ExecutionContext(new AyaStdIO(System.out, System.err, System.in));
 		at.getVars().add(new Dict()); // Add empty globals
 		return at;
 	}
 	
-	public static AyaThread createRoot(AyaStdIO io) {
-		return new AyaThread(io);
+	public static ExecutionContext createRoot(AyaStdIO io) {
+		return new ExecutionContext(io);
 	}
 	
-	public AyaThread createChild() {
-		AyaThread child = new AyaThread(_io);
+	public ExecutionContext createChild() {
+		ExecutionContext child = new ExecutionContext(_io);
 		// TODO: This must be changed
 		child._variables = _variables;
 		return child;

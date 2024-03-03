@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -330,7 +330,7 @@ class OP_Colon_Percent extends Operator {
 
 	// a b % => "a % b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj result;
 		// Vectorize?
 		result = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP);
@@ -455,7 +455,7 @@ class OP_Colon_LessThan extends Operator {
 
 	// a b :< => "a :< b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -485,7 +485,7 @@ class OP_Colon_Equals extends Operator {
 		final Obj sym = blockEvaluator.pop();
 		final Obj obj = blockEvaluator.peek();
 	
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 
 		if (sym.isa(SYMBOL)) {
 			context.getVars().setVar((Symbol)sym, obj);
@@ -524,7 +524,7 @@ class OP_Colon_GreaterThan extends Operator {
 
 	// a b :> => "a :> b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -947,7 +947,7 @@ class OP_Colon_O extends Operator {
 			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 		}
 		@Override
-		public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+		public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 			Obj res;
 			if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b)) != null) {
 				return res;

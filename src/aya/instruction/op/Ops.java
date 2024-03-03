@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -381,7 +381,7 @@ class OP_And extends Operator {
 		
 	// a b & => "a & b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -429,7 +429,7 @@ class OP_Times extends Operator {
 
 	// a b * => "a * b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -470,7 +470,7 @@ class OP_Plus extends Operator {
 
 	// a b + => "a + b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -517,7 +517,7 @@ class OP_Minus extends Operator {
 
 	// a b - => "a - b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -562,7 +562,7 @@ class OP_Divide extends Operator {
 		
 	// a b / => "a / b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -616,7 +616,7 @@ class OP_LessThan extends Operator {
 		
 	// a b < => "a < b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -697,7 +697,7 @@ class OP_GreaterThan extends Operator {
 		
 	// a b > => "a > b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -792,7 +792,7 @@ class OP_B extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 		
 		if (overload().execute(blockEvaluator, a)) return;
 
@@ -1375,7 +1375,7 @@ class OP_T extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -1430,7 +1430,7 @@ class OP_V extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 		
 		if (overload().execute(blockEvaluator, a)) return;
 		
@@ -1518,7 +1518,7 @@ class OP_W extends Operator {
 
 
 	/** Generic list summation */
-	public Obj sum(AyaThread context, List a) {
+	public Obj sum(ExecutionContext context, List a) {
 		//Using the new Promoted list, use Str, NumberList, or ObjList
 		if (a.isa(STR)) {
 			char total = 0;
@@ -1651,7 +1651,7 @@ class OP_Caret extends Operator {
 		
 	// a b ^ => "a ^ b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -1691,7 +1691,7 @@ class OP_Bar extends Operator {
 
 	// a b | => "a | b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -1720,7 +1720,7 @@ class OP_Tilde extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj a = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 		
 		if(a.isa(BLOCK)) {
 			blockEvaluator.dump(asStaticBlock(a));

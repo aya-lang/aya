@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -246,7 +246,7 @@ public class BlockUtils {
 		return new StaticBlock(is);
 	}
 
-	public static StaticBlock capture(AyaThread context, StaticBlock b, Symbol s) {
+	public static StaticBlock capture(ExecutionContext context, StaticBlock b, Symbol s) {
 		Obj o = context.getVars().getVar(s);
 		Dict locals = copyLocals(b);
 		locals.set(s, o);

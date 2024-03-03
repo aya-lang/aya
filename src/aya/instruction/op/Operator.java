@@ -3,7 +3,7 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.instruction.op.overload.OpOverload;
@@ -139,11 +139,11 @@ public abstract class Operator {
 		}
 	}
 
-	public Obj exec2arg(AyaThread context, Obj a, Obj b) {
+	public Obj exec2arg(ExecutionContext context, Obj a, Obj b) {
 		throw new UnimplementedError();
 	}
 
-	public Obj exec1arg(AyaThread context, Obj a) {
+	public Obj exec1arg(ExecutionContext context, Obj a) {
 		throw new UnimplementedError();
 	}
 }

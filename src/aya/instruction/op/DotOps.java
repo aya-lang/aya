@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 import aya.Aya;
 import aya.AyaPrefs;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
@@ -227,7 +227,7 @@ class OP_Dot_Bang extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
@@ -341,7 +341,7 @@ class OP_Dot_Percent extends Operator {
 
 	// a b .% => "a .% b"
 	@Override
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
@@ -492,7 +492,7 @@ class OP_Dot_Plus extends Operator {
 		Obj a = blockEvaluator.pop();
 		Obj b = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 
 		// GCD
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
@@ -608,7 +608,7 @@ class OP_Dot_FwdSlash extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
@@ -1079,7 +1079,7 @@ class OP_Dot_TryCatch extends Operator {
 		Obj catchBlock = blockEvaluator.pop();
 		Obj tryBlock = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
@@ -1185,7 +1185,7 @@ class OP_Dot_O extends Operator {
 		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 	
-	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b)) != null) return res;
 		
@@ -1453,7 +1453,7 @@ class OP_Dot_BackSlash extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
@@ -1492,7 +1492,7 @@ class OP_Dot_Pow extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
@@ -1539,7 +1539,7 @@ class OP_Dot_Bar extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
@@ -1572,7 +1572,7 @@ class OP_Dot_Tilde extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj a = blockEvaluator.pop();
 		
-		final AyaThread context = blockEvaluator.getContext();
+		final ExecutionContext context = blockEvaluator.getContext();
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {

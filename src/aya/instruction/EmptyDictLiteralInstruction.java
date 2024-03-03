@@ -2,7 +2,7 @@ package aya.instruction;
 
 import java.util.Queue;
 
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
@@ -22,7 +22,7 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	@Override
 	public int numCaptures() { return 0; }
 	
-	public Dict getDict(AyaThread context, Queue<Obj> q) {
+	public Dict getDict(ExecutionContext context, Queue<Obj> q) {
 		return new Dict();
 	}
 	

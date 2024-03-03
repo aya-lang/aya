@@ -2,7 +2,7 @@ package aya.obj.list;
 
 import java.util.ArrayList;
 
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.instruction.DataInstruction;
 import aya.obj.Obj;
@@ -13,7 +13,7 @@ public class ListIterationFunctions {
 	/** 
 	 * Maps a blockEvaluator to a list and returns the new list. The blockEvaluator is not effected
 	 */
-	public static List map(AyaThread context, List list, StaticBlock map) {
+	public static List map(ExecutionContext context, List list, StaticBlock map) {
 		int len = list.length();
 		if (len > 0) {
 			ArrayList<Obj> out = new ArrayList<Obj>(len);
@@ -34,7 +34,7 @@ public class ListIterationFunctions {
 	 * Same as map but push 1 additional item to the stack (shallow copied)
 	 * Maps a blockEvaluator to a list and returns the new list. The blockEvaluator is not effected
 	 */
-	public static List map1arg(AyaThread context, List list, StaticBlock expr, Obj obj) {
+	public static List map1arg(ExecutionContext context, List list, StaticBlock expr, Obj obj) {
 		int len = list.length();
 		ArrayList<Obj> out = new ArrayList<Obj>(len);
 		BlockEvaluator b = context.createEvaluator();
@@ -56,7 +56,7 @@ public class ListIterationFunctions {
 	 * @param list
 	 * @return
 	 */
-	public static List filter(AyaThread context, List list, StaticBlock filter) {
+	public static List filter(ExecutionContext context, List list, StaticBlock filter) {
 		ArrayList<Obj> out = new ArrayList<Obj>();
 		BlockEvaluator b = context.createEvaluator();
 		for (int i = 0; i < list.length(); i++) {
@@ -79,7 +79,7 @@ public class ListIterationFunctions {
 	 * @param list
 	 * @return
 	 */
-	public static List filter(AyaThread context, List list, StaticBlock staticBlock, Obj dflt) {
+	public static List filter(ExecutionContext context, List list, StaticBlock staticBlock, Obj dflt) {
 		ArrayList<Obj> out = new ArrayList<Obj>(list.length());
 		BlockEvaluator b = context.createEvaluator();
 		for (int i = 0; i < list.length(); i++) {
@@ -102,7 +102,7 @@ public class ListIterationFunctions {
 	 * @param list
 	 * @return
 	 */
-	public static boolean[] filterIndex(AyaThread context, List list, StaticBlock staticBlock) {
+	public static boolean[] filterIndex(ExecutionContext context, List list, StaticBlock staticBlock) {
 		final int len = list.length();
 		boolean[] out = new boolean[len];
 		BlockEvaluator b = context.createEvaluator();

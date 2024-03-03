@@ -1,7 +1,7 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -26,7 +26,7 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 		return stream;
 	}
 	
-	protected Obj getEvaluatedIndex(AyaThread context) {
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
 		BlockEvaluator evaluator = context.createEvaluator();
 		evaluator.dump(_index);
 		evaluator.eval();

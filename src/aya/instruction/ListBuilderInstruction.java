@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -31,7 +31,7 @@ public class ListBuilderInstruction extends Instruction {
 		this.num_captures = num_captures;
 	}
 	
-	public List createList(AyaThread context, Stack<Obj> outerStack) {
+	public List createList(ExecutionContext context, Stack<Obj> outerStack) {
 		BlockEvaluator evaluator = context.createEvaluator();
 		evaluator.dump(initialList);
 

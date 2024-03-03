@@ -3,7 +3,7 @@ package aya.obj.block;
 import java.util.ArrayList;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.BlockLiteralInstruction;
@@ -12,7 +12,7 @@ import aya.obj.Obj;
 
 public class ConditionalUtils {
 
-	private static boolean evalCondition(AyaThread context, Instruction instruction) {
+	private static boolean evalCondition(ExecutionContext context, Instruction instruction) {
 		BlockEvaluator b = context.createEvaluator();
 		b.add(instruction);
 		b.eval();
@@ -25,7 +25,7 @@ public class ConditionalUtils {
 		}
 	}
 	
-	private static Obj evalResult(AyaThread context, Instruction instruction) {
+	private static Obj evalResult(ExecutionContext context, Instruction instruction) {
 		BlockEvaluator b = context.createEvaluator();
 		if (instruction instanceof BlockLiteralInstruction) {
 			b.dump(((BlockLiteralInstruction)instruction).getRawBlock());
@@ -40,7 +40,7 @@ public class ConditionalUtils {
 		}
 	}
 	
-	public static Obj runConditional(AyaThread context, StaticBlock block) {
+	public static Obj runConditional(ExecutionContext context, StaticBlock block) {
 		ArrayList<Instruction> instructions = block.getInstructions();
 		int i;
 		for (i = instructions.size()-1; i > 0; i-=2) {

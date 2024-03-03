@@ -1,7 +1,7 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
@@ -24,7 +24,7 @@ public class InterpolateStringInstruction extends Instruction  {
 		return new InterpolateStringInstruction(getSource(), orig, instructions);
 	}
 	
-	public String evalString(AyaThread context) {
+	public String evalString(ExecutionContext context) {
 		InstructionStack is = this.instructions.duplicate();
 		StringBuilder sb = new StringBuilder();
 		

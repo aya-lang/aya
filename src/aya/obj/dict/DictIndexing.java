@@ -5,7 +5,7 @@ import static aya.util.Casting.asList;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
@@ -27,7 +27,7 @@ public class DictIndexing {
 	 * @param dict
 	 * @param index
 	 */
-	public static Obj getIndex(AyaThread context, Dict dict, Obj index) {
+	public static Obj getIndex(ExecutionContext context, Dict dict, Obj index) {
 		if (dict.hasMetaKey(SymbolConstants.KEYVAR_GETINDEX)) {
 			BlockEvaluator b = context.createEvaluator();
 			b.push(index);
@@ -53,7 +53,7 @@ public class DictIndexing {
 		}
 	}
 
-	public static Obj getIndex(AyaThread context, Dict list, Obj index, Obj dflt_val) {
+	public static Obj getIndex(ExecutionContext context, Dict list, Obj index, Obj dflt_val) {
 		try {
 			return getIndex(context, list, index);
 		} catch (IndexError e) {
@@ -62,7 +62,7 @@ public class DictIndexing {
 	}
 	
 	
-	public static Dict map(AyaThread context, Dict dict, StaticBlock mapBlock) {
+	public static Dict map(ExecutionContext context, Dict dict, StaticBlock mapBlock) {
 		Dict out = new Dict();
 		BlockEvaluator b = context.createEvaluator();
 
@@ -81,7 +81,7 @@ public class DictIndexing {
 	}
 
 
-	public static Dict filter(AyaThread context, Dict dict, StaticBlock filterBlock) {
+	public static Dict filter(ExecutionContext context, Dict dict, StaticBlock filterBlock) {
 		Dict out = new Dict();
 		BlockEvaluator b = context.createEvaluator();
 

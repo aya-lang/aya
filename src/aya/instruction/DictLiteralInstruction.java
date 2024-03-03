@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
@@ -39,7 +39,7 @@ public class DictLiteralInstruction extends Instruction {
 	}
 	
 	/** Run the dict, collect variables, return the Dict object */
-	public Dict getDict(AyaThread context, Queue<Obj> q) {
+	public Dict getDict(ExecutionContext context, Queue<Obj> q) {
 		//Add the variable set to the stack
 		context.getVars().add(new Dict(), true);
 		

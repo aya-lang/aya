@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import aya.Aya;
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
@@ -241,7 +241,7 @@ public class Dict extends Obj {
 			if (bool.isa(Obj.BLOCK)) {
 				// TODO: Remove __bool__
 				// No access to external variables
-				BlockEvaluator blk_bool = AyaThread.createIsolatedContext().createEvaluator();
+				BlockEvaluator blk_bool = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_bool.push(this);
 				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
@@ -272,7 +272,7 @@ public class Dict extends Obj {
 		} else {
 			if (str.isa(Obj.BLOCK)) {
 				// No access to external variables
-				BlockEvaluator blk_str = AyaThread.createIsolatedContext().createEvaluator();
+				BlockEvaluator blk_str = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_str.push(this);
 				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
@@ -355,7 +355,7 @@ public class Dict extends Obj {
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
 				// No access to external variables
-				BlockEvaluator blk_repr = AyaThread.createIsolatedContext().createEvaluator();
+				BlockEvaluator blk_repr = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_repr.push(this);
 				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {

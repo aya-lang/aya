@@ -8,7 +8,7 @@ import java.util.Stack;
 
 import aya.Aya;
 import aya.InteractiveAya;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -59,7 +59,7 @@ public class VariableData {
 	public VariableData() {
 	}
 	
-	public void initGlobals(AyaThread aya) {
+	public void initGlobals(ExecutionContext aya) {
 		Dict globals = new Dict();
 		
 		globals.set(SymbolConstants.VERSION, List.fromString(Aya.VERSION_NAME));

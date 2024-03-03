@@ -1,6 +1,6 @@
 package aya.instruction.index;
 
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -16,7 +16,7 @@ public class SetExprIndexInstruction extends SetIndexInstruction {
 		_index = index;
 	}
 	
-	protected Obj getEvaluatedIndex(AyaThread context) {
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
 		BlockEvaluator index = context.createEvaluator();
 		index.dump(_index);
 		index.eval();

@@ -11,7 +11,7 @@ import static aya.util.Casting.asNumber;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.runtime.TypeError;
@@ -192,7 +192,7 @@ class OP_Fact extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -301,7 +301,7 @@ class OP_Acosine extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -359,7 +359,7 @@ class OP_Log extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -397,7 +397,7 @@ class OP_Asine extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -434,7 +434,7 @@ class OP_Atangent extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -522,7 +522,7 @@ class OP_Cosine extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -553,7 +553,7 @@ class OP_CastDouble extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -600,7 +600,7 @@ class OP_Me extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -637,7 +637,7 @@ class OP_Mi extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -706,7 +706,7 @@ class OP_Ln extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -780,7 +780,7 @@ class OP_To_Rat extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a)) != null) return res;
 		
@@ -821,7 +821,7 @@ class OP_Sine extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;
@@ -861,7 +861,7 @@ class OP_Tangent extends Operator {
 	}
 
 	@Override
-	public Obj exec1arg(AyaThread context, final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
 		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
 		if ((res = overload().executeAndReturn(context, a)) != null) return res;

@@ -25,25 +25,25 @@ import aya.util.Casting;
  */
 public class BlockEvaluator {
 	
-	private AyaThread _context;
+	private ExecutionContext _context;
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
 	
 	/** Create a new blockEvaluator with empty instructions and stack */
-	protected BlockEvaluator(AyaThread context) {
+	protected BlockEvaluator(ExecutionContext context) {
 		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = new InstructionStack();
 	}
 	
 	/** Create a new blockEvaluator with empty stack */
-	protected BlockEvaluator(AyaThread context, InstructionStack il) {
+	protected BlockEvaluator(ExecutionContext context, InstructionStack il) {
 		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
 	}
 	
-	public AyaThread getContext() {
+	public ExecutionContext getContext() {
 		return _context;
 	}
 	

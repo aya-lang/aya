@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
@@ -33,7 +33,7 @@ public class ListLiteralInstruction extends Instruction {
 		return _num_captures;
 	}
 	
-	public List getListCopy(AyaThread context, Stack<Obj> outerStack) {
+	public List getListCopy(ExecutionContext context, Stack<Obj> outerStack) {
 		BlockEvaluator b = context.createEvaluator();
 		b.dump(_block);
 		int p = _num_captures;

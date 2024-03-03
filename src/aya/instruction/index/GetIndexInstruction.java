@@ -1,7 +1,7 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
-import aya.eval.AyaThread;
+import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
@@ -18,7 +18,7 @@ public abstract class GetIndexInstruction extends Instruction {
 
 	protected abstract Obj getIndex();
 	
-	protected Obj getEvaluatedIndex(AyaThread context) {
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
 		return getIndex();
 	}
 	
