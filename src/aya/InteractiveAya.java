@@ -111,7 +111,7 @@ public class InteractiveAya extends Thread {
 			
 			//Version
 			else if(command.equals("V") || command.equals("VERSION")) {
-				_aya.getOut().println(Aya.VERSION_NAME);
+				_aya.getOut().println(StaticData.VERSION_NAME);
 				return SKIP_WAIT;
 			}
 			

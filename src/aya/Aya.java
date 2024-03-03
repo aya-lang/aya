@@ -15,13 +15,6 @@ import aya.parser.Parser;
 import aya.parser.SourceString;
 
 public class Aya extends Thread {
-	public static final boolean DEBUG = true;
-	public static final String QUIT = "\\Q";
-	
-	public static final String VERSION_NAME = "v0.4.0";
-	public static String ayarcPath = "ayarc.aya";
-	
-	public static boolean PRINT_LARGE_ERRORS = true;
 	
 	private AyaStdIO _io;
 	private Scanner _scanner; 
@@ -57,7 +50,7 @@ public class Aya extends Thread {
 				String input = _input.take();
 				
 				synchronized(this) {
-					if (input.equals(QUIT)) {
+					if (input.equals(StaticData.QUIT)) {
 						break;
 					}
 					
@@ -89,21 +82,11 @@ public class Aya extends Thread {
 	}
 
 	
-	///////////////
-	// HELP DATA //
-	///////////////
-	
-
-	
-
-	
-
-	
 	//Returns true if load was successful
 	public boolean loadAyarc() {
 		//Load the standard library
 		try {
-			String pathString = Paths.get(AyaPrefs.getAyaDir(), ayarcPath).toString().replace("\\", "\\\\");
+			String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
 			getInstance().queueInput("\"" + pathString + "\":F");
 		} catch (Exception e) {
 			return false;
@@ -170,7 +153,7 @@ public class Aya extends Thread {
 	// PRINTING METHODS //
 	//////////////////////
 	
-	public void printDebug(Object o) {if (DEBUG) _io.out().println(o.toString());}
+	public void printDebug(Object o) {if (StaticData.DEBUG) _io.out().println(o.toString());}
 	
 	
 	////////////////////
@@ -179,7 +162,7 @@ public class Aya extends Thread {
 
 
 	public void quit() {
-		queueInput(Aya.QUIT);
+		queueInput(StaticData.QUIT);
 	}
 
 

@@ -37,7 +37,7 @@ public class AyaIDE extends JFrame
 			+ "Editor: ctrl-e\n"
 			+ "Run Editor: ctrl-r\n";
 	protected static String HELP_ABOUT = "Aya\n"
-			+ "Version: " + Aya.VERSION_NAME + "\n"
+			+ "Version: " + StaticData.VERSION_NAME + "\n"
 			+ "Source: github.com/nick-paul/aya-lang\n"
 			+ "Wiki: github.com/nick-paul/aya-lang/wiki";
 
