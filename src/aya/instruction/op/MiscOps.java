@@ -488,7 +488,7 @@ class OP_Mb extends Operator {
 		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(Obj.SYMBOL)) {
-			blockEvaluator.push(Num.fromBool(Aya.getInstance().getVars().isDefined(Casting.asSymbol(a))));
+			blockEvaluator.push(Num.fromBool(blockEvaluator.getContext().getVars().isDefined(Casting.asSymbol(a))));
 		} else if (a.isa(BLOCK)) {
 			blockEvaluator.push(BlockUtils.addLocals(Casting.asStaticBlock(a)));
 		} else {

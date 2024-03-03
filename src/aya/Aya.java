@@ -37,7 +37,6 @@ import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
-import aya.variable.VariableData;
 
 public class Aya extends Thread {
 	public static final boolean DEBUG = true;
@@ -117,10 +116,6 @@ public class Aya extends Thread {
 	
 	public Scanner getScanner() {
 		return _scanner;
-	}
-	
-	public VariableData getVars() {
-		return _instance._root.getVars();
 	}
 
 	

@@ -5,6 +5,7 @@ import aya.CallStack;
 import aya.DebugUtils;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.obj.block.StaticBlock;
+import aya.obj.dict.Dict;
 import aya.variable.VariableData;
 
 public class AyaThread {
@@ -20,7 +21,9 @@ public class AyaThread {
 	}
 	
 	public static AyaThread createIsolatedContext() {
-		return new AyaThread(new AyaStdIO(System.out, System.err, System.in));
+		final AyaThread at = new AyaThread(new AyaStdIO(System.out, System.err, System.in));
+		at.getVars().add(new Dict()); // Add empty globals
+		return at;
 	}
 	
 	public static AyaThread createRoot(AyaStdIO io) {

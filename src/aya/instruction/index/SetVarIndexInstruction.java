@@ -1,7 +1,7 @@
 package aya.instruction.index;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
@@ -17,7 +17,12 @@ public class SetVarIndexInstruction extends SetIndexInstruction {
 	
 	@Override
 	protected Obj getIndex() {
-		return Aya.getInstance().getVars().getVar(_var);
+		return _var;
+	}
+	
+	@Override
+	protected Obj getEvaluatedIndex(AyaThread context) {
+		return context.getVars().getVar(_var);
 	}
 
 	@Override

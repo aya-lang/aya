@@ -1,6 +1,5 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.obj.symbol.Symbol;
@@ -14,7 +13,7 @@ public class SetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Aya.getInstance().getVars().setVar(variable_, b.peek());
+		b.getContext().getVars().setVar(variable_, b.peek());
 	}
 	
 	@Override

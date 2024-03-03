@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
@@ -47,7 +46,7 @@ public class BlockHeader extends Instruction {
 	public void execute(BlockEvaluator b) {
 		Dict vars = _vars.clone();
 		setArgs(_args, vars, b);
-		Aya.getInstance().getVars().add(vars);
+		b.getContext().getVars().add(vars);
 	}
 	
 	

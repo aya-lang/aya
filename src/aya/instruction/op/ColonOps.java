@@ -485,13 +485,13 @@ class OP_Colon_Equals extends Operator {
 		final Obj sym = blockEvaluator.pop();
 		final Obj obj = blockEvaluator.peek();
 	
-		final Aya aya = Aya.getInstance();
+		final AyaThread context = blockEvaluator.getContext();
 
 		if (sym.isa(SYMBOL)) {
-			aya.getVars().setVar((Symbol)sym, obj);
+			context.getVars().setVar((Symbol)sym, obj);
 		} else if (sym.isa(CHAR) || sym.isa(STR)) {
 			String s = sym.str();
-			aya.getVars().setVar(aya.getSymbols().getSymbol(s), obj);
+			context.getVars().setVar(Aya.getInstance().getSymbols().getSymbol(s), obj);
 		} else {
 			throw new TypeError(this, sym, obj);
 		}
@@ -768,7 +768,7 @@ class OP_Colon_G extends Operator {
 
 	@Override
 	public void execute(BlockEvaluator blockEvaluator) {
-		blockEvaluator.push(Aya.getInstance().getVars().getDictList());
+		blockEvaluator.push(blockEvaluator.getContext().getVars().getDictList());
 	}
 }
 

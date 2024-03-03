@@ -1,6 +1,5 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
@@ -25,7 +24,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 			b.push(o);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().get(typeSym);
+			Obj builtin_dict = b.getContext().getVars().getGlobals().get(typeSym);
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
 				Obj o;

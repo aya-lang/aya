@@ -792,6 +792,8 @@ class OP_B extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		
+		final AyaThread context = blockEvaluator.getContext();
+		
 		if (overload().execute(blockEvaluator, a)) return;
 
 		if (a.isa(Obj.NUMBER)) {
@@ -800,11 +802,11 @@ class OP_B extends Operator {
 			blockEvaluator.push( ((Char)a).inc() );
 		} else if (a.isa(SYMBOL)) {
 			Symbol var = asSymbol(a);
-			Obj o = Aya.getInstance().getVars().getVar(var);
+			Obj o = context.getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(var, ((Number)o).inc());
+				context.getVars().setVar(var, ((Number)o).inc());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(var, ((Char)o).inc());
+				context.getVars().setVar(var, ((Char)o).inc());
 			}  else {
 				throw new ValueError("Cannot increment " + o.repr() 
 				+ " in place in call " + a.repr() + " V");
@@ -1428,6 +1430,8 @@ class OP_V extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		
+		final AyaThread context = blockEvaluator.getContext();
+		
 		if (overload().execute(blockEvaluator, a)) return;
 		
 		if (a.isa(NUMBER)) {
@@ -1436,11 +1440,11 @@ class OP_V extends Operator {
 			blockEvaluator.push( ((Char)a).dec() );
 		} else if (a.isa(SYMBOL)) {
 			Symbol var = asSymbol(a);
-			Obj o = Aya.getInstance().getVars().getVar(var);
+			Obj o = context.getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(var, ((Number)o).dec());
+				context.getVars().setVar(var, ((Number)o).dec());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(var, ((Char)o).dec());
+				context.getVars().setVar(var, ((Char)o).dec());
 			} else {
 				throw new ValueError("Cannot decrement " + o.repr() 
 						+ " in place in call " + a.repr() + " V");
@@ -1505,7 +1509,7 @@ class OP_W extends Operator {
 			Dict d = (Dict)a;
 			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
 			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
-				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
+				blockEvaluator.getContext().getVars().setVar(e.getKey(), e.getValue());
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1559,7 +1563,7 @@ class OP_X extends Operator {
 	
 	@Override
 	public void execute (final BlockEvaluator blockEvaluator) {
-		Aya.getInstance().getVars().setVar(SymbolConstants.X, blockEvaluator.pop());
+		blockEvaluator.getContext().getVars().setVar(SymbolConstants.X, blockEvaluator.pop());
 	}
 }
 
@@ -1573,7 +1577,7 @@ class OP_Y extends Operator {
 	
 	@Override
 	public void execute (final BlockEvaluator blockEvaluator) {
-		Aya.getInstance().getVars().setGlobalVar(SymbolConstants.Y, blockEvaluator.peek());
+		blockEvaluator.getContext().getVars().setGlobalVar(SymbolConstants.Y, blockEvaluator.peek());
 	}
 }
 
@@ -1716,6 +1720,8 @@ class OP_Tilde extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj a = blockEvaluator.pop();
 		
+		final AyaThread context = blockEvaluator.getContext();
+		
 		if(a.isa(BLOCK)) {
 			blockEvaluator.dump(asStaticBlock(a));
 		} else if (a.isa(STR) || a.isa(CHAR)) {
@@ -1732,10 +1738,10 @@ class OP_Tilde extends Operator {
 				blockEvaluator.add(list.getExact(i));
 			}
 		} else if (a.isa(SYMBOL)) {
-			blockEvaluator.push(Aya.getInstance().getVars().getVar(asSymbol(a)));
+			blockEvaluator.push(context.getVars().getVar(asSymbol(a)));
 		} else if (a.isa(DICT)) {
 			// Dump all vars if they exist in the most local scope
-			Aya.getInstance().getVars().peek().mergeDefined(asDict(a));
+			context.getVars().peek().mergeDefined(asDict(a));
 		} else {
 			throw new TypeError(this, a);
 		}

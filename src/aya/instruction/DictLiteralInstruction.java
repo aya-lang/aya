@@ -3,7 +3,6 @@ package aya.instruction;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
@@ -42,7 +41,7 @@ public class DictLiteralInstruction extends Instruction {
 	/** Run the dict, collect variables, return the Dict object */
 	public Dict getDict(AyaThread context, Queue<Obj> q) {
 		//Add the variable set to the stack
-		Aya.getInstance().getVars().add(new Dict(), true);
+		context.getVars().add(new Dict(), true);
 		
 		//Run the blockEvaluator
 		BlockEvaluator evaluator = context.createEvaluator();
@@ -55,7 +54,7 @@ public class DictLiteralInstruction extends Instruction {
 		evaluator.eval();
 		
 		//Retrieve the Dict
-		return Aya.getInstance().getVars().popGet();
+		return context.getVars().popGet();
 	}
 	
 	@Override

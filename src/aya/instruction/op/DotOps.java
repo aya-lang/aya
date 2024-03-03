@@ -491,6 +491,8 @@ class OP_Dot_Plus extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		Obj b = blockEvaluator.pop();
+		
+		final AyaThread context = blockEvaluator.getContext();
 
 		// GCD
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
@@ -503,7 +505,7 @@ class OP_Dot_Plus extends Operator {
 			}
 			// Constant capture from scope
 			else if (a.isa(SYMBOL)) {
-				blk = BlockUtils.capture(blk, (Symbol)a);
+				blk = BlockUtils.capture(context, blk, (Symbol)a);
 			}
 			// Constant capture from scope (list)
 			else if (a.isa(LIST)) {
@@ -511,7 +513,7 @@ class OP_Dot_Plus extends Operator {
 				for (int i = 0; i < l.length(); i++) {
 					final Obj s = l.getExact(i);
 					if (s.isa(SYMBOL)) {
-						blk = BlockUtils.capture(blk, (Symbol)s);
+						blk = BlockUtils.capture(context, blk, (Symbol)s);
 					} else {
 						throw new ValueError(".+ Expected list of symbols. Got:\n" + a.repr());
 					}
@@ -1076,20 +1078,22 @@ class OP_Dot_TryCatch extends Operator {
 	public void execute (BlockEvaluator blockEvaluator) {
 		Obj catchBlock = blockEvaluator.pop();
 		Obj tryBlock = blockEvaluator.pop();
+		
+		final AyaThread context = blockEvaluator.getContext();
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				BlockEvaluator evaluator = blockEvaluator.getContext().createEvaluator();
+				BlockEvaluator evaluator = context.createEvaluator();
 				Aya.getInstance().deleteme_getRoot().getCallStack().setCheckpoint();
-				Aya.getInstance().getVars().setCheckpoint();
+				context.getVars().setCheckpoint();
 				evaluator.dump(asStaticBlock(tryBlock));
 				evaluator.eval();
 				Aya.getInstance().deleteme_getRoot().getCallStack().popCheckpoint();
-				Aya.getInstance().getVars().popCheckpoint();
+				context.getVars().popCheckpoint();
 				blockEvaluator.appendToStack(evaluator.getStack());
 			} catch (AyaRuntimeException e) {
 				Aya.getInstance().deleteme_getRoot().getCallStack().rollbackCheckpoint();
-				Aya.getInstance().getVars().rollbackCheckpoint();
+				context.getVars().rollbackCheckpoint();
 				BlockEvaluator evaluator = blockEvaluator.getContext().createEvaluator();
 				evaluator.push(e.getDict());
 				evaluator.dump(asStaticBlock(catchBlock));
@@ -1118,7 +1122,7 @@ class OP_Dot_M extends Operator {
 		 if (a.isa(DICT)) {
 			blockEvaluator.push(((Dict)a).getMetaDict());
 		} else {
-			blockEvaluator.push(Aya.getInstance().getVars().getBuiltinMeta(a));
+			blockEvaluator.push(blockEvaluator.getContext().getVars().getBuiltinMeta(a));
 		}
 	}
 
@@ -1567,6 +1571,8 @@ class OP_Dot_Tilde extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj a = blockEvaluator.pop();
+		
+		final AyaThread context = blockEvaluator.getContext();
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
@@ -1578,7 +1584,7 @@ class OP_Dot_Tilde extends Operator {
 			return;
 
 		} else if (a.isa(SYMBOL)) {
-			Obj e = Aya.getInstance().getVars().getVar(asSymbol(a));
+			Obj e = context.getVars().getVar(asSymbol(a));
 			if (!e.isa(BLOCK)) {
 				StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(new DataInstruction(e));
 				blockEvaluator.push(b);
@@ -1588,7 +1594,7 @@ class OP_Dot_Tilde extends Operator {
 
 		} else if (a.isa(DICT)) {
 			// Set all vars in the dict
-			Aya.getInstance().getVars().setVars(asDict(a));
+			context.getVars().setVars(asDict(a));
 		} else if (a.isa(BLOCK)) {
 			blockEvaluator.push(BlockUtils.convertSingleVariableToSymbol(asStaticBlock(a)));
 		} else {

@@ -1,6 +1,5 @@
 package aya.instruction.flag;
 
-import aya.Aya;
 import aya.eval.BlockEvaluator;
 
 /**
@@ -14,7 +13,7 @@ public class PopVarFlagInstruction extends FlagInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Aya.getInstance().getVars().pop();
+		b.getContext().getVars().pop();
 	}
 	
 	@Override

@@ -1,6 +1,5 @@
 package aya.instruction;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
@@ -35,7 +34,7 @@ public class InterpolateStringInstruction extends Instruction  {
 			if (current instanceof GetVariableInstruction) {
 				GetVariableInstruction var = (GetVariableInstruction)current;
 				try {
-					sb.append(Aya.getInstance().getVars().getVar(var.getSymbol()).str());
+					sb.append(context.getVars().getVar(var.getSymbol()).str());
 				} catch (UndefVarException e) {
 					e.setSource(var.getSource());
 					throw e;

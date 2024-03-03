@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -246,8 +246,8 @@ public class BlockUtils {
 		return new StaticBlock(is);
 	}
 
-	public static StaticBlock capture(StaticBlock b, Symbol s) {
-		Obj o = Aya.getInstance().getVars().getVar(s);
+	public static StaticBlock capture(AyaThread context, StaticBlock b, Symbol s) {
+		Obj o = context.getVars().getVar(s);
 		Dict locals = copyLocals(b);
 		locals.set(s, o);
 		return new StaticBlock(b.getInstructions(), locals, b.getArgs());

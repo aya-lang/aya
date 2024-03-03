@@ -2,7 +2,6 @@ package aya.obj.block;
 
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
@@ -38,7 +37,7 @@ public class NewLocalsInstruction extends Instruction {
 		}
 		
 		// Add a new variable frame to the variable stack
-		Aya.getInstance().getVars().add(locals);
+		blockEvaluator.getContext().getVars().add(locals);
 	}
 
 	@Override

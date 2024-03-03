@@ -18,7 +18,7 @@ public class GetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Obj o = Aya.getInstance().getVars().getVar(variable_);
+		Obj o = b.getContext().getVars().getVar(variable_);
 		this.addOrDumpVar(o, b);
 	}
 	

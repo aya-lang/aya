@@ -1,6 +1,5 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
@@ -16,7 +15,7 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Obj o = Aya.getInstance().getVars().getVar(variable_);
+		Obj o = b.getContext().getVars().getVar(variable_);
 		b.push(o);
 	}
 	
