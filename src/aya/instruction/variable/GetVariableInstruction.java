@@ -1,6 +1,5 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.instruction.flag.PopCallstackInstruction;
@@ -36,7 +35,7 @@ public class GetVariableInstruction extends VariableInstruction {
 	}
 
 	public void dumpBlock(StaticBlock block_to_dump, BlockEvaluator evaluator) {
-		Aya.getInstance().deleteme_getRoot().getCallStack().push(this);
+		evaluator.getContext().getCallStack().push(this);
 		evaluator.add(PopCallstackInstruction.INSTANCE);
 		//b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());
 		evaluator.dump(block_to_dump);

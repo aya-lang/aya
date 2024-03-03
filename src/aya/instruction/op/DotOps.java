@@ -1084,15 +1084,15 @@ class OP_Dot_TryCatch extends Operator {
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
 				BlockEvaluator evaluator = context.createEvaluator();
-				Aya.getInstance().deleteme_getRoot().getCallStack().setCheckpoint();
+				context.getCallStack().setCheckpoint();
 				context.getVars().setCheckpoint();
 				evaluator.dump(asStaticBlock(tryBlock));
 				evaluator.eval();
-				Aya.getInstance().deleteme_getRoot().getCallStack().popCheckpoint();
+				context.getCallStack().popCheckpoint();
 				context.getVars().popCheckpoint();
 				blockEvaluator.appendToStack(evaluator.getStack());
 			} catch (AyaRuntimeException e) {
-				Aya.getInstance().deleteme_getRoot().getCallStack().rollbackCheckpoint();
+				context.getCallStack().rollbackCheckpoint();
 				context.getVars().rollbackCheckpoint();
 				BlockEvaluator evaluator = blockEvaluator.getContext().createEvaluator();
 				evaluator.push(e.getDict());

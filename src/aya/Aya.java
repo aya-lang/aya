@@ -76,10 +76,6 @@ public class Aya extends Thread {
 		return _instance;
 	}
 	
-	public AyaThread deleteme_getRoot() {
-		return _root;
-	}
-
 	@Override
 	public void run() {
 		while (true) {
