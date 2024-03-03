@@ -5,38 +5,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.eval.ExecutionContext;
 import aya.exceptions.parser.ParserException;
-import aya.ext.color.ColorInstructionStore;
-import aya.ext.date.DateInstructionStore;
-import aya.ext.debug.DebugInstructionStore;
-import aya.ext.dialog.DialogInstructionStore;
-import aya.ext.fstream.FStreamInstructionStore;
-import aya.ext.graphics.GraphicsInstructionStore;
-import aya.ext.image.ImageInstructionStore;
-import aya.ext.json.JSONInstructionStore;
-import aya.ext.la.LinearAlgebraInstructionStore;
-import aya.ext.plot.PlotInstructionStore;
-import aya.ext.socket.SocketInstructionStore;
-import aya.ext.sys.SystemInstructionStore;
-import aya.instruction.named.NamedInstructionStore;
-import aya.instruction.named.NamedOperator;
-import aya.instruction.op.ColonOps;
-import aya.instruction.op.DotOps;
-import aya.instruction.op.MiscOps;
-import aya.instruction.op.OpDocReader;
-import aya.instruction.op.Operator;
-import aya.instruction.op.Ops;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
-import aya.parser.SpecialNumberParser;
-import aya.util.StringSearch;
 
 public class Aya extends Thread {
 	public static final boolean DEBUG = true;
@@ -50,10 +27,8 @@ public class Aya extends Thread {
 	private AyaStdIO _io;
 	private Scanner _scanner; 
 	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
-	private StringSearch _helpData;
 	private static Aya _instance = getInstance();
 	private long _lastInputRunTime = 0;
-	private ArrayList<NamedInstructionStore> _namedInstructionStores = new ArrayList<NamedInstructionStore>();
 	private SymbolTable _symbolTable = new SymbolTable();
 	private ExecutionContext _root = null;
 	
@@ -68,10 +43,11 @@ public class Aya extends Thread {
 		if(_instance == null) {
 			_instance = new Aya();
 			_instance._root = ExecutionContext.createRoot(_instance._io);
+			// Init the static data
+			StaticData.getInstance().init();
 			// Init global vars
 			_instance._root.getVars().initGlobals(_instance._root);
 			AyaPrefs.init();
-			_instance.initNamedInstructions();
 		}
 		return _instance;
 	}
@@ -119,54 +95,11 @@ public class Aya extends Thread {
 	// HELP DATA //
 	///////////////
 	
-	private void initHelpData() {
-		if(_instance._helpData == null) {
-			
-			//Make sure all classes are loaded
-			try
-			{
-			  loadOps(Ops.OPS);
-			  loadOps(Ops.EXTRA_OPS);
-			  loadOps(MiscOps.MATH_OPS);
-			  loadOps(ColonOps.COLON_OPS);
-			  loadOps(DotOps.DOT_OPS);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			ArrayList<String> searchList = new ArrayList<String>();
-			searchList.addAll(OpDocReader.getAllOpDescriptions());
-			// Add additional help data
-			searchList.add(AyaPrefs.CONSTANTS_HELP);
-			searchList.add(SpecialNumberParser.STR_CONSTANTS_HELP);
-			searchList.toArray(new String[searchList.size()]);
-			_instance._helpData = new StringSearch(searchList);
-		}
-	}
-	
-	public StringSearch getHelpData() {
-		_instance.initHelpData();
-		return _helpData;
-	}
-	
-	public void addHelpText(String in) {
-		_instance.getHelpData().addUnique(in);
-	}
 
-	public static String[] getQuickSearchData() {
-		return _instance.getHelpData().getAllItems();
-	}
 	
-	/* This function does nothing but force java to load
-	 * the operators and call the static blocks
-	 */
-	private void loadOps(Operator[] ops) {
-		for (Operator o : ops) {
-			if (o != null) o.getClass();
-		}
-	}
+
 	
+
 	
 	//Returns true if load was successful
 	public boolean loadAyarc() {
@@ -241,39 +174,6 @@ public class Aya extends Thread {
 	
 	public void printDebug(Object o) {if (DEBUG) _io.out().println(o.toString());}
 	
-	////////////////////////
-	// Named Instructions //
-	////////////////////////
-
-	private void initNamedInstructions() {
-		_namedInstructionStores.add(new DebugInstructionStore());
-		_namedInstructionStores.add(new JSONInstructionStore());
-		_namedInstructionStores.add(new ImageInstructionStore());
-		_namedInstructionStores.add(new GraphicsInstructionStore());
-		_namedInstructionStores.add(new FStreamInstructionStore());
-		_namedInstructionStores.add(new SystemInstructionStore());
-		_namedInstructionStores.add(new DialogInstructionStore());
-		_namedInstructionStores.add(new PlotInstructionStore());
-		_namedInstructionStores.add(new DateInstructionStore());
-		_namedInstructionStores.add(new SocketInstructionStore());
-		_namedInstructionStores.add(new ColorInstructionStore());
-		_namedInstructionStores.add(new LinearAlgebraInstructionStore());
-		
-		for (NamedInstructionStore x : _namedInstructionStores) {
-			x.initHelpData(getInstance());
-		}
-		
-	}
-	public NamedOperator getNamedInstruction(String name) {
-		for (NamedInstructionStore x : _namedInstructionStores) {
-			NamedOperator i = x.getInstruction(name);
-			if (i != null) {
-				return i;
-			}
-		}
-		return null;
-	}
-
 	/////////////////////
 	// SYMBOL TABLE    //
 	/////////////////////

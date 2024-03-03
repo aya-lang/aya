@@ -21,6 +21,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
 import aya.Aya;
+import aya.StaticData;
 
 
 @SuppressWarnings("serial")
@@ -130,7 +131,7 @@ public class EditorWindow extends JPanel {
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Aya.getQuickSearchData());
+					QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}

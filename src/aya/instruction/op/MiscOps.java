@@ -10,9 +10,9 @@ import static aya.util.Casting.asNumber;
 
 import java.util.ArrayList;
 
-import aya.Aya;
-import aya.eval.ExecutionContext;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
@@ -254,12 +254,12 @@ class OP_Help extends Operator {
 			List items = new List();
 			
 			if (str.length() == 0) {
-				String[] ss = Aya.getInstance().getHelpData().getAllItems();
+				String[] ss = StaticData.getInstance().getHelpData().getAllItems();
 				for (String a : ss) {
 					items.mutAdd(List.fromString(a));
 				}
 			} else {
-				ArrayList<String> ss = Aya.getInstance().getHelpData().staticSearch(s.str());
+				ArrayList<String> ss = StaticData.getInstance().getHelpData().staticSearch(s.str());
 				for (String a : ss) {
 					items.mutAdd(List.fromString(a));
 				}

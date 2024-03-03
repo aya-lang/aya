@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import aya.Aya;
 import aya.AyaPrefs;
 import aya.InteractiveAya;
+import aya.StaticData;
 
 
 @SuppressWarnings("serial")
@@ -87,10 +88,10 @@ public class AyaIDE extends JFrame
 		    		  case KeyEvent.VK_Q:
 		    			  if(e.isControlDown()) {
 		    				  if(QuickSearch.isFrameActive()) {
-			    				  QuickSearch.updateHelpTextInFrame(Aya.getQuickSearchData());
+			    				  QuickSearch.updateHelpTextInFrame(StaticData.getInstance().getQuickSearchData());
 		    					  QuickSearch.frameFocus();
 		    				  } else {
-		    					  QuickSearch.newQSFrame(Aya.getQuickSearchData());
+		    					  QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 		    				  }
 		    			  }
 		    			  break;
@@ -219,7 +220,7 @@ public class AyaIDE extends JFrame
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Aya.getQuickSearchData());
+					QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}

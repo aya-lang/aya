@@ -3,6 +3,7 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.StaticData;
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
@@ -92,7 +93,7 @@ public class Parser {
 				String comment_str = comment.toString();
 				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
 					comment_str = comment_str.substring(1);
-					aya.addHelpText(comment_str);
+					StaticData.getInstance().addHelpText(comment_str);
 				}
 
 				continue;
@@ -125,7 +126,7 @@ public class Parser {
 				String comment_str = comment.toString();
 				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
 					comment_str = comment_str.substring(1);
-					aya.addHelpText(comment_str);
+					StaticData.getInstance().addHelpText(comment_str);
 				}
 			}
 

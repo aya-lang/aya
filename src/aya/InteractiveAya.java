@@ -96,12 +96,12 @@ public class InteractiveAya extends Thread {
 				}
 				searchText = searchText.substring(0, searchText.length()-1);
 				
-				_aya.getHelpData().clearFilter();
-				_aya.getHelpData().applyNewFilter(searchText);
-				if(_aya.getHelpData().getFilteredItems().size() == 0) {
+				StaticData.getInstance().getHelpData().clearFilter();
+				StaticData.getInstance().getHelpData().applyNewFilter(searchText);
+				if(StaticData.getInstance().getHelpData().getFilteredItems().size() == 0) {
 					_aya.getOut().println("No help data matching \"" + searchText + "\"");
 				} else {
-					for(String s : Aya.getInstance().getHelpData().getFilteredItems()) {
+					for(String s : StaticData.getInstance().getHelpData().getFilteredItems()) {
 						_aya.getOut().println(s.replace("\n", "\n   "));
 					}
 				}
