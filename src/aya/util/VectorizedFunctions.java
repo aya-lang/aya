@@ -9,6 +9,7 @@ import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumberList;
 
 import aya.ReprStream;
+import aya.eval.AyaThread;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.op.Operator;
 import aya.obj.Obj;
@@ -26,19 +27,19 @@ public class VectorizedFunctions {
 	// List, Obj
 	//
 
-	private static List vectorizeListObj(Operator op, List a, Obj b, NumberListOp nlop) {
+	private static List vectorizeListObj(AyaThread context, Operator op, List a, Obj b, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			return new List(nlop.ln(asNumberList(a), asNumber(b)));
 		} else {
-			return vectorizeListObj(op, a, b);
+			return vectorizeListObj(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeListObj(Operator op, List a, Obj b) {
+	private static List vectorizeListObj(AyaThread context, Operator op, List a, Obj b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
-			out.mutAdd(op.exec2arg(a.getExact(i), b));
+			out.mutAdd(op.exec2arg(context, a.getExact(i), b));
 		}
 		return out;	
 	}
@@ -48,19 +49,19 @@ public class VectorizedFunctions {
 	// Obj, List
 	//
 
-	private static List vectorizeObjList(Operator op, Obj a, List b, NumberListOp nlop) {
+	private static List vectorizeObjList(AyaThread context, Operator op, Obj a, List b, NumberListOp nlop) {
 		if (b.isa(NUMBERLIST) && a.isa(NUMBER)) {
 			return new List(nlop.nl(asNumber(a), asNumberList(b)));
 		} else {
-			return vectorizeObjList(op, a, b);
+			return vectorizeObjList(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeObjList(Operator op, Obj a, List b) {
+	private static List vectorizeObjList(AyaThread context, Operator op, Obj a, List b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < b.length(); i++) {
-			out.mutAdd(op.exec2arg(a, b.getExact(i)));
+			out.mutAdd(op.exec2arg(context, a, b.getExact(i)));
 		}
 		return out;	
 	}
@@ -70,19 +71,19 @@ public class VectorizedFunctions {
 	// List, List
 	//
 
-	private static List vectorizeListList(Operator op, List a, List b, NumberListOp nlop) {
+	private static List vectorizeListList(AyaThread context, Operator op, List a, List b, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
 			return new List(nlop.ll(asNumberList(a), asNumberList(b)));
 		} else {
-			return vectorizeListList(op, a, b);
+			return vectorizeListList(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeListList(Operator op, List a, List b) {
+	private static List vectorizeListList(AyaThread context, Operator op, List a, List b) {
 		List out = new List();
 		if (a.length() == b.length()) {
 			for (int i = 0; i < a.length(); i++) {
-				out.mutAdd(op.exec2arg(a.getExact(i), b.getExact(i)));
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b.getExact(i)));
 			}
 			return out;	
 		} else {
@@ -99,30 +100,30 @@ public class VectorizedFunctions {
 	// 2 Arg Driver Functions
 	//
 	
-	public static Obj vectorize2arg(Operator op, Obj a, Obj b) {
+	public static Obj vectorize2arg(AyaThread context, Operator op, Obj a, Obj b) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
-			return vectorizeListObj(op, (List)a, b);
+			return vectorizeListObj(context, op, (List)a, b);
 		} else if (!a_is_list && b_is_list) {
-			return vectorizeObjList(op, a, (List)b);
+			return vectorizeObjList(context, op, a, (List)b);
 		} else if (a_is_list && b_is_list) {
-			return vectorizeListList(op, (List)a, (List)b);
+			return vectorizeListList(context, op, (List)a, (List)b);
 		} else {
 			return null;
 		}
 	}
 
 
-	public static Obj vectorize2arg(Operator op, Obj a, Obj b, NumberListOp nlop) {
+	public static Obj vectorize2arg(AyaThread context, Operator op, Obj a, Obj b, NumberListOp nlop) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
-			return vectorizeListObj(op, (List)a, b, nlop);
+			return vectorizeListObj(context, op, (List)a, b, nlop);
 		} else if (!a_is_list && b_is_list) {
-			return vectorizeObjList(op, a, (List)b, nlop);
+			return vectorizeObjList(context, op, a, (List)b, nlop);
 		} else if (a_is_list && b_is_list) {
-			return vectorizeListList(op, (List)a, (List)b, nlop);
+			return vectorizeListList(context, op, (List)a, (List)b, nlop);
 		} else {
 			return null;
 		}
@@ -134,41 +135,41 @@ public class VectorizedFunctions {
 	//
 
 	
-	private static List vectorizeList(Operator op, List a, NumberListOp nlop) {
+	private static List vectorizeList(AyaThread context, Operator op, List a, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST)) {
 			return new List(nlop.l(asNumberList(a)));
 		} else {
-			return vectorizeList(op, a);
+			return vectorizeList(context, op, a);
 		}
 	}
 
 
-	private static List vectorizeList(Operator op, List a) {
+	private static List vectorizeList(AyaThread context, Operator op, List a) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
-			out.mutAdd(op.exec1arg(a.getExact(i)));
+			out.mutAdd(op.exec1arg(context, a.getExact(i)));
 		}
 		return out;	
 	}
 
 
 
-	public static Obj vectorize1arg(Operator op, Obj a) {
+	public static Obj vectorize1arg(AyaThread context, Operator op, Obj a) {
 		if (isList(a)) {
-			return vectorizeList(op, asList(a));
+			return vectorizeList(context, op, asList(a));
 		} else {
 			return null;
 		}
 	}
 
 
-	public static Obj vectorize1arg(Operator op, Obj a, NumberListOp nlop) {
+	public static Obj vectorize1arg(AyaThread context, Operator op, Obj a, NumberListOp nlop) {
 		if (isList(a)) {
 			if (a.isa(NUMBERLIST)) {
-				return vectorizeList(op, asList(a), nlop);
+				return vectorizeList(context, op, asList(a), nlop);
 			} else {
-				return vectorizeList(op, asList(a));
+				return vectorizeList(context, op, asList(a));
 			}
 		} else {
 			return null;

@@ -3,6 +3,7 @@ package aya.instruction.op.overload;
 import java.util.ArrayList;
 
 import aya.Aya;
+import aya.eval.AyaThread;
 import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -54,15 +55,15 @@ public class OpOverload2Arg extends OpOverload {
 	}
 
 	@Override
-	public Obj executeAndReturn(Obj a, Obj b) {
+	public Obj executeAndReturn(AyaThread context, Obj a, Obj b) {
 		if (a.isa(Obj.DICT)) {
-			BlockEvaluator blockEvaluator = new BlockEvaluator();
+			BlockEvaluator blockEvaluator = context.createEvaluator();
 			blockEvaluator.push(b);
 			blockEvaluator.callVariable((Dict)a, _var);
 			blockEvaluator.eval();
 			return blockEvaluator.pop();
 		} else if (b.isa(Obj.DICT)) {
-			BlockEvaluator blockEvaluator = new BlockEvaluator();
+			BlockEvaluator blockEvaluator = context.createEvaluator();
 			blockEvaluator.callVariable((Dict)b, _rvar, a);
 			blockEvaluator.eval();
 			return blockEvaluator.pop();

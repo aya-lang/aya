@@ -325,20 +325,20 @@ class OP_Colon_Percent extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(a, b));
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b % => "a % b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 		Obj result;
 		// Vectorize?
-		result = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP);
+		result = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP);
 		if (result != null) {
 			return result;
 		}
 		// Overload?
-		result = overload().executeAndReturn(b, a); // stack order
+		result = overload().executeAndReturn(context, b, a); // stack order
 		if (result != null) {
 			return result;
 		}
@@ -450,15 +450,15 @@ class OP_Colon_LessThan extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(a, b));
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b :< => "a :< b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return Num.fromBool(((Number)a).compareTo((Number)b) <= 0);
@@ -519,15 +519,15 @@ class OP_Colon_GreaterThan extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(a, b));
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b :> => "a :> b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return Num.fromBool(((Number)a).compareTo((Number)b) >= 0);
@@ -928,7 +928,6 @@ class OP_Colon_N extends Operator {
 
 
 
-// O - 80
 class OP_Colon_O extends Operator {
 	
 	public OP_Colon_O() {
@@ -941,17 +940,16 @@ class OP_Colon_O extends Operator {
 		public BlockOpInstruction(StaticBlock block) {
 			_block = block;
 		}
-		
 		@Override
 		public void execute(BlockEvaluator blockEvaluator) {
 			final Obj b = blockEvaluator.pop();
 			final Obj a = blockEvaluator.pop();
-			blockEvaluator.push(exec2argContext(blockEvaluator.getContext(), a, b));
+			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 		}
-
-		public Obj exec2argContext(AyaThread context, final Obj a, final Obj b) {
+		@Override
+		public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 			Obj res;
-			if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) {
+			if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b)) != null) {
 				return res;
 			} else {
 				BlockEvaluator blk = context.createEvaluator();
@@ -967,13 +965,13 @@ class OP_Colon_O extends Operator {
 
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
-		final Obj c = blockEvaluator.pop(); // blockEvaluator
+		final Obj c = blockEvaluator.pop(); // block
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
 
 		if (c.isa(Obj.BLOCK)) {
 			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asStaticBlock(c));
-			final Obj result = VectorizedFunctions.vectorize2arg(block_op, a, b);
+			final Obj result = VectorizedFunctions.vectorize2arg(blockEvaluator.getContext(), block_op, a, b);
 			if (result == null) {
 				throw new ValueError("Cannot vectorize over args: " + a.repr() + ", " + b.repr());
 			} else {
@@ -986,8 +984,6 @@ class OP_Colon_O extends Operator {
 	}
 
 }
-
-
 
 
 // P - 80

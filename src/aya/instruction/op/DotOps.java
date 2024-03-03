@@ -223,14 +223,14 @@ class OP_Dot_Bang extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(a));
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(AyaThread context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER)) {
 			return ((Number)a).signnum();
@@ -336,15 +336,15 @@ class OP_Dot_Percent extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(a, b));
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b .% => "a .% b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			try {
@@ -602,14 +602,14 @@ class OP_Dot_FwdSlash extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(a));
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(AyaThread context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
 		
 		if (a.isa(NUMBER)) {
 			return ((Number)a).ceil();
@@ -1178,12 +1178,12 @@ class OP_Dot_O extends Operator {
 	public void execute (BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2argWithContext(blockEvaluator.getContext(), a, b));
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 	
-	public Obj exec2argWithContext(AyaThread context, final Obj a, final Obj b) {
+	public Obj exec2arg(AyaThread context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b)) != null) return res;
 		
 		if (b.isa(BLOCK)) {
 			BlockEvaluator blk = context.createEvaluator();
@@ -1445,14 +1445,14 @@ class OP_Dot_BackSlash extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(a));
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(AyaThread context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER)) {
 			return ((Number)a).floor();
@@ -1484,14 +1484,14 @@ class OP_Dot_Pow extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(a));
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(AyaThread context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
 	
 		if(a.isa(NUMBER)) {
 			return ((Number)a).sqrt();
@@ -1531,14 +1531,14 @@ class OP_Dot_Bar extends Operator {
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(a));
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(AyaThread context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER)) {
 			return ((Number)a).abs();
