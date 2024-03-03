@@ -14,7 +14,6 @@ public class InteractiveAya extends Thread {
 	public static final int EXIT = 0;
 	public static final int SUCCESS = 1;
 	public static final int NONE = 2;
-	public static final int TIME = 3;
 	public static final int CLS = 4;
 	public static final int SKIP_WAIT = 5; // Do not wait for aya as no input was queued
 	public static final int NORMAL_INPUT = 6; // Normal 8input was sent to aya, wait for it to complete
@@ -115,16 +114,6 @@ public class InteractiveAya extends Thread {
 				return SKIP_WAIT;
 			}
 			
-			//Time
-			else if(command.equals("TIME")) {
-				String code = splitAtFirst(' ', input).trim();
-				if(code.equals("")) {
-					_aya.getErr().println("Nothing to time");
-				} else {					
-					_aya.queueInput(code);
-					return TIME;
-				}
-			}
 			
 			//User Command
 			else if (command.equals(":") || command.equals("USERCMD")) {
@@ -273,8 +262,6 @@ public class InteractiveAya extends Thread {
 				running = false;
 				_aya.quit();
 				break;
-			case TIME:
-				out.println("Execution time: " + ((double)_aya.getLastInputRunTime())/1000 + "s");
 			}
 
 			_aya.getOut().flush();

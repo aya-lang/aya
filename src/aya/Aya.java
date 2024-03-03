@@ -20,7 +20,6 @@ public class Aya extends Thread {
 	private Scanner _scanner; 
 	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
 	private static Aya _instance = getInstance();
-	private long _lastInputRunTime = 0;
 	private ExecutionContext _root = null;
 	
 	
@@ -54,9 +53,7 @@ public class Aya extends Thread {
 						break;
 					}
 					
-					long startTime = System.currentTimeMillis();
 					_instance.run(new SourceString(input, "<interactive>"));
-					_lastInputRunTime = System.currentTimeMillis() - startTime;
 					
 					if (_input.isEmpty()) {
 						notify();
@@ -93,11 +90,6 @@ public class Aya extends Thread {
 		}
 		return true;
 	}
-	
-	public long getLastInputRunTime() {
-		return _lastInputRunTime;
-	}
-
 	
 
 	////////////////////////
