@@ -1,13 +1,9 @@
 package aya;
 
-import java.nio.file.Paths;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.eval.ExecutionContext;
-import aya.obj.block.StaticBlock;
-import aya.parser.Parser;
-import aya.parser.SourceString;
 
 public class Aya extends Thread {
 	
@@ -60,19 +56,6 @@ public class Aya extends Thread {
 	
 	public void queueInput(ExecutionRequest request) {
 		_input.offer(request);
-	}
-	
-	//Returns true if load was successful
-	public boolean loadAyarc() {
-		//Load the standard library
-		try {
-			String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
-			StaticBlock blk = Parser.compileSafeOrNull(new SourceString("\"" + pathString + "\":F", "<ayarc loader>"), StaticData.IO);
-			if (blk != null) getInstance().queueInput(new ExecutionRequest(blk));
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
 	}
 	
 	public void quit() {

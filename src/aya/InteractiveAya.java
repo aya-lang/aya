@@ -2,6 +2,7 @@ package aya;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -198,7 +199,11 @@ public class InteractiveAya extends Thread {
 			if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 		}
 		
-		_aya.loadAyarc();
+		//_aya.loadAyarc();
+		// Load ayarc
+		String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
+		StaticBlock blk = Parser.compileSafeOrNull(new SourceString("\"" + pathString + "\":F", "<ayarc loader>"), StaticData.IO);
+		if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 		
 		// Get Aya I/O
 		PrintStream out = _io().out();
