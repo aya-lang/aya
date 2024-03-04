@@ -27,10 +27,10 @@ import java.util.Collections;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import aya.Aya;
 import aya.AyaPrefs;
-import aya.eval.ExecutionContext;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
@@ -1213,7 +1213,7 @@ class OP_Dot_Print extends Operator {
 
 	@Override
 	public void execute (BlockEvaluator blockEvaluator) {
-		Aya.getInstance().getOut().print(blockEvaluator.pop().str());
+		StaticData.IO.out().print(blockEvaluator.pop().str());
 	}
 }
 

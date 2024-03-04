@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import aya.Aya;
-import aya.eval.ExecutionContext;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AssertError;
@@ -996,7 +996,7 @@ class OP_Colon_P extends Operator {
 
 	@Override
 	public void execute (BlockEvaluator blockEvaluator) {		
-		Aya.getInstance().getOut().println(blockEvaluator.pop().str());
+		StaticData.IO.out().println(blockEvaluator.pop().str());
 	}
 }
 
@@ -1010,7 +1010,7 @@ class OP_Colon_R extends Operator {
 
 	@Override
 	public void execute (BlockEvaluator blockEvaluator) {		
-		blockEvaluator.push(List.fromString(Aya.getInstance().nextLine()));
+		blockEvaluator.push(List.fromString(StaticData.IO.nextLine()));
 	}
 }
 

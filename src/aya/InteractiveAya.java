@@ -34,6 +34,10 @@ public class InteractiveAya extends Thread {
 	
 	private Aya _aya;
 	
+	private AyaStdIO _io() {
+		return StaticData.IO;
+	}
+	
 	public InteractiveAya(Aya aya) {
 		_aya = aya;
 		_scripts = new ConcurrentLinkedQueue<String>();
@@ -87,7 +91,7 @@ public class InteractiveAya extends Thread {
 			
 			//Help
 			else if(command.equals("H") || command.equals("HELP")) {
-				_aya.getOut().println(HELP_TEXT);
+				_io().out().println(HELP_TEXT);
 				return SKIP_WAIT;
 			}
 			
@@ -102,10 +106,10 @@ public class InteractiveAya extends Thread {
 				StaticData.getInstance().getHelpData().clearFilter();
 				StaticData.getInstance().getHelpData().applyNewFilter(searchText);
 				if(StaticData.getInstance().getHelpData().getFilteredItems().size() == 0) {
-					_aya.getOut().println("No help data matching \"" + searchText + "\"");
+					_io().out().println("No help data matching \"" + searchText + "\"");
 				} else {
 					for(String s : StaticData.getInstance().getHelpData().getFilteredItems()) {
-						_aya.getOut().println(s.replace("\n", "\n   "));
+						_io().out().println(s.replace("\n", "\n   "));
 					}
 				}
 				
@@ -114,7 +118,7 @@ public class InteractiveAya extends Thread {
 			
 			//Version
 			else if(command.equals("V") || command.equals("VERSION")) {
-				_aya.getOut().println(StaticData.VERSION_NAME);
+				_io().out().println(StaticData.VERSION_NAME);
 				return SKIP_WAIT;
 			}
 			
@@ -124,12 +128,12 @@ public class InteractiveAya extends Thread {
 				if (settings.length > 1 && SymbolTable.isBasicSymbolString(settings[1])) {
 					_usercmd = settings[1];
 					if (!(settings.length > 2 && settings[2].equals("."))) {
-						_aya.getOut().println("Input now being parsed as:\n\t\"\"\"input\"\"\" __aya__.interpreter." + _usercmd
+						_io().out().println("Input now being parsed as:\n\t\"\"\"input\"\"\" __aya__.interpreter." + _usercmd
 								+ "\nType \"\\" + command + " -\" to return to normal"
 								+ "\nType \"\\" + command + " " + _usercmd + " .\" to hide this message in the future");
 					}
 				} else {
-					_aya.getErr().println("usercmd: \"" + settings[1] + "\" is not a valid user command");
+					_io().err().println("usercmd: \"" + settings[1] + "\" is not a valid user command");
 				}
 				return SKIP_WAIT;
 			}
@@ -137,7 +141,7 @@ public class InteractiveAya extends Thread {
 			else if (SymbolTable.isBasicSymbolString(command)) {
 				String code = splitAtFirst(' ', input).trim();
 				if(code.equals("")) {
-					_aya.getErr().println("No input provided");
+					_io().err().println("No input provided");
 				} else {			
 					// construct [ """ (code) """ varname ]
 					code = "\"\"\"" + code + "\"\"\" __aya__.interpreter." + command;
@@ -148,7 +152,7 @@ public class InteractiveAya extends Thread {
 			}
 						
 			else {
-				_aya.getErr().println("Invalid command. Please make sure there is a space between command and its arguments.");
+				_io().err().println("Invalid command. Please make sure there is a space between command and its arguments.");
 				return SKIP_WAIT;
 			}
 			
@@ -161,7 +165,7 @@ public class InteractiveAya extends Thread {
 			return NORMAL_INPUT;
 		}
 		
-		_aya.getErr().println("invalid input");
+		_io().err().println("invalid input");
 		return SKIP_WAIT;
 	}
 	
@@ -197,9 +201,9 @@ public class InteractiveAya extends Thread {
 		_aya.loadAyarc();
 		
 		// Get Aya I/O
-		PrintStream out = _aya.getOut();
-		PrintStream err = _aya.getErr();		
-		Scanner scanner = _aya.getScanner();
+		PrintStream out = _io().out();
+		PrintStream err = _io().err();		
+		Scanner scanner = _io().scanner();
 		
 		
 		String input = "";
@@ -271,7 +275,7 @@ public class InteractiveAya extends Thread {
 				break;
 			}
 
-			_aya.getOut().flush();
+			_io().out().flush();
 			
 		}
 
@@ -344,7 +348,7 @@ public class InteractiveAya extends Thread {
 		try {
 			iaya.join();
 		} catch (InterruptedException e) {
-			e.printStackTrace(aya.getErr());
+			e.printStackTrace(StaticData.IO.err());
 		}
 		
 		System.exit(1);

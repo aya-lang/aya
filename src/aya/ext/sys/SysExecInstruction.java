@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.AyaPrefs;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
@@ -48,11 +48,11 @@ public class SysExecInstruction extends NamedOperator {
 		            new InputStreamReader(proc.getInputStream()));
 		    String line;
 		    while ((line = reader.readLine()) != null) {
-		    	Aya.getInstance().getOut().println(line);
+		    	StaticData.IO.out().println(line);
 		    }
 		 
 		    reader.close();
-		    Aya.getInstance().getOut().println(command + ": finished!");
+		    StaticData.IO.out().println(command + ": finished!");
 		 
 		} catch (IOException e) {
 		    e.printStackTrace();

@@ -1,7 +1,7 @@
 package aya.ext.debug;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.ParserException;
 import aya.instruction.named.NamedOperator;
@@ -17,7 +17,7 @@ public class PauseDebugInstruction extends NamedOperator {
 	}
 	
 	private static void print(Object o) {
-		Aya.getInstance().getOut().println(o);
+		StaticData.IO.out().println(o);
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class PauseDebugInstruction extends NamedOperator {
 		}
 		print("Next instructions: " + instructions_state);
 		while (true) {
-			Aya.getInstance().getOut().print("aya (debug)> ");
-			String input = Aya.getInstance().nextLine();
+			StaticData.IO.out().print("aya (debug)> ");
+			String input = StaticData.IO.nextLine();
 			if (input.equals(".")) {
 				print(""); // newline
 				break;

@@ -42,10 +42,10 @@ public class AyaPrefs {
 			workingDir = (new File(workingDir).getCanonicalPath()).toString() + File.separator;
 		} catch (URISyntaxException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		} catch (IOException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		}
 		defaultWorkingDir = workingDir;
 	}

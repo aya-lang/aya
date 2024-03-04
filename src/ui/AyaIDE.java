@@ -350,7 +350,7 @@ public class AyaIDE extends JFrame
 	public static void main(String[] args) {
 		
 		Aya aya = Aya.getInstance();
-		boolean readstdin = aya.isInputAvaiable();
+		boolean readstdin = StaticData.IO.isInputAvaiable();
 		if (args.length > 0) {
 			// First arg is working directory
 			AyaPrefs.setWorkingDir(args[0]);
@@ -366,9 +366,9 @@ public class AyaIDE extends JFrame
 			AyaIDE ide = new AyaIDE(aya);
 			
 			// Aya Prefs
-			aya.setOut(ide.getOutputStream());
-			aya.setErr(ide.getOutputStream());
-			aya.setIn(ide.getInputStream());
+			StaticData.IO.setOut(ide.getOutputStream());
+			StaticData.IO.setErr(ide.getOutputStream());
+			StaticData.IO.setIn(ide.getInputStream());
 			
 			// InteractiveAya Prefs
 			InteractiveAya iaya = new InteractiveAya(aya);
@@ -382,7 +382,7 @@ public class AyaIDE extends JFrame
 			try {
 				iaya.join();
 			} catch (InterruptedException e) {
-				e.printStackTrace(aya.getErr());
+				e.printStackTrace(StaticData.IO.err());
 			}
 			
 			System.exit(1);
