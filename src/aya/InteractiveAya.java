@@ -6,7 +6,10 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import aya.obj.block.StaticBlock;
 import aya.obj.symbol.SymbolTable;
+import aya.parser.Parser;
+import aya.parser.SourceString;
 import aya.util.FileUtils;
 
 public class InteractiveAya extends Thread {
@@ -59,7 +62,8 @@ public class InteractiveAya extends Thread {
 				return SKIP_WAIT;
 			} else {
 				String code = "\"\"\"" + input + "\"\"\" __aya__.interpreter." + _usercmd;
-				_aya.queueInput(code);
+				StaticBlock blk = Parser.compileSafeOrNull(new SourceString(code, "<USERCMD>"), StaticData.IO);
+				if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 				return NORMAL_INPUT;
 			}
 		}
@@ -137,7 +141,8 @@ public class InteractiveAya extends Thread {
 				} else {			
 					// construct [ """ (code) """ varname ]
 					code = "\"\"\"" + code + "\"\"\" __aya__.interpreter." + command;
-					_aya.queueInput(code);
+					StaticBlock blk = Parser.compileSafeOrNull(new SourceString(code, "<USERCMD>"), StaticData.IO);
+					if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 					return NORMAL_INPUT;
 				}
 			}
@@ -151,7 +156,8 @@ public class InteractiveAya extends Thread {
 		
 		//Normal Input
 		else {
-			_aya.queueInput(input);
+			StaticBlock blk = Parser.compileSafeOrNull(new SourceString(input, "<input>"), StaticData.IO);
+			if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 			return NORMAL_INPUT;
 		}
 		
@@ -184,7 +190,8 @@ public class InteractiveAya extends Thread {
  		_aya.start();
  		
 		if (_initcode != null) {
-			_aya.queueInput(_initcode);
+			StaticBlock blk = Parser.compileSafeOrNull(new SourceString(_initcode, "<args>"), StaticData.IO);
+			if (blk != null) _aya.queueInput(new ExecutionRequest(blk));
 		}
 		
 		_aya.loadAyarc();

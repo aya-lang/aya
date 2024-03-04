@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.eval.ExecutionContext;
-import aya.exceptions.parser.ParserException;
+import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 
@@ -18,7 +18,7 @@ public class Aya extends Thread {
 	
 	private AyaStdIO _io;
 	private Scanner _scanner; 
-	private final BlockingQueue<String> _input = new LinkedBlockingQueue<String>();
+	private final BlockingQueue<ExecutionRequest> _input = new LinkedBlockingQueue<ExecutionRequest>();
 	private static Aya _instance = getInstance();
 	private ExecutionContext _root = null;
 	
@@ -46,15 +46,17 @@ public class Aya extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				String input = _input.take();
+				ExecutionRequest input = _input.take();
 				
 				synchronized(this) {
-					if (input.equals(StaticData.QUIT)) {
+					if (input == null) {
+						_io.out().println("Exiting...");
 						break;
 					}
 					
-					_instance.run(new SourceString(input, "<interactive>"));
-					
+					//_instance.run(new SourceString(input, "<interactive>"));
+					_root.run(input.getBlock());
+
 					if (_input.isEmpty()) {
 						notify();
 					}
@@ -66,8 +68,8 @@ public class Aya extends Thread {
 		}
 	}
 	
-	public void queueInput(String s) {
-		_input.offer(s);
+	public void queueInput(ExecutionRequest request) {
+		_input.offer(request);
 	}
 	
 	public String nextLine() {
@@ -84,7 +86,8 @@ public class Aya extends Thread {
 		//Load the standard library
 		try {
 			String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
-			getInstance().queueInput("\"" + pathString + "\":F");
+			StaticBlock blk = Parser.compileSafeOrNull(new SourceString("\"" + pathString + "\":F", "<ayarc loader>"), _io);
+			if (blk != null) getInstance().queueInput(new ExecutionRequest(blk));
 		} catch (Exception e) {
 			return false;
 		}
@@ -132,13 +135,13 @@ public class Aya extends Thread {
 	// THREAD OVERRIDES //
 	//////////////////////
 	
-	private void run(SourceString str) {
-		try {
-			_root.run(Parser.compile(str, this));
-		} catch (ParserException e) {
-			_io.err().println("Syntax Error: " + e.getSimpleMessage());
-		}
-	}
+	//private void run(SourceString str) {
+	//	try {
+	//		_root.run(Parser.compile(str));
+	//	} catch (ParserException e) {
+	//		_io.err().println("Syntax Error: " + e.getSimpleMessage());
+	//	}
+	//}
 	
 	
 	//////////////////////
@@ -154,7 +157,7 @@ public class Aya extends Thread {
 
 
 	public void quit() {
-		queueInput(StaticData.QUIT);
+		queueInput(null);
 	}
 
 

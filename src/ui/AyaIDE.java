@@ -24,8 +24,12 @@ import javax.swing.JPanel;
 
 import aya.Aya;
 import aya.AyaPrefs;
+import aya.ExecutionRequest;
 import aya.InteractiveAya;
 import aya.StaticData;
+import aya.obj.block.StaticBlock;
+import aya.parser.Parser;
+import aya.parser.SourceString;
 
 
 @SuppressWarnings("serial")
@@ -139,7 +143,8 @@ public class AyaIDE extends JFrame
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					Aya.getInstance().queueInput("\"" + path + "\":F");
+					StaticBlock in_block = Parser.compileSafeOrNull(new SourceString("\"" + path + "\" :F", ""), StaticData.IO);
+					Aya.getInstance().queueInput(new ExecutionRequest(in_block));
 					
 				}
 			}

@@ -30,7 +30,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import aya.Aya;
 import aya.AyaPrefs;
 import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
@@ -1727,7 +1726,7 @@ class OP_Tilde extends Operator {
 			blockEvaluator.dump(asStaticBlock(a));
 		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				StaticBlock compiled_str = Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance());
+				StaticBlock compiled_str = Parser.compile(new SourceString(a.str(), "~"));
 				blockEvaluator.dump(compiled_str);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);

@@ -21,7 +21,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
 import aya.Aya;
+import aya.ExecutionRequest;
 import aya.StaticData;
+import aya.obj.block.StaticBlock;
+import aya.parser.Parser;
+import aya.parser.SourceString;
 
 
 @SuppressWarnings("serial")
@@ -203,7 +207,10 @@ public class EditorWindow extends JPanel {
 	
 	public void run() {
 		String txt = editor.getText();
-		Aya.getInstance().queueInput(txt);
+		StaticBlock blk = Parser.compileSafeOrNull(new SourceString(txt, "<editor>"), StaticData.IO);
+		if (blk != null) {
+			Aya.getInstance().queueInput(new ExecutionRequest(blk));
+		}
 	}
 	
 	@Override

@@ -39,7 +39,7 @@ public class PauseDebugInstruction extends NamedOperator {
 			
 			StaticBlock block = null;
 			try {
-				block = Parser.compile(new SourceString(input, "<debug>"), Aya.getInstance());
+				block = Parser.compile(new SourceString(input, "<debug>"));
 			} catch (ParserException e) {
 				print("Error parsing expression '" + input + "':\n" + e.getMessage());
 			}

@@ -1577,7 +1577,7 @@ class OP_Dot_Tilde extends Operator {
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				StaticBlock sb = BlockUtils.fromIS( Parser.compileIS(new SourceString(a.str(), "~"), Aya.getInstance()) );
+				StaticBlock sb = BlockUtils.fromIS( Parser.compileIS(new SourceString(a.str(), "~")) );
 				blockEvaluator.push(sb);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);

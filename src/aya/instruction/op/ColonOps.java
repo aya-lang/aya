@@ -746,7 +746,7 @@ class OP_Colon_F extends Operator {
 			}
 			SourceString source = new SourceString(content, path);
 			try {
-				StaticBlock block = Parser.compile(source, Aya.getInstance());
+				StaticBlock block = Parser.compile(source);
 				blockEvaluator.dump(block);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);

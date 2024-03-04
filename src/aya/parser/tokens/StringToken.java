@@ -1,6 +1,5 @@
 package aya.parser.tokens;
 
-import aya.Aya;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
@@ -125,7 +124,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the blockEvaluator
-					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()) , Aya.getInstance());
+					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()));
 					instrs.insert(0, BlockUtils.fromIS(is));
 					
 				}

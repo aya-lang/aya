@@ -2,7 +2,7 @@ package aya.parser;
 
 import java.util.ArrayList;
 
-import aya.Aya;
+import aya.AyaStdIO;
 import aya.StaticData;
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
@@ -69,7 +69,7 @@ public class Parser {
 	
 	public static char CDICT_CHAR = (char)162; // cent
 
-	public static TokenQueue tokenize(Aya aya, ParserString in) throws ParserException {
+	public static TokenQueue tokenize(ParserString in) throws ParserException {
 		TokenQueue tokens = new TokenQueue();
 
 		while (!in.isEmpty()) {
@@ -755,9 +755,18 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static StaticBlock compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		InstructionStack is = compileIS(source, aya);
+	public static StaticBlock compile(SourceString source) throws EndOfInputError, SyntaxError, ParserException {
+		InstructionStack is = compileIS(source);
 		return BlockUtils.fromIS(is);
+	}
+	
+	public static StaticBlock compileSafeOrNull(SourceString source, AyaStdIO io) {
+		try {
+			return compile(source);
+		} catch (ParserException e) {
+			io.err().println("Syntax Error: " + e.getSimpleMessage());
+			return null;
+		}
 	}
 
 	/**
@@ -767,13 +776,13 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static InstructionStack compileIS(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+	public static InstructionStack compileIS(SourceString source) throws EndOfInputError, SyntaxError, ParserException {
 		ParserString ps = new ParserString(source);
-		return compileIS(ps, aya);
+		return compileIS(ps);
 	}
 
-	public static InstructionStack compileIS(ParserString ps, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		return generate(assemble(tokenize(aya, ps)));
+	public static InstructionStack compileIS(ParserString ps) throws EndOfInputError, SyntaxError, ParserException {
+		return generate(assemble(tokenize(ps)));
 	}
 
 	private static boolean isMultiCharOpPrefix(char c) {

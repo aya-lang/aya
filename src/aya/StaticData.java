@@ -33,6 +33,8 @@ public class StaticData {
 	public static boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
 	
+	public static AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
+	
 	//
 	// All calls to modify this data will need to be thread safe
 	//
