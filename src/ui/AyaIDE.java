@@ -22,8 +22,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import aya.AyaThread;
 import aya.AyaPrefs;
+import aya.AyaThread;
 import aya.ExecutionRequest;
 import aya.InteractiveAya;
 import aya.StaticData;
@@ -58,7 +58,7 @@ public class AyaIDE extends JFrame
     
 
 	public AyaIDE(AyaThread ayaThread) {
-		super("AyaThread");
+		super("Aya");
 		
 		this.thiside = this;
 
@@ -144,7 +144,7 @@ public class AyaIDE extends JFrame
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
 					StaticBlock in_block = Parser.compileSafeOrNull(new SourceString("\"" + path + "\" :F", ""), StaticData.IO);
-					_aya.queueInput(new ExecutionRequest(in_block));
+					_aya.queueInput(new ExecutionRequest(-1, in_block)); // TODO change request id
 					
 				}
 			}
@@ -374,16 +374,16 @@ public class AyaIDE extends JFrame
 			// InteractiveAya Prefs
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
-			iaya.run();
+			iaya.loop();
 			
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
 			
-			try {
-				iaya.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace(StaticData.IO.err());
-			}
+			//try {
+				//iaya.join();
+			//} catch (InterruptedException e) {
+			//	e.printStackTrace(StaticData.IO.err());
+			//}
 			
 			System.exit(1);
 		}

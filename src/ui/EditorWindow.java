@@ -213,7 +213,7 @@ public class EditorWindow extends JPanel {
 		String txt = editor.getText();
 		StaticBlock blk = Parser.compileSafeOrNull(new SourceString(txt, "<editor>"), StaticData.IO);
 		if (blk != null) {
-			_aya.queueInput(new ExecutionRequest(blk));
+			_aya.queueInput(new ExecutionRequest(-1, blk)); // TODO change req id
 		}
 	}
 	
