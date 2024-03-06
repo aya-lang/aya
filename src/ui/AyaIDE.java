@@ -22,7 +22,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import aya.Aya;
+import aya.AyaThread;
 import aya.AyaPrefs;
 import aya.ExecutionRequest;
 import aya.InteractiveAya;
@@ -47,7 +47,7 @@ public class AyaIDE extends JFrame
 
 	
 	
-	private Aya _aya;
+	private AyaThread _aya;
 	
 	//Layout
 	private MyConsole _interpreter;
@@ -57,13 +57,13 @@ public class AyaIDE extends JFrame
 	private AyaIDE thiside;
     
 
-	public AyaIDE(Aya aya) {
-		super("Aya");
+	public AyaIDE(AyaThread ayaThread) {
+		super("AyaThread");
 		
 		this.thiside = this;
 
 				
-		this._aya = aya;
+		this._aya = ayaThread;
 		this._interpreter = new MyConsole();
 		this._menu = new JMenu();
 		this._menuBar = new JMenuBar();
@@ -335,7 +335,7 @@ public class AyaIDE extends JFrame
         }
 	}
 	
-	public Aya getAya() {
+	public AyaThread getAya() {
 		return this._aya;
 	}
 	

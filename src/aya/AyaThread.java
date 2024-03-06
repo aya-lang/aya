@@ -5,18 +5,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import aya.eval.ExecutionContext;
 
-public class Aya extends Thread {
+public class AyaThread extends Thread {
 	
 	private final BlockingQueue<ExecutionRequest> _input = new LinkedBlockingQueue<ExecutionRequest>();
 	private ExecutionContext _root = null;
 	
 	
-	protected Aya(ExecutionContext context) {
+	protected AyaThread(ExecutionContext context) {
 		_root = context;
 	}
 	
-	public static Aya spawnThread(ExecutionContext context) {
-		Aya thread = new Aya(context);
+	public static AyaThread spawnThread(ExecutionContext context) {
+		AyaThread thread = new AyaThread(context);
 		return thread;
 	}
 	
@@ -42,7 +42,7 @@ public class Aya extends Thread {
 				}
 				
 			} catch (InterruptedException e) {
-				System.err.println("Aya interupted: " + e);
+				System.err.println("AyaThread interupted: " + e);
 			}
 		}
 	}

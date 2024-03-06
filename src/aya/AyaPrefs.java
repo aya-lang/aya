@@ -30,7 +30,7 @@ public class AyaPrefs {
 	
 	private static void initWorkingDir() {
 		try {
-			workingDir = Aya.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			workingDir = AyaThread.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 //			if(workingDir.length() > 0) {
 //				workingDir = workingDir.substring(1, workingDir.length()); //Remove the leading '/'
 //			}

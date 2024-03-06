@@ -34,14 +34,14 @@ public class InteractiveAya extends Thread {
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
 	
-	private Aya _aya;
+	private AyaThread _aya;
 	
 	private AyaStdIO _io() {
 		return StaticData.IO;
 	}
 	
-	protected InteractiveAya(Aya aya) {
-		_aya = aya;
+	protected InteractiveAya(AyaThread ayaThread) {
+		_aya = ayaThread;
 		_scripts = new ConcurrentLinkedQueue<String>();
 	}
 
@@ -298,7 +298,7 @@ public class InteractiveAya extends Thread {
 		return code;
 	}
 	
-	public Aya getMainThread() {
+	public AyaThread getMainThread() {
 		return _aya;
 	}
 	
@@ -313,10 +313,10 @@ public class InteractiveAya extends Thread {
 
 		AyaPrefs.init();
 
-		Aya aya = Aya.spawnThread(context);
+		AyaThread ayaThread = AyaThread.spawnThread(context);
 		
 		//Use default system io (interactive in the terminal)
-		InteractiveAya iaya = new InteractiveAya(aya);
+		InteractiveAya iaya = new InteractiveAya(ayaThread);
 		
 		return iaya;
 	}

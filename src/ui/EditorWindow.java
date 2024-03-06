@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
-import aya.Aya;
+import aya.AyaThread;
 import aya.ExecutionRequest;
 import aya.StaticData;
 import aya.obj.block.StaticBlock;
@@ -46,7 +46,7 @@ public class EditorWindow extends JPanel {
 	private JMenu menu;
 	private JMenuBar menuBar;
 	
-	private Aya _aya;
+	private AyaThread _aya;
 	
 	public static void newEditorFrame(AyaIDE ide) {
 		activeFrame = new JFrame("Editor");
@@ -70,8 +70,8 @@ public class EditorWindow extends JPanel {
 	}
 
 	
-	public EditorWindow(Aya aya) {
-		_aya = aya;
+	public EditorWindow(AyaThread ayaThread) {
+		_aya = ayaThread;
 		
 		//Size
 		setMaximumSize(new Dimension(WIDTH, 500));

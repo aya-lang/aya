@@ -1507,7 +1507,6 @@ class OP_W extends Operator {
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
-			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
 			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
 				blockEvaluator.getContext().getVars().setVar(e.getKey(), e.getValue());
 			}
