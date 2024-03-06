@@ -8,25 +8,18 @@ import aya.eval.ExecutionContext;
 public class Aya extends Thread {
 	
 	private final BlockingQueue<ExecutionRequest> _input = new LinkedBlockingQueue<ExecutionRequest>();
-	private static Aya _instance = getInstance();
 	private ExecutionContext _root = null;
 	
 	
-	protected Aya() { }
-	
-	
-	public static Aya getInstance() {
-		if(_instance == null) {
-			_instance = new Aya();
-			_instance._root = ExecutionContext.createRoot(StaticData.IO);
-			// Init the static data
-			StaticData.getInstance().init();
-			// Init global vars
-			_instance._root.getVars().initGlobals(_instance._root);
-			AyaPrefs.init();
-		}
-		return _instance;
+	protected Aya(ExecutionContext context) {
+		_root = context;
 	}
+	
+	public static Aya spawnThread(ExecutionContext context) {
+		Aya thread = new Aya(context);
+		return thread;
+	}
+	
 	
 	@Override
 	public void run() {

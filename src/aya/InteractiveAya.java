@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import aya.eval.ExecutionContext;
 import aya.obj.block.StaticBlock;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
@@ -39,7 +40,7 @@ public class InteractiveAya extends Thread {
 		return StaticData.IO;
 	}
 	
-	public InteractiveAya(Aya aya) {
+	protected InteractiveAya(Aya aya) {
 		_aya = aya;
 		_scripts = new ConcurrentLinkedQueue<String>();
 	}
@@ -297,15 +298,32 @@ public class InteractiveAya extends Thread {
 		return code;
 	}
 	
-	public static void main(String[] args) {
-		//for (int i = 0; i < args.length; i++) {
-		//	System.out.println("[" + i + "]: " + "'" + args[i] + "'");
-		//}
+	public Aya getMainThread() {
+		return _aya;
+	}
+	
+	public static InteractiveAya createInteractiveSession() {
+		// Init the static data
+		StaticData.getInstance().init();
 		
-		Aya aya = Aya.getInstance();
+		ExecutionContext context = ExecutionContext.createRoot(StaticData.IO);
+		
+		// Init global vars
+		context.getVars().initGlobals(context);
+
+		AyaPrefs.init();
+
+		Aya aya = Aya.spawnThread(context);
 		
 		//Use default system io (interactive in the terminal)
 		InteractiveAya iaya = new InteractiveAya(aya);
+		
+		return iaya;
+	}
+	
+	public static void main(String[] args) {
+
+		InteractiveAya iaya = createInteractiveSession();
 		
 		// argument[0] is always the working directory, check for args 1+
 		if (args.length > 1) {

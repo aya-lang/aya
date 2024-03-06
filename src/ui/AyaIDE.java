@@ -144,7 +144,7 @@ public class AyaIDE extends JFrame
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
 					StaticBlock in_block = Parser.compileSafeOrNull(new SourceString("\"" + path + "\" :F", ""), StaticData.IO);
-					Aya.getInstance().queueInput(new ExecutionRequest(in_block));
+					_aya.queueInput(new ExecutionRequest(in_block));
 					
 				}
 			}
@@ -349,7 +349,8 @@ public class AyaIDE extends JFrame
 	
 	public static void main(String[] args) {
 		
-		Aya aya = Aya.getInstance();
+		InteractiveAya iaya = InteractiveAya.createInteractiveSession();
+		
 		boolean readstdin = StaticData.IO.isInputAvaiable();
 		if (args.length > 0) {
 			// First arg is working directory
@@ -363,7 +364,7 @@ public class AyaIDE extends JFrame
 			// Use the GUI
 			
 			//Load and initialize the ide
-			AyaIDE ide = new AyaIDE(aya);
+			AyaIDE ide = new AyaIDE(iaya.getMainThread());
 			
 			// Aya Prefs
 			StaticData.IO.setOut(ide.getOutputStream());
@@ -371,7 +372,6 @@ public class AyaIDE extends JFrame
 			StaticData.IO.setIn(ide.getInputStream());
 			
 			// InteractiveAya Prefs
-			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
 			iaya.run();

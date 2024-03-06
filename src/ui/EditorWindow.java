@@ -46,9 +46,11 @@ public class EditorWindow extends JPanel {
 	private JMenu menu;
 	private JMenuBar menuBar;
 	
+	private Aya _aya;
+	
 	public static void newEditorFrame(AyaIDE ide) {
 		activeFrame = new JFrame("Editor");
-		activeEditor = new EditorWindow();
+		activeEditor = new EditorWindow(ide.getAya());
 		activeFrame.add(activeEditor);
 		activeFrame.pack();
 		activeFrame.setVisible(true);
@@ -68,7 +70,9 @@ public class EditorWindow extends JPanel {
 	}
 
 	
-	public EditorWindow() {			
+	public EditorWindow(Aya aya) {
+		_aya = aya;
+		
 		//Size
 		setMaximumSize(new Dimension(WIDTH, 500));
 		setMinimumSize(new Dimension(WIDTH, 500));
@@ -209,7 +213,7 @@ public class EditorWindow extends JPanel {
 		String txt = editor.getText();
 		StaticBlock blk = Parser.compileSafeOrNull(new SourceString(txt, "<editor>"), StaticData.IO);
 		if (blk != null) {
-			Aya.getInstance().queueInput(new ExecutionRequest(blk));
+			_aya.queueInput(new ExecutionRequest(blk));
 		}
 	}
 	
