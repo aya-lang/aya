@@ -14,6 +14,7 @@ import aya.ext.la.LinearAlgebraInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
+import aya.ext.thread.ThreadInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
@@ -32,6 +33,7 @@ public class StaticData {
 	public static final String ayarcPath = "ayarc.aya";
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
+
 	
 	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
 	
@@ -141,6 +143,7 @@ public class StaticData {
 		_namedInstructionStores.add(new SocketInstructionStore());
 		_namedInstructionStores.add(new ColorInstructionStore());
 		_namedInstructionStores.add(new LinearAlgebraInstructionStore());
+		_namedInstructionStores.add(new ThreadInstructionStore());
 		
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(this);
