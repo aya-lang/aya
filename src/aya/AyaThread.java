@@ -22,9 +22,14 @@ public class AyaThread extends Thread {
 	protected AyaThread(ExecutionContext context) {
 		_root = context;
 	}
-	
-	public static AyaThread spawnThread(ExecutionContext context) {
+
+	public static AyaThread spawnRootThread(ExecutionContext context) {
 		AyaThread thread = new AyaThread(context);
+		return thread;
+	}
+
+	public static AyaThread spawnChildThread(ExecutionContext context) {
+		AyaThread thread = new AyaThread(context.createChild());
 		return thread;
 	}
 	

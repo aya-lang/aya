@@ -270,7 +270,7 @@ public class InteractiveAya {
 
 		AyaPrefs.init();
 
-		AyaThread ayaThread = AyaThread.spawnThread(context);
+		AyaThread ayaThread = AyaThread.spawnRootThread(context);
 		
 		//Use default system io (interactive in the terminal)
 		InteractiveAya iaya = new InteractiveAya(ayaThread);
@@ -328,21 +328,6 @@ public class InteractiveAya {
 		_scripts.add(script);
 	}
 	
-	public final static void clearConsole() {
-	    try {
-	        final String os = System.getProperty("os.name");
-
-	        if (os.contains("Windows")) {
-	        	Runtime.getRuntime().exec("cls"); 
-	        }
-	        else {
-	            Runtime.getRuntime().exec("clear");
-	        }
-	    }
-	    catch (final Exception e) {
-	    	throw new RuntimeException(e);
-	    }
-	}
 	public static void setInteractive(boolean b) {
 		interactive = b;
 	}

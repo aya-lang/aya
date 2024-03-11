@@ -1,0 +1,15 @@
+"thread!" :P
+
+:{thread.new} :thread_id;
+
+"Created thread with id $(thread_id)" :P
+
+{
+    "starting task" :P
+    1 1 +
+    "finished task" :P
+} thread_id :{thread.add_task}
+
+thread_id :{thread.wait_for_result} :result;
+
+"Result is $(result)" :P

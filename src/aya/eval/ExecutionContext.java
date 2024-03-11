@@ -30,7 +30,8 @@ public class ExecutionContext {
 	public ExecutionContext createChild() {
 		ExecutionContext child = new ExecutionContext(_io);
 		// TODO: This must be changed
-		child._variables = _variables;
+		child._variables = new VariableData();
+		child._variables.add(new Dict()); // add empty globals
 		return child;
 	}
 	

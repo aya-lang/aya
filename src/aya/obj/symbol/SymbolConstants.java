@@ -113,6 +113,7 @@ public class SymbolConstants {
 	public static final Symbol NOT_AN_OP_ERROR  = S("not_an_op_err");
 	public static final Symbol ASSERT_ERROR     = S("assert_err");
 	public static final Symbol UNIMPL_ERROR     = S("unimpl_err");
+	public static final Symbol THREAD_ERR       = S("thread_err");
 
 	public static final Symbol EXCEPTION            = S("exception");
 	public static final Symbol RUNTIME_EXCEPTION    = S("runtime_exception");
