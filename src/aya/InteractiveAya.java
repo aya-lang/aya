@@ -8,34 +8,28 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import aya.eval.ExecutionContext;
+import aya.exceptions.parser.ParserException;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
-import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.util.FileUtils;
 
 public class InteractiveAya {
 	
-	public static final int EXIT = 0;
-	public static final int SUCCESS = 1;
-	public static final int NONE = 2;
-	public static final int CLS = 4;
-	public static final int SKIP_WAIT = 5; // Do not wait for aya as no input was queued
-	public static final int NORMAL_INPUT = 6; // Normal 8input was sent to aya, wait for it to complete
-	public static final int EMPTY_INPUT = 7; // Empty string was sent as input
 	private static boolean interactive = true;
 
 	private boolean _echo = false;
 	private boolean _showPromptText = true;
 	private String _initcode = null;
-	private String _usercmd = null;
 	private static ConcurrentLinkedQueue<String> _scripts;
 	
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
 	
 	private long _request_id_counter;
+	
+	private boolean running;
 	
 	private AyaThread _aya;
 	
@@ -64,46 +58,28 @@ public class InteractiveAya {
 			+ "\tUse \"\\USERCMD -\" to return to normal\n"
 			+ "\tUse \"\\USERCMD <variable> .\" to hide message\n";
 	
-	public int processInput(String input) {
+	public ExecutionRequest processInput(String input) {
 		//Empty Input
 		if(input.equals("")) {
-			return EMPTY_INPUT;
+			return null;
 		}
 		
-		// User Command
-		if (_usercmd != null) {
-			if (input.equals("\\USERCMD -") || input.equals("\\: -") ) {
-				_usercmd = null;
-				return SKIP_WAIT;
-			} else {
-				String code = "\"\"\"" + input + "\"\"\" __aya__.interpreter." + _usercmd;
-				StaticBlock blk = Parser.compileSafeOrNull(new SourceString(code, "<USERCMD>"), StaticData.IO);
-				if (blk != null) _aya.queueInput(new ExecutionRequest(makeRequestID(), blk));
-				return NORMAL_INPUT;
-			}
-		}
-		
-		
-		//Settings
+		// Settings
 		else if (input.charAt(0) == '\\') {
 
-			
 			String[] settings = input.split(" ");
 			String command = settings[0].substring(1, settings[0].length());
-			
 			
 			//Exit
 			if(command.equals("Q")) {
 				// Notify aya to exit
-				_aya.quit();
-				return EXIT; //return exit flag
+				_aya.interrupt();
+				running = false;
 			}
-			
 			
 			//Help
 			else if(command.equals("H") || command.equals("HELP")) {
 				_io().out().println(HELP_TEXT);
-				return SKIP_WAIT;
 			}
 			
 			//Search
@@ -123,71 +99,32 @@ public class InteractiveAya {
 						_io().out().println(s.replace("\n", "\n   "));
 					}
 				}
-				
-				return SKIP_WAIT;
 			}
 			
 			//Version
 			else if(command.equals("V") || command.equals("VERSION")) {
 				_io().out().println(StaticData.VERSION_NAME);
-				return SKIP_WAIT;
 			}
 			
-			
-			//User Command
-			else if (command.equals(":") || command.equals("USERCMD")) {
-				if (settings.length > 1 && SymbolTable.isBasicSymbolString(settings[1])) {
-					_usercmd = settings[1];
-					if (!(settings.length > 2 && settings[2].equals("."))) {
-						_io().out().println("Input now being parsed as:\n\t\"\"\"input\"\"\" __aya__.interpreter." + _usercmd
-								+ "\nType \"\\" + command + " -\" to return to normal"
-								+ "\nType \"\\" + command + " " + _usercmd + " .\" to hide this message in the future");
-					}
-				} else {
-					_io().err().println("usercmd: \"" + settings[1] + "\" is not a valid user command");
-				}
-				return SKIP_WAIT;
-			}
-			
-			else if (SymbolTable.isBasicSymbolString(command)) {
-				String code = splitAtFirst(' ', input).trim();
-				if(code.equals("")) {
-					_io().err().println("No input provided");
-				} else {			
-					// construct [ """ (code) """ varname ]
-					code = "\"\"\"" + code + "\"\"\" __aya__.interpreter." + command;
-					StaticBlock blk = Parser.compileSafeOrNull(new SourceString(code, "<USERCMD>"), StaticData.IO);
-					if (blk != null) _aya.queueInput(new ExecutionRequest(makeRequestID(), blk));
-					return NORMAL_INPUT;
-				}
-			}
-						
 			else {
 				_io().err().println("Invalid command. Please make sure there is a space between command and its arguments.");
-				return SKIP_WAIT;
 			}
-			
+
+			return null;
 		}
 		
 		//Normal Input
 		else {
-			StaticBlock blk = Parser.compileSafeOrNull(new SourceString(input, "<input>"), StaticData.IO);
-			if (blk != null) _aya.queueInput(new ExecutionRequest(makeRequestID(), blk));
-			return NORMAL_INPUT;
+			try {
+				StaticBlock blk = Parser.compile(new SourceString(input, "<input>"));
+				return new ExecutionRequest(makeRequestID(), blk);
+			} catch (ParserException e) {
+				_io().err().println("Syntax Error: " + e.getSimpleMessage());
+				return null;
+			}
 		}
-		
-		_io().err().println("invalid input");
-		return SKIP_WAIT;
 	}
 	
-	private static String splitAtFirst(char splitter, String str) {
-		int index = str.indexOf(' ');
-		if (index == -1) {
-			return "";
-		} else {
-			return str.substring(index, str.length());
-		}
-	}
 
 	public void initCode(String code) {
 		_initcode = code;
@@ -223,7 +160,7 @@ public class InteractiveAya {
 	}
 
 	public void loop() {
-		boolean running = true;
+		running = true;
 		
  		_aya.start();
  		
@@ -243,30 +180,18 @@ public class InteractiveAya {
 		Scanner scanner = _io().scanner();
 		
 		String input = "";
-		int status;
 
-		// TODO: Fix this
-		// Note: Aya may still be in the middle of processing responses so this will not always
-		// properly detect when the thread is done working. Sleep here to try to catch them
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		// Flush output
-		while (_aya.hasOutput()) {
+		while (_aya.hasUnfinishedTasks()) {
 			try {
 				printResult(_aya.waitForResponse());
 			} catch (InterruptedException e) {
 				out.println("Aya interrupted");
 				e.printStackTrace(err);
 				running = false;
-				status = EXIT;
 			}
 		}
-				
+		
 		// interactive is set on startup. If true, this is an infinite REPL loop
 		while (running && (interactive || !_scripts.isEmpty())) {
 
@@ -282,7 +207,7 @@ public class InteractiveAya {
 					input = scanner.nextLine();
 				} catch (NoSuchElementException e) {
 					// EOF Encountered
-					_aya.quit();
+					_aya.interrupt();
 					running = false;
 				}
 			}
@@ -295,9 +220,10 @@ public class InteractiveAya {
 				out.println(AyaPrefs.getPrompt() + input);
 			}
 			
-			status = processInput(input);
-			
-			if (status != SKIP_WAIT) {		
+			ExecutionRequest request = processInput(input);
+
+			if (request != null) {	
+				_aya.queueInput(request);
 				try {
 					ExecutionResult result = _aya.waitForResponse();
 					printResult(result);
@@ -305,20 +231,18 @@ public class InteractiveAya {
 					out.println("Aya interrupted");
 					e.printStackTrace(err);
 					running = false;
-					status = EXIT;
 				}
 			}
-
-			switch (status) {
-			case EXIT:
+			
+			if (!running) _aya.interrupt();
+			
+			if (_aya.isInterrupted()) {
 				scanner.close();
 				running = false;
-				_aya.quit();
 				break;
 			}
 
 			_io().out().flush();
-			
 		}
 	}
 	

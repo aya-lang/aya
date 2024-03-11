@@ -3,6 +3,7 @@ package aya;
 import java.io.PrintStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 import aya.eval.BlockEvaluator;
 import aya.eval.ExecutionContext;
@@ -14,6 +15,8 @@ public class AyaThread extends Thread {
 	private final BlockingQueue<ExecutionRequest> _input = new LinkedBlockingQueue<ExecutionRequest>();
 	private final BlockingQueue<ExecutionResult> _output = new LinkedBlockingQueue<ExecutionResult>();
 	private ExecutionContext _root = null;
+	private ReentrantLock _lock = new ReentrantLock();
+	private volatile boolean _running;
 	
 
 	protected AyaThread(ExecutionContext context) {
@@ -25,15 +28,18 @@ public class AyaThread extends Thread {
 		return thread;
 	}
 	
-	public boolean hasOutput() {
-		return _output.size() > 0;
+	public boolean hasUnfinishedTasks() {
+		return _lock.isLocked() || _input.size() > 0;
 	}
 	 
 	@Override
 	public void run() {
-		while (true) {
+		_running = true;
+		while (_running) {
 			try {
 				ExecutionRequest input = _input.take();
+
+				_lock.lock();
 			
 				if (input == null) {
 					StaticData.IO.out().println("Exiting...");
@@ -44,8 +50,10 @@ public class AyaThread extends Thread {
 				
 				_output.add(result);
 
+				_lock.unlock();
+
 			} catch (InterruptedException e) {
-				System.err.println("AyaThread interupted: " + e);
+				// Exit
 			}
 		}
 	}
@@ -56,10 +64,6 @@ public class AyaThread extends Thread {
 	
 	public ExecutionResult waitForResponse() throws InterruptedException {
 		return _output.take();
-	}
-	
-	public void quit() {
-		queueInput(null);
 	}
 	
 	public ExecutionResult eval(ExecutionRequest request) {
