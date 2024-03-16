@@ -1,17 +1,19 @@
+import ::threading
+
 "== Single Task ==" :P
 
 .# Create a single thread and run a task
-:{thread.new} :thread_id;
+threading.new :thread;
 
-"Created thread with id $(thread_id)" :P
+"Created thread with id $(thread.id)" :P
 
 {
     "starting task" :P
     1 1 +
     "finished task" :P
-} thread_id :{thread.add_task}
+} thread.add_task
 
-thread_id :{thread.wait_for_result} :result;
+thread.wait_for_result :result;
 
 "Result is $(result)" :P
 
@@ -23,13 +25,11 @@ thread_id :{thread.wait_for_result} :result;
 
 [4,{i, {:i^, 300:Z "Task $(i) complete" :P i} }] :tasks;
 
-[tasksE ,; :{thread.new}]:thread_ids;
+[tasksE ,; threading.new ]:threads;
 
-[tasks thread_ids, {task thread_id,
-    task.` thread_id :{thread.add_task}
-}];
+[tasks threads, .add_task];
 
-[thread_ids, :{thread.wait_for_result}] :P
+[threads, .wait_for_result] :P
 
 "complete" :P
 
@@ -39,11 +39,10 @@ thread_id :{thread.wait_for_result} :result;
 
 [10 ,{i, {:i^, 1000:Z "Task $(i) complete" :P i} }] :tasks;
 
-[4 ,; :{thread.new}]:thread_pool_ids;
 
 
 [] :threads_with_tasks;
-[thread_pool_ids ~] :thread_pool; .# Available
+[4 ,; threading.new]:thread_pool;
 
 
 .# Loop until no tasks remain
@@ -51,11 +50,11 @@ thread_id :{thread.wait_for_result} :result;
     .# For each thread with a task, check if it is ready,
     .# if it is, get the result and add it back to the pool
     [] :finished_threads;
-    threads_with_tasks :# {thread_id : res, 
-        thread_id :{thread.has_unfinished_tasks} ! {
-            thread_id :{thread.wait_for_result} :res;
+    threads_with_tasks :# {thread : res, 
+        thread.has_unfinished_tasks ! {
+            thread.wait_for_result :res;
             "Got result $res" :P
-            thread_id finished_threads .B;
+            thread finished_threads .B;
         } ?
     };
 
@@ -66,10 +65,10 @@ thread_id :{thread.wait_for_result} :result;
     thread_pool finished_threads J :thread_pool;
 
    .# Add a task to each thread in the pool
-    thread_pool :# {thread_id,
+    thread_pool :# {thread,
         tasks E 0 > {
-            tasks B\; thread_id :{thread.add_task}
-            thread_id threads_with_tasks .B;
+            tasks B\; thread.add_task
+            thread threads_with_tasks .B;
         } ?
     };
 
@@ -81,8 +80,8 @@ thread_id :{thread.wait_for_result} :result;
 tasks E 0 > } W
 
 .# Wait for all remaining tasks
-threads_with_tasks :# {thread_id : res,
-    thread_id :{thread.wait_for_result} :res;
+threads_with_tasks :# {thread : res,
+    thread.wait_for_result :res;
     "Got result $res" :P
 };
 
