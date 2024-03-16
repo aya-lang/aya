@@ -3,6 +3,7 @@ package aya;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -140,8 +141,10 @@ public class InteractiveAya {
 			case ExecutionResult.TYPE_SUCCESS:
 				{
 					ExecutionResultSuccess res = (ExecutionResultSuccess)result;
-					for (Obj o : res.getData()) {
-						_io().out().print(o);
+					ArrayList<Obj> data = res.getData();
+					for (int i = 0; i < data.size(); i++) {
+						_io().out().print(data.get(i));
+						if (i < data.size() - 1) _io().out().print(' ');
 					}
 					_io().out().println();
 				}
