@@ -8,7 +8,6 @@ import java.util.Stack;
 
 import aya.InteractiveAya;
 import aya.StaticData;
-import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -59,7 +58,26 @@ public class VariableData {
 	public VariableData() {
 	}
 	
-	public void initGlobals(ExecutionContext aya) {
+	public VariableData duplicateWithGlobals() {
+		VariableData v = new VariableData();
+		
+		//v.add(getGlobals());
+		v.add(new Dict());
+		
+		// Add object and builtins
+		v.OBJ_STR.update(this.OBJ_STR);
+		v.OBJ_SYM.update(this.OBJ_SYM);
+		v.OBJ_LIST.update(this.OBJ_LIST);
+		v.OBJ_NUM.update(this.OBJ_NUM);
+		v.OBJ_CHAR.update(this.OBJ_CHAR);
+		v.OBJ_BLOCK.update(this.OBJ_BLOCK);
+		v.OBJ_NIL.update(this.OBJ_NIL);
+		v.BUILTINS.update(this.BUILTINS);
+		
+		return v;
+	}
+	
+	public void initGlobals() {
 		Dict globals = new Dict();
 		
 		globals.set(SymbolConstants.VERSION, List.fromString(StaticData.VERSION_NAME));

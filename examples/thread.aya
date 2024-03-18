@@ -18,6 +18,22 @@ thread.wait_for_result :result;
 "Result is $(result)" :P
 
 
+"== Single Task with Globals ==" :P
+
+.# Create a single thread and run a task
+threading.new :thread;
+
+"Created thread with id $(thread.id)" :P
+
+{
+    [1 2 3] .x 3 +
+} thread.add_task
+
+thread.wait_for_result :result;
+
+"Result is $(result)" :P
+
+
 
 .# Create multiple threads with tasks
 

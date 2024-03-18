@@ -269,7 +269,7 @@ public class InteractiveAya {
 		ExecutionContext context = ExecutionContext.createRoot(StaticData.IO);
 		
 		// Init global vars
-		context.getVars().initGlobals(context);
+		context.getVars().initGlobals();
 
 		AyaPrefs.init();
 
