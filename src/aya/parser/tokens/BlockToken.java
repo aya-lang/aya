@@ -64,7 +64,7 @@ public class BlockToken extends CollectionToken {
 					try {
 						n = nt.numValue().toInt();
 					} catch (NumberFormatException e) {
-						throw new SyntaxError(nt + " is not a valid number in the block header", nt.getSourceStringRef());
+						throw new SyntaxError(nt + " is not a valid number in the blockEvaluator header", nt.getSourceStringRef());
 					}
 
 					if (n < 1) {
@@ -85,7 +85,7 @@ public class BlockToken extends CollectionToken {
 					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
 				}
 			} else {
-				throw new SyntaxError("Block contains too many parts", getSourceStringRef());
+				throw new SyntaxError("BlockEvaluator contains too many parts", getSourceStringRef());
 			}
 		}
 	}
@@ -252,7 +252,7 @@ public class BlockToken extends CollectionToken {
 		if (colons == 0) {
 			return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
 		} else if (colons > 1) {
-			throw new SyntaxError("Expected only one colon (:) token in block header", tokens.peek().getSourceStringRef());
+			throw new SyntaxError("Expected only one colon (:) token in blockEvaluator header", tokens.peek().getSourceStringRef());
 		} else {
 			ArrayList<Token> t1 = new ArrayList<Token>(colon_index);
 			ArrayList<Token> t2 = new ArrayList<Token>(ts.size()-colon_index);

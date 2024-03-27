@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.XML;
 
-import aya.Aya;
 import aya.exceptions.ex.AyaException;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
@@ -26,8 +25,9 @@ public class JSONUtils {
 	public static class JSONParams {
 		private static JSONParams default_encode = null;
 		private static JSONParams default_decode = null;
-		private static Symbol FALSE_SYM = Aya.getInstance().getSymbols().getSymbol("__json_false");
-		private static Symbol TRUE_SYM =  Aya.getInstance().getSymbols().getSymbol("__json_true");
+		private static Symbol FALSE_SYM = SymbolTable.getSymbol("__json_false");
+		private static Symbol TRUE_SYM =  SymbolTable.getSymbol("__json_true");
+		private static Symbol NULL_SYM =  SymbolTable.getSymbol("__json_null");
 		
 		public JSONParams(Obj obj_null, Obj obj_true, Obj obj_false, boolean parse_symbol) {
 			this.obj_null = obj_null;
@@ -40,7 +40,7 @@ public class JSONUtils {
 		public static JSONParams getDefaultEncode() {
 			if (default_encode == null) {
 				default_encode = new JSONParams(
-						Aya.getInstance().getVars().OBJ_NIL,
+						NULL_SYM,
 						TRUE_SYM,
 						FALSE_SYM,
 						false);
@@ -51,7 +51,7 @@ public class JSONUtils {
 		public static JSONParams getDefaultDecode() {
 			if (default_decode == null) {
 				default_decode = new JSONParams(
-						Aya.getInstance().getVars().OBJ_NIL,
+						NULL_SYM,
 						Num.ONE,
 						Num.ZERO,
 						false);
@@ -102,9 +102,9 @@ public class JSONUtils {
 			JSONObject json = (JSONObject)object;
 			Dict d = new Dict();
 			for (String key : json.keySet()) {
-				Symbol sym = Aya.getInstance().getSymbols().getSymbol(key);
+				Symbol sym = SymbolTable.getSymbol(key);
 				if (json.isNull(key)) {
-					d.set(sym, Aya.getInstance().getVars().OBJ_NIL);
+					d.set(sym, params.obj_null);
 				} else {
 					final Object o = json.get(key);
 					d.set(sym, toObj(o, params));
@@ -116,7 +116,7 @@ public class JSONUtils {
 			ArrayList<Obj> arr = new ArrayList<Obj>(jarr.length());
 			for (int i = 0; i < jarr.length(); i++) {
 				if (jarr.isNull(i)) {
-					arr.add(Aya.getInstance().getVars().OBJ_NIL);
+					arr.add(params.obj_null);
 				} else {
 					arr.add(toObj(jarr.get(i), params));
 				}
@@ -131,7 +131,7 @@ public class JSONUtils {
 			if (params.parse_symbol && str.startsWith("::")) {
 				String name = str.substring(2);
 				if (SymbolTable.isBasicSymbolString(name)) {
-					return Aya.getInstance().getSymbols().getSymbol(name);
+					return SymbolTable.getSymbol(name);
 				} else {
 					return List.fromString(str);
 				}

@@ -2,11 +2,11 @@ package aya.ext.graphics.instruction;
 
 import java.awt.geom.GeneralPath;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 
 public class PathGraphicsInstruction extends GraphicsInstruction {
 
@@ -17,7 +17,7 @@ public class PathGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		boolean fill = _reader.popBool();
 		double[] ys = _reader.popNumberList().todoubleArray();
 		double[] xs = _reader.popNumberList().todoubleArray();

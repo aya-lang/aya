@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
@@ -28,10 +29,10 @@ public class TupleInstruction extends Instruction {
 	 * of the results
 	 * @return
 	 */
-	public ArrayList<Obj> evalToResults() {
+	public ArrayList<Obj> evalToResults(ExecutionContext context) {
 		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
-			Block evaluator = new Block();
+			BlockEvaluator evaluator = context.createEvaluator();
 			evaluator.dump(elements[i]);
 			try {
 				evaluator.eval();
@@ -46,8 +47,8 @@ public class TupleInstruction extends Instruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
-		b.getStack().addAll(evalToResults());
+	public void execute(BlockEvaluator b) {
+		b.getStack().addAll(evalToResults(b.getContext()));
 	}
 
 	@Override

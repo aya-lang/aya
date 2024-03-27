@@ -1,11 +1,11 @@
 package aya.ext.graphics.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.number.Num;
 import aya.obj.symbol.SymbolConstants;
 import aya.util.Casting;
@@ -19,8 +19,8 @@ public class NewGraphicsInstruction extends GraphicsInstruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
-		final Obj o_params = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj o_params = blockEvaluator.pop();
 		
 		if (o_params.isa(Obj.DICT)) {
 			DictReader params = new DictReader(Casting.asDict(o_params));
@@ -34,7 +34,7 @@ public class NewGraphicsInstruction extends GraphicsInstruction {
 			if (params.getInt(SymbolConstants.SHOW, 1) == 1) {
 				c.show();
 			}
-			block.push(Num.fromInt(id));
+			blockEvaluator.push(Num.fromInt(id));
 		} else {
 			throw new TypeError(this, "D", o_params);
 		}
@@ -42,7 +42,7 @@ public class NewGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		// noop
 	}
 	

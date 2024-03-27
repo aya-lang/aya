@@ -1,7 +1,7 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.eval.BlockEvaluator;
 import aya.parser.SourceStringRef;
 
 public abstract class Instruction {
@@ -12,7 +12,7 @@ public abstract class Instruction {
 		this.source = source;
 	}
 
-	public abstract void execute(Block block);
+	public abstract void execute(BlockEvaluator blockEvaluator);
 	
 	public abstract ReprStream repr(ReprStream stream);
 	

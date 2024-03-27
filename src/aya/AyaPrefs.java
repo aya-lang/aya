@@ -30,7 +30,7 @@ public class AyaPrefs {
 	
 	private static void initWorkingDir() {
 		try {
-			workingDir = Aya.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			workingDir = AyaThread.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 //			if(workingDir.length() > 0) {
 //				workingDir = workingDir.substring(1, workingDir.length()); //Remove the leading '/'
 //			}
@@ -42,10 +42,10 @@ public class AyaPrefs {
 			workingDir = (new File(workingDir).getCanonicalPath()).toString() + File.separator;
 		} catch (URISyntaxException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		} catch (IOException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		}
 		defaultWorkingDir = workingDir;
 	}

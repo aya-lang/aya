@@ -1,10 +1,9 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
@@ -18,7 +17,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		final Obj kv_obj = b.pop();
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;
@@ -33,7 +32,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 				b.push(o);
 			}
 		} else {
-			Dict builtin_dict = Aya.getInstance().getVars().getBuiltinMeta(kv_obj);
+			Dict builtin_dict = b.getContext().getVars().getBuiltinMeta(kv_obj);
 			Dict dict = (Dict)builtin_dict;
 			Obj o;
 			try {

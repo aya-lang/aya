@@ -1,7 +1,7 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.eval.BlockEvaluator;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
 
@@ -15,8 +15,8 @@ public class StringLiteralInstruction extends Instruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		block.push(List.fromString(_str));
+	public void execute(BlockEvaluator blockEvaluator) {
+		blockEvaluator.push(List.fromString(_str));
 	}
 
 	@Override

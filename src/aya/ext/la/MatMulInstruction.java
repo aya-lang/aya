@@ -2,12 +2,12 @@ package aya.ext.la;
 
 import java.util.ArrayList;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -22,12 +22,12 @@ public class MatMulInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj b = block.pop();
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj b = blockEvaluator.pop();
+		Obj a = blockEvaluator.pop();
 
 		if (a.isa(Obj.LIST) && b.isa(Obj.LIST)) {
-			block.push(matMulSafe(Casting.asList(a), Casting.asList(b)));
+			blockEvaluator.push(matMulSafe(Casting.asList(a), Casting.asList(b)));
 		} else {
 			throw new TypeError(this, "LL", b, a);
 		}

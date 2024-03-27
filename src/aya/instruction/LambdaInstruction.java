@@ -1,11 +1,11 @@
 package aya.instruction;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.eval.BlockEvaluator;
 import aya.parser.SourceStringRef;
 
 /**
- * The Lambda class is nothing more than a block that automatically
+ * The Lambda class is nothing more than a blockEvaluator that automatically
  * gets dumped at runtime.
  * 
  * @author npaul
@@ -19,13 +19,13 @@ public class LambdaInstruction extends Instruction {
 		this.instructions = instructions;
 	}
 	
-	/** Return the block's InstructionStack */
+	/** Return the blockEvaluator's InstructionStack */
 	public InstructionStack getInstructions() {
 		return this.instructions;
 	}
 
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		b.getInstructions().addAll(instructions.getInstrucionList());
 	}
 

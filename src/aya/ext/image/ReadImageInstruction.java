@@ -8,11 +8,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 
 public class ReadImageInstruction extends NamedOperator {
@@ -23,8 +23,8 @@ public class ReadImageInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		String filename = null;
 		
 		if (a.isa(Obj.STR)) {
@@ -41,7 +41,7 @@ public class ReadImageInstruction extends NamedOperator {
 			throw new IOError(opName(), filename, e.getMessage());
 		}
 		
-		block.push(image.toDict());
+		blockEvaluator.push(image.toDict());
 	}
 
 	public AyaImage loadImage(String ImageName) throws IOException {

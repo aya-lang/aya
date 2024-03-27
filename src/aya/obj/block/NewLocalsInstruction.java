@@ -2,8 +2,8 @@ package aya.obj.block;
 
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.dict.Dict;
@@ -24,7 +24,7 @@ public class NewLocalsInstruction extends Instruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
+	public void execute(BlockEvaluator blockEvaluator) {
 		Dict locals = _locals.clone();
 
 		if (_args != null) {
@@ -32,12 +32,12 @@ public class NewLocalsInstruction extends Instruction {
 			// aya> 1 2 3 {a b c, a b}
 			// 1 2
 			for (int i = _args.size()-1; i >= 0; i--) {
-				_args.get(i).assign(locals, block.pop());
+				_args.get(i).assign(locals, blockEvaluator.pop());
 			}	
 		}
 		
 		// Add a new variable frame to the variable stack
-		Aya.getInstance().getVars().add(locals);
+		blockEvaluator.getContext().getVars().add(locals);
 	}
 
 	@Override

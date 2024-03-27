@@ -1,10 +1,10 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.op.Ops;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.util.Casting;
@@ -16,14 +16,14 @@ public class AnonGetIndexInstruction extends GetIndexInstruction {
 	}
 	
 	@Override
-	public void execute (final Block block) {
-		Obj index = block.pop();
-		final Obj list = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		Obj index = blockEvaluator.pop();
+		final Obj list = blockEvaluator.pop();
 				
 		if(list.isa(Obj.LIST)) {		
-			block.push(Casting.asList(list).getIndexed(index));
+			blockEvaluator.push(Casting.asList(list).getIndexed(blockEvaluator.getContext(), index));
 		} else if (list.isa(Obj.DICT)) {
-			block.push(DictIndexing.getIndex((Dict)list, index));
+			blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), (Dict)list, index));
 		} else {
 			throw new TypeError(Ops.OP_I_INSTANCE, index, list);
 		}

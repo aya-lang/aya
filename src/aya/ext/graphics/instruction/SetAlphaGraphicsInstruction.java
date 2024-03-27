@@ -2,10 +2,10 @@ package aya.ext.graphics.instruction;
 
 import java.awt.AlphaComposite;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 
 public class SetAlphaGraphicsInstruction extends GraphicsInstruction {
 
@@ -16,7 +16,7 @@ public class SetAlphaGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		double a = _reader.popDouble();
 		
 		double alpha = Double.max(0, Double.min(1.0, a));

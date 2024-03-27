@@ -1,6 +1,6 @@
 package aya.parser.tokens;
 
-import aya.Aya;
+import aya.StaticData;
 import aya.exceptions.parser.ParserException;
 import aya.instruction.Instruction;
 import aya.instruction.named.NamedOperator;
@@ -15,7 +15,7 @@ public class NamedOpToken extends StdToken {
 
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		NamedOperator instruction = Aya.getInstance().getNamedInstruction(data);
+		NamedOperator instruction = StaticData.getInstance().getNamedInstruction(data);
 		if (instruction != null) {
 			return new NamedOperatorInstruction(this.getSourceStringRef(), instruction);
 		} else {

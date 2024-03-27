@@ -4,17 +4,11 @@ import java.util.HashMap;
 
 public class SymbolTable {
 	
-	private HashMap<String, Symbol> _symbols;
-	private HashMap<Integer, String> _symbols_rev;
-	private int _counter;
+	private volatile static HashMap<String, Symbol> _symbols = new HashMap<String, Symbol>();
+	private volatile static HashMap<Integer, String> _symbols_rev = new HashMap<Integer, String>();
+	private volatile static int _counter = 1; // 0: null
 	
-	public SymbolTable() {
-		_symbols = new HashMap<String, Symbol>();
-		_symbols_rev = new HashMap<Integer, String>();
-		_counter = 1; // 0: null
-	}
-	
-	public Symbol getSymbol(String str) {
+	public static Symbol getSymbol(String str) {
 		Symbol sym = _symbols.get(str);
 		if (sym != null) {
 			return sym;
@@ -23,7 +17,7 @@ public class SymbolTable {
 		}
 	}
 	
-	String getName(Symbol s) {
+	public static String getName(Symbol s) {
 		String name = _symbols_rev.get(s._id);
 		if (name != null) {
 			return name;
@@ -32,7 +26,7 @@ public class SymbolTable {
 		}
 	}
 	
-	private Symbol newSymbol(String name) {
+	private static Symbol newSymbol(String name) {
 		Symbol sym = new Symbol(_counter);
 		_symbols.put(name, sym);
 		_symbols_rev.put(_counter,  name);

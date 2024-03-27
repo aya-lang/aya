@@ -4,12 +4,12 @@ import static aya.util.Casting.asList;
 
 import javax.swing.JOptionPane;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
@@ -22,26 +22,26 @@ public class DialogInstructionStore extends NamedInstructionStore {
 
 		addInstruction(new NamedOperator("dialog.getstr", "message::str: popup window with a a text input field") {
 			@Override
-			public void execute(Block block) {
-				final Obj title = block.pop();
-				block.push(List.fromString(QuickDialog.requestString(title.str())));
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj title = blockEvaluator.pop();
+				blockEvaluator.push(List.fromString(QuickDialog.requestString(title.str())));
 			}
 		});
 
 		addInstruction(new NamedOperator("dialog.getnum", "message::str: popup window with a number input field") {
 			@Override
-			public void execute(Block block) {
-				final Obj title = block.pop();
-				block.push(QuickDialog.numberInput(title.str()));
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj title = blockEvaluator.pop();
+				blockEvaluator.push(QuickDialog.numberInput(title.str()));
 			}
 		});
 		
 		addInstruction(new NamedOperator("dialog.alert", "message::str title::str type::sym show an alert dialog") {
 			@Override
-			public void execute(Block block) {
-				final Obj type_obj = block.pop();
-				final Obj title_obj = block.pop();
-				final Obj message_obj = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj type_obj = blockEvaluator.pop();
+				final Obj title_obj = blockEvaluator.pop();
+				final Obj message_obj = blockEvaluator.pop();
 				
 				if (!type_obj.isa(Obj.SYMBOL)) throw new TypeError(this, "SSJ", type_obj, title_obj, message_obj);
 
@@ -52,11 +52,11 @@ public class DialogInstructionStore extends NamedInstructionStore {
 
 		addInstruction(new NamedOperator("dialog.confirm", "message::str options::list title::str type::sym show an alert dialog") {
 			@Override
-			public void execute(Block block) {
-				final Obj type_obj = block.pop();
-				final Obj title_obj = block.pop();
-				final Obj options_obj = block.pop();
-				final Obj message_obj = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj type_obj = blockEvaluator.pop();
+				final Obj title_obj = blockEvaluator.pop();
+				final Obj options_obj = blockEvaluator.pop();
+				final Obj message_obj = blockEvaluator.pop();
 				
 				if (!(type_obj.isa(Obj.SYMBOL) && options_obj.isa(Obj.LIST))) throw new TypeError(this, "SSJ", type_obj, title_obj, message_obj);
 
@@ -72,17 +72,17 @@ public class DialogInstructionStore extends NamedInstructionStore {
 						title_obj.str(),
 						type);
 						
-				block.push(Num.fromBool(val));
+				blockEvaluator.push(Num.fromBool(val));
 			}
 		});
 		
 		addInstruction(new NamedOperator("dialog.buttons", "message::str options::list title::str type::sym: show a dialog with several option buttons") {
 			@Override
-			public void execute(Block block) {
-				final Obj type_obj = block.pop();
-				final Obj title_obj = block.pop();
-				final Obj options_obj = block.pop();
-				final Obj message_obj = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj type_obj = blockEvaluator.pop();
+				final Obj title_obj = blockEvaluator.pop();
+				final Obj options_obj = blockEvaluator.pop();
+				final Obj message_obj = blockEvaluator.pop();
 				
 				if (!(type_obj.isa(Obj.SYMBOL) && options_obj.isa(Obj.LIST))) throw new TypeError(this, "SSJ", type_obj, title_obj, message_obj);
 
@@ -102,17 +102,17 @@ public class DialogInstructionStore extends NamedInstructionStore {
 						title_obj.str(),
 						type);
 						
-				block.push(List.fromString(selected));
+				blockEvaluator.push(List.fromString(selected));
 			}
 		});
 
 		addInstruction(new NamedOperator("dialog.dropdown", "message::str options::list title::str type::sym: show a dialog with several options as a dropdown") {
 			@Override
-			public void execute(Block block) {
-				final Obj type_obj = block.pop();
-				final Obj title_obj = block.pop();
-				final Obj options_obj = block.pop();
-				final Obj message_obj = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj type_obj = blockEvaluator.pop();
+				final Obj title_obj = blockEvaluator.pop();
+				final Obj options_obj = blockEvaluator.pop();
+				final Obj message_obj = blockEvaluator.pop();
 				
 				if (!(type_obj.isa(Obj.SYMBOL) && options_obj.isa(Obj.LIST))) throw new TypeError(this, "SSJ", type_obj, title_obj, message_obj);
 
@@ -132,15 +132,15 @@ public class DialogInstructionStore extends NamedInstructionStore {
 						title_obj.str(),
 						type);
 						
-				block.push(List.fromString(selected));
+				blockEvaluator.push(List.fromString(selected));
 				
 			}
 		});
 		
 		addInstruction(new NamedOperator("dialog.choosefile") {
 			@Override
-			public void execute(Block block) {
-				block.push(List.fromString(QuickDialog.chooseFile()));
+			public void execute(BlockEvaluator blockEvaluator) {
+				blockEvaluator.push(List.fromString(QuickDialog.chooseFile()));
 			}
 		});
 	}

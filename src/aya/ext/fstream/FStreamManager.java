@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import aya.Aya;
+import aya.StaticData;
 
 public class FStreamManager {
 	
@@ -171,10 +171,10 @@ public class FStreamManager {
 	public static boolean print(int fileid, String str) {
 		switch (fileid) {
 		case STDOUT:
-			Aya.getInstance().getOut().print(str);
+			StaticData.IO.out().print(str);
 			return true;
 		case STDIN:
-			Aya.getInstance().getErr().print(str);
+			StaticData.IO.err().print(str);
 			return true;
 		default:
 			return print_f(fileid, str);
@@ -185,10 +185,10 @@ public class FStreamManager {
 	public static boolean println(int fileid, String str) {
 		switch (fileid) {
 		case STDOUT:
-			Aya.getInstance().getOut().println(str);
+			StaticData.IO.out().println(str);
 			return true;
 		case STDIN:
-			Aya.getInstance().getErr().println(str);
+			StaticData.IO.err().println(str);
 			return true;
 		default:
 			return println_f(fileid, str);

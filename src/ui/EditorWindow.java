@@ -20,7 +20,12 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 
-import aya.Aya;
+import aya.AyaThread;
+import aya.ExecutionRequest;
+import aya.StaticData;
+import aya.obj.block.StaticBlock;
+import aya.parser.Parser;
+import aya.parser.SourceString;
 
 
 @SuppressWarnings("serial")
@@ -41,9 +46,11 @@ public class EditorWindow extends JPanel {
 	private JMenu menu;
 	private JMenuBar menuBar;
 	
+	private AyaThread _aya;
+	
 	public static void newEditorFrame(AyaIDE ide) {
 		activeFrame = new JFrame("Editor");
-		activeEditor = new EditorWindow();
+		activeEditor = new EditorWindow(ide.getAya());
 		activeFrame.add(activeEditor);
 		activeFrame.pack();
 		activeFrame.setVisible(true);
@@ -63,7 +70,9 @@ public class EditorWindow extends JPanel {
 	}
 
 	
-	public EditorWindow() {			
+	public EditorWindow(AyaThread ayaThread) {
+		_aya = ayaThread;
+		
 		//Size
 		setMaximumSize(new Dimension(WIDTH, 500));
 		setMinimumSize(new Dimension(WIDTH, 500));
@@ -130,7 +139,7 @@ public class EditorWindow extends JPanel {
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Aya.getQuickSearchData());
+					QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -202,7 +211,10 @@ public class EditorWindow extends JPanel {
 	
 	public void run() {
 		String txt = editor.getText();
-		Aya.getInstance().queueInput(txt);
+		StaticBlock blk = Parser.compileSafeOrNull(new SourceString(txt, "<editor>"), StaticData.IO);
+		if (blk != null) {
+			_aya.queueInput(new ExecutionRequest(-1, blk)); // TODO change req id
+		}
 	}
 	
 	@Override

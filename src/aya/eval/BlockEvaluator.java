@@ -1,6 +1,5 @@
-package aya.obj.block;
+package aya.eval;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
@@ -13,34 +12,39 @@ import aya.exceptions.runtime.ValueError;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.LambdaInstruction;
-import aya.instruction.flag.PopVarFlagInstruction;
-import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.util.Casting;
 
 /** 
- * Block contain instructions and the resulting stacks 
+ * BlockEvaluator contain instructions and the resulting stacks 
  * @author Nick
  *
  */
-public class Block {
+public class BlockEvaluator {
 	
+	private ExecutionContext _context;
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
 	
-	/** Create a new block with empty instructions and stack */
-	public Block() {
+	/** Create a new blockEvaluator with empty instructions and stack */
+	protected BlockEvaluator(ExecutionContext context) {
+		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = new InstructionStack();
 	}
 	
-	/** Create a new block with empty stack */
-	public Block(InstructionStack il) {
+	/** Create a new blockEvaluator with empty stack */
+	protected BlockEvaluator(ExecutionContext context, InstructionStack il) {
+		this._context = context;
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
+	}
+	
+	public ExecutionContext getContext() {
+		return _context;
 	}
 	
 	/** Returns the output stack */
@@ -49,7 +53,7 @@ public class Block {
 	}
 	
 	/** Copy stack */
-	public void addStack(Block other) {
+	public void addStack(BlockEvaluator other) {
 		stack.addAll(other.getStack());
 	}
 	
@@ -119,27 +123,9 @@ public class Block {
 		return instructions.isEmpty();
 	}
 	
-	/** Get the block's header, return null if it does not have one */
-	public BlockHeader getHeader() {
-		if (instructions.size() > 0) {
-			Instruction i = instructions.peek(0);
-			if (i instanceof BlockHeader) {
-				return (BlockHeader)i;
-			}
-		}
-		return null;
-	}
-	
 	/** Returns true if there are no items remaining in the stack */
 	public boolean stackEmpty() {
 		return stack.isEmpty();
-	}
-
-	/** Test if this block has a local variable set */
-	public boolean hasLocals() {
-		if (instructions.isEmpty()) return false;
-		final Instruction flag = instructions.getInstrucionList().get(0);
-		return flag instanceof PopVarFlagInstruction;
 	}
 	
 	public void dump(StaticBlock block) {
@@ -166,32 +152,7 @@ public class Block {
 			}
 		}
 	}
-	
-	/** Creates a duplicate of a block without interfering with the block */
-	public Block duplicate() {
-		Block out = new Block(this.instructions.duplicate());
-		out.stack.addAll(this.stack);
-		return out;
-	}
-	
-	/** Create a new block with the given header */
-	public Block duplicateNewHeader(BlockHeader header) {
-		if (getHeader() == null) {
-			Block dup = duplicate();
-			dup._addHeader(header);
-			return dup;
-		} else {
-			Block dup = duplicateNoHeader();
-			dup._addHeader(header);
-			return dup;
-		}
-	}
-	
-	/** Assumes this block does not already have a header! */
-	private void _addHeader(BlockHeader bh) {
-		add(bh);
-		add(0, PopVarFlagInstruction.INSTANCE);
-	}
+
 
 	/** Sets the stack */
 	public void setStack(Stack<Obj> dupStack) {
@@ -228,36 +189,18 @@ public class Block {
 		return sb.toString();
 	}
 	
-	/** Returns the instruction object for this block */
+	/** Returns the instruction object for this blockEvaluator */
 	public InstructionStack getInstructions() {
 		return instructions;
 	}
 	
-	/** Adds a block to this block (does not duplicate the block) */
-	public void addBlock(Block b) {
-		if (b.hasLocals()) {
-			this.instructions.push(new LambdaInstruction(null, b.getInstructions()));
-		} else {
-			this.instructions.addAll(b.getInstructions().getInstrucionList());
-		}
-	}
-	
-	public void addBlockBack(Block b) {
-		if (b.hasLocals()) {
-			this.instructions.insert(0, new LambdaInstruction(null, b.getInstructions()));
-		} else {
-			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
-		}
-	}
-	
-
 
 	/** Adds an item to the back of the instruction stack. (opposite of add()) */
 	public void addBack(Obj b) {
 		instructions.insert(0, new DataInstruction(b));
 	}
 	
-	/** Adds a stack to this block. Reverses the stack before adding */
+	/** Adds a stack to this blockEvaluator. Reverses the stack before adding */
 	public void appendToStack(Stack<Obj> stk) {
 		Collections.reverse(stk);
 		while (!stk.empty()) {
@@ -265,7 +208,7 @@ public class Block {
 		}
 	}
 	
-	/** If the variable is a block, dump to the instructions
+	/** If the variable is a blockEvaluator, dump to the instructions
 	 * else add the item to the stack
 	 */
 	public void addOrDumpVar(Obj o) {
@@ -278,7 +221,7 @@ public class Block {
 
 	}
 	
-	/** Calls the variable and dumps the result to the stack existing in the input block */
+	/** Calls the variable and dumps the result to the stack existing in the input blockEvaluator */
 	public void callVariable(Dict dict, Symbol keyVar, Obj... push_first) {
 		//Push self
 		if (dict.pushSelf()) {
@@ -297,75 +240,6 @@ public class Block {
 			this.dump(blk);
 		} else {
 			stack.push(obj);
-		}
-	}
-	
-
-
-	
-	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<Assignment> getArgsAndTypes() {
-		BlockHeader header = getHeader();
-		if (header != null) {
-			return header.getArgs();
-		} else {
-			return new ArrayList<Assignment>();
-		}
-	}
-
-	/** Return a list of instructions not including the block header or pop var instruction */
-	public Block duplicateNoHeader() {
-		Block b = duplicate();
-		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
-		// Remove block header
-		int len = instructions.size();
-		if (len > 0) {
-			int last = len-1;
-			Instruction i = instructions.get(last);
-			if (i instanceof BlockHeader) {
-				instructions.remove(last);
-
-				// There was a header, remove popvar flag instruction
-				len = instructions.size();
-				if (len > 0) {
-					i = instructions.get(0);
-					if (i instanceof PopVarFlagInstruction) {
-						instructions.remove(0);
-					} else {
-						throw new RuntimeException("Expected popvar instruction in duplicateNoHeader");
-					}
-				}
-			}
-		}
-		
-		return b;
-	}
-
-	/** Return a copy of the block. If the original does not have a block header with local variables
-	 * create an empty local variables in the copy
-	 */
-	public Block duplicateAddLocals() {
-		 Block b = duplicate();
-		 BlockHeader bh = b.getHeader();
-		 if (bh == null) {
-			 bh = new BlockHeader(null);
-			 b.add(bh);
-			 b.add(0, PopVarFlagInstruction.INSTANCE);
-		 }
-		 return b;
-	}
-
-	
-	/** Allow access to modify the block's local variables directly
-	 *  If there are no locals, return null
-	 * @return
-	 */
-	public Dict getLocals() {
-		BlockHeader header = getHeader();
-		if (header != null) {
-			return header.getVars();
-		} else {
-			return null;
 		}
 	}
 	

@@ -1,11 +1,11 @@
 package aya.instruction;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
@@ -24,7 +24,7 @@ public class InterpolateStringInstruction extends Instruction  {
 		return new InterpolateStringInstruction(getSource(), orig, instructions);
 	}
 	
-	public String evalString() {
+	public String evalString(ExecutionContext context) {
 		InstructionStack is = this.instructions.duplicate();
 		StringBuilder sb = new StringBuilder();
 		
@@ -34,7 +34,7 @@ public class InterpolateStringInstruction extends Instruction  {
 			if (current instanceof GetVariableInstruction) {
 				GetVariableInstruction var = (GetVariableInstruction)current;
 				try {
-					sb.append(Aya.getInstance().getVars().getVar(var.getSymbol()).str());
+					sb.append(context.getVars().getVar(var.getSymbol()).str());
 				} catch (UndefVarException e) {
 					e.setSource(var.getSource());
 					throw e;
@@ -42,7 +42,7 @@ public class InterpolateStringInstruction extends Instruction  {
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {
-					Block b = new Block();
+					BlockEvaluator b = context.createEvaluator();
 					b.dump(Casting.asStaticBlock(data));
 					b.eval();
 					if (b.getStack().size() == 1) {
@@ -72,8 +72,8 @@ public class InterpolateStringInstruction extends Instruction  {
 	}
 
 	@Override
-	public void execute(Block b) {
-		b.push(List.fromString(evalString()));
+	public void execute(BlockEvaluator b) {
+		b.push(List.fromString(evalString(b.getContext())));
 		
 	}
 

@@ -3,7 +3,7 @@ package aya.instruction;
 import java.util.HashMap;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.eval.BlockEvaluator;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
@@ -28,7 +28,7 @@ public class BlockLiteralInstruction extends Instruction {
 		_defaults = defaults;
 		_auto_eval = false;
 	
-		// If the instruction has locals, make sure the underlying block has them as well
+		// If the instruction has locals, make sure the underlying blockEvaluator has them as well
 		if (_defaults != null) {
 			_block = BlockUtils.addLocals(_block);
 		}
@@ -43,14 +43,14 @@ public class BlockLiteralInstruction extends Instruction {
 	
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		StaticBlock blk = _block;
 
-		// If there are defaults, evaluate them and push a new block
+		// If there are defaults, evaluate them and push a new blockEvaluator
 		if (_defaults != null) {
 			Dict defaults = new Dict();
 			for (Symbol var : _defaults.keySet()) {
-				Block evaluator = new Block();
+				BlockEvaluator evaluator = b.getContext().createEvaluator();
 				evaluator.dump(_defaults.get(var));
 				evaluator.eval();
 				defaults.set(var, evaluator.pop());

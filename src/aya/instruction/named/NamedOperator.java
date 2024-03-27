@@ -1,7 +1,7 @@
 package aya.instruction.named;
 
 import aya.ReprStream;
-import aya.obj.block.Block;
+import aya.eval.BlockEvaluator;
 
 public abstract class NamedOperator {
 	
@@ -18,7 +18,7 @@ public abstract class NamedOperator {
 		this._doc = doc;
 	}
 
-	public abstract void execute(Block block);
+	public abstract void execute(BlockEvaluator blockEvaluator);
 	
 	public String getName() {
 		return this._name;

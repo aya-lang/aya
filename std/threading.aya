@@ -1,0 +1,21 @@
+struct thread {id}
+
+def ::new {: thread^,
+    :{thread.new} thread!
+}
+
+def thread::new {cls,
+    :{thread.new} thread!
+}
+
+def thread::add_task {block self,
+    block.` self.id :{thread.add_task}
+}
+
+def thread::wait_for_result {self,
+    self.id :{thread.wait_for_result}
+}
+
+def thread::has_unfinished_tasks {self,
+    self.id :{thread.has_unfinished_tasks}
+}

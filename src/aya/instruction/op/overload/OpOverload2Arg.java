@@ -2,11 +2,12 @@ package aya.instruction.op.overload;
 
 import java.util.ArrayList;
 
-import aya.Aya;
+import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 
 public class OpOverload2Arg extends OpOverload {
 	
@@ -20,8 +21,8 @@ public class OpOverload2Arg extends OpOverload {
 			throw new IllegalArgumentException();
 		}
 		
-		_var  =  Aya.getInstance().getSymbols().getSymbol("__" + name + "__");
-		_rvar =  Aya.getInstance().getSymbols().getSymbol("__r" + name + "__");
+		_var  =  SymbolTable.getSymbol("__" + name + "__");
+		_rvar =  SymbolTable.getSymbol("__r" + name + "__");
 	}
 
 	public ArrayList<String> getNames() {
@@ -40,13 +41,13 @@ public class OpOverload2Arg extends OpOverload {
 	
 
 	@Override
-	public boolean execute(Block block, Obj a, Obj b) {
+	public boolean execute(BlockEvaluator blockEvaluator, Obj a, Obj b) {
 		if (a.isa(Obj.DICT)) {
-			block.push(b);
-			block.callVariable((Dict)a, _var);
+			blockEvaluator.push(b);
+			blockEvaluator.callVariable((Dict)a, _var);
 			return true;
 		} else if (b.isa(Obj.DICT)) {
-			block.callVariable((Dict)b, _rvar, a);
+			blockEvaluator.callVariable((Dict)b, _rvar, a);
 			return true;
 		} else {
 			return false;
@@ -54,18 +55,18 @@ public class OpOverload2Arg extends OpOverload {
 	}
 
 	@Override
-	public Obj executeAndReturn(Obj a, Obj b) {
+	public Obj executeAndReturn(ExecutionContext context, Obj a, Obj b) {
 		if (a.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.push(b);
-			block.callVariable((Dict)a, _var);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = context.createEvaluator();
+			blockEvaluator.push(b);
+			blockEvaluator.callVariable((Dict)a, _var);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else if (b.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.callVariable((Dict)b, _rvar, a);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = context.createEvaluator();
+			blockEvaluator.callVariable((Dict)b, _rvar, a);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else {
 			return null;
 		}

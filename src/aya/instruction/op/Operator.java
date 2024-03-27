@@ -3,13 +3,14 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
 import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.op.overload.OpOverloadNoOp;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
@@ -20,7 +21,7 @@ import aya.obj.symbol.SymbolConstants;
  * The Operator Class
  * Every operator has some basic information (name, desc, argtypes)
  * and an execute method. The execute method is called by the interpreter
- * at run time and can manipulate a block
+ * at run time and can manipulate a blockEvaluator
  * 
  * @author npaul
  *
@@ -31,7 +32,7 @@ public abstract class Operator {
 	private OpOverload _overload;
 	public OpDoc _doc;
 	
-	public abstract void execute(Block block);
+	public abstract void execute(BlockEvaluator blockEvaluator);
 	
 	public String getDocTypeStr() {
 		if (_doc == null) {
@@ -138,11 +139,11 @@ public abstract class Operator {
 		}
 	}
 
-	public Obj exec2arg(Obj a, Obj b) {
+	public Obj exec2arg(ExecutionContext context, Obj a, Obj b) {
 		throw new UnimplementedError();
 	}
 
-	public Obj exec1arg(Obj a) {
+	public Obj exec1arg(ExecutionContext context, Obj a) {
 		throw new UnimplementedError();
 	}
 }

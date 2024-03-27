@@ -2,12 +2,12 @@ package aya.instruction.op;
 
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 
 public class OpDoc {
 	
@@ -132,7 +132,7 @@ public class OpDoc {
 		for (OpDesc desc : descs) {
 			String[] strs = desc.types.split("\\|");
 			for (String s : strs) {
-				Symbol sym = Aya.getInstance().getSymbols().getSymbol(s);
+				Symbol sym = SymbolTable.getSymbol(s);
 				ops.set(sym, List.fromString(desc.desc));
 			}
 		}

@@ -1,8 +1,8 @@
 package aya.instruction.op;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
-import aya.obj.block.Block;
 import aya.parser.SourceStringRef;
 
 public class OperatorInstruction extends Instruction {
@@ -20,8 +20,8 @@ public class OperatorInstruction extends Instruction {
 	}
 	
 	@Override
-	public void execute(Block block) {
-		op.execute(block);
+	public void execute(BlockEvaluator blockEvaluator) {
+		op.execute(blockEvaluator);
 	}
 
 	@Override

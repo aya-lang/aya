@@ -1,9 +1,9 @@
 package aya.ext.plot;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 
 public class PlotInstruction extends NamedOperator {
@@ -37,8 +37,8 @@ public class PlotInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 
 		if (a.isa(Obj.DICT)) {
 			FreeChartInterface.plot((Dict)a);

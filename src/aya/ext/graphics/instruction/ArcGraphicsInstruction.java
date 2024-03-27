@@ -1,9 +1,9 @@
 package aya.ext.graphics.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 
 public class ArcGraphicsInstruction extends GraphicsInstruction {
 
@@ -13,7 +13,7 @@ public class ArcGraphicsInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		boolean fill = _reader.popBool();
 		int extent = _reader.popInt();
 		int angle = _reader.popInt();

@@ -1,9 +1,10 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
@@ -25,8 +26,8 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 		return stream;
 	}
 	
-	protected Obj getIndex() {
-		Block evaluator = new Block();
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
+		BlockEvaluator evaluator = context.createEvaluator();
 		evaluator.dump(_index);
 		evaluator.eval();
 		if (evaluator.getStack().size() == 1) {
@@ -38,5 +39,9 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 			throw new ValueError("Error attempting to index object with " + _index.repr() 
 										  + ". Expression returned nothing");
 		}
+	}
+	
+	protected Obj getIndex() {
+		return _index;
 	}
 }
