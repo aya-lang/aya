@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import aya.Aya;
-import aya.ReprStream;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AssertError;
@@ -29,11 +28,11 @@ import aya.exceptions.runtime.MathError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.BlockLiteralInstruction;
-import aya.instruction.Instruction;
-import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.ConditionalUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -384,7 +383,7 @@ class OP_Colon_Times extends Operator {
 		Obj a  = block.pop();
 		
 		if (c.isa(BLOCK)) {
-			Block expr = (Block)c;
+			StaticBlock expr = Casting.asStaticBlock(c);
 			if (b.isa(LIST) && a.isa(LIST)) {
 				List l1 = asList(b);
 				List l2 = asList(a);
@@ -398,9 +397,9 @@ class OP_Colon_Times extends Operator {
 			} else if (b.isa(LIST)) {
 				block.push(asList(b).map1arg(expr, a));
 			} else if (a.isa(LIST)) {
-				Block e = new Block();
-				e.addAll(expr.getInstructions().getInstrucionList());
-				e.add(b);
+				StaticBlock e = StaticBlock.EMPTY;
+				e = BlockUtils.addAll(e, expr);
+				e = BlockUtils.add(e, b);
 				block.push(asList(a).map(e));
 			} else {
 				throw new TypeError(this, c, b, a);
@@ -545,61 +544,19 @@ class OP_Colon_Bool extends Operator {
 	
 	public OP_Colon_Bool() {
 		init(":?");
-		arg("A", "convert to boolean");
+		arg("A", "if/else");
 	}
 
 	@Override
 	public void execute (Block block) {		
 		Obj a = block.pop();
 		if (a.isa(Obj.BLOCK)) {
-			Obj result = runConditional(Casting.asBlock(a).getInstructions().getInstrucionList());
+			Obj result = ConditionalUtils.runConditional(Casting.asStaticBlock(a));
 			if (result != null) {
 				block.push(result);
 			}
 		} else {
 			throw new TypeError(this, a);
-		}
-	}
-	
-	private static boolean evalCondition(Instruction instruction) {
-		Block b = new Block();
-		b.add(instruction);
-		b.eval();
-		if (!b.getStack().isEmpty()) {
-			return b.pop().bool();
-		} else {
-			ReprStream rs = new ReprStream();
-			instruction.repr(rs);
-			throw new TypeError("Condition did not return a result: " + rs.toString());
-		}
-	}
-	
-	private static Obj evalResult(Instruction instruction) {
-		Block b = new Block();
-		if (instruction instanceof BlockLiteralInstruction) {
-			b.addAll(((BlockLiteralInstruction)instruction).getBlock().getInstructions().getInstrucionList());
-		} else {
-			b.add(instruction);
-		}
-		b.eval();
-		if (!b.getStack().isEmpty()) {
-			return b.pop();
-		} else {
-			return null;
-		}
-	}
-	
-	private static Obj runConditional(ArrayList<Instruction> instructions) {
-		int i;
-		for (i = instructions.size()-1; i > 0; i-=2) {
-			if (evalCondition(instructions.get(i))) {
-				return evalResult(instructions.get(i-1));
-			}
-		}
-		if (i == 0) {
-			return evalResult(instructions.get(i));
-		} else {
-			return null;
 		}
 	}
 }
@@ -923,7 +880,7 @@ class OP_Colon_M extends Operator {
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
-		arg("BD", "duplicate block with the given metadata");
+		arg("BD", "update a copy of the block locals with the dict");
 	}
 
 	@Override
@@ -934,6 +891,9 @@ class OP_Colon_M extends Operator {
 		if(obj.isa(DICT) && meta.isa(DICT)) {
 			((Dict)obj).setMetaTable((Dict)meta);
 			block.push(obj);
+		} else if(obj.isa(BLOCK) && meta.isa(DICT)) {
+			StaticBlock new_block = BlockUtils.mergeLocals(Casting.asStaticBlock(obj), asDict(meta));
+			block.push(new_block);
 		} else {
 			throw new TypeError(this, meta, obj);
 		}
@@ -973,9 +933,9 @@ class OP_Colon_O extends Operator {
 		arg("AAB", "apply (2-arg)");
 	}
 
-	private class BlockOpInstruction extends Operator {
-		private final Block _block;
-		public BlockOpInstruction(Block block) {
+	private static class BlockOpInstruction extends Operator {
+		private final StaticBlock _block;
+		public BlockOpInstruction(StaticBlock block) {
 			_block = block;
 		}
 		@Override
@@ -990,9 +950,10 @@ class OP_Colon_O extends Operator {
 			if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) {
 				return res;
 			} else {
-				Block blk = _block.duplicate();
+				Block blk = new Block();
 				blk.push(a);
 				blk.push(b);
+				blk.dump(_block);
 				blk.eval();
 				return blk.pop();
 			}
@@ -1007,7 +968,7 @@ class OP_Colon_O extends Operator {
 		final Obj a = block.pop();
 
 		if (c.isa(Obj.BLOCK)) {
-			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asBlock(c));
+			final BlockOpInstruction block_op = new BlockOpInstruction(Casting.asStaticBlock(c));
 			final Obj result = VectorizedFunctions.vectorize2arg(block_op, a, b);
 			if (result == null) {
 				throw new ValueError("Cannot vectorize over args: " + a.repr() + ", " + b.repr());
@@ -1070,28 +1031,12 @@ class OP_Colon_S extends Operator {
 		if (a.isa(STR) || a.isa(CHAR)) {
 			block.push(Aya.getInstance().getSymbols().getSymbol(a.str()));
 		} else if (a.isa(BLOCK)) {
-			block.push(singleToSymbolList((Block)a));
+			block.push(BlockUtils.singleToSymbolList(Casting.asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
 
-	private List singleToSymbolList(Block b) {
-		ArrayList<Obj> out = new ArrayList<Obj>();
-		ArrayList<Instruction> instructions = b.getInstructions().getInstrucionList();
-		if (instructions.size() == 1) {
-			Instruction i = instructions.get(0);
-			if (i instanceof VariableInstruction) {
-				out.add( ((VariableInstruction)i).getSymbol() );
-			} else if (i instanceof OperatorInstruction) {
-				Operator op = ((OperatorInstruction)i).getOperator();
-				if (op.overload() != null) {
-					out.addAll(op.overload().getSymbols());
-				}
-			}
-		}
-		return new List(out);
-	}
 }
 
 
@@ -1217,8 +1162,7 @@ class OP_Colon_Tick extends Operator {
 			}
 			List l = new List();
 			for (int i = 0; i < n; i++) {
-				final Block b = new Block();
-				b.add(block.getInstructions().popNextNonFlagInstruction());
+				StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(block.getInstructions().popNextNonFlagInstruction());
 				l.mutAdd(b);
 			}
 			if (unwrap_list) {
@@ -1227,7 +1171,7 @@ class OP_Colon_Tick extends Operator {
 				block.push(l);
 			}
 			
-			block.addAll(Casting.asBlock(blk_obj).getInstructions().getInstrucionList());
+			block.dump(Casting.asStaticBlock(blk_obj));
 			
 		} else {
 			throw new TypeError(this, n_obj, blk_obj);

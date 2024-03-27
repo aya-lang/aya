@@ -1,7 +1,7 @@
 package aya.util;
 
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -34,10 +34,10 @@ public class Casting {
 		return List.asStr(asList(o));
 	}
 	
-	public static Block asBlock(Obj o) {
-		return (Block)o;
+	public static StaticBlock asStaticBlock(Obj o) {
+		return (StaticBlock)o;
 	}
-	
+
 	public static Symbol asSymbol(Obj o) {
 		return (Symbol)o;
 	}

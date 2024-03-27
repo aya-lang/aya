@@ -10,6 +10,8 @@ import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.op.overload.OpOverloadNoOp;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolConstants;
@@ -98,9 +100,7 @@ public abstract class Operator {
 		Dict info = new Dict();
 
 		// {op}:call
-		Block call = new Block();
-		// TODO Source
-		call.add(new OperatorInstruction(null, this));
+		StaticBlock call = BlockUtils.makeBlockWithSingleInstruction(new OperatorInstruction(null, this));
 		info.set(SymbolConstants.CALL, call);
 		
 		// [::sym]:symbols;

@@ -14,7 +14,8 @@ import aya.instruction.LambdaInstruction;
 import aya.instruction.TupleInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
@@ -52,9 +53,9 @@ public class LambdaToken extends CollectionToken {
 				return new LambdaInstruction(this.getSourceStringRef(), lambdaIL);
 			}
 		} else {
-			Block[] elements = new Block[lambdaData.size()];
+			StaticBlock[] elements = new StaticBlock[lambdaData.size()];
 			for (int k = 0; k < elements.length; k++) {
-				elements[k] = new Block(Parser.generate(lambdaData.get(k)));
+				elements[k] = BlockUtils.fromIS(Parser.generate(lambdaData.get(k)));
 			}
 			return new TupleInstruction(this.getSourceStringRef(), elements);
 		}

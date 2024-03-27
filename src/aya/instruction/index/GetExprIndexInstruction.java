@@ -4,13 +4,15 @@ import aya.ReprStream;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.parser.SourceStringRef;
 
 public class GetExprIndexInstruction extends GetIndexInstruction {
 	
-	private Block _index;
+	private StaticBlock _index;
 
-	public GetExprIndexInstruction(SourceStringRef source, Block index) {
+	public GetExprIndexInstruction(SourceStringRef source, StaticBlock index) {
 		super(source);
 		_index = index;
 	}
@@ -18,17 +20,18 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(".[");
-		_index.repr(stream, false);
+		BlockUtils.repr(stream, _index, false, null);
 		stream.print("]");
 		return stream;
 	}
 	
 	protected Obj getIndex() {
-		Block index = _index.duplicate();
-		index.eval();
-		if (index.getStack().size() == 1) {
-			return index.getStack().pop();
-		} else if (index.getStack().size() > 1) {
+		Block evaluator = new Block();
+		evaluator.dump(_index);
+		evaluator.eval();
+		if (evaluator.getStack().size() == 1) {
+			return evaluator.getStack().pop();
+		} else if (evaluator.getStack().size() > 1) {
 			throw new ValueError("Error attempting to index object with " + _index.repr() 
 										  + ". Expression returned more than one item");
 		} else {

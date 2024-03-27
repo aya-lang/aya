@@ -28,7 +28,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 			if (o.isa(Obj.BLOCK)) {
 				// If user object function, leave it as the first item on the stack
 				if (dict.pushSelf()) b.push(dict);
-				dumpBlock(Casting.asBlock(o), b);
+				dumpBlock(Casting.asStaticBlock(o), b);
 			} else {
 				b.push(o);
 			}

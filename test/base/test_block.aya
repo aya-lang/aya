@@ -24,19 +24,7 @@
     {, 1:copy; ::b:name; ::str:type; ::typed:argtype; } ] 
 }
 
-{ {}.makelocals .locals {,} }
-{ {:a,}.makelocals .locals {,0:a} }
-
-{ [::x] {}.setlocals .locals {, 0:x} }
-.# block is wrapped, not merged
-{ [::x] {:y,}.setlocals .locals {, 0:x} }
 
 {:a, 1:a; {a}.use[::a] ~ 1 }
-
-{:a, 1:a; {a}.capture[::a] 2:a; ~ 1 }
-
-{:a, 1:a; {a}.where_const{, 10:a } ~ 10 }
-
-{:a, 1:a; {a}.where{, 10:a } ~ 10 }
 
 ] :# { test.test }

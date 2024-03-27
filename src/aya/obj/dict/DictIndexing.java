@@ -8,9 +8,11 @@ import aya.Aya;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.util.Casting;
 
 public class DictIndexing {
 	
@@ -43,7 +45,7 @@ public class DictIndexing {
 			}
 			return new List(out);
 		} else if (index.isa(Obj.BLOCK)) {
-			return filter(dict, (Block)index);
+			return filter(dict, Casting.asStaticBlock(index));
 		} else {
 			throw new IndexError(dict, index, true);
 		}
@@ -58,13 +60,13 @@ public class DictIndexing {
 	}
 	
 	
-	public static Dict map(Dict dict, Block block) {
+	public static Dict map(Dict dict, StaticBlock mapBlock) {
 		Dict out = new Dict();
 		Block b = new Block();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.dump(mapBlock);
 			b.push(key);
 			b.push(dict.get(key));
 			b.eval();
@@ -77,13 +79,13 @@ public class DictIndexing {
 	}
 
 
-	public static Dict filter(Dict dict, Block block) {
+	public static Dict filter(Dict dict, StaticBlock filterBlock) {
 		Dict out = new Dict();
 		Block b = new Block();
 
 		ArrayList<Symbol> symKeys = dict.keys();
 		for (Symbol key : symKeys) {
-			b.addAll(block.getInstructions().getInstrucionList());
+			b.dump(filterBlock);
 			b.push(key);
 			b.push(dict.get(key));
 			b.eval();

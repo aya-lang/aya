@@ -8,6 +8,7 @@ import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.parser.SourceStringRef;
+import aya.util.Casting;
 
 public class InterpolateStringInstruction extends Instruction  {
 	String orig; // For printing
@@ -41,7 +42,8 @@ public class InterpolateStringInstruction extends Instruction  {
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {
-					Block b = ((Block)data).duplicate();
+					Block b = new Block();
+					b.dump(Casting.asStaticBlock(data));
 					b.eval();
 					if (b.getStack().size() == 1) {
 						sb.append(b.getStack().pop().str());

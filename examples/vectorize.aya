@@ -4,7 +4,7 @@
 
 {f,
     .# A function which applies __x to each element in a list using :#
-    {:#{f}}.capture[::f]
+    {:f^, :#{f}}
     .# Substitute __x with the input function 'f'
 }:vectorize;
 

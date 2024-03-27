@@ -30,6 +30,7 @@ import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolTable;
@@ -617,7 +618,7 @@ public class Parser {
 							// Small optimization for single variable indices
 							is.push(new GetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new GetExprIndexInstruction(current.getSourceStringRef(), new Block(lli.getInstructions())));
+							is.push(new GetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}
 					}
 				}
@@ -656,7 +657,7 @@ public class Parser {
 							// Small optimization for single variable indices
 							is.push(new SetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new SetExprIndexInstruction(current.getSourceStringRef(), new Block(lli.getInstructions())));
+							is.push(new SetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}
 					}
 				}
@@ -730,18 +731,18 @@ public class Parser {
 				return (BlockLiteralInstruction)next;
 			} else {
 				// Create a block and apply it to a list
-				Block colonBlock = new Block();
+				InstructionStack colonBlock = new InstructionStack();
 				is.push(next); // Add next back in
 
 				while (!is.isEmpty()) {
 					Instruction o = is.pop();
-					colonBlock.getInstructions().insert(0, o);
+					colonBlock.insert(0, o);
 					if (o instanceof OperatorInstruction || o instanceof GetVariableInstruction
 							|| o instanceof GetKeyVariableInstruction) {
 						break;
 					}
 				}
-				return new BlockLiteralInstruction(ref, colonBlock);
+				return new BlockLiteralInstruction(ref, BlockUtils.fromIS(colonBlock));
 			}
 		}
 	}

@@ -63,6 +63,8 @@ public class BlockHeader extends Instruction {
 	}
 	
 	public ReprStream repr(ReprStream stream, HashMap<Symbol, Block> defaults) {
+		return stream;
+		/*
 		for (int i = _args.size()-1; i >= 0; i--) {
 			stream.print(_args.get(i).toString());
 			stream.print(" ");
@@ -83,7 +85,7 @@ public class BlockHeader extends Instruction {
 		if (defaults != null) {
 			for (Symbol v : defaults.keySet()) {
 				stream.print(v.name() + "(");
-				defaults.get(v).repr(stream, false);
+				BlockUtils.repr(stream, defaults.get(v), false, null);
 				stream.print(") ");
 			}
 		}
@@ -92,6 +94,7 @@ public class BlockHeader extends Instruction {
 		stream.delTrailingSpaces();
 		stream.print(",");
 		return stream;
+		*/
 	}
 
 	/**

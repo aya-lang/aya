@@ -7,9 +7,11 @@ import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.ListBuilderInstruction;
 import aya.instruction.ListLiteralInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
@@ -39,12 +41,13 @@ public class ListToken extends CollectionToken {
 			return ll;
 		case 2:
 		{
-			Block initialList = new Block(Parser.generate(listData.get(0)));			
-			Block map = new Block(Parser.generate(listData.get(1)));
-			BlockLiteralInstruction bli = map.getInstructions().getIfSingleBlockInstruction();
+			StaticBlock initialList = BlockUtils.fromIS(Parser.generate(listData.get(0)));			
+			InstructionStack map_is = Parser.generate(listData.get(1));
+			BlockLiteralInstruction bli = map_is.getIfSingleBlockInstruction();
 
-			if (map.getInstructions().isEmpty()) {
-				map = null;
+			StaticBlock map = null;
+			if (!map_is.isEmpty()) {
+				map = BlockUtils.fromIS(map_is);
 			} 
 			
 			if (bli != null) {
@@ -55,27 +58,29 @@ public class ListToken extends CollectionToken {
 		}
 		default:
 		{ 
-			Block initialList2 = new Block(Parser.generate(listData.get(0)));
-			Block map2 = new Block(Parser.generate(listData.get(1)));
-			if (map2.getInstructions().isEmpty()) {
-				map2 = null;
+			StaticBlock initialList2 = BlockUtils.fromIS(Parser.generate(listData.get(0)));
+			InstructionStack map2_is = Parser.generate(listData.get(1));
+
+			StaticBlock map2 = null;
+			if (!map2_is.isEmpty()) {
+				map2 = BlockUtils.fromIS(map2_is);
 			}
 			
-			Block[] filters = new Block[listData.size()-2];
+			StaticBlock[] filters = new StaticBlock[listData.size()-2];
 			for(int k = 2; k < listData.size(); k++) {
 				if (listData.get(k).size() == 0) {
 					throw new SyntaxError("List Comprehension filters must not be empty [" + initialList2 + ", " + map2 + ", ]", this.getSourceStringRef());
 				}
 				//filters[k-2] = new Block(generate(listData.get(k)));
-				Block tmpFilter = new Block(Parser.generate(listData.get(k)));
+				InstructionStack tmpFilter_is = Parser.generate(listData.get(k));
 				
 				//If the filter clause only contains a single block, set them to auto eval
-				BlockLiteralInstruction bli = tmpFilter.getInstructions().getIfSingleBlockInstruction();
+				BlockLiteralInstruction bli = tmpFilter_is.getIfSingleBlockInstruction();
 				if (bli != null) {
 					bli.setAutoEval();
 				}
 				
-				filters[k-2] = tmpFilter;
+				filters[k-2] = BlockUtils.fromIS(tmpFilter_is);
 			}
 			return new ListBuilderInstruction(this.getSourceStringRef(), initialList2, map2, filters, pops);
 		} //End default scope
