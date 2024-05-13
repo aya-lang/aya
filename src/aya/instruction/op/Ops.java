@@ -66,7 +66,7 @@ import aya.util.VectorizedFunctions;
 public class Ops {
 	
 	public static final Random RAND = new Random((new Date()).getTime());
-	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
+	public static final Pattern PATTERN_URL = Pattern.compile("https?://.*");
 
 	
 	////////////////////////
@@ -918,18 +918,18 @@ class OP_G extends OpInstruction {
 	@Override
 	public void execute (final Block block) {
 		final Obj a = block.pop();
-		
-		
+
+
 		if(a.isa(STR)) {
 			String name = a.str();
-			
+
 			if(Ops.PATTERN_URL.matcher(name).matches()) {
 				Scanner scnr = null;
 				try {
 					URL url = new URL(name);
 					scnr = new Scanner(url.openStream());
 					StringBuilder sb = new StringBuilder();
-					
+
 					while(scnr.hasNext()) {
 						sb.append(scnr.nextLine()).append('\n');
 					}
@@ -942,19 +942,13 @@ class OP_G extends OpInstruction {
 						scnr.close();
 				}
 			} else {
-				String path = "";
-				if (name.charAt(0) == '/' || name.contains(":\\") || name.contains(":/")) {
-					path = name;
-				} else {
-					path = AyaPrefs.getWorkingDir() + name;
-				}
+				File readFile = FileUtils.resolveFile(name);
 				try {
-					block.push( List.fromString(FileUtils.readAllText(path)) );
+					block.push( List.fromString(FileUtils.readAllText(readFile)) );
 				} catch (IOException e) {
-					throw new IOError("G", new File(path).getAbsolutePath(), e);
-				} 
+					throw new IOError("G", readFile.getAbsolutePath(), e);
+				}
 			}
-			return;
 		} else if (a.isa(NUMBER)) {
 			block.push( Num.fromBool(((Number)a).isPrime()) );
 		} else {

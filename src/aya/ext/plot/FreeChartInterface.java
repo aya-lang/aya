@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import aya.util.FileUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -24,7 +25,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
-import aya.AyaPrefs;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
@@ -94,21 +94,18 @@ public class FreeChartInterface
 		// Save chart
 		String filename = d.getString(sym("filename"), "");
 		if (!filename.equals("")) {
-			String path = AyaPrefs.getWorkingDir() + filename;
-			File file;
+			File exportFile = FileUtils.resolveFile(filename);
 			try {
-				if (path.contains(".png")) {
-					file = new File(path); 
-					ChartUtilities.saveChartAsPNG(file, chart, width, height);
-				} else if (path.contains(".jpg")) {
-					file = new File(path); 
-					ChartUtilities.saveChartAsJPEG(file, chart, width, height);
+				if (filename.toLowerCase().endsWith(".png")) {
+					ChartUtilities.saveChartAsPNG(exportFile, chart, width, height);
+				} else if (filename.toLowerCase().endsWith(".jpg")) {
+					ChartUtilities.saveChartAsJPEG(exportFile, chart, width, height);
 				} else {
 					throw new ValueError("Plot: Please specify either '*.png' ot '*.jpg' in the filename\n"
 							+ "Received: " + filename);
 				}
 			} catch (IOException e) {
-				throw new IOError("plot", path, e);
+				throw new IOError("plot", exportFile.getAbsolutePath(), e);
 			}
 		}
 		
