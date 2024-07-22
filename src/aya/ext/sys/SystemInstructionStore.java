@@ -169,5 +169,16 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				AyaPrefs.setPrompt(arg.str());
 			}
 		});
+		
+		addInstruction(new NamedOperator("sys.args", "CLI args") {
+			@Override
+			public void execute(BlockEvaluator blockEvaluator) {
+				List args = new List();
+				for (String a : AyaPrefs.getArgs()) {
+					args.mutAdd(List.fromString(a));
+				}
+				blockEvaluator.push(args);
+			}
+		});
 	}
 }

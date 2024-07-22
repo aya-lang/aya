@@ -22,7 +22,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import aya.AyaPrefs;
 import aya.AyaThread;
 import aya.ExecutionRequest;
 import aya.InteractiveAya;
@@ -348,18 +347,13 @@ public class AyaIDE extends JFrame
 	}
 	
 	public static void main(String[] args) {
-		
-		InteractiveAya iaya = InteractiveAya.createInteractiveSession();
+		InteractiveAya iaya = InteractiveAya.createInteractiveSession(args);
 		
 		boolean readstdin = StaticData.IO.isInputAvaiable();
-		if (args.length > 0) {
-			// First arg is working directory
-			AyaPrefs.setWorkingDir(args[0]);
-		}
+		
 		if (args.length > 1 || readstdin) {
 			// If reading from STDIN (piped input), don't use interactive mode
 			if (readstdin) InteractiveAya.setInteractive(false);
-			InteractiveAya.main(args);
 		} else {
 			// Use the GUI
 			
@@ -374,20 +368,14 @@ public class AyaIDE extends JFrame
 			// InteractiveAya Prefs
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
-			iaya.loop();
 			
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
 			
-			//try {
-				//iaya.join();
-			//} catch (InterruptedException e) {
-			//	e.printStackTrace(StaticData.IO.err());
-			//}
-			
-			System.exit(1);
 		}
-	
+		
+		iaya.loop();
+		System.exit(1);	
 	}
 }
 

@@ -738,12 +738,19 @@ class OP_Colon_F extends Operator {
 		
 		if (a.isa(STR)) {
 			String path = new File(FileUtils.workingRelative(a.str())).getAbsolutePath();
-			String content;
+			String content = null;
 			try {
 				content = FileUtils.readAllText(path);
 			} catch (IOException e) {
 				throw new IOError(":F", path, e);
 			}
+			
+			// Is there a shebang? If yes, drop the first line
+			if (content.charAt(0) == '#' && content.charAt(1) == '!') {
+				int line_end = content.indexOf('\n');
+				content = content.substring(line_end);
+			}
+			
 			SourceString source = new SourceString(content, path);
 			try {
 				StaticBlock block = Parser.compile(source);

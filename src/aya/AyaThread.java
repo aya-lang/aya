@@ -45,14 +45,9 @@ public class AyaThread extends Thread {
 				ExecutionRequest input = _input.take();
 
 				_lock.lock();
-			
-				if (input == null) {
-					StaticData.IO.out().println("Exiting...");
-					break;
-				}
 				
 				ExecutionResult result = eval(input);
-				
+
 				_output.add(result);
 
 				_lock.unlock();
