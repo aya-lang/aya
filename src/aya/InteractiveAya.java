@@ -170,7 +170,7 @@ public class InteractiveAya {
 		
 		// Load startup script
 		String[] args = AyaPrefs.getArgs();
-		if (args.length >= 1 && args[1].contains(".aya")) {
+		if (args.length >= 2 && args[1].contains(".aya")) {
 			String startupScript = AyaPrefs.getArgs()[1];
 			StaticBlock blk2 = Parser.compileSafeOrNull(new SourceString("\"" + startupScript + "\":F", "<ayarc loader>"), StaticData.IO);
 			if (blk2 != null) {
