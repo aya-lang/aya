@@ -19,3 +19,58 @@ def thread::wait_for_result {self,
 def thread::has_unfinished_tasks {self,
     self.id :{thread.has_unfinished_tasks}
 }
+
+
+class pool
+
+def pool::__init__ {n_threads self : thread^,
+    [] self.:threads_with_tasks;
+    [n_threads,; thread.new] self.:thread_pool;
+}
+
+def pool::exec { tasks::list finished_callback::block self : finished_threads,
+    .# Loop until no tasks remain
+    {
+        .# For each thread with a task, check if it is ready,
+        .# if it is, get the result and add it back to the pool
+        [] :finished_threads;
+        self.threads_with_tasks :# {thread : res,
+            thread.has_unfinished_tasks ! {
+                thread.wait_for_result finished_callback
+                .#draw_result cvs.show
+                thread finished_threads .B;
+            } ?
+        };
+
+        .# Remove finished threads from threads with tasks
+        self.threads_with_tasks finished_threads :| self.:threads_with_tasks;
+
+        .# Add the finished threads back to the pool
+        self.thread_pool finished_threads J self.:thread_pool;
+
+       .# Add a task to each thread in the pool
+        self.thread_pool :# {thread,
+            tasks E 0 > {
+                tasks B\; thread.add_task
+                thread self.threads_with_tasks .B;
+            } ?
+        };
+
+        .# Remove threads with tasks from the pool
+        self.thread_pool self.threads_with_tasks :| self.:thread_pool;
+
+        1 :Z
+
+    tasks E 0 > } W
+
+    .# Wait for all remaining tasks
+    self.threads_with_tasks :# {thread : res,
+        thread.wait_for_result finished_callback
+    };
+
+    .# Put everything back in the pool
+    self.threads_with_tasks self.thread_pool J self.:thread_pool;
+}
+
+
+
