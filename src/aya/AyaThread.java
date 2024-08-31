@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import aya.eval.BlockEvaluator;
 import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.AyaRuntimeException;
+import aya.exceptions.runtime.ThreadError;
 import aya.exceptions.runtime.ValueError;
 
 public class AyaThread extends Thread {
@@ -62,8 +63,12 @@ public class AyaThread extends Thread {
 		_input.offer(request);
 	}
 	
-	public ExecutionResult waitForResponse() throws InterruptedException {
-		return _output.take();
+	public ExecutionResult waitForResponse() throws InterruptedException, ThreadError {
+		if (!hasUnfinishedTasks() && _output.isEmpty()) {
+			throw new ThreadError("No tasks");
+		} else {
+			return _output.take();
+		}
 	}
 	
 	public ExecutionResult eval(ExecutionRequest request) {

@@ -96,6 +96,8 @@ public class ThreadInstructionStore extends NamedInstructionStore {
 						blockEvaluator.push(out);
 					} catch (InterruptedException e) {
 						throw new ThreadError(e);
+					} catch (ThreadError te) {
+						throw new ThreadError(thread_id, te.getMessage());
 					}
 				} else {
 					throw new TypeError(this, "N", thread_id_obj);

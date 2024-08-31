@@ -7,7 +7,7 @@ import aya.obj.symbol.SymbolConstants;
 public class ThreadError extends AyaRuntimeException {
 
 	public ThreadError(String message) {
-		super("(thread <anon>) " + message);
+		super(message);
 	}
 
 	public ThreadError(int thread_id, String message) {
