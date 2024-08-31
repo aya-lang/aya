@@ -19,7 +19,7 @@ public class AyaThread extends Thread {
 	private ReentrantLock _lock = new ReentrantLock();
 	private volatile boolean _running;
 	// A task is considered pending if it's result has not been accessed
-	private int _pending_task_count;
+	private volatile int _pending_task_count;
 	
 
 	protected AyaThread(ExecutionContext context) {
@@ -34,6 +34,10 @@ public class AyaThread extends Thread {
 	public static AyaThread spawnChildThread(ExecutionContext context) {
 		AyaThread thread = new AyaThread(context.createChild());
 		return thread;
+	}
+	
+	public boolean hasPendingTasks() {
+		return _pending_task_count > 0;
 	}
 	
 	public boolean hasUnfinishedTasks() {
@@ -67,7 +71,7 @@ public class AyaThread extends Thread {
 	}
 	
 	public ExecutionResult waitForResponse() throws InterruptedException, ThreadError {
-		if (_pending_task_count <= 0) {
+		if (!hasPendingTasks()) {
 			throw new ThreadError("No tasks");
 		} else {
 			_pending_task_count--;
