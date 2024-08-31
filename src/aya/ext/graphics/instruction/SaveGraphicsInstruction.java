@@ -23,8 +23,7 @@ public class SaveGraphicsInstruction extends GraphicsInstruction {
 		String filename = _reader.popString();
 		
 		try {
-			File f = new File(FileUtils.workingRelative(filename));
-			cvs.save(f);
+			cvs.save(FileUtils.resolveFile(filename));
 		} catch (IOException e) {
 			block.push(Num.ZERO);
 		}

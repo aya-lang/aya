@@ -133,9 +133,9 @@ public class SystemInstructionStore extends NamedInstructionStore {
 					if(arg_str.equals("")) {
 						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + arg_str);
 					}
-					String fstr = AyaPrefs.getWorkingDir() + arg.str();
-					if(!AyaPrefs.deleteFile(fstr)) {
-						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + fstr);
+					File delFile = FileUtils.resolveFile(arg.str());
+					if(!AyaPrefs.deleteFile(delFile)) {
+						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + delFile.getAbsolutePath());
 					}
 				} else {
 					throw new ValueError(":{sys.rm} : arg must be a string. Received:\n" + arg.repr());

@@ -1,5 +1,6 @@
 package aya;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
@@ -320,7 +321,7 @@ public class InteractiveAya extends Thread {
 				String code = argCode(args,	2);
 				
 				try {
-					String script = (code + "\n" + FileUtils.readAllText(filename)).trim();
+					String script = (code + "\n" + FileUtils.readAllText(new File(filename))).trim();
 					
 					// Is there a shebang? If yes, drop the first line
 					if (script.charAt(0) == '#' && script.charAt(1) == '!') {
