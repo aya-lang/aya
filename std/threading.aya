@@ -70,6 +70,7 @@ def pool::exec { tasks::list finished_callback::block self : finished_threads,
 
     .# Put everything back in the pool
     self.threads_with_tasks self.thread_pool J self.:thread_pool;
+    [] self.:threads_with_tasks;
 }
 
 
