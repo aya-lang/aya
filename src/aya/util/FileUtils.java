@@ -1,11 +1,13 @@
 package aya.util;
 
-import aya.AyaPrefs;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import aya.AyaPrefs;
 
 public class FileUtils {
 
@@ -23,6 +25,14 @@ public class FileUtils {
 		return file.isAbsolute() ? file : new File(AyaPrefs.getWorkingDir(), pathName);
 	}
 
+	public static byte[] readAllBytes(String filepath) throws IOException {
+        Path path = Paths.get(filepath); 
+  
+        // Converting the file into a byte array 
+        // using Files.readAllBytes() method 
+        return Files.readAllBytes(path); 
+	}
+	
 	public static boolean isFile(String str) {
 		return resolveFile(str).isFile();
 	}
