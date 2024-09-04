@@ -27,6 +27,7 @@ import ::plot
 "product"
 "quicksort"
 "quine"
+"thread"
 "tocamel"
 "visited_cities"
 "plot/bernstein"

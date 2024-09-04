@@ -11,9 +11,11 @@ threading.new :thread;
     "starting task" :P
     1 1 +
     "finished task" :P
-} thread.add_task
+} thread.add_task ;
+.# OR thread +
 
 thread.wait_for_result :result;
+.# OR thread .|
 
 "Result is $(result)" :P
 
@@ -27,9 +29,9 @@ threading.new :thread;
 
 {
     [1 2 3] .x 3 +
-} thread.add_task
+} thread + ;
 
-thread.wait_for_result :result;
+thread .| :result;
 
 "Result is $(result)" :P
 
@@ -39,13 +41,20 @@ thread.wait_for_result :result;
 
 "== Multiple Tasks ==" :P
 
-[4,{i, {:i^, 300:Z "Task $(i) complete" :P i} }] :tasks;
+[4,{i, {:i^, 100:Z "Task $(i) complete" :P i} }] :tasks;
 
 [tasksE ,; threading.new ]:threads;
 
-[tasks threads, .add_task];
 
-[threads, .wait_for_result] :P
+.# Add one task per thread
+.# operator `+` is automatically broadcasted
+.# same as [tasks threads, .add_task];
+tasks threads + ;
+
+.# Join all threads
+.# operator `.|` is automatically broadcasted
+.# same as [threads, .wait_for_result]
+threads .| :P
 
 "complete" :P
 
@@ -53,7 +62,7 @@ thread.wait_for_result :result;
 .# Thread pool
 "== Thread Pool ==" :P
 
-[10 ,{i, {:i^, 1000:Z "Task $(i) complete" :P i} }] :tasks;
+[10 ,{i, {:i^, 100:Z "Task $(i) complete" :P i} }] :tasks;
 
 
 
