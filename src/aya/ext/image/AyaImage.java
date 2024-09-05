@@ -19,24 +19,20 @@ import aya.util.DictReader;
 
 public class AyaImage {
 	/** Utility class for loading, storing and writing image in Aya */
-	
+
+	private static final SymbolTable symbols = Aya.getInstance().getSymbols();
+	private static final Symbol DATA = symbols.getSymbol("data");
+	private static final Symbol WIDTH = symbols.getSymbol("width");
+	private static final Symbol HEIGHT = symbols.getSymbol("height");
+
 	private NumberList bytes;
 	private int width;
 	private int height;
-	private static Symbol DATA;
-	private static Symbol WIDTH;
-	private static Symbol HEIGHT;
-	
+
 	public AyaImage(NumberList bytes, int width, int height) {
-		SymbolTable syms = Aya.getInstance().getSymbols();
-		DATA = syms.getSymbol("data");
-		WIDTH = syms.getSymbol("width");
-		HEIGHT = syms.getSymbol("height");
-		
 		this.bytes = bytes;
 		this.width = width;
 		this.height = height;
-
 	}
 	
 	public static AyaImage fromDict(DictReader d) {

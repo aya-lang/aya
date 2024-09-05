@@ -17,6 +17,7 @@ import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -65,6 +66,7 @@ import aya.parser.ParserString;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
+import aya.util.FileUtils;
 import aya.util.VectorizedFunctions;
 
 public class DotOps {
@@ -1004,26 +1006,27 @@ class OP_Dot_Write extends Operator {
 			final int option = ((Number)n).toInt();
 			final String filename = s.str();
 			final String write = a.str();
-			final String fstr = AyaPrefs.getWorkingDir()+filename;
+			final File file = FileUtils.resolveFile(filename);
+			final String absFilePath = file.getAbsolutePath();
 
 
 			if(option == 0) {
 				try {
-				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				}catch (IOException e) {
-				    throw new IOError(".G", fstr, e);
+				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
-				    throw new IOError(".G", fstr, "Invalid path");
+				    throw new IOError(".G", absFilePath, "Invalid path");
 				}
 			}
 
 			else if (option == 1) {
 				try {
-				    Files.write(Paths.get(fstr), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 				}catch (IOException e) {
-				    throw new IOError(".G", fstr, e);
+				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
-				    throw new IOError(".G", fstr, "Invalid path");
+				    throw new IOError(".G", absFilePath, "Invalid path");
 				}
 			}
 
