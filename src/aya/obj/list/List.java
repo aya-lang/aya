@@ -209,6 +209,25 @@ public class List extends Obj {
 			return out;
 		}
 	}
+	
+	public List shape() {
+		List shape = new List();
+		Obj cur = this;
+		while (true) {
+			if (cur.isa(LIST) && !cur.isa(STR)) {
+				List cur_list = asList(cur);
+				shape.mutAdd(Num.fromInt(cur_list.length()));
+				if (cur_list.length() > 0) {
+					cur = cur_list.head();
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+		return shape;
+	}
 
 	//Yes I know this is gross, i'll fix it later...
 	public List reshape(NumberList dims) {
