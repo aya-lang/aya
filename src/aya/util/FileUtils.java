@@ -4,16 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import aya.AyaPrefs;
 
 public class FileUtils {
 
-	@SuppressWarnings("null")
 	public static String readAllText(File file) throws IOException {
 		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8); // in Java 11 you can also do Files.readString(Path)
+	}
+	
+	public static byte[] readAllBytes(String filepath) throws IOException { 
+        File file = resolveFile(filepath);
+        return Files.readAllBytes(file.toPath()); 
 	}
 
 	/**
@@ -25,14 +27,6 @@ public class FileUtils {
 		return file.isAbsolute() ? file : new File(AyaPrefs.getWorkingDir(), pathName);
 	}
 
-	public static byte[] readAllBytes(String filepath) throws IOException {
-        Path path = Paths.get(filepath); 
-  
-        // Converting the file into a byte array 
-        // using Files.readAllBytes() method 
-        return Files.readAllBytes(path); 
-	}
-	
 	public static boolean isFile(String str) {
 		return resolveFile(str).isFile();
 	}
