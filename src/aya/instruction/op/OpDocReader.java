@@ -6,9 +6,9 @@ import aya.obj.Obj;
 
 public class OpDocReader {
 	
-	public static ArrayList<Obj> toDicts(OpInstruction[] ops) {
+	public static ArrayList<Obj> toDicts(Operator[] ops) {
 		ArrayList<Obj> dicts  = new ArrayList<Obj>();
-		for (OpInstruction op : ops) {
+		for (Operator op : ops) {
 			if (op != null) {
 				if (op.hasDocs()) {
 					dicts.add(op.getDoc().toDict());
@@ -18,9 +18,9 @@ public class OpDocReader {
 		return dicts;
 	}
 	
-	public static ArrayList<String> toStrings(OpInstruction[] ops) {
+	public static ArrayList<String> toStrings(Operator[] ops) {
 		ArrayList<String> out = new ArrayList<String>();
-		for (OpInstruction op : ops) {
+		for (Operator op : ops) {
 			if (op != null) {
 				if (op.hasDocs()) {
 					out.add(op.getDoc().toString());

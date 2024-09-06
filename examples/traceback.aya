@@ -1,0 +1,33 @@
+{a b,
+    ::a b - .# ERROR HERE! Should be "a b -"
+}:sub;
+
+{a b,
+    a b +
+}:add;
+
+{x,
+    x 1 add 10 mul
+}:fn;
+
+{n : a(0) b(1) fib(0),
+    .# Set n to the max of n-1 and 0
+    n 1 sub 0 .< :n;
+    n R :# {
+        a b add :fib;
+        b :a;
+        fib :b;
+    };
+    fib
+}:fib_iter;
+
+{
+    10R :# {i,
+        i fib_iter :P
+    };
+}:print_first_ten_fibs;
+
+
+print_first_ten_fibs
+
+

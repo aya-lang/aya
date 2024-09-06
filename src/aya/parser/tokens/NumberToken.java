@@ -1,28 +1,29 @@
 package aya.parser.tokens;
 
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
 import aya.obj.number.Num;
+import aya.parser.SourceStringRef;
 import aya.parser.SpecialNumberParser;
 
 public class NumberToken extends StdToken {
 	private boolean isSpecNum = false;
 	
-	public NumberToken(String data) {
-		super(data, Token.NUMERIC);
+	public NumberToken(String data, SourceStringRef source) {
+		super(data, Token.NUMERIC, source);
 	}
 
-	public NumberToken(String data, boolean b) {
-		super(data, Token.NUMERIC);
+	public NumberToken(String data, boolean b, SourceStringRef source) {
+		super(data, Token.NUMERIC, source);
 		isSpecNum = true;
 	}
 
 	@Override
 	public Instruction getInstruction() throws ParserException {
 		if (isSpecNum) {
-			return new DataInstruction(new SpecialNumberParser(data).toNumber());
+			return new DataInstruction(new SpecialNumberParser(data, this.getSourceStringRef()).toNumber());
 		} else {
 			try {
 				int i = Integer.parseInt(data);
@@ -40,7 +41,7 @@ public class NumberToken extends StdToken {
 	public aya.obj.number.Number numValue() {
 		if (isSpecNum) {
 			try {
-				Obj o = (new SpecialNumberParser(data)).toNumber();
+				Obj o = (new SpecialNumberParser(data, this.getSourceStringRef())).toNumber();
 				if (o instanceof aya.obj.number.Number) {
 					return (aya.obj.number.Number)o;
 				} else {

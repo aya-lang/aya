@@ -4,7 +4,7 @@ import java.io.File;
 import java.math.BigInteger;
 
 import aya.AyaPrefs;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.SyntaxError;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.Str;
@@ -52,6 +52,7 @@ public class SpecialNumberParser {
 	String _fst;
 	String _snd;
 	char _sep;
+	private SourceStringRef source;
 	
 	private final char NEG = '\0';
 	private final char HEX = 'x';
@@ -65,7 +66,8 @@ public class SpecialNumberParser {
 	private final char CONST = 'c';
 	private final char STR = 's';
 	
-	public SpecialNumberParser(String s) {
+	public SpecialNumberParser(String s, SourceStringRef source) {
+		this.source = source;
 		_sep = NEG;
 		int sepindex;
 		
@@ -126,10 +128,10 @@ public class SpecialNumberParser {
 			case STR:
 				return List.fromString(toStrVal());
 			default:
-				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
+				throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'", source);
 			}
 		} catch (NumberFormatException nfe) {
-			throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'");
+			throw new SyntaxError("Invalid special number: ':" + _fst + _sep + _snd + "'", source);
 		}
 	}
 	
@@ -222,7 +224,7 @@ public class SpecialNumberParser {
 		int i = Integer.parseInt(_fst);
 		if (i < 0 || i > AyaPrefs.CONSTS.length) {
 			throw new SyntaxError(":" + _fst + 
-					"c is out of range. Max val =" + AyaPrefs.CONSTS.length);
+					"c is out of range. Max val =" + AyaPrefs.CONSTS.length, source);
 		}
 		return AyaPrefs.CONSTS[i];
 	}
@@ -265,7 +267,7 @@ public class SpecialNumberParser {
 			try {
 				id = Integer.parseInt(_fst);
 			} catch (NumberFormatException nfe) {
-				throw new SyntaxError("Invalid special number: :" + _fst + "s" + _snd);
+				throw new SyntaxError("Invalid special number: :" + _fst + "s" + _snd, source);
 			}
 			
 			switch (id) {

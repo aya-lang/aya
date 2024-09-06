@@ -6,13 +6,15 @@ import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.number.Num;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetNumberIndexInstruction extends GetIndexInstruction {
 	
 	private int _index;
 	
-	public GetNumberIndexInstruction(int index) {
+	public GetNumberIndexInstruction(SourceStringRef source, int index) {
+		super(source);
 		_index = index;
 	}
 	

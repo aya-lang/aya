@@ -1,12 +1,12 @@
 package aya.ext.json;
 
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
 
-public class ToJSONInstruction extends NamedInstruction {
+public class ToJSONInstruction extends NamedOperator {
 	
 	public ToJSONInstruction() {
 		super("json.dumps");

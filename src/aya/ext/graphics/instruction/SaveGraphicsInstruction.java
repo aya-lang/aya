@@ -1,6 +1,5 @@
 package aya.ext.graphics.instruction;
 
-import java.io.File;
 import java.io.IOException;
 
 import aya.ext.graphics.Canvas;

@@ -8,12 +8,13 @@ import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetKeyVariableInstruction extends GetVariableInstruction {
 
-	public GetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public GetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override
@@ -27,7 +28,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 			if (o.isa(Obj.BLOCK)) {
 				// If user object function, leave it as the first item on the stack
 				if (dict.pushSelf()) b.push(dict);
-				dumpBlock(Casting.asBlock(o), b);
+				dumpBlock(Casting.asStaticBlock(o), b);
 			} else {
 				b.push(o);
 			}

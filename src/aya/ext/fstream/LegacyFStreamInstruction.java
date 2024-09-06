@@ -2,14 +2,14 @@ package aya.ext.fstream;
 
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.character.Char;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 
-public class LegacyFStreamInstruction extends NamedInstruction {
+public class LegacyFStreamInstruction extends NamedOperator {
 	
 	public LegacyFStreamInstruction() {
 		super("fstream.O");

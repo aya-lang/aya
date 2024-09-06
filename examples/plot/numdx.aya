@@ -17,11 +17,11 @@ import ::plot
 
 .# Generate a function for a tangent line at a point
 {a f : dx^,
-  {x, f_a fdx_a x a - * +}.where_const{, 
+  {x, f_a fdx_a x a - * +} {, 
     a f :f_a;
     a f.`dx :fdx_a;
     a :a;
-  }
+  } .+
 }:tangent_line;
 
 

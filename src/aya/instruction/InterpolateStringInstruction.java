@@ -2,22 +2,26 @@ package aya.instruction;
 
 import aya.Aya;
 import aya.ReprStream;
+import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.List;
+import aya.parser.SourceStringRef;
+import aya.util.Casting;
 
 public class InterpolateStringInstruction extends Instruction  {
 	String orig; // For printing
 	InstructionStack instructions;
 	
-	public InterpolateStringInstruction(String orig, InstructionStack is) {
+	public InterpolateStringInstruction(SourceStringRef source, String orig, InstructionStack is) {
+		super(source);
 		this.orig = orig;
 		instructions = is;
 	}
 	
 	public InterpolateStringInstruction duplicate() {
-		return new InterpolateStringInstruction(orig, instructions);
+		return new InterpolateStringInstruction(getSource(), orig, instructions);
 	}
 	
 	public String evalString() {
@@ -29,11 +33,17 @@ public class InterpolateStringInstruction extends Instruction  {
 			
 			if (current instanceof GetVariableInstruction) {
 				GetVariableInstruction var = (GetVariableInstruction)current;
-				sb.append(Aya.getInstance().getVars().getVar(var.getSymbol()).str());
+				try {
+					sb.append(Aya.getInstance().getVars().getVar(var.getSymbol()).str());
+				} catch (UndefVarException e) {
+					e.setSource(var.getSource());
+					throw e;
+				}
 			} else if (current instanceof DataInstruction) {
 				Obj data = ((DataInstruction)current).getData();
 				if (data.isa(Obj.BLOCK)) {
-					Block b = ((Block)data).duplicate();
+					Block b = new Block();
+					b.dump(Casting.asStaticBlock(data));
 					b.eval();
 					if (b.getStack().size() == 1) {
 						sb.append(b.getStack().pop().str());

@@ -8,16 +8,13 @@ import java.util.Stack;
 
 import aya.Aya;
 import aya.InteractiveAya;
-import aya.exceptions.ex.ParserException;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.Parser;
 
 /**
  * Static class containing all variables for the current session.
@@ -62,25 +59,6 @@ public class VariableData {
 		initGlobals(aya);
 	}
 	
-	private void initNil(Aya aya) {
-		Dict nil_meta = new Dict();
-		nil_meta.set(SymbolConstants.KEYVAR_TYPE, Aya.getInstance().getSymbols().getSymbol("__nil"));
-		List nil_str = List.fromString("nil");
-		nil_meta.set(SymbolConstants.KEYVAR_STR, nil_str);
-		nil_meta.set(SymbolConstants.KEYVAR_REPR, nil_str);
-		nil_meta.set(SymbolConstants.KEYVAR_PUSHSELF, Num.ONE);
-		
-		Block nil_eq = null;
-		try {
-			nil_eq = Parser.compile("; :T ::__nil =", aya);
-		} catch (ParserException e) {
-			throw new RuntimeException(e);
-		}
-		nil_meta.set(SymbolConstants.KEYVAR_EQ, nil_eq);
-		
-		OBJ_NIL.setMetaTable(nil_meta);
-	}
-	
 	public void initGlobals(Aya aya) {
 		Dict globals = new Dict();
 		
@@ -104,9 +82,6 @@ public class VariableData {
 		BUILTINS.set(SymbolConstants.NUM,   OBJ_NUM);
 		BUILTINS.set(SymbolConstants.STR,   OBJ_STR);
 		
-		initNil(aya);
-		globals.set(SymbolConstants.NIL, OBJ_NIL);
-
 		_var_sets.add(new Scope(globals));
 	}
 	

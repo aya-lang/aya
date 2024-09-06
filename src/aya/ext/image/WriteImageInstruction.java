@@ -9,13 +9,13 @@ import aya.Aya;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.util.DictReader;
 
-public class WriteImageInstruction extends NamedInstruction {
+public class WriteImageInstruction extends NamedOperator {
 	
 	public WriteImageInstruction() {
 		super("image.write");

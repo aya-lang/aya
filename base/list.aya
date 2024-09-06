@@ -33,7 +33,7 @@
         aE bE = {
             a b .E R * .[{0=!}] 1- I
         } {
-            "::list.mask: both lists must be the same length" ex.value_err
+            "::list.mask: both lists must be the same length" .D
         } .?
     }:mask;
 

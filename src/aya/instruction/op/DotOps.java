@@ -8,12 +8,12 @@ import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,9 +28,8 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import aya.Aya;
-import aya.AyaPrefs;
-import aya.exceptions.ex.NotAnOperatorError;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.NotAnOperatorError;
+import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.InternalAyaRuntimeException;
@@ -41,13 +39,12 @@ import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.dialog.QuickDialog;
-import aya.instruction.Instruction;
+import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilderInstruction;
-import aya.instruction.variable.VariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
-import aya.obj.block.BlockHeader;
-import aya.obj.block.BlockHeaderArg;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
@@ -64,6 +61,8 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.Parser;
 import aya.parser.ParserString;
+import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.VectorizedFunctions;
@@ -77,7 +76,7 @@ public class DotOps {
 	 *  Stored in final array for fast lookup.
 	 *  Array indexes are always [(operator character) - FIRST_OP]
 	 */
-	public static OpInstruction[] DOT_OPS = {
+	public static Operator[] DOT_OPS = {
 		/* 33 !  */ new OP_Dot_Bang(),
 		/* 34 "  */ null, // String symbol literal
 		/* 35 #  */ null, //Comment
@@ -175,18 +174,23 @@ public class DotOps {
 	};
 
 	/** Returns the operation bound to the character */
-	public static OpInstruction getOp(char c) throws NotAnOperatorError {
-		OpInstruction op = getOpOrNull(c);
+	public static OperatorInstruction getOp(char c, SourceStringRef source) throws NotAnOperatorError {
+		OperatorInstruction op = getOpOrNull(c, source);
 		if (op == null) {
-			throw new NotAnOperatorError("." + c);
+			throw new NotAnOperatorError("." + c, source);
 		} else {
 			return op;
 		}
 	}
 	
-	public static OpInstruction getOpOrNull(char op) {
+	public static OperatorInstruction getOpOrNull(char op, SourceStringRef source) {
 		if(op >= 33 && op <= 126) {
-			return DOT_OPS[op-FIRST_OP];
+			Operator operator = DOT_OPS[op-FIRST_OP];
+			if (operator == null) {
+				return null;
+			} else  {
+				return new OperatorInstruction(source, operator);
+			}
 		} else {
 			return null;
 		}
@@ -195,7 +199,7 @@ public class DotOps {
 }
 
 // ! - 33
-class OP_Dot_Bang extends OpInstruction {
+class OP_Dot_Bang extends Operator {
 
 	public OP_Dot_Bang() {
 		this.name = ".!";
@@ -230,7 +234,7 @@ class OP_Dot_Bang extends OpInstruction {
 			return ((Number)a).signnum();
 		} else if (a.isa(STR)) {
 			String numStr = a.str().trim();
-			ParserString ps = new ParserString(numStr);
+			ParserString ps = new ParserString(new SourceString(numStr, ".!"));
 			Number n;
 			try {
 				n = Parser.parseNumber(ps).numValue();
@@ -245,7 +249,7 @@ class OP_Dot_Bang extends OpInstruction {
 				return n;
 			}
 		} else if (a.isa(BLOCK)) {
-			return ((Block)a).duplicateNoHeader();
+			return BlockUtils.stripHeader(Casting.asStaticBlock(a));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -253,7 +257,7 @@ class OP_Dot_Bang extends OpInstruction {
 }
 
 // " - 34
-class OP_Dot_CastChar extends OpInstruction {
+class OP_Dot_CastChar extends Operator {
 
 	public OP_Dot_CastChar() {
 		init(".'");
@@ -282,7 +286,7 @@ class OP_Dot_CastChar extends OpInstruction {
 
 
 // $ - 36
-class OP_Dot_Duplicate extends OpInstruction {
+class OP_Dot_Duplicate extends Operator {
 
 	public OP_Dot_Duplicate() {
 		init(".$");
@@ -311,7 +315,7 @@ class OP_Dot_Duplicate extends OpInstruction {
 
 
 // % - 37
-class OP_Dot_Percent extends OpInstruction {
+class OP_Dot_Percent extends Operator {
 
 	public OP_Dot_Percent() {
 		init(".%");
@@ -355,7 +359,7 @@ class OP_Dot_Percent extends OpInstruction {
 
 
 // & - 38
-class OP_Dot_And extends OpInstruction {
+class OP_Dot_And extends Operator {
 
 	public OP_Dot_And() {
 		init(".&");
@@ -376,10 +380,10 @@ class OP_Dot_And extends OpInstruction {
 		} else if ( c.isa(STR) && (a.isa(STR) || a.isa(CHAR)) && (b.isa(STR) || b.isa(CHAR))) {
 			block.push(List.fromString( c.str().replaceAll(b.str(), a.str()) ));
 		} else if (a.isa(BLOCK) && b.isa(LIST) && c.isa(LIST)) {
-			Block initial = new Block();
-			initial.push(c);
-			initial.push(b);
-			ListBuilderInstruction lb = new ListBuilderInstruction(initial, (Block)a, null, 0);
+			StaticBlock zip_block = StaticBlock.EMPTY;
+			zip_block = BlockUtils.addObjToStack(zip_block, b);
+			zip_block = BlockUtils.addObjToStack(zip_block, c);
+			ListBuilderInstruction lb = new ListBuilderInstruction(null, zip_block, asStaticBlock(a), null, 0);
 			block.add(lb);
 		} else {
 			throw new TypeError(this,a,b,c);
@@ -399,7 +403,7 @@ class OP_Dot_And extends OpInstruction {
 }
 
 // ( - 40
-class OP_Dot_OParen extends OpInstruction {
+class OP_Dot_OParen extends Operator {
 
 	public OP_Dot_OParen() {
 		init(".(");
@@ -421,7 +425,7 @@ class OP_Dot_OParen extends OpInstruction {
 }
 
 // ) - 41
-class OP_Dot_CParen extends OpInstruction {
+class OP_Dot_CParen extends Operator {
 
 
 	public OP_Dot_CParen() {
@@ -444,7 +448,7 @@ class OP_Dot_CParen extends OpInstruction {
 }
 
 // * - 42 
-class OP_Dot_Star extends OpInstruction {
+class OP_Dot_Star extends Operator {
 
 	public OP_Dot_Star() {
 		init(".*");
@@ -457,19 +461,9 @@ class OP_Dot_Star extends OpInstruction {
 		final Obj a = block.pop();
 
 		if (a.isa(LIST)) {
-			List l = asList(a);
-			Block b = new Block();
-			for (int i = 0; i < l.length(); i++) {
-				final Obj k = l.getExact(i);
-				if (k.isa(BLOCK)) {
-					b.addBlockBack((Block)k);
-				} else {
-					b.addBack(k);
-				}
-			}
-			block.push(b);
+			block.push(BlockUtils.fromList(asList(a)));
 		} else if (a.isa(BLOCK)) {
-			block.push(asBlock(a).split());
+			block.push(BlockUtils.split(asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -478,7 +472,7 @@ class OP_Dot_Star extends OpInstruction {
 
 
 // + - 43
-class OP_Dot_Plus extends OpInstruction {
+class OP_Dot_Plus extends Operator {
 
 	public OP_Dot_Plus() {
 		init(".+");
@@ -489,18 +483,7 @@ class OP_Dot_Plus extends OpInstruction {
 		arg("DD", "update D1 with the values from D2 (modify D1)");
 	}
 
-	private Block capture(Block b, Symbol s) {
-		Obj o = Aya.getInstance().getVars().getVar(s);
-		BlockHeader bh = b.getHeader();
-		Block dup;
-		if (bh == null) {
-			dup = b.duplicate();
-		} else {
-			dup = b.duplicateNewHeader(bh.copy());
-		}
-		dup.getInstructions().assignVarValue(s, o);
-		return dup;
-	}
+
 
 	@Override
 	public void execute(Block block) {
@@ -511,14 +494,14 @@ class OP_Dot_Plus extends OpInstruction {
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			block.push(NumberMath.gcd((Number)a, (Number)b));
 		} else if (b.isa(BLOCK)) {
-			Block blk = (Block)(b.deepcopy());
+			StaticBlock blk = asStaticBlock(b);
 			// Constant capture from dict
 			if (a.isa(DICT)) {
-				Dict.assignVarValues((Dict)a, blk);
+				blk = BlockUtils.assignVarValues(Casting.asDict(a), blk);
 			}
 			// Constant capture from scope
 			else if (a.isa(SYMBOL)) {
-				blk = capture(blk, (Symbol)a);
+				blk = BlockUtils.capture(blk, (Symbol)a);
 			}
 			// Constant capture from scope (list)
 			else if (a.isa(LIST)) {
@@ -526,7 +509,7 @@ class OP_Dot_Plus extends OpInstruction {
 				for (int i = 0; i < l.length(); i++) {
 					final Obj s = l.getExact(i);
 					if (s.isa(SYMBOL)) {
-						blk = capture(blk, (Symbol)s);
+						blk = BlockUtils.capture(blk, (Symbol)s);
 					} else {
 						throw new ValueError(".+ Expected list of symbols. Got:\n" + a.repr());
 					}
@@ -544,7 +527,7 @@ class OP_Dot_Plus extends OpInstruction {
 }
 
 // - - 45
-class OP_Dot_Minus extends OpInstruction {
+class OP_Dot_Minus extends Operator {
 
 	public OP_Dot_Minus() {
 		init(".-");
@@ -599,7 +582,7 @@ class OP_Dot_Minus extends OpInstruction {
 }
 
 // / - 47
-class OP_Dot_FwdSlash extends OpInstruction {
+class OP_Dot_FwdSlash extends Operator {
 
 	public OP_Dot_FwdSlash() {
 		init("./");
@@ -635,7 +618,7 @@ class OP_Dot_FwdSlash extends OpInstruction {
 }
 
 // ; - 59
-class OP_Dot_ClearAll extends OpInstruction {
+class OP_Dot_ClearAll extends Operator {
 
 	public OP_Dot_ClearAll() {
 		init(".;");
@@ -649,7 +632,7 @@ class OP_Dot_ClearAll extends OpInstruction {
 }
 
 // < - 60
-class OP_Dot_LessThan extends OpInstruction {
+class OP_Dot_LessThan extends Operator {
 
 	public OP_Dot_LessThan() {
 		init(".<");
@@ -694,7 +677,7 @@ class OP_Dot_LessThan extends OpInstruction {
 
 
 // > - 62
-class OP_Dot_GreaterThan extends OpInstruction {
+class OP_Dot_GreaterThan extends Operator {
 
 	public OP_Dot_GreaterThan() {
 		init(".>");
@@ -741,7 +724,7 @@ class OP_Dot_GreaterThan extends OpInstruction {
 }
 
 // = 61 new OP_Dot_Equals(),
-class OP_Dot_Equals extends OpInstruction {
+class OP_Dot_Equals extends Operator {
 
 	public OP_Dot_Equals() {
 		init(".=");
@@ -770,7 +753,7 @@ class OP_Dot_Equals extends OpInstruction {
 
 
 // ? - 63
-class OP_Dot_Conditional extends OpInstruction {
+class OP_Dot_Conditional extends Operator {
 
 	public OP_Dot_Conditional() {
 		init(".?");
@@ -787,13 +770,13 @@ class OP_Dot_Conditional extends OpInstruction {
 
 		if(c.bool()) {
 			if(b.isa(BLOCK)) {
-				block.addAll(((Block)b).duplicate().getInstructions().getInstrucionList());
+				block.dump(asStaticBlock(b));
 			} else {
 				block.push(b);
 			}
 		} else {
 			if(a.isa(BLOCK)) {
-				block.addAll(((Block)a).duplicate().getInstructions().getInstrucionList());
+				block.dump(asStaticBlock(a));
 			} else {
 				block.push(a);
 			}
@@ -803,7 +786,7 @@ class OP_Dot_Conditional extends OpInstruction {
 }
 
 // @ - 64
-class OP_Dot_At extends OpInstruction {
+class OP_Dot_At extends Operator {
 
 	public OP_Dot_At() {
 		init(".@");
@@ -833,7 +816,7 @@ class OP_Dot_At extends OpInstruction {
 
 
 // A - 65
-class OP_Dot_ArrayAll extends OpInstruction {
+class OP_Dot_ArrayAll extends Operator {
 
 	public OP_Dot_ArrayAll() {
 		init(".A");
@@ -851,7 +834,7 @@ class OP_Dot_ArrayAll extends OpInstruction {
 }
 
 // B - 66
-class OP_Dot_Append extends OpInstruction {
+class OP_Dot_Append extends Operator {
 
 	public OP_Dot_Append() {
 		init(".B");
@@ -873,7 +856,7 @@ class OP_Dot_Append extends OpInstruction {
 }
 
 // C - 67
-class OP_Dot_SortUsing extends OpInstruction {
+class OP_Dot_SortUsing extends Operator {
 
 	public OP_Dot_SortUsing() {
 		init(".C");
@@ -891,7 +874,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 			block.push(NumberMath.bxor((Number)a, (Number)b));
 		}
 		else if (a.isa(BLOCK) && b.isa(LIST)) {
-			final Block blk = ((Block)a).duplicate();
+			final StaticBlock blk = asStaticBlock(a);
 			List objs = asList(b);
 			List key_obj = objs.map(blk);
 
@@ -942,7 +925,7 @@ class OP_Dot_SortUsing extends OpInstruction {
 }
 
 // D - 68
-class OP_Dot_Error extends OpInstruction {
+class OP_Dot_Error extends Operator {
 
 	public OP_Dot_Error() {
 		init(".D");
@@ -956,7 +939,7 @@ class OP_Dot_Error extends OpInstruction {
 }
 
 //E - 69
-class OP_Dot_Len extends OpInstruction {
+class OP_Dot_Len extends Operator {
 
 	public OP_Dot_Len() {
 		init(".E");
@@ -981,7 +964,7 @@ class OP_Dot_Len extends OpInstruction {
 
 
 //F - 70
-class OP_Dot_Flatten extends OpInstruction {
+class OP_Dot_Flatten extends Operator {
 
 	public OP_Dot_Flatten() {
 		init(".F");
@@ -1004,7 +987,7 @@ class OP_Dot_Flatten extends OpInstruction {
 
 
 // G - 71
-class OP_Dot_Write extends OpInstruction {
+class OP_Dot_Write extends Operator {
 
 	public OP_Dot_Write() {
 		init(".G");
@@ -1056,7 +1039,7 @@ class OP_Dot_Write extends OpInstruction {
 
 // I - 73
 //NOTE: If updating this operator, also update I
-class OP_Dot_I extends OpInstruction {
+class OP_Dot_I extends Operator {
 
 	public OP_Dot_I() {
 		init(".I");
@@ -1081,7 +1064,7 @@ class OP_Dot_I extends OpInstruction {
 }
 
 //K - 75
-class OP_Dot_TryCatch extends OpInstruction {
+class OP_Dot_TryCatch extends Operator {
 
 	public OP_Dot_TryCatch() {
 		init(".K");
@@ -1095,21 +1078,22 @@ class OP_Dot_TryCatch extends OpInstruction {
 
 		if(tryBlock.isa(BLOCK) && catchBlock.isa(BLOCK)) {
 			try {
-				Block b = ((Block)tryBlock).duplicate();
+				Block evaluator = new Block();
 				Aya.getInstance().getCallStack().setCheckpoint();
 				Aya.getInstance().getVars().setCheckpoint();
-				b.eval();
+				evaluator.dump(asStaticBlock(tryBlock));
+				evaluator.eval();
 				Aya.getInstance().getCallStack().popCheckpoint();
 				Aya.getInstance().getVars().popCheckpoint();
-				block.appendToStack(b.getStack());
+				block.appendToStack(evaluator.getStack());
 			} catch (AyaRuntimeException e) {
 				Aya.getInstance().getCallStack().rollbackCheckpoint();
 				Aya.getInstance().getVars().rollbackCheckpoint();
-				Block b = ((Block)catchBlock).duplicate();
-				//b.push(Aya.exceptionToObj(e));
-				b.push(e.getObj());
-				b.eval();
-				block.appendToStack(b.getStack());
+				Block evaluator = new Block();
+				evaluator.push(e.getDict());
+				evaluator.dump(asStaticBlock(catchBlock));
+				evaluator.eval();
+				block.appendToStack(evaluator.getStack());
 			} catch (Exception e2) {
 				// An actual bug
 				throw e2;
@@ -1120,7 +1104,7 @@ class OP_Dot_TryCatch extends OpInstruction {
 
 
 //M- 77
-class OP_Dot_M extends OpInstruction {
+class OP_Dot_M extends Operator {
 
 	public OP_Dot_M() {
 		init(".M");
@@ -1142,7 +1126,7 @@ class OP_Dot_M extends OpInstruction {
 }
 
 // N - 78
-class OP_Dot_N extends OpInstruction {
+class OP_Dot_N extends Operator {
 
 	public OP_Dot_N() {
 		init(".N");
@@ -1159,11 +1143,12 @@ class OP_Dot_N extends OpInstruction {
 
 			block.push(b); //Push the list
 
-			final Block blk = (Block)a;
+			final StaticBlock blk = asStaticBlock(a);
 			List l = asList(b);
 			for (int i = 0; i < l.length(); i++) {
-				Block cond = blk.duplicate();
+				Block cond = new Block();
 				cond.push(l.getExact(i));
+				cond.dump(blk);
 				cond.eval();
 				Obj result = cond.pop();
 				if (result.bool()) {
@@ -1180,7 +1165,7 @@ class OP_Dot_N extends OpInstruction {
 }
 
 // O - 79
-class OP_Dot_O extends OpInstruction {
+class OP_Dot_O extends Operator {
 
 	public OP_Dot_O() {
 		init(".O");
@@ -1200,8 +1185,9 @@ class OP_Dot_O extends OpInstruction {
 		if ((res = VectorizedFunctions.vectorize2arg(this, a, b)) != null) return res;
 		
 		if (b.isa(BLOCK)) {
-			Block blk = asBlock(b).duplicate();
+			Block blk = new Block();
 			blk.push(a);
+			blk.dump(asStaticBlock(b));
 			blk.eval();
 			return blk.pop();
 		} else {
@@ -1212,7 +1198,7 @@ class OP_Dot_O extends OpInstruction {
 
 
 // P - 80
-class OP_Dot_Print extends OpInstruction {
+class OP_Dot_Print extends Operator {
 
 	public OP_Dot_Print() {
 		init(".P");
@@ -1226,7 +1212,7 @@ class OP_Dot_Print extends OpInstruction {
 }
 
 // Q - 81
-class OP_Dot_Rand extends OpInstruction {
+class OP_Dot_Rand extends Operator {
 
 	public OP_Dot_Rand() {
 		init(".Q");
@@ -1240,7 +1226,7 @@ class OP_Dot_Rand extends OpInstruction {
 }
 
 // R - 82
-class OP_Dot_R extends OpInstruction {
+class OP_Dot_R extends Operator {
 
 	public OP_Dot_R() {
 		init(".R");
@@ -1313,7 +1299,7 @@ class OP_Dot_R extends OpInstruction {
 }
 
 // S - 83
-class OP_Dot_S extends OpInstruction {
+class OP_Dot_S extends Operator {
 
 	public OP_Dot_S() {
 		init(".S");
@@ -1361,7 +1347,7 @@ class OP_Dot_S extends OpInstruction {
 
 
 //T - 84
-class OP_Dot_T extends OpInstruction {
+class OP_Dot_T extends Operator {
 
 	public OP_Dot_T() {
 		init(".T");
@@ -1381,7 +1367,7 @@ class OP_Dot_T extends OpInstruction {
 }
 
 // U - 85
-class OP_RequestString extends OpInstruction {
+class OP_RequestString extends Operator {
 
 	public OP_RequestString() {
 		init(".U");
@@ -1395,7 +1381,7 @@ class OP_RequestString extends OpInstruction {
 }
 
 // V - 86
-class OP_Dot_AppendBack extends OpInstruction {
+class OP_Dot_AppendBack extends Operator {
 
 	public OP_Dot_AppendBack() {
 		init(".V");
@@ -1418,7 +1404,7 @@ class OP_Dot_AppendBack extends OpInstruction {
 
 
 // Z - 90
-class OP_Dot_Z extends OpInstruction {
+class OP_Dot_Z extends Operator {
 
 	public OP_Dot_Z() {
 		init(".Z");
@@ -1439,7 +1425,7 @@ class OP_Dot_Z extends OpInstruction {
 
 
 // \ - 92
-class OP_Dot_BackSlash extends OpInstruction {
+class OP_Dot_BackSlash extends Operator {
 
 	public OP_Dot_BackSlash() {
 		init(".\\");
@@ -1477,7 +1463,7 @@ class OP_Dot_BackSlash extends OpInstruction {
 
 // ^ - 94
 
-class OP_Dot_Pow extends OpInstruction {
+class OP_Dot_Pow extends Operator {
 
 	public OP_Dot_Pow() {
 		init(".^");
@@ -1523,7 +1509,7 @@ class OP_Dot_Pow extends OpInstruction {
 
 
 // | - 124
-class OP_Dot_Bar extends OpInstruction {
+class OP_Dot_Bar extends Operator {
 
 	
 
@@ -1556,40 +1542,18 @@ class OP_Dot_Bar extends OpInstruction {
 		if (a.isa(NUMBER)) {
 			return ((Number)a).abs();
 		} else if (a.isa(BLOCK)) {
-			return getBlockMeta((Block)a);
+			return BlockUtils.getBlockMeta(asStaticBlock(a));
 		} else {
 			throw new TypeError(this, a);
 		}
 	}
 
-	private Dict getBlockMeta(Block b) {
-		Dict d = new Dict();
-		// Arg Names
-		final ArrayList<BlockHeaderArg> args_and_types = b.getArgsAndTypes();
-
-		ArrayList<Obj> args_list = new ArrayList<Obj>();
-		for (BlockHeaderArg a : args_and_types) {
-			Dict arg = new Dict();
-			arg.set(SymbolConstants.NAME, a.var);
-			arg.set(SymbolConstants.TYPE, a.type);
-			arg.set(SymbolConstants.COPY, a.copy ? Num.ONE : Num.ZERO);
-			args_list.add(arg);
-		}
-		Collections.reverse(args_list);
-		d.set(SymbolConstants.ARGS, new List(args_list));
-		final Dict vars = b.getLocals();
-		if (vars != null) {
-			d.set(SymbolConstants.LOCALS, vars);
-		}
-				
-		return d;
-	}
 }
 
 
 
 // ~ - 126
-class OP_Dot_Tilde extends OpInstruction {
+class OP_Dot_Tilde extends Operator {
 
 	public OP_Dot_Tilde() {
 		init(".~");
@@ -1605,7 +1569,8 @@ class OP_Dot_Tilde extends OpInstruction {
 
 		if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				block.push( Parser.compile(a.str(), Aya.getInstance()) );
+				StaticBlock sb = BlockUtils.fromIS( Parser.compileIS(new SourceString(a.str(), "~"), Aya.getInstance()) );
+				block.push(sb);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}
@@ -1614,8 +1579,7 @@ class OP_Dot_Tilde extends OpInstruction {
 		} else if (a.isa(SYMBOL)) {
 			Obj e = Aya.getInstance().getVars().getVar(asSymbol(a));
 			if (!e.isa(BLOCK)) {
-				Block b = new Block();
-				b.add(e);
+				StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(new DataInstruction(e));
 				block.push(b);
 			} else {
 				block.push(e);
@@ -1625,14 +1589,7 @@ class OP_Dot_Tilde extends OpInstruction {
 			// Set all vars in the dict
 			Aya.getInstance().getVars().setVars(asDict(a));
 		} else if (a.isa(BLOCK)) {
-			Block b = Casting.asBlock(a);
-			Instruction i = b.getInstructions().pop();
-			if (i instanceof VariableInstruction) {
-				VariableInstruction v = (VariableInstruction)i;
-				block.push(v.getSymbol());
-			} else {
-				block.push(b);
-			}
+			block.push(BlockUtils.convertSingleVariableToSymbol(asStaticBlock(a)));
 		} else {
 			throw new TypeError(this, a);
 		}

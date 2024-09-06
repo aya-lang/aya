@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.Stack;
 
 import aya.ReprStream;
@@ -16,17 +15,18 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
+import aya.util.Casting;
 
 /** 
  * Block contain instructions and the resulting stacks 
  * @author Nick
  *
  */
-public class Block extends Obj {
+public class Block {
 	
 	protected Stack<Obj> stack;
 	protected InstructionStack instructions;
@@ -42,7 +42,7 @@ public class Block extends Obj {
 		this.stack = new Stack<Obj>();
 		this.instructions = il;
 	}
-
+	
 	/** Returns the output stack */
 	public Stack<Obj> getStack() {
 		return this.stack;
@@ -142,16 +142,8 @@ public class Block extends Obj {
 		return flag instanceof PopVarFlagInstruction;
 	}
 	
-	/** Get a list of args for this block */
-	public ArrayList<Symbol> getArgs() {
-		ArrayList<Symbol> list = new ArrayList<>();
-		BlockHeader header = getHeader();
-		if (header != null) {
-			for (BlockHeaderArg arg : header.getArgs()) {
-				list.add(arg.var);
-			}
-		}
-		return list;
+	public void dump(StaticBlock block) {
+		block.dumpToBlockEvaluator(this);
 	}
 	
 	/** Evaluates each instruction in the instruction stack and places the result in the output stack */ 
@@ -163,12 +155,13 @@ public class Block extends Obj {
 				instr.execute(this);
 			} catch (EmptyStackException es) {
 				EmptyStackError es2 = new EmptyStackError("Unexpected empty stack while executing instruction: " + instr);
-				es2.addContext(instr, this);
+				es2.setSource(instr.getSource());
 				throw es2;
-			} catch (NullPointerException npe) {
-				throw new RuntimeException(npe);
+			//}// catch (NullPointerException npe) {
+			//	throw npe;
+			//	throw new RuntimeException(npe);
 			} catch (AyaRuntimeException are) {
-				are.addContext(instr, this);
+				are.setSource(instr.getSource());
 				throw are;
 			}
 		}
@@ -243,7 +236,7 @@ public class Block extends Obj {
 	/** Adds a block to this block (does not duplicate the block) */
 	public void addBlock(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.push(new LambdaInstruction(b.getInstructions()));
+			this.instructions.push(new LambdaInstruction(null, b.getInstructions()));
 		} else {
 			this.instructions.addAll(b.getInstructions().getInstrucionList());
 		}
@@ -251,7 +244,7 @@ public class Block extends Obj {
 	
 	public void addBlockBack(Block b) {
 		if (b.hasLocals()) {
-			this.instructions.insert(0, new LambdaInstruction(b.getInstructions()));
+			this.instructions.insert(0, new LambdaInstruction(null, b.getInstructions()));
 		} else {
 			this.instructions.addAll(0, b.getInstructions().getInstrucionList());
 		}
@@ -262,7 +255,6 @@ public class Block extends Obj {
 	/** Adds an item to the back of the instruction stack. (opposite of add()) */
 	public void addBack(Obj b) {
 		instructions.insert(0, new DataInstruction(b));
-		
 	}
 	
 	/** Adds a stack to this block. Reverses the stack before adding */
@@ -278,7 +270,7 @@ public class Block extends Obj {
 	 */
 	public void addOrDumpVar(Obj o) {
 		if (o.isa(Obj.BLOCK)) {
-			instructions.addAll(((Block)o).getInstructions().getInstrucionList());
+			this.dump(Casting.asStaticBlock(o));
 		} else {
 			stack.push(o);
 
@@ -301,8 +293,8 @@ public class Block extends Obj {
 		Obj obj = dict.get(keyVar);
 		
 		if(obj.isa(Obj.BLOCK)) {
-			Block blk = ((Block)obj).duplicate();
-			instructions.addAll(blk.getInstructions().getInstrucionList());
+			StaticBlock blk = Casting.asStaticBlock(obj);
+			this.dump(blk);
 		} else {
 			stack.push(obj);
 		}
@@ -312,12 +304,12 @@ public class Block extends Obj {
 
 	
 	/** Introspection: get all asguments and types from header (if exists) */
-	public ArrayList<BlockHeaderArg> getArgsAndTypes() {
+	public ArrayList<Assignment> getArgsAndTypes() {
 		BlockHeader header = getHeader();
 		if (header != null) {
 			return header.getArgs();
 		} else {
-			return new ArrayList<BlockHeaderArg>();
+			return new ArrayList<Assignment>();
 		}
 	}
 
@@ -344,7 +336,6 @@ public class Block extends Obj {
 					}
 				}
 			}
-
 		}
 		
 		return b;
@@ -357,25 +348,13 @@ public class Block extends Obj {
 		 Block b = duplicate();
 		 BlockHeader bh = b.getHeader();
 		 if (bh == null) {
-			 bh = new BlockHeader();
+			 bh = new BlockHeader(null);
 			 b.add(bh);
 			 b.add(0, PopVarFlagInstruction.INSTANCE);
 		 }
 		 return b;
 	}
-	
-	/** Split a block into a list of blocks, 1 per instruction */
-	public List split() {
-		ArrayList<Obj> blocks = new ArrayList<Obj>();
-		ArrayList<Instruction> instructions = duplicateNoHeader().instructions.getInstrucionList();
-		for (Instruction instr : instructions)
-		{
-			Block b = new Block();
-			b.add(instr);
-			blocks.add(0, b);
-		}
-		return new List(blocks);
-	}
+
 	
 	/** Allow access to modify the block's local variables directly
 	 *  If there are no locals, return null
@@ -389,84 +368,5 @@ public class Block extends Obj {
 			return null;
 		}
 	}
-
 	
-	///////////////////////
-	// String Conversion //
-	///////////////////////
-	
-
-	/** If true, return "{instructions}" else just "instructions" */
-	private ReprStream blockRepr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
-		if (print_braces) stream.print("{");
-		instructions.repr(stream, defaults);
-		if (print_braces) stream.print("}");
-		return stream;
-	}
-	
-	public String toString() {
-		return blockRepr(new ReprStream(), true, null).toStringOneline();
-	}
-
-
-	public ReprStream repr(ReprStream stream, boolean print_braces) {
-		return repr(stream, print_braces, null);
-	}
-	
-	public ReprStream repr(ReprStream stream, boolean print_braces, HashMap<Symbol, Block> defaults) {
-		if (stream.visit(this)) {
-			blockRepr(stream, print_braces, defaults);
-			stream.popVisited(this);
-		} else {
-			stream.print("{...}");
-		}
-		return stream;
-	}
-	
-
-
-	///////////////////
-	// OBJ OVERRIDES //
-	///////////////////
-	
-	
-	@Override
-	public Obj deepcopy() {
-		return this.duplicate();
-	}
-
-	@Override
-	public boolean bool() {
-		return true;
-	}
-
-	@Override
-	public ReprStream repr(ReprStream stream) {
-		return repr(stream, true, null);
-	}
-
-	@Override
-	public String str() {
-		return repr(new ReprStream(), true).toStringOneline();
-	}
-
-	@Override
-	public boolean equiv(Obj o) {
-		// Always return false
-		return false;
-	}
-
-	@Override
-	public boolean isa(byte type) {
-		return type == Obj.BLOCK;
-	}
-
-	@Override
-	public byte type() {
-		return Obj.BLOCK;
-	}
-
-
-
-
 }

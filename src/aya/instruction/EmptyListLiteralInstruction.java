@@ -11,7 +11,7 @@ public class EmptyListLiteralInstruction extends ListLiteralInstruction {
 	public static final EmptyListLiteralInstruction INSTANCE = new EmptyListLiteralInstruction();
 	
 	protected EmptyListLiteralInstruction() {
-		super(new InstructionStack(), 0);
+		super(null, new InstructionStack(), 0);
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class AyaIDE extends JFrame
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					Aya.getInstance().queueInput("\"" + path + "\"G~");
+					Aya.getInstance().queueInput("\"" + path + "\":F");
 					
 				}
 			}

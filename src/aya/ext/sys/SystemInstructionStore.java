@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import aya.AyaPrefs;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
 import aya.obj.block.Block;
@@ -21,7 +21,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		addInstruction(new SysExecInstruction());
 		
 		// Readdir
-		addInstruction(new NamedInstruction("sys.readdir", "list files in working dir") {
+		addInstruction(new NamedOperator("sys.readdir", "list files in working dir") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -45,7 +45,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Get working dir
-		addInstruction(new NamedInstruction("sys.wd", "get absolute path of working dir") {
+		addInstruction(new NamedOperator("sys.wd", "get absolute path of working dir") {
 			@Override
 			public void execute(Block block) {
 				block.push(List.fromString(AyaPrefs.getWorkingDir()));
@@ -53,7 +53,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 
 		// Get aya dir
-		addInstruction(new NamedInstruction("sys.ad", "get absolute path of aya dir") {
+		addInstruction(new NamedOperator("sys.ad", "get absolute path of aya dir") {
 			@Override
 			public void execute(Block block) {
 				block.push(List.fromString(AyaPrefs.getAyaDir()));
@@ -61,7 +61,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Get aya dir
-		addInstruction(new NamedInstruction("sys.set_ad", "set absolute path of aya dir") {
+		addInstruction(new NamedOperator("sys.set_ad", "set absolute path of aya dir") {
 			@Override
 			public void execute(Block block) {
 				AyaPrefs.setAyaDir(block.pop().str());
@@ -69,7 +69,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Set working dir
-		addInstruction(new NamedInstruction("sys.cd", "set the working dir (empy string resets to default)") {
+		addInstruction(new NamedOperator("sys.cd", "set the working dir (empy string resets to default)") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -91,7 +91,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Make dir
-		addInstruction(new NamedInstruction("sys.mkdir", "create a directory") {
+		addInstruction(new NamedOperator("sys.mkdir", "create a directory") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -109,7 +109,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		
 		
 		// System.getProperty
-		addInstruction(new NamedInstruction("sys.getprop", "call System.getProperty with the given key") {
+		addInstruction(new NamedOperator("sys.getprop", "call System.getProperty with the given key") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -123,7 +123,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Delete file or directory
-		addInstruction(new NamedInstruction("sys.rm", "remove a file or directory") {
+		addInstruction(new NamedOperator("sys.rm", "remove a file or directory") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -144,7 +144,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Test if file exists
-		addInstruction(new NamedInstruction("sys.file_exists", "test if the file exists") {
+		addInstruction(new NamedOperator("sys.file_exists", "test if the file exists") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -153,7 +153,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Resolve home (replace ~/ with /path/to/home)
-		addInstruction(new NamedInstruction("sys.resolvehome", "replace ~/.. with /path/to/home/..") {
+		addInstruction(new NamedOperator("sys.resolvehome", "replace ~/.. with /path/to/home/..") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();
@@ -162,7 +162,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		});
 		
 		// Change the prompt text
-		addInstruction(new NamedInstruction("sys.alterprompt", "change the prompt text") {
+		addInstruction(new NamedOperator("sys.alterprompt", "change the prompt text") {
 			@Override
 			public void execute(Block block) {
 				final Obj arg = block.pop();

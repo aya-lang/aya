@@ -3,17 +3,21 @@ package aya.instruction.index;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
+import aya.parser.SourceStringRef;
 
 public class SetExprIndexInstruction extends SetIndexInstruction {
 	
-	Block _index;
+	StaticBlock _index;
 	
-	public SetExprIndexInstruction(Block index) {
+	public SetExprIndexInstruction(SourceStringRef source, StaticBlock index) {
+		super(source);
 		_index = index;
 	}
 	
 	protected Obj getIndex() {
-		Block index = _index.duplicate();
+		Block index = new Block();
+		index.dump(_index);
 		index.eval();
 		if (index.getStack().size() == 1) {
 			return index.getStack().pop();

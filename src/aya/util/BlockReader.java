@@ -1,7 +1,7 @@
 package aya.util;
 
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
@@ -10,9 +10,9 @@ import aya.obj.symbol.Symbol;
 public class BlockReader {
 
 	Block _block;
-	NamedInstruction _inst;
+	NamedOperator _inst;
 
-	public BlockReader(NamedInstruction instruction) {
+	public BlockReader(NamedOperator instruction) {
 		_block = null;
 		_inst = instruction;
 	}

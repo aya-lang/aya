@@ -5,13 +5,15 @@ import aya.ReprStream;
 import aya.instruction.flag.PopCallstackInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetVariableInstruction extends VariableInstruction {
 
-	public GetVariableInstruction(Symbol var) {
-		super(var);
+	public GetVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override
@@ -27,16 +29,17 @@ public class GetVariableInstruction extends VariableInstruction {
 	 */
 	public void addOrDumpVar(Obj o, Block b) {
 		if (o.isa(Obj.BLOCK)) {
-			dumpBlock(Casting.asBlock(o), b);
+			dumpBlock(Casting.asStaticBlock(o), b);
 		} else {
 			b.push(o);
 		}
 	}
 
-	public void dumpBlock(Block block_to_dump, Block b) {
+	public void dumpBlock(StaticBlock block_to_dump, Block evaluator) {
 		Aya.getInstance().getCallStack().push(this);
-		b.add(PopCallstackInstruction.INSTANCE);
-		b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());
+		evaluator.add(PopCallstackInstruction.INSTANCE);
+		//b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());
+		evaluator.dump(block_to_dump);
 	}
 
 	@Override

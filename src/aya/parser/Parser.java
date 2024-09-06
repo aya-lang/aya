@@ -3,9 +3,9 @@ package aya.parser;
 import java.util.ArrayList;
 
 import aya.Aya;
-import aya.exceptions.ex.EndOfInputError;
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.EndOfInputError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
@@ -20,7 +20,7 @@ import aya.instruction.index.SetNumberIndexInstruction;
 import aya.instruction.index.SetObjIndexInstruction;
 import aya.instruction.index.SetVarIndexInstruction;
 import aya.instruction.op.ColonOps;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.OperatorInstruction;
 import aya.instruction.op.Ops;
 import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
@@ -30,6 +30,7 @@ import aya.instruction.variable.SetKeyVariableInstruction;
 import aya.instruction.variable.SetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolTable;
@@ -67,9 +68,8 @@ public class Parser {
 	
 	public static char CDICT_CHAR = (char)162; // cent
 
-	public static TokenQueue tokenize(Aya aya, String s) throws ParserException {
+	public static TokenQueue tokenize(Aya aya, ParserString in) throws ParserException {
 		TokenQueue tokens = new TokenQueue();
-		ParserString in = new ParserString(s);
 
 		while (!in.isEmpty()) {
 			char current = in.next();
@@ -77,31 +77,24 @@ public class Parser {
 			// Line Comment
 			if (current == '.' && in.hasNext() && in.peek() == '#') {
 				in.next(); // skip the '#'
+				StringBuilder comment = new StringBuilder();
 
-				// Help Text
-				if (in.hasNext() && in.peek() == '?') {
-					in.next(); // Skip the '?'
-					StringBuilder sb = new StringBuilder();
-					while (in.hasNext() && in.peek() != '\n') {
-						sb.append(in.next());
-					}
-					// Append the last character
-					if (in.hasNext()) {
-						sb.append(in.next());
-					}
-					String doc = formatString(sb.toString()).trim();
-					aya.addHelpText(doc);
+				while (in.hasNext() && in.peek() != '\n') {
+					comment.append(in.next());
 				}
 
-				else {
-					while (in.hasNext() && in.peek() != '\n') {
-						in.next();
-					}
-					// Skip the last character
-					if (in.hasNext()) {
-						in.next();
-					}
+				// Skip the last character
+				if (in.hasNext()) {
+					comment.append(in.next());
 				}
+
+				// Documentation comment?
+				String comment_str = comment.toString();
+				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
+					comment_str = comment_str.substring(1);
+					aya.addHelpText(comment_str);
+				}
+
 				continue;
 			}
 
@@ -109,17 +102,7 @@ public class Parser {
 			if (current == '.' && in.hasNext() && in.peek() == '{') {
 				in.next(); // Skip the '{'
 
-				// Determine if the block is documentation
-				boolean isDocCode = false;
-				StringBuilder docs = null;
-				if (in.hasNext() && in.peek() == '?') {
-					in.next(); // Skip the '?'
-					isDocCode = true;
-					docs = new StringBuilder();
-
-				}
-
-				// Skip or collect the block
+				StringBuilder comment = new StringBuilder();
 				boolean complete = false;
 				while (in.hasNext(1)) {
 					if (in.peek(0) == '.' && in.peek(1) == '}') {
@@ -128,25 +111,21 @@ public class Parser {
 						complete = true;
 						break;
 					}
-
-					if (isDocCode) {
-						docs.append(in.next());
-					} else {
-						in.next();
-					}
+					comment.append(in.next());
 				}
 
 				// Early input termination
 				if (!complete) {
 					while (in.hasNext()) {
-						in.next();
+						comment.append(in.next());
 					}
 				}
 
 				// Add the documentation to Aya
-				if (isDocCode) {
-					String doc = formatString(docs.toString()).trim();
-					aya.addHelpText(doc);
+				String comment_str = comment.toString();
+				if (comment_str.length() > 0 && comment_str.charAt(0) == '?') {
+					comment_str = comment_str.substring(1);
+					aya.addHelpText(comment_str);
 				}
 			}
 
@@ -184,70 +163,71 @@ public class Parser {
 						while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 							varname += in.next();
 						}
-						tokens.add(new KeyVarToken(varname));
+						tokens.add(new KeyVarToken(varname, in.currentRef()));
 					}
 
 					else if (in.peek() == '"') {
-						in.next(); // Skip opening '
-						String varname = parseString(in, '"');
-						tokens.add(new KeyVarToken(varname));
+						in.next(); // Skip opening "
+						String varname = StringParseUtils.goToEnd(in, '"');
+						tokens.add(new KeyVarToken(varname, in.currentRef()));
 					}
 
 
 					// Quote a function (.`)
 					else if (in.peek() == '`') {
-						tokens.add(SpecialToken.FN_QUOTE);
+						tokens.add(new SpecialToken(Token.FN_QUOTE, ".`", in.currentRef()));
 						in.next(); // Skip the '`'
 					}
 
 					// Dot Colon
 					else if (in.peek() == ':') {
-						tokens.add(SpecialToken.DOT_COLON);
+						tokens.add(new SpecialToken(Token.DOT_COLON, ".:", in.currentRef()));
 						in.next(); // Skip the ':'
 						
 						// Quoted variable
 						if (in.peek() == '"') {
 							in.next(); // Skip open '
-							String str = parseString(in, '"');
-							tokens.add(new VarToken(str));
+							String str = StringParseUtils.goToEnd(in, '"');
+							tokens.add(new VarToken(str, in.currentRef()));
 						}
 					}
 
 					// Plain Dot
 					else if (in.peek() == '[') {
-						tokens.add(SpecialToken.DOT);
+						tokens.add(new SpecialToken(Token.DOT, ".", in.currentRef()));
 					}
 
 					// Dot operator
 					else if (in.peek() <= Ops.MAX_OP){
-						tokens.add(new OperatorToken("" + in.next(), OperatorToken.DOT_OP));
+						tokens.add(new OperatorToken("" + in.next(), OperatorToken.DOT_OP, in.currentRef()));
 					}
 					
 					else {
-						tokens.add(new KeyVarToken(""+in.next()));
+						tokens.add(new KeyVarToken(""+in.next(), in.currentRef()));
 					}
 
 				} else {
-					throw new SyntaxError("Unexpected end of input after '.'" + in.toString());
+					throw new SyntaxError("Unexpected end of input after '.'", in.currentRef());
 				}
 			}
 
 			// Math Operators
 			else if (current == 'M') {
 				try {
-					tokens.add(new OperatorToken("" + in.next(), OperatorToken.MATH_OP));
+					tokens.add(new OperatorToken("" + in.next(), OperatorToken.MATH_OP, in.currentRef()));
 				} catch (EndOfInputError e) {
-					throw new SyntaxError("Expected op name after 'M'" + in.toString());
+					throw new SyntaxError("Expected op name after 'M'", in.currentRef());
 				}
 			}
 			
 			else if (current == Parser.CDICT_CHAR) { // cent
-				tokens.add(new CDictToken(""+in.next()));
+				tokens.add(new CDictToken(""+in.next(), in.currentRef()));
 			}
 
 			// Long String Literals
 			else if (current == '"' && in.hasNext(1) && in.peek(0) == '"' && in.peek(1) == '"') {
 				StringBuilder str = new StringBuilder();
+				SourceStringRef startRef = in.currentRef();
 
 				// Skip other quote chars
 				in.next();
@@ -258,7 +238,9 @@ public class Parser {
 					if (in.hasNext(2) && in.peek(0) == '"' && in.peek(1) == '"' && in.peek(2) == '"') {
 
 						// false = do not interpolate
-						tokens.add(new StringToken(str.toString(), false));
+						SourceStringRef ref = in.currentRef();
+						ref.inc(); // Go to end of string
+						tokens.add(new StringToken(str.toString(), false, ref));
 
 						// Skip closing quotes
 						in.next();
@@ -275,21 +257,21 @@ public class Parser {
 					}
 					// Incomplete
 					else {
-						throw new SyntaxError("Incomplete long string literal: " + str.toString());
+						throw new SyntaxError("Unterminated long string literal (missing ending \"\"\")", startRef);
 					}
 				}
 			}
 
 			// String Literals
 			else if (current == '"') {
-				String str = parseString(in);
-				tokens.add(new StringToken(str));
+				String str = StringParseUtils.goToEnd(in, '"');
+				tokens.add(new StringToken(str, in.currentRef()));
 			}
 
 			// Character Literals
 			else if (current == '\'') {
 				if (!in.hasNext()) {
-					throw new SyntaxError("Expected character name after '''" + in.toString());
+					throw new SyntaxError("Expected character name after open single quote", in.currentRef());
 				}
 				// Special Character
 				if (in.peek() == '\\') {
@@ -305,27 +287,27 @@ public class Parser {
 						sb.append("" + in.next());
 					}
 					if (!complete) {
-						throw new SyntaxError("Expected closing quote after character literal '\\" + sb.toString());
+						throw new SyntaxError("Expected closing quote after character literal '\\" + sb.toString(), in.currentRef());
 					}
 
 					char specialChar;
 					if (sb.length() == 0) {
 						specialChar = '\\';
 					} else {
-						specialChar = CharacterParser.parse(sb.toString());
+						specialChar = CharacterParser.parse(sb.toString(), in.currentRef());
 					}
 
 					if (specialChar == CharacterParser.INVALID) {
-						throw new SyntaxError("'\\" + sb.toString() + "' is not a valid special character");
+						throw new SyntaxError("'\\" + sb.toString() + "' is not a valid special character", in.currentRef());
 					}
 
-					tokens.add(new CharToken("" + specialChar));
+					tokens.add(new CharToken("" + specialChar, in.currentRef()));
 
 				}
 
 				// Normal Character
 				else {
-					tokens.add(new CharToken("" + in.next()));
+					tokens.add(new CharToken("" + in.next(), in.currentRef()));
 				}
 			}
 
@@ -335,12 +317,12 @@ public class Parser {
 				while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 					sb.append(in.next());
 				}
-				tokens.add(new VarToken(sb.toString()));
+				tokens.add(new VarToken(sb.toString(), in.currentRef()));
 			}
 
 			// Normal Operators
 			else if (Ops.isOpChar(current)) {
-				tokens.add(new OperatorToken("" + current, OperatorToken.STD_OP));
+				tokens.add(new OperatorToken("" + current, OperatorToken.STD_OP, in.currentRef()));
 			}
 
 			// Colon
@@ -355,7 +337,7 @@ public class Parser {
 						if (in.hasNext() && in.peek() == '"') {
 							// Quoted symbol
 							in.next(); // Skip '
-							sym = parseString(in, '"');
+							sym = StringParseUtils.goToEnd(in, '"');
 						} else {
 
 							// Fist, try to parse as simple variable
@@ -377,12 +359,12 @@ public class Parser {
 									}
 									
 								} else {
-									throw new SyntaxError("Expected symbol name");
+									throw new SyntaxError("Expected symbol name", in.currentRef());
 								}
 							}
 						}
 
-						tokens.add(new SymbolToken(sym));
+						tokens.add(new SymbolToken(sym, in.currentRef()));
 					}
 					
 					// Named Operator
@@ -400,29 +382,29 @@ public class Parser {
 							}
 						}
 						if (done) {
-							tokens.add(new NamedOpToken(sb.toString()));
+							tokens.add(new NamedOpToken(sb.toString(), in.currentRef()));
 						} else {
-							throw new SyntaxError("Expected '}' after :{" + sb.toString());
+							throw new SyntaxError("Expected '}' after :{" + sb.toString(), in.currentRef());
 						}
 					}
 
 					// Colon Pound
 					else if (in.peek() == '#') {
-						tokens.add(SpecialToken.COLON_POUND);
+						tokens.add(new SpecialToken(Token.COLON_POUND, ":#", in.currentRef()));
 						in.next(); // Skip the #
 					}
 
 					// Quoted variable
 					else if (in.peek() == '"') {
-						tokens.add(SpecialToken.COLON);
-						in.next(); // Skip open '
-						String varname = parseString(in, '"');
-						tokens.add(new VarToken(varname));
+						tokens.add(new SpecialToken(Token.COLON, ":", in.currentRef()));
+						in.next(); // Skip open "
+						String varname = StringParseUtils.goToEnd(in, '"');
+						tokens.add(new VarToken(varname, in.currentRef()));
 					}
 
 					// Colon Operator
 					else if (ColonOps.isColonOpChar(in.peek()) && in.peek() != '{' && in.peek() != '[') {
-						tokens.add(new OperatorToken("" + in.next(), OperatorToken.COLON_OP));
+						tokens.add(new OperatorToken("" + in.next(), OperatorToken.COLON_OP, in.currentRef()));
 					}
 
 					// Special number
@@ -433,25 +415,25 @@ public class Parser {
 					
 					// Plain Colon
 					else {
-						tokens.add(SpecialToken.COLON);
+						tokens.add(new SpecialToken(Token.COLON, ":", in.currentRef()));
 					}
 				}
 
 				// !hasNext()
 				else {
-					tokens.add(SpecialToken.COLON);
+					tokens.add(new SpecialToken(Token.COLON, ":", in.currentRef()));
 				}
 
 			} // end colon
 
 			else {
 				// Single Character Special Tokens
-				SpecialToken tmp = SpecialToken.get(current);
+				SpecialToken tmp = SpecialToken.get(current, in.currentRef());
 				if (tmp != null) {
 					tokens.add(tmp);
 				} else if (!Character.isWhitespace(current)){
 					// Single character variable
-					tokens.add(new VarToken(""+current));
+					tokens.add(new VarToken(""+current, in.currentRef()));
 				}
 			}
 		}
@@ -461,7 +443,7 @@ public class Parser {
 
 	public static NumberToken parseNumber(ParserString in) throws EndOfInputError, SyntaxError {
 		if (!in.hasNext()) {
-			throw new SyntaxError("Attempted to parse empty number string");
+			throw new SyntaxError("Attempted to parse empty number string", in.currentRef());
 		}
 		char start = in.next();
 		if (start == ':') {
@@ -474,9 +456,9 @@ public class Parser {
 						break;
 					specNum.append(in.next());
 				}
-				return new NumberToken(specNum.toString(), true);
+				return new NumberToken(specNum.toString(), true, in.currentRef());
 			} else {
-				throw new SyntaxError(in.toString() + " is not a valid number");
+				throw new SyntaxError(in.toString() + " is not a valid number", in.currentRef());
 			}
 		} else if (CharUtils.isDigit(start) || start == '.' || start == '-') {
 			StringBuilder num = new StringBuilder("" + start);
@@ -495,9 +477,9 @@ public class Parser {
 					}
 				}
 			}
-			return new NumberToken(num.toString());
+			return new NumberToken(num.toString(), in.currentRef());
 		} else {
-			throw new SyntaxError(in.toString() + " is not a valid number");
+			throw new SyntaxError(in.toString() + " is not a valid number", in.currentRef());
 		}
 	}
 
@@ -509,23 +491,23 @@ public class Parser {
 
 			switch (current.getType()) {
 			case Token.OPEN_CURLY:
-				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, Token.BLOCK, in, out);
+				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, Token.BLOCK, in, out, current.getSourceStringRef());
 				break;
 			case Token.OPEN_SQBRACKET:
-				closeDelim(Token.OPEN_SQBRACKET, Token.CLOSE_SQBRACKET, Token.LIST, in, out);
+				closeDelim(Token.OPEN_SQBRACKET, Token.CLOSE_SQBRACKET, Token.LIST, in, out, current.getSourceStringRef());
 				break;
 			case Token.OPEN_PAREN:
-				closeDelim(Token.OPEN_PAREN, Token.CLOSE_PAREN, Token.LAMBDA, in, out);
+				closeDelim(Token.OPEN_PAREN, Token.CLOSE_PAREN, Token.LAMBDA, in, out, current.getSourceStringRef());
 				break;
 
 			// At this point, all delims should be balanced
 			// If they aren't, throw an error
 			case Token.CLOSE_CURLY:
-				throw new SyntaxError("Unexpected token '}'");
+				throw new SyntaxError("Unexpected token '}'", current.getSourceStringRef());
 			case Token.CLOSE_PAREN:
-				throw new SyntaxError("Unexpected token ')'");
+				throw new SyntaxError("Unexpected token ')'", current.getSourceStringRef());
 			case Token.CLOSE_SQBRACKET:
-				throw new SyntaxError("Unexpected token ']'");
+				throw new SyntaxError("Unexpected token ']'", current.getSourceStringRef());
 
 			default:
 				out.add(current);
@@ -541,7 +523,7 @@ public class Parser {
 	 * @throws EndOfInputError 
 	 * @throws SyntaxError 
 	 */
-	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out) throws EndOfInputError, SyntaxError {
+	public static void closeDelim(int open, int close, int type, TokenQueue in, TokenQueue out, SourceStringRef source) throws EndOfInputError, SyntaxError {
 		TokenQueue innerTokens = new TokenQueue();
 		StringBuilder debugStr = new StringBuilder();
 		boolean complete = false;
@@ -566,22 +548,23 @@ public class Parser {
 			innerTokens.add(in.next());
 		}
 
+		
 		if (!complete) {
 			throw new SyntaxError(
-					"Expected closing " + SpecialToken.quickString(type) + " delimiter after " + debugStr.toString());
+					"No closing delimiter found", source);
 		}
 
 		innerTokens = assemble(innerTokens);
 
 		switch (type) {
 		case Token.BLOCK:
-			out.add(new BlockToken(debugStr.toString(), innerTokens.getArrayList()));
+			out.add(new BlockToken(debugStr.toString(), innerTokens.getArrayList(), source));
 			break;
 		case Token.LIST:
-			out.add(new ListToken(debugStr.toString(), innerTokens.getArrayList()));
+			out.add(new ListToken(debugStr.toString(), innerTokens.getArrayList(), source));
 			break;
 		case Token.LAMBDA:
-			out.add(new LambdaToken(debugStr.toString(), innerTokens.getArrayList()));
+			out.add(new LambdaToken(debugStr.toString(), innerTokens.getArrayList(), source));
 		}
 
 	}
@@ -596,21 +579,21 @@ public class Parser {
 			// COLON
 			if (current.isa(Token.COLON)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after ':' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after ':'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetVariableInstruction(v.getSymbol()));
+					is.push(new SetVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
 				} else {
-					throw new SyntaxError("':' not followed by operator in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("':' not followed by operator", current.getSourceStringRef());
 				}
 			}
 
 			else if (current.isa(Token.DOT)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after '.' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after '.'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 
@@ -620,22 +603,22 @@ public class Parser {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
 							if (first.isa(Obj.NUMBER)) {
-								is.push(new GetNumberIndexInstruction(((Number)first).toInt()));
+								is.push(new GetNumberIndexInstruction(current.getSourceStringRef(), ((Number)first).toInt()));
 							} else {
-								is.push(new GetObjIndexInstruction(first));
+								is.push(new GetObjIndexInstruction(current.getSourceStringRef(), first));
 							}
 						} else {
 							throw new SyntaxError(
-									"Invalid index: " + l.repr() + ": Index must contain exactly one element");
+									"Invalid index: " + l.repr() + ": Index must contain exactly one element", current.getSourceStringRef());
 						}
 					} else {
 						ListLiteralInstruction lli = (ListLiteralInstruction) next;
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new GetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							is.push(new GetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new GetExprIndexInstruction(new Block(lli.getInstructions())));
+							is.push(new GetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}
 					}
 				}
@@ -643,13 +626,13 @@ public class Parser {
 
 			else if (current.isa(Token.DOT_COLON)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after '.:' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after '.:'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetKeyVariableInstruction(v.getSymbol()));
+					is.push(new SetKeyVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
 				}
 
 				// Index assignment
@@ -659,22 +642,22 @@ public class Parser {
 						if (l.length() == 1) {
 							Obj first = l.getExact(0);
 							if (first.isa(Obj.NUMBER)) {
-								is.push(new SetNumberIndexInstruction(((Number)first).toInt()));
+								is.push(new SetNumberIndexInstruction(current.getSourceStringRef(), ((Number)first).toInt()));
 							} else {
-								is.push(new SetObjIndexInstruction(first));
+								is.push(new SetObjIndexInstruction(current.getSourceStringRef(), first));
 							}
 						} else {
 							throw new SyntaxError(
-									"Invalid index: " + l.repr() + ": Index must contain exactly one element");
+									"Invalid index: " + l.repr() + ": Index must contain exactly one element", current.getSourceStringRef());
 						}
 					} else {
 						ListLiteralInstruction lli = (ListLiteralInstruction) next;
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new SetVarIndexInstruction(((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							is.push(new SetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
 						} else {
-							is.push(new SetExprIndexInstruction(new Block(lli.getInstructions())));
+							is.push(new SetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}
 					}
 				}
@@ -683,7 +666,7 @@ public class Parser {
 			// POUND
 			else if (current.isa(Token.POUND)) {
 				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
-				is.push(Ops.getOp('#'));
+				is.push(new OperatorInstruction(current.getSourceStringRef(), Ops.OP_POUND));
 				is.push(blk_ins);
 			}
 
@@ -695,11 +678,11 @@ public class Parser {
 			// COLON POUND
 			else if (current.isa(Token.COLON_POUND)) {
 				if (is.isEmpty()) {
-					throw new SyntaxError("Expected token after ':#' in:\n\t" + tokens_in.toString());
+					throw new SyntaxError("Expected token after infix operator ':#'", current.getSourceStringRef());
 				}
 				Instruction next = is.pop();
 				// Apply a block to a list or dict
-				is.push(ColonOps.getOp('#'));
+				is.push(new OperatorInstruction(current.getSourceStringRef(), ColonOps.OP_COLON_POUND));
 				is.push(next);
 			}
 
@@ -707,20 +690,20 @@ public class Parser {
 				if (stk.hasNext()) {
 					if (stk.peek().isa(Token.VAR)) {
 						VarToken t = (VarToken) stk.pop();
-						is.push(new QuoteGetVariableInstruction(t.getSymbol()));
+						is.push(new QuoteGetVariableInstruction(t.getSourceStringRef(), t.getSymbol()));
 					} else if (stk.peek().isa(Token.KEY_VAR)) {
 						KeyVarToken t = (KeyVarToken) stk.pop();
-						is.push(new QuoteGetKeyVariableInstruction(t.getSymbol()));
+						is.push(new QuoteGetKeyVariableInstruction(t.getSourceStringRef(), t.getSymbol()));
 					} else {
-						throw new SyntaxError("Expected var or keyvar before quote (.`) token");
+						throw new SyntaxError("Expected var or keyvar before quote (.`) token", current.getSourceStringRef());
 					}
 				} else {
-					throw new SyntaxError("Expected var or keyvar before quote (.`) token");
+					throw new SyntaxError("Expected var or keyvar before quote (.`) token", current.getSourceStringRef());
 				}
 			}
 
 			else if (current.typeString().equals("special")) {
-				throw new SyntaxError("Unexpected token in:\n\t" + tokens_in.toString());
+				throw new SyntaxError("Unexpected token", current.getSourceStringRef());
 			}
 
 			// Std Token
@@ -735,131 +718,34 @@ public class Parser {
 	}
 	
 	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
+		SourceStringRef ref = tokens_in.peek().getSourceStringRef();
 		if (is.isEmpty()) {
-			throw new SyntaxError("Expected token when assembling block in:\n\t" + tokens_in.toString());
+			throw new SyntaxError("Expected token when assembling block", ref);
 		} else {
 			Instruction next = is.pop();
 
 			// Apply a block to a list
 			if (next instanceof DataInstruction && ((DataInstruction) next).objIsa(Obj.BLOCK)) {
-				throw new SyntaxError("Assertion Failed!!");
+				throw new SyntaxError("Assertion Failed!!", tokens_in.peek().getSourceStringRef());
 			} else if (next instanceof BlockLiteralInstruction) {
 				return (BlockLiteralInstruction)next;
 			} else {
 				// Create a block and apply it to a list
-				Block colonBlock = new Block();
+				InstructionStack colonBlock = new InstructionStack();
 				is.push(next); // Add next back in
 
 				while (!is.isEmpty()) {
 					Instruction o = is.pop();
-					colonBlock.getInstructions().insert(0, o);
-					if (o instanceof OpInstruction || o instanceof GetVariableInstruction
+					colonBlock.insert(0, o);
+					if (o instanceof OperatorInstruction || o instanceof GetVariableInstruction
 							|| o instanceof GetKeyVariableInstruction) {
 						break;
 					}
 				}
-				return new BlockLiteralInstruction(colonBlock);
+				return new BlockLiteralInstruction(ref, BlockUtils.fromIS(colonBlock));
 			}
 		}
 	}
-	
-	private static String formatString(String input) throws EndOfInputError, SyntaxError {
-		ParserString in = new ParserString(input + "\"");
-		return parseString(in);
-	}
-
-	private static String parseString(ParserString in) throws EndOfInputError, SyntaxError {
-		return parseString(in, '"');
-	}
-
-	private static String parseString(ParserString in, char termination) throws EndOfInputError, SyntaxError {
-		boolean complete = false;
-		StringBuilder str = new StringBuilder();
-		while (in.hasNext()) {
-			char c = in.next();
-			if (c == '\\') {
-				char escape = in.next();
-				switch (escape) {
-				case '$':
-					str.append("\\$");
-					break;
-				case '}':
-					str.append("}"); // For escaping documented comments
-					break;
-				case 'n':
-					str.append('\n');
-					break;
-				case 't':
-					str.append('\t');
-					break;
-				case 'r':
-					str.append('\r');
-					break;
-				case 'b':
-					str.append('\b');
-					break;
-				case 'f':
-					str.append('\f');
-					break;
-				case '"':
-					str.append('"');
-					break;
-				case '\\':
-					str.append('\\');
-					break;
-				case '{':
-					StringBuilder sc = new StringBuilder(); // Special Char
-					boolean specialComplete = false;
-
-					while (in.hasNext()) {
-						if (in.peek() == '}') {
-							specialComplete = true;
-							in.next(); // Skip the closing '}'
-							break;
-						}
-						sc.append(in.next());
-					}
-
-					if (!specialComplete) {
-						// throw new SyntaxError("Early termination of special character in string
-						// literal: " + str.toString());
-						// Always return a valid result
-						str.append("\\{").append(sc);
-					} else {
-
-						// Parse the character
-						char specChar = CharacterParser.parse(sc.toString());
-						if (specChar == CharacterParser.INVALID) {
-							// throw new SyntaxError("'\\" + sc.toString() + "' is not a valid special
-							// character");
-							// Always return a valid result
-							str.append("\\{").append(sc).append("}");
-						}
-
-						str.append(specChar);
-					}
-					break;
-
-				default:
-					// throw new SyntaxError("'" + escape + "' is not a valid escape character....
-					// Always return a valid result
-					str.append('\\').append(escape);
-				}
-			} else if (c == termination) {
-				complete = true;
-				break;
-			} else {
-				str.append(c);
-			}
-		}
-		if (complete) {
-			return str.toString();
-		} else {
-			throw new SyntaxError("Expected closing quote after string \"" + str.toString());
-		}
-	}
-
-
 
 	/**
 	 * Compiles a string into a code block using input => tokenize => assemble =>
@@ -868,8 +754,9 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static Block compile(String s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		return new Block(generate(assemble(tokenize(aya, s))));
+	public static Block compile(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		ParserString ps = new ParserString(source);
+		return new Block(generate(assemble(tokenize(aya, ps))));
 	}
 
 	/**
@@ -879,8 +766,13 @@ public class Parser {
 	 * @throws SyntaxError 
 	 * @throws EndOfInputError 
 	 */
-	public static InstructionStack compileIS(String s, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
-		return generate(assemble(tokenize(aya, s)));
+	public static InstructionStack compileIS(SourceString source, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		ParserString ps = new ParserString(source);
+		return compileIS(ps, aya);
+	}
+
+	public static InstructionStack compileIS(ParserString ps, Aya aya) throws EndOfInputError, SyntaxError, ParserException {
+		return generate(assemble(tokenize(aya, ps)));
 	}
 
 	private static boolean isMultiCharOpPrefix(char c) {

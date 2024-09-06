@@ -195,7 +195,7 @@ exportall
     nG n2< |
 
     .# If the number is prime, return it
-    {n}
+    {[n]}
 
     .# If the number is not prime, find the
     .#   next factor

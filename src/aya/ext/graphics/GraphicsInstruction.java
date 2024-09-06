@@ -3,13 +3,13 @@ package aya.ext.graphics;
 import aya.exceptions.runtime.InvalidReferenceError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 import aya.util.BlockReader;
 import aya.util.Casting;
 
-public abstract class GraphicsInstruction extends NamedInstruction {
+public abstract class GraphicsInstruction extends NamedOperator {
 
 	protected CanvasTable _canvas_table;
 	private String _arg_type_string;

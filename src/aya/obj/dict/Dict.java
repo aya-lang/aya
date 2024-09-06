@@ -238,8 +238,9 @@ public class Dict extends Obj {
 			return true;
 		} else {
 			if (bool.isa(Obj.BLOCK)) {
-				Block blk_bool = ((Block)bool).duplicate();
+				Block blk_bool = new Block();
 				blk_bool.push(this);
+				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
 				Obj obj_res = blk_bool.pop();
 				return obj_res.bool();
@@ -267,8 +268,9 @@ public class Dict extends Obj {
 			return dictStr();
 		} else {
 			if (str.isa(Obj.BLOCK)) {
-				Block blk_str = ((Block)str).duplicate();
+				Block blk_str = new Block();
 				blk_str.push(this);
+				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
 				Obj obj_res = blk_str.pop();
 				return obj_res.str();
@@ -348,8 +350,9 @@ public class Dict extends Obj {
 
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
-				Block blk_repr = Casting.asBlock(repr).duplicate();
+				Block blk_repr = new Block();
 				blk_repr.push(this);
+				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {
 					blk_repr.eval();
 				} catch (AyaRuntimeException ex) {
@@ -422,16 +425,6 @@ public class Dict extends Obj {
 	// STATIC METHODS //
 	////////////////////
 	
-	/** Given a block, swap all references to variables defined in the dict
-	 * with the values corresponding to the keys in the dict.
-	 * @param d
-	 * @param b
-	 */
-	public static void assignVarValues(Dict d, Block b) {
-		for (Pair<Symbol, Obj> pair : d.getAllVars()) {
-			b.getInstructions().assignVarValue(pair.first(), pair.second());
-		}
-	}
 
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(Symbol v) {
@@ -456,17 +449,6 @@ public class Dict extends Obj {
 	
 
 
-	/** Return all variables as a list of pairs */
-	private ArrayList<Pair<Symbol, Obj>> getAllVars() {
-		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
-		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
-	    while (it.hasNext()) {
-	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
-	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
-	    }
-	    return out;
-	}
-	
 	private HashMap<Symbol, Obj> deepcopyHashMap() {
 		// Copy the hash map
 		HashMap<Symbol, Obj> vars_copy = new HashMap<Symbol, Obj>();

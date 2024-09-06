@@ -1,11 +1,11 @@
 package aya.ext.json;
 
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.block.Block;
 
-public class LoadJSONInstruction extends NamedInstruction {
+public class LoadJSONInstruction extends NamedOperator {
 	
 	public LoadJSONInstruction() {
 		super("json.loads");

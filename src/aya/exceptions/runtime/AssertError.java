@@ -21,8 +21,8 @@ public class AssertError extends InternalAyaRuntimeException {
 	}
 	
 	@Override
-	public Obj getObj() {
-		Dict d = (Dict)(super.getObj());
+	public Dict getDict() {
+		Dict d = super.getDict();
 		d.set(SymbolConstants.EXPECTED, _expected);
 		d.set(SymbolConstants.RECEIVED, _received);
 		return d;

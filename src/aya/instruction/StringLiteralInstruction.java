@@ -3,12 +3,14 @@ package aya.instruction;
 import aya.ReprStream;
 import aya.obj.block.Block;
 import aya.obj.list.List;
+import aya.parser.SourceStringRef;
 
 public class StringLiteralInstruction extends Instruction {
 
 	final String _str;
 	
-	public StringLiteralInstruction(String str) {
+	public StringLiteralInstruction(SourceStringRef source, String str) {
+		super(source);
 		_str = str;
 	}
 
