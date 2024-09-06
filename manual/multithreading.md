@@ -15,7 +15,7 @@ aya> threading.new :my_thread
 ( 1 ) thread!
 ```
 
-Add a task to a thread using `add_task` or `+` the task will be executed immediately.
+Add a task to a thread using `add_task` or `+` the task will be executed immediately. `add_task`/`+` return the thread. Examples below use `;` to discard so the thread is not printed in the REPL.
 
 ```
 aya> aya> { "begin" :P 1 1 + "end" :P } my_thread.add_task ; .# OR my_thread +
@@ -33,7 +33,7 @@ aya> my_thread.wait_for_result .# OR my_thread .|
 When multiple items left on stack during execution, all are returned as a list.
 
 ```
-aya> { 1 2 /   3 4 + } my_thread.add_task .# OR my_thread +
+aya> { 1 2 /   3 4 + } my_thread.add_task ; .# OR my_thread +
 aya> my_thread.wait_for_result
 [ .5 7 ]
 ```
@@ -66,7 +66,7 @@ If an error occurs while executing a task, the error will not be thrown until th
 
 ```
 aya> .# Attempt to access index 99 of any empty list
-aya> { "begin" :P   [ ].[99]   "end" :P } my_thread +   .# OR my_thread.add_task
+aya> { "begin" :P   [ ].[99]   "end" :P } my_thread + ;   .# OR my_thread.add_task
 begin
 ```
 
@@ -79,7 +79,7 @@ aya> my_thread.wait_for_result .# OR my_thread .|
 Invalid index 99 for list [ ]
 
 
-{ "begin" :P   [ ].[99]   "end" :P } my_thread.add_task
+{ "begin" :P   [ ].[99]   "end" :P } my_thread.add_task ;
 ~~~~~~~~~~~~~~~~~~^
 Function call traceback:
   File '<input>', line 1 in .wait_for_result:
@@ -95,9 +95,9 @@ Function call traceback:
 A thread may execute multiple tasks. These tasks are **not** executed in parellel. Tasks are always executed in the order they are received.
 
 ```
-aya> { 1 } my_thread.add_task
-aya> { 2 } my_thread.add_task
-aya> { 3 } my_thread.add_task
+aya> { 1 } my_thread.add_task ;
+aya> { 2 } my_thread.add_task ;
+aya> { 3 } my_thread.add_task ;
 aya> my_thread.wait_for_result
 [ 1 ]
 aya> my_thread.wait_for_result
@@ -219,7 +219,7 @@ aya> t.wait_for_result
 Undefined variable 'x'
 
 
-{ "x is $x" :P } t.add_task
+{ "x is $x" :P } t.add_task ;
 ~~~~~~~~^
 Function call traceback:
   File '<input>', line 1 in .wait_for_result:
@@ -232,7 +232,7 @@ To share a variable with a thread, it must be captured in the task block. `x` is
 
 ```
 aya> 10 :x;
-aya> { : x^ , "x is $x" :P } t.add_task
+aya> { : x^ , "x is $x" :P } t.add_task ;
 x is 10
 aya> t.wait_for_result
 [ ]
@@ -244,7 +244,7 @@ Note that `^` captures the *value* of a variable so if a modification is made to
 aya> 10 :x;
 
 aya> .# wait for 10s in the thread
-aya> { : x^ , "thread start" 10000:Z "x is $x" :P } t.add_task
+aya> { : x^ , "thread start" 10000:Z "x is $x" :P } t.add_task ;
 
 aya> .# change x before the thread is finished
 aya> 99 :x;
@@ -260,7 +260,7 @@ For mutable data, changes are reflected but **no guarentees are made about the d
 aya> {, 10 :a } :x;
 
 aya> .# wait for 10s in the thread
-aya> { : x^ , "thread start" 10000:Z "x is $x" :P } t.add_task
+aya> { : x^ , "thread start" 10000:Z "x is $x" :P } t.add_task ;
 
 aya> .# Change `x.a` before the thread is finished
 aya> .# Update a mutable object while it is being used in another thread
@@ -283,7 +283,7 @@ As stated above, modifying mutable objects should not be used to send data from 
 
 ```
 aya> .# The task can leave as many objects on the stack as needed
-aya> { 1 2 /   3 4 + } my_thread.add_task
+aya> { 1 2 /   3 4 + } my_thread.add_task ;
 
 aya> .# The complete stack is returned as a list
 aya> my_thread.wait_for_result
