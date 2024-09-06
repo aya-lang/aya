@@ -15,19 +15,14 @@ import aya.util.AWTKeyDecoder;
 
 public class PressedKeysInstruction extends GraphicsInstruction {
 
-	private static Symbol KEYCODE;
-	private static Symbol KEY_NAME;
-	private static Symbol LOCATION;
-	private static Symbol LOCATION_NAME;
+	private static final Symbol KEYCODE = SymbolTable.getSymbol("keycode");
+	private static final Symbol KEY_NAME = SymbolTable.getSymbol("key_name");
+	private static final Symbol LOCATION = SymbolTable.getSymbol("location");
+	private static final Symbol LOCATION_NAME = SymbolTable.getSymbol("location_name");
 
 	public PressedKeysInstruction(CanvasTable canvas_table) {
 		super(canvas_table, "pressed_keys", "N");
 		_doc = "canvas_id: returns a list of dictionaries containing the currently held keys {keycode; key_name; location; location_name;}";
-
-		KEYCODE = SymbolTable.getSymbol("keycode");
-		KEY_NAME = SymbolTable.getSymbol("key_name");
-		LOCATION = SymbolTable.getSymbol("location");
-		LOCATION_NAME = SymbolTable.getSymbol("location_name");
 	}
 
 	@Override

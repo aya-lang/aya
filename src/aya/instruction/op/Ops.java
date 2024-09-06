@@ -8,12 +8,12 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
@@ -30,7 +30,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import aya.AyaPrefs;
 import aya.eval.ExecutionContext;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
@@ -73,7 +72,7 @@ import aya.util.VectorizedFunctions;
 public class Ops {
 	
 	public static final Random RAND = new Random((new Date()).getTime());
-	public static final Pattern PATTERN_URL = Pattern.compile("http:\\/\\/.*|https:\\/\\/.*");
+	public static final Pattern PATTERN_URL = Pattern.compile("https?://.*");
 
 	
 	////////////////////////
@@ -930,17 +929,16 @@ class OP_G extends Operator {
 	public void execute (final BlockEvaluator blockEvaluator) {
 		final Obj a = blockEvaluator.pop();
 		
-		
 		if(a.isa(STR)) {
 			String name = a.str();
-			
+
 			if(Ops.PATTERN_URL.matcher(name).matches()) {
 				Scanner scnr = null;
 				try {
 					URL url = new URL(name);
 					scnr = new Scanner(url.openStream());
 					StringBuilder sb = new StringBuilder();
-					
+
 					while(scnr.hasNext()) {
 						sb.append(scnr.nextLine()).append('\n');
 					}
@@ -953,19 +951,13 @@ class OP_G extends Operator {
 						scnr.close();
 				}
 			} else {
-				String path = "";
-				if (name.charAt(0) == '/' || name.contains(":\\") || name.contains(":/")) {
-					path = name;
-				} else {
-					path = AyaPrefs.getWorkingDir() + name;
-				}
+				File readFile = FileUtils.resolveFile(name);
 				try {
-					blockEvaluator.push( List.fromString(FileUtils.readAllText(path)) );
+					blockEvaluator.push( List.fromString(FileUtils.readAllText(readFile)) );
 				} catch (IOException e) {
-					throw new IOError("G", new File(path).getAbsolutePath(), e);
-				} 
+					throw new IOError("G", readFile.getAbsolutePath(), e);
+				}
 			}
-			return;
 		} else if (a.isa(NUMBER)) {
 			blockEvaluator.push( Num.fromBool(((Number)a).isPrime()) );
 		} else {

@@ -1,6 +1,5 @@
 package aya.ext.graphics.instruction;
 
-import java.io.File;
 import java.io.IOException;
 
 import aya.eval.BlockEvaluator;
@@ -23,8 +22,7 @@ public class SaveGraphicsInstruction extends GraphicsInstruction {
 		String filename = _reader.popString();
 		
 		try {
-			File f = new File(FileUtils.workingRelative(filename));
-			cvs.save(f);
+			cvs.save(FileUtils.resolveFile(filename));
 		} catch (IOException e) {
 			blockEvaluator.push(Num.ZERO);
 		}

@@ -736,13 +736,14 @@ class OP_Colon_F extends Operator {
 	public void execute(BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		
-		if (a.isa(STR)) {
-			String path = new File(FileUtils.workingRelative(a.str())).getAbsolutePath();
+		if (a.isa(STR)) {			
+			File readFile = FileUtils.resolveFile(a.str());
+
 			String content = null;
 			try {
-				content = FileUtils.readAllText(path);
+				content = FileUtils.readAllText(readFile);
 			} catch (IOException e) {
-				throw new IOError(":F", path, e);
+				throw new IOError(":F", readFile.getAbsolutePath(), e);
 			}
 			
 			// Is there a shebang? If yes, drop the first line
@@ -751,7 +752,8 @@ class OP_Colon_F extends Operator {
 				content = content.substring(line_end);
 			}
 			
-			SourceString source = new SourceString(content, path);
+			SourceString source = new SourceString(content, readFile.getAbsolutePath());
+
 			try {
 				StaticBlock block = Parser.compile(source);
 				blockEvaluator.dump(block);

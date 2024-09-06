@@ -17,10 +17,10 @@ import aya.util.SizeBoundedQueue;
 
 public class CanvasCursorListener implements MouseListener, MouseMotionListener {
 
-	private static Symbol X;
-	private static Symbol Y;
-	private static Symbol BUTTON;
-	private static Symbol CLICKS;
+	private static final Symbol X = SymbolTable.getSymbol("x");
+	private static final Symbol Y = SymbolTable.getSymbol("y");
+	private static final Symbol BUTTON = SymbolTable.getSymbol("button");
+	private static final Symbol CLICKS = SymbolTable.getSymbol("clicks");
 
 	private final Set<Integer> pressedButtons = Collections.synchronizedSet(new HashSet<>());
 	private final SizeBoundedQueue<ClickInfo> clickHistory = new SizeBoundedQueue<>(16);
@@ -28,10 +28,6 @@ public class CanvasCursorListener implements MouseListener, MouseMotionListener 
 	private final SizeBoundedQueue<MoveInfo> moveHistory = new SizeBoundedQueue<>(128);
 
 	public CanvasCursorListener() {
-		X = SymbolTable.getSymbol("x");
-		Y = SymbolTable.getSymbol("y");
-		BUTTON = SymbolTable.getSymbol("button");
-		CLICKS = SymbolTable.getSymbol("clicks");
 	}
 
 	public List<Integer> getPressedButtons() {

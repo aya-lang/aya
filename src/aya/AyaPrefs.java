@@ -3,9 +3,7 @@ package aya;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -103,23 +101,7 @@ public class AyaPrefs {
 			return false;
 		}
 	}
-	
-	public static ArrayList<String> listFilesForWorkingDir() {
-		return listFilesForFolder(new File(getWorkingDir()));
-	}
-	
-	public static ArrayList<String> listFilesForFolder(final File folder) {
-		File[] listOfFiles = folder.listFiles();
-		ArrayList<String> fileList = new ArrayList<String>();
-		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		        fileList.add(file.getName());
-		    } 
-		}
-		return fileList;
-	}
-	
-	
+
 	public static ArrayList<String> listFilesAndDirsForFolder(final File folder) {
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<String> fileList = new ArrayList<String>();
@@ -149,14 +131,9 @@ public class AyaPrefs {
 		return true;
 	}
 	
-	public static boolean deleteFile(String filename) {
-		Path path = new File(filename).toPath();
+	public static boolean deleteFile(File file) {
 		try {
-		    Files.delete(path);
-		} catch (NoSuchFileException x) {
-			return false;
-		} catch (DirectoryNotEmptyException x) {
-			return false;
+		    Files.delete(file.toPath());
 		} catch (IOException x) {
 			return false;
 		}
