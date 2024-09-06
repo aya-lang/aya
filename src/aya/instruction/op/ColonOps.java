@@ -734,15 +734,16 @@ class OP_Colon_F extends Operator {
 	public void execute(Block block) {
 		Obj a = block.pop();
 		
-		if (a.isa(STR)) {
-			String path = new File(FileUtils.workingRelative(a.str())).getAbsolutePath();
+		if (a.isa(STR)) {			
+			File readFile = FileUtils.resolveFile(a.str());
+
 			String content;
 			try {
-				content = FileUtils.readAllText(path);
+				content = FileUtils.readAllText(readFile);
 			} catch (IOException e) {
-				throw new IOError(":F", path, e);
+				throw new IOError(":F", readFile.getAbsolutePath(), e);
 			}
-			SourceString source = new SourceString(content, path);
+			SourceString source = new SourceString(content, readFile.getAbsolutePath());
 			try {
 				block.addAll(Parser.compile(source, Aya.getInstance()).getInstructions().getInstrucionList());
 			} catch (ParserException e) {

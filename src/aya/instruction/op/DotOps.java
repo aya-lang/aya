@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import aya.Aya;
-import aya.AyaPrefs;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.AyaRuntimeException;

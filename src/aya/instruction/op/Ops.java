@@ -8,12 +8,12 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
-import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asChar;
 import static aya.util.Casting.asDict;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
+import static aya.util.Casting.asStaticBlock;
 import static aya.util.Casting.asStr;
 import static aya.util.Casting.asSymbol;
 
@@ -31,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import aya.Aya;
-import aya.AyaPrefs;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.IOError;
