@@ -1,0 +1,102 @@
+struct thread {id}
+
+def ::new {: thread^,
+    :{thread.new} thread!
+}
+
+.# Create a new thread
+def thread::new {cls,
+    :{thread.new} thread!
+}
+
+
+def thread::add_task {block self,
+    .# Add task to thread
+    .#
+    .# aya> {1 1 +} thread.add_task
+    .# aya> {1 1 +} thread +
+
+    block.` self.id :{thread.add_task}
+    self
+}
+
+.# Use sum to easily add multiple tasks to a thread
+.# aya> threading.new :t;
+.# aya> [{1} {2} {3}]: tasks;
+.# t tasks J W
+def thread::__add__ (thread.add_task.`)
+def thread::__radd__ {\+}
+
+
+
+def thread::wait_for_result {self,
+    .# Join and get result from thread
+    .#
+    .# aya> thread.wait_for_result
+    .# aya> thread .|
+    self.id :{thread.wait_for_result}
+}
+
+def thread::__abs__ (thread.wait_for_result.`)
+
+
+def thread::has_unfinished_tasks {self,
+    self.id :{thread.has_unfinished_tasks}
+}
+
+
+
+class pool
+
+def pool::__init__ {n_threads::num self : thread^,
+    [] self.:threads_with_tasks;
+    [n_threads,; thread.new] self.:thread_pool;
+}
+
+def pool::exec { tasks::list finished_callback::block self : finished_threads,
+    .# Loop until no tasks remain
+    {
+        .# For each thread with a task, check if it is ready,
+        .# if it is, get the result and add it back to the pool
+        [] :finished_threads;
+        self.threads_with_tasks :# {thread : res,
+            thread.has_unfinished_tasks ! {
+                thread.wait_for_result finished_callback
+                .#draw_result cvs.show
+                thread finished_threads .B;
+            } ?
+        };
+
+        .# Remove finished threads from threads with tasks
+        self.threads_with_tasks finished_threads :| self.:threads_with_tasks;
+
+        .# Add the finished threads back to the pool
+        self.thread_pool finished_threads J self.:thread_pool;
+
+       .# Add a task to each thread in the pool
+        self.thread_pool :# {thread,
+            tasks E 0 > {
+                tasks B\; thread.add_task
+                thread self.threads_with_tasks .B;
+            } ?
+        };
+
+        .# Remove threads with tasks from the pool
+        self.thread_pool self.threads_with_tasks :| self.:thread_pool;
+
+        1 :Z
+
+    tasks E 0 > } W
+
+    .# Wait for all remaining tasks
+    self.threads_with_tasks :# {thread : res,
+        thread.wait_for_result finished_callback
+    };
+
+    .# Put everything back in the pool
+    self.threads_with_tasks self.thread_pool J self.:thread_pool;
+    [] self.:threads_with_tasks;
+}
+
+
+

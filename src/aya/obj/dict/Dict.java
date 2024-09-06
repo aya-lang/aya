@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
 /**
@@ -238,7 +239,9 @@ public class Dict extends Obj {
 			return true;
 		} else {
 			if (bool.isa(Obj.BLOCK)) {
-				Block blk_bool = new Block();
+				// TODO: Remove __bool__
+				// No access to external variables
+				BlockEvaluator blk_bool = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_bool.push(this);
 				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
@@ -263,12 +266,13 @@ public class Dict extends Obj {
 		
 	@Override
 	public String str() {
-		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR);
+		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR); //TODO: Should be __str__??
 		if (str == null) {
 			return dictStr();
 		} else {
 			if (str.isa(Obj.BLOCK)) {
-				Block blk_str = new Block();
+				// No access to external variables
+				BlockEvaluator blk_str = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_str.push(this);
 				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
@@ -350,7 +354,8 @@ public class Dict extends Obj {
 
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
-				Block blk_repr = new Block();
+				// No access to external variables
+				BlockEvaluator blk_repr = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_repr.push(this);
 				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {
@@ -435,7 +440,7 @@ public class Dict extends Obj {
 	/** General setindex */
 	public static void setIndex(Dict dict, Obj index, Obj value) {
 		if (index.isa(Obj.STR)) {
-			dict.set(Aya.getInstance().getSymbols().getSymbol(index.str()), value);
+			dict.set(SymbolTable.getSymbol(index.str()), value);
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set((Symbol)index, value);
 		} else {

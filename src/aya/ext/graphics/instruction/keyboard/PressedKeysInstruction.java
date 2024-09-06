@@ -1,10 +1,9 @@
 package aya.ext.graphics.instruction.keyboard;
 
-import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.list.ListCollector;
@@ -16,11 +15,10 @@ import aya.util.AWTKeyDecoder;
 
 public class PressedKeysInstruction extends GraphicsInstruction {
 
-	private static final SymbolTable symbols = Aya.getInstance().getSymbols();
-	private static final Symbol KEYCODE = symbols.getSymbol("keycode");
-	private static final Symbol KEY_NAME = symbols.getSymbol("key_name");
-	private static final Symbol LOCATION = symbols.getSymbol("location");
-	private static final Symbol LOCATION_NAME = symbols.getSymbol("location_name");
+	private static final Symbol KEYCODE = SymbolTable.getSymbol("keycode");
+	private static final Symbol KEY_NAME = SymbolTable.getSymbol("key_name");
+	private static final Symbol LOCATION = SymbolTable.getSymbol("location");
+	private static final Symbol LOCATION_NAME = SymbolTable.getSymbol("location_name");
 
 	public PressedKeysInstruction(CanvasTable canvas_table) {
 		super(canvas_table, "pressed_keys", "N");
@@ -28,7 +26,7 @@ public class PressedKeysInstruction extends GraphicsInstruction {
 	}
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		List keyList = cvs.getKeyListener().getPressedKeys().stream()
 				.map(event -> {
 					Dict keyDict = new Dict();
@@ -45,6 +43,6 @@ public class PressedKeysInstruction extends GraphicsInstruction {
 				})
 				.collect(new ListCollector());
 
-		block.push(keyList);
+		blockEvaluator.push(keyList);
 	}
 }

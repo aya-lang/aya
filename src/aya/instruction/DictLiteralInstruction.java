@@ -3,10 +3,10 @@ package aya.instruction;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
@@ -39,12 +39,12 @@ public class DictLiteralInstruction extends Instruction {
 	}
 	
 	/** Run the dict, collect variables, return the Dict object */
-	public Dict getDict(Queue<Obj> q) {
+	public Dict getDict(ExecutionContext context, Queue<Obj> q) {
 		//Add the variable set to the stack
-		Aya.getInstance().getVars().add(new Dict(), true);
+		context.getVars().add(new Dict(), true);
 		
-		//Run the block
-		Block evaluator = new Block();
+		//Run the blockEvaluator
+		BlockEvaluator evaluator = context.createEvaluator();
 		if (q != null) {
 			while (!q.isEmpty()) {
 				evaluator.push(q.poll());
@@ -54,11 +54,11 @@ public class DictLiteralInstruction extends Instruction {
 		evaluator.eval();
 		
 		//Retrieve the Dict
-		return Aya.getInstance().getVars().popGet();
+		return context.getVars().popGet();
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		Queue<Obj> q = null;
 		int n = this.numCaptures();
 		if (n > 0) {
@@ -67,7 +67,7 @@ public class DictLiteralInstruction extends Instruction {
 				q.add(b.pop());
 			}
 		}
-		b.push(this.getDict(q));
+		b.push(this.getDict(b.getContext(), q));
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package aya.instruction.named;
 
 import java.util.HashMap;
 
-import aya.Aya;
+import aya.StaticData;
 
 public abstract class NamedInstructionStore {
 	
@@ -21,12 +21,12 @@ public abstract class NamedInstructionStore {
 		return _instructions.get(name);
 	}
 	
-	public void initHelpData(Aya aya) {
+	public void initHelpData(StaticData staticData) {
 		for (HashMap.Entry<String, NamedOperator> pair : _instructions.entrySet()) {
 			NamedOperator i = pair.getValue();
 			String doc = i._doc;
 			if (doc == null || doc.equals("")) continue;
-			aya.addHelpText(":{" + i.getName() + "}\n  " + doc);
+			staticData.addHelpText(":{" + i.getName() + "}\n  " + doc);
 		}
 	}
 	

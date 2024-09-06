@@ -3,10 +3,10 @@ package aya.ext.graphics.instruction;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 
 public class SetColorAlphaGraphicsInstruction extends GraphicsInstruction {
 
@@ -17,7 +17,7 @@ public class SetColorAlphaGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		double a = _reader.popDouble();
 		int b = _reader.popInt();
 		int g = _reader.popInt();

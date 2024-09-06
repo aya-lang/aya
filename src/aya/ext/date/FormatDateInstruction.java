@@ -5,11 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Number;
 
@@ -21,9 +21,9 @@ public class FormatDateInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
+		Obj b = blockEvaluator.pop();
 		if (a.isa(Obj.STR) && b.isa(Obj.NUMBER)) {
 			String df_str = a.str();
 			long time = ((Number)b).toLong();
@@ -42,7 +42,7 @@ public class FormatDateInstruction extends NamedOperator {
 			} catch (Exception e) {
 				throw new ValueError("Cannot parse time: '" + time + "' as date '" + df_str + "'");
 			}
-			block.push(List.fromString(out));
+			blockEvaluator.push(List.fromString(out));
 		} else {
 			throw new TypeError(this, "NS", a, b);
 		}

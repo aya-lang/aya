@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.parser.SourceStringRef;
 
@@ -29,8 +31,8 @@ public class ListBuilderInstruction extends Instruction {
 		this.num_captures = num_captures;
 	}
 	
-	public List createList(Stack<Obj> outerStack) {
-		Block evaluator = new Block();
+	public List createList(ExecutionContext context, Stack<Obj> outerStack) {
+		BlockEvaluator evaluator = context.createEvaluator();
 		evaluator.dump(initialList);
 
 		for (int p = 0; p < num_captures; p++) {
@@ -56,7 +58,7 @@ public class ListBuilderInstruction extends Instruction {
 		ArrayList<Obj> list = null;
 		List outList = null;
 		
-		//If all arguments are lists, dump each list's respective element onto the stack of the map block
+		//If all arguments are lists, dump each list's respective element onto the stack of the map blockEvaluator
 		// [[1 2][3 4], +] => 1 3 +, 2 4 + => [4 6]
 		if (allLists) {
 			ArrayList<List> listArgs = new ArrayList<List>(res.size());
@@ -76,7 +78,7 @@ public class ListBuilderInstruction extends Instruction {
 			
 			//Dump items from the lists into the blocks and apply the map if needed
 			for(int i = 0; i < size; i++) {
-				Block b = new Block();
+				BlockEvaluator b = context.createEvaluator();
 				for (int j = 0; j < listArgs.size(); j++) {
 					b.push(listArgs.get(j).getExact(i));
 				}
@@ -94,13 +96,13 @@ public class ListBuilderInstruction extends Instruction {
 		} else {
 			outList = new List(ListRangeUtils.buildRange(new List(res)));							//Create the initial range
 			if(map != null) {
-				outList = outList.map(this.map);
+				outList = ListIterationFunctions.map(context, outList, this.map);
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
 			for (StaticBlock filter : filters) {
-				outList = outList.filter(filter);
+				outList = ListIterationFunctions.filter(context, outList, filter);
 			}
 		}
 		return outList;
@@ -108,8 +110,8 @@ public class ListBuilderInstruction extends Instruction {
 	
 
 	@Override
-	public void execute(Block b) {
-		b.push(createList(b.getStack()));
+	public void execute(BlockEvaluator b) {
+		b.push(createList(b.getContext(), b.getStack()));
 	}
 
 	@Override

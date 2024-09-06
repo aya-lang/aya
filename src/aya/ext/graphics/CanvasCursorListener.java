@@ -1,11 +1,5 @@
 package aya.ext.graphics;
 
-import aya.Aya;
-import aya.obj.dict.Dict;
-import aya.obj.number.Num;
-import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolTable;
-import aya.util.SizeBoundedQueue;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,13 +9,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import aya.obj.dict.Dict;
+import aya.obj.number.Num;
+import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
+import aya.util.SizeBoundedQueue;
+
 public class CanvasCursorListener implements MouseListener, MouseMotionListener {
 
-	private static final SymbolTable symbols = Aya.getInstance().getSymbols();
-	private static final Symbol X = symbols.getSymbol("x");
-	private static final Symbol Y = symbols.getSymbol("y");
-	private static final Symbol BUTTON = symbols.getSymbol("button");
-	private static final Symbol CLICKS = symbols.getSymbol("clicks");
+	private static final Symbol X = SymbolTable.getSymbol("x");
+	private static final Symbol Y = SymbolTable.getSymbol("y");
+	private static final Symbol BUTTON = SymbolTable.getSymbol("button");
+	private static final Symbol CLICKS = SymbolTable.getSymbol("clicks");
 
 	private final Set<Integer> pressedButtons = Collections.synchronizedSet(new HashSet<>());
 	private final SizeBoundedQueue<ClickInfo> clickHistory = new SizeBoundedQueue<>(16);

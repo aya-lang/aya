@@ -16,19 +16,15 @@ public class AyaPrefs {
 	private static String prompt = "aya> ";
 	private static String workingDir = null;
 	private static String defaultWorkingDir = null;
+	private static String[] args = null;
 	
 	protected static final String BUG_MESSAGE =  "An unhandled exception occurred. If this is a bug, please submit an issue to "
 			+ "https://github.com/nick-paul/aya-lang/issues with the stacktrace below.\n"
 			+ "=== [ Stacktrace ] ===";
-	
 
-	public static void init() {
-		initWorkingDir();
-	}
-	
-	private static void initWorkingDir() {
+	public static void initDefaultWorkingDir() {
 		try {
-			workingDir = Aya.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			workingDir = AyaThread.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 //			if(workingDir.length() > 0) {
 //				workingDir = workingDir.substring(1, workingDir.length()); //Remove the leading '/'
 //			}
@@ -40,10 +36,10 @@ public class AyaPrefs {
 			workingDir = (new File(workingDir).getCanonicalPath()).toString() + File.separator;
 		} catch (URISyntaxException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		} catch (IOException e) {
 			workingDir = "";
-			Aya.getInstance().printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate working dir");
 		}
 		defaultWorkingDir = workingDir;
 	}
@@ -185,6 +181,14 @@ public class AyaPrefs {
 	}
 	public static Str getHomeDirStr() {
 		return SYS_HOME_DIR_STR;
+	}
+	
+	public static void setArgs(String[] args) {
+		AyaPrefs.args = args;
+	}
+	
+	public static String[] getArgs() {
+		return args;
 	}
 	
 

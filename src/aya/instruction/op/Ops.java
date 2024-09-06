@@ -30,7 +30,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import aya.Aya;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.IOError;
@@ -41,7 +42,6 @@ import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.index.AnonGetIndexInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.character.Char;
@@ -49,6 +49,7 @@ import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.list.GenericList;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
 import aya.obj.list.numberlist.NumberList;
@@ -59,6 +60,7 @@ import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
@@ -211,25 +213,25 @@ class OP_Bang extends Operator {
 		setOverload(-1, "new");
 	}
 
-	@Override public void execute(final Block block) {
-		Obj o = block.pop();
+	@Override public void execute(final BlockEvaluator blockEvaluator) {
+		Obj o = blockEvaluator.pop();
 		
 		if (o.isa(Obj.NUMBER)) {
-			block.push(Num.ONE.sub(asNumber(o)));
+			blockEvaluator.push(Num.ONE.sub(asNumber(o)));
 		} else if (o.isa(Obj.CHAR)) {
-			block.push(((Char)o).swapCase());
+			blockEvaluator.push(((Char)o).swapCase());
 		} else if (o.isa(STR)) {
-				block.push(new List(asStr(o).swapCase()));
+				blockEvaluator.push(new List(asStr(o).swapCase()));
 		} else if (o.isa(Obj.NUMBERLIST)) {
-			block.push( new List(asNumberList(o).subFrom(Num.ONE)) );
+			blockEvaluator.push( new List(asNumberList(o).subFrom(Num.ONE)) );
 		} else if (o.isa(DICT)) {
 			Dict d = (Dict)o;
 			if (d.containsKey(SymbolConstants.KEYVAR_NEW)) {
-				block.push(o);
-				block.addOrDumpVar(d.get(SymbolConstants.KEYVAR_NEW));
+				blockEvaluator.push(o);
+				blockEvaluator.addOrDumpVar(d.get(SymbolConstants.KEYVAR_NEW));
 			} else {
 				//Create a new empty dict with the input as its metatable
-				//block.push(new Dict((Dict)o));
+				//blockEvaluator.push(new Dict((Dict)o));
 				throw new IndexError(d, SymbolConstants.KEYVAR_NEW);
 			}
 		} else {
@@ -247,29 +249,29 @@ class OP_Pound extends Operator {
 	}
 	
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		
 		if(a.isa(Obj.BLOCK)) {
-			//final Block map = ((Block)a).duplicate();
+			//final BlockEvaluator map = ((BlockEvaluator)a).duplicate();
 			StaticBlock map = Casting.asStaticBlock(a);
 						
-			Obj popped = block.pop();
+			Obj popped = blockEvaluator.pop();
 			
 			//Capture all non-list items from the left of the #
 			while (!popped.isa(Obj.LIST)) {
 				map = BlockUtils.addObjToStack(map, popped);
 				
-				if (block.stackEmpty()) {
+				if (blockEvaluator.stackEmpty()) {
 					throw new ValueError("Could not find list to map to\n"
-							+ "\t in " + block.toString() + "\n"
+							+ "\t in " + blockEvaluator.toString() + "\n"
 							+ "\t map using " + map);
 				} else {
-					popped = block.pop();
+					popped = blockEvaluator.pop();
 				}
 			}
 			
-			block.push(asList(popped).map(map));
+			blockEvaluator.push(ListIterationFunctions.map(blockEvaluator.getContext(), asList(popped), map));
 			
 			return;
 		} 	
@@ -285,8 +287,8 @@ class OP_Duplicate extends Operator {
 		arg("A", "deepcopy (duplicate)");
 	}
 
-	@Override public void execute (final Block block) {
-		block.push(block.peek().deepcopy());
+	@Override public void execute (final BlockEvaluator blockEvaluator) {
+		blockEvaluator.push(blockEvaluator.peek().deepcopy());
 	}
 }
 
@@ -301,21 +303,21 @@ class OP_Percent extends Operator {
 		arg("BN", "repeat");
 	}
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
 	
 		if (a.isa(LIST) && b.isa(BLOCK)) {
-			fold(asList(a), asStaticBlock(b), block);
+			fold(asList(a), asStaticBlock(b), blockEvaluator);
 		} else if (a.isa(BLOCK) && b.isa(NUMBER)) {
 			int repeats = ((Number)(b)).toInt();
 			StaticBlock blk = asStaticBlock(a);
 			for (int i = 0; i < repeats; i ++) {
-				block.dump(blk);
+				blockEvaluator.dump(blk);
 			}
 			return;
 		} else if (a.isa(LIST) && ((b.isa(STR) || b.isa(CHAR)))) {
-			block.push(List.fromString(strJoin(asList(a), b.str())));
+			blockEvaluator.push(List.fromString(strJoin(asList(a), b.str())));
 		} else {
 			throw new TypeError(this, b, a); // stack order
 		}
@@ -331,7 +333,7 @@ class OP_Percent extends Operator {
 		return sb.toString();
 	}
 
-	private static void fold(List list, StaticBlock foldBlock, Block resultBlock) {
+	private static void fold(List list, StaticBlock foldBlock, BlockEvaluator resultBlock) {
 		int length = list.length();
 		if(length == 0) {
 			resultBlock.push(Num.ZERO);
@@ -343,7 +345,7 @@ class OP_Percent extends Operator {
 				resultBlock.add(list.getExact(i));
 			}
 			//Push the last element outside the loop so that there is not an extra plus (1 1+2+3+)
-			//block.add(list.get(list.size()-1));
+			//blockEvaluator.add(list.get(list.size()-1));
 			resultBlock.add(list.getExact(0));
 		}
 	}
@@ -363,10 +365,10 @@ class OP_And extends Operator {
 	}
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	private static NumberListOp NUML_OP = new NumberListOp() {
@@ -378,10 +380,10 @@ class OP_And extends Operator {
 		
 	// a b & => "a & b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.band((Number)a, (Number)b);
@@ -418,18 +420,18 @@ class OP_Times extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b * => "a * b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.mul(asNumber(a), asNumber(b));
@@ -459,18 +461,18 @@ class OP_Plus extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b + => "a + b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.add(asNumber(a), asNumber(b));
@@ -506,18 +508,18 @@ class OP_Minus extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b - => "a - b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.sub(asNumber(a), asNumber(b));
@@ -551,18 +553,18 @@ class OP_Divide extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 		
 	// a b / => "a / b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.div(asNumber(a), asNumber(b));
@@ -582,8 +584,8 @@ class OP_SemiColon extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		blockEvaluator.pop();
 	}
 }
 
@@ -605,18 +607,18 @@ class OP_LessThan extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 		
 	// a b < => "a < b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return Num.fromBool(((Number)a).compareTo((Number)b) < 0);
@@ -641,29 +643,29 @@ class OP_Equal extends Operator {
 	}
 
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		final Obj b = blockEvaluator.pop();
 		
 		if (a.isa(DICT)) {
 			if (((Dict)a).hasMetaKey(SymbolConstants.KEYVAR_EQ)) {
-				block.push(b);
-				block.callVariable((Dict)a, SymbolConstants.KEYVAR_EQ);
+				blockEvaluator.push(b);
+				blockEvaluator.callVariable((Dict)a, SymbolConstants.KEYVAR_EQ);
 			} else {
 				if (b.isa(DICT)) {
-					block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
+					blockEvaluator.push(a.equiv(b) ? Num.ONE : Num.ZERO);
 				} else {
-					block.push(Num.ZERO);
+					blockEvaluator.push(Num.ZERO);
 				}
 			}
 		} else if (b.isa(DICT)) {
 			if (((Dict)b).hasMetaKey(SymbolConstants.KEYVAR_EQ)) {
-				block.callVariable((Dict)b, SymbolConstants.KEYVAR_EQ, a);
+				blockEvaluator.callVariable((Dict)b, SymbolConstants.KEYVAR_EQ, a);
 			} else {
-				block.push(Num.ZERO);
+				blockEvaluator.push(Num.ZERO);
 			}
 		} else {
-			block.push(a.equiv(b) ? Num.ONE : Num.ZERO);
+			blockEvaluator.push(a.equiv(b) ? Num.ONE : Num.ZERO);
 		}
 	}
 }
@@ -686,18 +688,18 @@ class OP_GreaterThan extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 		
 	// a b > => "a > b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 
 		if(a.isa(NUMBER) && b.isa(NUMBER)) {
 			return Num.fromBool(((Number)a).compareTo((Number)b) > 0);
@@ -716,22 +718,22 @@ class OP_Conditional extends Operator {
 	
 	public OP_Conditional() {
 		init("?");
-		arg("AA", "if A1, then A2. If A2 is block, execute it");
+		arg("AA", "if A1, then A2. If A2 is blockEvaluator, execute it");
 	}
 
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		final Obj b = blockEvaluator.pop();
 
 		//  b     a
 		// cond {true}
 
 		if(b.bool()) {			
 			if(a.isa(BLOCK)) {
-				block.dump(asStaticBlock(a));
+				blockEvaluator.dump(asStaticBlock(a));
 			} else {
-				block.push(a);
+				blockEvaluator.push(a);
 			}
 		}
 	}
@@ -747,14 +749,14 @@ class OP_At extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
-		final Obj c = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		final Obj b = blockEvaluator.pop();
+		final Obj c = blockEvaluator.pop();
 		
-		block.push(b);
-		block.push(a);
-		block.push(c);
+		blockEvaluator.push(b);
+		blockEvaluator.push(a);
+		blockEvaluator.push(c);
 	}
 }
 
@@ -767,10 +769,10 @@ class OP_A extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
+	public void execute (final BlockEvaluator blockEvaluator) {
 		final ArrayList<Obj> al = new ArrayList<Obj>();
-		al.add(block.pop());
-		block.push(new List(al));
+		al.add(blockEvaluator.pop());
+		blockEvaluator.push(new List(al));
 	}
 }
 
@@ -786,22 +788,24 @@ class OP_B extends Operator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 		
-		if (overload().execute(block, a)) return;
+		final ExecutionContext context = blockEvaluator.getContext();
+		
+		if (overload().execute(blockEvaluator, a)) return;
 
 		if (a.isa(Obj.NUMBER)) {
-			block.push( ((Number)a).inc() );
+			blockEvaluator.push( ((Number)a).inc() );
 		} else if (a.isa(CHAR)) {
-			block.push( ((Char)a).inc() );
+			blockEvaluator.push( ((Char)a).inc() );
 		} else if (a.isa(SYMBOL)) {
 			Symbol var = asSymbol(a);
-			Obj o = Aya.getInstance().getVars().getVar(var);
+			Obj o = context.getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(var, ((Number)o).inc());
+				context.getVars().setVar(var, ((Number)o).inc());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(var, ((Char)o).inc());
+				context.getVars().setVar(var, ((Char)o).inc());
 			}  else {
 				throw new ValueError("Cannot increment " + o.repr() 
 				+ " in place in call " + a.repr() + " V");
@@ -810,8 +814,8 @@ class OP_B extends Operator {
 			List l = asList(a);
 			if (l.length() > 0) {
 				Obj popped = l.mutPopBack();
-				block.push(l);
-				block.push(popped);
+				blockEvaluator.push(l);
+				blockEvaluator.push(popped);
 			} else {
 				throw new ValueError("B: unable to remove element from empty list");
 			}
@@ -832,16 +836,16 @@ class OP_Sort extends Operator {
 	}
 
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		
-		if (overload().execute(block, a)) return;
+		if (overload().execute(blockEvaluator, a)) return;
 		
 		if (a.isa(Obj.NUMBER)) {
-			block.push( NumberMath.bnot((Number)a) );
+			blockEvaluator.push( NumberMath.bnot((Number)a) );
 		} else if(a.isa(LIST)) {
 			asList(a).mutSort();
-			block.push(a);
+			blockEvaluator.push(a);
 		} else {
 			throw new TypeError(this,a);
 		}		
@@ -862,19 +866,19 @@ class OP_D extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();  	//Index
-		final Obj b = block.pop();		//List
-		final Obj o = block.pop();		//Item
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();  	//Index
+		final Obj b = blockEvaluator.pop();		//List
+		final Obj o = blockEvaluator.pop();		//Item
 
 		if (b.isa(DICT)) {
-			block.push(o);
-			block.push(a);
-			block.callVariable((Dict)b, SymbolConstants.KEYVAR_SETINDEX);
+			blockEvaluator.push(o);
+			blockEvaluator.push(a);
+			blockEvaluator.callVariable((Dict)b, SymbolConstants.KEYVAR_SETINDEX);
 		}
 		else if (b.isa(LIST)) {
-			asList(b).mutSetIndexed(a, o);
-			block.push(b);
+			asList(b).mutSetIndexed(blockEvaluator.getContext(), a, o);
+			blockEvaluator.push(b);
 		}
 		else {		
 			throw new TypeError(this, a, b, o);
@@ -897,15 +901,15 @@ class OP_E extends Operator {
 	private static Num TEN = Num.fromInt(10);
 
 	@Override
-	public void execute (final Block block) {
-		Obj n = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		Obj n = blockEvaluator.pop();
 
-		if (overload().execute(block, n)) return;
+		if (overload().execute(blockEvaluator, n)) return;
 
 		if (n.isa(NUMBER)) {
-			block.push( TEN.pow((Number)n) );
+			blockEvaluator.push( TEN.pow((Number)n) );
 		} else if (n.isa(LIST)) {
-			block.push( Num.fromInt(asList(n).length()) );
+			blockEvaluator.push( Num.fromInt(asList(n).length()) );
 		} else {
 			throw new TypeError(this, n);
 		}
@@ -922,10 +926,9 @@ class OP_G extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
-
-
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		
 		if(a.isa(STR)) {
 			String name = a.str();
 
@@ -939,7 +942,7 @@ class OP_G extends Operator {
 					while(scnr.hasNext()) {
 						sb.append(scnr.nextLine()).append('\n');
 					}
-					block.push(List.fromString(sb.toString()));
+					blockEvaluator.push(List.fromString(sb.toString()));
 				}
 				catch(IOException ex) {
 					throw new IOError("G", name, ex);
@@ -950,13 +953,13 @@ class OP_G extends Operator {
 			} else {
 				File readFile = FileUtils.resolveFile(name);
 				try {
-					block.push( List.fromString(FileUtils.readAllText(readFile)) );
+					blockEvaluator.push( List.fromString(FileUtils.readAllText(readFile)) );
 				} catch (IOException e) {
 					throw new IOError("G", readFile.getAbsolutePath(), e);
 				}
 			}
 		} else if (a.isa(NUMBER)) {
-			block.push( Num.fromBool(((Number)a).isPrime()) );
+			blockEvaluator.push( Num.fromBool(((Number)a).isPrime()) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -973,24 +976,24 @@ class OP_H extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(STR)) {
-			block.push(Num.fromBool(a.str().contains(b.str())));
+			blockEvaluator.push(Num.fromBool(a.str().contains(b.str())));
 		} else if (a.isa(LIST)) {
-			block.push(Num.fromBool(asList(a).find(b) >= 0));
+			blockEvaluator.push(Num.fromBool(asList(a).find(b) >= 0));
 		} else if (a.isa(DICT)) {
 			Symbol key;
 			if (b.isa(SYMBOL)) {
 				key = asSymbol(b);
 			} else if (b.isa(STR) || b.isa(CHAR)) {
-				key = Aya.getInstance().getSymbols().getSymbol(b.str());
+				key = SymbolTable.getSymbol(b.str());
 			} else {
 				throw new TypeError(this, b, a);
 			}
-			block.push(Num.fromBool(asDict(a).containsKey(key)));
+			blockEvaluator.push(Num.fromBool(asDict(a).containsKey(key)));
 		} else {
 			throw new TypeError(this, b, a);
 		}
@@ -1011,8 +1014,8 @@ class OP_GetIndex extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		this._instruction.execute(block);
+	public void execute (final BlockEvaluator blockEvaluator) {
+		this._instruction.execute(blockEvaluator);
 	}
 }
 
@@ -1022,10 +1025,10 @@ class OP_SetIndex extends Operator {
 	public OP_SetIndex() {
 		this.name = ".:";
 	}
-	@Override public void execute (final Block block) {
-		Obj index = block.pop();
-		final Obj list = block.pop();
-		final Obj item = block.pop();
+	@Override public void execute (final BlockEvaluator blockEvaluator) {
+		Obj index = blockEvaluator.pop();
+		final Obj list = blockEvaluator.pop();
+		final Obj item = blockEvaluator.pop();
 		
 		if (index.isa(LIST) && !index.isa(STR)) {
 			List l = asList(index);
@@ -1035,14 +1038,14 @@ class OP_SetIndex extends Operator {
 		
 		// If it is a list, run the standard setindex method
 		if(list.isa(LIST)) {		
-			asList(list).mutSetIndexed(index, item);
+			asList(list).mutSetIndexed(blockEvaluator.getContext(), index, item);
 		}
 		
 		// If it is a dictionary check to see if has a metamethod first
 		else if (list.isa(DICT)) {
 			if ( ((Dict)list).hasMetaKey(SymbolConstants.KEYVAR_SETINDEX) ) {
-				block.push(index);
-				block.callVariable((Dict)list, SymbolConstants.KEYVAR_SETINDEX);
+				blockEvaluator.push(index);
+				blockEvaluator.callVariable((Dict)list, SymbolConstants.KEYVAR_SETINDEX);
 			} else {
 				Dict.setIndex((Dict)list, index, item);
 			}
@@ -1051,7 +1054,7 @@ class OP_SetIndex extends Operator {
 			throw new TypeError(this, index, list);
 		}
 		
-		block.push(list);
+		blockEvaluator.push(list);
 	}
 }
 
@@ -1067,24 +1070,24 @@ class OP_Join extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		final Obj b = blockEvaluator.pop();
 		
 		final boolean a_is_list = a.isa(LIST) && !a.isa(STR);
 		final boolean b_is_list = b.isa(LIST) && !b.isa(STR);
 		
 		if (a_is_list && b_is_list) {
-			block.push(asList(b).copyAddAll(asList(a)));
+			blockEvaluator.push(asList(b).copyAddAll(asList(a)));
 		} else if (a_is_list) {
-			block.push(asList(a).copyAddItemExact(0, b));
+			blockEvaluator.push(asList(a).copyAddItemExact(0, b));
 		} else if (b_is_list) {
-			block.push(asList(b).copyAddItem(a));
+			blockEvaluator.push(asList(b).copyAddItem(a));
 		} else {
 			final ArrayList<Obj> list = new ArrayList<Obj>();
 			list.add(b);  //Stack - Add in reverse order
 			list.add(a);
-			block.push(new List(list));
+			blockEvaluator.push(new List(list));
 		}
 	}
 }
@@ -1100,9 +1103,9 @@ class OP_L extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		Obj n = block.pop();
-		Obj item = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		Obj n = blockEvaluator.pop();
+		Obj item = blockEvaluator.pop();
 
 		if(n.isa(NUMBER)) {
 			int repeats = ((Number)n).toInt();
@@ -1112,11 +1115,11 @@ class OP_L extends Operator {
 			}
 
 			if (item.isa(CHAR)) {
-				block.push( new List(new Str( ((Char)item).charValue(), repeats)) );
+				blockEvaluator.push( new List(new Str( ((Char)item).charValue(), repeats)) );
 			} else if (item.isa(NUMBER)) {
-				block.push( new List(NumberList.repeat((Number)item, repeats)) );
+				blockEvaluator.push( new List(NumberList.repeat((Number)item, repeats)) );
 			} else  {
-				block.push( new List(new GenericList(item, repeats)) );
+				blockEvaluator.push( new List(new GenericList(item, repeats)) );
 			}
 
 		} 
@@ -1130,7 +1133,7 @@ class OP_L extends Operator {
 				l = new List();
 				l.mutAdd(item);
 			}
-			block.push( l.reshape(asNumberList(n)) );
+			blockEvaluator.push( l.reshape(asNumberList(n)) );
 		}
 		
 		else {
@@ -1147,7 +1150,7 @@ class OP_K extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
+	public void execute (final BlockEvaluator blockEvaluator) {
 
 	}
 }
@@ -1162,19 +1165,19 @@ class OP_N extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop(); //Item
-		final Obj b = block.peek(); //List
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop(); //Item
+		final Obj b = blockEvaluator.peek(); //List
 		
 		if (a.isa(STR) && b.isa(STR)) {
-			block.push(Num.fromInt(b.str().indexOf(a.str())));
+			blockEvaluator.push(Num.fromInt(b.str().indexOf(a.str())));
 		} else if(b.isa(Obj.LIST)) {			
-			block.push(Num.fromInt(asList(b).find(a)));
+			blockEvaluator.push(Num.fromInt(asList(b).find(a)));
 		} else if (b.isa(DICT) && a.isa(STR)) {
-			Symbol s = Aya.getInstance().getSymbols().getSymbol(a.str());
-			block.push( Num.fromBool(((Dict)b).containsKey(s)) );
+			Symbol s = SymbolTable.getSymbol(a.str());
+			blockEvaluator.push( Num.fromBool(((Dict)b).containsKey(s)) );
 		} else if (b.isa(DICT) && a.isa(SYMBOL)) {
-			block.push( Num.fromBool(((Dict)b).containsKey(asSymbol(a))) );
+			blockEvaluator.push( Num.fromBool(((Dict)b).containsKey(asSymbol(a))) );
 		} else {
 			throw new TypeError(this, a, b);
 		}
@@ -1186,22 +1189,22 @@ class OP_O extends Operator {
 	
 	public OP_O() {
 		init("O");
-		arg("LB", "Map block to list");
-		arg("DB", "Map block to dict");
+		arg("LB", "Map blockEvaluator to list");
+		arg("DB", "Map blockEvaluator to dict");
 		setOverload(-1, "each");
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj blk_obj = block.pop();
-		final Obj container = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj blk_obj = blockEvaluator.pop();
+		final Obj container = blockEvaluator.pop();
 
 		// Repeat
 		if (blk_obj.isa(NUMBER) && container.isa(BLOCK)) {
 			int repeats = ((Number)(blk_obj)).toInt();
 			StaticBlock blk = asStaticBlock(container);
 			for (int i = 0; i < repeats; i ++) {
-				block.dump(blk);
+				blockEvaluator.dump(blk);
 			}
 			return;
 		} else {
@@ -1213,14 +1216,14 @@ class OP_O extends Operator {
 			}
 			
 			if (container.isa(Obj.LIST)) {
-				block.push(asList(container).map(blk));
+				blockEvaluator.push(ListIterationFunctions.map(blockEvaluator.getContext(), asList(container), blk));
 			} else if (container.isa(Obj.DICT)) {
 				Dict d = (Dict)container;
 				if (d.pushSelf() && d.containsKey(SymbolConstants.KEYVAR_EACH)) {
-					block.push(blk);
-					block.callVariable(d, SymbolConstants.KEYVAR_EACH);
+					blockEvaluator.push(blk);
+					blockEvaluator.callVariable(d, SymbolConstants.KEYVAR_EACH);
 				} else {
-					block.push(DictIndexing.map((Dict)container, asStaticBlock(blk)));
+					blockEvaluator.push(DictIndexing.map(blockEvaluator.getContext(), (Dict)container, asStaticBlock(blk)));
 				}
 			} else {
 				throw new TypeError(this, blk_obj, container);
@@ -1241,8 +1244,8 @@ class OP_P extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		block.push(List.fromString(block.pop().str()));
+	public void execute (final BlockEvaluator blockEvaluator) {
+		blockEvaluator.push(List.fromString(blockEvaluator.pop().str()));
 	}
 }
 
@@ -1257,24 +1260,24 @@ class OP_Q extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 
-		if (overload().execute(block, a)) return;
+		if (overload().execute(blockEvaluator, a)) return;
 		
 		if(a.isa(Obj.NUMBER)) {
 			int i = ((Number)a).toInt();
 			if (i > 0) {
-				block.push(Num.fromInt(Ops.RAND.nextInt(i)));
+				blockEvaluator.push(Num.fromInt(Ops.RAND.nextInt(i)));
 			} else if (i < 0) {
-				block.push(Num.fromInt(-1 * Ops.RAND.nextInt(i*-1)));
+				blockEvaluator.push(Num.fromInt(-1 * Ops.RAND.nextInt(i*-1)));
 			} else {
-				block.push(Num.fromInt(Ops.RAND.nextInt()));
+				blockEvaluator.push(Num.fromInt(Ops.RAND.nextInt()));
 			}
 		} else if (a.isa(Obj.LIST)) {
 			List l = asList(a);
 			int i = Ops.RAND.nextInt(l.length());
-			block.push(l.getExact(i));
+			blockEvaluator.push(l.getExact(i));
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1292,17 +1295,17 @@ class OP_R extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 
-		if (overload().execute(block, a)) return;
+		if (overload().execute(blockEvaluator, a)) return;
 
 		if(a.isa(LIST)) {
-			block.push( new List(ListRangeUtils.buildRange(asList(a))) );
+			blockEvaluator.push( new List(ListRangeUtils.buildRange(asList(a))) );
 		} else if (a.isa(NUMBER)) {
-			block.push( new List(ListRangeUtils.buildRange((Number)a)) );
+			blockEvaluator.push( new List(ListRangeUtils.buildRange((Number)a)) );
 		} else if (a.isa(CHAR)) {
-			block.push( new List(ListRangeUtils.buildRange(((Char)a).charValue())) );
+			blockEvaluator.push( new List(ListRangeUtils.buildRange(((Char)a).charValue())) );
 		} else {
 			throw new TypeError(this, a);
 		}
@@ -1320,20 +1323,20 @@ class OP_S extends Operator {
 	}
 	
 	@Override
-	public void execute (final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(STR) && b.isa(STR)) {
-			block.push(asStr(a).splitRegex(b.str()));
+			blockEvaluator.push(asStr(a).splitRegex(b.str()));
 		} else if (a.isa(STR) && b.isa(CHAR)) {
-			block.push(asStr(a).splitAtChar(asChar(b).charValue()));
+			blockEvaluator.push(asStr(a).splitAtChar(asChar(b).charValue()));
 		} else if (a.isa(LIST) && b.isa(NUMBER)) {
 			Pair<List, List> lists = asList(a).splitAtIndexed(asNumber(b).toInt());
 			List out = new List();
 			out.mutAdd(lists.first());
 			out.mutAdd(lists.second());
-			block.push(out);
+			blockEvaluator.push(out);
 		} else {
 			throw new TypeError(this, b, a);
 		}
@@ -1358,16 +1361,16 @@ class OP_T extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		Obj a = block.pop();
-		block.push(exec1arg(a));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
 	}
 
 	@Override
-	public Obj exec1arg(final Obj a) {
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(a)) != null) return res;
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res;
 		
 		if (a.isa(NUMBER)) {
 			return ((Number)a).negate();
@@ -1388,14 +1391,14 @@ class OP_U extends Operator {
 	}
 
 	@Override
-	public void execute(final Block block) {
-		Obj o = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		Obj o = blockEvaluator.pop();
 
-		if (overload().execute(block, o)) return;
+		if (overload().execute(blockEvaluator, o)) return;
 		
 		if (o.isa(LIST)) {
 			asList(o).mutReverse();
-			block.push(o);
+			blockEvaluator.push(o);
 		} else {
 			throw new TypeError(this,o);
 		}
@@ -1416,22 +1419,24 @@ class OP_V extends Operator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 		
-		if (overload().execute(block, a)) return;
+		final ExecutionContext context = blockEvaluator.getContext();
+		
+		if (overload().execute(blockEvaluator, a)) return;
 		
 		if (a.isa(NUMBER)) {
-			block.push( ((Number)a).dec() );
+			blockEvaluator.push( ((Number)a).dec() );
 		} else if (a.isa(CHAR)) {
-			block.push( ((Char)a).dec() );
+			blockEvaluator.push( ((Char)a).dec() );
 		} else if (a.isa(SYMBOL)) {
 			Symbol var = asSymbol(a);
-			Obj o = Aya.getInstance().getVars().getVar(var);
+			Obj o = context.getVars().getVar(var);
 			if (o.isa(NUMBER)) {
-				Aya.getInstance().getVars().setVar(var, ((Number)o).dec());
+				context.getVars().setVar(var, ((Number)o).dec());
 			} else if (o.isa(CHAR)) {
-				Aya.getInstance().getVars().setVar(var, ((Char)o).dec());
+				context.getVars().setVar(var, ((Char)o).dec());
 			} else {
 				throw new ValueError("Cannot decrement " + o.repr() 
 						+ " in place in call " + a.repr() + " V");
@@ -1440,8 +1445,8 @@ class OP_V extends Operator {
 			List l = asList(a);
 			if (l.length() > 0) {
 				Obj popped = l.mutPop();
-				block.push(l);
-				block.push(popped);
+				blockEvaluator.push(l);
+				blockEvaluator.push(popped);
 			} else {
 				throw new ValueError("V: unable to remove element from empty list");
 			}
@@ -1456,22 +1461,22 @@ class OP_W extends Operator {
 	
 	public OP_W() {
 		init("W");
-		arg("B", "while loop (repeat as long as block returns true)");
+		arg("B", "while loop (repeat as long as blockEvaluator returns true)");
 		arg("D", "export all variables");
 		arg("L", "sum (fold using +)");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(LIST)) {
-			block.push(sum(asList(a)));
+			blockEvaluator.push(sum(blockEvaluator.getContext(), asList(a)));
 		} else if (a.isa(Obj.BLOCK)) {
 			StaticBlock blk = asStaticBlock(a);
-			Block state = new Block();
-			state.setStack((Stack<Obj>)block.getStack().clone());
+			BlockEvaluator state = blockEvaluator.getContext().createEvaluator();
+			state.setStack((Stack<Obj>)blockEvaluator.getStack().clone());
 			
 			boolean condition = false;
 			
@@ -1490,13 +1495,12 @@ class OP_W extends Operator {
 			} while (condition);
 			
 			//Merge the stack
-			block.setStack(state.getStack());
+			blockEvaluator.setStack(state.getStack());
 		}
 		else if(a.isa(DICT)) {
 			Dict d = (Dict)a;
-			//Aya.getInstance().getVars().peek().merge(d.getVarSet());
 			for (Entry<Symbol, Obj> e : d.getMap().entrySet()) {
-				Aya.getInstance().getVars().setVar(e.getKey(), e.getValue());
+				blockEvaluator.getContext().getVars().setVar(e.getKey(), e.getValue());
 			}
 		} else {
 			throw new TypeError(this, a);
@@ -1505,7 +1509,7 @@ class OP_W extends Operator {
 
 
 	/** Generic list summation */
-	public Obj sum(List a) {
+	public Obj sum(ExecutionContext context, List a) {
 		//Using the new Promoted list, use Str, NumberList, or ObjList
 		if (a.isa(STR)) {
 			char total = 0;
@@ -1523,7 +1527,7 @@ class OP_W extends Operator {
 				return Num.ZERO;
 			}
 			//Push all but the last item
-			Block exec_block = new Block();
+			BlockEvaluator exec_block = context.createEvaluator();
 			for(int i = list.length()-1; i > 0; i--) {
 				exec_block.add(new OperatorInstruction(null, Ops.OP_PLUS));
 				exec_block.add(list.getExact(i));
@@ -1549,8 +1553,8 @@ class OP_X extends Operator {
 	}
 	
 	@Override
-	public void execute (final Block block) {
-		Aya.getInstance().getVars().setVar(SymbolConstants.X, block.pop());
+	public void execute (final BlockEvaluator blockEvaluator) {
+		blockEvaluator.getContext().getVars().setVar(SymbolConstants.X, blockEvaluator.pop());
 	}
 }
 
@@ -1563,8 +1567,8 @@ class OP_Y extends Operator {
 	}
 	
 	@Override
-	public void execute (final Block block) {
-		Aya.getInstance().getVars().setGlobalVar(SymbolConstants.Y, block.peek());
+	public void execute (final BlockEvaluator blockEvaluator) {
+		blockEvaluator.getContext().getVars().setGlobalVar(SymbolConstants.Y, blockEvaluator.peek());
 	}
 }
 
@@ -1578,14 +1582,14 @@ class OP_Z extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		Obj a = block.pop();
+	public void execute (final BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 		
 		if (a.isa(Obj.NUMBER)) {
-			block.push(new BigNum(((Number)a).toBigDecimal()));
+			blockEvaluator.push(new BigNum(((Number)a).toBigDecimal()));
 		} else if (a.isa(Obj.STR)) {
 			try	{
-				block.push(new BigNum(new BigDecimal(a.str())));
+				blockEvaluator.push(new BigNum(new BigDecimal(a.str())));
 			} catch (NumberFormatException e) {
 				throw new ValueError("Cannot cast " + a.str() + " to bignum");
 			}
@@ -1604,11 +1608,11 @@ class OP_Backslash extends Operator {
 	}
 
 	@Override
-	public void execute (final Block block) {
-		final Obj a = block.pop();
-		final Obj b = block.pop();
-		block.push(a);
-		block.push(b);
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		final Obj b = blockEvaluator.pop();
+		blockEvaluator.push(a);
+		blockEvaluator.push(b);
 	}
 }
 
@@ -1630,18 +1634,18 @@ class OP_Caret extends Operator {
 	};
 
 	@Override
-	public void execute (final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute (final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 		
 	// a b ^ => "a ^ b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 		
 		if(a.isa(NUMBER) && b.isa(NUMBER)){
 			return NumberMath.pow(asNumber(a), asNumber(b));
@@ -1670,18 +1674,18 @@ class OP_Bar extends Operator {
 	};
 
 	@Override
-	public void execute(final Block block) {
-		final Obj b = block.pop();
-		final Obj a = block.pop();
-		block.push(exec2arg(a, b));
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj b = blockEvaluator.pop();
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
 	// a b | => "a | b"
 	@Override
-	public Obj exec2arg(final Obj a, final Obj b) {
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
 		Obj res;
-		if ((res = VectorizedFunctions.vectorize2arg(this, a, b, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(b, a)) != null) return res; // stack order
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, b, a)) != null) return res; // stack order
 		
 		if (a.isa(NUMBER) && b.isa(NUMBER)) {
 			return NumberMath.bor((Number)a, (Number)b);
@@ -1704,14 +1708,17 @@ class OP_Tilde extends Operator {
 	}
 
 	@Override
-	public void execute(final Block block) {
-		final Obj a = block.pop();
+	public void execute(final BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
+		
+		final ExecutionContext context = blockEvaluator.getContext();
 		
 		if(a.isa(BLOCK)) {
-			block.dump(asStaticBlock(a));
+			blockEvaluator.dump(asStaticBlock(a));
 		} else if (a.isa(STR) || a.isa(CHAR)) {
 			try {
-				block.addAll(Parser.compile(new SourceString(a.str(), "~"), Aya.getInstance()).getInstructions().getInstrucionList());
+				StaticBlock compiled_str = Parser.compile(new SourceString(a.str(), "~"));
+				blockEvaluator.dump(compiled_str);
 			} catch (ParserException e) {
 				throw new InternalAyaRuntimeException(e.typeSymbol(), e);
 			}
@@ -1719,13 +1726,13 @@ class OP_Tilde extends Operator {
 			List list = asList(a);
 			//Collections.reverse(list);
 			for (int i = list.length()-1; i >= 0; i--) {
-				block.add(list.getExact(i));
+				blockEvaluator.add(list.getExact(i));
 			}
 		} else if (a.isa(SYMBOL)) {
-			block.push(Aya.getInstance().getVars().getVar(asSymbol(a)));
+			blockEvaluator.push(context.getVars().getVar(asSymbol(a)));
 		} else if (a.isa(DICT)) {
 			// Dump all vars if they exist in the most local scope
-			Aya.getInstance().getVars().peek().mergeDefined(asDict(a));
+			context.getVars().peek().mergeDefined(asDict(a));
 		} else {
 			throw new TypeError(this, a);
 		}

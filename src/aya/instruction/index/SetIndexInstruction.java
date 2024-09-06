@@ -1,10 +1,11 @@
 package aya.instruction.index;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
@@ -18,22 +19,26 @@ public abstract class SetIndexInstruction extends Instruction {
 	
 	protected abstract Obj getIndex();
 	
-	public void execute(Block block) {
-		final Obj container = block.pop();
-		final Obj value = block.pop();
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
+		return getIndex();
+	}
+	
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj container = blockEvaluator.pop();
+		final Obj value = blockEvaluator.pop();
 		
-		Obj index = getIndex();
+		Obj index = getEvaluatedIndex(blockEvaluator.getContext());
 		boolean keyvar = false;
 		
 		if (container.isa(Obj.LIST)) {
-			Casting.asList(container).mutSetIndexed(index, value);
+			Casting.asList(container).mutSetIndexed(blockEvaluator.getContext(), index, value);
 		} else if (container.isa(Obj.DICT)) {
 			Dict d = Casting.asDict(container);
 			if (d.hasMetaKey(SymbolConstants.KEYVAR_SETINDEX)) {
 				keyvar = true;
-				block.push(value);
-				block.push(index);
-				block.callVariable(d, SymbolConstants.KEYVAR_SETINDEX);
+				blockEvaluator.push(value);
+				blockEvaluator.push(index);
+				blockEvaluator.callVariable(d, SymbolConstants.KEYVAR_SETINDEX);
 			} else {
 				Dict.setIndex((Dict)container, index, value);
 			}
@@ -42,7 +47,7 @@ public abstract class SetIndexInstruction extends Instruction {
 		}
 		
 		// Add the container back to the stack
-		if (!keyvar) block.push(container);
+		if (!keyvar) blockEvaluator.push(container);
 	}
 
 	@Override

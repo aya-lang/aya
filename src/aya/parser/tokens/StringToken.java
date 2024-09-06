@@ -1,6 +1,5 @@
 package aya.parser.tokens;
 
-import aya.Aya;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
@@ -74,11 +73,11 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new GetVariableInstruction(ref, Aya.getInstance().getSymbols().getSymbol(var_name)));
+					instrs.insert(0, new GetVariableInstruction(ref, SymbolTable.getSymbol(var_name)));
 					
 				}
 				
-				//Block Interpolation
+				//BlockEvaluator Interpolation
 				else if (c == '(') {
 					int braces = 1;
 					StringBuilder block = new StringBuilder();
@@ -124,8 +123,8 @@ public class StringToken extends StdToken {
 					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
-					//Add the block
-					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()) , Aya.getInstance());
+					//Add the blockEvaluator
+					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()));
 					instrs.insert(0, BlockUtils.fromIS(is));
 					
 				}

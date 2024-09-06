@@ -1,9 +1,9 @@
 package aya.parser.tokens;
 
-import aya.Aya;
 import aya.instruction.Instruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 import aya.parser.SourceStringRef;
 
 public class VarToken extends StdToken {
@@ -13,7 +13,7 @@ public class VarToken extends StdToken {
 	}
 	
 	public Symbol getSymbol() {
-		return Aya.getInstance().getSymbols().getSymbol(data);
+		return SymbolTable.getSymbol(data);
 	}
 
 	@Override

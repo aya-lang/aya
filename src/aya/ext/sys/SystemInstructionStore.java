@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import aya.AyaPrefs;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.util.FileUtils;
@@ -23,8 +23,8 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// Readdir
 		addInstruction(new NamedOperator("sys.readdir", "list files in working dir") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 				
 				if (arg.isa(Obj.STR)) {
 					String fstr = arg.str();
@@ -34,7 +34,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						for (String s : dirs) {
 							obj_dirs.add(List.fromString(s));
 						}
-						block.push(new List(obj_dirs));
+						blockEvaluator.push(new List(obj_dirs));
 					} catch (NullPointerException e) {
 						throw new ValueError(":{sys.readdir} : arg is not a valid location. Received:\n'" + fstr + "'");
 					}
@@ -47,32 +47,32 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// Get working dir
 		addInstruction(new NamedOperator("sys.wd", "get absolute path of working dir") {
 			@Override
-			public void execute(Block block) {
-				block.push(List.fromString(AyaPrefs.getWorkingDir()));
+			public void execute(BlockEvaluator blockEvaluator) {
+				blockEvaluator.push(List.fromString(AyaPrefs.getWorkingDir()));
 			}
 		});
 
 		// Get aya dir
 		addInstruction(new NamedOperator("sys.ad", "get absolute path of aya dir") {
 			@Override
-			public void execute(Block block) {
-				block.push(List.fromString(AyaPrefs.getAyaDir()));
+			public void execute(BlockEvaluator blockEvaluator) {
+				blockEvaluator.push(List.fromString(AyaPrefs.getAyaDir()));
 			}
 		});
 		
 		// Get aya dir
 		addInstruction(new NamedOperator("sys.set_ad", "set absolute path of aya dir") {
 			@Override
-			public void execute(Block block) {
-				AyaPrefs.setAyaDir(block.pop().str());
+			public void execute(BlockEvaluator blockEvaluator) {
+				AyaPrefs.setAyaDir(blockEvaluator.pop().str());
 			}
 		});
 		
 		// Set working dir
 		addInstruction(new NamedOperator("sys.cd", "set the working dir (empy string resets to default)") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 
 				if (arg.isa(Obj.STR)) {
 					String dir = arg.str();
@@ -93,8 +93,8 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// Make dir
 		addInstruction(new NamedOperator("sys.mkdir", "create a directory") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 
 				if(arg.isa(Obj.STR)) {
 					String fstr = arg.str();
@@ -111,13 +111,13 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// System.getProperty
 		addInstruction(new NamedOperator("sys.getprop", "call System.getProperty with the given key") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 				String val = System.getProperty(arg.str());
 				if (val == null) {
-					block.push(List.fromString(""));
+					blockEvaluator.push(List.fromString(""));
 				} else {
-					block.push(List.fromString(val));
+					blockEvaluator.push(List.fromString(val));
 				}
 			}
 		});
@@ -125,8 +125,8 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// Delete file or directory
 		addInstruction(new NamedOperator("sys.rm", "remove a file or directory") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 
 				if(arg.isa(Obj.STR)) {
 					String arg_str = arg.str();
@@ -146,27 +146,38 @@ public class SystemInstructionStore extends NamedInstructionStore {
 		// Test if file exists
 		addInstruction(new NamedOperator("sys.file_exists", "test if the file exists") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
-				block.push(FileUtils.isFile(arg.str()) ? Num.ONE : Num.ZERO);
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
+				blockEvaluator.push(FileUtils.isFile(arg.str()) ? Num.ONE : Num.ZERO);
 			}
 		});
 		
 		// Resolve home (replace ~/ with /path/to/home)
 		addInstruction(new NamedOperator("sys.resolvehome", "replace ~/.. with /path/to/home/..") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
-				block.push(List.fromString(FileUtils.resolveHome(arg.str())));
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
+				blockEvaluator.push(List.fromString(FileUtils.resolveHome(arg.str())));
 			}
 		});
 		
 		// Change the prompt text
 		addInstruction(new NamedOperator("sys.alterprompt", "change the prompt text") {
 			@Override
-			public void execute(Block block) {
-				final Obj arg = block.pop();
+			public void execute(BlockEvaluator blockEvaluator) {
+				final Obj arg = blockEvaluator.pop();
 				AyaPrefs.setPrompt(arg.str());
+			}
+		});
+		
+		addInstruction(new NamedOperator("sys.args", "CLI args") {
+			@Override
+			public void execute(BlockEvaluator blockEvaluator) {
+				List args = new List();
+				for (String a : AyaPrefs.getArgs()) {
+					args.mutAdd(List.fromString(a));
+				}
+				blockEvaluator.push(args);
 			}
 		});
 	}

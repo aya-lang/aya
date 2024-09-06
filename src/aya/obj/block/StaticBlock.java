@@ -3,6 +3,7 @@ package aya.obj.block;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.assignment.Assignment;
@@ -42,9 +43,9 @@ public class StaticBlock extends Obj {
 		this(instructions, null, null);
 	}
 	
-	public void dumpToBlockEvaluator(Block b) {
+	public void dumpToBlockEvaluator(BlockEvaluator b) {
 		if (_locals != null) {
-			// Pop the variable frame when the block is done
+			// Pop the variable frame when the blockEvaluator is done
 			b.add(PopVarFlagInstruction.INSTANCE);
 			b.addAll(_instructions);
 			b.add(_new_locals_instruction);

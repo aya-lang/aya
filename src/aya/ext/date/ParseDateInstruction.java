@@ -6,11 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.number.Num;
 
 public class ParseDateInstruction extends NamedOperator {
@@ -21,9 +21,9 @@ public class ParseDateInstruction extends NamedOperator {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
-		Obj b = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
+		Obj b = blockEvaluator.pop();
 		
 		
 		if (a.isa(Obj.STR) && b.isa(Obj.STR)) {
@@ -43,7 +43,7 @@ public class ParseDateInstruction extends NamedOperator {
 			} catch (ParseException e) {
 				throw new ValueError("Cannot parse date: '" + date_str + "' as '" + df_str + "'");
 			}
-			block.push(new Num(date.getTime()));
+			blockEvaluator.push(new Num(date.getTime()));
 		} else {
 			throw new TypeError(this, "SS", a, b);
 		}

@@ -22,9 +22,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import aya.Aya;
-import aya.AyaPrefs;
+import aya.AyaThread;
+import aya.ExecutionRequest;
 import aya.InteractiveAya;
+import aya.StaticData;
+import aya.obj.block.StaticBlock;
+import aya.parser.Parser;
+import aya.parser.SourceString;
 
 
 @SuppressWarnings("serial")
@@ -36,13 +40,13 @@ public class AyaIDE extends JFrame
 			+ "Editor: ctrl-e\n"
 			+ "Run Editor: ctrl-r\n";
 	protected static String HELP_ABOUT = "Aya\n"
-			+ "Version: " + Aya.VERSION_NAME + "\n"
+			+ "Version: " + StaticData.VERSION_NAME + "\n"
 			+ "Source: github.com/nick-paul/aya-lang\n"
 			+ "Wiki: github.com/nick-paul/aya-lang/wiki";
 
 	
 	
-	private Aya _aya;
+	private AyaThread _aya;
 	
 	//Layout
 	private MyConsole _interpreter;
@@ -52,13 +56,13 @@ public class AyaIDE extends JFrame
 	private AyaIDE thiside;
     
 
-	public AyaIDE(Aya aya) {
+	public AyaIDE(AyaThread ayaThread) {
 		super("Aya");
 		
 		this.thiside = this;
 
 				
-		this._aya = aya;
+		this._aya = ayaThread;
 		this._interpreter = new MyConsole();
 		this._menu = new JMenu();
 		this._menuBar = new JMenuBar();
@@ -87,10 +91,10 @@ public class AyaIDE extends JFrame
 		    		  case KeyEvent.VK_Q:
 		    			  if(e.isControlDown()) {
 		    				  if(QuickSearch.isFrameActive()) {
-			    				  QuickSearch.updateHelpTextInFrame(Aya.getQuickSearchData());
+			    				  QuickSearch.updateHelpTextInFrame(StaticData.getInstance().getQuickSearchData());
 		    					  QuickSearch.frameFocus();
 		    				  } else {
-		    					  QuickSearch.newQSFrame(Aya.getQuickSearchData());
+		    					  QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 		    				  }
 		    			  }
 		    			  break;
@@ -138,7 +142,8 @@ public class AyaIDE extends JFrame
 				String path = requestFilePathUI();
 				if (path != null) {
 					path = path.replace("\\", "\\\\");
-					Aya.getInstance().queueInput("\"" + path + "\":F");
+					StaticBlock in_block = Parser.compileSafeOrNull(new SourceString("\"" + path + "\" :F", ""), StaticData.IO);
+					_aya.queueInput(new ExecutionRequest(-1, in_block)); // TODO change request id
 					
 				}
 			}
@@ -219,7 +224,7 @@ public class AyaIDE extends JFrame
 				if(QuickSearch.isFrameActive()) {
 					QuickSearch.frameFocus();
 				} else {
-					QuickSearch.newQSFrame(Aya.getQuickSearchData());
+					QuickSearch.newQSFrame(StaticData.getInstance().getQuickSearchData());
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -329,7 +334,7 @@ public class AyaIDE extends JFrame
         }
 	}
 	
-	public Aya getAya() {
+	public AyaThread getAya() {
 		return this._aya;
 	}
 	
@@ -342,46 +347,35 @@ public class AyaIDE extends JFrame
 	}
 	
 	public static void main(String[] args) {
+		InteractiveAya iaya = InteractiveAya.createInteractiveSession(args);
 		
-		Aya aya = Aya.getInstance();
-		boolean readstdin = aya.isInputAvaiable();
-		if (args.length > 0) {
-			// First arg is working directory
-			AyaPrefs.setWorkingDir(args[0]);
-		}
+		boolean readstdin = StaticData.IO.isInputAvaiable();
+		
 		if (args.length > 1 || readstdin) {
 			// If reading from STDIN (piped input), don't use interactive mode
 			if (readstdin) InteractiveAya.setInteractive(false);
-			InteractiveAya.main(args);
 		} else {
 			// Use the GUI
 			
 			//Load and initialize the ide
-			AyaIDE ide = new AyaIDE(aya);
+			AyaIDE ide = new AyaIDE(iaya.getMainThread());
 			
 			// Aya Prefs
-			aya.setOut(ide.getOutputStream());
-			aya.setErr(ide.getOutputStream());
-			aya.setIn(ide.getInputStream());
+			StaticData.IO.setOut(ide.getOutputStream());
+			StaticData.IO.setErr(ide.getOutputStream());
+			StaticData.IO.setIn(ide.getInputStream());
 			
 			// InteractiveAya Prefs
-			InteractiveAya iaya = new InteractiveAya(aya);
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
-			iaya.run();
 			
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
 			
-			try {
-				iaya.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace(aya.getErr());
-			}
-			
-			System.exit(1);
 		}
-	
+		
+		iaya.loop();
+		System.exit(1);	
 	}
 }
 

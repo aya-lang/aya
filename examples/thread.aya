@@ -1,0 +1,113 @@
+import ::threading
+
+"== Single Task ==" :P
+
+.# Create a single thread and run a task
+threading.new :thread;
+
+"Created thread with id $(thread.id)" :P
+
+{
+    "starting task" :P
+    1 1 +
+    "finished task" :P
+} thread.add_task ;
+.# OR thread +
+
+thread.wait_for_result :result;
+.# OR thread .|
+
+"Result is $(result)" :P
+
+
+"== Single Task with Globals ==" :P
+
+.# Create a single thread and run a task
+threading.new :thread;
+
+"Created thread with id $(thread.id)" :P
+
+{
+    [1 2 3] .x 3 +
+} thread + ;
+
+thread .| :result;
+
+"Result is $(result)" :P
+
+
+
+.# Create multiple threads with tasks
+
+"== Multiple Tasks ==" :P
+
+[4,{i, {:i^, 100:Z "Task $(i) complete" :P i} }] :tasks;
+
+[tasksE ,; threading.new ]:threads;
+
+
+.# Add one task per thread
+.# operator `+` is automatically broadcasted
+.# same as [tasks threads, .add_task];
+tasks threads + ;
+
+.# Join all threads
+.# operator `.|` is automatically broadcasted
+.# same as [threads, .wait_for_result]
+threads .| :P
+
+"complete" :P
+
+
+.# Thread pool
+"== Thread Pool ==" :P
+
+[10 ,{i, {:i^, 100:Z "Task $(i) complete" :P i} }] :tasks;
+
+
+
+[] :threads_with_tasks;
+[4 ,; threading.new]:thread_pool;
+
+
+.# Loop until no tasks remain
+{
+    .# For each thread with a task, check if it is ready,
+    .# if it is, get the result and add it back to the pool
+    [] :finished_threads;
+    threads_with_tasks :# {thread : res, 
+        thread.has_unfinished_tasks ! {
+            thread.wait_for_result :res;
+            "Got result $res" :P
+            thread finished_threads .B;
+        } ?
+    };
+
+    .# Remove finished threads from threads with tasks
+    threads_with_tasks finished_threads :| :threads_with_tasks;
+
+    .# Add the finished threads back to the pool
+    thread_pool finished_threads J :thread_pool;
+
+   .# Add a task to each thread in the pool
+    thread_pool :# {thread,
+        tasks E 0 > {
+            tasks B\; thread.add_task
+            thread threads_with_tasks .B;
+        } ?
+    };
+
+    .# Remove threads with tasks from the pool
+    thread_pool threads_with_tasks :| :thread_pool;
+
+    1 :Z
+
+tasks E 0 > } W
+
+.# Wait for all remaining tasks
+threads_with_tasks :# {thread : res,
+    thread.wait_for_result :res;
+    "Got result $res" :P
+};
+
+"done" :P
