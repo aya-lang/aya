@@ -11,36 +11,35 @@ import ::threading
 Create a `thread` using `threading.new`.
 
 ```
-aya> threading.new :my_thread;
+aya> threading.new :my_thread
 ( 1 ) thread!
 ```
 
-Add a task to a thread using `add_task` the task will be executed immediately.
+Add a task to a thread using `add_task` or `+` the task will be executed immediately.
 
 ```
-aya> aya> { "begin" :P 1 1 + "end" :P } my_thread.add_task
+aya> aya> { "begin" :P 1 1 + "end" :P } my_thread.add_task ; .# OR my_thread +
 begin
 end
 ```
 
-Get the result from a thread using `wait_for_result`. The entire state of the stack is returned as a list.
+Get the result from a thread using `wait_for_result` or `.|`. The entire state of the stack is returned as a list.
 
 ```
-aya> my_thread.wait_for_result
+aya> my_thread.wait_for_result .# OR my_thread .|
 [ 2 ]
 ```
 
 When multiple items left on stack during execution, all are returned as a list.
 
 ```
-aya> { 1 2 /   3 4 + } my_thread.add_task
+aya> { 1 2 /   3 4 + } my_thread.add_task .# OR my_thread +
 aya> my_thread.wait_for_result
 [ .5 7 ]
 ```
 
 
-
-Attempting to call `wait_for_result` on a thread with no tasks will throw an error
+Attempting to call `wait_for_result`/`.|` on a thread with no tasks will throw an error
 
 ```
 aya> threading.new :t
@@ -67,7 +66,7 @@ If an error occurs while executing a task, the error will not be thrown until th
 
 ```
 aya> .# Attempt to access index 99 of any empty list
-aya> { "begin" :P   [ ].[99]   "end" :P } my_thread.add_task
+aya> { "begin" :P   [ ].[99]   "end" :P } my_thread +   .# OR my_thread.add_task
 begin
 ```
 
@@ -76,7 +75,7 @@ Notice that only "begin" has been printed. Execution failed before "end" was pri
 Attempting to access the result will throw the error.
 
 ```
-aya> my_thread.wait_for_result
+aya> my_thread.wait_for_result .# OR my_thread .|
 Invalid index 99 for list [ ]
 
 
@@ -111,18 +110,21 @@ To execute multiple tasks in parellel, create multiple threads and split the tas
 
 In the simple example below, we create one thread per task. If you have hundreds of tasks, or an unknown number of tasks, to execute, a thread pool (discussed below) may be a better option. 
 
+Operators `+` and `.|` are automatically broadcasted over lists
+
 ```
-aya> .# Create several of tasks
+aya> .# Create several tasks
 aya> [ {"Thread 1 Start" :P  2000 :Z "Thread 1 End" :P 10}
        {"Thread 2 Start" :P  1000 :Z "Thread 2 End" :P 20}
        {"Thread 3 Start" :P  3000 :Z "Thread 3 End" :P 30}
        {"Thread 4 Start" :P  1500 :Z "Thread 4 End" :P 40} ] :tasks;
 
 aya> .# Create a new thread for each task
-aya> tasks E R :# {; threading.new} :threads;
+aya> [tasks E R, ; threading.new] :threads;
 
-aya> .# Add one task to each thread (using zip list comprehension)
-aya> [tasks threads, .add_task];
+aya> .# Add one task to each thread using automatic operator broadcasting
+aya> .# The call below is the same as: [tasks threads, .add_task];
+aya> tasks threads + ;
 Thread 1 Start
 Thread 3 Start
 Thread 4 Start
@@ -133,7 +135,9 @@ Thread 1 End
 Thread 3 End
 
 aya> .# Wait for each thread to complete
-aya> [threads, .wait_for_result] :P
+aya> .# The operator .| is automatically broadcasted to all threads
+aya> .# The call below is the same as [threads, .wait_for_result] :P
+aya> threads .| :P
 [ [ 10 ] [ 20 ] [ 30 ] [ 40 ] ]
 
 ```
@@ -210,7 +214,7 @@ aya> threading.new :t
 ( 1 ) thread!
 
 aya> .# Attempt to access x in another thread
-aya> { "x is $x" :P } t.add_task
+aya> { "x is $x" :P } t + ;
 aya> t.wait_for_result
 Undefined variable 'x'
 
