@@ -3,6 +3,7 @@ export [
     ::file
     ::stdout
     ::stdin
+    ::fileutils
 ]
 
 
@@ -323,3 +324,11 @@ def dummyfile::close {self,
 }
 
 dummyfile file.:dummyfile ;
+
+
+{,
+    {path, .# ::path or ::str
+        path P :{fileutils.readallbytes}
+    }:readallbytes;
+
+}:fileutils;

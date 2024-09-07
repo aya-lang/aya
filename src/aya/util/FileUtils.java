@@ -1,17 +1,20 @@
 package aya.util;
 
-import aya.AyaPrefs;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import aya.AyaPrefs;
+
 public class FileUtils {
 
-	@SuppressWarnings("null")
 	public static String readAllText(File file) throws IOException {
 		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8); // in Java 11 you can also do Files.readString(Path)
+	}
+	
+	public static byte[] readAllBytes(File file) throws IOException { 
+		return Files.readAllBytes(file.toPath()); 
 	}
 
 	/**
