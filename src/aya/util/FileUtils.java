@@ -13,9 +13,8 @@ public class FileUtils {
 		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8); // in Java 11 you can also do Files.readString(Path)
 	}
 	
-	public static byte[] readAllBytes(String filepath) throws IOException { 
-        File file = resolveFile(filepath);
-        return Files.readAllBytes(file.toPath()); 
+	public static byte[] readAllBytes(File file) throws IOException { 
+		return Files.readAllBytes(file.toPath()); 
 	}
 
 	/**

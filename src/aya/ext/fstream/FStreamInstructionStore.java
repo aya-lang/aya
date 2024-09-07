@@ -14,16 +14,20 @@ public class FStreamInstructionStore extends NamedInstructionStore {
 	
 	@Override
 	protected void init() {
-		// JSON
+		// Legacy Stream Instructions
+		// TODO: Separate into individual instructions
 		addInstruction(new LegacyFStreamInstruction());
 		
-		addInstruction(new NamedOperator("fstream.readallbytes") {
-			
+		//
+		// Utility Instructions
+		//
+		
+		addInstruction(new NamedOperator("fileutils.readallbytes") {	
 			@Override
 			public void execute(BlockEvaluator blockEvaluator) {
 				String path = blockEvaluator.pop().str();
 				try {
-					byte[] bytes = FileUtils.readAllBytes(path);
+					byte[] bytes = FileUtils.readAllBytes(FileUtils.resolveFile(path));
 					double[] doubles = new double[bytes.length];
 					for (int i = 0; i < bytes.length; i++) {
 						doubles[i] = bytes[i];
