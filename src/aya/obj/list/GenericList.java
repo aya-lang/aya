@@ -329,16 +329,34 @@ public class GenericList extends ListImpl {
 
 	@Override
 	protected ListImpl flatten() {
-		GenericList out = new GenericList(new ArrayList<Obj>());
+		// Optimization for 2D array of doubles
+		// Check if all are double lists, if so, allocate the memory all at once
+		boolean all_double_lists = true;
+		int all_double_lists_size = 0;
 		for (int i = 0; i < length(); i++) {
-			Obj o = get(i);
-			if (o.isa(Obj.LIST)) {
-				out.addAll(asList(o).impl().flatten());
+			final Obj o = get(i);
+			if (o.isa(Obj.DOUBLELIST)) {
+				all_double_lists_size += Casting.asList(o).length();
 			} else {
-				out.addItem(o);
+				all_double_lists = false;
+				break;
 			}
 		}
-		return out.promote();
+		
+		if (all_double_lists) {
+			return DoubleList.flatten2D(_list, all_double_lists_size);
+		} else {
+			GenericList out = new GenericList(new ArrayList<Obj>());
+			for (int i = 0; i < length(); i++) {
+				Obj o = get(i);
+				if (o.isa(Obj.LIST)) {
+					out.addAll(asList(o).impl().flatten());
+				} else {
+					out.addItem(o);
+				}
+			}
+			return out.promote();
+		}
 	}
 
 	@Override
