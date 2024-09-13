@@ -1,0 +1,15 @@
+import ::color
+import ::canvas
+
+{colors radius : cvs, 
+    {, colors :E radius *~ :height; :width;} canvas!:cvs;
+    colors.enumerate #{[x cols],
+        cols.enumerate #{[y col],
+            col cvs.set_color
+            [x0.5+ y0.5+ 0.5] radius *~ cvs.fillcircle
+        };
+    }; 
+    cvs
+}:color_table;
+
+[0 30 360, color.colors.red.hueshift 10\ color.colors.white.grad] 30 color_table.show
