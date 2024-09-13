@@ -696,30 +696,10 @@ class OP_Colon_E extends Operator {
 		if (a.isa(DICT)) {
 			blockEvaluator.push(Num.fromInt( ((Dict)a).size()) );
 		} else if (a.isa(LIST)) {
-			blockEvaluator.push(shape(asList(a)));
+			blockEvaluator.push(asList(a).shape());
 		} else {
 			throw new TypeError(this, a);
 		}
-	}
-	
-	private List shape(List list) {
-		List shape = new List();
-		Obj cur = list;
-		while (true) {
-			if (cur.isa(LIST) && !cur.isa(STR)) {
-				List cur_list = asList(cur);
-				shape.mutAdd(Num.fromInt(cur_list.length()));
-				if (cur_list.length() > 0) {
-					cur = cur_list.head();
-				} else {
-					break;
-				}
-			} else {
-				break;
-			}
-		}
-		
-		return shape;
 	}
 	
 }

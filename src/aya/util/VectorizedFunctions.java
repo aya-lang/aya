@@ -41,9 +41,9 @@ public class VectorizedFunctions {
 		for (int i = 0; i < a.length(); i++) {
 			out.mutAdd(op.exec2arg(context, a.getExact(i), b));
 		}
-		return out;	
+		return out;
 	}
-	
+
 
 	//
 	// Obj, List
@@ -63,16 +63,16 @@ public class VectorizedFunctions {
 		for (int i = 0; i < b.length(); i++) {
 			out.mutAdd(op.exec2arg(context, a, b.getExact(i)));
 		}
-		return out;	
+		return out;
 	}
-	
+
 
 	//
 	// List, List
 	//
 
 	private static List vectorizeListList(ExecutionContext context, Operator op, List a, List b, NumberListOp nlop) {
-		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) && a.length() == b.length()) {
 			return new List(nlop.ll(asNumberList(a), asNumberList(b)));
 		} else {
 			return vectorizeListList(context, op, a, b);
@@ -81,11 +81,36 @@ public class VectorizedFunctions {
 
 	private static List vectorizeListList(ExecutionContext context, Operator op, List a, List b) {
 		List out = new List();
-		if (a.length() == b.length()) {
+		final int a_len = a.length();
+		final int b_len = b.length();
+		final int a_dims = a.shape().length();
+		final int b_dims = b.shape().length();
+
+		if (a.getExact(0).isa(LIST) && a_dims > b_dims) {
+			for (int i = 0; i < a.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b));
+			}
+			return out;
+		} else if (b.getExact(0).isa(LIST) && b_dims > a_dims) {
+			for (int i = 0; i < b.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a, b.getExact(i)));
+			}
+			return out;
+		} else if (a_len == 1) {
+			for (int i = 0; i < b.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(0), b.getExact(i)));
+			}
+			return out;
+		} else if (b_len == 1) {
+			for (int i = 0; i < a.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b.getExact(0)));
+			}
+			return out;
+		} else if (a_len == b_len) {
 			for (int i = 0; i < a.length(); i++) {
 				out.mutAdd(op.exec2arg(context, a.getExact(i), b.getExact(i)));
 			}
-			return out;	
+			return out;
 		} else {
 			ReprStream msg = new ReprStream();
 			msg.println("Dimension mismatch. Lengths must be equal but are: " + a.length() + ", " + b.length());
@@ -99,7 +124,7 @@ public class VectorizedFunctions {
 	//
 	// 2 Arg Driver Functions
 	//
-	
+
 	public static Obj vectorize2arg(ExecutionContext context, Operator op, Obj a, Obj b) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
@@ -128,13 +153,13 @@ public class VectorizedFunctions {
 			return null;
 		}
 	}
-	
+
 
 	//
 	// 1 Arg Functions
 	//
 
-	
+
 	private static List vectorizeList(ExecutionContext context, Operator op, List a, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST)) {
 			return new List(nlop.l(asNumberList(a)));
@@ -150,7 +175,7 @@ public class VectorizedFunctions {
 		for (int i = 0; i < a.length(); i++) {
 			out.mutAdd(op.exec1arg(context, a.getExact(i)));
 		}
-		return out;	
+		return out;
 	}
 
 
@@ -174,5 +199,6 @@ public class VectorizedFunctions {
 		} else {
 			return null;
 		}
+     
 	}
 }
