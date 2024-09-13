@@ -11,7 +11,7 @@ import ::math
     {10R normal $W/W .\  1 }
     {5R product  120 }
     {[] product  0 }
-    {[1 2 3][4 5 6] dot  32 }
+    {[1 2 3][4 5 6] vdot  32 }
     {12 4 lcm  12 }
     {[120 45 3 5] lcm  360 }
     {12 4 gcd  4 }

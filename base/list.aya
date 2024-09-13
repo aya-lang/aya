@@ -103,10 +103,6 @@
     }:makesquare;
 
 
-    { .T {*W} :* }:dot;
-
-
-
     .# Generators
     .#############
 

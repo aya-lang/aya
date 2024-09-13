@@ -63,7 +63,7 @@ exportall
 
 {:&2^W.^/}:normal;   .#? L<N> normal\n  compute the normal vector of the given list
 {{*}/}:product;     .#? L product\n  product of a list
-{*W}:dot;           .#? LL dot\n  dot product of a list
+{*W}:vdot;           .#? LL vdot\n  vdot product of two vectors
 {2^W.^}:norm;       .#? L norm\n compute the vector norm
 
 
