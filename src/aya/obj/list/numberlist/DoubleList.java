@@ -61,6 +61,15 @@ public class DoubleList extends NumberList {
 		}
 	}
 	
+	// For fast processing of internal double array
+	public double[] internalArray() {
+		return _list;
+	}
+	
+	public double getDouble(int i) {
+		return _list[i];
+	}
+	
 	
 	//////////////
 	// Creation //
@@ -1212,5 +1221,19 @@ public class DoubleList extends NumberList {
 			out.add(new List(new DoubleList(trans[i])));
 		}
 		return new List(out);
+	}
+
+	// All objs in must be DoubleLists
+	public static ListImpl flatten2D(ArrayList<Obj> double_lists, int total_size) {
+		double[] values = new double[total_size];
+		int i = 0;
+		for (Obj o : double_lists) {
+			double[] ds = ((DoubleList)Casting.asList(o).toNumberList())._list;
+			for (int j = 0; j < ds.length; j++) {
+				values[i] = ds[j];
+				i++;
+			}
+		}
+		return new DoubleList(values);
 	}
 }
