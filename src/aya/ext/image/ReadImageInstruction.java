@@ -1,8 +1,6 @@
 package aya.ext.image;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,7 +11,6 @@ import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.list.numberlist.NumberList;
 
 public class ReadImageInstruction extends NamedOperator {
 	
@@ -48,15 +45,7 @@ public class ReadImageInstruction extends NamedOperator {
 		 // open image
 		 File imgPath = new File(ImageName);
 		 BufferedImage bufferedImage = ImageIO.read(imgPath);
-
-		 // get DataBufferBytes from Raster
-		 WritableRaster raster = bufferedImage .getRaster();
-		 DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
-
-		 return new AyaImage(
-				 NumberList.fromBytes(data.getData()),
-				 bufferedImage.getWidth(),
-				 bufferedImage.getHeight());
+		 return AyaImage.fromBufferedImage(bufferedImage);
 	}		
 
 }

@@ -160,6 +160,10 @@ public class Canvas {
 	public void save(File outFile) throws IOException{
 		ImageIO.write(_plotImage, "png", outFile);
 	}
+	
+	public BufferedImage getBuffer() {
+		return _plotImage;
+	}
 
 	
 	@SuppressWarnings("serial")

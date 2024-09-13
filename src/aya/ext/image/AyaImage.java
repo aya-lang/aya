@@ -1,11 +1,14 @@
 package aya.ext.image;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 
 import aya.exceptions.runtime.ValueError;
 import aya.obj.dict.Dict;
@@ -62,6 +65,42 @@ public class AyaImage {
 		image.setData(raster);
 		
 		return image;
+	}
+	
+	public static AyaImage fromBufferedImage(BufferedImage buf) {
+		// get DataBufferBytes from Raster
+		WritableRaster raster = buf.getRaster();
+		DataBuffer databuf = raster.getDataBuffer();
+		int type = databuf.getDataType();
+		
+		if (type == DataBuffer.TYPE_BYTE) {
+			DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+		
+			return new AyaImage(
+				NumberList.fromBytes(data.getData()),
+				buf.getWidth(),
+				buf.getHeight());
+		} else if (type == DataBuffer.TYPE_INT) {
+			DataBufferInt data   = (DataBufferInt) raster.getDataBuffer();
+			
+			int[] pixels = data.getData();
+			byte[] bytes = new byte[data.getSize() * 3];
+			
+			for (int i = 0; i < data.getSize(); i++) {
+				int byte_index = i * 3;
+				final Color c = new Color(pixels[i]);
+				bytes[byte_index + 0] = (byte)(c.getRed());
+				bytes[byte_index + 1] = (byte)(c.getBlue());
+				bytes[byte_index + 2] = (byte)(c.getGreen());
+			}
+				
+			return new AyaImage(
+				NumberList.fromBytes(bytes),
+				buf.getWidth(),
+				buf.getHeight());
+		} else {
+			throw new ValueError("Image buffer type not supported");
+		}
 	}
 	
 
