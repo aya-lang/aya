@@ -190,8 +190,8 @@ public class DictReader {
 			c = getColor(key); // May return null
 		} catch (Exception e) {
 			// We should probably notify the user that his input was invalid
-			StaticData.IO.err().println("Failed to read color " + this._err_name + "." + key.name() + " (will use default). Cause: " + e.getMessage());
-			c = null;
+			String errName = get_err_name() + "." + key.name();
+			StaticData.IO.err().println(errName + ": Failed to read color (will use default). Cause: " + e.getMessage());
 		}
 
 		if (c == null) {
