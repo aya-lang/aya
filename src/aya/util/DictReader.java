@@ -2,7 +2,7 @@ package aya.util;
 
 import java.awt.Color;
 
-import aya.Aya;
+import aya.StaticData;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.UndefVarException;
@@ -188,9 +188,9 @@ public class DictReader {
 		Color c = null;
 		try {
 			c = getColor(key); // May return null
-		} catch (ValueError e) {
+		} catch (Exception e) {
 			// We should probably notify the user that his input was invalid
-			Aya.getInstance().getErr().println("Failed to read color " + this._err_name + "." + key.name() + " (will use default). Cause: " + e.getMessage());
+			StaticData.IO.err().println("Failed to read color " + this._err_name + "." + key.name() + " (will use default). Cause: " + e.getMessage());
 			c = null;
 		}
 
