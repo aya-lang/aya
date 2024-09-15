@@ -1,14 +1,14 @@
 package aya.ext.plot.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.plot.AxisConfig;
 import aya.ext.plot.ColorCycle;
 import aya.ext.plot.RenderConfig;
 import aya.ext.plot.SeriesConfig;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.Symbol;
@@ -28,7 +28,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class MultiPlotInstruction extends NamedInstruction {
+public class MultiPlotInstruction extends NamedOperator {
     public MultiPlotInstruction() {
         super("plot.multiplot");
         _doc = ("multiplot : renders multiple XY-plots\n"
@@ -53,8 +53,8 @@ public class MultiPlotInstruction extends NamedInstruction {
     }
 
     @Override
-    public void execute(Block block) {
-        Obj a = block.pop();
+    public void execute(BlockEvaluator blockEvaluator) {
+        Obj a = blockEvaluator.pop();
 
         if (a.isa(Obj.DICT)) {
             Input input = new Input(new DictReader((Dict) a, this._name));

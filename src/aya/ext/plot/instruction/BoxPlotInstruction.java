@@ -1,13 +1,13 @@
 package aya.ext.plot.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.plot.AxisConfig;
 import aya.ext.plot.ColorCycle;
 import aya.ext.plot.RenderConfig;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolConstants;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class BoxPlotInstruction extends NamedInstruction {
+public class BoxPlotInstruction extends NamedOperator {
     public BoxPlotInstruction() {
         super("plot.box_plot");
         _doc = ("box_plot : renders a box-and-whisker plot\n"
@@ -51,8 +51,8 @@ public class BoxPlotInstruction extends NamedInstruction {
     }
 
     @Override
-    public void execute(Block block) {
-        Obj a = block.pop();
+    public void execute(BlockEvaluator blockEvaluator) {
+        Obj a = blockEvaluator.pop();
 
         if (a.isa(Obj.DICT)) {
             Input input = new Input(new DictReader((Dict) a, this._name));

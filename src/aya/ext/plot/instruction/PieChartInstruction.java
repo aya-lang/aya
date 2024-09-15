@@ -1,12 +1,12 @@
 package aya.ext.plot.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.plot.ColorCycle;
 import aya.ext.plot.RenderConfig;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.util.Casting;
@@ -22,7 +22,7 @@ import org.jfree.data.general.DefaultPieDataset;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class PieChartInstruction extends NamedInstruction {
+public class PieChartInstruction extends NamedOperator {
     public PieChartInstruction() {
         super("plot.pie_chart");
         _doc = ("pie_chart : renders a pie-chart\n"
@@ -42,8 +42,8 @@ public class PieChartInstruction extends NamedInstruction {
     }
 
     @Override
-    public void execute(Block block) {
-        Obj a = block.pop();
+    public void execute(BlockEvaluator blockEvaluator) {
+        Obj a = blockEvaluator.pop();
 
         if (a.isa(Obj.DICT)) {
             Input input = new Input(new DictReader((Dict) a, this._name));
