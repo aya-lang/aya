@@ -884,11 +884,16 @@ class OP_Dot_SortUsing extends Operator {
 			List key_obj = ListIterationFunctions.map(blockEvaluator.getContext(), objs, blk);
 
 			//Convert keys to int array
-			ArrayList<SUItem> items = new ArrayList<SUItem>(key_obj.length());
+			ArrayList<SUItem> items = new ArrayList<>(key_obj.length());
 			try {
 
 				for (int i = 0; i < objs.length(); i++) {
-					items.add(new SUItem(objs.getExact(i), (Comparable) key_obj.getExact(i)));
+					Obj item = key_obj.getExact(i);
+					if (item.isa(STR)) {
+						items.add(new SUItem(objs.getExact(i), item.str()));
+					} else {
+						items.add(new SUItem(objs.getExact(i), (Comparable) item));
+					}
 				}
 				Collections.sort(items);
 
