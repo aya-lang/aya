@@ -21,7 +21,7 @@
 {fname,
     {, 
     "* Running tests '$fname'..." :P
-    "$(:{sys.ad})$fname.aya" G~
+    "$(:{sys.ad})$fname.aya" :F
     "  Tests complete: '$fname'" :P
     };
 }:load_test;
@@ -33,6 +33,7 @@
 "test/dot_ops" load_test
 "test/colon_ops" load_test
 "test/range" load_test
+"test/broadcast" load_test
 "test/unicode" load_test
 "test/misc" load_test
 "test/test_op_overload" load_test
@@ -53,6 +54,7 @@
     "enum"
     "csv"
     "io"
+    "la"
     "map"
     "matrix"
     "set"

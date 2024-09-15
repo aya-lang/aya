@@ -2,8 +2,9 @@ package aya.instruction;
 
 import java.util.Queue;
 
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 
 /** Specialization of a DictLiteralInstruction which always returns an empty dict
@@ -15,14 +16,13 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	public static final EmptyDictLiteralInstruction INSTANCE = new EmptyDictLiteralInstruction();
 	
 	protected EmptyDictLiteralInstruction() {
-		super(new Block());
+		super(null, StaticBlock.EMPTY);
 	}
 	
 	@Override
 	public int numCaptures() { return 0; }
 	
-	@Override
-	public Dict getDict(Queue<Obj> q) {
+	public Dict getDict(ExecutionContext context, Queue<Obj> q) {
 		return new Dict();
 	}
 	

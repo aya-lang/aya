@@ -1,4 +1,5 @@
 import ::color
+import ::image
 
 export ::canvas
 
@@ -173,4 +174,9 @@ def canvas::pressed_keys {self,
 
 def canvas::text {self,
     self.id :{graphics.text}
+}
+
+def canvas::get_pixels {self : data image^,
+    self.id :{graphics.get_pixels} :data;
+    data.data data.width data.height image!
 }

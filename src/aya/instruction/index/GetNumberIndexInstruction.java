@@ -1,18 +1,20 @@
 package aya.instruction.index;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.number.Num;
+import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
 public class GetNumberIndexInstruction extends GetIndexInstruction {
 	
 	private int _index;
 	
-	public GetNumberIndexInstruction(int index) {
+	public GetNumberIndexInstruction(SourceStringRef source, int index) {
+		super(source);
 		_index = index;
 	}
 	
@@ -22,15 +24,15 @@ public class GetNumberIndexInstruction extends GetIndexInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj o = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj o = blockEvaluator.pop();
 		try {
 			// Most likely a list, attempt to index it
-			block.push(Casting.asList(o).getIndexed(_index));
+			blockEvaluator.push(Casting.asList(o).getIndexed(_index));
 		} catch (ClassCastException e) {
 			// Not a list, is it a dict?
 			if (o.isa(Obj.DICT)) {
-				block.push(DictIndexing.getIndex((Dict)o, Num.fromInt(_index)));
+				blockEvaluator.push(DictIndexing.getIndex(blockEvaluator.getContext(), (Dict)o, Num.fromInt(_index)));
 			} else {
 				throw new TypeError("Unable to access object at numeric index [" + _index + "]:\n" + o.repr() );
 			}

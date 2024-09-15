@@ -1,42 +1,47 @@
 package aya.parser.tokens;
 
-import aya.Aya;
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.InterpolateStringInstruction;
 import aya.instruction.StringLiteralInstruction;
 import aya.instruction.variable.GetVariableInstruction;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.ParserString;
+import aya.parser.SourceStringRef;
+import aya.parser.StringParseUtils;
 
 public class StringToken extends StdToken {
 		
 	private boolean interpolate; //If true, interpolate string at runtime
 	
-	public StringToken(String data) {
-		super(data, Token.STRING);
+	public StringToken(String data, SourceStringRef source) {
+		super(data, Token.STRING, source);
 		this.interpolate = true;
 	}
 	
-	public StringToken(String data, boolean interpolate) {
-		super(data, Token.STRING);
+	public StringToken(String data, boolean interpolate, SourceStringRef source) {
+		super(data, Token.STRING, source);
 		this.interpolate = interpolate;
 	}
 	
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		if (interpolate && data.contains("$"))
-			return parseInterpolateStr(data);
-		return new StringLiteralInstruction(data);
+		if (interpolate && data.contains("$")) {
+			return parseInterpolateStr(data, this.getSourceStringRef());
+		} else {
+			SourceStringRef ref = this.getSourceStringRef();
+			String unescaped = StringParseUtils.unescape(new ParserString(ref, this.getData()));
+			return new StringLiteralInstruction(this.getSourceStringRef(), unescaped);
+		}
 	}
 
-	private InterpolateStringInstruction parseInterpolateStr(String data) throws ParserException {
-		ParserString in = new ParserString(data);
+	private InterpolateStringInstruction parseInterpolateStr(String data, SourceStringRef source) throws ParserException {
+		ParserString in = new ParserString(this.getSourceStringRef(), data);
 		StringBuilder sb = new StringBuilder();
 		InstructionStack instrs = new InstructionStack();
 		
@@ -45,7 +50,7 @@ public class StringToken extends StdToken {
 			
 			//Escaped dollar sign
 			if (c == '\\' && in.hasNext() && in.peek() == '$') {
-				sb.append('$');
+				sb.append("\\$");
 				in.next(); //Skip the $
 			} 
 			
@@ -61,15 +66,18 @@ public class StringToken extends StdToken {
 					}
 					
 					//Add and reset the string builder
-					instrs.insert(0, List.fromString(sb.toString()));
+					SourceStringRef ref = in.currentRef();
+					ref.dec(var_name.length()); // Don't include $
+					String str_literal = StringParseUtils.unescape(new ParserString(ref, sb.toString()));
+					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new GetVariableInstruction(Aya.getInstance().getSymbols().getSymbol(var_name)));
+					instrs.insert(0, new GetVariableInstruction(ref, SymbolTable.getSymbol(var_name)));
 					
 				}
 				
-				//Block Interpolation
+				//BlockEvaluator Interpolation
 				else if (c == '(') {
 					int braces = 1;
 					StringBuilder block = new StringBuilder();
@@ -103,16 +111,21 @@ public class StringToken extends StdToken {
 					}
 					
 					if(!complete) {
-						throw new SyntaxError("Incomplete interpolation in \"" + data + "\"");
+						throw new SyntaxError("Incomplete interpolation in \"" + data + "\"", in.currentRef());
 					}
 					
 					
 					//Add and reset the string builder
-					instrs.insert(0, List.fromString(sb.toString()));
+					SourceStringRef ref = in.currentRef();
+					ref.dec(block.toString().length());
+					ref.dec(2); // Open and close paren
+					String str_literal = StringParseUtils.unescape(new ParserString(ref, sb.toString()));
+					instrs.insert(0, List.fromString(str_literal));
 					sb.setLength(0);
 					
-					//Add the block
-					instrs.insert(0, new Block(Parser.compileIS(block.toString(), Aya.getInstance())));
+					//Add the blockEvaluator
+					InstructionStack is = Parser.compileIS(new ParserString(in.currentRef(), block.toString()));
+					instrs.insert(0, BlockUtils.fromIS(is));
 					
 				}
 				
@@ -128,8 +141,9 @@ public class StringToken extends StdToken {
 			}
 		}
 		
-		instrs.insert(0, List.fromString(sb.toString()));
-		return new InterpolateStringInstruction(data, instrs);
+		String str_literal = StringParseUtils.unescape(new ParserString(in.currentRef().inc(), sb.toString()));
+		instrs.insert(0, List.fromString(str_literal));
+		return new InterpolateStringInstruction(this.getSourceStringRef(), data, instrs);
 	}
 
 	@Override

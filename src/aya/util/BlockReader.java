@@ -1,23 +1,23 @@
 package aya.util;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.symbol.Symbol;
 
 public class BlockReader {
 
-	Block _block;
-	NamedInstruction _inst;
+	BlockEvaluator _block;
+	NamedOperator _inst;
 
-	public BlockReader(NamedInstruction instruction) {
+	public BlockReader(NamedOperator instruction) {
 		_block = null;
 		_inst = instruction;
 	}
 	
-	public void setBlock(Block b) {
+	public void setBlock(BlockEvaluator b) {
 		_block = b;
 	}
 	

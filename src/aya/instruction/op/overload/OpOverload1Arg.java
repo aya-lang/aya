@@ -2,11 +2,12 @@ package aya.instruction.op.overload;
 
 import java.util.ArrayList;
 
-import aya.Aya;
+import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 
 public class OpOverload1Arg extends OpOverload {
 	
@@ -19,7 +20,7 @@ public class OpOverload1Arg extends OpOverload {
 			throw new IllegalArgumentException();
 		}
 		
-		_var =  Aya.getInstance().getSymbols().getSymbol("__" + name + "__");
+		_var =  SymbolTable.getSymbol("__" + name + "__");
 	}
 	
 	public ArrayList<String> getNames() {
@@ -35,9 +36,9 @@ public class OpOverload1Arg extends OpOverload {
 	}
 	
 	@Override
-	public boolean execute(Block block, Obj a) {
+	public boolean execute(BlockEvaluator blockEvaluator, Obj a) {
 		if (a.isa(Obj.DICT)) {
-			block.callVariable((Dict)a, _var);
+			blockEvaluator.callVariable((Dict)a, _var);
 			return true;
 		} else {
 			return false;
@@ -45,12 +46,12 @@ public class OpOverload1Arg extends OpOverload {
 	}
 	
 	@Override
-	public Obj executeAndReturn(Obj a) {
+	public Obj executeAndReturn(ExecutionContext context, Obj a) {
 		if (a.isa(Obj.DICT)) {
-			Block block = new Block();
-			block.callVariable((Dict)a, _var);
-			block.eval();
-			return block.pop();
+			BlockEvaluator blockEvaluator = context.createEvaluator();
+			blockEvaluator.callVariable((Dict)a, _var);
+			blockEvaluator.eval();
+			return blockEvaluator.pop();
 		} else {
 			return null;
 		}

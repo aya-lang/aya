@@ -6,6 +6,7 @@ import aya.ext.graphics.instruction.ClearRectGraphicsInstruction;
 import aya.ext.graphics.instruction.CloseGraphicsInstruction;
 import aya.ext.graphics.instruction.CopyRectGraphicsInstruction;
 import aya.ext.graphics.instruction.EllipseGraphicsInstruction;
+import aya.ext.graphics.instruction.GetPixelsGraphicsInstruction;
 import aya.ext.graphics.instruction.IsOpenGraphicsInstruction;
 import aya.ext.graphics.instruction.LineGraphicsInstruction;
 import aya.ext.graphics.instruction.ListFontsGraphicsInstruction;
@@ -50,6 +51,7 @@ public class GraphicsInstructionStore extends NamedInstructionStore {
 		addInstruction(new CloseGraphicsInstruction(canvas_table));
 		addInstruction(new CopyRectGraphicsInstruction(canvas_table));
 		addInstruction(new EllipseGraphicsInstruction(canvas_table));
+		addInstruction(new GetPixelsGraphicsInstruction(canvas_table));
 		addInstruction(new IsOpenGraphicsInstruction(canvas_table));
 		addInstruction(new LineGraphicsInstruction(canvas_table));
 		addInstruction(new ListFontsGraphicsInstruction(canvas_table));

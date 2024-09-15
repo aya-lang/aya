@@ -2,16 +2,16 @@ package aya.ext.date;
 
 import java.util.Calendar;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.symbol.SymbolConstants;
 
-public class DescribeDateInstruction extends NamedInstruction {
+public class DescribeDateInstruction extends NamedOperator {
 
 	private Calendar cal; 
 	
@@ -22,8 +22,8 @@ public class DescribeDateInstruction extends NamedInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 
 		if (a.isa(Obj.NUMBER)) {
 			long timeStamp = ((Number)a).toLong();
@@ -41,7 +41,7 @@ public class DescribeDateInstruction extends NamedInstruction {
 			out.set(SymbolConstants.MS, 		  Num.fromInt(cal.get(Calendar.MILLISECOND)));
 			out.set(SymbolConstants.STAMP, 		  a);
 
-			block.push(out);
+			blockEvaluator.push(out);
 
 		} else {
 			throw new TypeError(this,"N", a);

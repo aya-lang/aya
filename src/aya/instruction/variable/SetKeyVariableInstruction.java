@@ -1,19 +1,20 @@
 package aya.instruction.variable;
 
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class SetKeyVariableInstruction extends VariableInstruction {
 
-	public SetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public SetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		final Obj kv_obj = b.pop();
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;

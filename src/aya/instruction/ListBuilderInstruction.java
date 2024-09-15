@@ -4,38 +4,45 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
+import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
+import aya.parser.SourceStringRef;
 
 public class ListBuilderInstruction extends Instruction {
 
 	
-	private Block initialList;
-	private Block map;
-	private Block[] filters;
+	private StaticBlock initialList;
+	private StaticBlock map;
+	private StaticBlock[] filters;
 	private int num_captures;
 
-	public ListBuilderInstruction(Block initial, Block map, Block[] filters, int num_captures) {
+	public ListBuilderInstruction(SourceStringRef source, StaticBlock initial, StaticBlock map, StaticBlock[] filters, int num_captures) {
+		super(source);
 		this.initialList = initial;
 		this.map = map;
 		this.filters = filters;
 		this.num_captures = num_captures;
 	}
 	
-	public List createList(Stack<Obj> outerStack) {
-		Block initial = initialList.duplicate();
+	public List createList(ExecutionContext context, Stack<Obj> outerStack) {
+		BlockEvaluator evaluator = context.createEvaluator();
+		evaluator.dump(initialList);
 
 		for (int p = 0; p < num_captures; p++) {
-			initial.add(outerStack.pop());
+			evaluator.add(outerStack.pop());
 		}
 		
-		initial.eval();
+		evaluator.eval();
 		
 		ArrayList<Obj> res = new ArrayList<Obj>();			//Initialize the argument list
-		res.addAll(initial.getStack());						//Copy the results into the argument list
+		res.addAll(evaluator.getStack());					//Copy the results into the argument list
 		
 		boolean allLists = false;							//Check if all arguments are lists
 		if(res.size() > 1) {
@@ -51,7 +58,7 @@ public class ListBuilderInstruction extends Instruction {
 		ArrayList<Obj> list = null;
 		List outList = null;
 		
-		//If all arguments are lists, dump each list's respective element onto the stack of the map block
+		//If all arguments are lists, dump each list's respective element onto the stack of the map blockEvaluator
 		// [[1 2][3 4], +] => 1 3 +, 2 4 + => [4 6]
 		if (allLists) {
 			ArrayList<List> listArgs = new ArrayList<List>(res.size());
@@ -71,14 +78,14 @@ public class ListBuilderInstruction extends Instruction {
 			
 			//Dump items from the lists into the blocks and apply the map if needed
 			for(int i = 0; i < size; i++) {
-				Block b = new Block();
+				BlockEvaluator b = context.createEvaluator();
 				for (int j = 0; j < listArgs.size(); j++) {
 					b.push(listArgs.get(j).getExact(i));
 				}
 				
 				//Apply the map
 				if(map != null) {
-					b.addAll(map.getInstructions().getInstrucionList());
+					b.dump(map);
 					b.eval();		
 				}
 				list.addAll(b.getStack());
@@ -89,13 +96,13 @@ public class ListBuilderInstruction extends Instruction {
 		} else {
 			outList = new List(ListRangeUtils.buildRange(new List(res)));							//Create the initial range
 			if(map != null) {
-				outList = outList.map(this.map);
+				outList = ListIterationFunctions.map(context, outList, this.map);
 			}
 		}
 		
 		if(filters != null) {								//Apply the filters to the list
-			for (Block filter : filters) {
-				outList = outList.filter(filter);
+			for (StaticBlock filter : filters) {
+				outList = ListIterationFunctions.filter(context, outList, filter);
 			}
 		}
 		return outList;
@@ -103,8 +110,8 @@ public class ListBuilderInstruction extends Instruction {
 	
 
 	@Override
-	public void execute(Block b) {
-		b.push(createList(b.getStack()));
+	public void execute(BlockEvaluator b) {
+		b.push(createList(b.getContext(), b.getStack()));
 	}
 
 	@Override
@@ -115,18 +122,18 @@ public class ListBuilderInstruction extends Instruction {
 			stream.print("| ");
 		}
 
-		initialList.repr(stream, false);
+		BlockUtils.repr(stream, initialList, false);
 		stream.print(", ");
 
 		boolean has_body = false;
 		if(map != null) {
-			map.repr(stream, false);
+			BlockUtils.repr(stream, map, false);
 			stream.print(", ");
 			has_body = true;
 		}
 		if(filters != null) {
-			for (Block b : filters) {
-				b.repr(stream, false);
+			for (StaticBlock b : filters) {
+				BlockUtils.repr(stream, b, false);
 				stream.print(", ");
 			}
 			has_body = true;

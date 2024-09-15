@@ -9,8 +9,9 @@ import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumberList;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.Operator;
 import aya.obj.Obj;
 import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberListOp;
@@ -26,65 +27,90 @@ public class VectorizedFunctions {
 	// List, Obj
 	//
 
-	private static List vectorizeListObj(OpInstruction op, List a, Obj b, NumberListOp nlop) {
+	private static List vectorizeListObj(ExecutionContext context, Operator op, List a, Obj b, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST) && b.isa(NUMBER)) {
 			return new List(nlop.ln(asNumberList(a), asNumber(b)));
 		} else {
-			return vectorizeListObj(op, a, b);
+			return vectorizeListObj(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeListObj(OpInstruction op, List a, Obj b) {
+	private static List vectorizeListObj(ExecutionContext context, Operator op, List a, Obj b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
-			out.mutAdd(op.exec2arg(a.getExact(i), b));
+			out.mutAdd(op.exec2arg(context, a.getExact(i), b));
 		}
-		return out;	
+		return out;
 	}
-	
+
 
 	//
 	// Obj, List
 	//
 
-	private static List vectorizeObjList(OpInstruction op, Obj a, List b, NumberListOp nlop) {
+	private static List vectorizeObjList(ExecutionContext context, Operator op, Obj a, List b, NumberListOp nlop) {
 		if (b.isa(NUMBERLIST) && a.isa(NUMBER)) {
 			return new List(nlop.nl(asNumber(a), asNumberList(b)));
 		} else {
-			return vectorizeObjList(op, a, b);
+			return vectorizeObjList(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeObjList(OpInstruction op, Obj a, List b) {
+	private static List vectorizeObjList(ExecutionContext context, Operator op, Obj a, List b) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < b.length(); i++) {
-			out.mutAdd(op.exec2arg(a, b.getExact(i)));
+			out.mutAdd(op.exec2arg(context, a, b.getExact(i)));
 		}
-		return out;	
+		return out;
 	}
-	
+
 
 	//
 	// List, List
 	//
 
-	private static List vectorizeListList(OpInstruction op, List a, List b, NumberListOp nlop) {
-		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+	private static List vectorizeListList(ExecutionContext context, Operator op, List a, List b, NumberListOp nlop) {
+		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) && a.length() == b.length()) {
 			return new List(nlop.ll(asNumberList(a), asNumberList(b)));
 		} else {
-			return vectorizeListList(op, a, b);
+			return vectorizeListList(context, op, a, b);
 		}
 	}
 
-	private static List vectorizeListList(OpInstruction op, List a, List b) {
+	private static List vectorizeListList(ExecutionContext context, Operator op, List a, List b) {
 		List out = new List();
-		if (a.length() == b.length()) {
+		final int a_len = a.length();
+		final int b_len = b.length();
+		final int a_dims = a.shape().length();
+		final int b_dims = b.shape().length();
+
+		if (a.getExact(0).isa(LIST) && a_dims > b_dims) {
 			for (int i = 0; i < a.length(); i++) {
-				out.mutAdd(op.exec2arg(a.getExact(i), b.getExact(i)));
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b));
 			}
-			return out;	
+			return out;
+		} else if (b.getExact(0).isa(LIST) && b_dims > a_dims) {
+			for (int i = 0; i < b.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a, b.getExact(i)));
+			}
+			return out;
+		} else if (a_len == 1) {
+			for (int i = 0; i < b.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(0), b.getExact(i)));
+			}
+			return out;
+		} else if (b_len == 1) {
+			for (int i = 0; i < a.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b.getExact(0)));
+			}
+			return out;
+		} else if (a_len == b_len) {
+			for (int i = 0; i < a.length(); i++) {
+				out.mutAdd(op.exec2arg(context, a.getExact(i), b.getExact(i)));
+			}
+			return out;
 		} else {
 			ReprStream msg = new ReprStream();
 			msg.println("Dimension mismatch. Lengths must be equal but are: " + a.length() + ", " + b.length());
@@ -98,80 +124,81 @@ public class VectorizedFunctions {
 	//
 	// 2 Arg Driver Functions
 	//
-	
-	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b) {
+
+	public static Obj vectorize2arg(ExecutionContext context, Operator op, Obj a, Obj b) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
-			return vectorizeListObj(op, (List)a, b);
+			return vectorizeListObj(context, op, (List)a, b);
 		} else if (!a_is_list && b_is_list) {
-			return vectorizeObjList(op, a, (List)b);
+			return vectorizeObjList(context, op, a, (List)b);
 		} else if (a_is_list && b_is_list) {
-			return vectorizeListList(op, (List)a, (List)b);
+			return vectorizeListList(context, op, (List)a, (List)b);
 		} else {
 			return null;
 		}
 	}
 
 
-	public static Obj vectorize2arg(OpInstruction op, Obj a, Obj b, NumberListOp nlop) {
+	public static Obj vectorize2arg(ExecutionContext context, Operator op, Obj a, Obj b, NumberListOp nlop) {
 		final boolean a_is_list = isList(a);
 		final boolean b_is_list = isList(b);
 		if (a_is_list && !b_is_list) {
-			return vectorizeListObj(op, (List)a, b, nlop);
+			return vectorizeListObj(context, op, (List)a, b, nlop);
 		} else if (!a_is_list && b_is_list) {
-			return vectorizeObjList(op, a, (List)b, nlop);
+			return vectorizeObjList(context, op, a, (List)b, nlop);
 		} else if (a_is_list && b_is_list) {
-			return vectorizeListList(op, (List)a, (List)b, nlop);
+			return vectorizeListList(context, op, (List)a, (List)b, nlop);
 		} else {
 			return null;
 		}
 	}
-	
+
 
 	//
 	// 1 Arg Functions
 	//
 
-	
-	private static List vectorizeList(OpInstruction op, List a, NumberListOp nlop) {
+
+	private static List vectorizeList(ExecutionContext context, Operator op, List a, NumberListOp nlop) {
 		if (a.isa(NUMBERLIST)) {
 			return new List(nlop.l(asNumberList(a)));
 		} else {
-			return vectorizeList(op, a);
+			return vectorizeList(context, op, a);
 		}
 	}
 
 
-	private static List vectorizeList(OpInstruction op, List a) {
+	private static List vectorizeList(ExecutionContext context, Operator op, List a) {
 		// Generic fallback
 		List out = new List();
 		for (int i = 0; i < a.length(); i++) {
-			out.mutAdd(op.exec1arg(a.getExact(i)));
+			out.mutAdd(op.exec1arg(context, a.getExact(i)));
 		}
-		return out;	
+		return out;
 	}
 
 
 
-	public static Obj vectorize1arg(OpInstruction op, Obj a) {
+	public static Obj vectorize1arg(ExecutionContext context, Operator op, Obj a) {
 		if (isList(a)) {
-			return vectorizeList(op, asList(a));
+			return vectorizeList(context, op, asList(a));
 		} else {
 			return null;
 		}
 	}
 
 
-	public static Obj vectorize1arg(OpInstruction op, Obj a, NumberListOp nlop) {
+	public static Obj vectorize1arg(ExecutionContext context, Operator op, Obj a, NumberListOp nlop) {
 		if (isList(a)) {
 			if (a.isa(NUMBERLIST)) {
-				return vectorizeList(op, asList(a), nlop);
+				return vectorizeList(context, op, asList(a), nlop);
 			} else {
-				return vectorizeList(op, asList(a));
+				return vectorizeList(context, op, asList(a));
 			}
 		} else {
 			return null;
 		}
+     
 	}
 }

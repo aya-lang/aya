@@ -2,10 +2,10 @@ package aya.ext.color;
 
 import java.awt.Color;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
@@ -17,10 +17,10 @@ public class ColorInstructionStore extends NamedInstructionStore {
 	@Override
 	protected void init() {
 
-		addInstruction(new NamedInstruction("color.fromstr", "color::str: convert an html valid color to an rgba dict") {
+		addInstruction(new NamedOperator("color.fromstr", "color::str: convert an html valid color to an rgba dict") {
 			@Override
-			public void execute(Block block) {
-				String color_str = block.pop().str();
+			public void execute(BlockEvaluator blockEvaluator) {
+				String color_str = blockEvaluator.pop().str();
 				try {
 					Color color = ColorFactory.web(color_str);
 					Dict d = new Dict();
@@ -28,21 +28,21 @@ public class ColorInstructionStore extends NamedInstructionStore {
 					d.set(SymbolConstants.G, Num.fromInt(color.getGreen()));
 					d.set(SymbolConstants.B, Num.fromInt(color.getBlue()));
 					d.set(SymbolConstants.A, Num.fromInt(color.getAlpha()));
-					block.push(d);
+					blockEvaluator.push(d);
 				} catch (IllegalArgumentException e) {
 					throw new ValueError(":{color.fromstr} Invalid color: '" + color_str + "'");
 				}
 			}
 		});
 
-		addInstruction(new NamedInstruction("color.name_list", "return a list of all named colors") {
+		addInstruction(new NamedOperator("color.name_list", "return a list of all named colors") {
 			@Override
-			public void execute(Block block) {
+			public void execute(BlockEvaluator blockEvaluator) {
 				List named_colors = new List();
 				for (String s : ColorFactory.listNamedColors()) {
 					named_colors.mutAdd(List.fromString(s));
 				}
-				block.push(named_colors);
+				blockEvaluator.push(named_colors);
 			}
 		});
 

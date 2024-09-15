@@ -1,6 +1,5 @@
 package aya.obj.list;
 
-import static aya.util.Casting.asBlock;
 import static aya.util.Casting.asList;
 import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
@@ -8,12 +7,11 @@ import static aya.util.Casting.asNumberList;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.DataInstruction;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.number.Num;
@@ -100,6 +98,22 @@ public class List extends Obj {
 		
 		return out;
 	}
+
+	// Compute the intersection of the two lists */
+	public List intersect(List objs) {
+		List out = new List();
+		List uniq = objs.unique();
+		
+		for (int i = 0; i < length(); i++) {
+			Obj o = getExact(i);
+			if (uniq.find(o) >= 0) {
+				out.mutAdd(o);
+			}
+		}
+		
+		return out;
+	}
+	
 	
 	/** Is the list a rectangular 2d list? */
 	public boolean isRect() {
@@ -194,6 +208,25 @@ public class List extends Obj {
 			
 			return out;
 		}
+	}
+	
+	public List shape() {
+		List shape = new List();
+		Obj cur = this;
+		while (true) {
+			if (cur.isa(LIST) && !cur.isa(STR)) {
+				List cur_list = asList(cur);
+				shape.mutAdd(Num.fromInt(cur_list.length()));
+				if (cur_list.length() > 0) {
+					cur = cur_list.head();
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+		return shape;
 	}
 
 	//Yes I know this is gross, i'll fix it later...
@@ -335,113 +368,6 @@ public class List extends Obj {
 		return (Str)(l.impl());
 	}
 
-	/** 
-	 * Maps a block to a list and returns the new list. The block is not effected
-	 */
-	public List map(Block block) {
-		int len = length();
-		if (len > 0) {
-			ArrayList<Obj> out = new ArrayList<Obj>(len);
-			Block b = new Block();
-			for (int i = 0; i < len; i++) {
-				b.addAll(block.getInstructions().getInstrucionList());
-				b.add(new DataInstruction(getExact(i)));
-				b.eval();
-				out.addAll(b.getStack());
-				b.clear();
-			}
-			return new List(out);
-		} else {
-			return this.deepcopy();
-		}
-	}
-	/** 
-	 * Same as map but push 1 additional item to the stack (shallow copied)
-	 * Maps a block to a list and returns the new list. The block is not effected
-	 */
-	public List map1arg(Block block, Obj obj) {
-		int len = length();
-		ArrayList<Obj> out = new ArrayList<Obj>(len);
-		Block b = new Block();
-		for (int i = 0; i < len; i++) {
-			b.push(obj);
-			b.addAll(block.getInstructions().getInstrucionList());
-			b.add(new DataInstruction(getExact(i)));
-			b.eval();
-			out.addAll(b.getStack());
-			b.clear();
-		}
-		return new List(out);
-	}
-
-	/**
-	 * Filter a list using the block
-	 * 
-	 * @param block
-	 * @param list
-	 * @return
-	 */
-	public List filter(Block block) {
-		ArrayList<Obj> out = new ArrayList<Obj>();
-		Block b = new Block();
-		for (int i = 0; i < length(); i++) {
-			final Obj o = getExact(i);
-			b.addAll(block.getInstructions().getInstrucionList());
-			b.add(new DataInstruction(o));
-			b.eval();
-			if(b.peek().bool()) {
-				out.add(o);
-			}
-			b.clear();
-		}
-		return new List(out);
-	}
-	
-	/**
-	 * Filter a list using the block
-	 * 
-	 * @param block
-	 * @param list
-	 * @return
-	 */
-	public List filter(Block block, Obj dflt) {
-		ArrayList<Obj> out = new ArrayList<Obj>(length());
-		Block b = new Block();
-		for (int i = 0; i < length(); i++) {
-			b.addAll(block.getInstructions().getInstrucionList());
-			b.add(new DataInstruction(getExact(i)));
-			b.eval();
-			if(b.peek().bool()) {
-				out.add(getExact(i));
-			} else {
-				out.add(dflt);
-			}
-			b.clear();
-		}
-		return new List(out);
-	}
-
-	/**
-	 * Like filter but returns a list of true/false values representing
-	 * the outcome of each applying the block to each item in the list
-	 * @param list
-	 * @return
-	 */
-	public boolean[] filterIndex(Block block) {
-		final int len = length();
-		boolean[] out = new boolean[len];
-		Block b = new Block();
-		for (int i = 0; i < len; i++) {
-			b.addAll(block.getInstructions().getInstrucionList());
-			b.add(new DataInstruction(getExact(i)));
-			b.eval();
-			out[i] = b.peek().bool();
-			b.clear();
-		}
-		return out;
-	}
-	
-	
 	/////////////////////
 	// LIST OPERATIONS //
 	/////////////////////
@@ -538,7 +464,7 @@ public class List extends Obj {
 	
 	public List split(Obj o) {
 		if (o.isa(Obj.BLOCK)) {
-			// TODO: Split wherever the block evaluates to true
+			// TODO: Split wherever the blockEvaluator evaluates to true
 			return new List();
 		} else {
 			return _list.split(o);
@@ -606,8 +532,9 @@ public class List extends Obj {
 		return getExact(is, dflt);
 	}
 
-	/** General list indexing */
-	public Obj getIndexed(Obj index) {
+	/** General list indexing 
+	 * @param context TODO*/
+	public Obj getIndexed(ExecutionContext context, Obj index) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt());
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -624,14 +551,14 @@ public class List extends Obj {
 					List index_list = asList(index);
 					List out = new List();
 					for (int i = 0; i < index_list.length(); i++) {
-						out.mutAdd(getIndexed(index_list.getExact(i)));
+						out.mutAdd(getIndexed(context, index_list.getExact(i)));
 					}
 					return out;
 				}
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter((Block)index);
+			return ListIterationFunctions.filter(context, this, Casting.asStaticBlock(index));
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -639,7 +566,7 @@ public class List extends Obj {
 		}
 	}
 
-	public Obj getIndexed(Obj index, Obj dflt) {
+	public Obj getIndexed(ExecutionContext context, Obj index, Obj dflt) {
 		if(index.isa(Obj.NUMBER)) {
 			return getIndexed(asNumber(index).toInt(), dflt);
 		} else if (index.isa(Obj.CHAR) && index.str().equals("*")) {
@@ -656,14 +583,14 @@ public class List extends Obj {
 					List index_list = asList(index);
 					List out = new List();
 					for (int i = 0; i < index_list.length(); i++) {
-						out.mutAdd(getIndexed(index_list.getExact(i), dflt));
+						out.mutAdd(getIndexed(context, index_list.getExact(i), dflt));
 					}
 					return out;
 				}
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			return filter((Block)index, dflt);
+			return ListIterationFunctions.filter(context, this, Casting.asStaticBlock(index), dflt);
 		} else {
 			throw new TypeError("Cannot index list using object:\n"
 					+ "list:\t" + repr() + "\n"
@@ -838,8 +765,9 @@ public class List extends Obj {
 		return l;
 	}
 
-	/** General list setting **/
-	public void mutSetIndexed(Obj index, Obj item) {
+	/** General list setting 
+	 * @param context TODO**/
+	public void mutSetIndexed(ExecutionContext context, Obj index, Obj item) {
 		if(index.isa(Obj.NUMBER)) {
 			mutSetIndexed(asNumber(index).toInt(), item);
 		} else if (index.isa(Obj.LIST)) {
@@ -889,7 +817,7 @@ public class List extends Obj {
 			}
 		} 
 		else if (index.isa(Obj.BLOCK)) {
-			boolean[] truthIdxs = filterIndex(asBlock(index));
+			boolean[] truthIdxs = ListIterationFunctions.filterIndex(context, this, Casting.asStaticBlock(index));
 			for (int i = 0; i < length(); i++) {
 				if (truthIdxs[i]) {
 					mutSetExact(i, item);
@@ -971,6 +899,7 @@ public class List extends Obj {
 	public byte type() {
 		return _list.type();
 	}
-	
+
+
 	
 }

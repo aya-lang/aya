@@ -1,21 +1,28 @@
 package aya.instruction.index;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class SetVarIndexInstruction extends SetIndexInstruction {
 	
 	private Symbol _var;
 
-	public SetVarIndexInstruction(Symbol var) {
+	public SetVarIndexInstruction(SourceStringRef source, Symbol var) {
+		super(source);
 		_var = var;
 	}
 	
 	@Override
 	protected Obj getIndex() {
-		return Aya.getInstance().getVars().getVar(_var);
+		return _var;
+	}
+	
+	@Override
+	protected Obj getEvaluatedIndex(ExecutionContext context) {
+		return context.getVars().getVar(_var);
 	}
 
 	@Override

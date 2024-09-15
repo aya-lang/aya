@@ -1,0 +1,23 @@
+import ::viewmat
+
+{10 2 .& 8 .> U}:make_rule;
+
+{prev rule,
+    prev .EL.E.RU{.S}.&2.S {3 .< 2 10 .& rule \ I} O
+}:next;
+
+30 make_rule :rule;
+
+200 :height;
+150 :width;
+[
+    .# Center dot
+    [ {0}width2/% 1 {0}width2/% ]
+    .# apply `height` times
+    {$ rule next } height %
+]
+
+.# Invert colors and display
+#! viewmat.show
+
+"":R

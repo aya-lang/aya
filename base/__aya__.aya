@@ -1,12 +1,13 @@
 .# This file is a part of aya: https://github.com/aya-lang/aya
 
+
 .# __aya__
 .# Defines the __aya__ namespace and keywords
 
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
-{:{sys.ad} "test/test.aya" + G ~}:tt;
+{:{sys.ad} "test/test.aya" + :F}:tt;
 
 .# Global __aya__ table
 {,
@@ -19,7 +20,15 @@
 
 }:__aya__;
 
-
+{,
+    {, 
+        ::__nil :__type__;
+        "nil" :__str__;
+        "nil" :__repr__'
+        1 :__pushself__;
+        {:T ::__nil =}:__eq__;
+    }:__meta__;
+}:nil;
 
 .#######################################
 .# DEFINE __aya__ KEYWORDS AND GLOBALS #
@@ -49,7 +58,7 @@
 .# ----
 
 .#? load S\n  Load a script
-{{~".aya"+G~} 0 :`}:load;
+{{~".aya"+:F} 0 :`}:load;
 
 
 .# -------
@@ -57,7 +66,7 @@
 .# -------
 
 {name,
-    [:{sys.ad} :9s "examples" :9s name ".aya"] W G~
+    [:{sys.ad} :9s "examples" :9s name ".aya"] W :F
 }:example;
 
 
@@ -433,7 +442,6 @@ __aya__.extend.` :extend;
 
     .# required libraries
     "importlib"
-    "exception"
 
     .# Interpreter commands
     "interpreter"

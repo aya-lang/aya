@@ -38,7 +38,8 @@
 
 
     .#? ::block.haslocals\n  return true if the block has a local variables
-    {.|::locals H}:haslocals;
+    .# Both the args and the locals mush be empty for this to be false
+    {.| :&.locals:E \.argsE + 0 =!}:haslocals;
 
 
     .#? ::block.locals\n  get the locals of a block\n  will throw error if block does not have locals
@@ -47,43 +48,6 @@
 
     .#? ::block.args\n  get an ordered list of argument descriptions to the block\n  empty list if there are none
     {.|.args}:args;
-
-
-    .#? ::block.makelocals\n  if a block has local variables, return the block, otherwise wrap it in a block that has an empty local variable set
-    .{ Example:
-        aya> {:a, a 1 +}.makelocals
-        {: a , a 1 + }
-        aya> {a, a 1 +}.makelocals
-        {a , a 1 + }
-        aya> {a 1 +}.makelocals
-        {, {a 1 +} ~ }
-    .}
-    {f,
-        f.`.haslocals {
-            .# f has locals, simply return the block
-            f.`
-        } {
-            .# f does not have locals, wrap it in a block that does
-            {: , f~} [::f] .+
-        } .?
-    }:makelocals;
-
-
-    .#? ::list ::block.setlocals\n  wrap a block in a scope which has locals provided by the list of symbols
-    .{ Example:
-        aya> [::x] {:x; "x is $x"}.setlocals :setx
-        {: x , {:x ; "$xx is "} ~ }
-        aya> 4 setx
-        "x is 4"
-        aya> x
-        ERROR: Variable x not found
-    .}
-    {syms code,
-        {: ,_~} {, code.` :_ } .+ :code;
-        0 syms code.`.locals :D;
-        code .`
-    }:setlocals;
-
 
     .#? ::block .use ::list\n  evaulate the variables (given by a list of symbols) in the block in the current scope
     .{ Example:
@@ -102,59 +66,8 @@
         d__ .+
     })}:use;
 
-    .#? ::block .capture ::list\n  capture all vars defined in list as local variables in the block.\n  If the block has no local variables, wrap it in a block that does and return that block
-    .{ Example:
-        aya> 1:a
-        1
-        aya> {x, a x +}.capture[::a]
-        {x : a , a x + }
-        aya> 5 f
-        6
-        aya> 2:a
-        2
-        aya> 5 f
-        6
-    .}
-    {(1 hold)({\.makelocals :& .|.locals @ {}.M._capture_vars .+ ;})}:capture;
-
     .#? ::block .time\n  return the result of the block and the execution time in ms
     {:a__, M$:a__; ~ M$ a__ -} :time;
-
-    .#? ::block.where_const ::dict\n  use variables defined in D in B
-    .{ Example
-        aya> {a, a b *}.where_const {, 2:b } :double
-        {a , a 2 * }
-        aya> 3 double
-        6
-
-       Set constant values in loops.
-       Before
-        aya> 3R :# {{a, a b *}.where_const {, 10:b "evaluating..":P} ~}
-        evaluating..
-        evaluating..
-        evaluating..
-        [ 10 20 30 ]
-       After: (note the parenthesis)
-        aya> 3R :# ({a, a b *}.where_const {, 10:b "evaluating..":P})
-        evaluating..
-        [ 10 20 30 ]
-
-       Escape functions with .` and ~ :
-        aya> {a, a fn~}.where_const {, double.` :fn} :apply_double
-        {a , a {x , x 2 * } ~ }
-        aya> 2 apply_double
-        4
-
-       Nesting!
-        aya> {a, a fn~}.where_const {, {a, a b *}.where_const {, 2:b} :fn} :apply_double
-        {a , a {a , a 2 * } ~ }
-        aya> 2 apply_double
-        4
-    .}
-    {1 hold .+}:where_const;
-
-    {(1 hold)(\$\;.makelocals:&.|.locals@.+;)}:where;
-
 
     .# Utility Functions
     .#####################

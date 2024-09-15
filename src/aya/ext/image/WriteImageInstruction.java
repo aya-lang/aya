@@ -5,17 +5,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import aya.Aya;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.SymbolTable;
 import aya.util.DictReader;
 
-public class WriteImageInstruction extends NamedInstruction {
+public class WriteImageInstruction extends NamedOperator {
 	
 	public WriteImageInstruction() {
 		super("image.write");
@@ -23,8 +23,8 @@ public class WriteImageInstruction extends NamedInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		Dict info = null;
 		
 		try {
@@ -34,7 +34,7 @@ public class WriteImageInstruction extends NamedInstruction {
 		}
 		
 		DictReader dr = new DictReader(info, opName());
-		String filename = dr.getStringEx(Aya.getInstance().getSymbols().getSymbol("filename"));
+		String filename = dr.getStringEx(SymbolTable.getSymbol("filename"));
 		String ext = getExt(filename);
 		if (ext.equals("")) {
 			throw new ValueError(opName() + ", filename does not have a valid extension");

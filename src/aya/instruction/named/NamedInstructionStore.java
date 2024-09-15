@@ -2,31 +2,31 @@ package aya.instruction.named;
 
 import java.util.HashMap;
 
-import aya.Aya;
+import aya.StaticData;
 
 public abstract class NamedInstructionStore {
 	
-	private HashMap<String, NamedInstruction> _instructions;
+	private HashMap<String, NamedOperator> _instructions;
 
 	public NamedInstructionStore() {
-		_instructions = new HashMap<String, NamedInstruction>();
+		_instructions = new HashMap<String, NamedOperator>();
 		init();
 	}
 	
-	protected void addInstruction(NamedInstruction inst) {
+	protected void addInstruction(NamedOperator inst) {
 		_instructions.put(inst.getName(), inst);
 	}
 
-	public NamedInstruction getInstruction(String name) {
+	public NamedOperator getInstruction(String name) {
 		return _instructions.get(name);
 	}
 	
-	public void initHelpData(Aya aya) {
-		for (HashMap.Entry<String, NamedInstruction> pair : _instructions.entrySet()) {
-			NamedInstruction i = pair.getValue();
+	public void initHelpData(StaticData staticData) {
+		for (HashMap.Entry<String, NamedOperator> pair : _instructions.entrySet()) {
+			NamedOperator i = pair.getValue();
 			String doc = i._doc;
 			if (doc == null || doc.equals("")) continue;
-			aya.addHelpText(":{" + i.getName() + "}\n  " + doc);
+			staticData.addHelpText(":{" + i.getName() + "}\n  " + doc);
 		}
 	}
 	

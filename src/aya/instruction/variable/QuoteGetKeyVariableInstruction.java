@@ -1,21 +1,21 @@
 package aya.instruction.variable;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.parser.SourceStringRef;
 
 public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
-	public QuoteGetKeyVariableInstruction(Symbol var) {
-		super(var);
+	public QuoteGetKeyVariableInstruction(SourceStringRef source, Symbol var) {
+		super(source, var);
 	}
 	
 	@Override
-	public void execute(Block b) {
+	public void execute(BlockEvaluator b) {
 		final Obj kv_obj = b.pop();
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;
@@ -24,7 +24,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 			b.push(o);
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
-			Obj builtin_dict = Aya.getInstance().getVars().getGlobals().get(typeSym);
+			Obj builtin_dict = b.getContext().getVars().getGlobals().get(typeSym);
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
 				Obj o;

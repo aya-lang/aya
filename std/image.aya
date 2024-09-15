@@ -5,6 +5,9 @@ export ::image
 
 class image
 
+.# Note pixels are signed bytes
+.# user .data :0xff & to get 0-255 values
+
 def image::__init__ {data width height self,
     data self.:data;
     width self.:width;

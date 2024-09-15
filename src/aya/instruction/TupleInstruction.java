@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.EmptyStackError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
+import aya.parser.SourceStringRef;
 
 public class TupleInstruction extends Instruction {	
-	Block[] elements;
+	StaticBlock[] elements;
 	
 	/** 
 	 * Tuples will not need to be resized during runtime
 	 * @param blocks
 	 */
-	public TupleInstruction(Block[] blocks) {
+	public TupleInstruction(SourceStringRef source, StaticBlock[] blocks) {
+		super(source);
 		elements = blocks;
 	}
 	
@@ -24,24 +29,26 @@ public class TupleInstruction extends Instruction {
 	 * of the results
 	 * @return
 	 */
-	public ArrayList<Obj> evalToResults() {
+	public ArrayList<Obj> evalToResults(ExecutionContext context) {
 		ArrayList<Obj> out = new ArrayList<Obj>(elements.length);
 		for (int i = 0; i < elements.length; i++) {
-			Block b = elements[i].duplicate();
+			BlockEvaluator evaluator = context.createEvaluator();
+			evaluator.dump(elements[i]);
 			try {
-				b.eval();
+				evaluator.eval();
 			} catch (EmptyStackException e) {
 				EmptyStackError e2 = new EmptyStackError("Empty stack during evaluation of tuple");
-				e2.addContext(elements[i]);
+				e2.setSource(this.getSource());
+				throw e2;
 			}
-			out.add(b.pop());
+			out.add(evaluator.pop());
 		}
 		return out;
 	}
 	
 	@Override
-	public void execute(Block b) {
-		b.getStack().addAll(evalToResults());
+	public void execute(BlockEvaluator b) {
+		b.getStack().addAll(evalToResults(b.getContext()));
 	}
 
 	@Override
@@ -51,7 +58,7 @@ public class TupleInstruction extends Instruction {
 			if(i!=0) {
 				stream.print(", ");
 			}
-			elements[i].repr(stream, false);
+			BlockUtils.repr(stream, elements[i], false);
 		}
 		stream.print(")");
 		return stream;

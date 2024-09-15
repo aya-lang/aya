@@ -3,30 +3,37 @@ package aya.parser.tokens;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.EndOfInputError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
-import aya.instruction.flag.PopVarFlagInstruction;
+import aya.instruction.InstructionStack;
 import aya.instruction.variable.QuoteGetVariableInstruction;
+import aya.instruction.variable.assignment.Assignment;
+import aya.instruction.variable.assignment.SimpleAssignment;
+import aya.instruction.variable.assignment.TypedAssignment;
+import aya.instruction.variable.assignment.UnpackAssignment;
 import aya.obj.Obj;
-import aya.obj.block.Block;
-import aya.obj.block.BlockHeader;
-import aya.obj.block.BlockHeaderArg;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
+import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
 import aya.util.Pair;
+import aya.util.Triple;
 
 public class BlockToken extends CollectionToken {
 	
 	public static final Obj DEFAULT_LOCAL_VAR = Num.ZERO;
 		
-	public BlockToken(String data, ArrayList<Token> col) {
-		super(Token.BLOCK, data, col);
+	public BlockToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.BLOCK, data, col, source);
 	}
 
 	
@@ -35,19 +42,19 @@ public class BlockToken extends CollectionToken {
 		//Split Tokens where there are commas
 		ArrayList<TokenQueue> blockData = splitCommas(col);
 		if (blockData.size() == 1) {
-			return new BlockLiteralInstruction(new Block(Parser.generate(blockData.get(0))));
+			InstructionStack instructions = Parser.generate(blockData.get(0));
+			return new BlockLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
 		} else {
 			TokenQueue header = blockData.get(0);
 
 			if (blockData.size() == 2) {
 				//Empty header, dict literal
 				if (!header.hasNext()) {
-					Block b = new Block();
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-					if (b.isEmpty()) {
+					InstructionStack instructions = Parser.generate(blockData.get(1));
+					if (instructions.size() == 0) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(b);
+						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
 					}
 				}
 				// Single number in header, create a dict factory with a capture
@@ -57,113 +64,167 @@ public class BlockToken extends CollectionToken {
 					try {
 						n = nt.numValue().toInt();
 					} catch (NumberFormatException e) {
-						throw new SyntaxError(nt + " is not a valid number in the block header");
+						throw new SyntaxError(nt + " is not a valid number in the blockEvaluator header", nt.getSourceStringRef());
 					}
 
-					if (n < 0) {
-						throw new SyntaxError("Cannot capture a negative number of elements in a dict literal");
+					if (n < 1) {
+						throw new SyntaxError("Cannot capture less than 1 elements from outer stack in a dict literal", nt.getSourceStringRef());
 					}
-					Block b = new Block();
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());
-					if (n == 0 && b.isEmpty()) {
+					InstructionStack instructions = Parser.generate(blockData.get(1));
+					if (n == 0 && instructions.isEmpty()) {
 						return EmptyDictLiteralInstruction.INSTANCE;
 					} else {
-						return new DictLiteralInstruction(b, n);
+						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions), n);
 					}
 				}
 				//Non-empty header, args and local variables
 				else {
-					Block b = new Block();
-					b.add(PopVarFlagInstruction.INSTANCE);
-					b.addAll(Parser.generate(blockData.get(1)).getInstrucionList());	//Main instructions
-					Pair<BlockHeader, HashMap<Symbol, Block>> p = generateBlockHeader(blockData.get(0));
-					BlockHeader block_header = p.first();
-					HashMap<Symbol, Block> captures = p.second();
-					b.add(block_header);
-					return new BlockLiteralInstruction(b, captures);
+					InstructionStack main_instructions = Parser.generate(blockData.get(1));
+					Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = generateBlockHeader(blockData.get(0));
+					StaticBlock blk = BlockUtils.fromIS(main_instructions, p.second(), p.first());
+					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
 				}
 			} else {
-				throw new SyntaxError("Block " + data + " contains too many parts");
+				throw new SyntaxError("BlockEvaluator contains too many parts", getSourceStringRef());
 			}
 		}
 	}
 	
-	private Pair<BlockHeader, HashMap<Symbol, Block>> generateBlockHeader(TokenQueue tokens) throws ParserException {
-		BlockHeader header = new BlockHeader();
-		
+	// args, locals, captures
+	private Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> generateBlockHeader(TokenQueue tokens) throws ParserException {
 		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
 		TokenQueue arg_tokens = split_tokens.first();
-		TokenQueue default_tokens = split_tokens.second();
-		HashMap<Symbol, Block> captures = new HashMap<Symbol, Block>();
+		TokenQueue locals_and_captures_tokens = split_tokens.second();
 	
-		generateBlockHeaderArgs(header, arg_tokens);
-		generateBlockHeaderDefaults(header, default_tokens, captures);
+		// Args
+		ArrayList<Assignment> args = generateBlockHeaderArgs(arg_tokens);
+
+		// Locals & Captures
+		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens);
+		Dict locals = locals_and_captures.first();
+		HashMap<Symbol, StaticBlock> captures = locals_and_captures.second();
 		
-		return new Pair<BlockHeader, HashMap<Symbol, Block>>(header, captures);
+		// Null checks
+		if (args.size() == 0) args = null;
+		if (locals.size() == 0) locals = null;
+		if (captures.size() == 0) captures = null;
+
+		return new Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>>(args, locals, captures);
 	}
 	
-	private static void generateBlockHeaderArgs(BlockHeader header, TokenQueue tokens) throws ParserException {
-		String orig = tokens.toString(); // For error reporting
+	private static ArrayList<Assignment> generateBlockHeaderArgs(TokenQueue tokens) throws ParserException {
+		ArrayList<Assignment> out = new ArrayList<Assignment>();
 		while (tokens.hasNext()) {
-			Token current = tokens.next();
-			if (current.isa(Token.VAR)) {
-				VarToken var = (VarToken)current;
-				BlockHeaderArg arg = new BlockHeaderArg(var.getSymbol());
-				
-				// Copy?
-				if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
-					tokens.next(); // Discard $
-					arg.copy = true;
-				}
+			Assignment arg = nextArg(tokens);
+			out.add(arg);
+		}
+		return out;
+	}
+	
+	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError {
+		Token current = tokens.next();
+		if (current.isa(Token.VAR)) {
+			VarToken var = (VarToken)current;
+			boolean copy = false;
+			Symbol arg_type = null;
 			
-				// Type annotation?
-				if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
-					SymbolToken sym_token = (SymbolToken)tokens.next();
-					arg.type = sym_token.getSymbol();
-				}
-				
-				header.addArg(arg);
-			} else {
-				throw new SyntaxError("All arguments should follow the format name[$][::type].\n" +
-									  "Got: " + orig);
+			// Copy?
+			if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().data.equals("$")) {
+				tokens.next(); // Discard $
+				copy = true;
 			}
+		
+			// Type annotation?
+			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
+				SymbolToken sym_token = (SymbolToken)tokens.next();
+				arg_type = sym_token.getSymbol();
+			}
+			
+			if (copy || arg_type != null) {
+				return new TypedAssignment(var.getSourceStringRef(), var.getSymbol(), arg_type, copy);
+			} else {
+				return new SimpleAssignment(var.getSourceStringRef(), var.getSymbol());
+			}
+		} else if (current.isa(Token.LIST)) {
+			ListToken unpack = (ListToken)current;
+			TokenQueue tq = new TokenQueue(unpack.col);
+			ArrayList<UnpackAssignment.Arg> args = new ArrayList<UnpackAssignment.Arg>();
+			Symbol catchall = null;
+			while (tq.hasNext()) {
+				// Catch-all
+				if (tq.peek().isa(Token.COLON)) {
+					Token colon = tq.next(); // colon
+					if (tq.hasNext() && tq.peek().isa(Token.VAR)) {
+						Token var = tq.next();
+						catchall = ((VarToken)var).getSymbol();
+					} else {
+						throw new SyntaxError("Expected varname after catchall assignment", colon.getSourceStringRef());
+					}
+					
+					if (tq.hasNext()) {
+						throw new SyntaxError("Catch-all name must be last", current.getSourceStringRef());
+					}
+				} else {
+					Assignment a = nextArg(tq);
+					boolean slurp = false;
+					if (tq.hasNext() && tq.peek().isa(Token.OP) && tq.peek().data.equals("~")) {
+						slurp = true;
+						tq.next(); // Skip ~
+					}
+
+					args.add(new UnpackAssignment.Arg(a, slurp));
+				}
+			}
+
+			if (args.size() == 0) {
+				throw new SyntaxError("Unpack args must contain at least one element", current.getSourceStringRef());
+			} else {
+				UnpackAssignment ua = UnpackAssignment.fromArgList(args, catchall, current.getSourceStringRef());
+				return ua;
+			}
+		} else {
+			throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());
 		}
 	}
 	
 	/** Assumes args have already been set 
 	 * @param captures 
 	 * @throws ParserException */
-	private static void generateBlockHeaderDefaults(BlockHeader header, TokenQueue tokens, HashMap<Symbol, Block> captures) throws ParserException {
-		String orig = tokens.toString();
+	private static Pair<Dict, HashMap<Symbol, StaticBlock>> generateBlockHeaderDefaults(TokenQueue tokens) throws ParserException {
+		Dict locals = new Dict();
+		HashMap<Symbol, StaticBlock> captures = new HashMap<Symbol, StaticBlock>();
+
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
 			if (current.isa(VAR)) {
 				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					header.addDefault(var.getSymbol(), Num.ZERO);
+					locals.set(var.getSymbol(), Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					captures.put(var.getSymbol(), new Block(lambda.generateInstructionsForFirst()));
+					captures.put(var.getSymbol(), BlockUtils.fromIS(lambda.generateInstructionsForFirst()));
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.data.equals("^")) {
-						Block b = new Block();
-						b.add(new QuoteGetVariableInstruction(var.getSymbol()));
+						Instruction i = new QuoteGetVariableInstruction(current.getSourceStringRef(), var.getSymbol());
+						StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(i);
 						captures.put(var.getSymbol(), b);
 					} else {
-						generateBlockHeaderDefaultsError(orig);
+						generateBlockHeaderDefaultsError(current.getSourceStringRef());
 					}
 				} else {
-					generateBlockHeaderDefaultsError(orig);
+					generateBlockHeaderDefaultsError(current.getSourceStringRef());
 				}
 			} else {
-				generateBlockHeaderDefaultsError(orig);
+				generateBlockHeaderDefaultsError(current.getSourceStringRef());
 			}
 		}
+		
+		return new Pair<Dict, HashMap<Symbol, StaticBlock>>(locals, captures);
 	}
 	
-	private static void generateBlockHeaderDefaultsError(String orig) throws SyntaxError {
-		throw new SyntaxError("All variable initializers should follow the format name().\n" + "Got: " + orig);
+	private static void generateBlockHeaderDefaultsError(SourceStringRef source) throws SyntaxError {
+		throw new SyntaxError("All variable initializers should follow the format name()", source);
 	}
 		
 	
@@ -191,8 +252,7 @@ public class BlockToken extends CollectionToken {
 		if (colons == 0) {
 			return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
 		} else if (colons > 1) {
-			throw new SyntaxError("Expected only one colon (:) token in block header.\n" +
-								  "Got: " + tokens.toString());
+			throw new SyntaxError("Expected only one colon (:) token in blockEvaluator header", tokens.peek().getSourceStringRef());
 		} else {
 			ArrayList<Token> t1 = new ArrayList<Token>(colon_index);
 			ArrayList<Token> t2 = new ArrayList<Token>(ts.size()-colon_index);
@@ -209,156 +269,6 @@ public class BlockToken extends CollectionToken {
 		}
 	}
 	
-	/** Parses variable set */
-	/*public static VariableSet parseVariableSet(ArrayList<Token> tokens) {
-		//Validate arguments
-		if(tokens.size() == 0) {
-			throw new SyntaxError("Variable names not found in block");
-		}
-		
-		//All vars, no need to check for type assertions
-		if(allVars(tokens)) {
-			//Set up arguments
-			Variable[] args = new Variable[tokens.size()];
-			for (int i = 0; i < args.length; i++) {
-				final Token t = tokens.get(i);
-				final GetVariableInstruction v = (GetVariableInstruction)(t.getInstruction());
-				args[i] = Symbol.fromID(v.id());
-			}
-			return new VariableSet(args,  null, null);
-		} 
-		
-		//Contains Local Variables
-		else if (blockHeaderHasLocals(tokens)) {
-			ArrayList<Token> before_colon = new ArrayList<Token>();
-			
-			int size = tokens.size();
-			for (int g = 0; g < size; g++) {
-				//g is not the index, since we remove every time, use 0
-				if (tokens.get(0).isa(Token.COLON)) {
-					tokens.remove(0);
-					break;
-				} else {
-					before_colon.add(tokens.get(0));
-					tokens.remove(0);
-				}
-			}
-			
-			//Create the set
-			VariableSet args;
-			if (before_colon.size() != 0) {
-				args = parseVariableSet(before_colon);
-			} else {
-				args = new VariableSet(null, null, null);
-			}
-			
-			//Initialize local variables in the set
-			Symbol last = null;
-			for (Token t : tokens) {
-
-				if (t.isa(Token.LAMBDA) && last != null) {
-					LambdaToken lt = (LambdaToken)t;
-					Pair<Boolean, Obj> inner_obj = lt.getInnerConstObj();
-					Obj obj = inner_obj.second();
-					if (obj == null) {
-						throw new SyntaxError("Block header: Local Variables Initializer: Must contain only const values");
-					}
-					args.setVar(last, obj);
-					if (inner_obj.first()) args.copyOnInit(last);
-					last = null;
-				} else if(!t.isa(VAR)) {
-					throw new SyntaxError("Block header: Local Variables: Must contain only variable names or"
-							+ " initializers. Received:\n" + t.data);
-				} else {
-					last = Symbol.fromStr(t.getData());
-					args.setVar(last, DEFAULT_LOCAL_VAR);
-					// Note: Variables without an explicit item will not be added to the copyOnInit list
-				}
-			}
-			return args;
-		}
-		
-		//Things other than vars exist, check if they are type assertions
-		else {
-			ArrayList<Symbol> argNames = new ArrayList<Symbol>();
-			ArrayList<Long> argTypes = new ArrayList<Long>();
-			for (int i = 0; i < tokens.size(); i++) {
-				if (tokens.get(i).getType() == Token.VAR) {
-					if (i+1 > tokens.size()-1) {
-						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
-						argTypes.add(Obj.SYM_ANY.id());
-					} else if (tokens.get(i+1).getType() == Token.SYMBOL) {
-						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
-						Symbol s = Symbol.fromStr(tokens.get(i+1).getData());
-						argTypes.add(s.id());
-						i++; //Skip the symbol on the next iteration
-					} else if (tokens.get(i).getType() == Token.VAR) {
-						argNames.add(Symbol.fromStr(tokens.get(i).getData()));
-						argTypes.add(Obj.SYM_ANY.id());
-					} else {
-						//Should always be a VAR or an SYMBOL
-						throw new SyntaxError("All arguments must be names or type assertions. Received " + tokens.get(i).data);
-					}
-				} else {
-					//Should always be a VAR or an SYMBOL
-					throw new SyntaxError("All arguments must be names or type assertions. Received " + tokens.get(i).data );
-				}
-			}
-			
-			//Convert to primitive byte array
-			boolean allAny = true;
-			long[] types = new long[argTypes.size()];
-			for (int i = 0; i < types.length; i++) {
-				types[i] = argTypes.get(i);
-				if(types[i] != Obj.SYM_ANY.id()) {
-					allAny = false;
-				}
-			}
-			
-			//Improves runtime speed. No need to check if they are all ANY
-			if(allAny) {
-				types = null;
-			}
-			
-			return new VariableSet(argNames.toArray(new Variable[argNames.size()]), types, null);
-		}
-	}
-	*/
-	
-	/** Returns true if there exists a single colon in the header
-	 * Throws a syntax error if there are more than one 
-	 * returns false if there are zero colons in the header */
-	/*public static boolean blockHeaderHasLocals(ArrayList<Token> tokens) {
-		int colons = 0;
-		for (Token t : tokens) {
-			if (t.isa(Token.COLON)) {
-				colons++;
-			}
-		}
-		
-		//Too many colons
-		if (colons > 1){ 
-			String tstr = "";
-			for (Token t : tokens) {
-				tstr += t.toString();
-			}
-			throw new SyntaxError("Too many colons in block header: {" + tstr + ", ... }");
-		}
-		// Zero or one colons
-		else {
-			return colons == 1;
-		}
-	}*/
-	
-	/** checks if every token is a variable token */
-	/*public static boolean allVars(ArrayList<Token> tokens) {
-		for (Token t : tokens) {
-			if (!t.isa(Token.VAR)) {
-				return false;
-			}
-		}
-		return true;
-	}*/
 
 	@Override
 	public String typeString() {

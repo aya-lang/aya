@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import aya.Aya;
 import aya.AyaPrefs;
+import aya.StaticData;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.list.List;
 import aya.util.Casting;
 
-public class SysExecInstruction extends NamedInstruction {
+public class SysExecInstruction extends NamedOperator {
 	
 	public SysExecInstruction() {
 		super("sys.exec");
@@ -23,8 +23,8 @@ public class SysExecInstruction extends NamedInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
 		List commands;
 		
 		if (a.isa(Obj.LIST)) {
@@ -48,11 +48,11 @@ public class SysExecInstruction extends NamedInstruction {
 		            new InputStreamReader(proc.getInputStream()));
 		    String line;
 		    while ((line = reader.readLine()) != null) {
-		    	Aya.getInstance().getOut().println(line);
+		    	StaticData.IO.out().println(line);
 		    }
 		 
 		    reader.close();
-		    Aya.getInstance().getOut().println(command + ": finished!");
+		    StaticData.IO.out().println(command + ": finished!");
 		 
 		} catch (IOException e) {
 		    e.printStackTrace();

@@ -1,11 +1,11 @@
 package aya.ext.json;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 
-public class LoadJSONInstruction extends NamedInstruction {
+public class LoadJSONInstruction extends NamedOperator {
 	
 	public LoadJSONInstruction() {
 		super("json.loads");
@@ -13,11 +13,11 @@ public class LoadJSONInstruction extends NamedInstruction {
 	}
 
 	@Override
-	public void execute(Block block) {
-		final Obj a = block.pop();
+	public void execute(BlockEvaluator blockEvaluator) {
+		final Obj a = blockEvaluator.pop();
 		
 		if (a.isa(Obj.STR)) {
-			block.push(JSONUtils.decodeJSON(a.str(), JSONUtils.JSONParams.getDefaultDecode()));
+			blockEvaluator.push(JSONUtils.decodeJSON(a.str(), JSONUtils.JSONParams.getDefaultDecode()));
 		} else {
 			throw new TypeError(this, "::str", a);
 		}

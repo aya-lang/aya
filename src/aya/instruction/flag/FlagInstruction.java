@@ -11,6 +11,10 @@ import aya.instruction.Instruction;
  *
  */
 public abstract class FlagInstruction extends Instruction {
+	
+	public FlagInstruction() {
+		super(null);
+	}
 
 	@Override
 	public ReprStream repr(ReprStream stream) {

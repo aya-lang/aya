@@ -1,11 +1,11 @@
 package aya.util;
 
-import aya.Aya;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolTable;
 
 public class Sym {
 	public static Symbol sym(String s)
 	{
-		return Aya.getInstance().getSymbols().getSymbol(s);
+		return SymbolTable.getSymbol(s);
 	}	
 }

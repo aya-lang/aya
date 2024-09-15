@@ -1,10 +1,13 @@
 package aya;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EmptyStackException;
 
 import aya.exceptions.runtime.AyaStackOverflowError;
 import aya.instruction.variable.GetVariableInstruction;
+import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 
 /**
  * Utility class for tracing function calls during Aya execution
@@ -34,7 +37,18 @@ public class CallStack {
 		
 		public String toString() {
 			if (_instruction != null) {
-				return _instruction.toString();
+				StringBuilder sb = new StringBuilder();
+				
+				SourceStringRef ref = _instruction.getSource();
+				SourceString source = ref.getSource();
+				SourceString.IndexedSourceLine line = source.getIndexedLine(ref.getIndex());
+
+				sb.append("  File '" + source.getFilename() + "', line " + line.lineNumber);
+				sb.append(" in " + _instruction.toString() + ":\n");
+				sb.append("    " + line.line + "\n");
+				sb.append("    " + line.pointerStr() + "\n");
+
+				return sb.toString();
 			} else {
 				return "(CallStackFrame Checkpoint)";
 			}
@@ -109,19 +123,18 @@ public class CallStack {
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder("Function call traceback:\n  Error ");
+		StringBuilder sb = new StringBuilder("Function call traceback:\n");
 		ArrayList<CallStackFrame> stack_list = new ArrayList<CallStackFrame>(size());
 		for (int i = size()-1; i >= 0; i--) {
 			if (i == MAX_STACK_DEPTH) return "Overflow";
 			stack_list.add(_stack[i]);
 		}
 
+		Collections.reverse(stack_list);
 		for (CallStackFrame l : stack_list)
 		{
 			if (l.isCheckpoint()) continue;
-			sb.append("in: ");
 			sb.append(l.toString());
-			sb.append("\n  ");
 		}
 		sb.append("\n");
 		return sb.toString();

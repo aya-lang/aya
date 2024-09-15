@@ -1,0 +1,7 @@
+.# This file is a part of Aya: https://github.com/aya-lang/aya
+
+.# la.aya
+.# Defines linear algebra functions
+
+.# Wrapper functions
+{:{la.mul}}:dot;

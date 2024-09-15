@@ -1,9 +1,9 @@
 package aya.ext.graphics.instruction;
 
+import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.obj.block.Block;
 
 public class TextGraphicsInstruction extends GraphicsInstruction {
 
@@ -14,7 +14,7 @@ public class TextGraphicsInstruction extends GraphicsInstruction {
 	
 
 	@Override
-	protected void doCanvasCommand(Canvas cvs, Block block) {
+	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
 		int y = _reader.popInt();
 		int x = _reader.popInt();
 		String text = _reader.popString();

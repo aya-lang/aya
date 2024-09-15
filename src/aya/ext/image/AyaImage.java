@@ -1,13 +1,15 @@
 package aya.ext.image;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 
-import aya.Aya;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -19,24 +21,19 @@ import aya.util.DictReader;
 
 public class AyaImage {
 	/** Utility class for loading, storing and writing image in Aya */
-	
+
+	private static final Symbol DATA = SymbolTable.getSymbol("data");
+	private static final Symbol WIDTH = SymbolTable.getSymbol("width");
+	private static final Symbol HEIGHT = SymbolTable.getSymbol("height");
+
 	private NumberList bytes;
 	private int width;
 	private int height;
-	private static Symbol DATA;
-	private static Symbol WIDTH;
-	private static Symbol HEIGHT;
-	
+
 	public AyaImage(NumberList bytes, int width, int height) {
-		SymbolTable syms = Aya.getInstance().getSymbols();
-		DATA = syms.getSymbol("data");
-		WIDTH = syms.getSymbol("width");
-		HEIGHT = syms.getSymbol("height");
-		
 		this.bytes = bytes;
 		this.width = width;
 		this.height = height;
-
 	}
 	
 	public static AyaImage fromDict(DictReader d) {
@@ -68,6 +65,42 @@ public class AyaImage {
 		image.setData(raster);
 		
 		return image;
+	}
+	
+	public static AyaImage fromBufferedImage(BufferedImage buf) {
+		// get DataBufferBytes from Raster
+		WritableRaster raster = buf.getRaster();
+		DataBuffer databuf = raster.getDataBuffer();
+		int type = databuf.getDataType();
+		
+		if (type == DataBuffer.TYPE_BYTE) {
+			DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+		
+			return new AyaImage(
+				NumberList.fromBytes(data.getData()),
+				buf.getWidth(),
+				buf.getHeight());
+		} else if (type == DataBuffer.TYPE_INT) {
+			DataBufferInt data   = (DataBufferInt) raster.getDataBuffer();
+			
+			int[] pixels = data.getData();
+			byte[] bytes = new byte[data.getSize() * 3];
+			
+			for (int i = 0; i < data.getSize(); i++) {
+				int byte_index = i * 3;
+				final Color c = new Color(pixels[i]);
+				bytes[byte_index + 0] = (byte)(c.getRed());
+				bytes[byte_index + 1] = (byte)(c.getBlue());
+				bytes[byte_index + 2] = (byte)(c.getGreen());
+			}
+				
+			return new AyaImage(
+				NumberList.fromBytes(bytes),
+				buf.getWidth(),
+				buf.getHeight());
+		} else {
+			throw new ValueError("Image buffer type not supported");
+		}
 	}
 	
 

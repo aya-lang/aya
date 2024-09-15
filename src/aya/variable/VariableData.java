@@ -6,18 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-import aya.Aya;
 import aya.InteractiveAya;
-import aya.exceptions.ex.ParserException;
+import aya.StaticData;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
-import aya.parser.Parser;
 
 /**
  * Static class containing all variables for the current session.
@@ -58,33 +55,32 @@ public class VariableData {
 
 	public final Dict OBJ_NIL = new Dict();
 
-	public VariableData(Aya aya) {
-		initGlobals(aya);
+	public VariableData() {
 	}
 	
-	private void initNil(Aya aya) {
-		Dict nil_meta = new Dict();
-		nil_meta.set(SymbolConstants.KEYVAR_TYPE, Aya.getInstance().getSymbols().getSymbol("__nil"));
-		List nil_str = List.fromString("nil");
-		nil_meta.set(SymbolConstants.KEYVAR_STR, nil_str);
-		nil_meta.set(SymbolConstants.KEYVAR_REPR, nil_str);
-		nil_meta.set(SymbolConstants.KEYVAR_PUSHSELF, Num.ONE);
+	public VariableData duplicateWithGlobals() {
+		VariableData v = new VariableData();
 		
-		Block nil_eq = null;
-		try {
-			nil_eq = Parser.compile("; :T ::__nil =", aya);
-		} catch (ParserException e) {
-			throw new RuntimeException(e);
-		}
-		nil_meta.set(SymbolConstants.KEYVAR_EQ, nil_eq);
+		//v.add(getGlobals());
+		v.add(new Dict());
 		
-		OBJ_NIL.setMetaTable(nil_meta);
+		// Add object and builtins
+		v.OBJ_STR.update(this.OBJ_STR);
+		v.OBJ_SYM.update(this.OBJ_SYM);
+		v.OBJ_LIST.update(this.OBJ_LIST);
+		v.OBJ_NUM.update(this.OBJ_NUM);
+		v.OBJ_CHAR.update(this.OBJ_CHAR);
+		v.OBJ_BLOCK.update(this.OBJ_BLOCK);
+		v.OBJ_NIL.update(this.OBJ_NIL);
+		v.BUILTINS.update(this.BUILTINS);
+		
+		return v;
 	}
 	
-	public void initGlobals(Aya aya) {
+	public void initGlobals() {
 		Dict globals = new Dict();
 		
-		globals.set(SymbolConstants.VERSION, List.fromString(Aya.VERSION_NAME));
+		globals.set(SymbolConstants.VERSION, List.fromString(StaticData.VERSION_NAME));
 		globals.set(SymbolConstants.HELP, List.fromString(InteractiveAya.HELP_TEXT));
 
 		globals.set(SymbolConstants.E, Num.E);				
@@ -104,9 +100,6 @@ public class VariableData {
 		BUILTINS.set(SymbolConstants.NUM,   OBJ_NUM);
 		BUILTINS.set(SymbolConstants.STR,   OBJ_STR);
 		
-		initNil(aya);
-		globals.set(SymbolConstants.NIL, OBJ_NIL);
-
 		_var_sets.add(new Scope(globals));
 	}
 	

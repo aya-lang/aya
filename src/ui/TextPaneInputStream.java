@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import aya.Aya;
+import aya.StaticData;
 
 // Initial implementation from
 // http://stackoverflow.com/questions/33067009/make-java-textarea-as-inputstream-to-run-shell-command-in-interactive-mode-using
@@ -53,7 +53,7 @@ public class TextPaneInputStream extends InputStream {
                 out_byte = q.take();
                 //pos = 0;
             } catch (InterruptedException ex) {
-               ex.printStackTrace(Aya.getInstance().getErr());
+               ex.printStackTrace(StaticData.IO.err());
             }
         //}
         System.out.println("Sending byte: " + out_byte);
@@ -85,7 +85,7 @@ public class TextPaneInputStream extends InputStream {
                 
                 prev = cur;
             } catch (InterruptedException ex) {
-                ex.printStackTrace(Aya.getInstance().getErr());
+                ex.printStackTrace(StaticData.IO.err());
             }
         }
 

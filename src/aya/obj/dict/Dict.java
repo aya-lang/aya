@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import aya.Aya;
 import aya.ReprStream;
+import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
+import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
 /**
@@ -238,8 +239,11 @@ public class Dict extends Obj {
 			return true;
 		} else {
 			if (bool.isa(Obj.BLOCK)) {
-				Block blk_bool = ((Block)bool).duplicate();
+				// TODO: Remove __bool__
+				// No access to external variables
+				BlockEvaluator blk_bool = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_bool.push(this);
+				blk_bool.dump(Casting.asStaticBlock(bool));
 				blk_bool.eval();
 				Obj obj_res = blk_bool.pop();
 				return obj_res.bool();
@@ -262,13 +266,15 @@ public class Dict extends Obj {
 		
 	@Override
 	public String str() {
-		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR);
+		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR); //TODO: Should be __str__??
 		if (str == null) {
 			return dictStr();
 		} else {
 			if (str.isa(Obj.BLOCK)) {
-				Block blk_str = ((Block)str).duplicate();
+				// No access to external variables
+				BlockEvaluator blk_str = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_str.push(this);
+				blk_str.dump(Casting.asStaticBlock(str));
 				blk_str.eval();
 				Obj obj_res = blk_str.pop();
 				return obj_res.str();
@@ -348,8 +354,10 @@ public class Dict extends Obj {
 
 		if (repr != null) {
 			if (repr.isa(Obj.BLOCK)) {
-				Block blk_repr = Casting.asBlock(repr).duplicate();
+				// No access to external variables
+				BlockEvaluator blk_repr = ExecutionContext.createIsolatedContext().createEvaluator();
 				blk_repr.push(this);
+				blk_repr.dump(Casting.asStaticBlock(repr));
 				try {
 					blk_repr.eval();
 				} catch (AyaRuntimeException ex) {
@@ -422,16 +430,6 @@ public class Dict extends Obj {
 	// STATIC METHODS //
 	////////////////////
 	
-	/** Given a block, swap all references to variables defined in the dict
-	 * with the values corresponding to the keys in the dict.
-	 * @param d
-	 * @param b
-	 */
-	public static void assignVarValues(Dict d, Block b) {
-		for (Pair<Symbol, Obj> pair : d.getAllVars()) {
-			b.getInstructions().assignVarValue(pair.first(), pair.second());
-		}
-	}
 
 	/** Returns true if the metatable defines a given key */
 	public boolean hasMetaKey(Symbol v) {
@@ -442,7 +440,7 @@ public class Dict extends Obj {
 	/** General setindex */
 	public static void setIndex(Dict dict, Obj index, Obj value) {
 		if (index.isa(Obj.STR)) {
-			dict.set(Aya.getInstance().getSymbols().getSymbol(index.str()), value);
+			dict.set(SymbolTable.getSymbol(index.str()), value);
 		} else if (index.isa(Obj.SYMBOL)) {
 			dict.set((Symbol)index, value);
 		} else {
@@ -456,17 +454,6 @@ public class Dict extends Obj {
 	
 
 
-	/** Return all variables as a list of pairs */
-	private ArrayList<Pair<Symbol, Obj>> getAllVars() {
-		ArrayList<Pair<Symbol,Obj>> out = new ArrayList<Pair<Symbol, Obj>>();
-		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
-	    while (it.hasNext()) {
-	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
-	    	out.add(new Pair<Symbol, Obj>(pair.getKey(), pair.getValue()));
-	    }
-	    return out;
-	}
-	
 	private HashMap<Symbol, Obj> deepcopyHashMap() {
 		// Copy the hash map
 		HashMap<Symbol, Obj> vars_copy = new HashMap<Symbol, Obj>();

@@ -1,15 +1,15 @@
 package aya.ext.graphics;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.InvalidReferenceError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedInstruction;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
-import aya.obj.block.Block;
 import aya.util.BlockReader;
 import aya.util.Casting;
 
-public abstract class GraphicsInstruction extends NamedInstruction {
+public abstract class GraphicsInstruction extends NamedOperator {
 
 	protected CanvasTable _canvas_table;
 	private String _arg_type_string;
@@ -24,10 +24,10 @@ public abstract class GraphicsInstruction extends NamedInstruction {
 	
 
 	@Override
-	public void execute(Block block) {
-		_reader.setBlock(block);
+	public void execute(BlockEvaluator blockEvaluator) {
+		_reader.setBlock(blockEvaluator);
 
-		final Obj o_id = block.pop();
+		final Obj o_id = blockEvaluator.pop();
 		int canvas_id = -1;
 		if (o_id.isa(Obj.NUMBER)) {
 			canvas_id = Casting.asNumber(o_id).toInt();
@@ -42,7 +42,7 @@ public abstract class GraphicsInstruction extends NamedInstruction {
 		}
 		
 		try {
-			doCanvasCommand(cvs, block);
+			doCanvasCommand(cvs, blockEvaluator);
 		} catch (IllegalArgumentException e) {
 			throw new ValueError(e.getMessage());
 		}
@@ -50,7 +50,7 @@ public abstract class GraphicsInstruction extends NamedInstruction {
 	}
 	
 	
-	protected abstract void doCanvasCommand(Canvas cvs, Block block);
+	protected abstract void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator);
 }
 
 

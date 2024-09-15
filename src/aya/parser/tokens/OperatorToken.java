@@ -1,13 +1,14 @@
 package aya.parser.tokens;
 
-import aya.exceptions.ex.ParserException;
-import aya.exceptions.ex.SyntaxError;
+import aya.exceptions.parser.ParserException;
+import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.op.ColonOps;
 import aya.instruction.op.DotOps;
 import aya.instruction.op.MiscOps;
-import aya.instruction.op.OpInstruction;
+import aya.instruction.op.OperatorInstruction;
 import aya.instruction.op.Ops;
+import aya.parser.SourceStringRef;
 
 public class OperatorToken extends StdToken {
 	
@@ -18,8 +19,8 @@ public class OperatorToken extends StdToken {
 	
 	private int op_type;
 	
-	public OperatorToken(String data, int op_type) {
-		super(data, Token.OP);
+	public OperatorToken(String data, int op_type, SourceStringRef source) {
+		super(data, Token.OP, source);
 		this.op_type = op_type;
 	}
 
@@ -30,22 +31,22 @@ public class OperatorToken extends StdToken {
 	
 	@Override
 	public Instruction getInstruction() throws ParserException {
-		OpInstruction op = null;
+		OperatorInstruction op = null;
 		switch (op_type) {
 		case STD_OP:
-			op = Ops.getOp(data.charAt(0));
+			op = Ops.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case DOT_OP:
-			op = DotOps.getOp(data.charAt(0));
+			op = DotOps.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case MATH_OP:
-			op = MiscOps.getOp(data.charAt(0));
+			op = MiscOps.getOp(data.charAt(0), this.getSourceStringRef());
 			break;
 		case COLON_OP:
-			op = ColonOps.getOp(data.charAt(0));
+			op = ColonOps.getOp(data.charAt(0), this.getSourceStringRef());
 		}
 		if (op == null) {
-			throw new SyntaxError("Operator '" + getOpTypeLetter() + data.charAt(0) + "' does not exist");
+			throw new SyntaxError("Operator '" + getOpTypeLetter() + data.charAt(0) + "' does not exist", this.getSourceStringRef());
 		}
 		return op;
 	}

@@ -2,29 +2,24 @@ package aya.parser.tokens;
 
 import java.util.ArrayList;
 
-import aya.Aya;
-import aya.exceptions.ex.ParserException;
+import aya.exceptions.parser.ParserException;
 import aya.instruction.BlockLiteralInstruction;
-import aya.instruction.DataInstruction;
-import aya.instruction.EmptyDictLiteralInstruction;
-import aya.instruction.EmptyListLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.LambdaInstruction;
 import aya.instruction.TupleInstruction;
-import aya.instruction.variable.GetVariableInstruction;
-import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
+import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
-import aya.util.Pair;
 
 public class LambdaToken extends CollectionToken {
 	
 	ArrayList<TokenQueue> _lambdaData;
 	
-	public LambdaToken(String data, ArrayList<Token> col) {
-		super(Token.LAMBDA, data, col);
+	public LambdaToken(String data, ArrayList<Token> col, SourceStringRef source) {
+		super(Token.LAMBDA, data, col, source);
 	}
 
 	private ArrayList<TokenQueue> getLambdaData() {
@@ -42,20 +37,20 @@ public class LambdaToken extends CollectionToken {
 		if(lambdaData.size() == 1) {
 			InstructionStack lambdaIL = Parser.generate(lambdaData.get(0));
 			
-			//If contains only block, set to auto eval
+			//If contains only blockEvaluator, set to auto eval
 			BlockLiteralInstruction bli = lambdaIL.getIfSingleBlockInstruction();
 			if (bli != null) {
 				bli.setAutoEval();
 				return bli;
 			} else {
-				return new LambdaInstruction(lambdaIL);
+				return new LambdaInstruction(this.getSourceStringRef(), lambdaIL);
 			}
 		} else {
-			Block[] elements = new Block[lambdaData.size()];
+			StaticBlock[] elements = new StaticBlock[lambdaData.size()];
 			for (int k = 0; k < elements.length; k++) {
-				elements[k] = new Block(Parser.generate(lambdaData.get(k)));
+				elements[k] = BlockUtils.fromIS(Parser.generate(lambdaData.get(k)));
 			}
-			return new TupleInstruction(elements);
+			return new TupleInstruction(this.getSourceStringRef(), elements);
 		}
 	}
 	
@@ -72,28 +67,4 @@ public class LambdaToken extends CollectionToken {
 		return Parser.generate(lambdaData.get(0));
 	}
 
-	/**
-	 * Should copy in init will only be false if the value is a variable reference
-	 * @throws ParserException 
-	 */
-	public Pair<Boolean, Obj> getInnerConstObj() throws ParserException {
-		ArrayList<TokenQueue> lambdaData = getLambdaData();
-		InstructionStack is = Parser.generate(lambdaData.get(0));
-		if (is.size() != 1) return null;
-
-		final Instruction o = is.pop();
-		
-		if (o instanceof EmptyListLiteralInstruction) {
-			return new Pair<Boolean, Obj>(true, EmptyListLiteralInstruction.INSTANCE.getListCopy());
-		} else if (o instanceof EmptyDictLiteralInstruction) {
-			return new Pair<Boolean, Obj>(true, EmptyDictLiteralInstruction.INSTANCE.getDict());
-		} else if (o instanceof GetVariableInstruction) {
-			GetVariableInstruction var = (GetVariableInstruction)o;
-			return new Pair<Boolean, Obj>(false, Aya.getInstance().getVars().getVar(var.getSymbol()));
-		} else if (o instanceof DataInstruction) {
-			return new Pair<Boolean, Obj>(true, ((DataInstruction)o).getData());
-		} else {
-			return new Pair<Boolean, Obj>(false, null);
-		}
-	}
 }

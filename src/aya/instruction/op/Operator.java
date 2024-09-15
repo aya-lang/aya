@@ -3,32 +3,36 @@ package aya.instruction.op;
 import java.util.ArrayList;
 
 import aya.ReprStream;
+import aya.eval.ExecutionContext;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UnimplementedError;
-import aya.instruction.Instruction;
 import aya.instruction.op.overload.OpOverload;
 import aya.instruction.op.overload.OpOverload1Arg;
 import aya.instruction.op.overload.OpOverload2Arg;
 import aya.instruction.op.overload.OpOverloadNoOp;
 import aya.obj.Obj;
-import aya.obj.block.Block;
+import aya.obj.block.BlockUtils;
+import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
 import aya.obj.symbol.SymbolConstants;
 
 /**
- * The Operation Class
+ * The Operator Class
  * Every operator has some basic information (name, desc, argtypes)
  * and an execute method. The execute method is called by the interpreter
- * at run time and can manipulate a block
+ * at run time and can manipulate a blockEvaluator
  * 
  * @author npaul
  *
  */
-public abstract class OpInstruction extends Instruction {
+public abstract class Operator {
 
 	public String name;
 	private OpOverload _overload;
 	public OpDoc _doc;
+	
+	public abstract void execute(BlockEvaluator blockEvaluator);
 	
 	public String getDocTypeStr() {
 		if (_doc == null) {
@@ -73,12 +77,12 @@ public abstract class OpInstruction extends Instruction {
 		} else if (name.length() == 2) {
 			this._doc = new OpDoc(name.charAt(0), name);
 		} else {
-			throw new IllegalArgumentException("OpInstruction name must be exactly 1 or 2 chars");
+			throw new IllegalArgumentException("Operator name must be exactly 1 or 2 chars");
 		}
 	}
 	
 	public void arg(String type, String desc) {
-		if (_doc == null) throw new RuntimeException("OpInstruction.init not called!");
+		if (_doc == null) throw new RuntimeException("Operator.init not called!");
 		
 		_doc.desc(type, desc);
 	}
@@ -97,8 +101,7 @@ public abstract class OpInstruction extends Instruction {
 		Dict info = new Dict();
 
 		// {op}:call
-		Block call = new Block();
-		call.add(this);
+		StaticBlock call = BlockUtils.makeBlockWithSingleInstruction(new OperatorInstruction(null, this));
 		info.set(SymbolConstants.CALL, call);
 		
 		// [::sym]:symbols;
@@ -123,7 +126,6 @@ public abstract class OpInstruction extends Instruction {
 		return name;
 	}
 	
-	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(name);
 		return stream;
@@ -137,11 +139,11 @@ public abstract class OpInstruction extends Instruction {
 		}
 	}
 
-	public Obj exec2arg(Obj a, Obj b) {
+	public Obj exec2arg(ExecutionContext context, Obj a, Obj b) {
 		throw new UnimplementedError();
 	}
 
-	public Obj exec1arg(Obj a) {
+	public Obj exec1arg(ExecutionContext context, Obj a) {
 		throw new UnimplementedError();
 	}
 }

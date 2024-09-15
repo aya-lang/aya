@@ -1,3 +1,5 @@
+from ::la import ::dot
+
 .# Sigmoid helper functions
 {-1 * Me 1+ 1\/}:sigmoid;
 {:& 1\- *}:dsigmoid;
@@ -16,19 +18,19 @@ def nn::__init__ {x y self,
 
 
 def nn::feedforward {self : sigmoid^,
-    self.input   self.weights_a .dot sigmoid self.:layer_a;
-    self.layer_a self.weights_b .dot sigmoid self.:output;
+    self.input   self.weights_a dot sigmoid self.:layer_a;
+    self.layer_a self.weights_b dot sigmoid self.:output;
 }
 
 
 def nn::backprop {self : dsigmoid^ d d_weights_a d_weights_b,
     self.y self.output - 2 * self.output dsigmoid * :d;
 
-    self.layer_a.T d .dot :d_weights_b;
+    self.layer_a.T d dot :d_weights_b;
 
     self.input.T
-    d self.weights_b.T .dot self.layer_a dsigmoid *
-    .dot :d_weights_a;
+    d self.weights_b.T dot self.layer_a dsigmoid *
+    dot :d_weights_a;
 
     self.weights_a d_weights_a + self.:weights_a;
     self.weights_b d_weights_b + self.:weights_b;
