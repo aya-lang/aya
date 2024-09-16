@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import aya.StaticData;
+import aya.util.FileUtils;
 
 public class FStreamManager {
 	
@@ -50,7 +51,7 @@ public class FStreamManager {
 		boolean valid = false;
 		
 		try {
-			File file = new File(filename);
+			File file = FileUtils.resolveFile(filename);
 			FileReader fr = new FileReader(file);
 			f = new BufferedReader(fr);
 			valid = true;
@@ -73,7 +74,7 @@ public class FStreamManager {
 		boolean valid = false;
 		
 		try {
-			File file = new File(filename);
+			File file = FileUtils.resolveFile(filename);
 			FileOutputStream fos = new FileOutputStream(file, type == 'a');
 			pw = new PrintWriter(fos);
 			valid = true;
@@ -140,23 +141,7 @@ public class FStreamManager {
 			return -1;
 		}
 	}
-	
-	public static String readAll(String path) throws IOException {
-		File file = new File(path);
-		String output = null;
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(file));
-			output = br.lines().collect(Collectors.joining("\n"));
-			br.close();
-		} catch (IOException e) {
-			br.close();
-			output = null;
-		}
-		
-		return output;
-	}
-	
+
 	public static String readAll(int fileid) {
 		BufferedReader f = _input_streams.get(fileid);
 		if (f == null) return null;
