@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
+import aya.util.FileUtils;
 
 public class AyaPrefs {
 	private static String prompt = "aya> ";
@@ -63,10 +63,8 @@ public class AyaPrefs {
 			dir += File.separator;
 		}
 		try {
-			//Create a path to test if it exists
-			File fwd = new File(dir);
-			Path path = new File(dir).toPath();
-			if (Files.exists(path)) {
+			File fwd = FileUtils.resolveFile(dir);
+			if (fwd.exists()) {
 				return fwd.getCanonicalPath() + File.separator;
 			} else {
 				//System.out.println("setWorkingDir: error, dir does not exist: " + workingDir);
@@ -116,7 +114,7 @@ public class AyaPrefs {
 	}
 	
 	public static boolean mkDir(String dirName) {
-		File theDir = new File(dirName);
+		File theDir = FileUtils.resolveFile(dirName);
 
 		// if the directory does not exist, create it
 		if (!theDir.exists()) {

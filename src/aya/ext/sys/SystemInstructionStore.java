@@ -29,7 +29,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if (arg.isa(Obj.STR)) {
 					String fstr = arg.str();
 					try {
-						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
+						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(FileUtils.resolveFile(fstr));
 						ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
 						for (String s : dirs) {
 							obj_dirs.add(List.fromString(s));
