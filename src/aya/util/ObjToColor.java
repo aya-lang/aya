@@ -27,14 +27,19 @@ public class ObjToColor {
 			return null;
 		}
 	}
-	
+
 	public static Color objToColorEx(Obj val, String message) {
-		Color c = objToColor(val);
-		if (c == null) {
-			throw new ValueError("Error loading color: " + message + "\nwhen reading: " + val.repr());
-		} else {
-			return c;
-		}
+        final Color c;
+        try {
+            c = objToColor(val);
+        } catch (Exception e) {
+            throw new ValueError("Error '" + e.getMessage() + "' while loading color " + message + "\n when reading: '" + val.repr() + "'");
+        }
+        if (c == null) {
+            throw new ValueError("Error loading color: " + message + "\nwhen reading: " + val.repr());
+        } else {
+            return c;
+        }
 	}
 
 	public static Color objToColorEx(Obj val) {

@@ -105,7 +105,7 @@ def multiplot::add {plot self,
 def multiplot::view {self : plot^,
     plot._supress_windows ! {
         "" self.:filename;
-        self :{plot.plot}
+        self :{plot.multiplot}
     } ?
 }
 

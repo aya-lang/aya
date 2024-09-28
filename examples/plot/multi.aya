@@ -19,7 +19,7 @@ x {x, x Ms x 0.3* +}  {, "sin(x)+0.3x":label  } b.plot
 b mp.add
 
 .# Plot title
-"Example Multi Plot" mp.:suptitle;
+"Example Multi Plot" mp.:title;
 
 .# Other plot parameters
 [-2 6]   mp.y.:lim;
