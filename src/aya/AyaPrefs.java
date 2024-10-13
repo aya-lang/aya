@@ -107,7 +107,7 @@ public class AyaPrefs {
 		    if (file.isFile()) {
 		        fileList.add(file.getName());
 		    } else if (file.isDirectory()) {
-		    	fileList.add(File.separator + file.getName());
+		    	fileList.add(file.getName() + File.separator);
 		    }
 		}
 		return fileList;
