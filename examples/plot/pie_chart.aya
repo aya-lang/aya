@@ -1,0 +1,20 @@
+.{ An example of the minimum required parameters for drawing a box-plot .}
+{,
+	[1 3 6] :data
+} :{plot.pie_chart}
+
+{,
+	"An Example Pie-Chart" :title
+	"#ddd" :bgcolor
+	["#222" "#444" "#666"] :color_cycle
+	0 :legend
+	1 :labels
+	1 :labels_on_chart
+	300 :width
+	300 :height
+	[
+		{, 1:value  "a":label }
+		{, 3:value  "b":label }
+		{, 6:value  "c":label }
+	]:data
+} :{plot.pie_chart}

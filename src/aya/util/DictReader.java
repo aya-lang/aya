@@ -2,6 +2,7 @@ package aya.util;
 
 import java.awt.Color;
 
+import aya.StaticData;
 import aya.exceptions.runtime.AyaRuntimeException;
 import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.UndefVarException;
@@ -27,7 +28,11 @@ public class DictReader {
 		this(dict);
 		_err_name = error_name;
 	}
-	
+
+	public String get_err_name() {
+		return _err_name;
+	}
+
 	public void setErrorName(String message) {
 		_err_name = message;
 	}
@@ -160,6 +165,15 @@ public class DictReader {
 		}
 	}
 
+	public DictReader getDictReaderEx(Symbol key) {
+		Dict d = getDictEx(key);
+		return new DictReader(d, get_err_name() + "." + key.name());
+	}
+
+	public DictReader getDictReader(Symbol key) {
+		Dict d = getDict(key);
+		return new DictReader(d == null ? new Dict() : d, get_err_name() + "." + key.name());
+	}
 
 	public Color getColor(Symbol key) {
 		Obj val = _dict.getSafe(key);
@@ -174,8 +188,10 @@ public class DictReader {
 		Color c = null;
 		try {
 			c = getColor(key); // May return null
-		} catch (ValueError e) {
-			c = null;
+		} catch (Exception e) {
+			// We should probably notify the user that his input was invalid
+			String errName = get_err_name() + "." + key.name();
+			StaticData.IO.err().println(errName + ": Failed to read color (will use default). Cause: " + e.getMessage());
 		}
 
 		if (c == null) {

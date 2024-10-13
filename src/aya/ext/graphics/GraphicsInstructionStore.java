@@ -40,11 +40,10 @@ import aya.instruction.named.NamedInstructionStore;
 
 public class GraphicsInstructionStore extends NamedInstructionStore {
 
+	public static final CanvasTable canvas_table = new CanvasTable();
+
 	@Override
 	protected void init() {
-
-		CanvasTable canvas_table = new CanvasTable();
-
 		addInstruction(new ArcGraphicsInstruction(canvas_table));
 		addInstruction(new ClearGraphicsInstruction(canvas_table));
 		addInstruction(new ClearRectGraphicsInstruction(canvas_table));
