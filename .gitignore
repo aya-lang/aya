@@ -5,3 +5,14 @@
 *.DS_Store
 aya.jar
 rdatasets_index.csv
+
+# Use `./gradlew eclipse` to generate
+.project
+.classpath
+.settings
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
