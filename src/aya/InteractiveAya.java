@@ -16,6 +16,7 @@ import aya.parser.SourceString;
 public class InteractiveAya {
 	
 	private static boolean interactive = true;
+	private static int lastResultCode = 0;
 
 	private boolean _echo = false;
 	private boolean _showPromptText = true;
@@ -32,7 +33,7 @@ public class InteractiveAya {
 	private AyaStdIO _io() {
 		return StaticData.IO;
 	}
-	
+
 	protected InteractiveAya(AyaThread ayaThread) {
 		_request_id_counter = 0;
 		_aya = ayaThread;
@@ -129,6 +130,7 @@ public class InteractiveAya {
 			switch (result.getType()) {
 			case ExecutionResult.TYPE_SUCCESS:
 				{
+					lastResultCode = 0;
 					ExecutionResultSuccess res = (ExecutionResultSuccess)result;
 					ArrayList<Obj> data = res.getData();
 					if (data.size() > 0) {
@@ -142,6 +144,7 @@ public class InteractiveAya {
 				break;
 			case ExecutionResult.TYPE_EXCEPTION:
 				{
+					lastResultCode = 1;
 					ExecutionResultException res = (ExecutionResultException)result;
 					res.ex().print(io.err());
 					if (!res.callstack().equals("")) {
@@ -153,7 +156,10 @@ public class InteractiveAya {
 		}
 	}
 
-	public void loop() {
+	/**
+	 * @return the resultCode of the last executed request
+	 */
+	public int loop() {
 		running = true;
 		
 		// Get Aya I/O
@@ -247,6 +253,7 @@ public class InteractiveAya {
 				_io().out().flush();
 			}
 		}
+		return lastResultCode;
 	}
 	
 	public AyaThread getMainThread() {
@@ -286,9 +293,9 @@ public class InteractiveAya {
 				setInteractive(true);
 			}
 		}
-		
-		iaya.loop();
-		System.exit(1);
+
+		int resultCode = iaya.loop();
+		System.exit( resultCode );
 	}
 	
 	public static void setInteractive(boolean b) {

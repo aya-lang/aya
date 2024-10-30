@@ -33,7 +33,7 @@ import aya.parser.SourceString;
 
 @SuppressWarnings("serial")
 public class AyaIDE extends JFrame
-{	
+{
 	protected static String HELP_KEY_BINDINGS = ""
 			+ "Quick Search: ctrl-q\n"
 			+ "Interpreter: ctrl-i\n"
@@ -44,44 +44,44 @@ public class AyaIDE extends JFrame
 			+ "Source: github.com/nick-paul/aya-lang\n"
 			+ "Wiki: github.com/nick-paul/aya-lang/wiki";
 
-	
-	
+
+
 	private AyaThread _aya;
-	
+
 	//Layout
 	private MyConsole _interpreter;
 	private JMenu _menu;
 	private JMenuBar _menuBar;
-	
+
 	private AyaIDE thiside;
-    
+
 
 	public AyaIDE(AyaThread ayaThread) {
 		super("Aya");
-		
+
 		this.thiside = this;
 
-				
+
 		this._aya = ayaThread;
 		this._interpreter = new MyConsole();
 		this._menu = new JMenu();
 		this._menuBar = new JMenuBar();
-		
+
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-				
+
 		//Keyboard Listener
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 		  .addKeyEventDispatcher(new KeyEventDispatcher() {
 			    public boolean dispatchKeyEvent(KeyEvent e) {
 			    //System.out.println(e.getID() + " - " + e.getKeyCode());
-			    	  
+
 		    	  //On key up: 402, On key down: 401
 		    	  if(e.getID() == 401) {
 		    		  switch(e.getKeyCode()) {
 		    		  case KeyEvent.VK_ENTER:
 		    			  if(!_interpreter.getInputLine().getText().equals("") && _interpreter.getInputLine().inFocus()) {
 		    				 // _aya.println(AyaPrefs.getPrompt() + " " + _interpreter.getInputLine().getText());
-						  } 
+						  }
 		    			  break;
 		    		  case KeyEvent.VK_I:
 		    			  if(e.isControlDown()) {
@@ -120,18 +120,18 @@ public class AyaIDE extends JFrame
 		    	  return false;
 			}
 		});
-		
+
 		//Confirm Close
 		addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent we) { 
+			public void windowClosing(WindowEvent we) {
 				exit();
 		    }
 		});
-		
+
 		//Menu Bar
 		_menuBar.setPreferredSize(new Dimension(100, 20));
-		
+
 		//File
 		_menu = new JMenu("File");
 		_menu.setMnemonic(KeyEvent.VK_A);
@@ -144,7 +144,7 @@ public class AyaIDE extends JFrame
 					path = path.replace("\\", "\\\\");
 					StaticBlock in_block = Parser.compileSafeOrNull(new SourceString("\"" + path + "\" :F", ""), StaticData.IO);
 					_aya.queueInput(new ExecutionRequest(-1, in_block)); // TODO change request id
-					
+
 				}
 			}
 			public void addPropertyChangeListener(PropertyChangeListener l) {}
@@ -158,9 +158,9 @@ public class AyaIDE extends JFrame
 		_menu.add(mi);
 
 
-		
+
 		_menuBar.add(_menu);
-			
+
 		//Tools
 		_menu = new JMenu("Tools");
 		_menu.setMnemonic(KeyEvent.VK_A);
@@ -209,11 +209,11 @@ public class AyaIDE extends JFrame
 			public void setEnabled(boolean b) {}
 		});
 		mi.setText("Open Editor   ctrl+E");
-		_menu.add(mi);		
-		
+		_menu.add(mi);
+
 		_menuBar.add(_menu);
-		
-		
+
+
 		//Help
 		//Quick Search
 		_menu = new JMenu("Help");
@@ -236,7 +236,7 @@ public class AyaIDE extends JFrame
 		});
 		mi.setText("Quick Search");
 		_menu.add(mi);
-		
+
 		//Key Bindings
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {
@@ -265,42 +265,42 @@ public class AyaIDE extends JFrame
 		mi.setText("About");
 		_menu.add(mi);
 		_menuBar.add(_menu);
-		
+
 		JPanel all = new JPanel();
 		all.setLayout(new BorderLayout());
 
 
-		
+
 		JPanel smallConsole = new JPanel();
 		smallConsole.setLayout(new BorderLayout());
 		smallConsole.add(_interpreter, BorderLayout.CENTER);
 		all.add(smallConsole);
-		
+
 		add(all);
-		
+
 		setJMenuBar(_menuBar);
 		pack();
 		setVisible(true);
-	
-		
+
+
 		_interpreter.getInputLine().grabFocus();
 	}
-	
+
 	public static void exit() {
 		if(EditorWindow.hasText()) {
 			String ObjButtons[] = {"Yes","No"};
-		    int PromptResult = JOptionPane.showOptionDialog(null, 
-		        "Editor still has code. Are you sure you want to exit?", "Editor Has Code", 
-		        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, 
+		    int PromptResult = JOptionPane.showOptionDialog(null,
+		        "Editor still has code. Are you sure you want to exit?", "Editor Has Code",
+		        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
 		        ObjButtons,ObjButtons[1]);
 		    if(PromptResult==0) {
-		      System.exit(0);          
+		      System.exit(0);
 		    }
 		} else {
 			System.exit(0);
 		}
 	}
-	
+
 	public void insertFilenameAtCarat() {
 		File file = chooseFile();
 		if(file != null) {
@@ -309,7 +309,7 @@ public class AyaIDE extends JFrame
             _interpreter.getInputLine().insertAtCaret("\"" + path + "\"");
 		}
 	}
-	
+
 	public String requestFilePathUI() {
 		File file = chooseFile();
 		if(file != null) {
@@ -317,15 +317,15 @@ public class AyaIDE extends JFrame
 		}
 		return null;
 	}
-	
+
 	public static File chooseFile() {
 		JFileChooser fc = new JFileChooser();
-		
+
 		//Set working directory
 		File here = new File(".");
 		fc.setCurrentDirectory(here);
 		here.delete();
-		
+
 		int returnVal = fc.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             return fc.getSelectedFile();
@@ -333,49 +333,49 @@ public class AyaIDE extends JFrame
         	return null;
         }
 	}
-	
+
 	public AyaThread getAya() {
 		return this._aya;
 	}
-	
+
 	public OutputStream getOutputStream() {
 		return _interpreter.getOut();
 	}
-	
+
 	public InputStream getInputStream() {
 		return _interpreter.getIn();
 	}
-	
+
 	public static void main(String[] args) {
 		InteractiveAya iaya = InteractiveAya.createInteractiveSession(args);
-		
+
 		boolean readstdin = StaticData.IO.isInputAvaiable();
-		
+
 		if (args.length > 1 || readstdin) {
 			// If reading from STDIN (piped input), don't use interactive mode
 			if (readstdin) InteractiveAya.setInteractive(false);
 		} else {
 			// Use the GUI
-			
+
 			//Load and initialize the ide
 			AyaIDE ide = new AyaIDE(iaya.getMainThread());
-			
+
 			// Aya Prefs
 			StaticData.IO.setOut(ide.getOutputStream());
 			StaticData.IO.setErr(ide.getOutputStream());
 			StaticData.IO.setIn(ide.getInputStream());
-			
+
 			// InteractiveAya Prefs
 			iaya.setPromptText(false);
 			iaya.setEcho(true);
-			
+
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
-			
+
 		}
-		
-		iaya.loop();
-		System.exit(1);	
+
+        int resultCode = iaya.loop();
+        System.exit( resultCode );
 	}
 }
 

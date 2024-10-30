@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="AyaTests" basedir="." default="all">
+    <!-- verify that all parameters were passed -->
+    <fail unless="build-dir"/>
+
+    <!-- re-define the parameters, so that they can be used with autocompletion -->
+    <property name="build-dir" value="ALREADY_DEFINED"/>
+
+    <dirname property="build-script.dir" file="${ant.file.AyaTests}"/>
+    <property name="root.dir" location="${build-script.dir}/.."/>
+
+    <target name="all">
+        <property name="test.dir" location="${build-dir}/test-package/"/>
+
+        <!-- delete data from previous tests -->
+        <delete dir="${test.dir}" failonerror="false"/>
+        <mkdir dir="${test.dir}"/>
+
+        <copy todir="${test.dir}">
+            <fileset dir="${build-dir}/classes" includes="**"/>
+            <fileset dir="${root.dir}">
+                <include name="ayarc.aya"/>
+                <include name="base/**"/>
+                <include name="examples/**"/>
+                <include name="std/**"/>
+                <include name="test/**"/>
+            </fileset>
+        </copy>
+
+        <!-- create a temporary working directory for aya -->
+        <property name="work.dir" location="${test.dir}/workingDir"/>
+        <mkdir dir="${work.dir}"/>
+        <mkdir dir="${work.dir}/fs_test"/>
+
+        <run_aya work.dir="${work.dir}/fs_test" test.dir="${test.dir}" test.aya="filesystem.aya"/>
+    </target>
+
+    <macrodef name="run_aya">
+        <attribute name="work.dir"/>
+        <attribute name="test.dir"/>
+        <attribute name="test.aya"/>
+        <sequential>
+            <java
+                    fork="true"
+                    dir="@{work.dir}"
+                    classname="ui.AyaIDE"
+                    failonerror="true"
+            >
+                <classpath>
+                    <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
+                    <file file="@{test.dir}"/>
+                </classpath>
+
+                <arg value="@{work.dir}"/>
+                <arg value="@{test.dir}/test/@{test.aya}"/>
+            </java>
+        </sequential>
+    </macrodef>
+</project>
