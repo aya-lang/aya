@@ -12,6 +12,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.ext.image.AyaImage;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
+import aya.util.FileUtils;
 
 public class ReadImageInstruction extends NamedOperator {
 	
@@ -42,11 +43,11 @@ public class ReadImageInstruction extends NamedOperator {
 		blockEvaluator.push(image.toDict());
 	}
 
-	public AyaImage loadImage(String ImageName) throws IOException {
-		 // open image
-		 File imgPath = new File(ImageName);
-		 BufferedImage bufferedImage = ImageIO.read(imgPath);
-		 return AyaImage.fromBufferedImage(bufferedImage);
+	public AyaImage loadImage(String imageName) throws IOException {
+		// open image
+		File imgFile = FileUtils.resolveFile(imageName);
+		BufferedImage bufferedImage = ImageIO.read(imgFile);
+		return AyaImage.fromBufferedImage(bufferedImage);
 	}		
 
 }

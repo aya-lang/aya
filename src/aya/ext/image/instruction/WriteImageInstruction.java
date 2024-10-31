@@ -1,6 +1,5 @@
 package aya.ext.image.instruction;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -15,6 +14,7 @@ import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.SymbolTable;
 import aya.util.DictReader;
+import aya.util.FileUtils;
 
 public class WriteImageInstruction extends NamedOperator {
 	
@@ -44,7 +44,7 @@ public class WriteImageInstruction extends NamedOperator {
 		AyaImage aya_image = AyaImage.fromDict(dr);
 		
 		try {
-			ImageIO.write(aya_image.toBufferedImage(), ext, new File(filename));
+			ImageIO.write(aya_image.toBufferedImage(), ext, FileUtils.resolveFile(filename));
 		} catch (IOException e) {
 			throw new IOError(opName(), filename, e);
 		} catch (IllegalArgumentException e) {

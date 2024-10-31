@@ -2,77 +2,81 @@ package aya.ext.plot;
 
 import static aya.util.Sym.sym;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 
 import aya.obj.number.Number;
+import aya.util.CircleIterator;
 import aya.util.DictReader;
 import aya.util.Pair;
+import aya.util.Sym;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 /**
  * Configuration object for a single dataset (or series) in a plot
- * 
  * @author npaul
- *
  */
-class SeriesConfig {
-	Color color;
-	boolean use_color_cycle;
-	float stroke;
-	boolean lines;
-	boolean points;
-	double yclip_min;
-	double yclip_max;
+public class SeriesConfig {
+    public static String getDocString(String leftPad) {
+        return (leftPad + "color::str/dict : default=uses the color_cycle\n"
+                + leftPad + "stroke::num : stroke-weight. default=1.0\n"
+                + leftPad + "points::num (bool) : draw points. default=false\n"
+                + leftPad + "lines::num (bool) : draw lines between points. default=true\n"
+                + leftPad + "yclip::list ([min,max]) : y values outside of this range will not\n"
+                + leftPad + "    be rendered, they will create a jump in the graph. default=no clipping\n"
+        );
+    }
 
-	public SeriesConfig() {
-		color = Color.BLACK;
-		use_color_cycle = true;
-		stroke = 1.0f;
-		lines = true;
-		points = false;
-		yclip_min = -9e99;
-		yclip_max = 9e99;
-	}
-	
-	public SeriesConfig copy() {
-		SeriesConfig cfg = new SeriesConfig();
-		cfg.color = color;
-		cfg.use_color_cycle = use_color_cycle;
-		cfg.stroke = stroke;
-		cfg.lines = lines;
-		cfg.points = points;
-		cfg.yclip_min = yclip_min;
-		cfg.yclip_max = yclip_max;
-		return cfg;
-	}
+    public final Color color;
+    public final boolean use_color_cycle;
+    public final float stroke;
+    public final boolean lines;
+    public final boolean points;
+    public final double yclip_min;
+    public final double yclip_max;
 
-	/**
-	 * Load configuration from a dict
-	 * 
-	 * @param d The dict to read from
-	 * @param defaults If a value is missing from d, use the value here instead
-	 * @return
-	 */
-	public static SeriesConfig fromDict(DictReader d, SeriesConfig defaults) {
-		SeriesConfig cfg = defaults.copy();
+    /** Constructs the default SeriesConfig */
+    public SeriesConfig() {
+        this.color = Color.BLACK;
+        this.use_color_cycle = true;
+        this.stroke = 1.0f;
+        this.lines = true;
+        this.points = false;
+        this.yclip_min = -9e99;
+        this.yclip_max = 9e99;
+    }
 
-		cfg.stroke = (float)(d.getDouble(sym("stroke"), defaults.stroke));
-		cfg.points = d.getBool(sym("points"), defaults.points);
-		cfg.lines = d.getBool(sym("lines"), defaults.lines);
-		
-		Color c = d.getColor(sym("color"));
-		if (c == null) {
-			cfg.use_color_cycle = true;
-		} else {
-			cfg.use_color_cycle = false;
-			cfg.color = c;
-		}
+    /** Reads a SeriesConfig from the Dict, using the default values as a fallback */
+    public SeriesConfig(DictReader d) {
+        this(d, new SeriesConfig());
+    }
 
-		if (d.hasKey(sym("yclip"))) {
-			Pair<Number, Number> yclip_pair = d.getNumberPairEx(sym("yclip"));
-			cfg.yclip_min = yclip_pair.first().toDouble();
-			cfg.yclip_max = yclip_pair.second().toDouble();
-		}
-		
-		return cfg;
-	}
+    public SeriesConfig(DictReader d, SeriesConfig defaults) {
+        Color c = d.getColor(Sym.sym("color"));
+        this.color = c == null ? defaults.color : c;
+        this.use_color_cycle = c == null;
+        this.stroke = (float) d.getDouble(Sym.sym("stroke"), defaults.stroke);
+        this.points = d.getBool(Sym.sym("points"), defaults.points);
+        this.lines = d.getBool(Sym.sym("lines"), defaults.lines);
+        if (d.hasKey(Sym.sym("yclip"))) {
+            Pair<Number, Number> yclip_pair = d.getNumberPairEx(sym("yclip"));
+            this.yclip_min = yclip_pair.first().toDouble();
+            this.yclip_max = yclip_pair.second().toDouble();
+        } else {
+            this.yclip_min = defaults.yclip_min;
+            this.yclip_max = defaults.yclip_max;
+        }
+    }
+
+    public double clip(double y) {
+        return (y < yclip_min || y > yclip_max) ? Double.NaN : y;
+    }
+
+    public void apply(XYLineAndShapeRenderer renderer, CircleIterator<Color> colorCycle) {
+        renderer.setSeriesPaint(0, use_color_cycle ? colorCycle.next() : color);
+        renderer.setSeriesStroke(0, new BasicStroke(stroke));
+        renderer.setBaseLinesVisible(lines);
+        renderer.setBaseShapesVisible(points);
+    }
+
 }
