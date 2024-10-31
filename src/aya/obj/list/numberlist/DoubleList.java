@@ -82,6 +82,14 @@ public class DoubleList extends NumberList {
 		}
 		return new DoubleList(out);
 	}
+
+	public static DoubleList fromUBytes(byte[] bytes) {
+		double[] out = new double[bytes.length];
+		for (int i = 0; i < bytes.length; i++) {
+			out[i] = bytes[i] & 0xff;
+		}
+		return new DoubleList(out);
+	}
 	
 	public static DoubleList copyOf(double[] elements) {
 		double[] list = new double[elements.length];

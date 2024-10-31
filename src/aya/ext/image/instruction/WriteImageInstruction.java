@@ -1,4 +1,4 @@
-package aya.ext.image;
+package aya.ext.image.instruction;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
+import aya.ext.image.AyaImage;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
