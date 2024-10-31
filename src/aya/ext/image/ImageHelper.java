@@ -8,9 +8,20 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ImageHelper {
+	/**
+	 * These Image Types cannot be written, because they require information that isn't available in our model.
+	 */
+	private static final Set<Integer> unwritableImageTypes = Arrays.stream(new int[]{
+			BufferedImage.TYPE_CUSTOM,
+			BufferedImage.TYPE_BYTE_BINARY,
+			BufferedImage.TYPE_BYTE_INDEXED
+	}).boxed().collect(Collectors.toSet());
+
 	public static String getColorSpaceName(ColorSpace colorSpace) {
 		int type = colorSpace.getType();
 		switch (type) {
@@ -48,15 +59,13 @@ public class ImageHelper {
 	/**
 	 * Creates a compatible (possibly non-standard) Image.
 	 */
-	public static BufferedImage createCompatibleImage(AyaImage2 image) {
-		Integer nativeImageType = findNativeImageType(image);
+	public static BufferedImage createCompatibleImage(int width, int height, ImageMeta meta) {
+		Integer nativeImageType = findNativeImageType(meta);
 		if (nativeImageType != null) {
-			return new BufferedImage(image.width, image.height, nativeImageType);
+			return new BufferedImage(width, height, nativeImageType);
 		}
 
-		ComponentColorModel colorModel = image.imageMeta.isGray ? createGrayComponentModel(image) : createComponentModel(image);
-		int width = image.width;
-		int height = image.height;
+		ComponentColorModel colorModel = meta.isGray ? createGrayComponentModel(meta) : createComponentModel(meta);
 		int numComponents = colorModel.getNumComponents();
 		int[] bOffs = IntStream.range(0, numComponents).toArray();
 		WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height, width * numComponents, numComponents, bOffs, null);
@@ -73,9 +82,8 @@ public class ImageHelper {
 	 *
 	 * @return a compatible ImageType | or null if no matching image type was found
 	 */
-	private static Integer findNativeImageType(AyaImage2 image) {
-		ImageMeta meta = image.imageMeta;
-		if (meta.javaImageType != null) {
+	private static Integer findNativeImageType(ImageMeta meta) {
+		if (meta.javaImageType != null && !unwritableImageTypes.contains(meta.javaImageType)) {
 			return meta.javaImageType;
 		}
 
@@ -85,15 +93,14 @@ public class ImageHelper {
 			- premultiplied
 		 */
 
-		boolean hasAlpha = image.channels.containsKey(Channel.alpha);
 		if (meta.isGray) {
 			// TYPE_BYTE_GRAY
 			if (!meta.premultiplied) return null;
-			if (hasAlpha) return null;
+			if (meta.hasAlpha) return null;
 			return BufferedImage.TYPE_BYTE_GRAY;
 		}
 
-		if (hasAlpha) {
+		if (meta.hasAlpha) {
 			return meta.premultiplied ? BufferedImage.TYPE_INT_ARGB_PRE : BufferedImage.TYPE_INT_ARGB;
 		}
 
@@ -101,25 +108,25 @@ public class ImageHelper {
 		return BufferedImage.TYPE_3BYTE_BGR; // seems to be the preferred over 'INT_RGB', at least on Windows.
 	}
 
-	private static ComponentColorModel createGrayComponentModel(AyaImage2 image) {
+	private static ComponentColorModel createGrayComponentModel(ImageMeta meta) {
 		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-		boolean hasAlpha = image.channels.containsKey(Channel.alpha);
+		boolean hasAlpha = meta.hasAlpha;
 		int alphaBits = hasAlpha ? 8 : 0;
 		int[] nBits = new int[1 + (hasAlpha ? 1 : 0)];
 		Arrays.fill(nBits, 8);
 
-		return new ComponentColorModel(colorSpace, nBits, hasAlpha, image.imageMeta.premultiplied, getTransparency(alphaBits), DataBuffer.TYPE_BYTE);
+		return new ComponentColorModel(colorSpace, nBits, hasAlpha, meta.premultiplied, getTransparency(alphaBits), DataBuffer.TYPE_BYTE);
 	}
 
-	private static ComponentColorModel createComponentModel(AyaImage2 image) {
-		boolean hasAlpha = image.channels.containsKey(Channel.alpha);
+	private static ComponentColorModel createComponentModel(ImageMeta meta) {
+		boolean hasAlpha = meta.hasAlpha;
 		int alphaBits = hasAlpha ? 8 : 0;
 		int[] nBits = new int[3 + (hasAlpha ? 1 : 0)];
 		Arrays.fill(nBits, 8);
 
 		return new ComponentColorModel(
 				ColorSpace.getInstance(ColorSpace.CS_sRGB),
-				nBits, hasAlpha, image.imageMeta.premultiplied,
+				nBits, hasAlpha, meta.premultiplied,
 				getTransparency(alphaBits),
 				DataBuffer.TYPE_BYTE
 		);

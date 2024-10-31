@@ -66,7 +66,7 @@ public class AyaImage2 {
 	public final Map<Channel, byte[]> channels = new EnumMap<>(Channel.class);
 
 	public AyaImage2(DictReader d) {
-		imageMeta = new ImageMeta(d.getDictReader(SYM_META));
+		imageMeta = new ImageMeta(d.getDictReader(SYM_META), d.hasKey(Channel.alpha.symbol));
 
 		for (Channel channel : Channel.values()) {
 			if (!d.hasKey(channel.symbol))
@@ -148,9 +148,11 @@ public class AyaImage2 {
 		}
 
 		byte[] red = new byte[width * height];
-		byte[] blue = numColorChannels >= 2 ? new byte[width * height] : null;
-		byte[] green = numColorChannels >= 3 ? new byte[width * height] : null;
-		byte[] alpha = model.hasAlpha() ? new byte[width * height] : null;
+		byte[] green = imageMeta.isGray ? null : new byte[width * height];
+		byte[] blue = imageMeta.isGray ? null : new byte[width * height];
+		byte[] alpha = new byte[width * height];
+		boolean hasAlpha = model.hasAlpha();
+
 		int pixelIdx = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -161,22 +163,21 @@ public class AyaImage2 {
 				red[pixelIdx] = (byte) (argb >> 16);
 				if (green != null) green[pixelIdx] = (byte) (argb >> 8);
 				if (blue != null) blue[pixelIdx] = (byte) argb;
-				if (alpha != null) alpha[pixelIdx] = (byte) (argb >> 24);
+				alpha[pixelIdx] = hasAlpha ? ((byte) (argb >> 24)) : ((byte) 255); // ComponentColorModel and DirectColorModel already behave like this, but IndexedColorModel does not.
+
 				pixelIdx++;
 			}
 		}
 
 		this.channels.put(Channel.red, red);
+		this.channels.put(Channel.alpha, alpha);
+
 		if (imageMeta.isGray) {
 			this.channels.put(Channel.green, red);
 			this.channels.put(Channel.blue, red);
 		} else {
-			if (green != null) this.channels.put(Channel.green, green);
-			if (blue != null) this.channels.put(Channel.blue, blue);
-		}
-
-		if (alpha != null) {
-			this.channels.put(Channel.alpha, alpha);
+			this.channels.put(Channel.green, green);
+			this.channels.put(Channel.blue, blue);
 		}
 	}
 
@@ -192,7 +193,7 @@ public class AyaImage2 {
 	}
 
 	public BufferedImage toBufferedImage() {
-		BufferedImage image = ImageHelper.createCompatibleImage(this);
+		BufferedImage image = ImageHelper.createCompatibleImage(width, height, imageMeta);
 
 		byte[] red = channels.get(Channel.red);
 		byte[] green = channels.get(imageMeta.isGray ? Channel.red : Channel.green);
