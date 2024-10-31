@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  *     .# :{image.write2} infers these values unless specified
  *     {,
  *         <bool> :gray
+ *         <bool> :alpha
  *         <bool> :premultiplied
  *         <num>  :java_image_type
  *     } :meta
