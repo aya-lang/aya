@@ -5,6 +5,8 @@
 .# mkdir fs_test
 .# java -jar aya.jar fs_test/ ../test/filesystem.aya
 
+import ::image
+
 .{ Function that appends the platform-specific file separator to a string .}
 {path::str, path :9s + } :sep;
 
@@ -75,10 +77,10 @@
 {"dir1/dir2" :{sys.readdir} ["dir3"sep] = 1} test.test
 
 .# Create a single pixel image
-{, 1:width 1:height "out.png":filename [41 -92 34]:data }:img;
-img :{image.write}
+{, 1:width 1:height [41]:r [164]:g [34]:b }:img;
+img "out.png" :{image.write}
 {"." :{sys.readdir}C ["dir1"sep "hello.txt" "out.png"]C = 1} test.test
 
 .# Read an image
-"out.png" :{image.read} :img;
-{img {, 1:width 1:height [41 -92 34]:data }} test.test
+"out.png" image.read :img;
+{img.pixels [[41 -92 34]]} test.test

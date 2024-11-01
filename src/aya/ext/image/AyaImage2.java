@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * <pre>{@code
  * {,
  *     .# meta information about the image.
- *     .# :{image.read2} provides this information
- *     .# :{image.write2} infers these values unless specified
+ *     .# :{image.read} provides this information
+ *     .# :{image.write} infers these values unless specified
  *     {,
  *         <bool> :gray
  *         <bool> :alpha

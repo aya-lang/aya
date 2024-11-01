@@ -17,7 +17,7 @@ import java.io.File;
 
 public class WriteImage2Instruction extends NamedOperator {
 	public WriteImage2Instruction() {
-		super("image.write2");
+		super("image.write");
 		_doc = ("image::dict filename::str : write image to file\n"
 				+ "  <hint: for a list of supported image formats, see :{image.get_formats}>\n"
 				+ "  image::dict : " + AyaImage2.getDocString("    ")
