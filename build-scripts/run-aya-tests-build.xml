@@ -34,6 +34,7 @@
         <mkdir dir="${work.dir}/fs_test"/>
 
         <run_aya work.dir="${work.dir}/fs_test" test.dir="${test.dir}" test.aya="filesystem.aya"/>
+        <run_aya work.dir="${work.dir}" test.dir="${test.dir}" test.aya="test.aya"/>
     </target>
 
     <macrodef name="run_aya">
