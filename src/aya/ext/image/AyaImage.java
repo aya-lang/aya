@@ -41,7 +41,8 @@ import java.util.stream.Collectors;
  *     256.R :a
  * }}</pre>
  */
-public class AyaImage2 {
+public class AyaImage
+{
 	private static final Symbol SYM_META = Sym.sym("meta");
 	private static final Symbol SYM_WIDTH = Sym.sym("width");
 	private static final Symbol SYM_HEIGHT = Sym.sym("height");
@@ -66,7 +67,7 @@ public class AyaImage2 {
 	public final int height;
 	public final Map<Channel, byte[]> channels = new EnumMap<>(Channel.class);
 
-	public AyaImage2(DictReader d) {
+	public AyaImage(DictReader d) {
 		imageMeta = new ImageMeta(d.getDictReader(SYM_META), d.hasKey(Channel.alpha.symbol));
 
 		for (Channel channel : Channel.values()) {
@@ -116,7 +117,7 @@ public class AyaImage2 {
 		}
 	}
 
-	public AyaImage2(BufferedImage image) {
+	public AyaImage(BufferedImage image) {
 		ColorModel model = image.getColorModel();
 		ColorSpace colorSpace = model.getColorSpace();
 

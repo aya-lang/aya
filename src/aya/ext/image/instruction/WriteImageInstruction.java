@@ -4,7 +4,7 @@ import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
-import aya.ext.image.AyaImage2;
+import aya.ext.image.AyaImage;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -15,12 +15,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class WriteImage2Instruction extends NamedOperator {
-	public WriteImage2Instruction() {
+public class WriteImageInstruction extends NamedOperator {
+	public WriteImageInstruction() {
 		super("image.write");
 		_doc = ("image::dict filename::str : write image to file\n"
 				+ "  <hint: for a list of supported image formats, see :{image.get_formats}>\n"
-				+ "  image::dict : " + AyaImage2.getDocString("    ")
+				+ "  image::dict : " + AyaImage.getDocString("    ")
 				+ "  filename::str : name of the file to write to. The file extension controls the image type."
 		);
 	}
@@ -41,7 +41,7 @@ public class WriteImage2Instruction extends NamedOperator {
 			throw new ValueError("filename for image must have a file extension");
 		}
 
-		AyaImage2 image = new AyaImage2(new DictReader((Dict) a, opName() + ".image"));
+		AyaImage image = new AyaImage(new DictReader((Dict) a, opName() + ".image"));
 		try {
 			BufferedImage bufImg = image.toBufferedImage();
 			boolean wasWritten = ImageIO.write(bufImg, ext, targetFile);

@@ -4,7 +4,7 @@ import aya.eval.BlockEvaluator;
 import aya.ext.graphics.Canvas;
 import aya.ext.graphics.CanvasTable;
 import aya.ext.graphics.GraphicsInstruction;
-import aya.ext.image.AyaImage2;
+import aya.ext.image.AyaImage;
 
 public class GetPixelsGraphicsInstruction extends GraphicsInstruction {
 
@@ -15,7 +15,7 @@ public class GetPixelsGraphicsInstruction extends GraphicsInstruction {
 
 	@Override
 	protected void doCanvasCommand(Canvas cvs, BlockEvaluator blockEvaluator) {
-		AyaImage2 img = new AyaImage2( cvs.getBuffer() );
+		AyaImage img = new AyaImage( cvs.getBuffer() );
 		blockEvaluator.push(img.toDict());
 	}
 }
