@@ -10,6 +10,12 @@
     <dirname property="build-script.dir" file="${ant.file.AyaTests}"/>
     <property name="root.dir" location="${build-script.dir}/.."/>
 
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${build-script.dir}/libs/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="all">
         <property name="test.dir" location="${build-dir}/test-package/"/>
 
@@ -42,20 +48,35 @@
         <attribute name="test.dir"/>
         <attribute name="test.aya"/>
         <sequential>
-            <java
-                    fork="true"
-                    dir="@{work.dir}"
-                    classname="ui.AyaIDE"
-                    failonerror="true"
-            >
-                <classpath>
-                    <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
-                    <file file="@{test.dir}"/>
-                </classpath>
+            <!-- since this is a macro, make sure properties are cleared on every call -->
+            <property name="error.log.str" value=""/>
+            <var name="error.log.str" unset="true"/>
 
-                <arg value="@{work.dir}"/>
-                <arg value="@{test.dir}/test/@{test.aya}"/>
-            </java>
+            <trycatch>
+                <try>
+                    <java
+                            fork="true"
+                            dir="@{work.dir}"
+                            classname="ui.AyaIDE"
+                            failonerror="true"
+                            errorproperty="error.log.str"
+                    >
+                        <classpath>
+                            <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
+                            <file file="@{test.dir}"/>
+                        </classpath>
+
+                        <arg value="@{work.dir}"/>
+                        <arg value="@{test.dir}/test/@{test.aya}"/>
+                    </java>
+                    <!-- if the test did not fail, repeat the error logs to the console -->
+                    <echo level="error" message="${error.log.str}"/>
+                </try>
+                <catch>
+                    <!-- if the test failed, use the error log as the failure message -->
+                    <fail message="${error.log.str}"/>
+                </catch>
+            </trycatch>
         </sequential>
     </macrodef>
 </project>
