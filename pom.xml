@@ -84,6 +84,27 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="build-dir" value="${project.build.directory}"/>
+                                <property name="aya.jar" value="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
+                                <ant antfile="${project.basedir}/build-scripts/release-zip-build.xml"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
