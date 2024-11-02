@@ -1,12 +1,17 @@
 package aya.ext.debug;
 
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class DebugInstructionStore extends NamedInstructionStore {
-	
+import java.util.Arrays;
+import java.util.Collection;
+
+public class DebugInstructionStore implements NamedInstructionStore {
+
 	@Override
-	protected void init() {
-		// JSON
-		addInstruction(new PauseDebugInstruction());
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+				new PauseDebugInstruction()
+		);
 	}
 }

@@ -28,6 +28,10 @@ public abstract class NamedOperator {
 		return ":{" + _name + "}";
 	}
 
+	public String getDoc() {
+		return _doc;
+	}
+
 	public ReprStream repr(ReprStream stream) {
 		stream.print(opName());
 		return stream;

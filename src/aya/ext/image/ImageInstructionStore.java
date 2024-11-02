@@ -1,12 +1,18 @@
 package aya.ext.image;
 
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class ImageInstructionStore extends NamedInstructionStore {
-	
+import java.util.Arrays;
+import java.util.Collection;
+
+public class ImageInstructionStore implements NamedInstructionStore {
+
 	@Override
-	protected void init() {
-		addInstruction(new ReadImageInstruction());
-		addInstruction(new WriteImageInstruction());
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+				new ReadImageInstruction(),
+				new WriteImageInstruction()
+		);
 	}
 }
