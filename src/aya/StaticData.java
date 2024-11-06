@@ -80,6 +80,11 @@ public class StaticData {
 		initNamedInstructions();
 	}
 	
+	public void addNamedInstructionStore(NamedInstructionStore is) {
+		_namedInstructionStores.add(is);
+		is.initHelpData(this);
+	}
+	
 	
 	///////////////
 	// Help Data //
@@ -155,8 +160,9 @@ public class StaticData {
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(this);
 		}
-		
 	}
+	
+	
 	public NamedOperator getNamedInstruction(String name) {
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			NamedOperator i = x.getInstruction(name);
