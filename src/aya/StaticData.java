@@ -23,6 +23,10 @@ import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
+import aya.io.fs.AbstractFilesystemIO;
+import aya.io.fs.UnimplementedFilesystemIO;
+import aya.io.http.AbstractHTTPDownloader;
+import aya.io.http.UnimplementedHTTPDownloader;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 
@@ -37,6 +41,7 @@ public class StaticData {
 	
 	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
 	public static AbstractHTTPDownloader HTTP_DOWNLOADER = new UnimplementedHTTPDownloader();
+	public static AbstractFilesystemIO FILESYSTEM = new UnimplementedFilesystemIO();
 	
 	//
 	// All calls to modify this data will need to be thread safe

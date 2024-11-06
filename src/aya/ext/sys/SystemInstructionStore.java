@@ -29,7 +29,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if (arg.isa(Obj.STR)) {
 					String fstr = arg.str();
 					try {
-						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(FileUtils.resolveFile(fstr));
+						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
 						ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
 						for (String s : dirs) {
 							obj_dirs.add(List.fromString(s));
@@ -143,14 +143,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 			}
 		});
 		
-		// Test if file exists
-		addInstruction(new NamedOperator("sys.file_exists", "test if the file exists") {
-			@Override
-			public void execute(BlockEvaluator blockEvaluator) {
-				final Obj arg = blockEvaluator.pop();
-				blockEvaluator.push(FileUtils.isFile(arg.str()) ? Num.ONE : Num.ZERO);
-			}
-		});
+		addInstruction(new FileExistsSystemInstruction());
 		
 		// Resolve home (replace ~/ with /path/to/home)
 		addInstruction(new NamedOperator("sys.resolvehome", "replace ~/.. with /path/to/home/..") {

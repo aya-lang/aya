@@ -19,7 +19,6 @@ import static aya.util.Casting.asSymbol;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -1019,7 +1018,7 @@ class OP_Dot_Write extends Operator {
 
 			if(option == 0) {
 				try {
-				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				}catch (IOException e) {
 				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
@@ -1029,7 +1028,7 @@ class OP_Dot_Write extends Operator {
 
 			else if (option == 1) {
 				try {
-				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 				}catch (IOException e) {
 				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
