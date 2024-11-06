@@ -8,6 +8,9 @@ import java.util.Scanner;
 
 import aya.eval.ExecutionContext;
 import aya.exceptions.parser.ParserException;
+import aya.io.fs.FilesystemIO;
+import aya.io.http.HTTPDownloader;
+import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
@@ -165,7 +168,7 @@ public class InteractiveAya {
 		// Get Aya I/O
 		PrintStream out = _io().out();
 		PrintStream err = _io().err();		
-		Scanner scanner = _io().scanner();
+		Scanner scanner = ((ScannerInputWrapper)(_io().inputWrapper())).getScanner();
 		
  		_aya.start();
 		
@@ -177,7 +180,7 @@ public class InteractiveAya {
 		// Load startup script
 		String[] args = AyaPrefs.getArgs();
 		if (args.length >= 2 && args[1].contains(".aya")) {
-			String startupScript = AyaPrefs.getArgs()[1].replace("\\", "\\\\");
+			String startupScript = AyaPrefs.getArgs()[1];
 			StaticBlock blk2 = Parser.compileSafeOrNull(new SourceString("\"" + startupScript + "\":F", "<ayarc loader>"), StaticData.IO);
 			if (blk2 != null) {
 				_aya.queueInput(new ExecutionRequest(makeRequestID(), blk2));
@@ -285,8 +288,12 @@ public class InteractiveAya {
 	}
 	
 	public static void main(String[] args) {
-		InteractiveAya iaya = createInteractiveSession(args);
+		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
+		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
+		StaticData.FILESYSTEM = new FilesystemIO();
 
+		InteractiveAya iaya = createInteractiveSession(args);
+		
 		// argument[0] is always the working directory, check for args 1+
 		if (args.length > 1) {
 			if (args[1].equals("-i")) {
@@ -295,7 +302,8 @@ public class InteractiveAya {
 		}
 
 		int resultCode = iaya.loop();
-		System.exit( resultCode );
+		//System.exit( resultCode );
+		System.exit( 0 );
 	}
 	
 	public static void setInteractive(boolean b) {

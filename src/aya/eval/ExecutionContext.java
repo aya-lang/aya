@@ -2,6 +2,7 @@ package aya.eval;
 
 import aya.AyaStdIO;
 import aya.CallStack;
+import aya.StaticData;
 import aya.obj.dict.Dict;
 import aya.variable.VariableData;
 
@@ -18,7 +19,8 @@ public class ExecutionContext {
 	}
 	
 	public static ExecutionContext createIsolatedContext() {
-		final ExecutionContext at = new ExecutionContext(new AyaStdIO(System.out, System.err, System.in));
+		final ExecutionContext at = new ExecutionContext(StaticData.IO);
+		
 		at.getVars().add(new Dict()); // Add empty globals
 		return at;
 	}

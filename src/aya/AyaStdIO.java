@@ -5,19 +5,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Scanner;
+
+import aya.io.stdin.InputWrapper;
 
 public class AyaStdIO {
-
 	private PrintStream _out;
 	private PrintStream _err;
 	private InputStream _in;
-	private Scanner _scanner; 
+	private InputWrapper _input_wrapper;
 	
-	public AyaStdIO(PrintStream out, PrintStream err, InputStream in) {
+	public AyaStdIO(PrintStream out, PrintStream err, InputStream in, InputWrapper iw) {
 		_out = out;
 		_err = err;
-		setIn(in);
+		setIn(in, iw);
 	}
 	
 	public PrintStream out() {
@@ -32,12 +32,8 @@ public class AyaStdIO {
 		return _in;
 	}
 	
-	public Scanner scanner() {
-		return _scanner;
-	}
-	
 	public String nextLine() {
-		return _scanner.nextLine();
+		return _input_wrapper.nextLine();
 	}
 
 	/** Return true if input is ready to be read */
@@ -71,9 +67,13 @@ public class AyaStdIO {
 		}
 	}
 	
-	public void setIn(InputStream is) {
+	public void setIn(InputStream is, InputWrapper input_wrapper) {
 		_in = is;
-		_scanner = new Scanner(_in, "UTF-8");
+		_input_wrapper = input_wrapper;
+	}
+
+	public InputWrapper inputWrapper() {
+		return _input_wrapper;
 	}
 
 	

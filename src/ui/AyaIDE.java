@@ -22,10 +22,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import aya.AyaStdIO;
 import aya.AyaThread;
 import aya.ExecutionRequest;
 import aya.InteractiveAya;
 import aya.StaticData;
+import aya.io.fs.FilesystemIO;
+import aya.io.http.HTTPDownloader;
+import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -347,6 +351,11 @@ public class AyaIDE extends JFrame
 	}
 
 	public static void main(String[] args) {
+		// Set to System.in/out/err initially. Will be changed to IDE gui later
+		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
+		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
+		StaticData.FILESYSTEM = new FilesystemIO();
+
 		InteractiveAya iaya = InteractiveAya.createInteractiveSession(args);
 
 		boolean readstdin = StaticData.IO.isInputAvaiable();
@@ -363,7 +372,7 @@ public class AyaIDE extends JFrame
 			// Aya Prefs
 			StaticData.IO.setOut(ide.getOutputStream());
 			StaticData.IO.setErr(ide.getOutputStream());
-			StaticData.IO.setIn(ide.getInputStream());
+			StaticData.IO.setIn(ide.getInputStream(), new ScannerInputWrapper(ide.getInputStream()));
 
 			// InteractiveAya Prefs
 			iaya.setPromptText(false);
@@ -374,8 +383,8 @@ public class AyaIDE extends JFrame
 
 		}
 
-        int resultCode = iaya.loop();
-        System.exit( resultCode );
+		iaya.loop();
+		System.exit(1);
 	}
 }
 

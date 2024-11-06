@@ -39,7 +39,8 @@ public class StaticData {
 	public static final String QUIT = "\\Q";
 
 	
-	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
+	// Must me initialized in main
+	public static AyaStdIO IO = null;
 	public static AbstractHTTPDownloader HTTP_DOWNLOADER = new UnimplementedHTTPDownloader();
 	public static AbstractFilesystemIO FILESYSTEM = new UnimplementedFilesystemIO();
 	
