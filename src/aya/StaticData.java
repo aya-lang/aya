@@ -36,6 +36,7 @@ public class StaticData {
 
 	
 	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
+	public static AbstractHTTPDownloader HTTP_DOWNLOADER = new UnimplementedHTTPDownloader();
 	
 	//
 	// All calls to modify this data will need to be thread safe
