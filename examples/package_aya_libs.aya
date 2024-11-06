@@ -1,0 +1,20 @@
+import ::json
+
+["base/__aya__.aya"] :files;
+{,} :data;
+
+files :# {file, 
+    file G data.:[file];
+};
+
+
+data json.dumps :json_data;
+
+"aya-stdlib.js" :outfile;
+
+"const AYA_STDLIB = $json_data;" outfile 0 .G
+
+"Created file $outfile" :P
+
+
+

@@ -161,7 +161,7 @@ public class JSONUtils {
 				if (vc.hasVisited(e.second())) {
 					throw new ValueError("JSON: Circular reference detected when serializing json object. key: " + e.first());
 				} else {
-					out.put(e.first().name(), toJSON(e.second(), params, vc));
+					out.put(e.first().unquotedName(), toJSON(e.second(), params, vc));
 				}
 			}
 			vc.pop(d);
