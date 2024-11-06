@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TeaVM example</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <!--<script type="text/javascript" charset="utf-8" src="./build/generated/teavm/js/aya.js"></script>-->
+    <script type="text/javascript" charset="utf-8" src="./target/javascript/aya.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./aya-stdlib.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js" integrity="sha512-8RnEqURPUc5aqFEN04aQEiPlSAdE0jlFS/9iGgUyNtwFnSKCXhmB6ZTNl7LnDtDWKabJIASzXrzD0K+LYexU9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript">
+        var aya = {};
+        var editor = null;
+
+        function run() {
+            var input = "\"base/__aya__.aya\" :F ";
+            var out = aya.runIsolated(input + editor.getValue());
+            document.getElementById('out').innerHTML = out;
+        }
+
+        function setup() {
+            main();
+            // Exported functions
+            aya.runIsolated = main.runIsolated;
+            aya.addFile = main.addFile;
+            aya.listFiles = main.listFiles;
+
+            editor = CodeMirror(document.getElementById("code"), {
+                mode: "text/html",
+                theme: "neonsyntax",
+                lineWrapping: true,
+                lineNumbers: true,
+                styleActiveLine: true,
+                matchBrackets: true,
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete",
+                    "Ctrl-Enter": (cm) => {
+                        run();
+                    }
+                },
+
+            });
+
+            console.log("Adding file")
+            aya.addFile('foo.txt', 'Hello fro filesystem!');
+
+            for (const path of Object.keys(AYA_STDLIB)) {
+                aya.addFile(path, AYA_STDLIB[path]);
+            }
+            console.log(aya.listFiles());
+
+            run();
+        }
+
+    </script>
+  </head>
+  <body onload="setup()">
+    <div id="code" style="border: solid 1px;"></div>
+    <pre id="out"></pre>
+  </body>
+</html>
