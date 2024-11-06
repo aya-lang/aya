@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.Str;
 import aya.obj.number.Num;
-import aya.util.FileUtils;
 
 public class AyaPrefs {
 	private static String prompt = "aya> ";
@@ -107,7 +107,7 @@ public class AyaPrefs {
 		    if (file.isFile()) {
 		        fileList.add(file.getName());
 		    } else if (file.isDirectory()) {
-		    	fileList.add(file.getName() + File.separator);
+		    	fileList.add(File.separator + file.getName());
 		    }
 		}
 		return fileList;
