@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ReleaseZip" basedir="." default="all">
+    <!-- verify that all parameters were passed -->
+    <fail unless="build-dir"/>
+    <fail unless="aya.jar"/>
+
+    <!-- re-define the parameters, so that they can be used with autocompletion -->
+    <property name="build-dir" value="ALREADY_DEFINED"/>
+    <property name="aya.jar" value="ALREADY_DEFINED"/>
+
+    <dirname property="build-script.dir" file="${ant.file.ReleaseZip}"/>
+    <property name="root.dir" location="${build-script.dir}/.."/>
+
+    <target name="all">
+        <basename property="aya.jar.name" file="${aya.jar}" suffix=".jar"/>
+        <zip destfile="${build-dir}/${aya.jar.name}.zip">
+            <mappedresources>
+                <union>
+                    <mappedresources>
+                        <fileset file="${aya.jar}"/>
+                        <globmapper from="*" to="aya.jar"/> <!-- rename the versioned jar file to 'aya.jar' -->
+                    </mappedresources>
+                    <fileset dir="${root.dir}">
+                        <include name="ayarc.aya"/>
+                        <include name="LICENSE"/>
+                        <include name="README.md"/>
+                        <include name="base/**"/>
+                        <include name="examples/**"/>
+                        <include name="std/**"/>
+                        <include name="test/**"/>
+                        <include name="images/**"/>
+                        <include name="manual/**"/>
+                        <include name="runnable/**"/>
+                    </fileset>
+                </union>
+                <globmapper from="*" to="${aya.jar.name}/*"/> <!-- remap files to be stored in a directory 'aya-[version]/' -->
+            </mappedresources>
+        </zip>
+    </target>
+</project>
