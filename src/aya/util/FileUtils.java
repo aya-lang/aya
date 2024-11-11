@@ -3,6 +3,7 @@ package aya.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import aya.AyaPrefs;
 import aya.StaticData;
@@ -24,6 +25,13 @@ public class FileUtils {
 	public static File resolveFile(String pathName) {
 		File file = new File(pathName);
 		return file.isAbsolute() ? file : new File(AyaPrefs.getWorkingDir(), pathName);
+	}
+	
+	/** See resolveFile(String) */
+	public static Path resolvePath(String pathName) {
+		Path path = Path.of(pathName);
+		return path.isAbsolute() ? path : Path.of(AyaPrefs.getWorkingDir(), pathName);
+		
 	}
 
 	public static boolean isFile(String str) {

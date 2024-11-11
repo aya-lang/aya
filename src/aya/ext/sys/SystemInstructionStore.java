@@ -1,16 +1,16 @@
 package aya.ext.sys;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import aya.AyaPrefs;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
-import aya.instruction.named.NamedOperator;
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.list.List;
-import aya.obj.number.Num;
 import aya.util.FileUtils;
 
 public class SystemInstructionStore extends NamedInstructionStore {
@@ -28,16 +28,13 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				
 				if (arg.isa(Obj.STR)) {
 					String fstr = arg.str();
-					try {
-						ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(new File(fstr));
-						ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
-						for (String s : dirs) {
-							obj_dirs.add(List.fromString(s));
-						}
-						blockEvaluator.push(new List(obj_dirs));
-					} catch (NullPointerException e) {
-						throw new ValueError(":{sys.readdir} : arg is not a valid location. Received:\n'" + fstr + "'");
+					Path path = FileUtils.resolvePath(fstr);
+					ArrayList<String> dirs = AyaPrefs.listFilesAndDirsForFolder(path);
+					ArrayList<Obj> obj_dirs = new ArrayList<Obj>(dirs.size());
+					for (String s : dirs) {
+						obj_dirs.add(List.fromString(s));
 					}
+					blockEvaluator.push(new List(obj_dirs));
 				} else {
 					throw new ValueError(":{sys.readdir} : arg must be a string. Received:\n" + arg.repr());
 				}
