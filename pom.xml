@@ -81,7 +81,6 @@
                 </executions>
             </plugin>
 
-         
         </plugins>
     </build>
 
@@ -167,11 +166,13 @@
             </build>
         </profile>
 
-        <!-- Build a .js file for Running in a web enviornment -->
+        <!-- Build .js files for running in a web enviornment -->
         <profile>
             <id>web</id>
             <build>
                 <plugins>
+
+                    <!-- Build JS runtime using TeaVM -->
                     <plugin>
                         <groupId>org.teavm</groupId>
                         <artifactId>teavm-maven-plugin</artifactId>
@@ -196,6 +197,28 @@
                                     <debugInformationGenerated>true</debugInformationGenerated>
                                     <sourceMapsGenerated>true</sourceMapsGenerated>
                                     <targetFileName>aya.js</targetFileName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Build a js file containing the aya standard library -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>package-ayastdlib-js</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="build-dir" value="${project.build.directory}"/>
+                                        <ant antfile="${project.basedir}/build-scripts/package-ayastdlib-js-build.xml"/>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
