@@ -302,8 +302,7 @@ public class InteractiveAya {
 		}
 
 		int resultCode = iaya.loop();
-		//System.exit( resultCode );
-		System.exit( 0 );
+		System.exit( resultCode );
 	}
 	
 	public static void setInteractive(boolean b) {

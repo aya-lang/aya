@@ -351,7 +351,7 @@ public class AyaIDE extends JFrame
 	}
 
 	public static void main(String[] args) {
-		// Set to System.in/out/err initially. Will be changed to IDE gui later
+		// Set to System.in/out/err. If using the GUI, these will be changed to IDE GUI later
 		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
 		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
 		StaticData.FILESYSTEM = new FilesystemIO();
@@ -383,8 +383,8 @@ public class AyaIDE extends JFrame
 
 		}
 
-		iaya.loop();
-		System.exit(1);
+		int resultCode = iaya.loop();
+		System.exit(resultCode);
 	}
 }
 
