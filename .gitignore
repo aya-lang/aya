@@ -6,3 +6,6 @@
 aya.jar
 rdatasets_index.csv
 /target/
+.settings/
+.project
+.classpath

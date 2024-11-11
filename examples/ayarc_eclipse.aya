@@ -1,0 +1,17 @@
+.# When using eclise, copy this file into target/classes and rename it "ayarc.aya"
+.# This file redirects aya back to the root folder and calls the ayarc.aya file from there
+
+.# From the root aya directory after building:
+.#   cp examples/ayarc_eclipse.aya target/classes/ayarc.aya
+
+.# The current working directory, split on path separator
+:{sys.wd} '/ S
+.# Pop 2 dirs
+{B ;} 2 %
+.# Re-assemble the path
+#"/"+ W
+.# Set as current dir and aya dir
+$ :{sys.cd} :{sys.set_ad}
+
+.# Load ayarc from the normal place
+:{sys.wd} "ayarc.aya" + :F
