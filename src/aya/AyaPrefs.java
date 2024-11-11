@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import aya.exceptions.runtime.IOError;
 import aya.obj.Obj;
 import aya.obj.character.Char;
 import aya.obj.list.Str;
@@ -101,15 +102,19 @@ public class AyaPrefs {
 		}
 	}
 
-	public static ArrayList<String> listFilesAndDirsForFolder(final File folder) {
-		File[] listOfFiles = folder.listFiles();
+	public static ArrayList<String> listFilesAndDirsForFolder(final Path path) {
+		File[] listOfFiles = path.toFile().listFiles();
 		ArrayList<String> fileList = new ArrayList<String>();
-		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		        fileList.add(file.getName());
-		    } else if (file.isDirectory()) {
-		    	fileList.add(File.separator + file.getName());
-		    }
+		if (listOfFiles == null) {
+			throw new IOError("AyaPrefs.listFilesAndDirsForFolder", path.toString(), "Unable to list files, path is invalid");
+		} else {
+			for (File file : listOfFiles) {
+			    if (file.isFile()) {
+			        fileList.add(file.getName());
+			    } else if (file.isDirectory()) {
+			    	fileList.add(file.getName() + File.separator);
+			    }
+			}
 		}
 		return fileList;
 	}
