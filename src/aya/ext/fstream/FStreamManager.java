@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import aya.StaticData;
+import aya.util.FileUtils;
 
 public class FStreamManager {
 	
