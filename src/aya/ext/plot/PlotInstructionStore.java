@@ -5,14 +5,20 @@ import aya.ext.plot.instruction.MultiPlotInstruction;
 import aya.ext.plot.instruction.PieChartInstruction;
 import aya.ext.plot.instruction.PlotInstruction;
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class PlotInstructionStore extends NamedInstructionStore {
+import java.util.Arrays;
+import java.util.Collection;
 
-    @Override
-    protected void init() {
-        addInstruction(new PlotInstruction());
-        addInstruction(new MultiPlotInstruction());
-        addInstruction(new BoxPlotInstruction());
-        addInstruction(new PieChartInstruction());
-    }
+public class PlotInstructionStore implements NamedInstructionStore {
+
+	@Override
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+				new PlotInstruction(),
+				new MultiPlotInstruction(),
+				new BoxPlotInstruction(),
+				new PieChartInstruction()
+		);
+	}
 }

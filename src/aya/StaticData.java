@@ -1,7 +1,5 @@
 package aya;
 
-import java.util.ArrayList;
-
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
@@ -26,6 +24,19 @@ import aya.instruction.op.Ops;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 public class StaticData {
 
 	public static final boolean DEBUG = true;
@@ -34,64 +45,59 @@ public class StaticData {
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
 
-	
+
 	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
-	
+
 	//
 	// All calls to modify this data will need to be thread safe
 	//
 	private static StaticData _instance;
-	
-	
-	
+
+
 	//
 	// Data loaded in the parser
 	//
 	private StringSearch _helpData;
 
-	
+
 	//
 	// Data Loaded on Start-up
 	//
-	private ArrayList<NamedInstructionStore> _namedInstructionStores;
-	
-	
+	private final Map<String, NamedOperator> _namedInstructions = new HashMap<>();
+
+
 	private StaticData() {
 		_helpData = null; // initHelpData will create
-		_namedInstructionStores = new ArrayList<NamedInstructionStore>();
 	}
-	
+
 	public static StaticData getInstance() {
 		if (_instance == null) {
 			_instance = new StaticData();
 		}
 		return _instance;
 	}
-	
+
 	public void init() {
 		initHelpData();
 		initNamedInstructions();
 	}
-	
-	
+
+
 	///////////////
 	// Help Data //
 	///////////////
-	
+
 	private void initHelpData() {
-		if(_helpData == null) {
-			
+		if (_helpData == null) {
+
 			//Make sure all classes are loaded
-			try
-			{
-			  loadOps(Ops.OPS);
-			  loadOps(Ops.EXTRA_OPS);
-			  loadOps(MiscOps.MATH_OPS);
-			  loadOps(ColonOps.COLON_OPS);
-			  loadOps(DotOps.DOT_OPS);
-			}
-			catch(Exception e)
-			{
+			try {
+				loadOps(Ops.OPS);
+				loadOps(Ops.EXTRA_OPS);
+				loadOps(MiscOps.MATH_OPS);
+				loadOps(ColonOps.COLON_OPS);
+				loadOps(DotOps.DOT_OPS);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			ArrayList<String> searchList = new ArrayList<String>();
@@ -103,12 +109,12 @@ public class StaticData {
 			_helpData = new StringSearch(searchList);
 		}
 	}
-	
+
 	public StringSearch getHelpData() {
 		initHelpData();
 		return _helpData;
 	}
-	
+
 	public void addHelpText(String in) {
 		getHelpData().addUnique(in);
 	}
@@ -116,7 +122,7 @@ public class StaticData {
 	public String[] getQuickSearchData() {
 		return getHelpData().getAllItems();
 	}
-	
+
 	/* This function does nothing but force java to load
 	 * the operators and call the static blocks
 	 */
@@ -131,35 +137,72 @@ public class StaticData {
 	////////////////////////
 
 	private void initNamedInstructions() {
-		_namedInstructionStores.add(new DebugInstructionStore());
-		_namedInstructionStores.add(new JSONInstructionStore());
-		_namedInstructionStores.add(new ImageInstructionStore());
-		_namedInstructionStores.add(new GraphicsInstructionStore());
-		_namedInstructionStores.add(new FStreamInstructionStore());
-		_namedInstructionStores.add(new SystemInstructionStore());
-		_namedInstructionStores.add(new DialogInstructionStore());
-		_namedInstructionStores.add(new PlotInstructionStore());
-		_namedInstructionStores.add(new DateInstructionStore());
-		_namedInstructionStores.add(new SocketInstructionStore());
-		_namedInstructionStores.add(new ColorInstructionStore());
-		_namedInstructionStores.add(new LinearAlgebraInstructionStore());
-		_namedInstructionStores.add(new ThreadInstructionStore());
-		
-		for (NamedInstructionStore x : _namedInstructionStores) {
-			x.initHelpData(this);
-		}
-		
-	}
-	public NamedOperator getNamedInstruction(String name) {
-		for (NamedInstructionStore x : _namedInstructionStores) {
-			NamedOperator i = x.getInstruction(name);
-			if (i != null) {
-				return i;
+		addNamedInstructionStore(new DebugInstructionStore());
+		addNamedInstructionStore(new JSONInstructionStore());
+		addNamedInstructionStore(new ImageInstructionStore());
+		addNamedInstructionStore(new GraphicsInstructionStore());
+		addNamedInstructionStore(new FStreamInstructionStore());
+		addNamedInstructionStore(new SystemInstructionStore());
+		addNamedInstructionStore(new DialogInstructionStore());
+		addNamedInstructionStore(new PlotInstructionStore());
+		addNamedInstructionStore(new DateInstructionStore());
+		addNamedInstructionStore(new SocketInstructionStore());
+		addNamedInstructionStore(new ColorInstructionStore());
+		addNamedInstructionStore(new LinearAlgebraInstructionStore());
+		addNamedInstructionStore(new ThreadInstructionStore());
+
+		/*
+			Unfortunately, classpath wildcards are not supported in MANIFEST files. https://docs.oracle.com/javase/7/docs/technotes/tools/windows/classpath.html
+			So the user-libraries need to be loaded manually.
+		 */
+		try {
+			File libsDir = new File(AyaPrefs.getAyaRootDirectory(), "libs");
+			final URL[] libUrls;
+			try (Stream<Path> libPaths = Files.list(libsDir.toPath())) {
+				libUrls = libPaths.map(path -> {
+					try {
+						return path.toUri().toURL();
+					} catch (Exception e) {
+						return null;
+					}
+				}).filter(Objects::nonNull).toArray(URL[]::new);
 			}
+
+			try (URLClassLoader libClassLoader = new URLClassLoader(libUrls)) {
+				StreamSupport.stream(
+						ServiceLoader.load(NamedInstructionStore.class, libClassLoader).spliterator(),
+						false
+				).forEach(store -> {
+					IO.out().println("found store: " + store.getClass().getName());
+					addNamedInstructionStore(store);
+				});
+			}
+		} catch (Exception e) {
+			IO.err().println("Failed to load libraries due to exception: " + e.getMessage());
+			e.printStackTrace(IO.err());
 		}
-		return null;
 	}
 
-	
+	private void addNamedInstructionStore(NamedInstructionStore store) {
+		for (NamedOperator instruction : store.getNamedInstructions()) {
+			String iName = instruction.getName();
+			NamedOperator previous = _namedInstructions.put(iName, instruction);
+			if (previous != null) {
+				IO.err().println("NamedInstruction '" + iName + "' has multiple implementations:\n"
+						+ "  " + previous.getClass().getName() + "\n"
+						+ "  " + instruction.getClass().getName()
+				);
+			}
+
+			String doc = instruction.getDoc();
+			if (doc != null && !doc.isEmpty()) {
+				addHelpText(instruction.opName() + "\n  " + doc);
+			}
+		}
+	}
+
+	public NamedOperator getNamedInstruction(String name) {
+		return _namedInstructions.get(name);
+	}
 
 }
