@@ -2,12 +2,14 @@ package aya.ext.image.instruction;
 
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.InternalAyaRuntimeException;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
 import aya.ext.image.AyaImage;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
+import aya.obj.symbol.SymbolConstants;
 import aya.util.DictReader;
 import aya.util.FileUtils;
 
@@ -42,14 +44,16 @@ public class WriteImageInstruction extends NamedOperator {
 		}
 
 		AyaImage image = new AyaImage(new DictReader((Dict) a, opName() + ".image"));
+		final boolean wasWritten;
 		try {
 			BufferedImage bufImg = image.toBufferedImage();
-			boolean wasWritten = ImageIO.write(bufImg, ext, targetFile);
-			if (!wasWritten) {
-				throw new IOError(opName(), targetFile.getAbsolutePath(), "found no image writer that supports the requested format");
-			}
+			wasWritten = ImageIO.write(bufImg, ext, targetFile);
 		} catch (Exception e) {
 			throw new IOError(opName(), targetFile.getAbsolutePath(), e.getMessage());
+		}
+
+		if (!wasWritten) {
+			throw new InternalAyaRuntimeException(SymbolConstants.IO_ERR, "found no image writer that supports the requested format '" + ext + "'. Absolute file path: '" + targetFile.getAbsolutePath() + "'");
 		}
 	}
 }
