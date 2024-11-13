@@ -53,7 +53,7 @@ public class WriteImageInstruction extends NamedOperator {
 		}
 
 		if (!wasWritten) {
-			throw new InternalAyaRuntimeException(SymbolConstants.IO_ERR, "found no image writer that supports the requested format '" + ext + "'. Absolute file path: '" + targetFile.getAbsolutePath() + "'");
+			throw new InternalAyaRuntimeException(SymbolConstants.IO_ERR, "found no '" + ext + "' image writer that supports the provided metadata: " + image.imageMeta);
 		}
 	}
 }

@@ -61,4 +61,13 @@ public class ImageMeta {
 		return d;
 	}
 
+	@Override
+	public String toString() {
+		return "ImageMeta{" +
+				"isGray=" + isGray +
+				", hasAlpha=" + hasAlpha +
+				", premultiplied=" + premultiplied +
+				", javaImageType=" + javaImageType +
+				'}';
+	}
 }
