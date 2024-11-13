@@ -83,4 +83,4 @@ img "out.png" :{image.write}
 
 .# Read an image
 "out.png" image.read :img;
-{img.pixels [[41 -92 34]]} test.test
+{img.pixels [[41 164 34 255]]} test.test
