@@ -37,9 +37,18 @@ public class FileUtils {
 	public static boolean isFile(String str) {
 		return StaticData.FILESYSTEM.isFile(resolveFile(str));
 	}
-	
+
 	public static String resolveHome(String path) {
 		return path.replaceFirst("^~", System.getProperty("user.home"));
 	}
-	
+
+	/**
+	 * @return the File extension of the file | or null if no extension is present
+	 */
+	public static String getExt(File file) {
+		String name = file.getName();
+		int sepIdx = name.lastIndexOf('.');
+		return sepIdx >= 0 ? name.substring(sepIdx + 1) : null;
+	}
+
 }

@@ -2,7 +2,9 @@ package aya.obj.dict;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
@@ -101,7 +103,7 @@ public class Dict extends Obj {
 	 *  
 	 *  If not found continue along the __meta__ chain
 	 * */
-	private Obj _get(Symbol typeId, boolean meta_only, ArrayList<Integer> visited) {
+	private Obj _get(Symbol typeId, boolean meta_only, Set<Integer> visited) {
 		Obj o = null;
 		if (!meta_only) o = _vars.get(typeId);
 		if (o != null)
@@ -113,21 +115,11 @@ public class Dict extends Obj {
 			if (_meta != null) {
 				// Add this dict as visited
 				// Only allocate the visited array if needed
-				if (visited == null) visited = new ArrayList<Integer>();
+				if (visited == null) visited = new HashSet<>();
 				visited.add(this.hashCode());
 				
-				// Have we already visited this?
-				int hash = _meta.hashCode();
-				boolean visited_meta = false;
-				for (Integer i : visited) {
-					if (hash == i.intValue()) {
-						visited_meta = true;
-						break;
-					}
-				}
-				
 				// Already visited, do not look up
-				if (visited_meta) {
+				if (visited.contains(_meta.hashCode())) {
 					return null;
 				} else {
 					// Not visited, search it (and it's metas) for the key
@@ -159,13 +151,7 @@ public class Dict extends Obj {
 	
 	/** A list of keys */
 	public ArrayList<Symbol> keys() {
-		ArrayList<Symbol> out = new ArrayList<Symbol>();
-		Iterator<HashMap.Entry<Symbol, Obj>> it = _vars.entrySet().iterator();
-	    while (it.hasNext()) {
-	    	HashMap.Entry<Symbol,Obj> pair = (HashMap.Entry<Symbol, Obj>)it.next();
-	    	out.add(pair.getKey());
-	    }
-	    return out;
+		return new ArrayList<>(_vars.keySet());
 	}
 	
 	/** All key/value pairs */
