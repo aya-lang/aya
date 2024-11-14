@@ -33,6 +33,13 @@ public abstract class NumberList extends ListImpl {
 		return DoubleList.fromBytes(bytes);
 	}
 
+	/**
+	 * like {@link #fromBytes(byte[])} except that the bytes are treated as unsigned.
+	 */
+	public static DoubleList fromUBytes(byte[] bytes) {
+		return DoubleList.fromUBytes(bytes);
+	}
+
 	public static DoubleList fromChars(char[] chars) {
 		double[] out = new double[chars.length];
 		for (int i = 0; i < chars.length; i++) {
