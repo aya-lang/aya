@@ -1,6 +1,7 @@
 package aya.ext.graphics;
 
 import aya.ext.graphics.instruction.ArcGraphicsInstruction;
+import aya.ext.graphics.instruction.PointsGraphicsInstruction;
 import aya.ext.graphics.instruction.ClearGraphicsInstruction;
 import aya.ext.graphics.instruction.ClearRectGraphicsInstruction;
 import aya.ext.graphics.instruction.CloseGraphicsInstruction;
@@ -50,6 +51,7 @@ public class GraphicsInstructionStore extends NamedInstructionStore {
 		addInstruction(new ClickEventsInstruction(canvas_table));
 		addInstruction(new CloseGraphicsInstruction(canvas_table));
 		addInstruction(new CopyRectGraphicsInstruction(canvas_table));
+		addInstruction(new PointsGraphicsInstruction(canvas_table));
 		addInstruction(new EllipseGraphicsInstruction(canvas_table));
 		addInstruction(new GetPixelsGraphicsInstruction(canvas_table));
 		addInstruction(new IsOpenGraphicsInstruction(canvas_table));
