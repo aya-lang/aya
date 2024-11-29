@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
-//import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.canvas.CanvasRenderingContext2D;
 
 import aya.AyaStdIO;
 import aya.StandaloneAya;
 import aya.StaticData;
+import aya.eval.BlockEvaluator;
 import aya.exceptions.parser.ParserException;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.json.JSONInstructionStore;
 import aya.ext.la.LinearAlgebraInstructionStore;
+import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 import aya.io.StringOut;
 import aya.io.stdin.EmptyInputWrapper;
 
@@ -38,6 +43,23 @@ public class AyaWeb {
 	
 		WebAvailableNamedInstructionStore wsi = new WebAvailableNamedInstructionStore();
 		sd.addNamedInstructionStore(wsi);
+		
+		sd.addNamedInstructionStore(new NamedInstructionStore() {
+			@Override
+			protected void init() {
+				addInstruction(new NamedOperator("wg.test", "web graphics test") {
+					@Override
+					public void execute(BlockEvaluator blockEvaluator) {
+						var document = HTMLDocument.current();
+						var canvas_element = (HTMLCanvasElement)(document.getElementById("my-canvas"));
+				        CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvas_element.getContext("2d");
+				        context.setFillStyle("blue");
+				        context.setStrokeStyle("grey");
+				        context.fillRect(0, 0, 200, 200);
+					}
+				});
+			}
+		});
 
 		//sd.addNamedInstructionStore(new DebugInstructionStore());
 		sd.addNamedInstructionStore(new JSONInstructionStore());
@@ -135,7 +157,6 @@ public class AyaWeb {
 
     @JSBody(params = "lint", script = "main.lint = lint;")
     private static native void exportLint(ExportFunctionLint fn);
-
 }
 
 @JSFunctor
@@ -162,4 +183,3 @@ interface ExportFunctionListFiles extends JSObject {
 interface ExportFunctionLint extends JSObject {
 	String call(String source);
 }
-

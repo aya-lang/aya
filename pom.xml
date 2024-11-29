@@ -233,6 +233,21 @@
                     <artifactId>teavm-jso</artifactId>
                     <version>0.10.2</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.teavm</groupId>
+                    <artifactId>teavm-core</artifactId>
+                    <version>0.10.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.teavm</groupId>
+                    <artifactId>teavm-jso-apis</artifactId>
+                    <version>0.10.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.teavm</groupId>
+                    <artifactId>teavm-interop</artifactId>
+                    <version>0.10.2</version>
+                </dependency>
             </dependencies>
 
         </profile>
