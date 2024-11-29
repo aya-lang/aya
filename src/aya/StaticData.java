@@ -49,8 +49,6 @@ public class StaticData {
 	//
 	private static StaticData _instance;
 	
-	
-	
 	//
 	// Data loaded in the parser
 	//

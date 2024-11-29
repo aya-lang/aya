@@ -9,6 +9,11 @@ import aya.obj.list.List;
 import aya.obj.list.Str;
 
 public class WebAvailableNamedInstructionStore extends NamedInstructionStore {
+	/**
+	 * This class provides some overrides for aya instructions so they work in the web implementation
+	 * 
+	 * Only a small subset of instructions are supported
+	 */
 
 	@Override
 	protected void init() {

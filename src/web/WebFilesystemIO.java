@@ -10,6 +10,12 @@ import java.util.HashMap;
 import aya.io.fs.AbstractFilesystemIO;
 
 public class WebFilesystemIO extends AbstractFilesystemIO {
+	/**
+	 * A very basic virtual filesystem implementation
+	 * This is primarily used to load the standard library in the web implementation
+	 * 
+	 * Very few features outside of loading the standard library are supported
+	 */
 
 	private static class FileData {
 		public byte[] data;

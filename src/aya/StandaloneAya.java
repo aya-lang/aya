@@ -17,6 +17,9 @@ import aya.parser.Parser;
 import aya.parser.SourceString;
 
 public class StandaloneAya {
+	/**
+	 * A Bare-bones aya entry point that does not provide interactivity or preserve state
+	 */
 
     public static void main(String[] args) {
 		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
