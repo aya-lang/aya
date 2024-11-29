@@ -61,6 +61,10 @@ def canvas::fillcircle {x y r self,
     x y r2* $ 1 self.id :{graphics.ellipse}
 }
 
+def canvas::points {points r self,
+    points r2* $ self.id :{graphics.points}
+}
+
 def canvas::set_color {color self,
     .# ::set_color {, color.r:r color.g:g color.b:b } self.id :{graphics.MG} ;
     color.r color.g color.b self.id :{graphics.set_color}

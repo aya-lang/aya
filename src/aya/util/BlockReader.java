@@ -4,6 +4,7 @@ import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.TypeError;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
+import aya.obj.list.List;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.symbol.Symbol;
 
@@ -67,6 +68,15 @@ public class BlockReader {
 			return Casting.asSymbol(o);
 		} else {
 			throw new TypeError(_inst, "J", o);
+		}
+	}
+
+	public List popList() {
+		final Obj o = _block.pop();
+		if (o.isa(Obj.LIST)) {
+			return Casting.asList(o);
+		} else {
+			throw new TypeError(_inst, "L", o);
 		}
 	}
 }
