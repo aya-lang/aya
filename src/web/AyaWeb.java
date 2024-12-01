@@ -56,7 +56,7 @@ public class AyaWeb {
     	exportRunIsolated(new ExportFunctionRunIsolated() {
 			@Override
 			public String call(String s) {
-				StandaloneAya.runIsolated(input, StaticData.IO);
+				StandaloneAya.runIsolated(s, StaticData.IO);
 		        return output.flushOut() + output.flushErr();
 			}
 		});
