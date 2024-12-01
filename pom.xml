@@ -78,6 +78,91 @@
                             </target>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>package-ayastdlib-js</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="build-dir" value="${project.build.directory}"/>
+                                <ant antfile="${project.basedir}/build-scripts/package-ayastdlib-js-build.xml"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build fat JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>ui.AyaIDE</mainClass>
+                                </transformer>
+                            </transformers>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                            <!-- exclude teaVM dependency from desktop jar -->
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.teavm:teavm-classlib</exclude>
+                                </excludes>
+                            </artifactSet>
+
+                            <!-- exclude web classes from desktop jar -->
+                            <filters>
+                                <filter>
+                                    <artifact>co.npaul.aya:aya</artifact>
+                                    <excludes>
+                                        <exclude>web/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build JS runtime using TeaVM -->
+            <plugin>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-maven-plugin</artifactId>
+                <version>0.10.2</version>
+                <dependencies>
+                    <!-- This dependency is required by TeaVM to emulate subset of Java class library -->
+                    <dependency>
+                        <groupId>org.teavm</groupId>
+                        <artifactId>teavm-classlib</artifactId>
+                        <version>0.10.2</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <mainClass>web.AyaWeb</mainClass>
+                            <mainPageIncluded>true</mainPageIncluded>
+                            <debugInformationGenerated>true</debugInformationGenerated>
+                            <sourceMapsGenerated>true</sourceMapsGenerated>
+                            <targetFileName>aya.js</targetFileName>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -111,132 +196,13 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso</artifactId>
+            <version>0.10.2</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
-
-
-    <profiles>
-
-        <!-- Build a fat JAR for Running in a desktop enviornment -->
-        <profile>
-            <id>desktop</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-
-                    <!-- Exclude web specific files -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.13.0</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>web/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-
-                    <!-- Build fat JAR -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>3.5.0</version>
-
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <configuration>
-                                    <shadedArtifactAttached>false</shadedArtifactAttached>
-                                    <transformers>
-                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>ui.AyaIDE</mainClass>
-                                        </transformer>
-                                    </transformers>
-                                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- Build .js files for running in a web enviornment -->
-        <profile>
-            <id>web</id>
-            <build>
-                <plugins>
-
-                    <!-- Build JS runtime using TeaVM -->
-                    <plugin>
-                        <groupId>org.teavm</groupId>
-                        <artifactId>teavm-maven-plugin</artifactId>
-                        <version>0.10.2</version>
-                        <dependencies>
-                            <!-- This dependency is required by TeaVM to emulate subset of Java class library -->
-                            <dependency>
-                                <groupId>org.teavm</groupId>
-                                <artifactId>teavm-classlib</artifactId>
-                                <version>0.10.2</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>compile</goal>
-                                </goals>
-                                <phase>process-classes</phase>
-                                <configuration>
-                                    <mainClass>web.AyaWeb</mainClass>
-                                    <mainPageIncluded>true</mainPageIncluded>
-                                    <debugInformationGenerated>true</debugInformationGenerated>
-                                    <sourceMapsGenerated>true</sourceMapsGenerated>
-                                    <targetFileName>aya.js</targetFileName>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Build a js file containing the aya standard library -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>package-ayastdlib-js</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="build-dir" value="${project.build.directory}"/>
-                                        <ant antfile="${project.basedir}/build-scripts/package-ayastdlib-js-build.xml"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-
-            <dependencies>
-                <dependency>
-                    <groupId>org.teavm</groupId>
-                    <artifactId>teavm-jso</artifactId>
-                    <version>0.10.2</version>
-                </dependency>
-            </dependencies>
-
-        </profile>
-    </profiles>
-
 
 </project>
