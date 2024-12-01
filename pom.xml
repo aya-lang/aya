@@ -64,20 +64,6 @@
                             </target>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>release-zip</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <property name="build-dir" value="${project.build.directory}"/>
-                                <property name="aya.jar" value="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
-                                <ant antfile="${project.basedir}/build-scripts/release-zip-build.xml"/>
-                            </target>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
@@ -111,6 +97,13 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso</artifactId>
+            <version>0.10.2</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 
@@ -124,18 +117,6 @@
             </activation>
             <build>
                 <plugins>
-
-                    <!-- Exclude web specific files -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.13.0</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>web/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
 
                     <!-- Build fat JAR -->
                     <plugin>
@@ -157,6 +138,36 @@
                                         </transformer>
                                     </transformers>
                                     <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                                    <!-- exclude teaVM dependency from desktop jar -->
+                                    <artifactSet>
+                                        <excludes>
+                                            <exclude>org.teavm:teavm-classlib</exclude>
+                                        </excludes>
+                                    </artifactSet>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- package fat JAR into a release aya.zip -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>release-zip</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="build-dir" value="${project.build.directory}"/>
+                                        <property name="aya.jar" value="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
+                                        <ant antfile="${project.basedir}/build-scripts/release-zip-build.xml"/>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -226,14 +237,6 @@
 
                 </plugins>
             </build>
-
-            <dependencies>
-                <dependency>
-                    <groupId>org.teavm</groupId>
-                    <artifactId>teavm-jso</artifactId>
-                    <version>0.10.2</version>
-                </dependency>
-            </dependencies>
 
         </profile>
     </profiles>

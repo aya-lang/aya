@@ -13,7 +13,6 @@ import aya.StaticData;
 import aya.exceptions.parser.ParserException;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
-import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.json.JSONInstructionStore;
 import aya.ext.la.LinearAlgebraInstructionStore;
 import aya.io.StringOut;
@@ -21,7 +20,7 @@ import aya.io.stdin.EmptyInputWrapper;
 
 public class AyaWeb {
 
-	private static StringOut output = new StringOut();
+	private static final StringOut output = new StringOut();
 	
     public static void main(String[] args) {
     	
@@ -53,47 +52,26 @@ public class AyaWeb {
 		//
 		// Exported Functions Implementation
 		//
-    	exportRunIsolated(new ExportFunctionRunIsolated() {
-			@Override
-			public String call(String s) {
-				StandaloneAya.runIsolated(s, StaticData.IO);
-		        return output.flushOut() + output.flushErr();
-			}
+    	exportRunIsolated(s -> {
+			StandaloneAya.runIsolated(s, StaticData.IO);
+			return output.flushOut() + output.flushErr();
 		});
     	
-    	exportAddFile(new ExportFunctionAddFile() {
-			@Override
-			public void call(String path, String content) {
-				((WebFilesystemIO)(StaticData.FILESYSTEM)).addFile(path, content);
+    	exportAddFile((path, content) -> ((WebFilesystemIO)(StaticData.FILESYSTEM)).addFile(path, content));
+    	
+    	exportListFiles(() -> String.join(",", fs.listFiles()));
+    	
+    	exportLint(source -> {
+			ArrayList<ParserException> errors = StandaloneAya.lint(source);
+			if (errors.size() > 0) {
+				// TODO: The compile function stops after the first error
+				// if we update the parser to catch multiple errors, we will need to update this
+				ParserException err = errors.get(0);
+				return err.getSource().getIndex() + ":" + err.getSimpleMessage();
+			} else {
+				return "";
 			}
 		});
-    	
-    	exportListFiles(new ExportFunctionListFiles() {
-			@Override
-			public String call() {
-				ArrayList<String> files = fs.listFiles();
-				String out = "";
-				for (String s : files) {
-					out += s + ",";
-				}
-				return out;
-			}
-		});
-    	
-    	exportLint(new ExportFunctionLint() {
-    		@Override
-    		public String call(String source) {
-    			ArrayList<ParserException> errors = StandaloneAya.lint(source);
-    			if (errors.size() > 0) {
-    				// TODO: The compile function stops after the first error
-    				// if we update the parser to catch multiple errors, we will need to update this
-    				ParserException err = errors.get(0);
-    				return err.getSource().getIndex() + ":" + err.getSimpleMessage();
-    			} else {
-    				return "";
-    			}
-    		}
-    	});
     	
     }
     
