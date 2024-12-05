@@ -32,6 +32,10 @@ def image::pixels {self,
     [self.r self.g self.b self.a] .T
 }
 
+def image::pixels_rgb {self,
+    [self.r self.g self.b] .T
+}
+
 def image::channels {self,
     [self.r self.g self.b self.a]
 }

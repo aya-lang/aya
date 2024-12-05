@@ -726,33 +726,39 @@ class OP_Dot_GreaterThan extends Operator {
 	}
 }
 
-// = 61 new OP_Dot_Equals(),
+// = - 61
 class OP_Dot_Equals extends Operator {
-
+	
 	public OP_Dot_Equals() {
 		init(".=");
-		arg("LL|AL|LA", "element-wise equivalence");
+		arg("AA", "equality (vectorized)");
+		vect();
 	}
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { return a.eq(b);}
+		public NumberList nl(Number a, NumberList b) { return b.eq(a);}
+		public NumberList ll(NumberList a, NumberList b) { return a.eq(b);}
+		public NumberList l(NumberList a) { throw new UnimplementedError(); }
+	};
 
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
-		final Obj a = blockEvaluator.pop();
 		final Obj b = blockEvaluator.pop();
-
-		if (a.isa(DICT) && b.isa(DICT)) {
-			blockEvaluator.push(a.equiv(b) ? Num.ONE : Num.ZERO);
-		} else if (a.isa(LIST) && b.isa(LIST)) {
-			blockEvaluator.push(asList(a).equalsElementwise(asList(b)));
-		} else if ( a.isa(LIST) ) {
-			blockEvaluator.push(asList(a).equalsElementwise(b));
-		} else if ( b.isa(LIST) ) {
-			blockEvaluator.push(asList(b).equalsElementwise(a));
-		} else {
-			throw new TypeError(this, a, b);
-		}
+		final Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
 	}
 
+	@Override
+	public Obj exec2arg(ExecutionContext context, final Obj a, final Obj b) {
+		Obj res;
+		// First apply standard vectorization rules
+		if ((res = VectorizedFunctions.vectorize2arg(context, this, a, b, NUML_OP)) != null) return res;
+		// Vectorization rules applied, return standard equals
+		return Num.fromBool(a.equiv(b));
+	}
 }
+
 
 
 // ? - 63
