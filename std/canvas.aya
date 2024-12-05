@@ -182,5 +182,5 @@ def canvas::text {self,
 
 def canvas::get_pixels {self : data image^,
     self.id :{graphics.get_pixels} :data;
-    data.data data.width data.height image!
+    data.r data.g data.b data.a data.width data.height data.meta image!
 }
