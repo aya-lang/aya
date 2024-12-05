@@ -19,7 +19,6 @@ import static aya.util.Casting.asSymbol;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.UnimplementedError;
 import aya.exceptions.runtime.UserObjRuntimeException;
 import aya.exceptions.runtime.ValueError;
-import aya.ext.dialog.QuickDialog;
 import aya.instruction.DataInstruction;
 import aya.instruction.ListBuilderInstruction;
 import aya.obj.Obj;
@@ -132,7 +130,7 @@ public class DotOps {
 		/* 82 R  */ new OP_Dot_R(),
 		/* 83 S  */ new OP_Dot_S(),
 		/* 84 T  */ new OP_Dot_T(),
-		/* 85 U  */ new OP_RequestString(),
+		/* 85 U  */ null,
 		/* 86 V  */ new OP_Dot_AppendBack(),
 		/* 87 W  */ null,
 		/* 88 X  */ null,
@@ -1020,7 +1018,7 @@ class OP_Dot_Write extends Operator {
 
 			if(option == 0) {
 				try {
-				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				}catch (IOException e) {
 				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
@@ -1030,7 +1028,7 @@ class OP_Dot_Write extends Operator {
 
 			else if (option == 1) {
 				try {
-				    Files.write(file.toPath(), write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 				}catch (IOException e) {
 				    throw new IOError(".G", absFilePath, e);
 				} catch (InvalidPathException ipe) {
@@ -1375,20 +1373,6 @@ class OP_Dot_T extends Operator {
 		} else {
 			throw new TypeError(this, a);
 		}
-	}
-}
-
-// U - 85
-class OP_RequestString extends Operator {
-
-	public OP_RequestString() {
-		init(".U");
-		arg("S", "requests a string using a ui dialog, S is the prompt text");
-	}
-
-	@Override
-	public void execute(BlockEvaluator blockEvaluator) {
-		blockEvaluator.push(List.fromString(QuickDialog.requestString(blockEvaluator.pop().str())));
 	}
 }
 

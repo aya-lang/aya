@@ -23,6 +23,10 @@ import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
+import aya.io.fs.AbstractFilesystemIO;
+import aya.io.fs.UnimplementedFilesystemIO;
+import aya.io.http.AbstractHTTPDownloader;
+import aya.io.http.UnimplementedHTTPDownloader;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 
@@ -35,14 +39,15 @@ public class StaticData {
 	public static final String QUIT = "\\Q";
 
 	
-	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
+	// Must me initialized in main
+	public static AyaStdIO IO = null;
+	public static AbstractHTTPDownloader HTTP_DOWNLOADER = new UnimplementedHTTPDownloader();
+	public static AbstractFilesystemIO FILESYSTEM = new UnimplementedFilesystemIO();
 	
 	//
 	// All calls to modify this data will need to be thread safe
 	//
 	private static StaticData _instance;
-	
-	
 	
 	//
 	// Data loaded in the parser
@@ -71,6 +76,11 @@ public class StaticData {
 	public void init() {
 		initHelpData();
 		initNamedInstructions();
+	}
+	
+	public void addNamedInstructionStore(NamedInstructionStore is) {
+		_namedInstructionStores.add(is);
+		is.initHelpData(this);
 	}
 	
 	
@@ -148,8 +158,9 @@ public class StaticData {
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			x.initHelpData(this);
 		}
-		
 	}
+	
+	
 	public NamedOperator getNamedInstruction(String name) {
 		for (NamedInstructionStore x : _namedInstructionStores) {
 			NamedOperator i = x.getInstruction(name);

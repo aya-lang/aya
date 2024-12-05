@@ -20,18 +20,17 @@ import static aya.util.Casting.asSymbol;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import aya.eval.ExecutionContext;
+import aya.StaticData;
 import aya.eval.BlockEvaluator;
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.NotAnOperatorError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.runtime.IOError;
@@ -933,22 +932,12 @@ class OP_G extends Operator {
 			String name = a.str();
 
 			if(Ops.PATTERN_URL.matcher(name).matches()) {
-				Scanner scnr = null;
 				try {
-					URL url = new URL(name);
-					scnr = new Scanner(url.openStream());
-					StringBuilder sb = new StringBuilder();
-
-					while(scnr.hasNext()) {
-						sb.append(scnr.nextLine()).append('\n');
-					}
-					blockEvaluator.push(List.fromString(sb.toString()));
+					String downloaded = StaticData.HTTP_DOWNLOADER.downloadFile(name);
+					blockEvaluator.push(List.fromString(downloaded));
 				}
 				catch(IOException ex) {
 					throw new IOError("G", name, ex);
-				} finally {
-					if(scnr != null)
-						scnr.close();
 				}
 			} else {
 				File readFile = FileUtils.resolveFile(name);
