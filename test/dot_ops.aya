@@ -1,5 +1,5 @@
 {[1 2 3 [1 2]] 1 .= [ 1 0 0 [ 1 0 ] ] } test.test
-{"abc" "Abc" .= [0 1 1]} test.test
+{"abc" "Abc" {=} .& [0 1 1]} test.test
 
 { [1 2 3 4] [2 3] .- [ 1 2 ] } test.test
 { [1 2 3 4] 2 .- [ 1 2 4 ] } test.test
