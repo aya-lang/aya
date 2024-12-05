@@ -51,7 +51,9 @@ public class VariableData {
 	private final Dict OBJ_NUM = new Dict();
 	private final Dict OBJ_CHAR = new Dict();
 	private final Dict OBJ_BLOCK = new Dict();
-	private final Dict BUILTINS = new Dict();
+	
+	// Builtins are static across all threads
+	private static final Dict BUILTINS = new Dict();
 
 	public final Dict OBJ_NIL = new Dict();
 
@@ -72,7 +74,6 @@ public class VariableData {
 		v.OBJ_CHAR.update(this.OBJ_CHAR);
 		v.OBJ_BLOCK.update(this.OBJ_BLOCK);
 		v.OBJ_NIL.update(this.OBJ_NIL);
-		v.BUILTINS.update(this.BUILTINS);
 		
 		return v;
 	}
@@ -93,12 +94,14 @@ public class VariableData {
 		OBJ_NUM.set(SymbolConstants.KEYVAR_META,  OBJ_NUM);
 		OBJ_STR.set(SymbolConstants.KEYVAR_META,  OBJ_STR);
 
-		BUILTINS.set(SymbolConstants.CHAR,  OBJ_CHAR);
-		BUILTINS.set(SymbolConstants.SYM,   OBJ_SYM);
-		BUILTINS.set(SymbolConstants.BLOCK, OBJ_BLOCK);
-		BUILTINS.set(SymbolConstants.LIST,  OBJ_LIST);
-		BUILTINS.set(SymbolConstants.NUM,   OBJ_NUM);
-		BUILTINS.set(SymbolConstants.STR,   OBJ_STR);
+		if (BUILTINS.size() == 0) {
+			BUILTINS.set(SymbolConstants.CHAR,  OBJ_CHAR);
+			BUILTINS.set(SymbolConstants.SYM,   OBJ_SYM);
+			BUILTINS.set(SymbolConstants.BLOCK, OBJ_BLOCK);
+			BUILTINS.set(SymbolConstants.LIST,  OBJ_LIST);
+			BUILTINS.set(SymbolConstants.NUM,   OBJ_NUM);
+			BUILTINS.set(SymbolConstants.STR,   OBJ_STR);
+		}
 		
 		_var_sets.add(new Scope(globals));
 	}
