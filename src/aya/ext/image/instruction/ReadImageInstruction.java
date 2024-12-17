@@ -17,7 +17,7 @@ public class ReadImageInstruction extends NamedOperator {
 	public ReadImageInstruction() {
 		super("image.read");
 		_doc = ("Read an image from a file\n"
-				+ "  <hint: for a list of supported image formats, see :{image.get_formats}>\n"
+				+ "  <hint: for a list of supported image formats, see :(image.get_formats)>\n"
 				+ "  <returns: " + AyaImage.getDocString("    ") + ">"
 		);
 	}

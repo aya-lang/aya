@@ -831,10 +831,10 @@ aya> {P} 2 :` 1 +
 
 ### Extension Operators
 
-Extension operators have the form `:{...}`. 
+Extension operators have the form `:(...)`. 
 
 ```
-aya> 123456789 "dd/MM/yyyy HH:mm:ss" :{date.format}
+aya> 123456789 "dd/MM/yyyy HH:mm:ss" :(date.format)
 "02/01/1970 05:17:36" 
 ```
 

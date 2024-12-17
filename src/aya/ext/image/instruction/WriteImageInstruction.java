@@ -21,7 +21,7 @@ public class WriteImageInstruction extends NamedOperator {
 	public WriteImageInstruction() {
 		super("image.write");
 		_doc = ("image::dict filename::str : write image to file\n"
-				+ "  <hint: for a list of supported image formats, see :{image.get_formats}>\n"
+				+ "  <hint: for a list of supported image formats, see :(image.get_formats)>\n"
 				+ "  image::dict : " + AyaImage.getDocString("    ")
 				+ "  filename::str : name of the file to write to. The file extension controls the image type."
 		);

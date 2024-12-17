@@ -5,13 +5,13 @@
 .#   cp examples/ayarc_eclipse.aya target/classes/ayarc.aya
 
 .# The current working directory, split on path separator
-:{sys.wd} '/ S
+:(sys.wd) '/ S
 .# Pop 2 dirs
 {B ;} 2 %
 .# Re-assemble the path
 #"/"+ W
 .# Set as current dir and aya dir
-$ :{sys.cd} :{sys.set_ad}
+$ :(sys.cd) :(sys.set_ad)
 
 .# Load ayarc from the normal place
-:{sys.wd} "ayarc.aya" + :F
+:(sys.wd) "ayarc.aya" + :F

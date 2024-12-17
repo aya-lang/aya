@@ -21,7 +21,7 @@
 {fname,
     {, 
     "* Running tests '$fname'..." :P
-    "$(:{sys.ad})$fname.aya" :F
+    "$(:(sys.ad))$fname.aya" :F
     "  Tests complete: '$fname'" :P
     };
 }:load_test;
@@ -66,7 +66,7 @@
 
 .# Import entire standard library
 "Importing standard library..." :P
-:{sys.ad} "/std"+ :{sys.readdir}:# {".aya".^ S W} :# {name, "importing $name...":P import name} ;
+:(sys.ad) "/std"+ :(sys.readdir):# {".aya".^ S W} :# {name, "importing $name...":P import name} ;
 "Import finished!" :P
 "":P
 

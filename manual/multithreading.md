@@ -50,7 +50,7 @@ aya> t.wait_for_result
 
 > File '/home/npaul/git/aya/std/threading.aya', line 16, col 37:
 15 | def thread::wait_for_result {self,
-16 |     self.id :{thread.wait_for_result}
+16 |     self.id :(thread.wait_for_result)
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 17 | }
 

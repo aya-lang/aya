@@ -78,17 +78,17 @@ def path::__dec__ {self,
 
 .#? ::str path.readdir\n  list of file/dir names in the given path
 def path::readdir {path,
-    P :{sys.readdir}
+    P :(sys.readdir)
 }
 
 .#? path.working\n  working directory
 def path::working {path,
-    :{sys.wd} path!
+    :(sys.wd) path!
 }
 
 .#? path.aya\n  aya directory
 def path::aya {path,
-    :{sys.ad} path!
+    :(sys.ad) path!
 }
 
 def path::clean {self,
@@ -168,13 +168,13 @@ def path::_iswindows {self,
 .#
 
 .#? path.root\n  root dir name
-"user.dir" :{sys.getprop} :9s .^ S .[0] path.:root;
+"user.dir" :(sys.getprop) :9s .^ S .[0] path.:root;
 
 
 
-"~" :{sys.resolvehome} path! path.:home;
+"~" :(sys.resolvehome) path! path.:home;
 
-{, :{sys.wd} path._split :dirs} path :M path.:dfltworking;
+{, :(sys.wd) path._split :dirs} path :M path.:dfltworking;
 
 
 
@@ -188,63 +188,63 @@ def file::__init__ {filepath type::char  self : path^,
     .# save a copy of the path
     filepath path!      self.:path ;
     .# open the stream
-    self.path P type :{fstream.O} self.:id ;
+    self.path P type :(fstream.O) self.:id ;
 }
 
 .#? ::file.close\n  close a file. return 1 is success
 def file::close {self,
     self.flush;
-    self.id 'c :{fstream.O}
+    self.id 'c :(fstream.O)
 }
 
 .#? ::file.isopen\n  test if a file stream is open
 def file::isopen {self,
-    self.id 'i :{fstream.O} 0 =!
+    self.id 'i :(fstream.O) 0 =!
 }
 
 .#? ::file.isread\n  return 1 if file is an input stream
 def file::isinput {self,
-    self.id 'i :{fstream.O} 1 =
+    self.id 'i :(fstream.O) 1 =
 }
 
 .#? ::file.iswrite\n  return 1 if file is an output stream
 def file::isoutput {self,
-    self.id 'i :{fstream.O} 2 =
+    self.id 'i :(fstream.O) 2 =
 }
 
 .#? ::file.print\n  print to a file if it is an input stream
 def file::print {s self,
-    sP self.id :{fstream.O}
+    sP self.id :(fstream.O)
 }
 
 .#? ::file.println\n  print string followed by a newline tp a file
 def file::println {s self,
-    sP "\n" + self.id :{fstream.O}
+    sP "\n" + self.id :(fstream.O)
 }
 
 .#? ::file.readchar\n  read the next char in the file, return -1 if EOF or invalid stream
 def file::readchar {self,
-    self.id 'b :{fstream.O}
+    self.id 'b :(fstream.O)
 }
 
 .#? ::file.readline\n  read the next line in the file, return 0 is EOF or invalid stream
 def file::readline {self,
-    self.id 'l :{fstream.O}
+    self.id 'l :(fstream.O)
 }
 
 .#? ::file.readall\n  read all text in the stream, return "" if EOF and 0 if invalid stream
 def file::readall {self,
-    self.id 'a :{fstream.O}
+    self.id 'a :(fstream.O)
 }
 
 .#? ::file.lines\n  return a list containing the lines in the file
 def file::lines {self,
-    self.id 'a :{fstream.O} '\n' S
+    self.id 'a :(fstream.O) '\n' S
 }
 
 .#? ::file.flush\n  flush an output stream
 def file::flush {self,
-    self.id 'f :{fstream.O}
+    self.id 'f :(fstream.O)
 }
 
 def file::__repr__ {self,
@@ -328,7 +328,7 @@ dummyfile file.:dummyfile ;
 
 {,
     {path, .# ::path or ::str
-        path P :{fileutils.readallbytes}
+        path P :(fileutils.readallbytes)
     }:readallbytes;
 
 }:fileutils;

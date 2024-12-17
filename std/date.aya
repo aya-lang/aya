@@ -18,7 +18,7 @@ export [::date ::dates ::dateunit]
 
     .# {in meta, [
     .#     in:T ::num = {{,in:ms} meta :M} ?
-    .#     in:T ::str = {{,in "yyyy-MM-dd" :{date.parse}:ms} meta :M} ?
+    .#     in:T ::str = {{,in "yyyy-MM-dd" :(date.parse):ms} meta :M} ?
     .#     {"Expected S|D, recieved: $in".D}
     .# ].S }:__new__;
 
@@ -30,7 +30,7 @@ export [::date ::dates ::dateunit]
                 } meta :M
             } (in :T ::str =) {
                 {, 
-                    in "yyyy-MM-dd" :{date.parse} :ms;
+                    in "yyyy-MM-dd" :(date.parse) :ms;
                 } meta :M
             } {
                 "Expected ::str or ::num. recieved: $in" .D
@@ -38,21 +38,21 @@ export [::date ::dates ::dateunit]
         } :?
     }:__new__;
 
-    {.ms "MMM dd, yyyy h:mm:ss a" :{date.format}}:__repr__;
+    {.ms "MMM dd, yyyy h:mm:ss a" :(date.format)}:__repr__;
     {.__repr__}:__str__;
 
-    {.ms :{date.desc}.day_of_week}:dayofweekid;
-    {.ms :{date.desc}.day_of_week dates.weekdays\V I}:dayofweek;
-    {.ms :{date.desc}.day_of_week dates.weekdaysabb\V I}:dayofweekabb;
-    {.ms :{date.desc}.year}:year;
-    {.ms :{date.desc}.month}:monthid;
-    {.ms :{date.desc}.month dates.monthnames\I}:month;
-    {.ms :{date.desc}.month dates.monthsabb\I}:monthabb;
-    {.ms :{date.desc}.day_of_month}:dayofmonth;
-    {.ms :{date.desc}.hour}:hour:h;
-    {.ms :{date.desc}.minute}:min:m;
-    {.ms :{date.desc}.second}:sec:s;
-    {.ms"a":{date.format}}:ampm;
+    {.ms :(date.desc).day_of_week}:dayofweekid;
+    {.ms :(date.desc).day_of_week dates.weekdays\V I}:dayofweek;
+    {.ms :(date.desc).day_of_week dates.weekdaysabb\V I}:dayofweekabb;
+    {.ms :(date.desc).year}:year;
+    {.ms :(date.desc).month}:monthid;
+    {.ms :(date.desc).month dates.monthnames\I}:month;
+    {.ms :(date.desc).month dates.monthsabb\I}:monthabb;
+    {.ms :(date.desc).day_of_month}:dayofmonth;
+    {.ms :(date.desc).hour}:hour:h;
+    {.ms :(date.desc).minute}:min:m;
+    {.ms :(date.desc).second}:sec:s;
+    {.ms"a":(date.format)}:ampm;
 
     {self unit,
         self.ms unit.ms + date!
@@ -65,12 +65,12 @@ export [::date ::dates ::dateunit]
     {.ms}:__sort__;
 
     .# Parse Functions
-    {"MM/dd/yy" :{date.parse}}:parsemdy;
+    {"MM/dd/yy" :(date.parse)}:parsemdy;
 
     .# String functions
-    {.ms "MM/dd/yy"   :{date.format}}:mmddyy;
-    {.ms "MM/dd/yyyy" :{date.format}}:mmddyyyy;
-    {.ms "hh:mm aa"   :{date.format}}:timestr;
+    {.ms "MM/dd/yy"   :(date.format)}:mmddyy;
+    {.ms "MM/dd/yyyy" :(date.format)}:mmddyyyy;
+    {.ms "hh:mm aa"   :(date.format)}:timestr;
 
 }:date;
 

@@ -369,13 +369,13 @@ public class Parser {
 					}
 					
 					// Named Operator
-					else if (in.peek() == '{') {
-						in.next(); // Skip '{'
+					else if (in.peek() == '(') {
+						in.next(); // Skip '('
 						StringBuilder sb = new StringBuilder();
 						boolean done = false;
 						while (in.hasNext()) {
 							char c = in.next();
-							if (c == '}') {
+							if (c == ')') {
 								done = true;
 								break;
 							} else {
@@ -385,7 +385,7 @@ public class Parser {
 						if (done) {
 							tokens.add(new NamedOpToken(sb.toString(), in.currentRef()));
 						} else {
-							throw new SyntaxError("Expected '}' after :{" + sb.toString(), in.currentRef());
+							throw new SyntaxError("Expected ')' after :(" + sb.toString(), in.currentRef());
 						}
 					}
 

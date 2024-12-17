@@ -30,7 +30,7 @@ public class ColorInstructionStore extends NamedInstructionStore {
 					d.set(SymbolConstants.A, Num.fromInt(color.getAlpha()));
 					blockEvaluator.push(d);
 				} catch (IllegalArgumentException e) {
-					throw new ValueError(":{color.fromstr} Invalid color: '" + color_str + "'");
+					throw new ValueError(":(color.fromstr) Invalid color: '" + color_str + "'");
 				}
 			}
 		});

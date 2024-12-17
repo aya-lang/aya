@@ -7,7 +7,7 @@
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
-{:{sys.ad} "test/test.aya" + :F}:tt;
+{:(sys.ad) "test/test.aya" + :F}:tt;
 
 .# Global __aya__ table
 {,
@@ -41,7 +41,7 @@
 .#? bp\n  set a breakpoint
 { : __aya__^,
     __aya__.ignore_breakpoints ! {
-        :{debug.pause}
+        :(debug.pause)
     } ?
 }:bp;
 
@@ -66,7 +66,7 @@
 .# -------
 
 {name,
-    [:{sys.ad} :9s "examples" :9s name ".aya"] W :F
+    [:(sys.ad) :9s "examples" :9s name ".aya"] W :F
 }:example;
 
 
@@ -448,5 +448,5 @@ __aya__.extend.` :extend;
 
 ] :# {f,
     .# "Loading base/$f..." :P
-    load ([:{sys.ad} :9s "base/$f"]W)
+    load ([:(sys.ad) :9s "base/$f"]W)
 };

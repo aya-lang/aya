@@ -1,4 +1,4 @@
-{g :{graphics.close}; } {;} .K
+{g :(graphics.close); } {;} .K
 
 .{
     A Demo of all raw graphics calls that can be made
@@ -9,87 +9,87 @@
 {,255Q:r 255Q:g 255Q:b}:col;
 {,100:r 100:g 100:b}:col;
 {x y,
-    1 g :{graphics.set_stroke_width}
-    0 0 0 g :{graphics.set_color}
-    x y x y g :{graphics.line}
+    1 g :(graphics.set_stroke_width)
+    0 0 0 g :(graphics.set_color)
+    x y x y g :(graphics.line)
 }:point;
 
-{, 300:width 300:height "Test":name 1:autoflush 1:show} :{graphics.new} :g;
+{, 300:width 300:height "Test":name 1:autoflush 1:show} :(graphics.new) :g;
 200 200 point
-0 0 100 200 g :{graphics.line}
-150 0 150 300 g :{graphics.line}
-0 150 300 150 g :{graphics.line}
+0 0 100 200 g :(graphics.line)
+150 0 150 300 g :(graphics.line)
+0 150 300 150 g :(graphics.line)
 .# x1 y1 w h fill
-20 30 10 100 0 g :{graphics.rect}
+20 30 10 100 0 g :(graphics.rect)
 .# r g b
-200 0 0 g :{graphics.set_color}
-3 g :{graphics.set_stroke_width}
-40 40 0 50 g :{graphics.line}
-120 130 10 50 1 g :{graphics.rect}
-200 250 0 g :{graphics.set_color}
+200 0 0 g :(graphics.set_color)
+3 g :(graphics.set_stroke_width)
+40 40 0 50 g :(graphics.line)
+120 130 10 50 1 g :(graphics.rect)
+200 250 0 g :(graphics.set_color)
 .# x y w h dh dv fill
-50 50 50 50 30 15 1 g :{graphics.round_rect}
-45 45 60 60 15 30 0 g :{graphics.round_rect}
-col.r col.g col.b g :{graphics.set_color}
-200 200 50 50 1 g :{graphics.oval}
-194 194 61 61 0 g :{graphics.oval}
-150 150 40 60 0 g :{graphics.ellipse}
+50 50 50 50 30 15 1 g :(graphics.round_rect)
+45 45 60 60 15 30 0 g :(graphics.round_rect)
+col.r col.g col.b g :(graphics.set_color)
+200 200 50 50 1 g :(graphics.oval)
+194 194 61 61 0 g :(graphics.oval)
+150 150 40 60 0 g :(graphics.ellipse)
 .# x y w h angle extent fill
-150 150 100 100 0  90 0 g :{graphics.arc}
-150 150 100 100 90 90 1 g :{graphics.arc}
+150 150 100 100 0  90 0 g :(graphics.arc)
+150 150 100 100 90 90 1 g :(graphics.arc)
 
-0 0 0 g :{graphics.set_color}
-1 g :{graphics.set_stroke_width}
-250 0 250 300 g :{graphics.line}
-100 100 0 g :{graphics.set_color}
-5 g :{graphics.set_stroke_width}
+0 0 0 g :(graphics.set_color)
+1 g :(graphics.set_stroke_width)
+250 0 250 300 g :(graphics.line)
+100 100 0 g :(graphics.set_color)
+5 g :(graphics.set_stroke_width)
 
 1:idx;
 ["butt" "round" "square"] :# {cap,
-  5 cap "bevel" g :{graphics.set_stroke}
-  150 idx20* 250 idx20* g :{graphics.line}
+  5 cap "bevel" g :(graphics.set_stroke)
+  150 idx20* 250 idx20* g :(graphics.line)
   ::idx B
 };
 
-5 g :{graphics.set_stroke_width}
-col.r col.g col.b g :{graphics.set_color}
+5 g :(graphics.set_stroke_width)
+col.r col.g col.b g :(graphics.set_color)
 ["bevel" "miter" "round"] :# {join,
-  5 "square" join g :{graphics.set_stroke}
-  150 idx30* 100 15 0 g :{graphics.rect}
+  5 "square" join g :(graphics.set_stroke)
+  150 idx30* 100 15 0 g :(graphics.rect)
   ::idx B
 };
 
 .# x1 y1 x2 y2 start_r start_g start_b start_a end_r end_g end_b end_a cycle
-0 0 20 20 (255 0 0 200) (0 255 0 200) 1 g :{graphics.set_paint_grad}
+0 0 20 20 (255 0 0 200) (0 255 0 200) 1 g :(graphics.set_paint_grad)
 
-0.4 g :{graphics.set_alpha}
-
-[ 0 75 100 125 200 150 160 100 40 50 0 ]
-[ 85 75 10 75 85 125 190 150 190 125 85 ]
-1 g :{graphics.path}
-
-0 0 0 1.0 g :{graphics.set_color_alpha}
-2 g :{graphics.set_stroke_width}
+0.4 g :(graphics.set_alpha)
 
 [ 0 75 100 125 200 150 160 100 40 50 0 ]
 [ 85 75 10 75 85 125 190 150 190 125 85 ]
-0 g :{graphics.path}
+1 g :(graphics.path)
+
+0 0 0 1.0 g :(graphics.set_color_alpha)
+2 g :(graphics.set_stroke_width)
+
+[ 0 75 100 125 200 150 160 100 40 50 0 ]
+[ 85 75 10 75 85 125 190 150 190 125 85 ]
+0 g :(graphics.path)
 
 225 225 point
 260 260 point
 
 .# fonts
 
-0 0 0 1.0 g :{graphics.set_color_alpha}
-"Hello world!" 20 20 g :{graphics.text}
+0 0 0 1.0 g :(graphics.set_color_alpha)
+"Hello world!" 20 20 g :(graphics.text)
 
-"Times New Roman" "bold" 20 g :{graphics.set_font}
+"Times New Roman" "bold" 20 g :(graphics.set_font)
 
-"Hello world!" 20 40 g :{graphics.text}
+"Hello world!" 20 40 g :(graphics.text)
 
-col.r col.g col.b g :{graphics.set_color}
-"Comic Sans MS" "italic" 15 g :{graphics.set_font}
-"Hello world!" 20 60 g :{graphics.text}
+col.r col.g col.b g :(graphics.set_color)
+"Comic Sans MS" "italic" 15 g :(graphics.set_font)
+"Hello world!" 20 60 g :(graphics.text)
 
-"Courier New" "bolditalic" 24 g :{graphics.set_font}
-"Hello world!" 20 80 g :{graphics.text}
+"Courier New" "bolditalic" 24 g :(graphics.set_font)
+"Hello world!" 20 80 g :(graphics.text)

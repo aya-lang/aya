@@ -94,7 +94,7 @@ def matrix::__rmul__ {self n::num,
 }
 
 def matrix::matmul {other self, 
-    other.rows self.rows :{la.mul} self.M._new
+    other.rows self.rows :(la.mul) self.M._new
 }
 
 def matrix ::__add__ { other self,
