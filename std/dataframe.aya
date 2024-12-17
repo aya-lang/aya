@@ -62,7 +62,7 @@ def dataframe::_gen_colnames {n::num cls,
 .###########
 
 def dataframe::from_csv {csv_dict cls,
-    {,
+    :{
         csv_dict.data :data;
         csv_dict.rownames :index;
         csv_dict.colnames :colnames;
@@ -108,7 +108,7 @@ def dataframe::_numgetindex {index::num self : dataframe^ idx,
     self._index index N :idx;
 
     idx 0 :> {
-        {,
+        :{
             [self._data.[idx]]  :data;
             [self._index.[idx]] :index;
             self._colnames :colnames;
@@ -129,7 +129,7 @@ def dataframe::__getindex__ { index self : dataframe^,
             index self._get_col
         } (index :T ::list =) {
             index E self._data E = {
-                {,
+                :{
                     self._data index .i :data;
                     self._index index .i :index;
                     self._colnames :colnames;
@@ -161,7 +161,7 @@ def dataframe::row {(1 hold)({self index : data,
     self._data.[index~]:data;
     [ index~ :T ::num = { [data]:data } ? ];
 
-    {, self._colnames:colnames data:data } dataframe!
+    :{ self._colnames:colnames data:data } dataframe!
 })}
 
 

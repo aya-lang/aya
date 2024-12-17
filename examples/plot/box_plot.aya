@@ -1,17 +1,17 @@
 .{ An example of the minimum required parameters for drawing a box-plot .}
-{,
+:{
 	[
-		{, 10.R :values}
-		{, 15.R :values}
-		{, 20.R :values}
-		{, 15.R :values}
-		{, 10.R :values}
+		:{ 10.R :values}
+		:{ 15.R :values}
+		:{ 20.R :values}
+		:{ 15.R :values}
+		:{ 10.R :values}
 	] :data
 } :(plot.box_plot)
 
 
 .{ An example showing all parameters for box-plots .}
-{,
+:{
 	"An Example Box-Plot" :title
 	"#ddd" :bgcolor
 	["#222" "#444"] :color_cycle
@@ -19,13 +19,13 @@
 	0 :show_median
 	1 :show_average
 	1 :show_far_outliers
-	{,
+	:{
 		1 :gridlines
 		"#fff" :gridline_color
 		1 :visible
 		"x-axis" :label
 	} :x
-	{,
+	:{
 		1 :gridlines
 		"#fff" :gridline_color
 		1 :zeroline
@@ -36,11 +36,11 @@
 	500 :width
 	500 :height
 	[
-		{, [0 0.9 1 1.1 2] 0.1 + :values  "group1" :group  "1" :entry}
-		{, [0 0.9 1 1.1 2] 0.2 + :values  "group1" :group  "2" :entry}
-		{, [0 0.9 1 1.1 2] 0.3 + :values  "group1" :group  "3" :entry}
-		{, [0 0.9 1 1.1 2] 0.4 + :values  "group2" :group  "1" :entry}
-		{, [0 0.9 1 1.1 2] 0.5 + :values  "group2" :group  "2" :entry}
-		{, [0 0.9 1 1.1 2] 0.6 + :values  "group2" :group  "3" :entry}
+		:{ [0 0.9 1 1.1 2] 0.1 + :values  "group1" :group  "1" :entry}
+		:{ [0 0.9 1 1.1 2] 0.2 + :values  "group1" :group  "2" :entry}
+		:{ [0 0.9 1 1.1 2] 0.3 + :values  "group1" :group  "3" :entry}
+		:{ [0 0.9 1 1.1 2] 0.4 + :values  "group2" :group  "1" :entry}
+		:{ [0 0.9 1 1.1 2] 0.5 + :values  "group2" :group  "2" :entry}
+		:{ [0 0.9 1 1.1 2] 0.6 + :values  "group2" :group  "3" :entry}
 	] :data
 } :(plot.box_plot)

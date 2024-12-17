@@ -27,7 +27,7 @@ def defaultdict::__str__ {self,
 def defaultdict::__repr__ (defaultdict.__str__.`)
 
 .# Create a default dict
-{,} 0 defaultdict! :dd;
+:{} 0 defaultdict! :dd;
 "> Dict is $dd" :P
 
 "> Adding x=10..." :P

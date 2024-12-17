@@ -19,7 +19,7 @@
 { "fail".D } assertfail
 
 {fname,
-    {, 
+    :{ 
     "* Running tests '$fname'..." :P
     "$(:(sys.ad))$fname.aya" :F
     "  Tests complete: '$fname'" :P
@@ -61,7 +61,7 @@
     "stats"
     "stack"
 ] :# {mod,
-    {, "test/std/test_$mod" load_test };
+    :{ "test/std/test_$mod" load_test };
 };
 
 .# Import entire standard library

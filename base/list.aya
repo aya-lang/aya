@@ -2,7 +2,7 @@
 
 .# Metatable definition for the built-in `list` type
 
-{,
+:{
     .# Querying
     .###############
 
@@ -152,7 +152,7 @@
 
     .#? ::list.dict_flatten\n  given a list of dicts, flatten the into a single dict
     {
-        {,}\J{.+}%
+        :{}\J{.+}%
     }:dict_flatten;
 
 

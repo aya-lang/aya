@@ -59,7 +59,7 @@ def attractor::show {self,
 .# Run Loop
 .###########
 
-{, "Attractor":name 0:autoflush } canvas! :cvs;
+:{ "Attractor":name 0:autoflush } canvas! :cvs;
 
 .# Create list of movers
 [50,;

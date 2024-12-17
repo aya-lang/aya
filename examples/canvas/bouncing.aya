@@ -4,7 +4,7 @@ import ::time
 .# Initialize the canvas
 400:w;
 300:h;
-{, w:width h:height "Bouncing":name } canvas! :c;
+:{ w:width h:height "Bouncing":name } canvas! :c;
 
 
 30:rad;

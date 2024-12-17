@@ -17,7 +17,7 @@ import ::plot
 
 .# Generate a function for a tangent line at a point
 {a f : dx^,
-  {x, f_a fdx_a x a - * +} {, 
+  {x, f_a fdx_a x a - * +} :{ 
     a f :f_a;
     a f.`dx :fdx_a;
     a :a;
@@ -31,9 +31,9 @@ t fn.` tangent_line :f_;
 
 plot.plot! :p;
 
-x :& #fn       {, "f":label  } p.plot
-x :& #{fn.`dx} {, "f'":label } p.plot
-x :& #f_       {, "tangent@$t":label  } p.plot
+x :& #fn       :{ "f":label  } p.plot
+x :& #{fn.`dx} :{ "f'":label } p.plot
+x :& #f_       :{ "tangent@$t":label  } p.plot
 
 p.view
 

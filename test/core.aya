@@ -90,7 +90,7 @@
 {"hi" {s::list,s} ~} assert ["hi"]
 {'C {s::char,s} ~} assert ['C]
 {1 'C "C" {a::any b::any c::any, a b c} ~} assert [1 'C "C"]
-{ {,} {d::dict,d}~} assert [{,}]
+{ :{} {d::dict,d}~} assert [:{}]
 {1 {s::str,} ~} assertfail
 {[1 2 3] {s::str,} ~} assertfail
 
@@ -105,29 +105,29 @@
 
 {:a(2), 1 ({a: b(a), a b})} assert [1 2]
 {:a(9), 2 ({a: a(a 1 +), a})} assert [2]
-{{: b({,}), b}:x; 1 x.:y; x} assert [{,1:y}]
+{{: b(:{}), b}:x; 1 x.:y; x} assert [:{1:y}]
 
 .# Dictionaries
 
-{{,}}  assert [{,}]
-{{,5 "hi" 'C}}  assert [{,}]
-{{, 5:x}.x} assert [5]
-{5 {,}.:x.x} assert [5]
-{ {,{,5:x}:x;}.x.x} assert [5]
-{ {,5:x} "x" H} assert [1]
-{ {,5:x} "y" H} assert [0]
+{:{}}  assert [:{}]
+{:{5 "hi" 'C}}  assert [:{}]
+{:{ 5:x}.x} assert [5]
+{5 :{}.:x.x} assert [5]
+{ :{:{5:x}:x;}.x.x} assert [5]
+{ :{5:x} "x" H} assert [1]
+{ :{5:x} "y" H} assert [0]
 
 .# Symbols
-{ {, 1:"FOO" } ."FOO" } assert [1]
+{ :{ 1:"FOO" } ."FOO" } assert [1]
 
 .# Meta dictionaries
 
-{{, 1:a} {, 2:b} :M .a} assert [1]
-{{, 1:a} {, 2:b} :M .b} assert [2]
-{{, 1:a} {, 2:b 10:a} :M .a} assert [1]
-{{, 1:a {, 2:b}:__meta__} .a} assert [1]
-{{, 1:a {, 2:b}:__meta__} .b} assert [2]
-{{, 1:a {, 2:b 10:a}:__meta__} .a} assert [1]
+{:{ 1:a} :{ 2:b} :M .a} assert [1]
+{:{ 1:a} :{ 2:b} :M .b} assert [2]
+{:{ 1:a} :{ 2:b 10:a} :M .a} assert [1]
+{:{ 1:a :{ 2:b}:__meta__} .a} assert [1]
+{:{ 1:a :{ 2:b}:__meta__} .b} assert [2]
+{:{ 1:a :{ 2:b 10:a}:__meta__} .a} assert [1]
 
 .# Lambdas
 {({1})} assert [1]
@@ -160,7 +160,7 @@
     0:a;
     {100 f} assert [100]
 
-    {, 1:a 2:b }:b;
+    :{ 1:a 2:b }:b;
     {:b^, b.a b.b b.c}:g;
     3 b.:c;
     20 b.:b;
@@ -172,7 +172,7 @@
 .# push self
 ({:d x y m,
 
-    {, 1:x 2:y {1+}:inc }:d;
+    :{ 1:x 2:y {1+}:inc }:d;
     {d.x d.y} assert [1 2]
     {d.y d.inc} assert [3]
 
@@ -197,9 +197,9 @@
     {d.foo} assert [3]
     {10 20 d.bar} assert [10 20 1 2]
 
-    {, {other self, other.a self.a + other.b self.b + J}:__add__ }:m;
-    {, 1:a 2:b m:__meta__ }:x;
-    {, 3:a 4:b m:__meta__ }:y;
+    :{ {other self, other.a self.a + other.b self.b + J}:__add__ }:m;
+    :{ 1:a 2:b m:__meta__ }:x;
+    :{ 3:a 4:b m:__meta__ }:y;
 
     .# if self is not pushed, should have an empty stack
     { x y + } assertfail
@@ -218,7 +218,7 @@
 ({:d,
 
     .# Create dict with strings
-    {, 1:x 2:y } :d;
+    :{ 1:x 2:y } :d;
     3 d.:["Hello!"];
     4 d.:["foo bar"];
     5 d.:["var"];
@@ -234,20 +234,20 @@
 .# get/set block metadata
 ({:args,
     [
-        {,
+        :{
           ::a:name;
           ::simple:argtype;
-        } {,
+        } :{
           ::num:type;
           1:copy;
           ::b:name;
           ::typed:argtype;
-        } {,
+        } :{
           ::str:type;
           0:copy;
           ::c:name;
           ::typed:argtype;
-        } {,
+        } :{
           ::any:type;
           1:copy;
           ::d:name;
@@ -278,4 +278,4 @@ assert
 { {a b, a b +} .! P } assert ["{a b +}"]
 
 .# type override
-{ {, {, ::foo:__type__ }:__meta__ } {x::foo, 1 } ~} assert [1]
+{ :{ :{ ::foo:__type__ }:__meta__ } {x::foo, 1 } ~} assert [1]

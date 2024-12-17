@@ -9,13 +9,13 @@ plot.multiplot! :mp;
 
 .# Upper plot
 plot.plot!:a;
-x {sin} {, "sin":label } a.plot
-x {0.3*} {, "0.3x":label } a.plot
+x {sin} :{ "sin":label } a.plot
+x {0.3*} :{ "0.3x":label } a.plot
 a mp.add
 
 .# Lower plot
 plot.plot!:b;
-x {x, x Ms x 0.3* +}  {, "sin(x)+0.3x":label  } b.plot
+x {x, x Ms x 0.3* +}  :{ "sin(x)+0.3x":label  } b.plot
 b mp.add
 
 .# Plot title

@@ -77,7 +77,7 @@ import ::image
 {"dir1/dir2" :(sys.readdir) ["dir3"sep] = 1} test.test
 
 .# Create a single pixel image
-{, 1:width 1:height [41]:r [164]:g [34]:b }:img;
+:{ 1:width 1:height [41]:r [164]:g [34]:b }:img;
 img "out.png" :(image.write)
 {"." :(sys.readdir)C ["dir1"sep "hello.txt" "out.png"]C = 1} test.test
 

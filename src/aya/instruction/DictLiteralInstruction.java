@@ -73,7 +73,7 @@ public class DictLiteralInstruction extends Instruction {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		if (num_captures == 0) {
-			stream.print("{,");
+			stream.print(":{");
 		} else {
 			stream.print("{" + num_captures + ",");
 		}

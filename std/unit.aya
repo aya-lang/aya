@@ -12,7 +12,7 @@
      "3hour 1mph *" => 3mile
 .}
 
-{,
+:{
 
     .# Length
 
@@ -76,7 +76,7 @@
 .# Regular Version
 .#	{(1 hold)(\@*\/)}:to;
 
-{,
+:{
     {(1 hold)({sub super : super_type,
         super.__type__ :super_type;
         super ::__type__ .- ;

@@ -305,14 +305,14 @@ Classes, structs, and object instances are simply dictionaries with special __me
 Below is an example of a 2d vector "class" definition written *from scratch* without using any convience functions. Member functions and overloads work the same as they do for normal classes. The only major difference is object creation (`__new__` vs `__init__`) and the special variables `__pushself__` and `__type__` at the top of the metatable.
 
 ```
-{,
+:{
 
   1:__pushself__;
   ::vec:__type__;
 
   .# Constructor
   {x y cls,
-    {,
+    :{
       x:x;
       y:y;
       cls:__meta__;
@@ -357,7 +357,7 @@ The symbol assigned to `__type__` is used for type checking and overloading the 
 
 ```
 {x y cls,
-    {,
+    :{
         x:x;
         y:y;
         cls:__meta__;

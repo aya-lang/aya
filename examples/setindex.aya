@@ -11,15 +11,15 @@
 9 newlist.[{:T::str=}];   x:P  .# [ 1 2 3 'a 'b 'c ]
 
 "Dicts":P
-{, 1:a 2:b 3:c} :dict;
+:{ 1:a 2:b 3:c} :dict;
 {dict$X;x}:newdict;
 
-9 newdict.:[::a];          x:P  .# {, 9:a; 2:b; 3:c; }
-9 newdict.:[::x];          x:P  .# {, 1:a; 2:b; 3:c; 9:x; }
+9 newdict.:[::a];          x:P  .# :{ 9:a; 2:b; 3:c; }
+9 newdict.:[::x];          x:P  .# :{ 1:a; 2:b; 3:c; 9:x; }
 
 .# setindex overload
 newdict :d;
-d {, {item index self,
+d :{ {item index self,
 "d.setindex:
   Item: $item
   Index: $index

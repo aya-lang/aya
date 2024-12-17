@@ -195,7 +195,7 @@ Use aya's `turtle` and `color` modules to draw a pattern
 import ::turtle
 import ::color
 
-{,
+:{
     400:width;
     400:height;
     color.colors.darkblue :bg_color;
@@ -225,7 +225,7 @@ import ::plot
 import ::stats
 
 "Downloading file..." :P
-{,
+:{
     "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/LakeHuron.csv":filename
     1:csvindex
 }
@@ -238,8 +238,8 @@ df.["value"] :y;
 x y stats.regression :r;
 
 plot.plot! :plt;
-x y   {, "Water Level":label} plt.plot
-x {r} {, "Trend":label} plt.plot
+x y   :{ "Water Level":label} plt.plot
+x {r} :{ "Trend":label} plt.plot
 
 "Water Level of Lake Huron" plt.:title;
 [575 583] plt.y.:lim;

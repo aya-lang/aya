@@ -43,7 +43,7 @@ If a colon is the first token in a block header, all variable names are consider
 Finally, if nothing is included in the block header, the block will be parsed as a dictionary.
 
 ```
-{, <dict body>}
+:{ <dict body>}
 ```
 
 ## Arguments
@@ -83,7 +83,7 @@ Arguments may have type assertions. Write a variable name followed by a symbol c
 If a user defined type defines a `type` variable as a symbol. The symbol will be used for type assertions.
 
 ```
-{,
+:{
   ::vec :type;
 
   ... define vec variables and functions ...
@@ -168,18 +168,18 @@ Aya provides a way to use keyword arguments using dictionaries and local declara
 The function `fn` contains 1 argument `kwargs` (the name can be anything) and three local declarations. The operator `.W` will export variables from the `kwargs` dict only if they are defined in the local scope. This means that any variables defined in `kwargs` will overwrite the initialized local variables. Every variable not given by `kwargs` dict will remain in its default state.
 
 ```
-aya> {, "sales.csv":filename 1:header} fn
+aya> :{ "sales.csv":filename 1:header} fn
 filename="sales.csv", header=1, dtype=::num
 
 aya> .# The variable `useless` does not exist in the local scope of `fn`
 aya> .#    and will therefore be ignored
-aya> {, "colors.csv":filename "blah":useless} fn
+aya> :{ "colors.csv":filename "blah":useless} fn
 filename="colors.csv", header=0, dtype=::num
 
-aya> {, "names.csv":filename ::str:dtype} fn
+aya> :{ "names.csv":filename ::str:dtype} fn
 filename="names.csv", header=0, dtype=::str
 
-aya> {, } fn
+aya> :{ } fn
 filename="", header=0, dtype=::num
 ```
 

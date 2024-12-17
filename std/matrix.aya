@@ -23,7 +23,7 @@ def matrix::__init__ {input::list self,
 .# Use this instead of the constructor to avoid
 .# validating the list
 def matrix::_new {matrix,
-    {1, :rows} matrix :M
+    :{1, :rows} matrix :M
 }
 
 .{ Example:
@@ -130,7 +130,7 @@ def matrix::__radd__ {self n::num,
     sym.op :op;
     def matrix sym ({
         :& .rows op #~ \.M._new
-        } {, op.`:op } .+
+        } :{ op.`:op } .+
     )
 }
 
@@ -161,8 +161,8 @@ def matrix::__eq__ ({a b,
     .# swap args if b is not a matrix
     b :T ::matrix =! {\} ?
     __fn 3.$ :T I ~
-} {,
-    {,
+} :{
+    :{
         matrix._eq_list.` :list;
         matrix._eq_num.`  :num;
         matrix._eq_mat.`  :matrix;

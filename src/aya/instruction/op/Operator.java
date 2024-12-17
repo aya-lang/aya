@@ -115,7 +115,7 @@ public abstract class Operator {
 		// ::sym:type;
 		info.set(SymbolConstants.TYPE, _doc.typeSymbol());
 		
-		// {,}:doc;
+		// :{}:doc;
 		info.set(SymbolConstants.DOC, _doc.toDict());
 		
 		return info;

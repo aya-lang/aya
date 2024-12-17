@@ -13,7 +13,7 @@ exportall
 } ;
 
 .# Standard library shortcuts
-{,
+:{
     0 .M :num;
     'x.M :char;
     [].M :list;
@@ -84,7 +84,7 @@ matrix:m;
 
 
 .# cdict variables
-{,
+:{
   "()" :"(";
   "<>" :"<";
   "/\\":"^";

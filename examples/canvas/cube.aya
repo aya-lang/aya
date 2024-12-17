@@ -11,7 +11,7 @@ color.colors.black :black;
 color.colors.white :white;
 
 .# Create a new canvas
-{, "3D Cube":name 0:autoflush } canvas! :c;
+:{ "3D Cube":name 0:autoflush } canvas! :c;
 2 c.set_stroke_width
 
 0 :theta;

@@ -479,21 +479,21 @@ aya> 10 list.:[0]
 
 ### Dictionary Literals
 
-Dictionary literals have the form `{, ... }`. All variables assigned between `{,` and `}` are assigned to the dictionary
+Dictionary literals have the form `:{ ... }`. All variables assigned between `:{` and `}` are assigned to the dictionary
 
 ```
-aya> {, 1:a 2:b }
-{,
+aya> :{ 1:a 2:b }
+:{
   2:b;
   1:a;
 }
 ```
 
-`{,}` creates an empty dict
+`:{}` creates an empty dict
 
 ```
-aya> {,}
-{,}
+aya> :{}
+:{}
 ```
 
 ### Getting Values
@@ -501,8 +501,8 @@ aya> {,}
 Use dot notation to get values from a dict:
 
 ```
-aya> {, 1:a 2:b } :d
-{,
+aya> :{ 1:a 2:b } :d
+:{
   2:b;
   1:a;
 } 
@@ -533,8 +533,8 @@ aya> d "a" I
 Dot notation can be used with [quoted variables](#variables)
 
 ```
-aya> {, 1:"Hello, world!" } :d
-{,
+aya> :{ 1:"Hello, world!" } :d
+:{
   1:"Hello, world!";
 } 
 aya> d."Hello, world!"
@@ -547,10 +547,10 @@ aya> d."Hello, world!"
 Use `.:` notation to set values of a dict
 
 ```
-aya> {,} :d
-{,} 
+aya> :{} :d
+:{} 
 aya> 10 d.:a
-{,
+:{
   10:a;
 } 
 ```
@@ -559,12 +559,12 @@ Or using strings or symbols with index notation (`.:[]`)
 
 ```
 aya> 11 d.:["b"]
-{,
+:{
   11:b;
   10:a;
 } 
 aya> 12 d.:[::c]
-{,
+:{
   11:b;
   10:a;
   12:c;
@@ -574,10 +574,10 @@ aya> 12 d.:[::c]
 This notation can be used with [quoted variables](#variables)
 
 ```
-aya> {,}:d
-{,} 
+aya> :{}:d
+:{} 
 aya> 10 d.:"Hello, world!"
-{,
+:{
   10:"Hello, world!";
 } 
 ```
@@ -635,8 +635,8 @@ See [Variables and Scope](./variables_and_scope.md) and [Blocks and Functions](.
 If the header is empty, the block is parsed as a dict (see *Dictionary*)
 
 ```
-aya> {, 1:a }
-{,
+aya> :{ 1:a }
+:{
   1:a;
 } 
 ```
@@ -910,8 +910,8 @@ aya> p.format
 Any single-character key stored in `__cdict__` can be accessed using `¢` + that character
 
 ```
-aya> {, "Hello!":"!" 10:a }:__cdict__
-{,
+aya> :{ "Hello!":"!" 10:a }:__cdict__
+:{
   "Hello!":"!";
 } 
 aya> ¢!

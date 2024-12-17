@@ -3,7 +3,7 @@
 import ::turtle
 import ::math
 
-{, } turtle!:t;
+:{ } turtle!:t;
 {
     {
         20 t.fd

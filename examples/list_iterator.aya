@@ -2,7 +2,7 @@ import ::iterator
 
 .# Implementing and using an iterator
 
-{,
+:{
   .# Any user types must define a "type"
   .# "type" should always be a symbol
   .#   representation of the type name
@@ -15,12 +15,12 @@ import ::iterator
   .# `mylist` is just a wrapper for a list
   .#   we assign the list variable to `.l`
   {l,
-    {,l:l} mylist MO
+    :{l:l} mylist MO
   }:new;
 
   .# All types that implement iterator must
   .#   must define an `iter` dict
-  {,
+  :{
     .# since mylist is just a list wrapper,
     .#   we can use the built in listiter
     .#   to define `start`, `next`, and `done`

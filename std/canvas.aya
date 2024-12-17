@@ -8,7 +8,7 @@ class canvas
 def canvas::__init__ {params::dict self : color^,
 
     .# Default values
-    {,
+    :{
         400 :width
         400 :height
         "Canvas" :name
@@ -40,7 +40,7 @@ def canvas::delay {self,
 }
 
 def canvas::line {xa ya xb yb self,
-    .# ::line {, xa:xa ya:ya xb:xb yb:yb } self.id :(graphics.MG) ;
+    .# ::line :{ xa:xa ya:ya xb:xb yb:yb } self.id :(graphics.MG) ;
     xa ya xb yb self.id :(graphics.line)
 }
 
@@ -49,7 +49,7 @@ def canvas::path {xs::list ys::list fill::num self,
 }
 
 def canvas::point {x y self,
-    .#::line {, x:xa:xb y:ya:yb} self.id :(graphics.MG) ;
+    .#::line :{ x:xa:xb y:ya:yb} self.id :(graphics.MG) ;
     x y x y self.id :(graphics.line)
 }
 
@@ -66,12 +66,12 @@ def canvas::points {points r self,
 }
 
 def canvas::set_color {color self,
-    .# ::set_color {, color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
+    .# ::set_color :{ color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
     color.r color.g color.b self.id :(graphics.set_color)
 }
 
 def canvas::set_alpha {a self,
-    .# ::set_alpha {, a:a } self.id :(graphics.MG) ;
+    .# ::set_alpha :{ a:a } self.id :(graphics.MG) ;
     a self.id :(graphics.set_alpha)
 }
 
@@ -79,12 +79,12 @@ def canvas::set_stroke_width {n::num self,
     n self.id :(graphics.set_stroke_width)
 }
 
-def canvas::cap {,}
+def canvas::cap :{}
 "butt"   canvas.cap.:butt;
 "round"  canvas.cap.:round;
 "square" canvas.cap.:square;
 
-def canvas::join {,}
+def canvas::join :{}
 "bevel" canvas.join.:bevel;
 "miter" canvas.join.:miter;
 "round" canvas.join.:round;
@@ -101,7 +101,7 @@ def canvas::set_grad {start::list ca::color end::list cb::color cycle::num self,
 }
 
 def canvas::set_bg {color self,
-    .# ::set_bg {, color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
+    .# ::set_bg :{ color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
     color.r color.g color.b self.id :(graphics.set_bgcolor)
 }
 
@@ -115,7 +115,7 @@ def canvas::save {filename self,
 }
 
 def canvas::close {self,
-    .# ::close {,} self.id :(graphics.MG) ;
+    .# ::close :{} self.id :(graphics.MG) ;
     self.id :(graphics.close)
 }
 
@@ -128,12 +128,12 @@ def canvas::isopen {self,
 }
 
 def canvas::rect {x y w h self,
-    .# ::rect {, x:x y:y w:w h:h } self.id :(graphics.MG) ;
+    .# ::rect :{ x:x y:y w:w h:h } self.id :(graphics.MG) ;
     x y w h 0 self.id :(graphics.rect)
 }
 
 def canvas::fillrect {x y w h self,
-    .# ::rect {, x:x y:y w:w h:h 1:fill} self.id :(graphics.MG) ;
+    .# ::rect :{ x:x y:y w:w h:h 1:fill} self.id :(graphics.MG) ;
     x y w h 1 self.id :(graphics.rect)
 }
 

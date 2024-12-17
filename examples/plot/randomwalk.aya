@@ -7,7 +7,7 @@ import ::plot
 {v, v.x 3QV+ v.:x; v.y 3QV+ v.:y;}:step;
 
 .# Start at (0,0)
-{,0:x 0:y}:v;
+:{0:x 0:y}:v;
 
 .# Record each step in a list, step 20000 times
 [] {v step [v.x v.y]\.V} 20000 %

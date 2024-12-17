@@ -60,7 +60,7 @@
 
 .{? docs: dictionaries
   dicts are created using the following syntax
-  {, val1:key1 val2:key2 ... valN:keyN}
+  :{ val1:key1 val2:key2 ... valN:keyN}
 .}
 
 .{? docs: special characters

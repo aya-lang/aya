@@ -6,20 +6,20 @@
 
 .# TODO: .| locals appears to be a bit broken
 .{
-{ {: a("hi") b(a), }.locals {, "hi":a {a}:b } }
+{ {: a("hi") b(a), }.locals :{ "hi":a {a}:b } }
 aya> {: a("hi") b(a), }
 {:  b(a) a("hi"),} 
 aya> {: a("hi") b(a), } .locals
-{,} 
+:{} 
 aya> {: a b, }:locals
 {: b a,} 
 aya> {: a b, }.locals
-{,
+:{
   0:b;
   0:a;
 } 
 aya> {: a(1) b, }.locals
-{,
+:{
   0:b;
 } 
 .}

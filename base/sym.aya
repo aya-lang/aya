@@ -2,7 +2,7 @@
 
 .# Metatable definition for the built-in `sym` type
 
-{,
+:{
     .{? ::sym .op
 
         Return a block containing the operator
@@ -24,7 +24,7 @@
     }:op;
 
     .# Get a dict of all operator/symbol pairs
-    {,
+    :{
         "overloadable" M? :# {
             .# Get <name> <op> as strings
             :& "overloadable:.*$" & .[0] " " S .[-1] \ " " S .[0]
@@ -54,7 +54,7 @@
         ::__radd__
     .}
 
-    {,
+    :{
         .# Get the overload list for all ops
         ::ops Ma :#{.overload}
         .# Get all ops with non-zero length overloads
