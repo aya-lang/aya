@@ -24,7 +24,7 @@ class path
             } {
                 1 :absolute_path;
             } .?
-            {,
+            :{
                 dir meta._split :dirs;
                 absolute_path :is_absolute_path;
             } meta :M
@@ -174,7 +174,7 @@ def path::_iswindows {self,
 
 "~" :(sys.resolvehome) path! path.:home;
 
-{, :(sys.wd) path._split :dirs} path :M path.:dfltworking;
+:{ :(sys.wd) path._split :dirs} path :M path.:dfltworking;
 
 
 
@@ -280,7 +280,7 @@ def file::_do {blk__::block self__,
 }
 
 .#? stdin::file\n  standard input stream
-{,
+:{
     1:id;
 
     .# Overloads
@@ -292,7 +292,7 @@ def file::_do {blk__::block self__,
 } file :M :stdin;
 
 .#? stdout::file\n  standard output stream
-{,
+:{
     2:id;
 
     .# Overloads
@@ -326,7 +326,7 @@ def dummyfile::close {self,
 dummyfile file.:dummyfile ;
 
 
-{,
+:{
     {path, .# ::path or ::str
         path P :(fileutils.readallbytes)
     }:readallbytes;

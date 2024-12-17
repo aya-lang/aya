@@ -7,8 +7,6 @@ import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
-import aya.instruction.DictLiteralInstruction;
-import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.variable.QuoteGetVariableInstruction;
@@ -50,15 +48,18 @@ public class BlockToken extends CollectionToken {
 			if (blockData.size() == 2) {
 				//Empty header, dict literal
 				if (!header.hasNext()) {
-					InstructionStack instructions = Parser.generate(blockData.get(1));
-					if (instructions.size() == 0) {
-						return EmptyDictLiteralInstruction.INSTANCE;
-					} else {
-						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
-					}
+					throw new SyntaxError("Block cannot have an empty header", source);
+					//InstructionStack instructions = Parser.generate(blockData.get(1));
+					//if (instructions.size() == 0) {
+					//	return EmptyDictLiteralInstruction.INSTANCE;
+					//} else {
+					//	return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions));
+					//}
 				}
 				// Single number in header, create a dict factory with a capture
 				else if (header.size() == 1 && header.peek() instanceof NumberToken) {
+					throw new SyntaxError("Block cannot have a number in header", source);
+					/*
 					NumberToken nt = (NumberToken)header.peek();
 					int n = 0;
 					try {
@@ -76,6 +77,7 @@ public class BlockToken extends CollectionToken {
 					} else {
 						return new DictLiteralInstruction(this.getSourceStringRef(), BlockUtils.fromIS(instructions), n);
 					}
+					*/
 				}
 				//Non-empty header, args and local variables
 				else {

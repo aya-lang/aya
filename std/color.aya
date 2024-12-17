@@ -186,7 +186,7 @@ def color::rgbtohsv {r g b color : h s v delta maxv minv,
 .}
 module colors
 
-{,
+:{
     :(color.name_list) :# {color_name : color_dict,
         color_name :(color.fromstr) :color_dict;
         color_dict.r color_dict.g color_dict.b color! color_name :=

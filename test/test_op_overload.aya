@@ -1,12 +1,12 @@
 .# This file tests operator overloading features
 .# For testing modules or other aya code, see base/test.aya
 
-{,
+:{
 
   ::vec :__type__;
   1 :__pushself__;
 
-  {l meta, {, l:l} meta :M}:__new__;
+  {l meta, :{ l:l} meta :M}:__new__;
   {self, "<" self.lPB;V; ">" ++}:__str__:__repr__;
 
   {o self, o:T ::vec = {o.l} {o} .? self.l + self.M!}:__add__;
@@ -78,7 +78,7 @@
 {v : vec^, vR vec! } vec.:__range__;
 
 "add/radd..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v P "< 1 2 3 >" } test.test
     { 3 v + P "< 4 5 6 >" } test.test
@@ -88,7 +88,7 @@
 };
 
 "sub/rsub..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v P "< 1 2 3 >" } test.test
     { 3 v - P "< 2 1 0 >" } test.test
@@ -99,7 +99,7 @@
 };
 
 "mul/rmul..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 3 v * P "< 3 6 9 >" } test.test
     { v 3 * P "< 3 6 9 >" } test.test
@@ -109,7 +109,7 @@
 };
 
 "div/rdiv..." :P
-{,
+:{
     [2 4 6] vec! :v;
     { 24 v / P "< 12 6 4 >" } test.test
     { v 2 / P "< 1 2 3 >" } test.test
@@ -121,7 +121,7 @@
 
 
 "mod/rmod..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 2 v :% P "< 0 0 2 >" } test.test
     { v 2 :% P "< 1 0 1 >" } test.test
@@ -132,7 +132,7 @@
 
 
 "idiv/rdiv..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 2 v .% P "< 2 1 0 >" } test.test
     { v 2 .% P "< 0 1 1 >" } test.test
@@ -142,35 +142,35 @@
 };
 
 "lt..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 3 v < P "< 0 0 0 >" } test.test
     { [1 2 3] v < P "[ < 0 1 1 > < 0 0 1 > < 0 0 0 > ]" } test.test
 };
 
 "gt..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 3 v > P "< 1 1 0 >" } test.test
     { [1 2 3] v > P "[ < 0 0 0 > < 1 0 0 > < 1 1 0 > ]" } test.test
 };
 
 "leq..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 3 v :< P "< 0 0 1 >" } test.test
     { [1 2 3] v :< P "[ < 1 1 1 > < 0 1 1 > < 0 0 1 > ]" } test.test
 };
 
 "geq..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { 3 v :> P "< 1 1 1 >" } test.test
     { [1 2 3] v :> P "[ < 1 0 0 > < 1 1 0 > < 1 1 1 > ]" } test.test
 };
 
 "eq..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { (v v =) 1 } test.test
     { (v v1+ =) 0 } test.test
@@ -179,63 +179,63 @@
 
 
 "reverse..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v U P "< 3 2 1 >" } test.test
 };
 
 "negate..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v T P "< -1 -2 -3 >" } test.test
 };
 
 "sort..." :P
-{,
+:{
     { [6 7 4 5 3] vec! :v P "< 6 7 4 5 3 >" } test.test
     { v C P "< 3 4 5 6 7 >" } test.test
 };
 
 "inc..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v BB P "< 3 4 5 >" } test.test
 };
 
 "dec..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v VV P "< -1 0 1 >" } test.test
 };
 
 "len..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v E 3 } test.test
 };
 
 "range..." :P
-{,
+:{
     {3 vecR P "< 1 2 3 >" } test.test
     {[3 6] vec R P "< 3 4 5 6 >" } test.test
 };
 
 "random..." :P
-{,
+:{
     [] vec! :v;
     { 3 v Q .__len__ 3 } test.test
 };
 
 
 "each..." :P
-{,
+:{
     [1 2 3] vec! :v;
     { v :# {1+} P "< 2 3 4 >" } test.test
 };
 
 
 "math..." :P
-{,
+:{
     [0 1] vec! :v;
     { v M! P "< 1 1 >" } test.test
     { v Ms P "< 0 .84147098 >" } test.test
@@ -246,7 +246,7 @@
     { v MT P "< 0 .78539816 >" } test.test
 };
 
-{,
+:{
     [1 2] vec! :v;
     { v Ml P "< 0 .69314718 >" } test.test
     { v ML P "< 0 .30103 >" } test.test
@@ -254,33 +254,33 @@
     { v .^ P "< 1 1.41421356 >" } test.test
 };
 
-{,
+:{
     [-2 1 0 -3.4] vec! :v;
     { v .| P "< 2 1 0 3.4 >" } test.test
     { v .! P "< -1 1 0 -1 >" } test.test
 };
 
-{,
+:{
     [:2r3 :2z 2] vec! :v;
     { v Md .l #:T [::num ::num ::num] } test.test
 };
 
 "head/tail..." :P
-{,
+:{
     [1 2 3 4 5] vec! :v;
     { v 3 .> P "< 3 4 5 >" } test.test
     { v 3 .< P "< 1 2 3 >" } test.test
 };
 
 "getindex..." :P
-{,
+:{
     [1 2 3 4 5] vec! :v;
     { v.[0] 1 } test.test
     { v.[-1] 5 } test.test
 };
 
 "setindex..." :P
-{,
+:{
     [1 2 3 4 5] vec! :v;
     { 99 v.:[2] P "< 1 2 99 4 5 >" } test.test
     0:i;
@@ -288,7 +288,7 @@
 };
 
 "bool..." :P
-{,
+:{
     [1 2 3 4 5] vec! :v;
     { v 't 'f .? 't } test.test
     [ ] vec! :v;

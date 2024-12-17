@@ -2,7 +2,7 @@
 
 .# Metatable definition for the built-in `num` type
 
-{,
+:{
 
     .#? ::num .digits\n  convert a number into a list of digits
     {

@@ -40,6 +40,7 @@ import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
 import aya.parser.tokens.CDictToken;
 import aya.parser.tokens.CharToken;
+import aya.parser.tokens.DictToken;
 import aya.parser.tokens.KeyVarToken;
 import aya.parser.tokens.LambdaToken;
 import aya.parser.tokens.ListToken;
@@ -394,6 +395,11 @@ public class Parser {
 						tokens.add(new SpecialToken(Token.COLON_POUND, ":#", in.currentRef()));
 						in.next(); // Skip the #
 					}
+					
+					// Dict Literal
+					else if (in.peek() == '{') {
+						tokens.add(new SpecialToken(Token.NEXT_BLOCK_IS_DICT, ":", in.currentRef()));
+					}
 
 					// Quoted variable
 					else if (in.peek() == '"') {
@@ -486,13 +492,21 @@ public class Parser {
 
 	public static TokenQueue assemble(TokenQueue in) throws EndOfInputError, SyntaxError {
 		TokenQueue out = new TokenQueue();
-
+		boolean next_block_is_dict = false;
+		
 		while (in.hasNext()) {
 			Token current = in.next();
-
+			
+			
 			switch (current.getType()) {
+			case Token.NEXT_BLOCK_IS_DICT:
+				next_block_is_dict = true;
+				break;
 			case Token.OPEN_CURLY:
-				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, Token.BLOCK, in, out, current.getSourceStringRef());
+				closeDelim(Token.OPEN_CURLY, Token.CLOSE_CURLY, 
+					next_block_is_dict ? Token.DICT : Token.BLOCK, 
+					in, out, current.getSourceStringRef());
+				next_block_is_dict = false;
 				break;
 			case Token.OPEN_SQBRACKET:
 				closeDelim(Token.OPEN_SQBRACKET, Token.CLOSE_SQBRACKET, Token.LIST, in, out, current.getSourceStringRef());
@@ -512,6 +526,10 @@ public class Parser {
 
 			default:
 				out.add(current);
+			}
+			
+			if (next_block_is_dict && current.getType() != Token.NEXT_BLOCK_IS_DICT) {
+				throw new SyntaxError("Internal error parsing this token. Expected next token to be a dict", current.getSourceStringRef());
 			}
 		}
 
@@ -558,6 +576,9 @@ public class Parser {
 		innerTokens = assemble(innerTokens);
 
 		switch (type) {
+		case Token.DICT:
+			out.add(new DictToken(debugStr.toString(), innerTokens.getArrayList(), source));
+			break;
 		case Token.BLOCK:
 			out.add(new BlockToken(debugStr.toString(), innerTokens.getArrayList(), source));
 			break;

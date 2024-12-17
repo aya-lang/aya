@@ -8,14 +8,14 @@ export ::bitset
 
 def bitset::__new__ {s meta,
     s :T ::num = {
-        {, s:size 0sL:bits } meta :M
+        :{ s:size 0sL:bits } meta :M
     } {
         s meta.fromlist
     } .?
 }
 
 def bitset::fromlist {l::list : bitset^,
-    {, lE:size l:bits } bitset :M
+    :{ lE:size l:bits } bitset :M
 }
 
 

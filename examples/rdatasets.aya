@@ -5,7 +5,7 @@
 
 import ::csv
 
-{,
+:{
 
     "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv":url;
 

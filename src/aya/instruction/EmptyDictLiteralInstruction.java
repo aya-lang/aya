@@ -32,6 +32,6 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 	
 	@Override
 	public String toString() {
-		return "{,}";
+		return ":{}";
 	}
 }

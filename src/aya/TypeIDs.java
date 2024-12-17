@@ -33,4 +33,7 @@ public class TypeIDs {
 	public static final byte T_FN_QUOTE 	   = 126; // (.`) function quote
 	public static final byte T_COLON_POUND 	   = 127; // (:#) special operator
 	public static final byte T_NAMED_OP        = 90;  // :(...)
+	public static final byte T_DICT 		   = 91;  // :{...} dict
+	
+	public static final int T_NEXT_BLOCK_IS_DICT = 92; // :{}
 }

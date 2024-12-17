@@ -6,15 +6,15 @@
 .}
 
 
-{,255Q:r 255Q:g 255Q:b}:col;
-{,100:r 100:g 100:b}:col;
+:{255Q:r 255Q:g 255Q:b}:col;
+:{100:r 100:g 100:b}:col;
 {x y,
     1 g :(graphics.set_stroke_width)
     0 0 0 g :(graphics.set_color)
     x y x y g :(graphics.line)
 }:point;
 
-{, 300:width 300:height "Test":name 1:autoflush 1:show} :(graphics.new) :g;
+:{ 300:width 300:height "Test":name 1:autoflush 1:show} :(graphics.new) :g;
 200 200 point
 0 0 100 200 g :(graphics.line)
 150 0 150 300 g :(graphics.line)

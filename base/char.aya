@@ -2,7 +2,7 @@
 
 .# Metatable definition for the built-in `char` type
 
-{,
+:{
     .#? C.islower\n  tests if a character is lowercase
     {$ 'a :> \ 'z :< &}:islower;
 

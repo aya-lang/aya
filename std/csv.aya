@@ -17,7 +17,7 @@ def csv::read { arg : csv^ ,
     {
         (arg :T ::str =) {
             .# convert to dict
-            {, arg :filename }
+            :{ arg :filename }
         } (arg :T ::dict =) {
             arg
         } {
@@ -67,7 +67,7 @@ def csv::_read_kw {kwargs::dict : csv^
         data :#{V\;} :rownames;
     } ?
 
-    {,
+    :{
         data:data
         colnames:colnames
         rownames:rownames

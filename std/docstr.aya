@@ -1,5 +1,5 @@
 {f: argtypes args d,
-    {,}:d;
+    :{}:d;
     f.`.M W
     args :# {k,
         k :C argtypes.[k] "" arg! k d :D
@@ -39,10 +39,10 @@ def docstr::__init__ {name string::str self,
     id self.:_name;
     string self.:_full_str;
 
-    {,} self.:sections;
+    :{} self.:sections;
     { self._parse self.:sections; } {err, "Error parsing docstr:\n$err" .D} .K
 
-    {,} self.:_args;
+    :{} self.:_args;
     self.sections ::args H {
         self._parseargs self.:_args;
     } ?
@@ -52,14 +52,14 @@ def docstr::_parse {self : m("@.+:\n") d keys vals,
     self._full_str m & #{.trim B; V;} "desc" \J :keys;
     self._full_str "@.+:\n" S :# {.trim.lines :# {.trim"\n"+}W.trim}:vals;
 
-    {,}:sections;
+    :{}:sections;
     vals keys {sections :D} .&;
 
     sections
 }
 
 .# Inner class
-docstr {, class arg} .+;
+docstr :{ class arg} .+;
 
 def (docstr.arg)::__init__ {name desc self,
     name.[0] ': = self.:is_stack_arg;
@@ -167,12 +167,12 @@ def docstr::_get_name {self,
 def docstr::_get__doc__ {self,
     d._module nil = {
         .# Access from scope
-        {__doc__;} {;{,}:__doc__;} .K
+        {__doc__;} {;:{}:__doc__;} .K
 
         __doc__
     } {
         .# Access from module
-        {d._module.__doc__;} {; {,} d._module.:__doc__;} .K
+        {d._module.__doc__;} {; :{} d._module.:__doc__;} .K
 
         d._module.__doc__
     } .?

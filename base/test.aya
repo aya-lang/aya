@@ -3,7 +3,7 @@
 .# test.aya
 .# Defines an interface for testing aya code
 
-{, } :test;
+:{ } :test;
 
 .# New simpler test function
 {blk,

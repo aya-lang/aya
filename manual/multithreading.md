@@ -257,7 +257,7 @@ x is 10
 For mutable data, changes are reflected but **no guarentees are made about the data being in sync across threads**. In general, mutable objects should not be updated if they are being shared between threads.
 
 ```
-aya> {, 10 :a } :x;
+aya> :{ 10 :a } :x;
 
 aya> .# wait for 10s in the thread
 aya> { : x^ , "thread start" 10000:Z "x is $x" :P } t.add_task ;
@@ -269,12 +269,12 @@ aya> 99 x.:a;
 
 aya> `x.a` is `99` in the main thread
 aya> x
-{,
+:{
   99:a;
 }
 
 aya> .# When the other thread accesses `x`, `x.a` is `10`, sometimes `x.a` is `99`
-x is {, 99:a; }
+x is :{ 99:a; }
 ```
 
 ### Getting data from a thread

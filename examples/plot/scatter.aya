@@ -7,7 +7,7 @@ plot.plot! :plt;
 [100,;.Q]:x;
 [100,;.Q]:y;
 
-x y {,} plt.scatter
+x y :{} plt.scatter
 
 "A Scatter Plot" plt.:title;
 0 plt.:legend;

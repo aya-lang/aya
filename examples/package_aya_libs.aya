@@ -11,7 +11,7 @@ import ::io
 .# Convert to strings
 files #P :files;
 
-{,} :data;
+:{} :data;
 
 files :# {file,
     file G data.:[file];

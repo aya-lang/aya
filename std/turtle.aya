@@ -8,7 +8,7 @@
 
     Examples:
         .# Offset nested balls
-        {, 200:width 200:height} turtle!:t
+        :{ 200:width 200:height} turtle!:t
         10R :# {n, {0.1 t.right n t.fd 2:Z} 100 %} ;
 
         .# A small colorful star
@@ -28,7 +28,7 @@ color.colors.black :c_black;
 def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
 
     .# Default values
-    {,
+    :{
         0:x
         0:y
         0:r
@@ -54,7 +54,7 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
     params.canvas nil = {
         params.width self.:_w;
         params.height self.:_h;
-        {, self._w:width self._h:height "Turtle":name } canvas! self.:_cvs;
+        :{ self._w:width self._h:height "Turtle":name } canvas! self.:_cvs;
     } {
         params.canvas self.:_cvs;
         self._cvs.width self.:_w;
@@ -187,7 +187,7 @@ def turtle::__rpow__ {self val,
 
 
 .# For testing
-{,
+:{
     100 :width
     100 :height
     ::deg :units

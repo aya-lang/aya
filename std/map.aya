@@ -60,13 +60,13 @@ def map::__getindex__ {key self : idx,
 .#? ::block ::map.__each__\n  apply the block to each key value pair
 .{ Example:
 aya> [[1 "one"][2 "two"]] map.fromlist :m
-{,
+:{
   [ 1 2 ]:keys;
   [ "one" "two" ]:values;
 }
 aya> m :# {k v, v.upper k m.put}
 aya> m
-{,
+:{
   [ 1 2 ]:keys;
   [ "ONE" "TWO" ]:values;
 }

@@ -47,8 +47,8 @@ def ::julia { kwargs :
     div_time
 }
 
-{,} julia 4 viewmat_scaled.show
+:{} julia 4 viewmat_scaled.show
 
 .# Higher resolution; may take ~20 seconds
-.# {, 400:width 360:height 130:max_iterations } julia viewmat.show
-.# {, 400:width 360:height 250:max_iterations :-0.7269i0.1889:c } julia viewmat.show
+.# :{ 400:width 360:height 130:max_iterations } julia viewmat.show
+.# :{ 400:width 360:height 250:max_iterations :-0.7269i0.1889:c } julia viewmat.show

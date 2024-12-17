@@ -96,7 +96,7 @@ aya> [1 2 3] :T
 ::list
 aya> [1 2 3] :T :T
 ::sym
-aya> [ 1 [1 2 3] "hello" 'c {, 1:x } {2+} ::red ] #:T
+aya> [ 1 [1 2 3] "hello" 'c :{ 1:x } {2+} ::red ] #:T
 [ ::num ::list ::str ::char ::dict ::block ::sym ]
 ```
 
@@ -173,21 +173,21 @@ TYPE ERROR: {ARGS}
     Received: "dogs"
 ```
 
-Aya also supports dictionaries. `{,}` creates an empty dictionary. `.` is used for dictionary access and `.:` is used for assignment.
+Aya also supports dictionaries. `:{}` creates an empty dictionary. `.` is used for dictionary access and `.:` is used for assignment.
 
 ```
-aya> {,} :d
-{,
+aya> :{} :d
+:{
 }
 aya> 3 d.:x
-{,
+:{
   3:x;
 }
 aya> d.x
 3
 aya> .# Keys can also be assigned in the literal itself
-aya> {, 3:x; }
-{,
+aya> :{ 3:x; }
+:{
   3:x;
 }
 ```

@@ -7,7 +7,7 @@ plot.plot!:plt;
 
 
 5R # {n,
-  x {x, [nR [nR, x*Ms], *] W} {, nP:label } plt.plot
+  x {x, [nR [nR, x*Ms], *] W} :{ nP:label } plt.plot
 };
 
 "Sine Series" plt.:title;
