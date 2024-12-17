@@ -97,7 +97,7 @@ def (docstr.arg)::show {margin self : n l pad,
     }W.trim + pad \+
 }
 
-def docstr::_parseargs {self : matcher("(?m)^(:{2}|)[a-z]+:"),
+def docstr::_parseargs {self : matcher("(?m)^(:(2)|)[a-z]+:"),
     .# Names
     self.sections.args matcher & :#{B;}
     .# Desc

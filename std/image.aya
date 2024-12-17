@@ -16,7 +16,7 @@ def image::__init__ {r g b a width height meta self,
 }
 
 def image::read {filename cls : img image^ path^,
-    filename :{image.read} :img;
+    filename :(image.read) :img;
     img.r img.g img.b img.a img.width img.height img.meta image!
 }
 
@@ -25,7 +25,7 @@ def image::__repr__ {self,
 }
 
 def image::write {filename self : path^,
-    self filename :{image.write}
+    self filename :(image.write)
 }
 
 def image::pixels {self,

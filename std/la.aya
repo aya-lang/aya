@@ -4,4 +4,4 @@
 .# Defines linear algebra functions
 
 .# Wrapper functions
-{:{la.mul}}:dot;
+{:(la.mul)}:dot;

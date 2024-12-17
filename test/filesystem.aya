@@ -11,75 +11,75 @@ import ::image
 {path::str, path :9s + } :sep;
 
 .# Create a directory
-"dir1" :{sys.mkdir}
-{"." :{sys.readdir} ["dir1"sep] = 1} test.test
+"dir1" :(sys.mkdir)
+{"." :(sys.readdir) ["dir1"sep] = 1} test.test
 
 .# Change working directory
-"dir1" :{sys.cd}
-"dir2" :{sys.mkdir}
-{"." :{sys.readdir} ["dir2"sep] = 1} test.test
+"dir1" :(sys.cd)
+"dir2" :(sys.mkdir)
+{"." :(sys.readdir) ["dir2"sep] = 1} test.test
 
-".." :{sys.cd}
-{"." :{sys.readdir} ["dir1"sep] = 1} test.test
+".." :(sys.cd)
+{"." :(sys.readdir) ["dir1"sep] = 1} test.test
 
-"../../" :{sys.set_ad}
-"../" :{sys.cd}
-{"fs_test" :{sys.readdir} ["dir1"sep] = 1} test.test
+"../../" :(sys.set_ad)
+"../" :(sys.cd)
+{"fs_test" :(sys.readdir) ["dir1"sep] = 1} test.test
 
 .# Set aya dir back to normal
-"." :{sys.set_ad}
-"fs_test" :{sys.cd}
-{"." :{sys.readdir} ["dir1"sep] = 1} test.test
-"dir1" :{sys.cd}
-{"." :{sys.readdir} ["dir2"sep] = 1} test.test
+"." :(sys.set_ad)
+"fs_test" :(sys.cd)
+{"." :(sys.readdir) ["dir1"sep] = 1} test.test
+"dir1" :(sys.cd)
+{"." :(sys.readdir) ["dir2"sep] = 1} test.test
 
 .# Return to aya dir
-"" :{sys.cd}
+"" :(sys.cd)
 .# Go into fs_test dir
-"fs_test" :{sys.cd}
-{"." :{sys.readdir} ["dir1"sep] = 1} test.test
+"fs_test" :(sys.cd)
+{"." :(sys.readdir) ["dir1"sep] = 1} test.test
 
 .# cd into nested directory
-"dir1/dir2/" :{sys.cd}
-{"." :{sys.readdir} [] = 1} test.test
-"../.." :{sys.cd}
-{"." :{sys.readdir} ["dir1"sep] = 1} test.test
+"dir1/dir2/" :(sys.cd)
+{"." :(sys.readdir) [] = 1} test.test
+"../.." :(sys.cd)
+{"." :(sys.readdir) ["dir1"sep] = 1} test.test
 
 
 .# Write a file
-"hello.txt" 'w :{fstream.O} :id;
-{"Hello!" id :{fstream.O} 1} test.test
-{id 'c :{fstream.O} 1} test.test
+"hello.txt" 'w :(fstream.O) :id;
+{"Hello!" id :(fstream.O) 1} test.test
+{id 'c :(fstream.O) 1} test.test
 .# Use C to sort lists when checking if they are equal
-{"." :{sys.readdir}C ["dir1"sep "hello.txt"]C = 1} test.test
+{"." :(sys.readdir)C ["dir1"sep "hello.txt"]C = 1} test.test
 
 .# Read a file
-"hello.txt" 'r :{fstream.O} :id;
-{id 'a :{fstream.O} "Hello!"} test.test
-{id 'c :{fstream.O} 1} test.test
+"hello.txt" 'r :(fstream.O) :id;
+{id 'a :(fstream.O) "Hello!"} test.test
+{id 'c :(fstream.O) 1} test.test
 
 
 .# Write a file in a directory
-"dir1/two-plus-two.txt" 'w :{fstream.O} :id;
-{"four" id :{fstream.O} 1} test.test
-{id 'c :{fstream.O} 1} test.test
+"dir1/two-plus-two.txt" 'w :(fstream.O) :id;
+{"four" id :(fstream.O) 1} test.test
+{id 'c :(fstream.O) 1} test.test
 .# Use C to sort lists when checking if they are equal
-{"." :{sys.readdir}C ["dir1"sep "hello.txt"]C = 1} test.test
-{"dir1/" :{sys.readdir}C ["dir2"sep "two-plus-two.txt"]C = 1} test.test
+{"." :(sys.readdir)C ["dir1"sep "hello.txt"]C = 1} test.test
+{"dir1/" :(sys.readdir)C ["dir2"sep "two-plus-two.txt"]C = 1} test.test
 
 .# Read a file in a directory
-"dir1/two-plus-two.txt" 'r :{fstream.O} :id;
-{id 'a :{fstream.O} "four"} test.test
-{id 'c :{fstream.O} 1} test.test
+"dir1/two-plus-two.txt" 'r :(fstream.O) :id;
+{id 'a :(fstream.O) "four"} test.test
+{id 'c :(fstream.O) 1} test.test
 
 .# Create a directory in a directory
-"dir1/dir2/dir3" :{sys.mkdir}
-{"dir1/dir2" :{sys.readdir} ["dir3"sep] = 1} test.test
+"dir1/dir2/dir3" :(sys.mkdir)
+{"dir1/dir2" :(sys.readdir) ["dir3"sep] = 1} test.test
 
 .# Create a single pixel image
 {, 1:width 1:height [41]:r [164]:g [34]:b }:img;
-img "out.png" :{image.write}
-{"." :{sys.readdir}C ["dir1"sep "hello.txt" "out.png"]C = 1} test.test
+img "out.png" :(image.write)
+{"." :(sys.readdir)C ["dir1"sep "hello.txt" "out.png"]C = 1} test.test
 
 .# Read an image
 "out.png" image.read :img;

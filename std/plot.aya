@@ -83,7 +83,7 @@ def plot::scatter {x::list y params::dict self : dataset^ d,
 def plot::view {self,
     self.M._supress_windows ! {
         "" self.:filename;
-        self :{plot.plot}
+        self :(plot.plot)
     } ?
 
 }
@@ -105,7 +105,7 @@ def multiplot::add {plot self,
 def multiplot::view {self : plot^,
     plot._supress_windows ! {
         "" self.:filename;
-        self :{plot.multiplot}
+        self :(plot.multiplot)
     } ?
 }
 

@@ -19,7 +19,7 @@ public class NamedOpToken extends StdToken {
 		if (instruction != null) {
 			return new NamedOperatorInstruction(this.getSourceStringRef(), instruction);
 		} else {
-			throw new ParserException("Named instruction :{" + data + "} does not exist", source);
+			throw new ParserException("Named instruction :(" + data + ") does not exist", source);
 		}
 	}
 

@@ -26,7 +26,7 @@ public abstract class NamedInstructionStore {
 			NamedOperator i = pair.getValue();
 			String doc = i._doc;
 			if (doc == null || doc.equals("")) continue;
-			staticData.addHelpText(":{" + i.getName() + "}\n  " + doc);
+			staticData.addHelpText(":(" + i.getName() + ")\n  " + doc);
 		}
 	}
 	

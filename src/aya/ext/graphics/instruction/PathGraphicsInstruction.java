@@ -24,13 +24,13 @@ public class PathGraphicsInstruction extends GraphicsInstruction {
 		
 		if (xs.length != ys.length) {
 			throw new ValueError(
-					":{graphics.path} : 'xs' and 'ys' must be the same length. Got xs(" +
+					":(graphics.path) : 'xs' and 'ys' must be the same length. Got xs(" +
 					xs.length + "), ys(" + ys.length + ")");
 		}
 		
 		if (xs.length == 0) {
 			throw new ValueError(
-					":{graphics.path} : 'xs' and 'ys' must contain at least 1 point.");
+					":(graphics.path) : 'xs' and 'ys' must contain at least 1 point.");
 		}
 		
 		GeneralPath path = new GeneralPath();

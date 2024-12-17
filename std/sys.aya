@@ -3,7 +3,7 @@ from ::io import ::path
 module sys
 export ::sys
 
-def sys::args :{sys.args}
+def sys::args :(sys.args)
 
 
 .#? sys.iswindows\n  returns true if system is windows
@@ -15,19 +15,19 @@ def sys::cd {dirname : path^,
     dirname
     .# If it is a string, conv to path
     dirname :T ::str = { path! } ?
-    P :{sys.cd}
+    P :(sys.cd)
 }
 
 
 .#? ::str sys.mkdir\n  create a new directory
 def sys::mkdir {dir,
-    dir P :{sys.mkdir}
+    dir P :(sys.mkdir)
 }
 
 
 def sys::readdir {dir,
     dir P :dir;
     dir "" = {"." :dir;} ?
-    dir :{sys.readdir}
+    dir :(sys.readdir)
 }
 

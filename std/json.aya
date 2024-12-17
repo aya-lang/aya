@@ -3,9 +3,9 @@ import ::io
 module json
 export ::json
 
-def json::loads {:{json.loads}}
+def json::loads {:(json.loads)}
 
-def json::dumps {:{json.dumps}}
+def json::dumps {:(json.dumps)}
 
 def json::load {json_file : file^ json^,
     json_file :T ::str = {

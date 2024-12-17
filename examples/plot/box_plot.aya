@@ -7,7 +7,7 @@
 		{, 15.R :values}
 		{, 10.R :values}
 	] :data
-} :{plot.box_plot}
+} :(plot.box_plot)
 
 
 .{ An example showing all parameters for box-plots .}
@@ -43,4 +43,4 @@
 		{, [0 0.9 1 1.1 2] 0.5 + :values  "group2" :group  "2" :entry}
 		{, [0 0.9 1 1.1 2] 0.6 + :values  "group2" :group  "3" :entry}
 	] :data
-} :{plot.box_plot}
+} :(plot.box_plot)
