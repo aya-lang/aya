@@ -19,9 +19,6 @@ public class EmptyDictLiteralInstruction extends DictLiteralInstruction {
 		super(null, StaticBlock.EMPTY);
 	}
 	
-	@Override
-	public int numCaptures() { return 0; }
-	
 	public Dict getDict(ExecutionContext context, Queue<Obj> q) {
 		return new Dict();
 	}

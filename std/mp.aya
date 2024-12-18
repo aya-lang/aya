@@ -5,10 +5,6 @@
 module mp
 export ::mp
 
-.#? ::list mp.capture_vars\n  given a list of symbols, return a dict with each symbol and
-def mp::capture_vars ( {}.M._capture_vars.` )
-
-
 .#? ::list mp.merge\n  Convert a list of blocks into a single block
 def mp::merge {
     #.op .*

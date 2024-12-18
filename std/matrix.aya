@@ -23,7 +23,7 @@ def matrix::__init__ {input::list self,
 .# Use this instead of the constructor to avoid
 .# validating the list
 def matrix::_new {matrix,
-    :{1, :rows} matrix :M
+    :{rows,} matrix :M
 }
 
 .{ Example:
