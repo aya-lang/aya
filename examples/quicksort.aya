@@ -42,7 +42,7 @@ lst qs :P
 {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i qss @@qss JJ} ?}:qss;
 
 .# Stack only version with no global vars
-.# {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i _ @@_ JJ} ?} {1, :_} :+
+.# {.E1> {$\; :&V$@\< @\ :&#! @:&@.i \@.i _ @@_ JJ} ?} :{_,} :+
 
 .# Quicksort benchmark and example output
 .# aya> 10 R :# {; [100000,;.Q] {qs;}.time} :& .E \W\/

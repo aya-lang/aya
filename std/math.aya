@@ -161,7 +161,7 @@ exportall
     aya> [4,double]
     [ 2 4 6 8 ]
 .}
-.# {.E .R U {2, :c ; :p} {p ^ c * W} \ .+}:makepoly;
+.# {.E .R U :{2, :c ; :p} {p ^ c * W} \ .+}:makepoly;
 { [1| .E .R U {^} \ {*W} ].* }:makepoly;
 
 

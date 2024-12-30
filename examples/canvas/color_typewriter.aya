@@ -12,7 +12,7 @@ import ::color
 color.colors.white num_tiles 2^ L :grid;
 0:index;
 
-{,
+:{
     num_tiles :width
     num_tiles :height
     tile_width :scale

@@ -1,7 +1,7 @@
 import ::dataframe
 import ::plot
 
-{, "$(:{sys.ad})/examples/data/iris.csv":filename} dataframe.read_csv :df;
+:{ "$(:(sys.ad))/examples/data/iris.csv":filename} dataframe.read_csv :df;
 
 .# get unique species names
 df.["Species"] :~ :species;
@@ -13,7 +13,7 @@ plot.plot! :plt;
 
 species :# {s_name : sp_df,
     df.[df.["Species"] s_name .=] :sp_df;
-    sp_df.["Sepal.Length"] sp_df.["Sepal.Width"] {, s_name:label } plt.scatter
+    sp_df.["Sepal.Length"] sp_df.["Sepal.Width"] :{ s_name:label } plt.scatter
 };
 
 plt.view

@@ -245,7 +245,7 @@ public class Dict extends Obj {
 			dictRepr(stream);
 			stream.popVisited(this);
 		} else {
-			stream.print("{, ...}");
+			stream.print(":{ ...}");
 		}
 		return stream;
 	}
@@ -347,7 +347,7 @@ public class Dict extends Obj {
 				try {
 					blk_repr.eval();
 				} catch (AyaRuntimeException ex) {
-					stream.print("{, <Exception thrown when calling __repr__ on dict: " + ex.getSimpleMessage() + "> }");
+					stream.print(":{ <Exception thrown when calling __repr__ on dict: " + ex.getSimpleMessage() + "> }");
 					return stream;
 				}
 				Obj obj_res = blk_repr.pop();
@@ -367,9 +367,9 @@ public class Dict extends Obj {
 		} else {
 			// Normal repr
 			if (_vars.size() == 0) {
-				stream.print("{,}");
+				stream.print(":{}");
 			} else {
-				stream.println("{,");
+				stream.println(":{");
 				stream.incIndent();
 				stream.currentLineMatchIndent();
 				for (Symbol sym : _vars.keySet()) {

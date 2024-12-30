@@ -36,7 +36,7 @@ public class SystemInstructionStore extends NamedInstructionStore {
 					}
 					blockEvaluator.push(new List(obj_dirs));
 				} else {
-					throw new ValueError(":{sys.readdir} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":(sys.readdir) : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -77,12 +77,12 @@ public class SystemInstructionStore extends NamedInstructionStore {
 						AyaPrefs.resetWorkingDir();
 					} else {
 						if (!AyaPrefs.setWorkingDir(arg.str())) {
-							throw new ValueError(":{sys.cd} : arg is not a valid path."
+							throw new ValueError(":(sys.cd) : arg is not a valid path."
 									+ " Did you include a '/' or '\' at the end? Received:\n" + arg.repr());
 						}
 					}
 				} else {
-					throw new ValueError(":{sys.cd} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":(sys.cd) : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -96,10 +96,10 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if(arg.isa(Obj.STR)) {
 					String fstr = arg.str();
 					if(!AyaPrefs.mkDir(fstr)) {
-						throw new ValueError(":{sys.mkdir} : arg must be a valid name. Received:\n" + fstr);
+						throw new ValueError(":(sys.mkdir) : arg must be a valid name. Received:\n" + fstr);
 					}
 				} else {
-					throw new ValueError(":{sys.mkdir} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":(sys.mkdir) : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});
@@ -128,14 +128,14 @@ public class SystemInstructionStore extends NamedInstructionStore {
 				if(arg.isa(Obj.STR)) {
 					String arg_str = arg.str();
 					if(arg_str.equals("")) {
-						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + arg_str);
+						throw new ValueError(":(sys.rm) : arg must be a valid name. Received:\n" + arg_str);
 					}
 					File delFile = FileUtils.resolveFile(arg.str());
 					if(!AyaPrefs.deleteFile(delFile)) {
-						throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + delFile.getAbsolutePath());
+						throw new ValueError(":(sys.rm) : arg must be a valid name. Received:\n" + delFile.getAbsolutePath());
 					}
 				} else {
-					throw new ValueError(":{sys.rm} : arg must be a string. Received:\n" + arg.repr());
+					throw new ValueError(":(sys.rm) : arg must be a string. Received:\n" + arg.repr());
 				}
 			}
 		});

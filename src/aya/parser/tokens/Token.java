@@ -46,6 +46,9 @@ public abstract class Token {
 	public static final int COLON_POUND 	= TypeIDs.T_COLON_POUND;
 	public static final int NAMED_OP        = TypeIDs.T_NAMED_OP;
 	
+	public static final int DICT            = TypeIDs.T_DICT;
+	public static final int NEXT_BLOCK_IS_DICT = TypeIDs.T_NEXT_BLOCK_IS_DICT;
+	
 	
 	protected Token(int type, SourceStringRef source) {
 		this.type = type;

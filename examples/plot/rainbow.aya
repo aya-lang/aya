@@ -14,7 +14,7 @@ plot.plot!:p;
 [0.9 :1p .9 - 600] .R :x;
 
 7R :# {i,
-    x {:i^, Ms i 0.011* +} {,} p.plot
+    x {:i^, Ms i 0.011* +} :{} p.plot
 };
 
 p.view

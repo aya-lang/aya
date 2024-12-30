@@ -21,7 +21,7 @@ Lists the mouse clicks since the last time this instruction was executed.
 - `clicks` (num) The amount of successive clicks. (Useful for detecting double-clicks)
 
 ```
-aya> my_canvas.id :{graphics.click_events}
+aya> my_canvas.id :(graphics.click_events)
 [ {
     128 :x;
     256 :y;
@@ -37,7 +37,7 @@ Lists the currently held mouse buttons.
 `graphics.pressed_buttons` pushes a list of currently held button-numbers onto the stack. (See [Mouse Buttons](#mouse-buttons))
 
 ```
-aya> my_canvas.id :{graphics.pressed_buttons}
+aya> my_canvas.id :(graphics.pressed_buttons)
 [ 1 3 ]
 ```
 
@@ -51,7 +51,7 @@ Lists the mouse movements since the last time this instruction was executed.
 - `y` (num) The y-coordinate the cursor moved to.
 
 ```
-aya> my_canvas.id :{graphics.move_events}
+aya> my_canvas.id :(graphics.move_events)
 [ {
     128 :x;
     256 :y;
@@ -78,7 +78,7 @@ Lists the currently held keyboard keys.
 - `location` (num) An integer representation of the location.
 
 ```
-aya> my_canvas.id :{graphics.pressed_keys}
+aya> my_canvas.id :(graphics.pressed_keys)
 [ {
     "A" :key_name;
     65 :keycode;
@@ -99,7 +99,7 @@ Lists the Unicode characters that were typed since the last time this instructio
 `graphics.typed_chars` pushes a string of typed characters onto the stack.
 
 ```
-aya> my_canvas.id :{graphics.typed_chars}
+aya> my_canvas.id :(graphics.typed_chars)
 "Hello, World!"
 ```
 

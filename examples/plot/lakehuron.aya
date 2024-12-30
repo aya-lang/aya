@@ -6,7 +6,7 @@ import ::plot
 import ::stats
 
 "Downloading file..." :P
-{,
+:{
     "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/LakeHuron.csv":filename
     1:csvindex
 }
@@ -20,8 +20,8 @@ df.["value"] :y;
 .# stats.regression returns a function
 x y stats.regression :r;
 
-x y   {, "Water Level":label} plt.plot
-x {r} {, "Trend":label} plt.plot
+x y   :{ "Water Level":label} plt.plot
+x {r} :{ "Trend":label} plt.plot
 
 "Water Level of Lake Huron" plt.:title;
 [575 583] plt.y.:lim;

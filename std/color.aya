@@ -32,7 +32,7 @@ def color::newhsv { color,
 }
 
 def color::fromstr { s::str color,
-    s :{color.fromstr} color.fromdict
+    s :(color.fromstr) color.fromdict
 }
 
 def color::fromdict { d::dict color ,
@@ -186,9 +186,9 @@ def color::rgbtohsv {r g b color : h s v delta maxv minv,
 .}
 module colors
 
-{,
-    :{color.name_list} :# {color_name : color_dict,
-        color_name :{color.fromstr} :color_dict;
+:{
+    :(color.name_list) :# {color_name : color_dict,
+        color_name :(color.fromstr) :color_dict;
         color_dict.r color_dict.g color_dict.b color! color_name :=
     }
 }:named_colors;

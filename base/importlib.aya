@@ -6,10 +6,10 @@ def importlib::_log_debug {:importlib^,
      importlib._debug {"importlib: " \+ :P} {;} .?
 }
 
-def importlib::aya_dir :{sys.ad}
+def importlib::aya_dir :(sys.ad)
 
 .# Dictionary of files which have been imported
-def importlib::imported {,}
+def importlib::imported :{}
 
 def importlib::path [
     importlib.aya_dir "std" :9s + +    .# <aya>/base
@@ -18,7 +18,7 @@ def importlib::path [
 .# Return the path with the current directory at the bottom
 def importlib::get_path { : importlib^ ,
     importlib.path
-    :{sys.wd}
+    :(sys.wd)
     J
 }
 
@@ -34,7 +34,7 @@ def importlib::load_file {filename : importlib^,
         { .# try
             "Attempting to open file $filename..." importlib._log_debug
             .# Load the file into a dict scope
-            {,
+            :{
                 .# If __main__ exists and is 0, `main` will discard its block
                 .# Otherwise it will execute it
                 0:__main__;
@@ -138,7 +138,7 @@ def importlib::from_file {filepath : importlib^ all_possible mod,
 
     importlib.get_path :# { filepath + } :~ :all_possible
     .# Get only files that exist
-    { :{sys.file_exists} } I
+    { :(sys.file_exists) } I
     .# If the lists is empty, throw an error
     .E 0 = {"Import Error: Unable to find any of the following files: $all_possible" .D} ?
 
@@ -216,7 +216,7 @@ def importlib::export {vars : importlib^,
 def importlib::from {mod_sym import_vars : meta_mod importlib^,
     "$mod_sym $import_vars importlib.from" importlib._log_debug
     "from: Capturing all imported vars..." importlib._log_debug
-    {,
+    :{
         mod_sym importlib.import
     }:meta_mod;
 
@@ -245,7 +245,7 @@ importlib __aya__.:importlib;
 .# If provided a 0 (for example from `from` keyword), do nothing
 {(1 hold)(:& 0= {;} {__aya__.importlib.import} .?)}:import;
 
-{: importlib^ , {,} importlib.:imported; } :reimport;
+{: importlib^ , :{} importlib.:imported; } :reimport;
 
 {(1 hold)(__aya__.importlib.export)}:export;
 {1:__export__;} :exportall;

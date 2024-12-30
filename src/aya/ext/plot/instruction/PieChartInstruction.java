@@ -34,7 +34,7 @@ public class PieChartInstruction extends NamedOperator {
                 + "  labels_on_chart::num (bool) : overlay the labels onto the chart. default=false\n"
                 + RenderConfig.getDocString("  ")
                 + "  data::list : list of num or dict\n"
-                + "      ::num : The value of the entry. Same as {, num:value}\n"
+                + "      ::num : The value of the entry. Same as :{ num:value}\n"
                 + "      ::dict :\n"
                 + "          label::str : label of the entry. defaults to index\n"
                 + "          value::str : value of the entry\n"
@@ -67,7 +67,7 @@ public class PieChartInstruction extends NamedOperator {
         public final RenderConfig renderConfig;
         /**
          * Provided as a list, where each entry is either:
-         * <p>- a dictionary, e.g. {, "str":label 123:value}
+         * <p>- a dictionary, e.g. :{ "str":label 123:value}
          * <p>- a number, in which case the index is used as the label
          */
         public final java.util.List<DatasetEntry> data;

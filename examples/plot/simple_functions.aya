@@ -7,10 +7,10 @@ plot.plot!:p;
 [0 2pi*] .R :x;
 
 .# Add each function
-x {sin} {, "sin":label } p.plot
-x {cos} {, "cos":label } p.plot
-x {tan} {, "tan":label [-3 3]:yclip} p.plot
-x {ln}  {, "ln":label  } p.plot
+x {sin} :{ "sin":label } p.plot
+x {cos} :{ "cos":label } p.plot
+x {tan} :{ "tan":label [-3 3]:yclip} p.plot
+x {ln}  :{ "ln":label  } p.plot
 
 .# Plot title
 "Example Expression Plot" p.:title;

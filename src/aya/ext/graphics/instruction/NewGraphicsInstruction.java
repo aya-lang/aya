@@ -24,7 +24,7 @@ public class NewGraphicsInstruction extends GraphicsInstruction {
 		
 		if (o_params.isa(Obj.DICT)) {
 			DictReader params = new DictReader(Casting.asDict(o_params));
-			params.setErrorName(":{graphics.new}");
+			params.setErrorName(":(graphics.new)");
 			int id = _canvas_table.newCanvas(params.getString(SymbolConstants.NAME, "Canvas"),
 									  params.getIntEx(SymbolConstants.WIDTH),
 									  params.getIntEx(SymbolConstants.HEIGHT),

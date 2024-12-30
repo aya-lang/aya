@@ -7,12 +7,12 @@
 .# NOTE: 12 letter variables ending in the letter 'z' are reserved for use in
 .#       standard library. Such variables are used below.
 
-{:{sys.ad} "test/test.aya" + :F}:tt;
+{:(sys.ad) "test/test.aya" + :F}:tt;
 
 .# Global __aya__ table
-{,
+:{
 
-    {,}:interpreter;
+    :{}:interpreter;
 
     .# If set to 1, all breakpoints will be ignored
     .#? __aya__.ignore_breakpoints\n  if true, skip all breakpoints
@@ -20,8 +20,8 @@
 
 }:__aya__;
 
-{,
-    {, 
+:{
+    :{ 
         ::__nil :__type__;
         "nil" :__str__;
         "nil" :__repr__'
@@ -41,7 +41,7 @@
 .#? bp\n  set a breakpoint
 { : __aya__^,
     __aya__.ignore_breakpoints ! {
-        :{debug.pause}
+        :(debug.pause)
     } ?
 }:bp;
 
@@ -66,7 +66,7 @@
 .# -------
 
 {name,
-    [:{sys.ad} :9s "examples" :9s name ".aya"] W :F
+    [:(sys.ad) :9s "examples" :9s name ".aya"] W :F
 }:example;
 
 
@@ -91,9 +91,9 @@
         }
     )
 
-    aya> f {,} ::foo {"a"}
+    aya> f :{} ::foo {"a"}
     with_mod!
-    [ {"a"} ::foo {,} ]
+    [ {"a"} ::foo :{} ]
 
     aya> f ::foo {"a"}
     no mod!
@@ -109,7 +109,7 @@
         _no_mod:no_mod;
 
         .# Store functions on stack so they can be retrieved later
-        {,
+        :{
             no_mod.` :no_mod
             with_mod.` :with_mod
         }
@@ -119,8 +119,8 @@
             .# aya> {mod name block, mod ::_fn =! {;} ? [mod name block.`]} :f
 
             .# Jump ahead 3 items
-            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   {,} ::foo {+}
-            .# [ {,} ::foo {+} ]
+            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   :{} ::foo {+}
+            .# [ :{} ::foo {+} ]
 
             .# Jump ahead 2 items
             .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
@@ -156,7 +156,7 @@
     }
 
     .# Use constant substitution until var^ syntax is introduced
-    {, no_mod.`:_no_mod with_mod.`:_with_mod} .+
+    :{ no_mod.`:_no_mod with_mod.`:_with_mod} .+
 
 } __aya__.:opt_mod;
 
@@ -178,7 +178,7 @@
 
     Define a function in a module scope:
 
-        aya> {,}:math;
+        aya> :{}:math;
         aya> def math::sq {2^}
         aya> 5 math.sq
         25
@@ -194,7 +194,7 @@
 
     Define a function in a submodule:
 
-        aya> {, {,}:stats; }:math;
+        aya> :{ :{}:stats; }:math;
         aya> def (math.stats)::mean {.E\W\/}
         aya> [1 2 3 4] math.stats.mean
         2.5
@@ -218,9 +218,9 @@
 .#
 .# `objcet`: Base object for class and struct
 .#
-{,
+:{
     {meta : instance,
-        {,
+        :{
             meta :__meta__;
             1 :__pushself__;
         } :instance;
@@ -250,7 +250,7 @@
 .#
 
 {type::sym super,
-    {,
+    :{
         super:__meta__;
         type:__type__;
         .# copy new from super directly
@@ -297,7 +297,7 @@ __aya__.extend.` :extend;
         num_members :A
         .# and assign them to self
         members {self :D} .&;
-    } {,
+    } :{
         members__ E :num_members;
         members__   :members;
     } .+ cls__.:__init__;
@@ -311,7 +311,7 @@ __aya__.extend.` :extend;
         " ) " +
         name  +
         "!"+
-    } {,
+    } :{
         type__ :C   :name;
         members__ :members;
     } .+ cls__.:__str__;
@@ -332,14 +332,14 @@ __aya__.extend.` :extend;
 
 .#? module sym\n  declare a new module
 {name::sym,
-    {,
+    :{
         name :__modname__;
 
         {meta,
             "Cannot create new instance of module $(meta.__modname__:C)" .D
         } :__new__;
 
-        {,
+        :{
             ::module :__type__;
             "(module $name)":__repr__;
         }:__meta__;
@@ -448,5 +448,5 @@ __aya__.extend.` :extend;
 
 ] :# {f,
     .# "Loading base/$f..." :P
-    load ([:{sys.ad} :9s "base/$f"]W)
+    load ([:(sys.ad) :9s "base/$f"]W)
 };

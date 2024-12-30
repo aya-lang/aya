@@ -86,12 +86,12 @@ _ a._ a:_
 .# Another comment!
 2500 rainprob 100.0 * :result;
 
-{,
+:{
 
     ::point:type;
 
     {x::num y::num,
-        {, x:x y:y} plot MO
+        :{ x:x y:y} plot MO
     }:new!;
 
     {other self, 

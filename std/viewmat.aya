@@ -8,7 +8,7 @@ def ::viewmat_scaled { data scale : cvs canvas^,
     .# special case for matrix
     data :T ::matrix = {data.rows :data;} ?
 
-    {,
+    :{
         data E :height;
         data.[0] E :width;
         scale :scale;

@@ -63,7 +63,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 				int type = symToDialogType((Symbol)type_obj);
 				List options = asList(options_obj);
 				
-				if (options.length() != 2) throw new ValueError(":{dialog.confirm} : Expected options list of length 2. Got " + options.repr());
+				if (options.length() != 2) throw new ValueError(":(dialog.confirm) : Expected options list of length 2. Got " + options.repr());
 				
 				boolean val = QuickDialog.confirm(
 						message_obj.str(),
@@ -89,7 +89,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 				int type = symToDialogType((Symbol)type_obj);
 
 				List options_list = asList(options_obj);
-				if (options_list.length() <= 0) throw new ValueError(":{dialog.buttons} : Expected non-empty options. Got " + options_list.repr());
+				if (options_list.length() <= 0) throw new ValueError(":(dialog.buttons) : Expected non-empty options. Got " + options_list.repr());
 
 				String[] options = new String[options_list.length()];
 				for (int i = 0; i < options_list.length(); i++) {
@@ -119,7 +119,7 @@ public class DialogInstructionStore extends NamedInstructionStore {
 				int type = symToDialogType((Symbol)type_obj);
 
 				List options_list = asList(options_obj);
-				if (options_list.length() <= 0) throw new ValueError(":{dialog.buttons} : Expected non-empty options. Got " + options_list.repr());
+				if (options_list.length() <= 0) throw new ValueError(":(dialog.buttons) : Expected non-empty options. Got " + options_list.repr());
 
 				String[] options = new String[options_list.length()];
 				for (int i = 0; i < options_list.length(); i++) {

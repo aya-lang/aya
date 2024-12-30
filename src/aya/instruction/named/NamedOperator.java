@@ -25,7 +25,7 @@ public abstract class NamedOperator {
 	}
 	
 	public String opName() {
-		return ":{" + _name + "}";
+		return ":(" + _name + ")";
 	}
 
 	public ReprStream repr(ReprStream stream) {

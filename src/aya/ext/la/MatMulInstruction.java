@@ -40,9 +40,9 @@ public class MatMulInstruction extends NamedOperator {
 		} catch (ClassCastException e0) {
 			throw new TypeError(this, "LL", b, a);
 		} catch (IndexError e1) {
-			throw new ValueError("Dimension error in :{la.mul}");
+			throw new ValueError("Dimension error in :(la.mul)");
 		} catch (IndexOutOfBoundsException e2) {
-			throw new ValueError("Dimension error in :{la.mul}");
+			throw new ValueError("Dimension error in :(la.mul)");
 		}
 	}
 	

@@ -8,11 +8,11 @@ import ::canvas
 import ::color
 
 .# The canvas to pass to the turtle
-{, 500:width; 500:height; } canvas! :cvs;
+:{ 500:width; 500:height; } canvas! :cvs;
 
 def ::newimage { : cvs^ ,
 
-    {, cvs :canvas; "#444" color.fromstr :bg_color; } turtle! :t;
+    :{ cvs :canvas; "#444" color.fromstr :bg_color; } turtle! :t;
     .# random bright color
     360Q 1.0 1.0 color.newhsv :c;
     .# Random number between 60 and 190

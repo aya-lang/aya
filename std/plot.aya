@@ -24,8 +24,8 @@ def plot::_supress_windows 0
 def plot::__init__ {self,
     [] self.:data;
 
-    {,} self.:y;
-    {,} self.:x;
+    :{} self.:y;
+    :{} self.:x;
 }
 
 
@@ -83,7 +83,7 @@ def plot::scatter {x::list y params::dict self : dataset^ d,
 def plot::view {self,
     self.M._supress_windows ! {
         "" self.:filename;
-        self :{plot.plot}
+        self :(plot.plot)
     } ?
 
 }
@@ -94,8 +94,8 @@ def plot::view {self,
 def multiplot::__init__ {self,
     [] self.:subplots;
 
-    {,} self.:y;
-    {,} self.:x;
+    :{} self.:y;
+    :{} self.:x;
 }
 
 def multiplot::add {plot self,
@@ -105,7 +105,7 @@ def multiplot::add {plot self,
 def multiplot::view {self : plot^,
     plot._supress_windows ! {
         "" self.:filename;
-        self :{plot.multiplot}
+        self :(plot.multiplot)
     } ?
 }
 
@@ -116,7 +116,7 @@ def multiplot::view {self : plot^,
 .# Create a line plot with default paramaters and x,y as a dataset
 def ::line {x::list y::list : p plot^,
     plot! :p;
-    x y {,} p.plot
+    x y :{} p.plot
     0 p.:legend;
     p
 }
@@ -126,7 +126,7 @@ def ::fns {fns::list a::num b::num : x p plot^,
     plot! :p;
     [a b 300] .R :x;
     fns {f, 
-        x :& f.` O {, f.`P:label} p.plot
+        x :& f.` O :{ f.`P:label} p.plot
     } O;
     1 p.:legend;
     p

@@ -9,28 +9,28 @@
 
 export [::date ::dates ::dateunit]
 
-{,
+:{
 
     ::date :__type__;
     1 :__pushself__;
 
-    {{,M$:ms} date :M}:now;
+    {:{M$:ms} date :M}:now;
 
     .# {in meta, [
-    .#     in:T ::num = {{,in:ms} meta :M} ?
-    .#     in:T ::str = {{,in "yyyy-MM-dd" :{date.parse}:ms} meta :M} ?
+    .#     in:T ::num = {:{in:ms} meta :M} ?
+    .#     in:T ::str = {:{in "yyyy-MM-dd" :(date.parse):ms} meta :M} ?
     .#     {"Expected S|D, recieved: $in".D}
     .# ].S }:__new__;
 
     {in meta,
         {
             (in :T ::num =) {
-                {, 
+                :{ 
                     in:ms
                 } meta :M
             } (in :T ::str =) {
-                {, 
-                    in "yyyy-MM-dd" :{date.parse} :ms;
+                :{ 
+                    in "yyyy-MM-dd" :(date.parse) :ms;
                 } meta :M
             } {
                 "Expected ::str or ::num. recieved: $in" .D
@@ -38,21 +38,21 @@ export [::date ::dates ::dateunit]
         } :?
     }:__new__;
 
-    {.ms "MMM dd, yyyy h:mm:ss a" :{date.format}}:__repr__;
+    {.ms "MMM dd, yyyy h:mm:ss a" :(date.format)}:__repr__;
     {.__repr__}:__str__;
 
-    {.ms :{date.desc}.day_of_week}:dayofweekid;
-    {.ms :{date.desc}.day_of_week dates.weekdays\V I}:dayofweek;
-    {.ms :{date.desc}.day_of_week dates.weekdaysabb\V I}:dayofweekabb;
-    {.ms :{date.desc}.year}:year;
-    {.ms :{date.desc}.month}:monthid;
-    {.ms :{date.desc}.month dates.monthnames\I}:month;
-    {.ms :{date.desc}.month dates.monthsabb\I}:monthabb;
-    {.ms :{date.desc}.day_of_month}:dayofmonth;
-    {.ms :{date.desc}.hour}:hour:h;
-    {.ms :{date.desc}.minute}:min:m;
-    {.ms :{date.desc}.second}:sec:s;
-    {.ms"a":{date.format}}:ampm;
+    {.ms :(date.desc).day_of_week}:dayofweekid;
+    {.ms :(date.desc).day_of_week dates.weekdays\V I}:dayofweek;
+    {.ms :(date.desc).day_of_week dates.weekdaysabb\V I}:dayofweekabb;
+    {.ms :(date.desc).year}:year;
+    {.ms :(date.desc).month}:monthid;
+    {.ms :(date.desc).month dates.monthnames\I}:month;
+    {.ms :(date.desc).month dates.monthsabb\I}:monthabb;
+    {.ms :(date.desc).day_of_month}:dayofmonth;
+    {.ms :(date.desc).hour}:hour:h;
+    {.ms :(date.desc).minute}:min:m;
+    {.ms :(date.desc).second}:sec:s;
+    {.ms"a":(date.format)}:ampm;
 
     {self unit,
         self.ms unit.ms + date!
@@ -65,17 +65,17 @@ export [::date ::dates ::dateunit]
     {.ms}:__sort__;
 
     .# Parse Functions
-    {"MM/dd/yy" :{date.parse}}:parsemdy;
+    {"MM/dd/yy" :(date.parse)}:parsemdy;
 
     .# String functions
-    {.ms "MM/dd/yy"   :{date.format}}:mmddyy;
-    {.ms "MM/dd/yyyy" :{date.format}}:mmddyyyy;
-    {.ms "hh:mm aa"   :{date.format}}:timestr;
+    {.ms "MM/dd/yy"   :(date.format)}:mmddyy;
+    {.ms "MM/dd/yyyy" :(date.format)}:mmddyyyy;
+    {.ms "hh:mm aa"   :(date.format)}:timestr;
 
 }:date;
 
 .#? dateunit\n  static namespace defining units related to dates
-{,
+:{
     [
         ["year" 31536000000]
         ["month" 2628000000]
@@ -89,10 +89,10 @@ export [::date ::dates ::dateunit]
     units # {u : name conv,
         u0I:name;
         u1I:conv;
-        {,
+        :{
             1 :__pushself__;
-            {n::num meta, {,n:n} meta :M}:__new__;
-            {.n x +} {, " dates.$name":x} .+ :__repr__;
+            {n::num meta, :{n:n} meta :M}:__new__;
+            {.n x +} :{ " dates.$name":x} .+ :__repr__;
             {.n conv*}.use[::conv]:ms;
             {date.__radd__.`~}:__add__;
             {date.__rsub__.`~}:__sub__;
@@ -101,7 +101,7 @@ export [::date ::dates ::dateunit]
 }:dateunit;
 
 .#? dates\n  static namespace for date related variables
-{,
+:{
     .# Units
     dateunit.units # {u : name,
         u0I:name;
