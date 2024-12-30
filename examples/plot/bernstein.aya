@@ -14,7 +14,7 @@ plot.plot! :plt;
 
 .# generate polynomials
 coeff B .R # {i : f,
-  x ({a coeff bernstein} {,i:a} .+) {,} plt.plot
+  x ({a coeff bernstein} :{i:a} .+) :{} plt.plot
 }:fns;
 
 .# plot attributes

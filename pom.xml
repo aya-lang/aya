@@ -6,13 +6,15 @@
 
     <groupId>co.npaul.aya</groupId>
     <artifactId>aya</artifactId>
-    <version>4.0.0</version>
+    <version>0.6.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+
 
     <repositories>
         <repository>
@@ -23,7 +25,9 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
+
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -60,49 +64,14 @@
                             </target>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>release-zip</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <property name="build-dir" value="${project.build.directory}"/>
-                                <property name="aya.jar" value="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
-                                <ant antfile="${project.basedir}/build-scripts/release-zip-build.xml"/>
-                            </target>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ui.AyaIDE</mainClass>
-                                </transformer>
-                            </transformers>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
+
         <dependency>
             <groupId>ch.obermuhlner</groupId>
             <artifactId>big-math</artifactId>
@@ -126,8 +95,151 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20190722</version>
+            <version>20231013</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso</artifactId>
+            <version>0.10.2</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
+
+
+    <profiles>
+
+        <!-- Build a fat JAR for Running in a desktop enviornment -->
+        <profile>
+            <id>desktop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+
+                    <!-- Build fat JAR -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.5.0</version>
+
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>ui.AyaIDE</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                                    <!-- exclude teaVM dependency from desktop jar -->
+                                    <artifactSet>
+                                        <excludes>
+                                            <exclude>org.teavm:teavm-classlib</exclude>
+                                        </excludes>
+                                    </artifactSet>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- package fat JAR into a release aya.zip -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>release-zip</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="build-dir" value="${project.build.directory}"/>
+                                        <property name="aya.jar" value="${project.build.directory}/${project.artifactId}-${project.version}.jar"/>
+                                        <ant antfile="${project.basedir}/build-scripts/release-zip-build.xml"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Build .js files for running in a web enviornment -->
+        <profile>
+            <id>web</id>
+            <build>
+                <plugins>
+
+                    <!-- Build JS runtime using TeaVM -->
+                    <plugin>
+                        <groupId>org.teavm</groupId>
+                        <artifactId>teavm-maven-plugin</artifactId>
+                        <version>0.10.2</version>
+                        <dependencies>
+                            <!-- This dependency is required by TeaVM to emulate subset of Java class library -->
+                            <dependency>
+                                <groupId>org.teavm</groupId>
+                                <artifactId>teavm-classlib</artifactId>
+                                <version>0.10.2</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <phase>process-classes</phase>
+                                <configuration>
+                                    <mainClass>web.AyaWeb</mainClass>
+                                    <mainPageIncluded>true</mainPageIncluded>
+                                    <debugInformationGenerated>true</debugInformationGenerated>
+                                    <sourceMapsGenerated>true</sourceMapsGenerated>
+                                    <targetFileName>aya.js</targetFileName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Build a js file containing the aya standard library -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>package-ayastdlib-js</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="build-dir" value="${project.build.directory}"/>
+                                        <ant antfile="${project.basedir}/build-scripts/package-ayastdlib-js-build.xml"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
+
 
 </project>

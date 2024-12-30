@@ -7,7 +7,7 @@ import ::time
 500 :width;
 500 :height;
 
-{, width:width height:height "Boids":name } canvas! :c;
+:{ width:width height:height "Boids":name } canvas! :c;
 
 struct boid { pos vel acc }
 

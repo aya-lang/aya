@@ -33,7 +33,7 @@ def shell_impl::echo {data::str : shellresult^ ,
 
 .#? ls\n  print a list of files in the working dir
 def ::ls {: shellresult^ ,
-    :{sys.wd} :{sys.readdir}
+    :(sys.wd) :(sys.readdir)
     .E 0 = {
         ; "  <no files>"
     } {
@@ -56,7 +56,7 @@ def ::cd {{sys.cd} 0:`}
 def ::mkdir { {sys.mkdir} 0 :` }
 
 
-.# def ::echo ({(4 hold)x (2 hold)~} {, shell_impl.echo.` :x } .+)
+.# def ::echo ({(4 hold)x (2 hold)~} :{ shell_impl.echo.` :x } .+)
 
 .#? echo S\n  print a string to the console
 def ::echo {: shell_impl^,  

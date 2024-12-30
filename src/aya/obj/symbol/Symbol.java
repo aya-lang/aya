@@ -25,6 +25,10 @@ public class Symbol extends Obj {
 		}
 	}
 	
+	public String unquotedName() {
+		return SymbolTable.getName(this);
+	}
+	
 	@Override
 	public int hashCode() {
 		return _id;

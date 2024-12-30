@@ -11,7 +11,7 @@ color.colors.black :black;
 color.colors.white :white;
 
 .# Create a new canvas
-{, "3D Cube":name 0:autoflush } canvas! :c;
+:{ "3D Cube":name 0:autoflush } canvas! :c;
 2 c.set_stroke_width
 
 0 :theta;
@@ -76,10 +76,10 @@ points 70 * :points;
 
     .# Rotate the points
     points :points_rotated;
-    rotation_y points_rotated :{la.mul} :points_rotated;
-    rotation_x points_rotated :{la.mul} :points_rotated;
-    rotation_z points_rotated :{la.mul} :points_rotated;
-    projection points_rotated :{la.mul} :points_projected;
+    rotation_y points_rotated :(la.mul) :points_rotated;
+    rotation_x points_rotated :(la.mul) :points_rotated;
+    rotation_z points_rotated :(la.mul) :points_rotated;
+    projection points_rotated :(la.mul) :points_projected;
 
     .# Apply canvas transform
     .# (Move the points to the center of the canvas)

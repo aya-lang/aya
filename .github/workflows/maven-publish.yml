@@ -1,0 +1,33 @@
+# Package and Upload a release.zip
+# See https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-maven
+
+name: Publish release
+
+on:
+  push:
+    branches: [ "master" ]
+  # Allows you to manually run the workflow (for testing)
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and package Aya
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run install phase
+        run: mvn install --batch-mode
+      - name: Publish the artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aya.zip
+          path: target/aya-*.zip

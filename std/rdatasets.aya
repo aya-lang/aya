@@ -8,7 +8,7 @@ def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/
 def rdatasets::_cache_loc "rdatasets_index.csv"
 
 .# Load index file
-def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
+def rdatasets::load_index {:index_str("") data index(:{}) packages(:{}),
 
     {
         rdatasets._cache_loc G :index_str;
@@ -44,8 +44,8 @@ def rdatasets::load_index {:index_str("") data index({,}) packages({,}),
 }
 
 
-def rdatasets::index {,}
-def rdatasets::packages {,}
+def rdatasets::index :{}
+def rdatasets::packages :{}
 
 def rdatasets::load {id::str : rdatasets^ csv^,
     rdatasets.index :E 0 = {

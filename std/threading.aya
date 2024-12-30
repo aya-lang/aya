@@ -1,12 +1,12 @@
 struct thread {id}
 
 def ::new {: thread^,
-    :{thread.new} thread!
+    :(thread.new) thread!
 }
 
 .# Create a new thread
 def thread::new {cls,
-    :{thread.new} thread!
+    :(thread.new) thread!
 }
 
 
@@ -16,7 +16,7 @@ def thread::add_task {block self,
     .# aya> {1 1 +} thread.add_task
     .# aya> {1 1 +} thread +
 
-    block.` self.id :{thread.add_task}
+    block.` self.id :(thread.add_task)
     self
 }
 
@@ -34,14 +34,14 @@ def thread::wait_for_result {self,
     .#
     .# aya> thread.wait_for_result
     .# aya> thread .|
-    self.id :{thread.wait_for_result}
+    self.id :(thread.wait_for_result)
 }
 
 def thread::__abs__ (thread.wait_for_result.`)
 
 
 def thread::has_unfinished_tasks {self,
-    self.id :{thread.has_unfinished_tasks}
+    self.id :(thread.has_unfinished_tasks)
 }
 
 

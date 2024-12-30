@@ -1,0 +1,29 @@
+import ::json
+import ::sys
+import ::io
+
+.# All files in base/ and std/
+[
+    "base" path! $ sys.readdir + ~
+    "std"  path! $ sys.readdir + ~
+] :files;
+
+.# Convert to strings
+files #P :files;
+
+:{} :data;
+
+files :# {file,
+    file G data.:[file];
+};
+
+data json.dumps :json_data;
+
+"aya-stdlib.js" :outfile;
+
+"const AYA_STDLIB = $json_data;" outfile 0 .G
+
+"Created file $outfile" :P
+
+
+

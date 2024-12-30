@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="AyaPackageStdlibJS" basedir="." default="all">
+    <!-- verify that all parameters were passed -->
+    <fail unless="build-dir"/>
+
+    <!-- re-define the parameters, so that they can be used with autocompletion -->
+    <property name="build-dir" value="ALREADY_DEFINED"/>
+
+    <dirname property="build-script.dir" file="${ant.file.AyaPackageStdlibJS}"/>
+    <property name="root.dir" location="${build-script.dir}/.."/>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${build-script.dir}/libs/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+    <target name="all">
+        <property name="run.dir" location="${build-dir}/package-stdlib-js/"/>
+
+        <!-- delete data from previous tests -->
+        <delete dir="${run.dir}" failonerror="false"/>
+        <mkdir dir="${run.dir}"/>
+
+        <copy todir="${run.dir}">
+            <fileset dir="${build-dir}/classes" includes="**"/>
+            <fileset dir="${root.dir}">
+                <include name="ayarc.aya"/>
+                <include name="base/**"/>
+                <include name="std/**"/>
+                <include name="libs/**"/>
+                <include name="examples/package_aya_libs.aya"/>
+            </fileset>
+        </copy>
+
+        <!-- create a temporary working directory for aya -->
+        <run_aya run.dir="${run.dir}" run.aya="examples/package_aya_libs.aya"/>
+    </target>
+
+    <macrodef name="run_aya">
+        <attribute name="run.dir"/>
+        <attribute name="run.aya"/>
+        <sequential>
+            <!-- since this is a macro, make sure properties are cleared on every call -->
+            <property name="error.log.str" value=""/>
+            <var name="error.log.str" unset="true"/>
+
+            <trycatch>
+                <try>
+                    <java
+                            fork="true"
+                            dir="@{run.dir}"
+                            classname="ui.AyaIDE"
+                            failonerror="true"
+                            errorproperty="error.log.str"
+                    >
+                        <classpath>
+                            <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
+                            <file file="@{run.dir}"/>
+                        </classpath>
+
+                        <arg value="@{run.dir}"/>
+                        <arg value="@{run.dir}/@{run.aya}"/>
+                    </java>
+                    <!-- if the test did not fail, repeat the error logs to the console -->
+                    <echo level="error" message="${error.log.str}"/>
+                </try>
+                <catch>
+                    <!-- if the test failed, use the error log as the failure message -->
+                    <fail message="${error.log.str}"/>
+                </catch>
+            </trycatch>
+        </sequential>
+    </macrodef>
+</project>

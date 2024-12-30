@@ -17,7 +17,7 @@ def csv::read { arg : csv^ ,
     {
         (arg :T ::str =) {
             .# convert to dict
-            {, arg :filename }
+            :{ arg :filename }
         } (arg :T ::dict =) {
             arg
         } {
@@ -29,25 +29,26 @@ def csv::read { arg : csv^ ,
 }
 
 def csv::_read_kw {kwargs::dict : csv^
-                                clabel(1)
-                                rlabel(nil)
-                                filename(nil)
-                                csv_str(nil)
+                                clabel(1) .# bool
+                                rlabel(::nil) .# bool
+                                filename(::nil) .# str
+                                csv_str(::nil) .# str
                                 dlm(",")
                                 data
-                                colnames(nil)
-                                rownames(nil),
+                                colnames(::nil) .# ::list
+                                rownames(::nil) .# ::list
+                                ,
     kwargs ~
 
-    (csv_str nil = filename nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
+    (csv_str ::nil = filename ::nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
 
     .# Open the file and read into data
-    filename nil =! {filenameP G :csv_str;} ?
+    filename ::nil =! {filenameP G :csv_str;} ?
 
     csv_str dlm csv.parse :data;
 
     .# Attempt to auto-detect rlabel if it is not specified
-    rlabel nil = {
+    rlabel ::nil = {
         data.[0].[0] "" = {
             1 :rlabel;
         } {
@@ -66,7 +67,7 @@ def csv::_read_kw {kwargs::dict : csv^
         data :#{V\;} :rownames;
     } ?
 
-    {,
+    :{
         data:data
         colnames:colnames
         rownames:rownames

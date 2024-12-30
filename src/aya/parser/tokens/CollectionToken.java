@@ -13,6 +13,10 @@ public abstract class CollectionToken extends StdToken{
 		this.col = col;
 	}
 	
+	public ArrayList<Token> getCol() {
+		return col;
+	}
+	
 	/** Splits a list of tokens wherever a comma is */
 	protected static ArrayList<TokenQueue> splitCommas(ArrayList<Token> tokens) {
 		ArrayList<TokenQueue> out = new ArrayList<TokenQueue>();

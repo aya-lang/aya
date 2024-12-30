@@ -8,7 +8,7 @@ class canvas
 def canvas::__init__ {params::dict self : color^,
 
     .# Default values
-    {,
+    :{
         400 :width
         400 :height
         "Canvas" :name
@@ -25,8 +25,8 @@ def canvas::__init__ {params::dict self : color^,
     .# Input
     [-1 -1] self.:_last_mouse_pos;
 
-    .# ::new params 0 :{graphics.MG} self.:id ;
-    params :{graphics.new} self.:id ;
+    .# ::new params 0 :(graphics.MG) self.:id ;
+    params :(graphics.new) self.:id ;
 }
 
 def canvas::__str__ {self,
@@ -40,65 +40,69 @@ def canvas::delay {self,
 }
 
 def canvas::line {xa ya xb yb self,
-    .# ::line {, xa:xa ya:ya xb:xb yb:yb } self.id :{graphics.MG} ;
-    xa ya xb yb self.id :{graphics.line}
+    .# ::line :{ xa:xa ya:ya xb:xb yb:yb } self.id :(graphics.MG) ;
+    xa ya xb yb self.id :(graphics.line)
 }
 
 def canvas::path {xs::list ys::list fill::num self,
-    xs ys fill self.id :{graphics.path}
+    xs ys fill self.id :(graphics.path)
 }
 
 def canvas::point {x y self,
-    .#::line {, x:xa:xb y:ya:yb} self.id :{graphics.MG} ;
-    x y x y self.id :{graphics.line}
+    .#::line :{ x:xa:xb y:ya:yb} self.id :(graphics.MG) ;
+    x y x y self.id :(graphics.line)
 }
 
 def canvas::circle {x y r self,
-    x y r2* $ 0 self.id :{graphics.ellipse}
+    x y r2* $ 0 self.id :(graphics.ellipse)
 }
 
 def canvas::fillcircle {x y r self,
-    x y r2* $ 1 self.id :{graphics.ellipse}
+    x y r2* $ 1 self.id :(graphics.ellipse)
+}
+
+def canvas::points {points r self,
+    points r2* $ self.id :(graphics.points)
 }
 
 def canvas::set_color {color self,
-    .# ::set_color {, color.r:r color.g:g color.b:b } self.id :{graphics.MG} ;
-    color.r color.g color.b self.id :{graphics.set_color}
+    .# ::set_color :{ color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
+    color.r color.g color.b self.id :(graphics.set_color)
 }
 
 def canvas::set_alpha {a self,
-    .# ::set_alpha {, a:a } self.id :{graphics.MG} ;
-    a self.id :{graphics.set_alpha}
+    .# ::set_alpha :{ a:a } self.id :(graphics.MG) ;
+    a self.id :(graphics.set_alpha)
 }
 
 def canvas::set_stroke_width {n::num self,
-    n self.id :{graphics.set_stroke_width}
+    n self.id :(graphics.set_stroke_width)
 }
 
-def canvas::cap {,}
+def canvas::cap :{}
 "butt"   canvas.cap.:butt;
 "round"  canvas.cap.:round;
 "square" canvas.cap.:square;
 
-def canvas::join {,}
+def canvas::join :{}
 "bevel" canvas.join.:bevel;
 "miter" canvas.join.:miter;
 "round" canvas.join.:round;
 
 def canvas::set_stroke {width::num cap::str join::str self,
-    width cap join self.id :{graphics.set_stroke}
+    width cap join self.id :(graphics.set_stroke)
 }
 
 def canvas::set_grad {start::list ca::color end::list cb::color cycle::num self,
     start.[0] start.[1] end.[0] end.[1]
     ca.r ca.g ca.b ca.a 255*
     cb.r cb.g cb.b cb.a 255*
-    cycle self.id :{graphics.set_paint_grad}
+    cycle self.id :(graphics.set_paint_grad)
 }
 
 def canvas::set_bg {color self,
-    .# ::set_bg {, color.r:r color.g:g color.b:b } self.id :{graphics.MG} ;
-    color.r color.g color.b self.id :{graphics.set_bgcolor}
+    .# ::set_bg :{ color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
+    color.r color.g color.b self.id :(graphics.set_bgcolor)
 }
 
 def canvas::save {filename self,
@@ -107,38 +111,38 @@ def canvas::save {filename self,
     .# Add file extension if it does not exist
     ".png" filename.in ! {".png"+} ?
 
-    self.id :{graphics.save}
+    self.id :(graphics.save)
 }
 
 def canvas::close {self,
-    .# ::close {,} self.id :{graphics.MG} ;
-    self.id :{graphics.close}
+    .# ::close :{} self.id :(graphics.MG) ;
+    self.id :(graphics.close)
 }
 
 def canvas::show {self,
-    self.id :{graphics.show}
+    self.id :(graphics.show)
 }
 
 def canvas::isopen {self,
-    self.id :{graphics.isopen}
+    self.id :(graphics.isopen)
 }
 
 def canvas::rect {x y w h self,
-    .# ::rect {, x:x y:y w:w h:h } self.id :{graphics.MG} ;
-    x y w h 0 self.id :{graphics.rect}
+    .# ::rect :{ x:x y:y w:w h:h } self.id :(graphics.MG) ;
+    x y w h 0 self.id :(graphics.rect)
 }
 
 def canvas::fillrect {x y w h self,
-    .# ::rect {, x:x y:y w:w h:h 1:fill} self.id :{graphics.MG} ;
-    x y w h 1 self.id :{graphics.rect}
+    .# ::rect :{ x:x y:y w:w h:h 1:fill} self.id :(graphics.MG) ;
+    x y w h 1 self.id :(graphics.rect)
 }
 
 def canvas::clear {self,
-    self.id :{graphics.clear}
+    self.id :(graphics.clear)
 }
 
 def canvas::viewmat {data self,
-    data self.id :{graphics.viewmat}
+    data self.id :(graphics.viewmat)
 }
 
 .# Block until the canvas is closed
@@ -147,7 +151,7 @@ def canvas::wait {self,
 }
 
 def canvas::move_events {self,
-    self.id :{graphics.move_events}
+    self.id :(graphics.move_events)
 }
 
 .# Get the most recent mouse x/y
@@ -161,22 +165,22 @@ def canvas::mouse_pos {self : move,
 }
 
 def canvas::pressed_buttons {self,
-    self.id :{graphics.pressed_buttons}
+    self.id :(graphics.pressed_buttons)
 }
 
 def canvas::typed_chars {self,
-    self.id :{graphics.typed_chars}
+    self.id :(graphics.typed_chars)
 }
 
 def canvas::pressed_keys {self,
-    self.id :{graphics.pressed_keys}
+    self.id :(graphics.pressed_keys)
 }
 
 def canvas::text {self,
-    self.id :{graphics.text}
+    self.id :(graphics.text)
 }
 
 def canvas::get_pixels {self : data image^,
-    self.id :{graphics.get_pixels} :data;
-    data.data data.width data.height image!
+    self.id :(graphics.get_pixels) :data;
+    data.r data.g data.b data.a data.width data.height data.meta image!
 }

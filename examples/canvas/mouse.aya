@@ -3,7 +3,7 @@ import ::time
 
 .# A simple mouse input example
 
-{,} canvas! :cvs;
+:{} canvas! :cvs;
 cvs.show
 
 60 time.rate! :limiter;

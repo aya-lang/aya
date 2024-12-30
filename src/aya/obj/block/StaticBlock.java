@@ -58,6 +58,14 @@ public class StaticBlock extends Obj {
 		return _locals != null;
 	}
 	
+	public int getNumArgs() {
+		if (_args == null) {
+			return 0;
+		} else {
+			return _args.size();
+		}
+	}
+	
 	//////////////////////
 	// Used By BlockOps //
 	//////////////////////

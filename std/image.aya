@@ -5,18 +5,19 @@ export ::image
 
 class image
 
-.# Note pixels are signed bytes
-.# user .data :0xff & to get 0-255 values
-
-def image::__init__ {data width height self,
-    data self.:data;
+def image::__init__ {r g b a width height meta self,
+    r self.:r;
+    g self.:g;
+    b self.:b;
+    a self.:a;
     width self.:width;
     height self.:height;
+    meta self.:meta;
 }
 
 def image::read {filename cls : img image^ path^,
-    filename path! P :{image.read} :img;
-    img.data img.width img.height image!
+    filename :(image.read) :img;
+    img.r img.g img.b img.a img.width img.height img.meta image!
 }
 
 def image::__repr__ {self,
@@ -24,18 +25,17 @@ def image::__repr__ {self,
 }
 
 def image::write {filename self : path^,
-    {,
-        filename path! P:filename;
-        self.width :width;
-        self.height :height;
-        self.data :data;
-    } :{image.write}
+    self filename :(image.write)
 }
 
 def image::pixels {self,
-    self.data [self.width self.height * 3] L
+    [self.r self.g self.b self.a] .T
+}
+
+def image::pixels_rgb {self,
+    [self.r self.g self.b] .T
 }
 
 def image::channels {self,
-    self.data [self.width self.height * 3] L .T
+    [self.r self.g self.b self.a]
 }

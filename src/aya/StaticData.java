@@ -21,6 +21,10 @@ import aya.instruction.op.MiscOps;
 import aya.instruction.op.OpDocReader;
 import aya.instruction.op.Operator;
 import aya.instruction.op.Ops;
+import aya.io.fs.AbstractFilesystemIO;
+import aya.io.fs.UnimplementedFilesystemIO;
+import aya.io.http.AbstractHTTPDownloader;
+import aya.io.http.UnimplementedHTTPDownloader;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
 
@@ -40,14 +44,17 @@ import java.util.stream.StreamSupport;
 public class StaticData {
 
 	public static final boolean DEBUG = true;
-	public static final String VERSION_NAME = "v0.4.0";
+	public static final String VERSION_NAME = "v0.6.0-SNAPSHOT";
 	public static final String ayarcPath = "ayarc.aya";
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
 
-
-	public static final AyaStdIO IO = new AyaStdIO(System.out, System.err, System.in);
-
+	
+	// Must me initialized in main
+	public static AyaStdIO IO = null;
+	public static AbstractHTTPDownloader HTTP_DOWNLOADER = new UnimplementedHTTPDownloader();
+	public static AbstractFilesystemIO FILESYSTEM = new UnimplementedFilesystemIO();
+	
 	//
 	// All calls to modify this data will need to be thread safe
 	//
@@ -183,7 +190,7 @@ public class StaticData {
 		}
 	}
 
-	private void addNamedInstructionStore(NamedInstructionStore store) {
+	public void addNamedInstructionStore(NamedInstructionStore store) {
 		for (NamedOperator instruction : store.getNamedInstructions()) {
 			String iName = instruction.getName();
 			NamedOperator previous = _namedInstructions.put(iName, instruction);

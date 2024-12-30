@@ -4,9 +4,9 @@ class dataframe
 export ::dataframe
 
 def dataframe::__init__ {kwargs::dict self :
-        data(nil)
-        colnames(nil)
-        index(nil),
+        data(::nil)
+        colnames(::nil)
+        index(::nil),
 
     kwargs ~
 
@@ -15,20 +15,20 @@ def dataframe::__init__ {kwargs::dict self :
     [] self.:_data;
 
     .# Create using data
-    data nil =! {:numrows numcols,
+    data ::nil =! {:numrows numcols,
         data E :numrows;
         data .TE :numcols;
         data self.:_data;
 
         .# Column names
-        colnames nil = {
+        colnames ::nil = {
             numcols self.M._gen_colnames
         } {
             colnames
         } .? self.:_colnames;
 
         .# Row names
-        index nil = {
+        index ::nil = {
             numrows .R
         } {
             index
@@ -62,7 +62,7 @@ def dataframe::_gen_colnames {n::num cls,
 .###########
 
 def dataframe::from_csv {csv_dict cls,
-    {,
+    :{
         csv_dict.data :data;
         csv_dict.rownames :index;
         csv_dict.colnames :colnames;
@@ -103,20 +103,40 @@ def dataframe::_get_col {colname self : colindex,
     self._data :# { colindex I }
 }
 
-def dataframe::_numgetindex {index::num self : dataframe^,
-    {,
-        [self._data.[index]]  :data;
-        [self._index.[index]] :index;
-        self._colnames :colnames;
-    } dataframe!
+def dataframe::_numgetindex {index::num self : dataframe^ idx,
+    .# Lookup the index in _index
+    self._index index N :idx;
+
+    idx 0 :> {
+        :{
+            [self._data.[idx]]  :data;
+            [self._index.[idx]] :index;
+            self._colnames :colnames;
+        } dataframe!
+    } {
+        "Index $num does not exist in df._index" .D
+    } .?
 }
 
 def dataframe::__getindex__ { index self : dataframe^,
+    .# If input is a number, look up that row, return a dataframe
+    .# If input is a string, look up that column, return a list
+    .# If input is a list, use it as a row mask, return a dataframe
     {
         (index :T ::num =) {
             index self._numgetindex
         } (index :T ::str =) {
             index self._get_col
+        } (index :T ::list =) {
+            index E self._data E = {
+                :{
+                    self._data index .i :data;
+                    self._index index .i :index;
+                    self._colnames :colnames;
+                } dataframe!
+            } {
+                "List length must match row length" .D
+            } .?
         } {
             "Unsupported index: $index" .D
         }
@@ -141,7 +161,7 @@ def dataframe::row {(1 hold)({self index : data,
     self._data.[index~]:data;
     [ index~ :T ::num = { [data]:data } ? ];
 
-    {, self._colnames:colnames data:data } dataframe!
+    :{ self._colnames:colnames data:data } dataframe!
 })}
 
 

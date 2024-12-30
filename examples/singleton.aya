@@ -14,7 +14,7 @@ def singleton::add {self,
 
 impl_static singleton::get_instance {meta,
     meta._instance nil = {: self,
-        {,} meta MO: self .__init__
+        :{} meta MO: self .__init__
         self meta.:_instance;
     } ?
 

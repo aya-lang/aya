@@ -158,7 +158,7 @@
 }:test_matrix;
 
 
-{,
+:{
 import ::matrix
 
 matrix test_matrix

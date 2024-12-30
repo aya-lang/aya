@@ -2,7 +2,7 @@ import ::color
 import ::canvas
 
 {colors radius : cvs, 
-    {, colors :E radius *~ :height; :width;} canvas!:cvs;
+    :{ colors :E radius *~ :height; :width;} canvas!:cvs;
     colors.enumerate #{[x cols],
         cols.enumerate #{[y col],
             col cvs.set_color

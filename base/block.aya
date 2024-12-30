@@ -1,4 +1,4 @@
-{,
+:{
 
     .# Functional Operations
     .########################
@@ -60,7 +60,7 @@
     .}
     {(1 hold)({:d__,
         .# Create a dictionary of all values given by the list
-        {,}:d__;
+        :{}:d__;
         :#{$~\d__:D;};
         .# Substitute the values from the dictionary into the block
         d__ .+
@@ -71,22 +71,6 @@
 
     .# Utility Functions
     .#####################
-
-
-    .# ::list _capture_vars\n  given a list of symbols, return a dict with each symbol and it's assignment
-    .{ Example:
-        aya> {1 +}:a 2:b
-        {1 +} 2
-        aya> [::a ::b].capture_vars
-        {,
-          {1 +}:a;
-          2:b;
-        }
-        aya> [::a ::b ::c].capture_vars
-        ERROR: Variable c not found
-    .}
-    { {1, :# {$~\:=} } }:_capture_vars;
-
 
     .#? ::block .op\n  return the block (allows use of (::sym or ::block) .op without type checking
     {}:op;

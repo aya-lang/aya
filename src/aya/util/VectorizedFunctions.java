@@ -72,8 +72,18 @@ public class VectorizedFunctions {
 	//
 
 	private static List vectorizeListList(ExecutionContext context, Operator op, List a, List b, NumberListOp nlop) {
-		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST) && a.length() == b.length()) {
-			return new List(nlop.ll(asNumberList(a), asNumberList(b)));
+		if (a.isa(NUMBERLIST) && b.isa(NUMBERLIST)) {
+			final int a_len = a.length();
+			final int b_len = b.length();
+			if (a_len == b_len) {
+				return new List(nlop.ll(asNumberList(a), asNumberList(b)));
+			} else if (a_len == 1) {
+				return new List(nlop.nl(asNumberList(a).get(0), asNumberList(b)));
+			} else if (b_len == 1) {
+				return new List(nlop.ln(asNumberList(a), asNumberList(b).get(0)));
+			} else {
+				return vectorizeListList(context, op, a, b);
+			}
 		} else {
 			return vectorizeListList(context, op, a, b);
 		}
