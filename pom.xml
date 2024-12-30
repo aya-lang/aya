@@ -6,7 +6,7 @@
 
     <groupId>co.npaul.aya</groupId>
     <artifactId>aya</artifactId>
-    <version>4.0.0</version>
+    <version>0.5.0</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

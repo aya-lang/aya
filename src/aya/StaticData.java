@@ -33,7 +33,7 @@ import aya.util.StringSearch;
 public class StaticData {
 
 	public static final boolean DEBUG = true;
-	public static final String VERSION_NAME = "v0.4.0";
+	public static final String VERSION_NAME = "v0.5.0";
 	public static final String ayarcPath = "ayarc.aya";
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
