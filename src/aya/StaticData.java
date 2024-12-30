@@ -1,5 +1,17 @@
 package aya;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.stream.StreamSupport;
+
+import aya.exceptions.runtime.IOError;
 import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
@@ -9,6 +21,7 @@ import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.image.ImageInstructionStore;
 import aya.ext.json.JSONInstructionStore;
 import aya.ext.la.LinearAlgebraInstructionStore;
+import aya.ext.library.LibraryInstructionStore;
 import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
@@ -27,19 +40,6 @@ import aya.io.http.AbstractHTTPDownloader;
 import aya.io.http.UnimplementedHTTPDownloader;
 import aya.parser.SpecialNumberParser;
 import aya.util.StringSearch;
-
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ServiceLoader;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class StaticData {
 
@@ -157,37 +157,33 @@ public class StaticData {
 		addNamedInstructionStore(new ColorInstructionStore());
 		addNamedInstructionStore(new LinearAlgebraInstructionStore());
 		addNamedInstructionStore(new ThreadInstructionStore());
-
-		/*
-			Unfortunately, classpath wildcards are not supported in MANIFEST files. https://docs.oracle.com/javase/7/docs/technotes/tools/windows/classpath.html
-			So the user-libraries need to be loaded manually.
-		 */
+		addNamedInstructionStore(new LibraryInstructionStore());
+	}
+	
+	public ArrayList<NamedInstructionStore> loadLibrary(File path) { 
+		ArrayList<NamedInstructionStore> loaded = new ArrayList<NamedInstructionStore>();
+		
 		try {
-			File libsDir = new File(AyaPrefs.getAyaRootDirectory(), "libs");
-			final URL[] libUrls;
-			try (Stream<Path> libPaths = Files.list(libsDir.toPath())) {
-				libUrls = libPaths.map(path -> {
-					try {
-						return path.toUri().toURL();
-					} catch (Exception e) {
-						return null;
-					}
-				}).filter(Objects::nonNull).toArray(URL[]::new);
-			}
-
-			try (URLClassLoader libClassLoader = new URLClassLoader(libUrls)) {
+			URL[] urls = {path.toURI().toURL()};
+			
+			try (URLClassLoader libClassLoader = new URLClassLoader(urls)) {
 				StreamSupport.stream(
 						ServiceLoader.load(NamedInstructionStore.class, libClassLoader).spliterator(),
 						false
 				).forEach(store -> {
-					IO.out().println("found store: " + store.getClass().getName());
+					//IO.out().println("found store: " + store.getClass().getName());
 					addNamedInstructionStore(store);
+					loaded.add(store);
 				});
+			} catch (IOException e) {
+				throw new IOError("library.load", path.getPath(), e);
 			}
-		} catch (Exception e) {
-			IO.err().println("Failed to load libraries due to exception: " + e.getMessage());
-			e.printStackTrace(IO.err());
+			
+		} catch (MalformedURLException e) {
+			throw new IOError("library.load", path.getPath(), e);
 		}
+		
+		return loaded;
 	}
 
 	public void addNamedInstructionStore(NamedInstructionStore store) {

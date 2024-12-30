@@ -31,7 +31,6 @@
                 <include name="examples/**"/>
                 <include name="std/**"/>
                 <include name="test/**"/>
-                <include name="libs/**"/>
             </fileset>
         </copy>
 

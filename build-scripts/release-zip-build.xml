@@ -32,7 +32,6 @@
                         <include name="images/**"/>
                         <include name="manual/**"/>
                         <include name="runnable/**"/>
-                        <include name="libs/**"/>
                     </fileset>
                 </union>
                 <globmapper from="*" to="${aya.jar.name}/*"/> <!-- remap files to be stored in a directory 'aya-[version]/' -->

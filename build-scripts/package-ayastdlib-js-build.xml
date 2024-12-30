@@ -29,7 +29,6 @@
                 <include name="ayarc.aya"/>
                 <include name="base/**"/>
                 <include name="std/**"/>
-                <include name="libs/**"/>
                 <include name="examples/package_aya_libs.aya"/>
             </fileset>
         </copy>
