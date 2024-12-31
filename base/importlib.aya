@@ -11,6 +11,8 @@ def importlib::aya_dir :(sys.ad)
 .# Dictionary of files which have been imported
 def importlib::imported :{}
 
+def importlib::loaded_jars []
+
 def importlib::path [
     importlib.aya_dir "std" :9s + +    .# <aya>/base
 ]
@@ -164,7 +166,9 @@ def importlib::import {__name : importlib^,
             __name importlib.from_path
         } (__name :T ::str =) {
             { .# Determine load command based on string type
-                (__name ".aya" H) {
+                (__name ".jar" H) {
+                    __name importlib.load_library
+                } (__name ".aya" H) {
                     __name importlib.from_file
                 } (__name.[0] '/ =) {
                     __name importlib.load_file
@@ -180,6 +184,13 @@ def importlib::import {__name : importlib^,
     } :?
 }
 
+
+def importlib::load_library {jar_file : importlib^,
+    importlib.loaded_jars jar_file H ! {
+        jar_file :(library.load) ;
+        jar_file importlib.loaded_jars .B ;
+    } ?
+}
 
 
 def importlib::is_exportall {

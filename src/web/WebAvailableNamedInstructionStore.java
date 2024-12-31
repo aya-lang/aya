@@ -43,6 +43,14 @@ public class WebAvailableNamedInstructionStore implements NamedInstructionStore 
 					// Unimplemented
 					throw new UnimplementedError();
 				}
+			},
+			
+			new NamedOperator("library.load", "load a jar file") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					// Unimplemented
+					throw new UnimplementedError();
+				}
 			}
 		);
 	}
