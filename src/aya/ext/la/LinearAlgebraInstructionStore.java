@@ -1,11 +1,17 @@
 package aya.ext.la;
 
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class LinearAlgebraInstructionStore extends NamedInstructionStore {
-	
+import java.util.Arrays;
+import java.util.Collection;
+
+public class LinearAlgebraInstructionStore implements NamedInstructionStore {
+
 	@Override
-	protected void init() {
-		addInstruction(new MatMulInstruction());
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+				new MatMulInstruction()
+		);
 	}
 }

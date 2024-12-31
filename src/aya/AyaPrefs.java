@@ -24,25 +24,22 @@ public class AyaPrefs {
 			+ "https://github.com/nick-paul/aya-lang/issues with the stacktrace below.\n"
 			+ "=== [ Stacktrace ] ===";
 
-	public static void initDefaultWorkingDir() {
+	public static File getAyaRootDirectory() {
 		try {
-			workingDir = AyaThread.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-//			if(workingDir.length() > 0) {
-//				workingDir = workingDir.substring(1, workingDir.length()); //Remove the leading '/'
-//			}
-			if(workingDir.contains(".jar")) {
-				int ix = workingDir.lastIndexOf('/');
-				workingDir = workingDir.substring(0, ix+1);
+			File codeSource = new File(AyaThread.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			if(codeSource.isFile()) {
+				codeSource = codeSource.getParentFile();
 			}
-			
-			workingDir = (new File(workingDir).getCanonicalPath()).toString() + File.separator;
+			return codeSource;
 		} catch (URISyntaxException e) {
-			workingDir = "";
-			StaticData.IO.printDebug("Cannot locate working dir");
-		} catch (IOException e) {
-			workingDir = "";
-			StaticData.IO.printDebug("Cannot locate working dir");
+			StaticData.IO.printDebug("Cannot locate aya dir: " + e.getMessage());
+			return null;
 		}
+	}
+
+	public static void initDefaultWorkingDir() {
+		File rootDir = getAyaRootDirectory();
+		workingDir = rootDir == null ? "" : (rootDir.getAbsolutePath() + File.separator);
 		defaultWorkingDir = workingDir;
 	}
 

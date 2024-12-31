@@ -4,13 +4,19 @@ import aya.ext.image.instruction.GetImageFormatsInstruction;
 import aya.ext.image.instruction.ReadImageInstruction;
 import aya.ext.image.instruction.WriteImageInstruction;
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class ImageInstructionStore extends NamedInstructionStore {
+import java.util.Arrays;
+import java.util.Collection;
+
+public class ImageInstructionStore implements NamedInstructionStore {
 
 	@Override
-	protected void init() {
-		addInstruction(new GetImageFormatsInstruction());
-		addInstruction(new ReadImageInstruction());
-		addInstruction(new WriteImageInstruction());
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+			new GetImageFormatsInstruction(),
+			new ReadImageInstruction(),
+			new WriteImageInstruction()
+		);
 	}
 }

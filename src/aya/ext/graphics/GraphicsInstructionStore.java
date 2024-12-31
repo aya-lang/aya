@@ -38,49 +38,55 @@ import aya.ext.graphics.instruction.cursor.PressedButtonsInstruction;
 import aya.ext.graphics.instruction.keyboard.PressedKeysInstruction;
 import aya.ext.graphics.instruction.keyboard.TypedCharsInstruction;
 import aya.instruction.named.NamedInstructionStore;
+import aya.instruction.named.NamedOperator;
 
-public class GraphicsInstructionStore extends NamedInstructionStore {
+import java.util.Arrays;
+import java.util.Collection;
+
+public class GraphicsInstructionStore implements NamedInstructionStore {
 
 	public static final CanvasTable canvas_table = new CanvasTable();
 
 	@Override
-	protected void init() {
-		addInstruction(new ArcGraphicsInstruction(canvas_table));
-		addInstruction(new ClearGraphicsInstruction(canvas_table));
-		addInstruction(new ClearRectGraphicsInstruction(canvas_table));
-		addInstruction(new ClickEventsInstruction(canvas_table));
-		addInstruction(new CloseGraphicsInstruction(canvas_table));
-		addInstruction(new CopyRectGraphicsInstruction(canvas_table));
-		addInstruction(new PointsGraphicsInstruction(canvas_table));
-		addInstruction(new EllipseGraphicsInstruction(canvas_table));
-		addInstruction(new GetPixelsGraphicsInstruction(canvas_table));
-		addInstruction(new IsOpenGraphicsInstruction(canvas_table));
-		addInstruction(new LineGraphicsInstruction(canvas_table));
-		addInstruction(new ListFontsGraphicsInstruction(canvas_table));
-		addInstruction(new MoveEventsInstruction(canvas_table));
-		addInstruction(new NewGraphicsInstruction(canvas_table));
-		addInstruction(new OvalGraphicsInstruction(canvas_table));
-		addInstruction(new PathGraphicsInstruction(canvas_table));
-		addInstruction(new PressedKeysInstruction(canvas_table));
-		addInstruction(new PressedButtonsInstruction(canvas_table));
-		addInstruction(new RectGraphicsInstruction(canvas_table));
-		addInstruction(new RotateGraphicsInstruction(canvas_table));
-		addInstruction(new RoundRectGraphicsInstruction(canvas_table));
-		addInstruction(new SaveGraphicsInstruction(canvas_table));
-		addInstruction(new ScaleGraphicsInstruction(canvas_table));
-		addInstruction(new SetAlphaGraphicsInstruction(canvas_table));
-		addInstruction(new SetBGColorGraphicsInstruction(canvas_table));
-		addInstruction(new SetColorGraphicsInstruction(canvas_table));
-		addInstruction(new SetColorAlphaGraphicsInstruction(canvas_table));
-		addInstruction(new SetFontGraphicsInstruction(canvas_table));
-		addInstruction(new SetPaintGradGraphicsInstruction(canvas_table));
-		addInstruction(new SetStrokeGraphicsInstruction(canvas_table));
-		addInstruction(new SetStrokeWidthGraphicsInstruction(canvas_table));
-		addInstruction(new ShearGraphicsInstruction(canvas_table));
-		addInstruction(new ShowGraphicsInstruction(canvas_table));
-		addInstruction(new TextGraphicsInstruction(canvas_table));
-		addInstruction(new TranslateGraphicsInstruction(canvas_table));
-		addInstruction(new TypedCharsInstruction(canvas_table));
-		addInstruction(new ViewmatGraphicsInstruction(canvas_table));
+	public Collection<NamedOperator> getNamedInstructions() {
+		return Arrays.asList(
+				new ArcGraphicsInstruction(canvas_table),
+				new ClearGraphicsInstruction(canvas_table),
+				new ClearRectGraphicsInstruction(canvas_table),
+				new ClickEventsInstruction(canvas_table),
+				new CloseGraphicsInstruction(canvas_table),
+				new CopyRectGraphicsInstruction(canvas_table),
+				new EllipseGraphicsInstruction(canvas_table),
+				new GetPixelsGraphicsInstruction(canvas_table),
+				new IsOpenGraphicsInstruction(canvas_table),
+				new LineGraphicsInstruction(canvas_table),
+				new ListFontsGraphicsInstruction(canvas_table),
+				new MoveEventsInstruction(canvas_table),
+				new NewGraphicsInstruction(canvas_table),
+				new OvalGraphicsInstruction(canvas_table),
+				new PathGraphicsInstruction(canvas_table),
+				new PointsGraphicsInstruction(canvas_table),
+				new PressedKeysInstruction(canvas_table),
+				new PressedButtonsInstruction(canvas_table),
+				new RectGraphicsInstruction(canvas_table),
+				new RotateGraphicsInstruction(canvas_table),
+				new RoundRectGraphicsInstruction(canvas_table),
+				new SaveGraphicsInstruction(canvas_table),
+				new ScaleGraphicsInstruction(canvas_table),
+				new SetAlphaGraphicsInstruction(canvas_table),
+				new SetBGColorGraphicsInstruction(canvas_table),
+				new SetColorGraphicsInstruction(canvas_table),
+				new SetColorAlphaGraphicsInstruction(canvas_table),
+				new SetFontGraphicsInstruction(canvas_table),
+				new SetPaintGradGraphicsInstruction(canvas_table),
+				new SetStrokeGraphicsInstruction(canvas_table),
+				new SetStrokeWidthGraphicsInstruction(canvas_table),
+				new ShearGraphicsInstruction(canvas_table),
+				new ShowGraphicsInstruction(canvas_table),
+				new TextGraphicsInstruction(canvas_table),
+				new TranslateGraphicsInstruction(canvas_table),
+				new TypedCharsInstruction(canvas_table),
+				new ViewmatGraphicsInstruction(canvas_table)
+		);
 	}
 }

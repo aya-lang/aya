@@ -41,6 +41,7 @@ public class AyaWeb {
 		//
 		// Named Instructions
 		// Web build only supports a limited set of named instructions
+		// We do not use the full initNamedInstructions method for web
 		//
 		WebAvailableNamedInstructionStore wsi = new WebAvailableNamedInstructionStore();
 		sd.addNamedInstructionStore(wsi);
