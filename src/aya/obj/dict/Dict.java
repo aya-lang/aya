@@ -313,7 +313,10 @@ public class Dict extends Obj {
 	
 	/** Return a string representation of the dict */
 	private String dictStr() {
-		return dictRepr(new ReprStream()).toStringOneline();
+		final boolean fullStr = true;
+		ReprStream stream = new ReprStream();
+		stream.setFullStrings(true);
+		return dictRepr(stream).toString();//.toStringOneline();
 	}
 	
 	/** Return a string representation of the dict 

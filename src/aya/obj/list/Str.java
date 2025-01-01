@@ -429,10 +429,10 @@ public class Str extends ListImpl implements Comparable<Str> {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		if (_str.length() > 100) {
-			stream.print(StringUtils.quote(_str.substring(0, 30) + " ... " + _str.substring(_str.length()-30)));
-		} else {
+		if (stream.isFullStrings() || _str.length() <= 100) {
 			stream.print(StringUtils.quote(_str));
+		} else {
+			stream.print(StringUtils.quote(_str.substring(0, 30) + " ... " + _str.substring(_str.length()-30)));
 		}
 		return stream;
 	}
