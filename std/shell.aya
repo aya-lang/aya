@@ -15,7 +15,7 @@ def shellresult::lines {self,
 }
 
 
-module shell_impl
+:{} :shell_impl;
 
 def shell_impl::grep {res::shellresult rgx::str : shellresult^ ,
     res.lines {rgx &E0>} I

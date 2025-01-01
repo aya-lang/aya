@@ -184,7 +184,7 @@ def color::rgbtohsv {r g b color : h s v delta maxv minv,
       colors.aqua
       colors.raspberry
 .}
-module colors
+:{} :colors;
 
 :{
     :(color.name_list) :# {color_name : color_dict,

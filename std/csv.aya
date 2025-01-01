@@ -1,4 +1,4 @@
-module csv
+:{} :csv;
 export ::csv
 
 def csv::parse {dlm : rgx,

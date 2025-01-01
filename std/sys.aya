@@ -1,6 +1,6 @@
 from ::io import ::path
 
-module sys
+:{} :sys;
 export ::sys
 
 def sys::args :(sys.args)

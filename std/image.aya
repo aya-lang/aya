@@ -1,6 +1,6 @@
 from ::io import ::path
 
-module image
+:{} :image;
 export ::image
 
 class image

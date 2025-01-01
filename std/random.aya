@@ -2,7 +2,7 @@
 
 .# Functions related to random number generation
 
-module random
+:{} :random;
 export ::random
 
 .#? ::list ::num random.lotto\n  pick N random items from L
