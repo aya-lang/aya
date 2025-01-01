@@ -27,6 +27,7 @@ public class ReprStream {
 	private Stack<Obj> _visited;
 	// In safe mode, do not try to call __repr__ on objects
 	private boolean _safe_mode;
+	private boolean _full_strings; // If long strings will be printed completely or with "abc ... xyz"
 	
 	public ReprStream() {
 		_lines = new ArrayList<ReprStream.Line>();
@@ -35,6 +36,7 @@ public class ReprStream {
 		_visited = new Stack<Obj>();
 		_current_line = new Line(_current_indent);
 		_safe_mode = false;
+		_full_strings = false;
 	}
 
 	
@@ -194,5 +196,14 @@ public class ReprStream {
 	
 	public boolean isSafeMode() {
 		return _safe_mode;
+	}
+
+
+	public void setFullStrings(boolean b) {
+		_full_strings = true;		
+	}
+	
+	public boolean isFullStrings() {
+		return _full_strings;
 	}
 }
