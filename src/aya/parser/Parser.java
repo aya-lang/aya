@@ -40,6 +40,7 @@ import aya.parser.token.TokenStack;
 import aya.parser.tokens.BlockToken;
 import aya.parser.tokens.CDictToken;
 import aya.parser.tokens.CharToken;
+import aya.parser.tokens.CurrentFileToken;
 import aya.parser.tokens.DictToken;
 import aya.parser.tokens.KeyVarToken;
 import aya.parser.tokens.LambdaToken;
@@ -215,10 +216,15 @@ public class Parser {
 
 			// Math Operators
 			else if (current == 'M') {
-				try {
-					tokens.add(new OperatorToken("" + in.next(), OperatorToken.MATH_OP, in.currentRef()));
-				} catch (EndOfInputError e) {
-					throw new SyntaxError("Expected op name after 'M'", in.currentRef());
+				if (in.peek() == '0') {
+					in.next(); // Skip 0
+					tokens.add(new CurrentFileToken(in.currentRef()));
+				} else {
+					try {
+						tokens.add(new OperatorToken("" + in.next(), OperatorToken.MATH_OP, in.currentRef()));
+					} catch (EndOfInputError e) {
+						throw new SyntaxError("Expected op name after 'M'", in.currentRef());
+					}
 				}
 			}
 			
