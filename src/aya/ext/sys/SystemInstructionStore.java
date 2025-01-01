@@ -13,6 +13,7 @@ import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.list.List;
+import aya.obj.number.Num;
 import aya.util.FileUtils;
 
 public class SystemInstructionStore implements NamedInstructionStore {
@@ -44,6 +45,17 @@ public class SystemInstructionStore implements NamedInstructionStore {
 					}
 				}
 			},
+			
+			// Is dir?
+			new NamedOperator("sys.isdir", "true if the path exists and is a directory") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String path_str = blockEvaluator.pop().str();
+					File file = FileUtils.resolvePath(path_str).toFile();
+					blockEvaluator.push(Num.fromBool(file.exists() && file.isDirectory()));
+				}
+			},
+
 
 			// Get working dir
 			new NamedOperator("sys.wd", "get absolute path of working dir") {
@@ -152,6 +164,17 @@ public class SystemInstructionStore implements NamedInstructionStore {
 				public void execute(BlockEvaluator blockEvaluator) {
 					final Obj arg = blockEvaluator.pop();
 					blockEvaluator.push(List.fromString(FileUtils.resolveHome(arg.str())));
+				}
+			},
+			
+			
+			// Absolute Path
+			new NamedOperator("sys.abspath", "convert path string to absolute path. Normalize the path if '.' or '..' specifiers exist") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String path_str = blockEvaluator.pop().str();
+					final Path p = FileUtils.resolvePath(path_str).normalize();
+					blockEvaluator.push(List.fromString( p.toFile().getAbsolutePath()) );
 				}
 			},
 
