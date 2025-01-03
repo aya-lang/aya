@@ -1,4 +1,4 @@
-import ::csv
+import csv
 
 [
     {[[1 2][3 4]] "," 0 csv.dumps "1,2\n3,4" }

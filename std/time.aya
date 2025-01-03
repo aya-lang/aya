@@ -1,8 +1,4 @@
-:{} :time;
-export ::time
-
 class rate
-rate time.:rate;
 
 def rate::__init__ {hz self,
     hz self.:hz;

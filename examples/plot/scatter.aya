@@ -1,5 +1,6 @@
+import plot
+
 .# A simple scatter plot
-import ::plot
 
 plot.plot! :plt;
 

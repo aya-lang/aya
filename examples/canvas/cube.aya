@@ -3,15 +3,15 @@
 .# Implementation of Coding Challenge #112 by The Coding Train
 .# https://thecodingtrain.com/
 
-import ::canvas
-import ::color
-import ::time
+import canvas
+import time
+require color {colors}
 
-color.colors.black :black;
-color.colors.white :white;
+colors.black :black;
+colors.white :white;
 
 .# Create a new canvas
-:{ "3D Cube":name 0:autoflush } canvas! :c;
+:{ "3D Cube":name 0:autoflush } canvas.canvas! :c;
 2 c.set_stroke_width
 
 0 :theta;

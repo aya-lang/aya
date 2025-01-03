@@ -9,7 +9,6 @@
 .}
 
 class map
-export ::map
 
 def map::__init__ {self,
     [] self.:keys;

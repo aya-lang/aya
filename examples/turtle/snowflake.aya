@@ -1,9 +1,8 @@
+import turtle
+
 .# Draw a snowflake using `turtle`
 
-import ::turtle
-import ::math
-
-:{ } turtle!:t;
+:{ } turtle.turtle!:t;
 
 {
     {

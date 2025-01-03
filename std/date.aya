@@ -7,8 +7,6 @@
     The date type provides operations for accessing date and time variables.
 .}
 
-export [::date ::dates ::dateunit]
-
 :{
 
     ::date :__type__;
@@ -105,7 +103,7 @@ export [::date ::dates ::dateunit]
     .# Units
     dateunit.units # {u : name,
         u0I:name;
-        "{dateunit.$name!}:$name"~
+        "{:dateunit^,dateunit.$name!}:$name"~
     };
 
     .# Week Day Names
@@ -128,5 +126,3 @@ export [::date ::dates ::dateunit]
     ]:monthsabb;
 
 }:dates;
-
-{date.now}:now;

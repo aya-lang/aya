@@ -1,13 +1,13 @@
-import ::canvas
-import ::math
-import ::time
+import canvas
+import time
+require math {normal norm}
 
 .# Simple boid simulation
 
 500 :width;
 500 :height;
 
-:{ width:width height:height "Boids":name } canvas! :c;
+:{ width:width height:height "Boids":name } canvas.canvas! :c;
 
 struct boid { pos vel acc }
 

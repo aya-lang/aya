@@ -1,5 +1,4 @@
 class versionstr
-export [::versionstr ::v]
 
 def versionstr::__init__ {maj min pat self,
     majP self.:major;

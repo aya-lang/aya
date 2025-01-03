@@ -1,9 +1,9 @@
-import ::canvas
-import ::time
+import canvas
+import time
 
 .# A simple mouse input example
 
-:{} canvas! :cvs;
+:{} canvas.canvas! :cvs;
 cvs.show
 
 60 time.rate! :limiter;

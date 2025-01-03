@@ -7,8 +7,6 @@
     A module for manipulating and printing colors in Aya
 .}
 class color
-export ::color
-
 
 .#
 .# Constructors

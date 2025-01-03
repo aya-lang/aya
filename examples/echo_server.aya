@@ -1,6 +1,6 @@
-.# A Simple echo server running on localhost:3003
+require socket {socket_server}
 
-import ::socket
+.# A Simple echo server running on localhost:3003
 
 "localhost" 3003 socket_server.listen :srv;
 

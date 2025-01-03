@@ -2,11 +2,8 @@
 
 .# Metaprogramming utilities
 
-:{} :mp;
-export ::mp
-
 .#? ::list mp.merge\n  Convert a list of blocks into a single block
-def mp::merge {
+def ::merge {
     #.op .*
 }
 

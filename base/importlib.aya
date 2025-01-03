@@ -140,16 +140,18 @@ def importlib::import {__name::str : importlib^,
     \ importlib._filename_no_extension := ;
 }
 
-def importlib::require {__name::str __symbols::list : importlib^,
+.# __symbols ::list|::num
+.# if symbols is 1, then import all public names
+def importlib::require {__name::str __symbols : importlib^,
     __name importlib._resolve_name_to_path importlib._load_file .# dict
 
-    __symbols .# list[symbol]
-
-    .# require all *
-    .# dict :# { \ :& :C .[0] '_ =! {:=} ? .A}
-
-    .# require names
-    importlib._bring_names_into_scope
+    __symbols 1 = {
+        .# require all names that don't start with "_"
+        :# { \ :& :C .[0] '_ =! {:=} ? .A} ;
+    } {
+        .# require specified names
+        __symbols importlib._bring_names_into_scope
+    } .?
 }
 
 .#
@@ -171,7 +173,15 @@ def importlib::require {__name::str __symbols::list : importlib^,
 {{
     .# Args from :` come wrapped in a list; dump both to the stack
     ~
-    __aya__.importlib._parse_identifiers :# {:S}  .# symbols
+    .# require foo *
+    .# bring all public names into scope
+    .# Not really a better way to check this at the moment so we just
+    .#   use string conversion
+    :& P "{*}" = {
+        ; 1
+    } {
+        __aya__.importlib._parse_identifiers :# {:S}  .# symbols
+    } .?
     \
     __aya__.importlib._parse_identifiers.[0]      .# name
     \ __aya__.importlib.require
@@ -296,6 +306,8 @@ def importlib::_load_file {path_to_import::str : importlib^,
         {
             .# Open a new scope
             :{
+                0 :__main__;
+
                 .# Load the file
                 path_to_import :F
             }
@@ -317,6 +329,18 @@ def importlib::_load_file {path_to_import::str : importlib^,
     .# the imported dict is left on the stack
 }
 
+.# A file is main if `__main__` is undefined or not 0
+def importlib::is_main {
+    { .# try
+        __main__ 0 =!
+    } {;
+        1
+    } .K
+}
+
+def ::main {{
+    ~ __aya__.importlib.is_main {~} ?
+} 1 :`}
 
 
 .# Convert a block containing symbols or strings to a list of strings

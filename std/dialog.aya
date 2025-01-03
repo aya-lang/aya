@@ -8,61 +8,57 @@
     all functions in this module are shortcuts for the :(dialog.legacy) operator
 .}
 
-:{} :dialog;
-export ::dialog
-
-
 .#? ::str dialog.requeststr\n  request a string from the user
-def dialog::getstr {question,
+def ::getstr {question,
     question :(dialog.getstr)
 }
 
 .#? ::str dialog.requestnum\n  request a number from the user
-def dialog::getnum {question,
+def ::getnum {question,
     question :(dialog.getnum)
 }
 
 .#? ::str dialog.alert\n  display a dialog box with a given message
-def dialog::alert {text,
+def ::alert {text,
     text "Aya" ::plain :(dialog.alert)
 }
 
 .#? ::str dialog.warning\n  display a warning message with the given message
-def dialog::warning {text,
+def ::warning {text,
     text "Aya" ::warn :(dialog.alert)
 }
 
 .#? ::str dialog.error\n  display an error message with the given message
-def dialog::error {text,
+def ::error {text,
     text "Aya" ::error :(dialog.alert)
 }
 
 .#? ::str dialog.warn\n  display a warning message with the given message
-def dialog::warn {text,
+def ::warn {text,
     text "Aya" ::warn :(dialog.alert)
 }
 
 .#? ::str ::str ::str dialog.yesno\n  display a dialog box with the question ::str1. ::str2 and ::str3 return true and false respectively
-def dialog::yesno {question yes no,
+def ::yesno {question yes no,
     question [yes no] "Aya" ::plain :(dialog.confirm)
 }
 
 .#? message::str dialog.confirm\n  Return 1 if the user presses okay and 0 otherwise
-def dialog::confirm {question,
+def ::confirm {question,
     question ["Okay" "Cancel"] "Aya" ::plain :(dialog.confirm)
 }
 
 .#? ::str ::list dialog.buttons\n  display a dialog box with buttons for each of the options in L. Returns the item in the list as a string.
-def dialog::buttons {question options::list,
+def ::buttons {question options::list,
     question options "Aya" ::question :(dialog.buttons)
 }
 
 .#? ::str ::list dialog.dropdown\n  display a dialog box with a dropdown selection of the options in L
-def dialog::dropdown {question options::list,
+def ::dropdown {question options::list,
     question options "Aya" ::question :(dialog.dropdown)
 }
 
 .#? dialog.choosefile\n  open a file selection window. return the full path of the selected file
-def dialog::choosefile {
+def ::choosefile {
     :(dialog.choosefile)
 }

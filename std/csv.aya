@@ -1,34 +1,16 @@
-:{} :csv;
-export ::csv
-
-def csv::parse {dlm : rgx,
+{dlm : rgx,
     "(?<=^|$dlm)(\"(?:[^\"]|\"\")*\"|[^$dlm]*)" :rgx; .#"
     '\n' S :# {line,
         line.trim :line;
         line rgx & :#{.trim .rmquote .!}
     }
-}
+} :parse;
 
-def csv::open {f : csv^,
-    fP G "," csv.parse
-}
+{f : parse^,
+    fP G "," parse
+} :open;
 
-def csv::read { arg : csv^ ,
-    {
-        (arg :T ::str =) {
-            .# convert to dict
-            :{ arg :filename }
-        } (arg :T ::dict =) {
-            arg
-        } {
-            "csv.read: Unsupported arg type $(arg:T). Must be ::str or ::dict" .D
-        }
-    } :?
-
-    csv._read_kw
-}
-
-def csv::_read_kw {kwargs::dict : csv^
+{kwargs::dict : parse^
                                 clabel(1) .# bool
                                 rlabel(::nil) .# bool
                                 filename(::nil) .# str
@@ -40,12 +22,12 @@ def csv::_read_kw {kwargs::dict : csv^
                                 ,
     kwargs ~
 
-    (csv_str ::nil = filename ::nil = &) {"csv.read: Must provide either filename or csv_str" .D} ?
+    (csv_str ::nil = filename ::nil = &) {"Must provide either filename or csv_str" .D} ?
 
     .# Open the file and read into data
     filename ::nil =! {filenameP G :csv_str;} ?
 
-    csv_str dlm csv.parse :data;
+    csv_str dlm parse :data;
 
     .# Attempt to auto-detect rlabel if it is not specified
     rlabel ::nil = {
@@ -72,10 +54,27 @@ def csv::_read_kw {kwargs::dict : csv^
         colnames:colnames
         rownames:rownames
     }
-}
+} :_read_kw;
+
+
+{ arg : _read_kw^ ,
+    {
+        (arg :T ::str =) {
+            .# convert to dict
+            :{ arg :filename }
+        } (arg :T ::dict =) {
+            arg
+        } {
+            "Unsupported arg type $(arg:T). Must be ::str or ::dict" .D
+        }
+    } :?
+
+    _read_kw
+} :read;
+
 
 .#? list sep na csv.dumps\n  convert a 2d list to a csv string
-def csv::dumps {list sep na,
+{list sep na,
     list :# {
         :#{
             .# If it is na, make it emptystr
@@ -85,6 +84,6 @@ def csv::dumps {list sep na,
         }
         sep %
     } "\n" %
-}
+} :dumps;
 
 
