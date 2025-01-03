@@ -414,7 +414,8 @@ __aya__.extend.` :extend;
     "sym"
 
     .# required libraries
-    "importlib"
+    .#"importlib"
+    "importlib2"
 
     .# Interpreter commands
     "interpreter"

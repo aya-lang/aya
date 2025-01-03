@@ -1,0 +1,320 @@
+:{} :importlib;
+
+"""
+# importlib
+
+Defines two global keywords: import & require
+
+## `import`
+
+`import <module>`: import the module and assign it to the module name
+
+### Example
+
+Assume "sample.aya" has variables "foo" and "bar"
+
+`import sample` will define the variable `sample` to the dict `:{ ...:foo ...:bar}`.
+Use `sample.foo` & `sample.bar` to access imported names
+
+### Valid import statements
+
+  - Standard imports: Search for files in "<importlib._path>/<name>.aya"
+    - import "example"
+    - import "example.aya" (extension optional, no extension preferred)
+
+  - Relative imports: Search for files relative to the file with the import statement
+    - import ".relative"
+    - import ".relative.aya" (extension optional, no extension preferred)
+    - import ".src/relative.aya"
+
+  - Package improts: If the import points to a directory, it will look for <path>/init.aya
+    - import "src/package" (assumes src/package/init.aya exists)
+
+  - Identifier imports: Itentifiers will be converted to strings before importing
+    - import example (same as import "example")
+    - import .example (same as import ".example")
+    - Use with a SINGLE IDENTIFIER ONLY! Anything after the first identifier is treated as
+      a nomal aya expression
+      - import foo.bar (Parsed as {(import foo) .bar} )
+      - import foo/bar (Parsed as {(import foo) / bar} )
+
+## `require`
+
+Require is similar to import but imports names directly into the current scope. 
+You can specify which names to import or import all with a wildcard.
+When using the wildcard, names with a leading underscore will not be imported
+
+### Example
+
+Assume "sample.aya" has variables "foo", "bar", and "_baz"
+
+  - `require sample {foo}` will bring `foo` into the current scope. `sample` and `sample.bar` are undefined
+  - `require sample {foo bar}` will bring `foo` and `bar` into the current scope
+  - `require sample *` will bring `foo` and `bar` into the current scope. `_baz` will not be imported
+    since it has a leading underscore
+  - `require sample {foo _baz}` will bring `foo` and `_baz` into the current scope even though _baz has a leading underscore
+
+### Valid require statements
+
+ - Bring sin, cos, and tan into scope
+   - require math {sin cos tan}
+   - require .math {sin cos tan}
+ - Like imports, strings and identifiers are interchangable (identifiers preferred when possible)
+   - require "math" {"sin" "cos" "tan"}
+   - require "./src/math" {"sin" "cos" "tan"}
+ - Require * will bring all variables that do not start with a leading _ into scope
+   - require math *
+   - require "./src/math" *
+
+""";
+
+
+.#
+.# Utility Functions
+.#
+
+.# Join paths a and b in a portable way
+def importlib::_join_path {a::str b::str,
+    .# If b has a leading separator, refuse to join
+    b.[0]P :9s = {"Can't join, Path b has leading separator (is it an absolute path?): $b".D} ?
+
+    .# If a ends with a separator, don't add another
+    a.[-1]P :9s =! {
+        a :9s +
+    } {
+        a
+    } .?
+
+    .# Join with b
+    b +
+}
+
+"a" "b"  importlib._join_path ["a" :9s "b"] W :!
+"a/" "b" importlib._join_path ["a" :9s "b"] W :!
+
+
+.#
+.# Importlib Variables
+.#
+
+.# If true, allow printing debug information
+def importlib::_debug 0
+
+.# While processing an import, this will keep track of imports
+.# inside of other imports. The top of the stack (.[-1]) is 
+.# always the current file being imported
+def importlib::_import_stack []
+
+.# Dictionary of files which have been imported
+.#  maps filename -> imported module (dict)
+def importlib::_imported :{}
+
+.# List of absolute paths to imported jar files
+.# def importlib::loaded_jars []
+
+.# List of locations where we are looking for files to import
+.# Should always use get_path since it will append the current directory
+.# By default, we add the standard library 
+def importlib::_path [
+    :(sys.ad) "std" importlib._join_path .# "<aya-dir>/std"
+]
+
+
+.#
+.# Main API
+.#
+
+
+def importlib::import {__name::str : importlib^,
+    __name importlib._resolve_name_to_path .# path
+
+    $ importlib._load_file .# dict
+
+    .# Assign the dict to the filename with no extension
+    \ importlib._filename_no_extension := ;
+}
+
+def importlib::require {__name::str __symbols::block : importlib^,
+    name importlib._resolve_name_to_path importlib._load_file .# dict
+
+    __symbols importlib._block_to_symbol_list .# list[symbol]
+
+    .# require all *
+    .# dict :# { \ :& :C .[0] '_ =! {:=} ? .A}
+
+    .# require names
+    importlib._bring_names_into_scope
+}
+
+.# stack args:
+.#   dict
+.#   list[symbol]
+def importlib::_bring_names_into_scope { {$@\I\:=} :O ; }
+
+:{ :{ 1:a 2:b 3:_c} [::a ::_c] importlib._bring_names_into_scope } :{ 1:a 3:_c } :!
+:{ :{ 1:a 2:b 3:_c} [::a] importlib._bring_names_into_scope } :{ 1:a } :!
+:{ :{ 1:a 2:b 3:_c} [] importlib._bring_names_into_scope } :{ } :!
+
+
+.#
+.# Helper Functions
+.#
+
+def importlib::_log_debug {:importlib^,
+     importlib._debug {"importlib: " \+ :P} {;} .?
+}
+
+.# Return the path with the current directory at the bottom
+def importlib::get_path { : importlib^ ,
+    importlib._path
+    :(sys.wd)
+    J
+}
+
+.# Get the filename with extensions removed
+.# All extensions are removed
+.# "/foo/bar/baz.aya" => "baz"
+.# "/xyz/abc.def.ghi" => "abc"
+def importlib::_filename_no_extension {path::str,
+    path :(sys.get_filename) "\."S.[0]
+}
+
+"/foo/bar/baz.aya" importlib._filename_no_extension "baz" :!
+"/xyz/abc.def.ghi" importlib._filename_no_extension "abc" :!
+
+
+.# str::str suffix::str _endswith
+.# "foo.aya" ".aya" _endswith => 1
+def importlib::_endswith { :& E@\.>= }
+
+"foo.aya" ".aya" importlib._endswith 1 :!
+"foo.txt" ".aya" importlib._endswith 0 :!
+
+.# Convert a name to a path
+.# 
+.# args:
+.#   name::str : a valid import name
+.#      - "example"
+.#      - "example.aya"
+.#      - ".relative"
+.#      - ".relative.aya"
+.#      - ".src/relative.aya"
+.#      - "src/package" (assumes src/package/init.aya exists
+.#
+.# If a name has a leading "." resolve it to a path relative
+.#   to the file currently being imported (not relative to the
+.#   working dir)
+.# Otherwise, search the importlib._path for locations the file could be
+.# Check the following three files:
+.#   - "_path/<name>" (an exact match)
+.#   - "_path/<name>.aya" (append aya file extension)
+.#   - "_path/<name>/init.aya" (package path)
+.# 
+.# Return the absolute path that was found. Only one path is returned
+def importlib::_resolve_name_to_path {name::str : path_to_import importlib^,
+    .# Sanity check: make sure we didn't pass an empty path
+    name "" = {"Empty import"} ?
+
+    .# First we need to check if it is a relative import
+    name.[0] '. = {
+        .# If a path starts with a "." we need to join it with path
+        .# from the top of the import stack
+        importlib._import_stack.[-1] :(sys.parent)
+        .# Drop the leading "." from 
+        name.E 1- .>
+        importlib._join_path :path_to_import;
+    } {: files_to_check valid_paths, .# locals
+        .# If it is not a relative import, we need to search for it in the import path
+        importlib.get_path :# {path_entry,
+            path_entry name importlib._join_path :path_entry;
+            path_entry .# regular name
+            path_entry ".aya" + .# name.aya
+            path_entry "init.aya" importlib._join_path .# package
+        } :files_to_check;
+
+
+        files_to_check.[{:(sys.file_exists)}] :valid_paths;
+
+        valid_paths E 1 > { "Import error: Multiple valid paths found for import: $valid_paths" .D } ?
+        valid_paths E 0 = { "Import error: Unable to find any files in path: $files_to_check" .D} ?
+
+        .# Exactly 1 file exists, that is the path to import
+        valid_paths.[0] :path_to_import;
+    } .?
+
+    .# Now that we have the path to import, lets load it
+    path_to_import :(sys.abspath) .# importlib._load_file :imported;
+}
+
+
+.# Import a file
+.# args:
+.#   - path_to_import::str : The resolved absolute path to the aya file
+.#
+.# return: the imported file as a dict
+def importlib::_load_file {path_to_import::str : importlib^,
+    .# Have we imported this already?
+    importlib._imported path_to_import H {
+        .# If we've already imported the file, just return the dict
+        importlib._imported.[path_to_import]
+    } {
+        .# Push the path we are importing onto the import stack
+        path_to_import importlib._import_stack .B;
+
+        {
+            .# Open a new scope
+            :{
+                .# Load the file
+                path_to_import :F
+            }
+        } {ex,
+            .# There was an error importing
+            .# pop from the import stack
+            importlib._import_stack B;;
+            ex .D .# re throw error
+        } .K
+
+        .# pop from the import stack
+        importlib._import_stack B;;
+
+        .# Add dict to imported cache
+        :& .# Keep dict on the stack
+        importlib._imported.:[path_to_import];
+    } .?
+
+    .# the imported dict is left on the stack
+}
+
+
+.# Conver a block containing symbols or strings to a list of symbols
+.# aya> {sin cos "Asin" "Acos"} .* :# {x, x.` :S .E 1= {~:C} {; x.`~}.? :S}
+.# [ ::sin ::cos ::"Asin" ::"Acos" ]
+def importlib::_block_to_symbol_list {b::block,
+    b.` .* :# {x,
+        x.` :S .E 1= {
+            .# If it is a symbol it will be converted to [::symbol]
+            .# Use .[0] to get the symbol object
+            .[0]
+        } {
+            .# If it is not a symbol it will be converted to []
+            .# use x.`~ to get the original string
+            ; x.`~
+            .# then convert it to a symbol
+            :S
+        }.?
+    }
+}
+
+.# Tests
+{sin cos "Asin" "Acos"} importlib._block_to_symbol_list
+    [ ::sin ::cos ::"Asin" ::"Acos" ] :!
+
+
+def importlib::load_library {jar_file : importlib^,
+    importlib.loaded_jars jar_file H ! {
+        jar_file :(library.load) ;
+        jar_file importlib.loaded_jars .B ;
+    } ?
+}
+
+importlib __aya__.:importlib;

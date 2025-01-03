@@ -13,6 +13,7 @@ import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.list.List;
+import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.util.FileUtils;
 
@@ -73,7 +74,7 @@ public class SystemInstructionStore implements NamedInstructionStore {
 				}
 			},
 
-			// Get aya dir
+			// Set aya dir
 			new NamedOperator("sys.set_ad", "set absolute path of aya dir") {
 				@Override
 				public void execute(BlockEvaluator blockEvaluator) {
@@ -175,6 +176,28 @@ public class SystemInstructionStore implements NamedInstructionStore {
 					final String path_str = blockEvaluator.pop().str();
 					final Path p = FileUtils.resolvePath(path_str).normalize();
 					blockEvaluator.push(List.fromString( p.toFile().getAbsolutePath()) );
+				}
+			},
+			
+			// Get file name from path
+			new NamedOperator("sys.get_filename", "get the filename from a path") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String arg = blockEvaluator.pop().str();
+					blockEvaluator.push(List.fromString(new File(arg).getName()));
+				}
+			},
+			
+			// Get parent name from path
+			new NamedOperator("sys.parent", "get the parent dir from a path") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String arg = blockEvaluator.pop().str();
+					String parent = new File(arg).getParent();
+					if (parent == null) {
+						parent = "";
+					}
+					blockEvaluator.push(List.fromString(parent));
 				}
 			},
 

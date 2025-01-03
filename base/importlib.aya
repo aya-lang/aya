@@ -1,5 +1,3 @@
-:{} :importlib;
-
 def importlib::_debug 0
 
 def importlib::_log_debug {:importlib^,
