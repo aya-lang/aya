@@ -135,9 +135,9 @@ def importlib::import {__name::str : importlib^,
 }
 
 def importlib::require {__name::str __symbols::block : importlib^,
-    name importlib._resolve_name_to_path importlib._load_file .# dict
+    __name importlib._resolve_name_to_path importlib._load_file .# dict
 
-    __symbols importlib._block_to_symbol_list .# list[symbol]
+    __symbols.` importlib._block_to_symbol_list .# list[symbol]
 
     .# require all *
     .# dict :# { \ :& :C .[0] '_ =! {:=} ? .A}
