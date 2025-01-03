@@ -1,5 +1,7 @@
 :{} :importlib;
 
+importlib __aya__.:importlib;
+
 """
 # importlib
 
@@ -27,16 +29,20 @@ Use `sample.foo` & `sample.bar` to access imported names
     - import ".relative.aya" (extension optional, no extension preferred)
     - import ".src/relative.aya"
 
-  - Package improts: If the import points to a directory, it will look for <path>/init.aya
+  - Package imports: If the import points to a directory, it will look for <path>/init.aya
     - import "src/package" (assumes src/package/init.aya exists)
 
   - Identifier imports: Itentifiers will be converted to strings before importing
     - import example (same as import "example")
-    - import .example (same as import ".example")
+    - import .example (ERROR: Will import "exmaple" not ".example")
     - Use with a SINGLE IDENTIFIER ONLY! Anything after the first identifier is treated as
       a nomal aya expression
       - import foo.bar (Parsed as {(import foo) .bar} )
       - import foo/bar (Parsed as {(import foo) / bar} )
+
+  - Multiple imports: Wrap multiple imports in a block
+    - import {foo bar}
+    - import {example "./src/foo"} (same rules as above apply, can be an identifier or string)
 
 ## `require`
 
@@ -58,7 +64,7 @@ Assume "sample.aya" has variables "foo", "bar", and "_baz"
 
  - Bring sin, cos, and tan into scope
    - require math {sin cos tan}
-   - require .math {sin cos tan}
+   - require ".math" {sin cos tan}
  - Like imports, strings and identifiers are interchangable (identifiers preferred when possible)
    - require "math" {"sin" "cos" "tan"}
    - require "./src/math" {"sin" "cos" "tan"}
@@ -134,10 +140,10 @@ def importlib::import {__name::str : importlib^,
     \ importlib._filename_no_extension := ;
 }
 
-def importlib::require {__name::str __symbols::block : importlib^,
+def importlib::require {__name::str __symbols::list : importlib^,
     __name importlib._resolve_name_to_path importlib._load_file .# dict
 
-    __symbols.` importlib._block_to_symbol_list .# list[symbol]
+    __symbols .# list[symbol]
 
     .# require all *
     .# dict :# { \ :& :C .[0] '_ =! {:=} ? .A}
@@ -145,6 +151,36 @@ def importlib::require {__name::str __symbols::block : importlib^,
     .# require names
     importlib._bring_names_into_scope
 }
+
+.#
+.# Keywords
+.#
+
+.# keyword: import
+.# See module documentation for valid import format
+{{
+    .[0] .# :` wraps args in a list; dump it to the stack
+    __aya__.importlib._parse_identifiers :# {
+        __aya__.importlib.import 
+    };
+} 1:` }:import;
+
+
+.# keyword: require
+.# See module documentation for valid import format
+{{
+    .# Args from :` come wrapped in a list; dump both to the stack
+    ~
+    __aya__.importlib._parse_identifiers :# {:S}  .# symbols
+    \
+    __aya__.importlib._parse_identifiers.[0]      .# name
+    \ __aya__.importlib.require
+} 2:` }:require;
+
+
+.#
+.# Helper Functions
+.#
 
 .# stack args:
 .#   dict
@@ -155,10 +191,6 @@ def importlib::_bring_names_into_scope { {$@\I\:=} :O ; }
 :{ :{ 1:a 2:b 3:_c} [::a] importlib._bring_names_into_scope } :{ 1:a } :!
 :{ :{ 1:a 2:b 3:_c} [] importlib._bring_names_into_scope } :{ } :!
 
-
-.#
-.# Helper Functions
-.#
 
 def importlib::_log_debug {:importlib^,
      importlib._debug {"importlib: " \+ :P} {;} .?
@@ -286,28 +318,63 @@ def importlib::_load_file {path_to_import::str : importlib^,
 }
 
 
-.# Conver a block containing symbols or strings to a list of symbols
-.# aya> {sin cos "Asin" "Acos"} .* :# {x, x.` :S .E 1= {~:C} {; x.`~}.? :S}
-.# [ ::sin ::cos ::"Asin" ::"Acos" ]
-def importlib::_block_to_symbol_list {b::block,
+
+.# Convert a block containing symbols or strings to a list of strings
+def importlib::_block_to_str_list {b::block,
     b.` .* :# {x,
         x.` :S .E 1= {
             .# If it is a symbol it will be converted to [::symbol]
             .# Use .[0] to get the symbol object
-            .[0]
+            .[0] :C
         } {
             .# If it is not a symbol it will be converted to []
-            .# use x.`~ to get the original string
-            ; x.`~
-            .# then convert it to a symbol
-            :S
+            .# evaluate the block x to get the original string
+            ; x
         }.?
     }
 }
 
 .# Tests
+{sin cos "Asin" "Acos"} importlib._block_to_str_list
+    [ "sin" "cos" "Asin" "Acos" ] :!
+
+.# Convert a block containing symbols or strings to a list of symbols
+.# aya> {sin cos "Asin" "Acos"} .* :# {x, x.` :S .E 1= {~:C} {; x.`~}.? :S}
+.# [ ::sin ::cos ::"Asin" ::"Acos" ]
+def importlib::_block_to_symbol_list {:importlib^,
+    importlib._block_to_str_list #:S
+
+}
+
+.# Tests
 {sin cos "Asin" "Acos"} importlib._block_to_symbol_list
     [ ::sin ::cos ::"Asin" ::"Acos" ] :!
+
+
+.# stack args:
+.#  list[block[str|identifier]]
+def importlib::_parse_identifiers {
+    importlib._block_to_str_list
+
+    .# If still a block, we need to parse one level deeper
+    .# We do not handle any additional nested blocks
+    :&.[0] ::block :@ {
+        .[0] .* :#{
+            importlib._block_to_str_list.[0]
+        }
+    } ?
+}
+
+{foo} importlib._parse_identifiers
+    [ "foo" ] :!
+{foo bar} importlib._parse_identifiers
+    [ "foo" "bar" ] :!
+{foo "baz"} importlib._parse_identifiers
+    [ "foo" "baz" ] :!
+{foo "baz" "./src/foo.txt"} importlib._parse_identifiers
+    [ "foo" "baz" "./src/foo.txt" ] :!
+{"./src/foo.txt"} importlib._parse_identifiers
+    [ "./src/foo.txt" ] :!
 
 
 def importlib::load_library {jar_file : importlib^,
