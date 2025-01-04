@@ -291,6 +291,7 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
             rel_path
             rel_path ".aya" +
             rel_path "__pkg__.aya" importlib._join_path
+            rel_path ".aya" + "__pkg__.aya" importlib._join_path
         ] :files_to_check;
 
     } {
@@ -300,6 +301,7 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
             path_entry .# regular name
             path_entry ".aya" + .# name.aya
             path_entry "__pkg__.aya" importlib._join_path .# package
+            path_entry ".aya" + "__pkg__.aya" importlib._join_path .# .aya package
         } :files_to_check;
     } .?
 
