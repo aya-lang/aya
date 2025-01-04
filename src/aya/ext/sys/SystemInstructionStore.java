@@ -1,6 +1,7 @@
 package aya.ext.sys;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import aya.AyaPrefs;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
+import aya.exceptions.runtime.IOError;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
@@ -218,6 +220,34 @@ public class SystemInstructionStore implements NamedInstructionStore {
 						args.mutAdd(List.fromString(a));
 					}
 					blockEvaluator.push(args);
+				}
+			},
+
+			new NamedOperator("sys.unzip", "zip_path::str dest_path::str unzip a file into a directory") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String dest_path = blockEvaluator.pop().str();
+					final String zip_path  = blockEvaluator.pop().str();
+
+					try {
+						FileUtils.unzip(FileUtils.resolveFile(zip_path), FileUtils.resolvePath(dest_path));
+					} catch (IOException e) {
+						throw new IOError("sys.unzip", zip_path + " -> " + dest_path, e);
+					}
+				}
+			},
+
+			new NamedOperator("sys.mvdir", "src::str dst::str rename/move a directory") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String dest_path = blockEvaluator.pop().str();
+					final String src_path  = blockEvaluator.pop().str();
+
+					try {
+						FileUtils.moveDir(FileUtils.resolvePath(src_path), FileUtils.resolvePath(dest_path));
+					} catch (IOException e) {
+						throw new IOError("sys.mvdir", src_path + " -> " + dest_path, e);
+					}
 				}
 			}
 		);

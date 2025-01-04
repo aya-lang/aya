@@ -36,10 +36,22 @@ import json
 } :run;
 
 .# stub: username/pkgname
-{stub::str : json^ repo_data branch,
-    "https://api.github.com/repos/$stub" G json.loads :repo_data;
-    repo_data.default_branch :branch;
-    "https://github.com/$stub/archive/refs/heads/$branch.zip":zip_url;
-    "Downloading file: $zip_url ..." :P
-    zip_url "pkg/tmp.zip" :(download.to_file)
+{stub::str : json^ repo_data branch pkg_data,
+     "https://api.github.com/repos/$stub" G json.loads :repo_data;
+     repo_data.default_branch :branch;
+     "https://github.com/$stub/archive/refs/heads/$branch.zip":zip_url;
+     "Downloading file: $zip_url ..." :P
+     zip_url "pkg/tmp.zip" :(download.to_file)
+
+    "Reading package information..." :P
+    "pkg/tmp.zip" "pkg/tmp" :(sys.unzip)
+    "pkg/tmp" $ :(sys.readdir).[0] \:9s+\+ :9s + "package.json" + G json.loads :pkg_data;
+
+    "Installing $(pkg_data.name)..." :P
+    "pkg/tmp" $ :(sys.readdir).[0] \:9s+\+ "pkg/" pkg_data.name + :(sys.mvdir)
+
+	"Cleaning up..." :P
+	"pkg/tmp" :(sys.rm)
+	"pkg/tmp.zip" :(sys.rm)
+
 } :add;
