@@ -34,3 +34,12 @@ import json
         __run__
     };
 } :run;
+
+.# stub: username/pkgname
+{stub::str : json^ repo_data branch,
+    "https://api.github.com/repos/$stub" G json.loads :repo_data;
+    repo_data.default_branch :branch;
+    "https://github.com/$stub/archive/refs/heads/$branch.zip":zip_url;
+    "Downloading file: $zip_url ..." :P
+    zip_url "pkg/tmp.zip" :(download.to_file)
+} :add;
