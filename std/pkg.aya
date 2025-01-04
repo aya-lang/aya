@@ -1,0 +1,36 @@
+import json
+
+{name::str,
+    [:(sys.ad) :9s "pkg" :9s name ".aya" +] W :(sys.abspath)
+} :pkg_path;
+
+{name::str : pkg_path^ test_dir,
+    [name pkg_path :9s "test"] W :test_dir;
+
+    test_dir :(sys.isdir) {
+        test_dir :(sys.readdir) :# {fname,
+            fname ".aya" H {
+                :{ .# open new scope
+                    [test_dir :9s fname] W 
+                    $ "Running test: " \+ :P
+                    :F
+                };
+            } ?
+        };
+    } {
+        "Package $name does not have a test directory" :P
+    } .?
+
+} :test;
+
+{name::str : pkg_path^ json^,
+    [name pkg_path :9s "package.json"] W G json.loads
+} :metadata;
+
+{name::str,
+    :{ .# open a new scope
+        name [::__run__] __aya__.importlib.require
+
+        __run__
+    };
+} :run;

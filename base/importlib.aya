@@ -122,7 +122,10 @@ def importlib::_imported :{}
 .# Should always use get_path since it will append the current directory
 .# By default, we add the standard library 
 def importlib::_path [
-    :(sys.ad) "std" importlib._join_path .# "<aya-dir>/std"
+    .# Standard library: "<aya-dir>/std"
+    :(sys.ad) "std" importlib._join_path
+    .# Default packages location: "<aya-dir>/pkg"
+    :(sys.ad) "pkg" importlib._join_path
 ]
 
 
@@ -306,7 +309,7 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
     } .?
 
 
-    files_to_check.[{:(sys.file_exists)}] :valid_paths;
+    files_to_check :~ .[{:(sys.file_exists)}] :valid_paths;
 
     valid_paths E 1 > { "Import error: Multiple valid paths found for import: $valid_paths" .D } ?
     valid_paths E 0 = { "Import error: Unable to find any files in path: $files_to_check" .D} ?

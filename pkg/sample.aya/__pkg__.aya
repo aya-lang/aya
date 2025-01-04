@@ -1,0 +1,12 @@
+.# Bring our conversion functions into scope
+require ".src/conversion" {deg_to_rad rad_to_deg}
+
+.# Bring the angle object into scope
+require ".src/angle" {angle}
+
+.# Include fmt as a submodule
+import ".src/fmt"
+
+.# Packages can define a __run__ function
+.# Bring it into scope so it can be called on pkg.run
+require ".src/angle_conversion_utility" {__run__}

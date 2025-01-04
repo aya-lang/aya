@@ -1,0 +1,20 @@
+.# Interactive angle conversion utility used to demo a package as a runnable program
+
+.# Use `"sample" pkg.run to run this
+
+{: deg_input deg_to_rad^,
+    "== Angle Conversion Utility ==" :P
+
+    "Enter an angle in degrees: ".P :R :deg_input;
+
+    .# Try to convert to number
+    deg_input .! :deg_input;
+
+    deg_input ::num :@ {
+        "Radians: $(deg_input deg_to_rad)" :P
+    } {
+        "Cannot convert, invalid number: $deg_input" .D
+    } .?
+
+    "Conversion complete." :P
+} :__run__;

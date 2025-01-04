@@ -1,0 +1,21 @@
+import sample
+
+.# format
+90 sample.fmt.deg_to_str "90°" :!
+3.14 sample.fmt.rad_to_str "3.14rad" :!
+
+.# conversion
+.# note: :1p is pi
+180 sample.deg_to_rad :1p :!
+:1p sample.rad_to_deg 180 :!
+
+.# angle
+90 sample.angle! :angle_a;
+angle_a.degrees 90 :!
+angle_a.radians :1p 2/ :!
+angle_aP "90°" :!
+angle_a.__repr__ "(90) angle!" :!
+
+270 sample.angle! :angle_b;
+
+angle_a angle_b + .degrees 360 :!
