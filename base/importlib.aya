@@ -29,8 +29,8 @@ Use `sample.foo` & `sample.bar` to access imported names
     - import ".relative.aya" (extension optional, no extension preferred)
     - import ".src/relative.aya"
 
-  - Package imports: If the import points to a directory, it will look for <path>/init.aya
-    - import "src/package" (assumes src/package/init.aya exists)
+  - Package imports: If the import points to a directory, it will look for <path>/__pkg__.aya
+    - import "src/package" (assumes src/package/__pkg__.aya exists)
 
   - Identifier imports: Itentifiers will be converted to strings before importing
     - import example (same as import "example")
@@ -131,13 +131,28 @@ def importlib::_path [
 .#
 
 
-def importlib::import {__name::str : importlib^,
-    __name importlib._resolve_name_to_path .# path
+def importlib::import {__name::str : __path importlib^,
+    __name importlib._resolve_name_to_path :__path;
 
-    $ importlib._load_file .# dict
+    .# Special case, if the file is a jar, use library.load
+    __path ".jar" importlib._endswith {
+        __path :(library.load)
+    } {
 
-    .# Assign the dict to the filename with no extension
-    \ importlib._filename_no_extension := ;
+        .# Get the name of the identifier to assign to
+        __path importlib._filename_no_extension .# str
+
+        :& "__pkg__" = {
+            ; .# pop "__pkg__"
+            .# replace it with the package name
+            __path :(sys.parent) importlib._filename_no_extension
+        } ?
+
+        __path importlib._load_file .# dict
+
+        .# Assign the dict to the identifier
+        \ := ;
+    } .?
 }
 
 .# __symbols ::list|::num
@@ -241,7 +256,7 @@ def importlib::_endswith { :& E@\.>= }
 .#      - ".relative"
 .#      - ".relative.aya"
 .#      - ".src/relative.aya"
-.#      - "src/package" (assumes src/package/init.aya exists
+.#      - "src/package" (assumes src/package/__pkg__.aya exists
 .#
 .# If a name has a leading "." resolve it to a path relative
 .#   to the file currently being imported (not relative to the
@@ -250,39 +265,52 @@ def importlib::_endswith { :& E@\.>= }
 .# Check the following three files:
 .#   - "_path/<name>" (an exact match)
 .#   - "_path/<name>.aya" (append aya file extension)
-.#   - "_path/<name>/init.aya" (package path)
+.#   - "_path/<name>/__pkg__.aya" (package path)
 .# 
 .# Return the absolute path that was found. Only one path is returned
-def importlib::_resolve_name_to_path {name::str : path_to_import importlib^,
+def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ files_to_check valid_paths,
     .# Sanity check: make sure we didn't pass an empty path
-    name "" = {"Empty import"} ?
+    name "" = {"Empty import" .D} ?
 
     .# First we need to check if it is a relative import
-    name.[0] '. = {
+    name.[0] '. = {: rel_path,
         .# If a path starts with a "." we need to join it with path
         .# from the top of the import stack
-        importlib._import_stack.[-1] :(sys.parent)
+        .# If the import stack is empty, use working directory
+        importlib._import_stack E 0 = {
+            :(sys.wd)
+        } {
+            importlib._import_stack.[-1] :(sys.parent)
+        } .?
+
         .# Drop the leading "." from 
         name.E 1- .>
-        importlib._join_path :path_to_import;
-    } {: files_to_check valid_paths, .# locals
+        importlib._join_path :rel_path;
+
+        [
+            rel_path
+            rel_path ".aya" +
+            rel_path "__pkg__.aya" importlib._join_path
+        ] :files_to_check;
+
+    } {
         .# If it is not a relative import, we need to search for it in the import path
         importlib.get_path :# {path_entry,
             path_entry name importlib._join_path :path_entry;
             path_entry .# regular name
             path_entry ".aya" + .# name.aya
-            path_entry "init.aya" importlib._join_path .# package
+            path_entry "__pkg__.aya" importlib._join_path .# package
         } :files_to_check;
-
-
-        files_to_check.[{:(sys.file_exists)}] :valid_paths;
-
-        valid_paths E 1 > { "Import error: Multiple valid paths found for import: $valid_paths" .D } ?
-        valid_paths E 0 = { "Import error: Unable to find any files in path: $files_to_check" .D} ?
-
-        .# Exactly 1 file exists, that is the path to import
-        valid_paths.[0] :path_to_import;
     } .?
+
+
+    files_to_check.[{:(sys.file_exists)}] :valid_paths;
+
+    valid_paths E 1 > { "Import error: Multiple valid paths found for import: $valid_paths" .D } ?
+    valid_paths E 0 = { "Import error: Unable to find any files in path: $files_to_check" .D} ?
+
+    .# Exactly 1 file exists, that is the path to import
+    valid_paths.[0] :path_to_import;
 
     .# Now that we have the path to import, lets load it
     path_to_import :(sys.abspath) .# importlib._load_file :imported;
@@ -311,6 +339,8 @@ def importlib::_load_file {path_to_import::str : importlib^,
                 .# Load the file
                 path_to_import :F
             }
+            .# Now that import is complete, remove __main__
+            ::__main__ .-
         } {ex,
             .# There was an error importing
             .# pop from the import stack
