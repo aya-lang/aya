@@ -1,9 +1,0 @@
-:1p :pi;
-
-{deg::num : pi^ ,
-    deg pi * 180 /
-} :deg_to_rad;
-
-{rad::num : pi^ ,
-    rad 180 * pi /
-} :rad_to_deg;

@@ -1,9 +1,0 @@
-.# Functions for converting degrees ot rads to strings
-{deg::num,
-    "$deg°"
-} :deg_to_str;
-
-{rad::num,
-    "$(rad)rad"
-} :rad_to_str;
-
