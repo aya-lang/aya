@@ -1,17 +1,18 @@
 package aya.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.nio.file.StandardCopyOption;
 
 import aya.AyaPrefs;
 import aya.StaticData;
@@ -102,4 +103,61 @@ public class FileUtils {
 			throw new IOException("Source directory does not exist or is not a directory.");
 		}
 	}
+	
+	 /**
+     * Deletes a file or directory. If the directory is not empty, it recursively deletes all contents.
+     * Ensures safety checks to prevent accidental deletion of root directories.
+     */
+	public static void deleteFileOrDirectory(Path path) throws IOException, IllegalArgumentException{
+        if (path == null) {
+            throw new IllegalArgumentException("The provided path is null.");
+        }
+
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("The specified path does not exist: " + path);
+        }
+
+        // Normalize the path and check against known root paths
+        Path normalizedPath = path.toRealPath();
+
+        if (isRootDirectory(normalizedPath)) {
+            throw new IllegalArgumentException("Deletion of root directories is not allowed: " + normalizedPath);
+        }
+
+        // If it's a directory, recursively delete contents
+        if (Files.isDirectory(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+                for (Path child : stream) {
+                    deleteFileOrDirectory(child);
+                }
+            }
+        }
+
+        // Delete the file or empty directory
+        Files.delete(path);
+    }
+
+    /**
+     * Checks if the given path is a root directory.
+     */
+    private static boolean isRootDirectory(Path path) {
+        Path parent = path.getParent();
+
+        // On UNIX-like systems, root is "/", so parent is null.
+        // On Windows, root paths like "C:\" will have no parent that differs from themselves.
+        return parent == null || parent.equals(path.getRoot());
+    }
+    
+    public static String joinPaths(String basePath, String relativePath) {
+        if (basePath == null || basePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Base path cannot be null or empty.");
+        }
+        if (relativePath == null || relativePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Relative path cannot be null or empty.");
+        }
+
+        // Use Path to join the paths
+        Path combinedPath = Paths.get(basePath).resolve(relativePath);
+        return combinedPath.toString();
+    }
 }

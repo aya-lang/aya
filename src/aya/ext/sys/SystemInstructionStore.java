@@ -9,13 +9,12 @@ import java.util.Collection;
 
 import aya.AyaPrefs;
 import aya.eval.BlockEvaluator;
-import aya.exceptions.runtime.ValueError;
 import aya.exceptions.runtime.IOError;
+import aya.exceptions.runtime.ValueError;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.Obj;
 import aya.obj.list.List;
-import aya.obj.list.Str;
 import aya.obj.number.Num;
 import aya.util.FileUtils;
 
@@ -141,19 +140,14 @@ public class SystemInstructionStore implements NamedInstructionStore {
 			new NamedOperator("sys.rm", "remove a file or directory") {
 				@Override
 				public void execute(BlockEvaluator blockEvaluator) {
-					final Obj arg = blockEvaluator.pop();
+					final String arg = blockEvaluator.pop().str();
 
-					if (arg.isa(Obj.STR)) {
-						String arg_str = arg.str();
-						if (arg_str.equals("")) {
-							throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + arg_str);
-						}
-						File delFile = FileUtils.resolveFile(arg.str());
-						if (!AyaPrefs.deleteFile(delFile)) {
-							throw new ValueError(":{sys.rm} : arg must be a valid name. Received:\n" + delFile.getAbsolutePath());
-						}
-					} else {
-						throw new ValueError(":{sys.rm} : arg must be a string. Received:\n" + arg.repr());
+					try {
+						FileUtils.deleteFileOrDirectory(FileUtils.resolvePath(arg));
+					} catch (IllegalArgumentException e) {
+						throw new ValueError(e.getMessage());
+					} catch (IOException e) {
+						throw new IOError("sys.rm", arg, e);
 					}
 				}
 			},
@@ -249,7 +243,22 @@ public class SystemInstructionStore implements NamedInstructionStore {
 						throw new IOError("sys.mvdir", src_path + " -> " + dest_path, e);
 					}
 				}
+			},
+			
+			new NamedOperator("sys.joinpath", "a::str b::str join two paths") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String b = blockEvaluator.pop().str();
+					final String a  = blockEvaluator.pop().str();
+					
+					try {
+						blockEvaluator.push(List.fromString(FileUtils.joinPaths(a, b)));
+					} catch (IllegalArgumentException e) {
+						throw new ValueError(e.getMessage());
+					}
+				}
 			}
+			
 		);
 	}
 }
