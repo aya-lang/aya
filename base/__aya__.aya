@@ -398,6 +398,14 @@ __aya__.extend.` :extend;
 }__aya__.:with_;
 .}
 
+.# val local:foo
+{{
+    .[0]:S.[0] .# extract symbol
+    \:&@  .# duplicate the value so we can leave it on the stack
+    :G.[-1] .# get local scope
+    :D; .# assign
+    .# val is left on the stack
+}1:`} :local;
 
 .################
 .# import types #

@@ -1,5 +1,13 @@
 import json
 
+1 :debug;
+
+{msg::str : debug^,
+    debug {
+        "[DEBUG/pkg]: $msg" :P
+    } ?
+} :_log_debug;
+
 {name::str,
     [:(sys.ad) :9s "pkg" :9s name ".aya" +] W :(sys.abspath)
 } :pkg_path;
@@ -35,23 +43,56 @@ import json
     };
 } :run;
 
+{
+    [:(sys.ad) :9s "pkg"] W :(sys.abspath)
+} :get_pkg_dir;
+
+{a b,
+    [a :9s b] W
+} :_join_path;
+
+
 .# stub: username/pkgname
-{stub::str : json^ repo_data branch pkg_data,
-     "https://api.github.com/repos/$stub" G json.loads :repo_data;
-     repo_data.default_branch :branch;
-     "https://github.com/$stub/archive/refs/heads/$branch.zip":zip_url;
-     "Downloading file: $zip_url ..." :P
-     zip_url "pkg/tmp.zip" :(download.to_file)
+{stub::str : json^ get_pkg_dir^ _join_path^ _log_debug^,
+    get_pkg_dir local :aya_pkg_dir;
+    "Using pkg root dir $aya_pkg_dir" _log_debug
+    aya_pkg_dir :(sys.mkdir)
+
+    "Downloading..." :P
+
+     "https://api.github.com/repos/$stub" G json.loads  local :repo_data;
+     repo_data.default_branch local :branch;
+     "https://github.com/$stub/archive/refs/heads/$branch.zip" local :zip_url;
+     aya_pkg_dir "tmp.zip" _join_path local :zip_path;
+     "Downloading file: $zip_url to $zip_path" _log_debug
+     zip_url zip_path :(download.to_file)
 
     "Reading package information..." :P
-    "pkg/tmp.zip" "pkg/tmp" :(sys.unzip)
-    "pkg/tmp" $ :(sys.readdir).[0] \:9s+\+ :9s + "package.json" + G json.loads :pkg_data;
+
+    .# Unzip
+    aya_pkg_dir "tmp" _join_path local :unzip_loc;
+    "Unzipping $unzip_loc" _log_debug
+    zip_path unzip_loc :(sys.unzip)
+
+    .# Get the location of the package in the unzipped folder
+    unzip_loc $ :(sys.readdir).[0] B; _join_path local :tmp_pkg_dir;
+    "Location of unzipped package: $tmp_pkg_dir" _log_debug
+
+    .# Load the package data
+    tmp_pkg_dir "package.json" _join_path $:P G json.loads local :pkg_data;
+    "Reading package data $pkg_data" _log_debug
 
     "Installing $(pkg_data.name)..." :P
-    "pkg/tmp" $ :(sys.readdir).[0] \:9s+\+ "pkg/" pkg_data.name + :(sys.mvdir)
 
-	"Cleaning up..." :P
-	"pkg/tmp" :(sys.rm)
-	"pkg/tmp.zip" :(sys.rm)
+    aya_pkg_dir pkg_data.name _join_path local :install_pkg_dir;
+    "Moving files from $tmp_pkg_dir to $install_pkg_dir" _log_debug
+    install_pkg_dir :(sys.isdir) {
+        "Already installed"
+    } {
+        tmp_pkg_dir install_pkg_dir :(sys.mvdir)
+    } .?
 
+    "Cleaning up..." :P
+    unzip_loc :9s + :(sys.rm)
+    zip_path :(sys.rm)
 } :add;
