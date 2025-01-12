@@ -81,18 +81,7 @@ Assume "sample.aya" has variables "foo", "bar", and "_baz"
 
 .# Join paths a and b in a portable way
 def importlib::_join_path {a::str b::str,
-    .# If b has a leading separator, refuse to join
-    b.[0]P :9s = {"Can't join, Path b has leading separator (is it an absolute path?): $b".D} ?
-
-    .# If a ends with a separator, don't add another
-    a.[-1]P :9s =! {
-        a :9s +
-    } {
-        a
-    } .?
-
-    .# Join with b
-    b +
+    a b :(sys.joinpath)
 }
 
 "a" "b"  importlib._join_path ["a" :9s "b"] W :!
