@@ -39,6 +39,16 @@
         <mkdir dir="${work.dir}"/>
         <mkdir dir="${work.dir}/fs_test"/>
 
+        <path id="cp.aya">
+            <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
+            <file file="${test.dir}"/>
+        </path>
+
+        <!-- running the lib test requires the example library to be built -->
+        <ant antfile="${test.dir}/test/lib/example/build.xml" usenativebasedir="true" inheritall="false" inheritrefs="true">
+            <property name="aya.classpath" value="cp.aya"/>
+        </ant>
+
         <run_aya work.dir="${work.dir}/fs_test" test.dir="${test.dir}" test.aya="filesystem.aya"/>
         <run_aya work.dir="${work.dir}" test.dir="${test.dir}" test.aya="test.aya"/>
     </target>
@@ -60,12 +70,8 @@
                             classname="ui.AyaIDE"
                             failonerror="true"
                             errorproperty="error.log.str"
+                            classpathref="cp.aya"
                     >
-                        <classpath>
-                            <fileset dir="${build-dir}/libs" includes="**/*.jar"/>
-                            <file file="@{test.dir}"/>
-                        </classpath>
-
                         <arg value="@{work.dir}"/>
                         <arg value="@{test.dir}/test/@{test.aya}"/>
                     </java>

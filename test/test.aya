@@ -74,3 +74,5 @@
 
 .# Also load and auto-run many examples
 "test/examples" load_test
+
+"test/lib/lib" load_test
