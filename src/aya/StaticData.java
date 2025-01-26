@@ -165,20 +165,18 @@ public class StaticData {
 		
 		try {
 			URL[] urls = {path.toURI().toURL()};
-			
-			try (URLClassLoader libClassLoader = new URLClassLoader(urls)) {
-				StreamSupport.stream(
-						ServiceLoader.load(NamedInstructionStore.class, libClassLoader).spliterator(),
-						false
-				).forEach(store -> {
-					//IO.out().println("found store: " + store.getClass().getName());
-					addNamedInstructionStore(store);
-					loaded.add(store);
-				});
-			} catch (IOException e) {
-				throw new IOError("library.load", path.getPath(), e);
-			}
-			
+
+			// Do not release the classloader, otherwise the library will fail to access its own classes later.
+			URLClassLoader libClassLoader = new URLClassLoader(urls);
+			StreamSupport.stream(
+					ServiceLoader.load(NamedInstructionStore.class, libClassLoader).spliterator(),
+					false
+			).forEach(store -> {
+				//IO.out().println("found store: " + store.getClass().getName());
+				addNamedInstructionStore(store);
+				loaded.add(store);
+			});
+
 		} catch (MalformedURLException e) {
 			throw new IOError("library.load", path.getPath(), e);
 		}

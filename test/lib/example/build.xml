@@ -1,0 +1,43 @@
+<project name="example-lib" default="jar" basedir=".">
+    <!-- verify that all parameters were passed -->
+    <fail unless="aya.classpath"/>
+
+    <!-- re-define the parameters, so that they can be used with autocompletion -->
+    <property name="aya.classpath" value="ALREADY_DEFINED"/>
+
+    <property name="target.dir" location="${basedir}/target/"/>
+    <property name="target.manifest.file" location="${target.dir}/manifest.mf"/>
+    <property name="target.jar.file" location="${target.dir}/example.jar"/>
+
+    <target name="check_modified">
+        <!-- if the source files were not modified after the jar file, set 'is_uptodate' -->
+        <uptodate targetfile="${target.jar.file}" property="is_uptodate">
+            <srcfiles dir="${basedir}">
+                <include name="aya.instruction.named.NamedInstructionStore"/>
+                <include name="build.xml"/>
+                <include name="ExampleStore.java"/>
+            </srcfiles>
+        </uptodate>
+    </target>
+
+    <target name="jar" depends="check_modified" unless="is_uptodate">
+        <!-- reset the target directory -->
+        <delete failonerror="false" dir="${target.dir}"/>
+        <mkdir dir="${target.dir}"/>
+
+        <!-- compile and jar the example library -->
+        <javac destdir="${target.dir}" debug="true" target="11" source="11"
+               srcdir="${basedir}" includeantruntime="false" includes="ExampleStore.java" classpathref="${aya.classpath}">
+        </javac>
+
+        <manifest file="${target.manifest.file}"/>
+        <copy file="aya.instruction.named.NamedInstructionStore" todir="${target.dir}/META-INF/services/"/>
+        <jar jarfile="${target.jar.file}" manifest="${target.manifest.file}">
+            <fileset dir="${target.dir}">
+                <include name="**/*.class"/>
+                <include name="META-INF/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>
