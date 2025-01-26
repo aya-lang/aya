@@ -1,6 +1,6 @@
-import ::json
-import ::sys
-import ::io
+import json
+import sys
+require io {path}
 
 .# All files in base/ and std/
 [

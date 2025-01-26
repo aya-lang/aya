@@ -38,7 +38,9 @@ https://codegolf.stackexchange.com/questions/101684/all-aboard-the-ascii-train
 .}
 
 class asciiart
-export [::asciiart ::_]
+
+.# alias
+asciiart:aa;
 
 def asciiart::__init__ {str self,
     str :T ::str = {
@@ -304,17 +306,14 @@ def asciiart::rle {s asciiart,
 }
 
 
-
-
-
+.# Sample letters for testing
 [ "00000" "0   0" "00000" ] asciiart!T :o;
 [ "EEEEE" "E E E" "E   E" ] asciiart!T :e;
 [ "T    " "TTTTT" "T    " ] asciiart!T :t;
 [ "GGGGG" "G G G" "G GGG" ] asciiart!T :g;
 
-asciiart:aa;
 
-{asciiart.rle '` S asciiart!}:_;
+{:asciiart^, asciiart.rle '` S asciiart!}:_;
 
 .{ Example:
     Generate a Sierpinski carpet:

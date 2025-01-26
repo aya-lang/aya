@@ -1,15 +1,15 @@
+import turtle
+require color {colors}
+
 .# Draw a pattern using the turtle library
 .# Based on the example in Luxor.jl
 .# https://juliagraphics.github.io/Luxor.jl/stable/turtle/
-
-import ::turtle
-import ::color
 
 :{
     400:width;
     400:height;
     color.colors.darkblue :bg_color;
-} turtle!:t;
+} turtle.turtle!:t;
 
 5 :n;
 color.colors.blue :c;

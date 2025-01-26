@@ -1,59 +1,58 @@
-import ::color
+require color {color colors}
 
-module terminal
-export ::terminal
+:{
+    colors.white :fg;
+    colors.black :bg;
+}:term_state;
 
-def terminal::fg (color.colors.white)
-def terminal::bg (color.colors.black)
+def ::clear {"\{x1b}[2J".P}
+def ::clearline {"\{x1b}[1:J\{x1b}[1G".P}
 
-def terminal::clear {"\{x1b}[2J".P}
-def terminal::clearline {"\{x1b}[1:J\{x1b}[1G".P}
+def ::_setfgstr {c::color, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }
+def ::_setbgstr {c::color, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }
 
-def terminal::_setfgstr {c::color, "\{x1b}[38;2;$(c.r);$(c.g);$(c.b)m" }
-def terminal::_setbgstr {c::color, "\{x1b}[48;2;$(c.r);$(c.g);$(c.b)m" }
-
-def terminal::setfg {c::color : terminal^,
-    c terminal.:fg;
-    c terminal._setfgstr .P
+def ::setfg {c::color : term_state^ _setfgstr^,
+    c term_state.:fg;
+    c _setfgstr .P
 }
 
-def terminal::setbg {c::color : terminal^,
-    c terminal.:bg;
-    c terminal._setbgstr .P
+def ::setbg {c::color : term_state^ _setbgstr^,
+    c term_state.:bg;
+    c _setbgstr .P
 }
 
-def terminal::bold      { "\{x1b}[1m" "\{x1b}[22m" .? .P}
-def terminal::italic    { "\{x1b}[3m" "\{x1b}[23m" .? .P}
-def terminal::underline { "\{x1b}[4m" "\{x1b}[24m" .? .P}
-def terminal::strike    { "\{x1b}[9m" "\{x1b}[29m" .? .P}
+def ::bold      { "\{x1b}[1m" "\{x1b}[22m" .? .P}
+def ::italic    { "\{x1b}[3m" "\{x1b}[23m" .? .P}
+def ::underline { "\{x1b}[4m" "\{x1b}[24m" .? .P}
+def ::strike    { "\{x1b}[9m" "\{x1b}[29m" .? .P}
 
-def terminal::reset_font {: terminal^ ,
-    0 terminal.bold
-    0 terminal.italic
-    0 terminal.underline
-    0 terminal.strike
+def ::reset_font {: bold^ italic^ underline^ strike^ ,
+    0 bold
+    0 italic
+    0 underline
+    0 strike
 }
 
-def terminal::reset_color {: color^ terminal^ ,
-    color.colors.white terminal.setfg
-    color.colors.black terminal.setbg
+def ::reset_color {: colors^ setfg^ setbg^ ,
+    colors.white setfg
+    colors.black setbg
 }
 
-def terminal::replcolor {c::color : color^ terminal^ ,
-    [c terminal._setfgstr
+def ::replcolor {c::color : colors^ _setfgstr^ ,
+    [c _setfgstr
      "aya> "
-     color.colors.white terminal._setfgstr]W
+     colors.white _setfgstr]W
     :(sys.alterprompt)
 }
 
-def terminal::print_color {value c::color : terminal^ prev_fg,
-    terminal.fg :prev_fg;
-    c terminal.setfg
+def ::print_color {value c::color : term_state^ setfg^ prev_fg,
+    term_state.fg :prev_fg;
+    c setfg
     value P .P
-    prev_fg terminal.setfg
+    prev_fg setfg
 }
 
-def terminal::println_color {value c::color : terminal^,
-    value c terminal.print_color
+def ::println_color {value c::color : print_color^,
+    value c print_color
     "" :P
 }

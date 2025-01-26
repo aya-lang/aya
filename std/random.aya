@@ -2,15 +2,17 @@
 
 .# Functions related to random number generation
 
-module random
-export ::random
-
 .#? ::list ::num random.lotto\n  pick N random items from L
-def random::lotto {
+def ::lotto {
     \.EV@L#QI
 }
 
 .#? lo::num hi::num random.randint\n  random integer between lo and hi
-def random::randint {
+def ::randint {
     \$@\-Q+
+}
+
+.# Generate a normally distributed random number using the Box-Muller transform
+def ::norm {
+    .Q Ml -2 * .^ :2p .Q * Mc *
 }

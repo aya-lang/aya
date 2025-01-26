@@ -1,8 +1,6 @@
-import ::csv
+import csv
 
-
-module rdatasets
-export ::rdatasets
+:{} :rdatasets;
 
 def rdatasets::_index_csv "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/datasets.csv"
 def rdatasets::_cache_loc "rdatasets_index.csv"

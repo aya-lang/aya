@@ -3,8 +3,6 @@
 .# socket.aya
 .# Defines socket and socket_server types
 
-export [::socket ::socket_server]
-
 struct socket {
     _sock
 }

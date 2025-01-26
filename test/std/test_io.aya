@@ -1,9 +1,9 @@
-import ::io
+import io
 
 [
 
-    { "/a/b/c" path!.dirs  ["a""b""c"] }
-    { "./a/b/c" path!.dirs  [".""a""b""c"] }
-    { "/a/b/c" path! V .dirs  ["a""b"] }
+    { "/a/b/c" io.path!.dirs  ["a""b""c"] }
+    { "./a/b/c" io.path!.dirs  [".""a""b""c"] }
+    { "/a/b/c" io.path! V .dirs  ["a""b"] }
 
 ] :# { test.test }

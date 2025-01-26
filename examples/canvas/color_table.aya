@@ -1,5 +1,5 @@
-import ::color
-import ::canvas
+import canvas
+require color {colors}
 
 {colors radius : cvs, 
     :{ colors :E radius *~ :height; :width;} canvas!:cvs;
@@ -12,4 +12,4 @@ import ::canvas
     cvs
 }:color_table;
 
-[0 30 360, color.colors.red.hueshift 10\ color.colors.white.grad] 30 color_table.show
+[0 30 360, colors.red.hueshift 10\ colors.white.grad] 30 color_table.show

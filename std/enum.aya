@@ -3,8 +3,6 @@
 .# Defines the enum keyword which allows for
 .#  easy creation of enum classes and symbol groups
 
-export ::enum
-
 {class::sym enums::list : dict meta,
 
     .# The metatable for each enum member

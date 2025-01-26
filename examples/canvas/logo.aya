@@ -1,4 +1,4 @@
-import ::canvas
+require canvas {canvas}
 
 
 300 :width;

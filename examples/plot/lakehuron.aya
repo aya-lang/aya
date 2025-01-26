@@ -1,9 +1,10 @@
+require dataframe {dataframe}
+import plot
+import stats
+
 .# A script demonstrating the use of dataframes, plots, and
 .#   retrieving information from the web. 
 
-import ::dataframe
-import ::plot
-import ::stats
 
 "Downloading file..." :P
 :{

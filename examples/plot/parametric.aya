@@ -1,6 +1,6 @@
-.# Generate a spiral using parametric coordinates
+import plot
 
-import ::plot
+.# Generate a spiral using parametric coordinates
 
 [0 100 1000] .R :t;
 t#{n,nMs nMs 1 2/*-}:x;

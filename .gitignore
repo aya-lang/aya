@@ -9,3 +9,4 @@ rdatasets_index.csv
 .settings/
 .project
 .classpath
+pkg/**

@@ -7,8 +7,6 @@
     A module for manipulating and printing colors in Aya
 .}
 class color
-export ::color
-
 
 .#
 .# Constructors
@@ -184,7 +182,7 @@ def color::rgbtohsv {r g b color : h s v delta maxv minv,
       colors.aqua
       colors.raspberry
 .}
-module colors
+:{} :colors;
 
 :{
     :(color.name_list) :# {color_name : color_dict,

@@ -1,8 +1,8 @@
-.# Shell-like commands for Aya
+import sys
+import terminal
+require io {path}
 
-import ::sys
-import ::io
-import ::terminal
+.# Shell-like commands for Aya
 
 struct shellresult {value}
 
@@ -15,7 +15,7 @@ def shellresult::lines {self,
 }
 
 
-module shell_impl
+:{} :shell_impl;
 
 def shell_impl::grep {res::shellresult rgx::str : shellresult^ ,
     res.lines {rgx &E0>} I
@@ -86,19 +86,3 @@ def (__aya__.interpreter)::shell {str : cmd args,
         cmd~ args
     } .?
 }
-
-export [
-    ::sys
-    ::shell_impl
-
-    ::ls
-    ::pwd
-    ::cd
-    ::mkdir
-    ::echo
-    ::cat
-    ::grep
-    ::touch
-    ::clear
-]
-

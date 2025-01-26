@@ -1,9 +1,8 @@
+import turtle
+
 .# Draw a flower using `turtle`
 
-import ::turtle
-import ::math
-
-:{ } turtle!:t;
+:{ } turtle.turtle!:t;
 {
     {
         20 t.fd

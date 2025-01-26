@@ -1,4 +1,4 @@
-import ::date
+require date {date dates}
 
 [
 

@@ -1,6 +1,5 @@
-import ::golf
-import ::viewmat
-import ::time
+import viewmat
+import time
 
 .# Life function
 .# Algorithm based off the APL implementation here:
@@ -10,7 +9,7 @@ import ::time
 .# Generate initial Matrix
 9.R [1 2 3 4 7] {=}:*#W [3 3]L 24\.pad :mat;
 
-mat 10 viewmat_scaled :cvs;
+mat 10 viewmat.draw_scaled :cvs;
 
 30 time.rate! :limiter;
 

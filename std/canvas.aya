@@ -1,11 +1,9 @@
-import ::color
-import ::image
-
-export ::canvas
+require color {colors}
+require image {image}
 
 class canvas
 
-def canvas::__init__ {params::dict self : color^,
+def canvas::__init__ {params::dict self : colors^,
 
     .# Default values
     :{
@@ -14,8 +12,8 @@ def canvas::__init__ {params::dict self : color^,
         "Canvas" :name
         0 :autoflush
         0 :show
-        color.colors.white :bg
-        color.colors.black :fg
+        colors.white :bg
+        colors.black :fg
         params W
     }:params;
 
@@ -65,7 +63,7 @@ def canvas::points {points r self,
     points r2* $ self.id :(graphics.points)
 }
 
-def canvas::set_color {color self,
+def canvas::set_color {color::color self,
     .# ::set_color :{ color.r:r color.g:g color.b:b } self.id :(graphics.MG) ;
     color.r color.g color.b self.id :(graphics.set_color)
 }

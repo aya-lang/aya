@@ -1,3 +1,6 @@
+require canvas {canvas}
+require color {color colors}
+
 .# This file is a part of Aya: https://github.com/nick-paul/aya-lang
 
 .{
@@ -15,15 +18,11 @@
         color.colors.red {10\.hueshift $ t.pencolor 40 t.fd 124 t.right} 36 %
 .}
 
-import ::canvas
-import ::color
 
-export ::turtle
+colors.white :c_white;
+colors.black :c_black;
+
 class turtle
-
-color.colors.white :c_white;
-color.colors.black :c_black;
-
 
 def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
 

@@ -1,8 +1,8 @@
-import ::math
-import ::plot
-import ::stats
+import plot
+import stats
+import random
 
-[10000,; randnorm]:l 100 stats.hist :h;
+[10000,; random.norm]:l 100 stats.hist :h;
 
 plot.plot! :plt;
 

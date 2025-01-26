@@ -1,4 +1,4 @@
-import ::threading
+import threading
 
 "== Single Task ==" :P
 

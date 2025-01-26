@@ -1,7 +1,7 @@
-.# Plot Bernstein Polynomials
+import plot
+require math {bin}
 
-import ::plot
-import ::math .# bin
+.# Plot Bernstein Polynomials
 
 .# The Bernstein Polynomial generator
 {t i n, n i bin t i ^ * 1 t - n i - ^ *} :bernstein;

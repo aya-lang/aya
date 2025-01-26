@@ -1,11 +1,11 @@
-import ::math
-import ::canvas
-import ::color
-import ::random
-import ::time
+import canvas
+import random
+import time
+require math {normal}
+require color {colors}
 
-color.colors.black :black;
-color.colors.white :white;
+colors.black :black;
+colors.white :white;
 
 "Click to move the attractor":P
 1 :g;
@@ -59,7 +59,7 @@ def attractor::show {self,
 .# Run Loop
 .###########
 
-:{ "Attractor":name 0:autoflush } canvas! :cvs;
+:{ "Attractor":name 0:autoflush } canvas.canvas! :cvs;
 
 .# Create list of movers
 [50,;
@@ -97,7 +97,7 @@ cvs.show
   1.0 cvs.set_alpha
   white cvs.set_color
   ms #.show ;
-  color.colors.red cvs.set_color
+  colors.red cvs.set_color
   a.show
   cvs.show
 

@@ -1,7 +1,7 @@
+require math {cumsum}
+
 .# A super simple genetic algorithm for generating
 .# a line of text using random mutations
-
-from ::math import ::cumsum
 
 struct dna {data fitness}
 

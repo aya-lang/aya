@@ -1,10 +1,6 @@
-import ::canvas
+require canvas {canvas}
 
-export ::viewmat
-export ::viewmat_scaled
-
-
-def ::viewmat_scaled { data scale : cvs canvas^,
+def ::draw_scaled { data scale : cvs canvas^,
     .# special case for matrix
     data :T ::matrix = {data.rows :data;} ?
 
@@ -20,7 +16,7 @@ def ::viewmat_scaled { data scale : cvs canvas^,
     cvs
 }
 
-def ::viewmat { data : width height scale size viewmat_scaled^,
+def ::draw { data : width height scale size draw_scaled^,
     .# special case for matrix
     data :T ::matrix = {data.rows :data;} ?
 
@@ -35,5 +31,10 @@ def ::viewmat { data : width height scale size viewmat_scaled^,
     size 40  :< { 16:scale; } ?
     size 10  :< { 64:scale; } ?
 
-    data scale viewmat_scaled
+    data scale draw_scaled
+}
+
+.# immediately open the canvas
+def ::show {: draw^,
+    draw.show
 }

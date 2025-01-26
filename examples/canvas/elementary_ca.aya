@@ -1,4 +1,4 @@
-import ::viewmat
+import viewmat
 
 {10 2 .& 8 .> U}:make_rule;
 

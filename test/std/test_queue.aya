@@ -1,4 +1,4 @@
-import ::queue
+require queue {queue}
 
 [
 

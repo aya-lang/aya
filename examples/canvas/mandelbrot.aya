@@ -1,4 +1,4 @@
-import ::viewmat
+import viewmat
 
 400 :width;
 width 0.8* :height;

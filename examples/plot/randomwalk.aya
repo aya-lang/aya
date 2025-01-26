@@ -1,7 +1,7 @@
+import plot
+
 .# Draw a random walk
 .# Use a dict to represent a 2d vector `v`
-
-import ::plot
 
 .# A function for moving the x and y values by 0, -1, or +1
 {v, v.x 3QV+ v.:x; v.y 3QV+ v.:y;}:step;

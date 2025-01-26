@@ -79,5 +79,66 @@ public class WebFilesystemIO extends AbstractFilesystemIO {
 		String basename = sections[sections.length-1];
 		return basename.contains(".") && _files.get(path) != null;
 	}
+	
+	// Implementation of normalize using only string functions
+	public static String normalizePath(String path) {
+		if (path == null || path.isEmpty()) {
+			return "";
+		}
+		
+		// Split the path by "/"
+		String[] parts = path.split("/");
+		StringBuilder normalized = new StringBuilder();
+		int skip = 0;
+		
+		// Traverse the path components in reverse
+		for (int i = parts.length - 1; i >= 0; i--) {
+			String part = parts[i];
+		
+			// Ignore empty parts and current directory "."
+			if (part.isEmpty() || part.equals(".")) {
+				continue;
+			}
+		
+			// Handle parent directory ".."
+			if (part.equals("..")) {
+				skip++;
+			} else {
+				if (skip > 0) {
+					skip--; // Skip this directory as it's canceled out by a ".."
+				} else {
+					normalized.insert(0, part).insert(0, "/");
+				}
+			}
+		}
+		
+		// Handle root cases
+		String result = normalized.length() > 0 ? normalized.toString() : "/";
+		return result;
+	}
+	
+	
+	public static String joinPaths(String basePath, String relativePath) {
+		if (basePath == null || basePath.isEmpty()) {
+			return relativePath == null ? "" : relativePath;
+		}
+		if (relativePath == null || relativePath.isEmpty()) {
+			return basePath;
+		}
+		
+		// Ensure basePath does not end with a trailing slash
+		if (basePath.endsWith("/")) {
+			basePath = basePath.substring(0, basePath.length() - 1);
+		}
+		
+		// Ensure relativePath does not start with a leading slash
+		if (relativePath.startsWith("/")) {
+			relativePath = relativePath.substring(1);
+		}
+		
+		// Combine the paths with a single slash in between
+		return basePath + "/" + relativePath;
+	}
+
 
 }

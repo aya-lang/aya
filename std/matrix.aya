@@ -1,7 +1,6 @@
-import ::mp
+import mp
 
 class matrix
-export ::matrix
 
 .# Test if list is a valid matrix
 def matrix::_is_valid_list {m::list matrix,

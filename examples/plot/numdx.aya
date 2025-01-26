@@ -1,4 +1,4 @@
-import ::plot
+import plot
 
 .#{Mc} :fn;
 .# :-2p:a;

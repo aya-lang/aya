@@ -1,4 +1,4 @@
-from ::la import ::dot
+require la {dot}
 
 .# Sigmoid helper functions
 {-1 * Me 1+ 1\/}:sigmoid;
