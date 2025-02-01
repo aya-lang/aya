@@ -16,6 +16,7 @@ import aya.ext.color.ColorInstructionStore;
 import aya.ext.date.DateInstructionStore;
 import aya.ext.debug.DebugInstructionStore;
 import aya.ext.dialog.DialogInstructionStore;
+import aya.ext.download.DownloadInstructionStore;
 import aya.ext.fstream.FStreamInstructionStore;
 import aya.ext.graphics.GraphicsInstructionStore;
 import aya.ext.image.ImageInstructionStore;
@@ -158,6 +159,7 @@ public class StaticData {
 		addNamedInstructionStore(new LinearAlgebraInstructionStore());
 		addNamedInstructionStore(new ThreadInstructionStore());
 		addNamedInstructionStore(new LibraryInstructionStore());
+		addNamedInstructionStore(new DownloadInstructionStore());
 	}
 	
 	public ArrayList<NamedInstructionStore> loadLibrary(File path) { 

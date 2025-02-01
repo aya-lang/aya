@@ -159,7 +159,7 @@
 
 
 :{
-import ::matrix
+require matrix {matrix}
 
 matrix test_matrix
 };

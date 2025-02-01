@@ -1,28 +1,25 @@
-import ::io
+require io {file}
 
-module json
-export ::json
+{:(json.loads)} :loads;
 
-def json::loads {:(json.loads)}
+{:(json.dumps)} :dumps;
 
-def json::dumps {:(json.dumps)}
-
-def json::load {json_file : file^ json^,
+{json_file : file^ loads^,
     json_file :T ::str = {
         json_file 'r file! :json_file;
     } ?
 
     json_file.do {f,
-        f.readall json.loads
+        f.readall loads
     }
-}
+} :load;
 
-def json::dump {data json_file : file^ json^,
+{data json_file : file^ dumps^,
     json_file :T ::str = {
         json_file 'w file! :json_file;
     } ?
 
     json_file.do {f,
-        data json.dumps f.print;
+        data dumps f.print;
     }
-}
+} :dump;

@@ -12,8 +12,6 @@
 
 
 class stack
-export ::stack
-
 
 .#? ::list stack!\n  convert a list into a stack
 def stack::__init__ {l self,

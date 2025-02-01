@@ -1,24 +1,19 @@
+import csv
+
 .# Package for loading Rdatasets from github: vincentarelbundock/Rdatasets
 .# Example:
 .# "cluster/agriculture" rdatasets.load_csv
 
+"https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv":url;
 
-import ::csv
+{name::str : url^,
+    "/" `in name {
+        "$url/$name.csv"
+    } {
+        "$url/datasets/$name.csv"
+    } .?
+}:make_url;
 
-:{
-
-    "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv":url;
-
-    {name::str : url^,
-        "/" `in name {
-            "$url/$name.csv"
-        } {
-            "$url/datasets/$name.csv"
-        } .?
-    }:make_url;
-
-    {name::str : make_url^,
-        name make_url csv.open
-    }:load_csv;
-
-}:rdatasets;
+{name::str : make_url^,
+    name make_url csv.open
+}:load_csv;

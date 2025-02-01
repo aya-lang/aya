@@ -5,7 +5,7 @@
 .# mkdir fs_test
 .# java -jar aya.jar fs_test/ ../test/filesystem.aya
 
-import ::image
+require image {image}
 
 .{ Function that appends the platform-specific file separator to a string .}
 {path::str, path :9s + } :sep;

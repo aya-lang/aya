@@ -252,7 +252,7 @@ public class Dict extends Obj {
 		
 	@Override
 	public String str() {
-		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_REPR); //TODO: Should be __str__??
+		Obj str = getFromMetaTableOrNull(SymbolConstants.KEYVAR_STR);
 		if (str == null) {
 			return dictStr();
 		} else {

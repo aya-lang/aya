@@ -1,6 +1,6 @@
 .# This file loads and auto-runs many examples
 
-import ::plot
+import plot
 1 plot.plot.:_supress_windows
 
 [

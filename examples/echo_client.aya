@@ -1,6 +1,6 @@
-.# A Simple echo client running on localhost:3003
+require socket {socket}
 
-import ::socket
+.# A Simple echo client running on localhost:3003
 
 "localhost" :addr;
 3003 :port;

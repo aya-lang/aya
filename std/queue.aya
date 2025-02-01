@@ -12,8 +12,6 @@
 
 
 class queue
-export ::queue
-
 
 .#? ::list ::queue.__init__\n  convert a list into a queue
 def queue::__init__ {l self,

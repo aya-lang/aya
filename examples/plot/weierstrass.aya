@@ -1,6 +1,6 @@
-.# Plot Weierstrass Function
+import plot
 
-import ::plot
+.# Plot Weierstrass Function
 
 3 :a;
 2 :b;

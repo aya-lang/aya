@@ -1,5 +1,6 @@
+import plot
+
 .# Plot a Lorenz attractor
-import ::plot
 
 .# Starting parameters
 

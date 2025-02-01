@@ -1,5 +1,5 @@
-import ::plot
-import ::enum
+import plot
+require enum {enum}
 
 enum state {win lose}
 

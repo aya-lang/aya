@@ -1,7 +1,4 @@
-from ::io import ::path
-
-module image
-export ::image
+require io {path}
 
 class image
 

@@ -10,7 +10,6 @@
 
 
 class set
-export [::set ::s]
 
 def set::__init__ {l::list self,
     l self.:list ;
@@ -108,4 +107,4 @@ def set::__each__ {blk self,
 }
 
 
-{{~set!} 0 :`}:s;
+{:set^, set {~\!} 0 :`}:s;

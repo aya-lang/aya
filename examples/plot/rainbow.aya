@@ -1,6 +1,6 @@
-.# Draws a rainbow in a plot window
+import plot
 
-import ::plot
+.# Draws a rainbow in a plot window
 
 plot.plot!:p;
 [0.857 1.1] p.y.:lim;

@@ -1,5 +1,5 @@
-import ::dataframe
-import ::plot
+require dataframe {dataframe}
+import plot
 
 :{ "$(:(sys.ad))/examples/data/iris.csv":filename} dataframe.read_csv :df;
 

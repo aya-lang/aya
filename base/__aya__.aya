@@ -326,33 +326,6 @@ __aya__.extend.` :extend;
 }:struct;
 
 
-.# ------
-.# MODULE
-.# ------
-
-.#? module sym\n  declare a new module
-{name::sym,
-    :{
-        name :__modname__;
-
-        {meta,
-            "Cannot create new instance of module $(meta.__modname__:C)" .D
-        } :__new__;
-
-        :{
-            ::module :__type__;
-            "(module $name)":__repr__;
-        }:__meta__;
-    }
-    name := ; .# assign variable
-} __aya__.:_module_impl;
-
-
-{ : _module_impl(__aya__._module_impl.`),
-    { : _module_impl^ , ~:S~ _module_impl} 1 :`
-}:module;
-
-
 .###########
 .# CONTROL #
 .###########
@@ -425,6 +398,14 @@ __aya__.extend.` :extend;
 }__aya__.:with_;
 .}
 
+.# val local:foo
+{{
+    .[0]:S.[0] .# extract symbol
+    \:&@  .# duplicate the value so we can leave it on the stack
+    :G.[-1] .# get local scope
+    :D; .# assign
+    .# val is left on the stack
+}1:`} :local;
 
 .################
 .# import types #

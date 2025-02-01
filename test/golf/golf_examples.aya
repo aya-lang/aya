@@ -1,4 +1,4 @@
-import ::golf
+require golf *
 
 .# 
 .# A or An

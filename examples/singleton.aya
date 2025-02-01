@@ -1,4 +1,4 @@
-import ::missing
+require missing {missing}
 
 class singleton
 

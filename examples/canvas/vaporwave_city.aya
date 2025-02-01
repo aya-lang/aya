@@ -1,5 +1,5 @@
-import ::canvas
-import ::color
+import canvas
+require color {color colors}
 
 .# A randomly generated vaporwave style city
 
@@ -15,7 +15,7 @@ import ::color
     .# Display drawings immediately
     .# Slower but looks cooler
     1:autoflush
-} canvas! :c;
+} canvas.canvas! :c;
 
 .# Custom colors
 "FF2DF0" color.newhex :magenta;
@@ -24,11 +24,11 @@ import ::color
 "3048CC" color.newhex :lightblue;
 
 .# Background
-[0 0] color.colors.blue0.4* [0 h0.75*] magenta 0 c.set_grad
+[0 0] colors.blue0.4* [0 h0.75*] magenta 0 c.set_grad
 0 0 w h c.fillrect
 
 .# Stars
-color.colors.white c.set_color
+colors.white c.set_color
 { wQ hQ c.point } 50 %
 { wQ h3/Q c.point } 30 %
 

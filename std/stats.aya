@@ -1,39 +1,34 @@
-.# This file is a part of Aya: https://github.com/nick-paul/aya-lang
-
-module stats
-export ::stats
-
-from ::math import ::cumsum
+require math {cumsum}
 
 .#? ::list stats.mean\n  average of a list of numbers
-def stats::mean {
+def ::mean {
     .E\W\/
 }
 
 
 .#? ::list stats.variance\n  population variance
-def stats::variance {set : m stats^,
-    set stats.mean:m;
+def ::variance {set : m mean^,
+    set mean:m;
     set#{m- 2^} W setE /
 }
 
 
 .#? L stats.stdev\n  standard deviation
-def stats::stdev {: stats^,
-    stats.variance .^
+def ::stdev {: variance^,
+    variance .^
 }
 
 
 .#? ::list stats.geomean\n  geometric mean
 .# the nth root of the product of n numbers
 .# compute by summing the logarithms of the values
-def stats::geomean {
+def ::geomean {
     Ml.E\W\/Me
 }
 
 
 .#? L stats.median\n  median value of a list
-def stats::median {l,
+def ::median {l,
     lC$E2/.\        .# Sort the list and get its middle index
     lE2:%0= {        .# If the list has even length,
         $1-:JIW2/    .# average the middle two
@@ -44,7 +39,7 @@ def stats::median {l,
 
 
 .#? ::list ::list stats.regression\n  return a block that evaluates to the regression of the sets
-def stats::regression {x y :
+def ::regression {x y :
     n a b
     sumy sumx
     sumxsq
@@ -70,7 +65,7 @@ def stats::regression {x y :
 
 
 .#? ::list ::list stats.pearson\n  pearson correlation coefficient between 2 datasets
-def stats::pearson {x y : n xs ys,
+def ::pearson {x y : n xs ys,
     xE:n;
     xW:xs;
     yW:ys;
@@ -82,7 +77,7 @@ def stats::pearson {x y : n xs ys,
     /
 }
 
-def stats::hist {l::list nbins::num : min max bin_size bins counter cumsum^,
+def ::hist {l::list nbins::num : min max bin_size bins counter cumsum^,
     .# compute bin size using list min and max values
     l.min :min;
     l.max :max;

@@ -1,12 +1,3 @@
-export [
-    ::path
-    ::file
-    ::stdout
-    ::stdin
-    ::fileutils
-]
-
-
 class path
 
 .# Create a new path (accepts relative or abs paths)
@@ -308,7 +299,6 @@ def file::_do {blk__::block self__,
 .# dummyfile for testing opening and closing of input streams
 
 class dummyfile
-export ::dummyfile
 
 def dummyfile::__init__ {name self,
     "opened dummy file '$name'" :P

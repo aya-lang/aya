@@ -1,17 +1,16 @@
-from ::io import ::path
+require io {path}
 
-module sys
-export ::sys
+:{} :sys;
 
-def sys::args :(sys.args)
+def ::args :(sys.args)
 
 
 .#? sys.iswindows\n  returns true if system is windows
-def sys::iswindows {:9s"\\"=}
+def ::iswindows {:9s"\\"=}
 
 
 .# ::str sys.cd\n  set working directory
-def sys::cd {dirname : path^,
+def ::cd {dirname : path^,
     dirname
     .# If it is a string, conv to path
     dirname :T ::str = { path! } ?
@@ -20,12 +19,12 @@ def sys::cd {dirname : path^,
 
 
 .#? ::str sys.mkdir\n  create a new directory
-def sys::mkdir {dir,
+def ::mkdir {dir,
     dir P :(sys.mkdir)
 }
 
 
-def sys::readdir {dir,
+def ::readdir {dir,
     dir P :dir;
     dir "" = {"." :dir;} ?
     dir :(sys.readdir)
