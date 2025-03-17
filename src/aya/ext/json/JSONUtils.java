@@ -124,8 +124,8 @@ public class JSONUtils {
 			return new List(arr);
 		} else if (object instanceof Integer) {
 			return Num.fromInt((Integer)object);
-		} else if (object instanceof Double) {
-			return new Num((Double)object);
+		} else if (object instanceof Number) {
+			return new Num(((Number)object).doubleValue());
 		} else if (object instanceof String) {
 			String str = (String)object;
 			if (params.parse_symbol && str.startsWith("::")) {

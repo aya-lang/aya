@@ -1,0 +1,62 @@
+.# see https://www.json.org/json-en.html
+"""{
+    "emptyObj": {},
+    "valuesArray": [
+        {
+            "string": "foo"
+        },
+        {
+            "number0": 0,
+            "number0N": -0,
+            "numberInt": 12,
+            "numberIntN": -12,
+            "numberFr": 0.12,
+            "numberFrN": -0.12,
+            "numberExp": 23.45E3,
+            "numberExpN": 23.45e-3,
+            "numberNExp": -23.45e3,
+            "numberNExpN": -23.45E-3
+        },
+        [1, 2, 3],
+        true,
+        false,
+        null
+    ]
+}""" :(json.loads) :json_obj;
+
+:{
+    :{} :"emptyObj";
+    [
+        :{
+            "foo" :"string";
+        }
+        :{
+            0 :"number0";
+            -0 :"number0N";
+            12 :"numberInt";
+            -12 :"numberIntN";
+            0.12 :"numberFr";
+            -0.12 :"numberFrN";
+            :23.45e3 :"numberExp";
+            :23.45e-3 :"numberExpN";
+            :-23.45e3 :"numberNExp";
+            :-23.45e-3 :"numberNExpN";
+        }
+        [1 2 3]
+        1
+        0
+        ::__json_null
+    ] :"valuesArray";
+} :aya_obj;
+
+
+[
+
+    { json_obj aya_obj }
+
+    {
+        aya_obj :(json.dumps) :(json.loads)
+        aya_obj
+    }
+
+] :# { test.test }
