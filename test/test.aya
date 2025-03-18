@@ -54,6 +54,7 @@
     "enum"
     "csv"
     "io"
+    "json"
     "la"
     "map"
     "matrix"
