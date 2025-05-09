@@ -55,6 +55,7 @@
     "csv"
     "io"
     "json"
+    "xml"
     "la"
     "map"
     "matrix"
