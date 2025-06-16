@@ -6,26 +6,18 @@ import aya.exceptions.parser.SyntaxError;
 public class StringParseUtils {
 
 	public static String goToEnd(ParserString in, char termination) throws EndOfInputError {
-		boolean ignore_next = false;
 		StringBuilder out = new StringBuilder();
 		while (in.hasNext()) {
 			char c = in.next();
-			
-			if (c == '\\') {
-				if (ignore_next) {
-					// Double backslash, the backslash itself is being escaped
-					ignore_next = false;
-				} else {
-					// Normal backslash, escape the next character
-					ignore_next = true;
-				}
-			} else if (c == termination && !ignore_next) {
+
+			if (c == '\\' && in.hasNext()) {
+				out.append(c);
+				out.append(in.next());
+			} else if (c == termination) {
 				return out.toString();
 			} else {
-				ignore_next = false;
+				out.append(c);
 			}
-			
-			out.append(c);
 		}
 		// End of input
 		return out.toString();

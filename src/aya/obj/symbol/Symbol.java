@@ -17,15 +17,6 @@ public class Symbol extends Obj {
 	}
 	
 	public String name() {
-		String s = SymbolTable.getName(this);
-		if (SymbolTable.isBasicSymbolString(s)) {
-			return s;
-		} else {
-			return StringUtils.quote(s);
-		}
-	}
-	
-	public String unquotedName() {
 		return SymbolTable.getName(this);
 	}
 	
@@ -46,13 +37,13 @@ public class Symbol extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("::" + name());
+		stream.print(str());
 		return stream;
 	}
 
 	@Override
 	public String str() {
-		return "::" + name();
+		return "::" + StringUtils.quote(name());
 	}
 
 	@Override
