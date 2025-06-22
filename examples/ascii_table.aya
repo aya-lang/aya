@@ -10,10 +10,10 @@ table :P
 
 .{ Example with custom styling .}
 :{
-	'= :border_top
-	'- :border_bottom
-	"||" :border_left
-	"||" :border_right
+    '= :border_top
+    '- :border_bottom
+    "||" :border_left
+    "||" :border_right
 } ascii_table.ascii_table! :table;
 1 1 table.set_col_align
 
