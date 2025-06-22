@@ -42,10 +42,10 @@ def ::pad_str {text::str width::num mode::num pad_char::char,
     }.?
 }
 
-.{? type: ascii_table
+.{? type: asciitable
     Presents 2D data as an Ascii Table.
 
-    :{} ascii_table! :table;
+    :{} asciitable! :table;
     ["foo" "bar"] table.add_header
     table.add_row_sep
     [ [ 3.R :{} ] "xy" ] table.add_rows
@@ -55,9 +55,9 @@ def ::pad_str {text::str width::num mode::num pad_char::char,
       > | [ 0 1 2 ] | :{} |
       > | x         | y   |
 .}
-class ascii_table
+class asciitable
 
-def ascii_table::__init__ {options::dict self,
+def asciitable::__init__ {options::dict self,
     :{
         ' :pad_char;		.# padding character in table cells
         '|:col_sep;			.# separator char between columns
@@ -84,17 +84,17 @@ def ascii_table::__init__ {options::dict self,
 }
 
 .# remove all rows from this table
-def ascii_table::clear {self,
+def asciitable::clear {self,
     [] self.:rows;
 }
 
 .# make all columns use the default alignment again
-def ascii_table::reset_align {self,
+def asciitable::reset_align {self,
     :{} self.:column_align;
 }
 
 .# adds a 1D list as a header row
-def ascii_table::add_header {header::list self,
+def asciitable::add_header {header::list self,
     :{
         'h:type;
         header:data;
@@ -102,7 +102,7 @@ def ascii_table::add_header {header::list self,
 }
 
 .# adds a 2D list as multiple header rows
-def ascii_table::add_headers {headers::list self,
+def asciitable::add_headers {headers::list self,
     self.rows headers # {header,
         :{
             'h:type;
@@ -111,12 +111,12 @@ def ascii_table::add_headers {headers::list self,
     } :J ;
 }
 
-def ascii_table::add_header_sep {self,
+def asciitable::add_header_sep {self,
     :{ 'H:type; } self.rows .B ;
 }
 
 .# adds a 1D list as a row
-def ascii_table::add_row {row::list self,
+def asciitable::add_row {row::list self,
     :{
         'r:type;
         row:data;
@@ -124,7 +124,7 @@ def ascii_table::add_row {row::list self,
 }
 
 .# adds a 2D list as multiple rows
-def ascii_table::add_rows {rows::list self,
+def asciitable::add_rows {rows::list self,
     self.rows rows # {row,
         :{
             'r:type;
@@ -133,16 +133,16 @@ def ascii_table::add_rows {rows::list self,
     } :J ;
 }
 
-def ascii_table::add_row_sep {self,
+def asciitable::add_row_sep {self,
     :{ 'R:type; } self.rows .B ;
 }
 
 .# apply a custom alignment for a single column.
-def ascii_table::set_col_align {col_idx align_mode self,
+def asciitable::set_col_align {col_idx align_mode self,
     align_mode self.column_align.:[col_idx P] ;
 }
 
-def ascii_table::__repr__ {self : col_sep row_data col_widths formatters border_left_width make_transposable^ pad_str^,
+def asciitable::__repr__ {self : col_sep row_data col_widths formatters border_left_width make_transposable^ pad_str^,
 
     self.rows {row, "hr" row.type H } I # {.data} :row_data;
     row_data "" make_transposable

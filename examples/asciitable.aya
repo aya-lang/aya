@@ -1,7 +1,7 @@
-import ascii_table
+import asciitable
 
 .{ Simple Example .}
-:{} ascii_table.ascii_table! :table;
+:{} asciitable.asciitable! :table;
 ["my" "header"] table.add_header
 3.R table.add_row .# you don't need to pay attention to your column-count. the table is extended on demand
 table :P
@@ -14,7 +14,7 @@ table :P
     '- :border_bottom
     "||" :border_left
     "||" :border_right
-} ascii_table.ascii_table! :table;
+} asciitable.asciitable! :table;
 1 1 table.set_col_align
 
 ["foo" "bar"] table.add_header
