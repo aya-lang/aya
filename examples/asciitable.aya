@@ -1,0 +1,29 @@
+import asciitable
+
+.{ Simple Example .}
+:{} asciitable.asciitable! :table;
+["my" "header"] table.add_header
+3.R table.add_row .# you don't need to pay attention to your column-count. the table is extended on demand
+table :P
+"" :P
+
+
+.{ Example with custom styling .}
+:{
+    '= :border_top
+    '- :border_bottom
+    "||" :border_left
+    "||" :border_right
+} asciitable.asciitable! :table;
+1 1 table.set_col_align
+
+["foo" "bar"] table.add_header
+table.add_header_sep
+[:{1:a; 2:b;} "dict"] table.add_row
+
+table.add_row_sep
+["other data"] table.add_header
+[3R 10R] table.add_rows
+
+table :P
+"":P
