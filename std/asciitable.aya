@@ -80,6 +80,8 @@ def asciitable::__init__ {options::dict self,
 
     :{} self.:column_align; .# stores columns that should be aligned differently (key=col_idx, value=mode)
 
+    :{} self.:subtable_by_column; .# allow user to define columns that contain multiple values
+
     [] self.:rows; .# start empty
 }
 
@@ -142,9 +144,53 @@ def asciitable::set_col_align {col_idx align_mode self,
     align_mode self.column_align.:[col_idx P] ;
 }
 
-def asciitable::__repr__ {self : col_sep row_data col_widths formatters border_left_width make_transposable^ pad_str^,
+.# make a column a subtable.
+def asciitable::set_col_subtable {col_idx options::dict self : asciitable^,
+    self.options $\; options .+ asciitable! self.subtable_by_column.:[col_idx P] ;
+}
 
-    self.rows {row, "hr" row.type H } I # {.data} :row_data;
+.# modify rows such that each ::list in a subtable-column is replaced with the rendered ::str
+def asciitable::_render_subtables {rows self : subtable_cells_by_column,
+    self.subtable_by_column :K E 0 > {
+        self.subtable_by_column :V # {subtable, subtable.clear} ;
+    
+        .# write ::list cells into their subtables
+        rows # {row,
+            {
+                (row.type 'h =) {
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+                        row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_header
+                    };
+                }
+                (row.type 'r =) {
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+                        row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_row
+                    };
+                }
+            }:?
+        };
+        
+        :{} :subtable_cells_by_column;
+        self.subtable_by_column :K # {col_sym,
+            0 self.subtable_by_column.[col_sym] ._get_repr_cells; subtable_cells_by_column.:[col_sym] ;
+        };
+        
+        .# write subtable cells back into the ::list cells of this table
+        rows {row, "hr" row.type H} I # {row,
+            row.data E .R {col_idx, subtable_cells_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+                subtable_cells_by_column.[col_idx P] V\; row.data.:[col_idx] ;
+            };
+        };
+    }?
+}
+
+.# pad_left_right ::bool if true: apply left padding on leftmost cell and right padding on rightmost cell
+.# returns (cell_rows::list[::str] col_widths::list[::num])
+def asciitable::_get_repr_cells {pad_left_right self : rows col_sep row_data col_data col_widths formatters border_left_width make_transposable^ pad_str^,
+    .# take a deep-copy to avoid modifying the original data
+    self.rows $ :rows;;
+    rows self._render_subtables
+    rows {row, "hr" row.type H } I # {.data} :row_data;
     row_data "" make_transposable
 
     .# figure out how wide each column is
@@ -166,7 +212,7 @@ def asciitable::__repr__ {self : col_sep row_data col_widths formatters border_l
                 self.options.header_align
                 self.options.pad_char
                 pad_str
-            } col_sep % self.options.pad_char \.V self.options.pad_char \.B }~
+            } col_sep % pad_left_right {self.options.pad_char \.V self.options.pad_char \.B}? }~
         }:"h"
         {row,
             col_widths 2+ # {width, self.options.header_sep width L} self.options.col_sep %
@@ -180,7 +226,7 @@ def asciitable::__repr__ {self : col_sep row_data col_widths formatters border_l
                 self.column_align col_idx P H { self.column_align.[col_idx P] }{ self.options.row_align }.?
                 self.options.pad_char
                 pad_str
-            } col_sep % self.options.pad_char \.V self.options.pad_char \.B }~
+            } col_sep % pad_left_right {self.options.pad_char \.V self.options.pad_char \.B}? }~
         }:"r"
         {row,
             col_widths 2+ # {width, self.options.row_sep width L} self.options.col_sep %
@@ -188,10 +234,15 @@ def asciitable::__repr__ {self : col_sep row_data col_widths formatters border_l
     }:formatters;
 
     .# convert row objects to row ascii lines
-    self.rows # {row,
+    rows # {row,
         row formatters.[row.type P]~
     }
-    .# list of ::str on stack
+    col_widths
+}
+
+def asciitable::__repr__ {self : col_widths,
+    1 self._get_repr_cells :col_widths;
+    .# ::list[::str] stack
 
     .# apply borders if enabled
     self.options.border_left 0 = ! {

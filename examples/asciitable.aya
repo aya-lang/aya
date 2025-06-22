@@ -1,7 +1,7 @@
-import asciitable
+require asciitable {asciitable}
 
 .{ Simple Example .}
-:{} asciitable.asciitable! :table;
+:{} asciitable! :table;
 ["my" "header"] table.add_header
 3.R table.add_row .# you don't need to pay attention to your column-count. the table is extended on demand
 table :P
@@ -14,7 +14,7 @@ table :P
     '- :border_bottom
     "||" :border_left
     "||" :border_right
-} asciitable.asciitable! :table;
+} asciitable! :table;
 1 1 table.set_col_align
 
 ["foo" "bar"] table.add_header
@@ -24,6 +24,24 @@ table.add_header_sep
 table.add_row_sep
 ["other data"] table.add_header
 [3R 10R] table.add_rows
+
+table :P
+"":P
+
+
+.{ Example with subtable .}
+:{1:row_align;} asciitable! :table;
+["task" "count" "time"] table.add_header
+["" "" ["total" "avg."]] table.add_header
+table.add_header_sep
+
+0 -1 table.set_col_align
+2 :{"":col_sep;} table.set_col_subtable .# make column[2] a subtable column, options are inherited from this table and merged with the options argument.
+
+["foo" 120 ["75 s" "$(75 120 / 2.fixed) s"]] table.add_row
+["bar" 99 ["115 s" "$(115 99 / 2.fixed) s"]] table.add_row
+["abnormal1" 5 "line1\nline2"] table.add_row .# cells in subtables that are not ::list are left untouched
+["abnormal2" "line1\nline2" ["4 s" "$(4 2 / 2.fixed) s"]] table.add_row .# subtables in rows with multi-line cells work as well
 
 table :P
 "":P
