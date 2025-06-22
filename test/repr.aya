@@ -1,0 +1,88 @@
+.# This test covers conversion of Objects from and to Strings
+
+[
+    "a"
+    "A"
+    "3"
+    ""
+    "\""
+    "\\"
+    "\\\""
+    "2 1 -"
+]:tricky_keys;
+
+[
+    ::a
+    ::"A"
+    ::"3"
+    ::""
+    ::"\""
+    ::"\\"
+    ::"2 1 -"
+]:tricky_symbols;
+
+.# Dictionary with various "tricky" keys and values
+:{
+    [1 1.2 -3] :list;
+    :{1:a;2:b;} :dict;
+    "foo" :str;
+    tricky_symbols :symbols;
+}:tricky_dict;
+
+.# store tricky keys in the dictionary
+tricky_keys E .R # {i,
+    i tricky_dict.:[ tricky_keys.[i] ];
+};
+
+.# json.dumps writes symbols by their name instead. Remove 'symbols' from the copy.
+tricky_dict $\; :tricky_dict_for_json;
+tricky_dict_for_json "symbols" .- ;
+
+[
+    .# Expect P to cast Objects to the Aya-Code of themselves as a String
+    {
+        "  test: dict P~":P
+        tricky_dict :& P~ \
+    }
+
+    .# Block (mapped with {P} to compare string representations, as comparing the blocks directly doesn't work)
+    {
+        "  test: block P~":P
+        [
+            {x, x R .[i] .[1] .:[i] .:[1] :a}
+            :& P~
+        ] # {P}~ \
+    }
+
+    .# the JSON instructions also rely on symbol names
+    {
+        "  test: dict :(json.dumps) :(json.loads)":P
+        tricky_dict_for_json :& :(json.dumps) :(json.loads) \
+    }
+
+
+    .# {:S :C} (string to symbol and back to string) should give the original string
+    {
+        "  test: str :S :C":P
+        tricky_keys :& # { :S :C } \
+    }
+
+    .# {:C :S} (symbol to string and back to symbol) should give the original symbol
+    {
+        "  test: symbol :C :S":P
+        tricky_symbols :& # { :C :S } \
+    }
+
+    .# { :K :C } (keys of dict as symbols, to string) should give a valid key for the dictionary
+    {
+        "  test: dict :K # {:C}":P
+
+        .# setup: create a dictionary containing each key assigned to itself
+        :{} :tricky_key_dict;
+        tricky_keys # {k, k tricky_key_dict.:[k];};
+
+        .# assert (list of keys as str) = (dict[list of keys as str])
+        tricky_key_dict :K # {:C} :& # {k, tricky_key_dict.[k]} \
+    }
+
+] :# { test.test }

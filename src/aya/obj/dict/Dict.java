@@ -17,6 +17,8 @@ import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
+import aya.util.StringUtils;
+
 /**
  * A set of key-value pairs accessible as a runtime object
  * @author Nick
@@ -378,7 +380,7 @@ public class Dict extends Obj {
 				for (Symbol sym : _vars.keySet()) {
 					if (sym.id() != SymbolConstants.KEYVAR_META.id()) {
 						_vars.get(sym).repr(stream);
-						stream.println(":" + sym.name() + ";");
+						stream.println(":" + StringUtils.quote(sym.name()) + ";");
 					}
 				}
 				stream.decIndent();

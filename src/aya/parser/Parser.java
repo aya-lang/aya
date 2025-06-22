@@ -166,13 +166,13 @@ public class Parser {
 						while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 							varname += in.next();
 						}
-						tokens.add(new KeyVarToken(varname, in.currentRef()));
+						tokens.add(new KeyVarToken(varname, in.currentRef(), false));
 					}
 
 					else if (in.peek() == '"') {
 						in.next(); // Skip opening "
 						String varname = StringParseUtils.goToEnd(in, '"');
-						tokens.add(new KeyVarToken(varname, in.currentRef()));
+						tokens.add(new KeyVarToken(varname, in.currentRef(), true));
 					}
 
 
@@ -191,7 +191,7 @@ public class Parser {
 						if (in.peek() == '"') {
 							in.next(); // Skip open '
 							String str = StringParseUtils.goToEnd(in, '"');
-							tokens.add(new VarToken(str, in.currentRef()));
+							tokens.add(new VarToken(str, in.currentRef(), true));
 						}
 					}
 
@@ -206,7 +206,7 @@ public class Parser {
 					}
 					
 					else {
-						tokens.add(new KeyVarToken(""+in.next(), in.currentRef()));
+						tokens.add(new KeyVarToken(""+in.next(), in.currentRef(), false));
 					}
 
 				} else {
@@ -325,7 +325,7 @@ public class Parser {
 				while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
 					sb.append(in.next());
 				}
-				tokens.add(new VarToken(sb.toString(), in.currentRef()));
+				tokens.add(new VarToken(sb.toString(), in.currentRef(), false));
 			}
 
 			// Normal Operators
@@ -342,10 +342,12 @@ public class Parser {
 					if (in.peek() == ':') {
 						in.next(); // Move to the next colon
 						String sym = "";
+						final boolean varIsExplicitlyTerminated;
 						if (in.hasNext() && in.peek() == '"') {
 							// Quoted symbol
 							in.next(); // Skip '
 							sym = StringParseUtils.goToEnd(in, '"');
+							varIsExplicitlyTerminated = true;
 						} else {
 
 							// Fist, try to parse as simple variable
@@ -354,7 +356,7 @@ public class Parser {
 							}
 
 							// If empty, check for operator or special character
-							if (sym.equals("")) {
+							if (sym.isEmpty()) {
 								if (in.hasNext()) {
 									
 									// Multi-char operator
@@ -370,9 +372,10 @@ public class Parser {
 									throw new SyntaxError("Expected symbol name", in.currentRef());
 								}
 							}
+							varIsExplicitlyTerminated = false;
 						}
 
-						tokens.add(new SymbolToken(sym, in.currentRef()));
+						tokens.add(new SymbolToken(sym, in.currentRef(), varIsExplicitlyTerminated));
 					}
 					
 					// Named Operator
@@ -412,7 +415,7 @@ public class Parser {
 						tokens.add(new SpecialToken(Token.COLON, ":", in.currentRef()));
 						in.next(); // Skip open "
 						String varname = StringParseUtils.goToEnd(in, '"');
-						tokens.add(new VarToken(varname, in.currentRef()));
+						tokens.add(new VarToken(varname, in.currentRef(), true));
 					}
 
 					// Colon Operator
@@ -446,7 +449,7 @@ public class Parser {
 					tokens.add(tmp);
 				} else if (!Character.isWhitespace(current)){
 					// Single character variable
-					tokens.add(new VarToken(""+current, in.currentRef()));
+					tokens.add(new VarToken(""+current, in.currentRef(), false));
 				}
 			}
 		}

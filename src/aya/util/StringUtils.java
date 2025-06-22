@@ -36,13 +36,9 @@ public class StringUtils {
 
 	// Add quotes to a string
 	public static String quote(String s) {
-		s = s.replaceAll("\\\"", "\\\\\"");
+		s = s.replace("\\", "\\\\");
+		s = s.replace("\"", "\\\"");
 		return '"' + s + '"';
-	}
-
-	public static String singleQuote(String s) {
-		s = s.replaceAll("\\\'", "\\\\\'");
-		return "'" + s + "'";
 	}
 
 	/** Test if a string contains all lowercase alphabetical letters */
