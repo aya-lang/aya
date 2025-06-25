@@ -151,7 +151,7 @@ public abstract class ListImpl {
 
 	protected abstract byte type();
 
-	protected abstract boolean isa(byte type);
+	public abstract boolean isa(byte type);
 
 	protected abstract boolean equiv(ListImpl o);
 

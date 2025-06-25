@@ -664,7 +664,7 @@ public class DoubleList extends NumberList {
 	@Override
 	public boolean canAcceptAll( ListImpl otherList )
 	{
-		return otherList.length() <= 0 || (otherList instanceof DoubleList);
+		return otherList.length() <= 0 || otherList.isa(Obj.DOUBLELIST);
 	}
 
 	@Override
