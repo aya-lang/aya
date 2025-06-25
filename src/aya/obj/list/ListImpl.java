@@ -89,10 +89,7 @@ public abstract class ListImpl {
 	
 	/** Return a list containing the unique elements of the original list */
 	public abstract ListImpl unique();
-	
-	/** Return true if the input object can be a valid member of the list */
-	public abstract boolean canInsert(Obj o);
-	
+
 	/** Return an empty list that is the same type as the callee */
 	public abstract ListImpl similarEmpty();
 
@@ -112,6 +109,16 @@ public abstract class ListImpl {
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////
+
+	/**
+	 * @return true if the item can be added to this list.
+	 */
+	public abstract boolean canAccept(Obj item);
+
+	/**
+	 * @return true if all items in {@code otherList} can be added to this list.
+	 */
+	public abstract boolean canAcceptAll(ListImpl otherList);
 	
 	/** Set index i of the list to Obj o, throws an exception 
 	 * if the list is of lower type than o. (Ex: insert "hello" 

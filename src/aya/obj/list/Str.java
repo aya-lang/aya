@@ -281,7 +281,17 @@ public class Str extends ListImpl implements Comparable<Str> {
 	     Arrays.sort(chars);
 	     _str = new String(chars);
 	}
-	
+
+	@Override
+	public boolean canAccept(Obj item) {
+		return item.isa(Obj.CHAR);
+	}
+
+	@Override
+	public boolean canAcceptAll(ListImpl otherList) {
+		return otherList.length() <= 0 || otherList.isa(Obj.STR);
+	}
+
 	@Override
 	public void set(int i, Obj o) {
 		char[] chars = _str.toCharArray();
@@ -369,11 +379,6 @@ public class Str extends ListImpl implements Comparable<Str> {
 	@Override
 	public Str copy() {
 		return new Str(_str);
-	}
-	
-	@Override
-	public boolean canInsert(Obj o) {
-		return o.isa(Obj.CHAR);
 	}
 
 	@Override

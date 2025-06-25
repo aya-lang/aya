@@ -654,7 +654,19 @@ public class DoubleList extends NumberList {
 	public void sort() {
 		Arrays.sort(_list);
 	}
-	
+
+	@Override
+	public boolean canAccept( Obj item )
+	{
+		return item.isa(Obj.NUM);
+	}
+
+	@Override
+	public boolean canAcceptAll( ListImpl otherList )
+	{
+		return otherList.length() <= 0 || (otherList instanceof DoubleList);
+	}
+
 	@Override
 	public void set(int i, Obj o) {
 		_list[i] = ((Num)o).toDouble();
@@ -702,7 +714,10 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public void addAll(ListImpl l) {
-		double[] other = ((DoubleList)l)._list;
+		if (l.length() <= 0)
+			return;
+
+		double[] other = ((DoubleList) l)._list;
 		final int len = _list.length;
 		final int o_len = other.length;
 
@@ -717,11 +732,6 @@ public class DoubleList extends NumberList {
 		double[] out = new double[_list.length];
 		for (int i = 0; i < _list.length; i++) out[i] = _list[i];
 		return new DoubleList(out);
-	}
-	
-	@Override
-	public boolean canInsert(Obj o) {
-		return o.isa(Obj.NUM);
 	}
 
 	@Override
