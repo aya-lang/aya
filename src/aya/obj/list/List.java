@@ -663,24 +663,23 @@ public class List extends Obj {
 	////////////////////////
 	// LIST MODIFICATIONS //
 	////////////////////////
-	
-	/** Set index i of the list to Obj o, throws an exception 
-	 * if the list is of lower type than o. (Ex: insert "hello" 
-	 * into a NumberList)
+
+	/**
+	 * Set index i of the list to Obj o.
+	 * Converts this list to one of higher type if needed.
 	 */
 	public void mutSetExact(int i, Obj o) {
-		try {
+		if (_list.canAccept(o)) {
 			_list.set(i, o);
-		} catch (ClassCastException e) {
+		} else {
 			_list = new GenericList(_list.getObjAL());
 			_list.set(i, o);
 			promote();
 		}
 	}
 
-	/** Set index i of the list to Obj o, throws an exception 
-	 * if the list is of lower type than o. (Ex: insert "hello" 
-	 * into a NumberList)
+	/** Set index i of the list to Obj o.
+	 * Converts this list to one of higher type if needed.
 	 */
 	public void mutSetIndexed(int i, Obj o) {
 		final int len = length();
@@ -693,51 +692,49 @@ public class List extends Obj {
 	}
 	
 	
-	/** Add item to the end of the list. throws an exception 
-	 * if the list is of lower type than o. (Ex: insert "hello" 
-	 * into a NumberList)
+	/** Add item to the end of the list.
+	 * Converts this list to one of higher type if needed.
 	 */
 	public void mutAdd(Obj o) {
 		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
-		try {
+		if (_list.canAccept(o)) {
 			_list.addItem(o);
 			if (do_promote) promote();
-		} catch (ClassCastException e) {
+		} else {
 			_list = new GenericList(_list.getObjAL());
 			_list.addItem(o);
 			promote();
 		}
 	}
 	
-	/** Insert an item into the list at pos i. throws an exception 
-	 * if the list is of lower type than o. (Ex: insert "hello" 
-	 * into a NumberList)
+	/** Insert an item into the list at pos i.
+	 * Converts this list to one of higher type if needed.
 	 */
 	public void mutAddExact(int i, Obj o) {
 		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
-		try {
+		if (_list.canAccept(o)) {
 			_list.addItem(i, o);
 			if (do_promote) promote();
-		} catch (ClassCastException e) {
+		} else {
 			_list = new GenericList(_list.getObjAL());
 			_list.addItem(i, o);
 			promote();
 		}
 	}
 	
-	/** Extent the current list with l. throws an exception 
-	 * if the list is of lower type than o.
+	/** Extent the current list with l.
+	 * Converts this list to one of higher type if needed.
 	 * ( Ex. {@code [1 2 3].extend(['a 'b 'c])} )
 	 */
 	public void mutAddAll(List l) {
 		// Only automatically run the promote if this is the first item in the list
 		final boolean do_promote = length() == 0;
-		try {
+		if (_list.canAcceptAll(l._list)) {
 			_list.addAll(l._list);
 			if (do_promote) promote();
-		} catch (ClassCastException e) {
+		} else {
 			_list = new GenericList(_list.getObjAL());
 			_list.addAll(l._list);
 			promote();

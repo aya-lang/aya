@@ -246,6 +246,16 @@ public class GenericList extends ListImpl {
 	}
 
 	@Override
+	public boolean canAccept(Obj item) {
+		return true;
+	}
+
+	@Override
+	public boolean canAcceptAll(ListImpl otherList) {
+		return true;
+	}
+
+	@Override
 	public void set(int i, Obj o) {
 		if (o.hashCode() == this.hashCode())
 		{
@@ -297,12 +307,7 @@ public class GenericList extends ListImpl {
 		out.addAll(_list);
 		return new GenericList(out);
 	}
-	
-	@Override
-	public boolean canInsert(Obj o) {
-		return true;
-	}
-	
+
 	@Override
 	public GenericList similarEmpty() {
 		return new GenericList(new ArrayList<Obj>());
