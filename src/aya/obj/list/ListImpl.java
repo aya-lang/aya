@@ -167,12 +167,8 @@ public abstract class ListImpl {
 		return this;
 	}
 
-	protected String repr() {
+	public String repr() {
 		return repr(new ReprStream()).toStringOneline();
 	}
 
-
-
-
-	
 }
