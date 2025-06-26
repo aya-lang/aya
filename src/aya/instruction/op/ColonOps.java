@@ -727,7 +727,7 @@ class OP_Colon_F extends Operator {
 			}
 			
 			// Is there a shebang? If yes, drop the first line
-			if (content.charAt(0) == '#' && content.charAt(1) == '!') {
+			if (content.length() > 0 && content.charAt(0) == '#' && content.charAt(1) == '!') {
 				int line_end = content.indexOf('\n');
 				content = content.substring(line_end);
 			}
