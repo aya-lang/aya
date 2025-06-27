@@ -222,7 +222,7 @@ public class EditorWindow extends JPanel {
 			// This call could be getting a task from the REPL and is not guaranteed to be the one we just sent
 			try {
 				ExecutionResult res = _aya.waitForResponse();
-				InteractiveAya.printResult(StaticData.IO, res);
+				InteractiveAya.printResult(StaticData.IO, res, false);
 			} catch (ThreadError e) {
 				StaticData.IO.err().print(e.getMessage());
 			} catch (InterruptedException e) {
