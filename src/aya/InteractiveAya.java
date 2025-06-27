@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import aya.eval.ExecutionContext;
+import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
-import aya.io.fs.FilesystemIO;
-import aya.io.http.HTTPDownloader;
+import aya.exceptions.parser.SyntaxError;
 import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
@@ -18,11 +18,11 @@ import aya.parser.SourceString;
 
 public class InteractiveAya {
 	
-	private static boolean interactive = true;
 	private static int lastResultCode = 0;
 
 	private boolean _echo = false;
 	private boolean _showPromptText = true;
+	private boolean _interactive = true;
 	
 	public void setShowPrompt(boolean b) {_showPromptText = b;};
 	public void setEcho(boolean b) {_echo = b;};
@@ -47,15 +47,27 @@ public class InteractiveAya {
 		return _request_id_counter;
 	}
 
-	public static final String HELP_TEXT = "Help:\n"
-			+ "  \\QUIT or \\Q\n\tquit interactive Aya\n"
-			+ "  \\HELP or \\H\n\tview this page\n"
-			+ "  \\? <help text>\n\tsearch for help text in Aya\n"
-			+ "  \\VERSION or \\V\n\tdisplay Ara version name\n"
-			+ "  \\USERCMD <variable> [.] or \\: <variable> [.]\n"
-			+ "\tInput will be parsed as \"\"\"input\"\"\" __aya__.interpreter.<variable>\n"
-			+ "\tUse \"\\USERCMD -\" to return to normal\n"
-			+ "\tUse \"\\USERCMD <variable> .\" to hide message\n";
+	public static final String HELP_TEXT = "aya " + StaticData.VERSION_NAME + "\n"
+			+ "  aya\n"
+			+ "    Running aya with no args will open the GUI IDE at the default working directory\n"
+			+ "    Note: Default setting is GUI so that double clicking the jar from a file explorer opens the IDE\n"
+			+ "    Use `aya <workingDir> -x` to open the GUI at a specified directory\n"
+			+ "  aya <workingDir>\n"
+			+ "    Open a command line REPL\n"
+			+ "  aya <workingDir> <filename>\n"
+			+ "    Run the file and exit\n"
+			+ "  aya <workingDir> -<flags> <option1>\n"
+			+ "    g: Import std/golf and bring all variables into scope\n"
+			+ "    e: Run the expression given by <option1>\n"
+			+ "    p: Run the package name given by <opion1>\n"
+			+ "    i: Enter the REPL after finishing CLI tasks\n"
+			+ "    x: Launch the GUI\n"
+			+ "    If <option1> is an aya source file, run it\n"
+			+ "  aya --help\n"
+			+ "    Print this message.\n"
+			+ "  aya --version\n"
+			+ "    Print version information\n"
+			+ "";
 	
 	public ExecutionRequest processInput(String input) {
 		//Empty Input
@@ -124,6 +136,18 @@ public class InteractiveAya {
 		}
 	}
 	
+	/** Compile and run a system generated input (i.e. in main()). Do not use for normal aya input */
+	public void compileAndQueueSystemInput(String source, String input) {
+		try {
+			StaticBlock blk = Parser.compile(new SourceString(input, source));
+			ExecutionRequest req = new ExecutionRequest(makeRequestID(), blk);
+			_aya.queueInput(req);
+		} catch (ParserException e) {
+			e.printStackTrace();
+			StaticData.IO.out().print(e);
+		}
+	}
+	
 	public void setPromptText(boolean b) {
 		_showPromptText = false;
 	}
@@ -172,22 +196,6 @@ public class InteractiveAya {
 		
  		_aya.start();
 		
-		// Load ayarc
-		String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
-		StaticBlock blk = Parser.compileSafeOrNull(new SourceString("\"" + pathString + "\":F", "<ayarc loader>"), StaticData.IO);
-		if (blk != null) _aya.queueInput(new ExecutionRequest(makeRequestID(), blk));
-		
-		// Load startup script
-		String[] args = AyaPrefs.getArgs();
-		if (args.length >= 2 && args[1].contains(".aya")) {
-			String startupScript = AyaPrefs.getArgs()[1].replace("\\", "\\\\");
-			StaticBlock blk2 = Parser.compileSafeOrNull(new SourceString("\"" + startupScript + "\":F", "<ayarc loader>"), StaticData.IO);
-			if (blk2 != null) {
-				_aya.queueInput(new ExecutionRequest(makeRequestID(), blk2));
-				interactive = false;
-			}
-		}
-
 		// Flush output
 		boolean unfinished_requests = _request_id_counter > 0;
 		while (unfinished_requests) {
@@ -203,9 +211,10 @@ public class InteractiveAya {
 				running = false;
 			}
 		}
+
 		
 		// interactive is set on startup. If true, this is an infinite REPL loop
-		if (interactive) {
+		if (_interactive) {
 			while (running) {
 				if (_showPromptText) {
 					out.print(AyaPrefs.getPrompt());
@@ -223,7 +232,7 @@ public class InteractiveAya {
 					continue;
 				}
 				
-				if (_echo && interactive) {
+				if (_echo && _interactive) {
 					out.println(AyaPrefs.getPrompt() + input);
 				}
 				
@@ -262,16 +271,15 @@ public class InteractiveAya {
 	public AyaThread getMainThread() {
 		return _aya;
 	}
-	
-	public static InteractiveAya createInteractiveSession(String[] args) {
+		
+	public static InteractiveAya createInteractiveSession(String workingDirectory) {
 		// Init the static data
 		StaticData.getInstance().init();
-		AyaPrefs.setArgs(args);
+		//AyaPrefs.setArgs(args);
 		
 		AyaPrefs.initDefaultWorkingDir();
-		if (args.length > 0) {
-			// First arg is working directory
-			AyaPrefs.setWorkingDir(args[0]);
+		if (workingDirectory != null) {
+			AyaPrefs.setWorkingDir(workingDirectory);
 		}
 		
 		ExecutionContext context = ExecutionContext.createRoot(StaticData.IO);
@@ -284,28 +292,46 @@ public class InteractiveAya {
 		//Use default system io (interactive in the terminal)
 		InteractiveAya iaya = new InteractiveAya(ayaThread);
 		
+		// Load ayarc
+		String pathString = Paths.get(AyaPrefs.getAyaDir(), StaticData.ayarcPath).toString().replace("\\", "\\\\");
+		iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
+
+		
 		return iaya;
 	}
 	
-	public static void main(String[] args) {
-		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
-		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
-		StaticData.FILESYSTEM = new FilesystemIO();
-
-		InteractiveAya iaya = createInteractiveSession(args);
-		
-		// argument[0] is always the working directory, check for args 1+
-		if (args.length > 1) {
-			if (args[1].equals("-i")) {
-				setInteractive(true);
-			}
-		}
-
-		int resultCode = iaya.loop();
-		System.exit( resultCode );
-	}
+	/**
+	 * Helper function for main that creates requests and adds them to the interactive session
+	 * @param source
+	 * @param expression
+	 */
+//	private void _enqueueInput(String source, String expression) {
+//		StaticBlock blk = Parser.compile(new SourceString(expression, "<input>"));
+//		ExecutionRequest req = new ExecutionRequest(iaya.makeRequestID(), blk);
+//	}
 	
-	public static void setInteractive(boolean b) {
-		interactive = b;
+//	public static void main(String[] args) {
+//		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
+//		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
+//		StaticData.FILESYSTEM = new FilesystemIO();
+//
+//		
+//		final int RESCODE_OK  = 0;
+//		final int RESCODE_ERR = 1;
+//		
+//		int resultCode = RESCODE_OK;
+//		InteractiveAya iaya = createInteractiveSession(args);
+//
+//		
+//		// argument[0] is always the working directory, check for args 1+
+//		
+//			
+//		resultCode = iaya.loop();
+//
+//		System.exit( resultCode );
+//	}
+	
+	public void setInteractive(boolean b) {
+		_interactive = b;
 	}
 }
