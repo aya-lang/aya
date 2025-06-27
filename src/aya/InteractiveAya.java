@@ -152,7 +152,7 @@ public class InteractiveAya {
 		_showPromptText = false;
 	}
 	
-	public static void printResult(AyaStdIO io, ExecutionResult result) {
+	public static void printResult(AyaStdIO io, ExecutionResult result, boolean raw) {
 		if (result != null) {
 			switch (result.getType()) {
 			case ExecutionResult.TYPE_SUCCESS:
@@ -162,7 +162,11 @@ public class InteractiveAya {
 					ArrayList<Obj> data = res.getData();
 					if (data.size() > 0) {
 						for (int i = 0; i < data.size(); i++) {
-							io.out().print(data.get(i));
+							if (raw) {
+								io.out().print(data.get(i).str());
+							} else {
+								io.out().print(data.get(i));
+							}
 							if (i < data.size() - 1) io.out().print(' ');
 						}
 						io.out().println();
@@ -193,6 +197,7 @@ public class InteractiveAya {
 		PrintStream out = _io().out();
 		PrintStream err = _io().err();		
 		Scanner scanner = ((ScannerInputWrapper)(_io().inputWrapper())).getScanner();
+		boolean rawOutput = !_interactive;
 		
  		_aya.start();
 		
@@ -201,7 +206,7 @@ public class InteractiveAya {
 		while (unfinished_requests) {
 			try {
 				ExecutionResult res = _aya.waitForResponse();
-				printResult(_io(), res);
+				printResult(_io(), res, rawOutput);
 				
 				// done?
 				if (res.id() >= _request_id_counter) unfinished_requests = false;
@@ -244,7 +249,7 @@ public class InteractiveAya {
 						while (_aya.hasPendingTasks()) {
 							ExecutionResult result = _aya.waitForResponse();
 							if (result.id() == request.id()) {
-								printResult(_io(), result);
+								printResult(_io(), result, rawOutput);
 							}
 						}
 					} catch (InterruptedException e) {
