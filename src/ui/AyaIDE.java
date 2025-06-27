@@ -10,8 +10,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -387,7 +389,7 @@ public class AyaIDE extends JFrame
 		
 		public CLIOptions() { }
 		
-		public static CLIOptions parse(String[] args) throws RuntimeException {
+		public static CLIOptions parse(String[] args, String pipedInput) throws RuntimeException {
 			CLIOptions options = new CLIOptions();
 			
 			// Special case for double clicking the jar icon: Just launch the GUI
@@ -464,7 +466,9 @@ public class AyaIDE extends JFrame
 					}
 				}
 			} else {
-				options.mode = MODE_REPL;
+				if (pipedInput == null) {
+					options.mode = MODE_REPL;
+				}
 			}
 				
 			return options;
@@ -479,9 +483,19 @@ public class AyaIDE extends JFrame
 		StaticData.FILESYSTEM = new FilesystemIO();
 		AyaPrefs.setArgs(args);
 		
+		// Something was piped in, add it to the input queue
+		String pipedInput = null;
+		try {
+			if (System.in.available() > 0) {
+		        pipedInput = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		CLIOptions options = new CLIOptions();
 		try {
-			options = CLIOptions.parse(args);
+			options = CLIOptions.parse(args, pipedInput);
 		} catch (RuntimeException e) {
 			StaticData.IO.out().print(e.getMessage());
 			System.exit(RESCODE_ERR);
@@ -499,6 +513,8 @@ public class AyaIDE extends JFrame
 		
 		InteractiveAya iaya = InteractiveAya.createInteractiveSession(options.workingDir);
 		
+
+		
 		if (options.autoImportGolf) {
 			iaya.compileAndQueueSystemInput("<system>", "require golf *");
 		}
@@ -512,6 +528,10 @@ public class AyaIDE extends JFrame
 			iaya.compileAndQueueSystemInput("-p", "\"\"\"" + options.packageToRun + "\"\"\" pkg.run");
 		}
 		
+		if (pipedInput != null) {
+			iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
+		}
+		
 		if (options.fileToRun != null) {
 			Path path = Paths.get(options.fileToRun);
 			if (!path.isAbsolute()) {
@@ -521,6 +541,8 @@ public class AyaIDE extends JFrame
 			
 			iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
 		}
+		
+
 		
 		if (options.mode == CLIOptions.MODE_EXIT) {
 			iaya.setInteractive(false); // Exit once complete
