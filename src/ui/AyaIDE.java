@@ -10,8 +10,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -22,6 +26,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import aya.AyaPrefs;
 import aya.AyaStdIO;
 import aya.AyaThread;
 import aya.ExecutionRequest;
@@ -48,6 +53,8 @@ public class AyaIDE extends JFrame
 			+ "Source: github.com/nick-paul/aya-lang\n"
 			+ "Wiki: github.com/nick-paul/aya-lang/wiki";
 
+	private final static int RESCODE_OK  = 0;
+	private final static int RESCODE_ERR = 1;
 
 
 	private AyaThread _aya;
@@ -349,27 +356,205 @@ public class AyaIDE extends JFrame
 	public InputStream getInputStream() {
 		return _interpreter.getIn();
 	}
+	
+	private static class CLIOptions {
+		// What to do after processing CLI args
+		public static final int MODE_EXIT = 0; // Exit after processing CLI args
+		public static final int MODE_REPL = 1; // Enter the command line REPL
+		public static final int MODE_GUI = 2; // Open the GUI
+		
+		public static final int SPECIAL_MODE_NONE = 0; // Print help text and exit
+		public static final int SPECIAL_MODE_PRINT_HELP = 1; // Print help text and exit
+		public static final int SPECIAL_MODE_PRINT_VERSION = 2; // Print help text and exit
+
+
+		
+		// Options
+		
+		// Runtime working directory
+		public String workingDir = null;
+		// If true, import the golf standard library
+		public boolean autoImportGolf = false;
+		// If not null, run this expression on startup
+		public String expressionToRun = null;
+		// Interactive mode
+		// By default, if no args are provided, we open the GUI
+		public int mode = MODE_EXIT;
+		// Special args that don't require the aya runtime
+		public int specialMode = SPECIAL_MODE_NONE;
+		// File to run
+		public String fileToRun = null;
+		// If not null, run this package
+		public String packageToRun = null;
+		
+		public CLIOptions() { }
+		
+		public static CLIOptions parse(String[] args, String pipedInput) throws RuntimeException {
+			CLIOptions options = new CLIOptions();
+			
+			// Special case for double clicking the jar icon: Just launch the GUI
+			if (args.length == 0) {
+				options.mode = MODE_GUI;
+				return options;
+			}
+
+			// First arg is always the working directory
+			if (args.length >= 1) {
+				options.workingDir = args[0];
+			}
+			
+			// 2nd arg is flags or a special case like --help or --version
+			// Only compact format for args is supported
+			// The first arg must start with a "-" and may include any of the following characters
+			// i: Run in CLI mode
+			// e: Run an expression give by arg[2], then exit
+			// g: Import golf standard library before running code
+			// p: Run pkg.run on arg[2]
+			if (args.length >= 2) {
+				String arg = args[1];
+				
+				// Special case for --help and --version
+				if (arg.equals("--help")) {
+					options.specialMode = SPECIAL_MODE_PRINT_HELP;
+				} else if (arg.equals("--version")) {
+					options.specialMode = SPECIAL_MODE_PRINT_VERSION;
+				} else {
+					// aya <file>.aya
+					if (arg.endsWith(".aya")) {
+						options.fileToRun = arg;
+					}
+					// aya -<options>
+					else if (arg.startsWith("-")) {
+						
+						// Auto import golf
+						if (arg.contains("g")) {
+							options.autoImportGolf = true;
+							//iaya.compileAndQueueInput("<system>", "import golf");
+						}
+						
+						// Enter REPL after running initial requests
+						if (arg.contains("i")) {
+							options.mode = MODE_REPL;							
+						}
+						// Enter REPL after running initial requests
+						if (arg.contains("x")) {
+							options.mode = MODE_GUI;							
+						}
+						
+						// Options that require a 3rd argument
+						if (arg.contains("p")) {
+							if (args.length >= 3) {
+								options.packageToRun = args[2];
+							} else {
+								throw new RuntimeException("Error: Please provide a package name");
+							}
+						} else if (arg.contains("e")) {
+							if (args.length >= 3) {
+								options.expressionToRun = args[2];
+							} else {
+								throw new RuntimeException("Error: No expression provided");
+							}
+						} else {
+							// fallback, 3rd arg may be a filename
+							if (args.length >= 3 && args[2].contains(".aya")) {
+								options.fileToRun = args[2];
+							}
+						}
+						
+					} else {
+						throw new RuntimeException("Error: Invalid argument " + options);
+					}
+				}
+			} else {
+				if (pipedInput == null) {
+					options.mode = MODE_REPL;
+				}
+			}
+				
+			return options;
+		}
+	}
+	
 
 	public static void main(String[] args) {
 		// Set to System.in/out/err. If using the GUI, these will be changed to IDE GUI later
 		StaticData.IO = new AyaStdIO(System.out, System.err, System.in, new ScannerInputWrapper(System.in));
 		StaticData.HTTP_DOWNLOADER = new HTTPDownloader();
 		StaticData.FILESYSTEM = new FilesystemIO();
+		AyaPrefs.setArgs(args);
+		
+		// Something was piped in, add it to the input queue
+		String pipedInput = null;
+		try {
+			if (System.in.available() > 0) {
+		        pipedInput = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		CLIOptions options = new CLIOptions();
+		try {
+			options = CLIOptions.parse(args, pipedInput);
+		} catch (RuntimeException e) {
+			StaticData.IO.out().print(e.getMessage());
+			System.exit(RESCODE_ERR);
+		}
 
-		InteractiveAya iaya = InteractiveAya.createInteractiveSession(args);
+		// Special cases
+		
+		if (options.specialMode == CLIOptions.SPECIAL_MODE_PRINT_HELP) {
+			StaticData.IO.out().print(InteractiveAya.HELP_TEXT);
+			System.exit(RESCODE_OK);
+		} else if (options.specialMode == CLIOptions.SPECIAL_MODE_PRINT_VERSION) {
+			StaticData.IO.out().print(StaticData.VERSION_NAME);
+			System.exit(RESCODE_OK);						
+		}
+		
+		InteractiveAya iaya = InteractiveAya.createInteractiveSession(options.workingDir);
+		
 
-		boolean readstdin = StaticData.IO.isInputAvaiable();
+		
+		if (options.autoImportGolf) {
+			iaya.compileAndQueueSystemInput("<system>", "require golf *");
+		}
+		
+		if (options.expressionToRun != null) {
+			iaya.compileAndQueueSystemInput("-e", options.expressionToRun);
+		}
+		
+		if (options.packageToRun != null) {
+			iaya.compileAndQueueSystemInput("-p", "import pkg");
+			iaya.compileAndQueueSystemInput("-p", "\"\"\"" + options.packageToRun + "\"\"\" pkg.run");
+		}
+		
+		if (pipedInput != null) {
+			iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
+		}
+		
+		if (options.fileToRun != null) {
+			Path path = Paths.get(options.fileToRun);
+			if (!path.isAbsolute()) {
+				path = Paths.get(AyaPrefs.getAyaDir(), options.fileToRun);
+			}
+			String pathString = path.toString().replace("\\", "\\\\");
+			
+			iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
+		}
+		
 
-		if (args.length > 1 || readstdin) {
-			// If reading from STDIN (piped input), don't use interactive mode
-			if (readstdin) InteractiveAya.setInteractive(false);
-		} else {
-			// Use the GUI
-
+		
+		if (options.mode == CLIOptions.MODE_EXIT) {
+			iaya.setInteractive(false); // Exit once complete
+		} else if (options.mode == CLIOptions.MODE_REPL) {
+			iaya.setInteractive(true);
+		} else if (options.mode == CLIOptions.MODE_GUI) {
+			iaya.setInteractive(true);
+			
 			//Load and initialize the ide
 			AyaIDE ide = new AyaIDE(iaya.getMainThread());
 
-			// Aya Prefs
+			// Redirect IO to GUI
 			StaticData.IO.setOut(ide.getOutputStream());
 			StaticData.IO.setErr(ide.getOutputStream());
 			StaticData.IO.setIn(ide.getInputStream(), new ScannerInputWrapper(ide.getInputStream()));
@@ -380,8 +565,11 @@ public class AyaIDE extends JFrame
 
 			//Grab focus
 			ide._interpreter.getInputLine().grabFocus();
-
 		}
+
+
+		//if (readstdin) InteractiveAya.setInteractive(false);
+		
 
 		int resultCode = iaya.loop();
 		System.exit(resultCode);

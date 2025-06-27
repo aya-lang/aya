@@ -8,7 +8,7 @@
 .# Import standard library
 :(sys.ad) "/std"+ :(sys.readdir) :# { ".aya".^ S W } :# {name, 
     name "golf" =! {
-        "importing $name...":P 
+        .# "importing $name...":P 
         name __aya__.importlib.import
     } ?
 };
