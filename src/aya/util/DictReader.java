@@ -111,6 +111,15 @@ public class DictReader {
 		}
 	}
 
+	public List getList(Symbol key) {
+		Obj o = _dict.getSafe(key);
+		if (o == null || !o.isa(Obj.LIST)) {
+			return null;
+		} else {
+			return Casting.asList(o);
+		}
+	}
+
 	public NumberList getNumberListEx(Symbol key) {
 		try {
 			return Casting.asNumberList(_dict.get(key));

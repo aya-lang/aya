@@ -1,0 +1,113 @@
+"""
+""":newline;
+
+.#? sort attributes alphabetically by 'ns:name' so that object comparison does not fail due to different orders
+{xml_obj,
+	xml_obj.attributes {att,
+		att ::ns H {"$(att.ns):$(att.name)"}{att.name}.?
+	} .C xml_obj.:attributes;
+	
+	xml_obj.content # {child,
+		child :& :T ::str =! { sort_attributes }?
+	} xml_obj.:content;
+	
+	xml_obj
+}:sort_attributes;
+
+.# namespace 'ns' is defined, but 'ns2' is not - this should be allowed to be useful for parsing fragments.
+"""<root xmlns:ns="nsUrl">
+	<meta>
+		<!-- comment -->
+		<![CDATA[any<!--character-->data]]>
+		<?processing instruction?>
+	</meta>
+	<attrNode att="test"/>
+	<ns:nsNode ns2:att2="test2" att3="test3">
+		<foo/>
+		<bar/>
+	</ns:nsNode>
+</root>""" :(xml.loads) sort_attributes :xml_obj;
+
+:{
+	0:meta;
+	"root":name;
+	[
+		:{ "xmlns":ns; "ns":name; "nsUrl":value; }
+	]:attributes;
+	[
+		"$(newline)\t"
+		:{
+			0:meta;
+			"meta":name;
+			[]:attributes;
+			[
+				"$(newline)\t\t"
+				:{
+					1:meta;
+					8:meta_type;
+					"#comment":name;
+					[]:attributes;
+					[ " comment " ]:content;
+				}
+				"$(newline)\t\t"
+				:{
+					1:meta;
+					4:meta_type;
+					"#cdata-section":name;
+					[]:attributes;
+					[ "any<!--character-->data" ]:content;
+				}
+				"$(newline)\t\t"
+				:{
+					1:meta;
+					7:meta_type;
+					"processing":name;
+					[]:attributes;
+					[ "instruction" ]:content;
+				}
+				"$(newline)\t"
+			]:content;
+		}
+		"$(newline)\t"
+		:{
+			0:meta;
+			"attrNode":name;
+			[
+				:{ "att":name; "test":value; }
+			]:attributes;
+			[]:content;
+		}
+		"$(newline)\t"
+		:{
+			0:meta;
+			"ns":ns;
+			"nsNode":name;
+			[
+				:{ "ns2":ns; "att2":name; "test2":value; }
+				:{ "att3":name; "test3":value; }
+			]:attributes;
+			[
+				"$(newline)\t\t"
+				:{ 0:meta; "foo":name; []:attributes; []:content; }
+				"$(newline)\t\t"
+				:{ 0:meta; "bar":name; []:attributes; []:content; }
+				"$(newline)\t"
+			]:content;
+		}
+		"$(newline)"
+	]:content
+} sort_attributes :aya_obj;
+
+
+[
+
+    { xml_obj aya_obj }
+
+    {
+        aya_obj :(xml.dumps) :(xml.loads) sort_attributes
+        aya_obj
+    }
+	
+	.# the :(xml.dumps) output should match the input exactly (including whitespace) - except for the order of attributes, which is why there is no test for this.
+
+] :# { test.test }
