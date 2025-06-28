@@ -38,6 +38,7 @@ import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;
+import aya.util.FileUtils;
 
 
 @SuppressWarnings("serial")
@@ -531,19 +532,13 @@ public class AyaIDE extends JFrame
 		if (pipedInput != null) {
 			iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
 		}
-		
-		if (options.fileToRun != null) {
-			Path path = Paths.get(options.fileToRun);
-			if (!path.isAbsolute()) {
-				path = Paths.get(AyaPrefs.getAyaDir(), options.fileToRun);
-			}
-			String pathString = path.toString().replace("\\", "\\\\");
-			
-			iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
-		}
-		
 
-		
+		if (options.fileToRun != null) {
+				File f = FileUtils.resolveFile(options.fileToRun);
+				String pathString = f.getPath().toString().replace("\\", "\\\\");
+				iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
+		}
+
 		if (options.mode == CLIOptions.MODE_EXIT) {
 			iaya.setInteractive(false); // Exit once complete
 		} else if (options.mode == CLIOptions.MODE_REPL) {
