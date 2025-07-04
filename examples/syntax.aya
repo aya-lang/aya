@@ -29,6 +29,11 @@ def foo::.+ { }
 def foo:::+ { }
 def foo::M+ { }
 
+mat.foo.:bar .. {
+
+}
+
+
 class point
 
 struct point {x y}

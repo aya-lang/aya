@@ -38,6 +38,8 @@
 "test/unicode" load_test
 "test/misc" load_test
 "test/test_op_overload" load_test
+"test/tie" load_test
+
 
 .# Base
 "test/base/test_sym" load_test

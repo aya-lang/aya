@@ -1,6 +1,7 @@
 package aya.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import aya.AyaStdIO;
 import aya.StaticData;
@@ -12,11 +13,13 @@ import aya.instruction.DataInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.ListLiteralInstruction;
+import aya.instruction.flag.TieFlagInstruction;
 import aya.instruction.index.GetExprIndexInstruction;
 import aya.instruction.index.GetNumberIndexInstruction;
 import aya.instruction.index.GetObjIndexInstruction;
 import aya.instruction.index.GetVarIndexInstruction;
 import aya.instruction.index.SetExprIndexInstruction;
+import aya.instruction.index.SetIndexInstruction;
 import aya.instruction.index.SetNumberIndexInstruction;
 import aya.instruction.index.SetObjIndexInstruction;
 import aya.instruction.index.SetVarIndexInstruction;
@@ -52,6 +55,7 @@ import aya.parser.tokens.SpecialToken;
 import aya.parser.tokens.StdToken;
 import aya.parser.tokens.StringToken;
 import aya.parser.tokens.SymbolToken;
+import aya.parser.tokens.TieToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
 import aya.util.CharUtils;
@@ -100,9 +104,15 @@ public class Parser {
 
 				continue;
 			}
+			
+			// Tie operator (..)
+			if (current == '.' && in.hasNext() && in.peek() == '.') {
+				tokens.add(new TieToken(in.currentRef()));
+				in.next(); // skip second '.'
+			}
 
 			// BlockEvaluator Comment
-			if (current == '.' && in.hasNext() && in.peek() == '{') {
+			else if (current == '.' && in.hasNext() && in.peek() == '{') {
 				in.next(); // Skip the '{'
 
 				StringBuilder comment = new StringBuilder();
@@ -603,6 +613,8 @@ public class Parser {
 	public static InstructionStack generate(TokenQueue tokens_in) throws ParserException {
 		InstructionStack is = new InstructionStack();
 		TokenStack stk = new TokenStack(tokens_in);
+		
+		boolean has_tie = false;
 
 		while (stk.hasNext()) {
 			Token current = stk.pop();
@@ -700,7 +712,7 @@ public class Parser {
 				is.push(new OperatorInstruction(current.getSourceStringRef(), Ops.OP_POUND));
 				is.push(blk_ins);
 			}
-
+			
 			else if (current.isa(Token.TICK)) {
 				BlockLiteralInstruction blk_ins = captureUntilOp(is, tokens_in);
 				is.push(blk_ins);
@@ -716,7 +728,12 @@ public class Parser {
 				is.push(new OperatorInstruction(current.getSourceStringRef(), ColonOps.OP_COLON_POUND));
 				is.push(next);
 			}
-
+			
+			else if (current.isa(Token.TIE)) {
+				has_tie = true;
+				is.push(current.getInstruction());
+			}
+			
 			else if (current.isa(Token.FN_QUOTE)) {
 				if (stk.hasNext()) {
 					if (stk.peek().isa(Token.VAR)) {
@@ -743,11 +760,57 @@ public class Parser {
 			}
 
 		}
+		
+		if (has_tie) {
+			resolveTieInstructions(is.getInstrucionList());
+		}
 
 		return is;
 
 	}
 	
+	
+	/**
+	 * Processes a list of Instruction objects. If a TieFlagInstruction is found,
+	 * it is removed, and the instructions immediately preceding and succeeding it are swapped.
+	 * Throws an ParserException if a TieFlagInstruction is found at the
+	 * beginning or end of the list.
+	 *
+	 * @param instructions The list of Instruction objects to process.
+	 * @throws ParserException 
+	 */
+	private static void resolveTieInstructions(ArrayList<Instruction> instructions) throws ParserException {
+		// Iterate backwards to safely remove elements without affecting indices
+		// of elements yet to be processed.
+		for (int i = instructions.size() - 1; i >= 0; i--) {
+			Instruction currentInstruction = instructions.get(i);
+
+			if (currentInstruction instanceof TieFlagInstruction) {
+				// Check if the TieFlagInstruction is at the beginning or end
+				if (i == 0 || i == instructions.size() - 1) {
+					throw new ParserException("tie (..) cannot be at front or back of block", currentInstruction.getSource());
+				}
+
+				// Remove the TieFlagInstruction
+				instructions.remove(i);
+
+				// Now, swap the elements that were originally at i-1 and i+1.
+				// Note: After removing the element at 'i', the element that was at i+1
+				// is now at 'i'. The element that was at 'i-1' is still at 'i-1'.
+				// So, we need to swap the element at 'i-1' with the element now at 'i'.
+				Collections.swap(instructions, i-1, i);
+				
+				// Special case for keyvar (.:foo) and index (.:[]) assignments
+				// When combining tie (..) with a set index or set keyvar instruction, 
+				// we also insert a swap (\) so that the order of instructions is correct at runtime
+				if (instructions.get(i-1) instanceof SetKeyVariableInstruction || 
+					instructions.get(i-1) instanceof SetIndexInstruction) {
+					instructions.add(i, Ops.getOp('\\', currentInstruction.getSource()));
+				}
+			}
+		}
+	}
+
 	private static BlockLiteralInstruction captureUntilOp(InstructionStack is, TokenQueue tokens_in) throws SyntaxError {
 		SourceStringRef ref = tokens_in.peek().getSourceStringRef();
 		if (is.isEmpty()) {

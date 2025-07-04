@@ -1,0 +1,145 @@
+
+[
+
+.#
+.# Basic Swaps
+.#
+
+{
+    [1 .. 2]
+    [2 1]
+}
+
+{
+    [1 2 .. 3]
+    [1 3 2]
+}
+
+{
+    [1 .. 2 3]
+    [2 1 3]
+}
+
+.#
+.# Parens
+.#
+
+{
+    [1 .. (2 3)]
+    [2 3 1]
+}
+
+{
+    [(1 2) .. 3]
+    [3 1 2]
+}
+
+.#
+.# Basic operators
+.#
+
+{:list([1 2 3]), 
+    .# Loop style syntax
+    list O..{x,
+        x 1 +
+    }
+    [2 3 4]
+}
+
+{
+    .# If style syntax
+    0 0 = ?..{
+        100
+    }
+    100
+}
+
+{
+    .# Single if else style syntax (requires parens)
+    0 1 = .?..({
+        100
+    } {
+        200
+    })
+
+    200
+}
+
+{
+    .# if else chain
+    :?..{
+        (0 1 =) {
+            100
+        } (0 2 =) {
+            200
+        } {
+            300
+        }
+    }
+    300
+}
+
+
+
+
+.#
+.# Assignments
+.#
+
+{:double,
+    :double .. {
+        2 *
+    };
+    3 double
+    6
+}
+
+{:mat,
+    :mat .. [
+        [1 2 3]
+        [4 5 6]
+        [7 8 9]
+    ]
+    mat.[1].[1]
+    5
+}
+
+.# Nested Assignments
+
+{:mod(:{}),
+    mod.:double .. {
+        2 *
+    };
+
+    3 mod.double
+    6
+}
+
+{:mod(:{:{}:submod}),
+    mod.submod.:double .. {
+        2 *
+    };
+
+    3 mod.submod.double
+    6
+}
+
+.# List Assignments
+
+{:l([1 2 3]),
+    l.:[1] .. 99 ;
+    l
+    [1 99 3]
+}
+
+.# Combos
+
+{:dict(:{[1 2 3]:list}),
+    dict.list.:[1] .. 99 ;
+    dict.list
+    [1 99 3]
+}
+
+
+
+] :# { test.test } ;

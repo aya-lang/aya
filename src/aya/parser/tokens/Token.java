@@ -48,6 +48,7 @@ public abstract class Token {
 	
 	public static final int DICT            = TypeIDs.T_DICT;
 	public static final int NEXT_BLOCK_IS_DICT = TypeIDs.T_NEXT_BLOCK_IS_DICT;
+	public static final int TIE             = TypeIDs.T_TIE;
 	
 	
 	protected Token(int type, SourceStringRef source) {
