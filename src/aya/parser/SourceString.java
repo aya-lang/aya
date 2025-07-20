@@ -100,6 +100,13 @@ public class SourceString {
 		return lineCount;
 	}
 	
+	
+	public int getLineCharNumber(int charIndex) {
+		IndexedSourceLine isl = this.getIndexedLine(charIndex);
+		return isl.index;
+	}
+
+	
 	public String getContextStr(int charIndex) {
 		StringBuilder sb = new StringBuilder();
 		IndexedSourceLine line = this.getIndexedLine(charIndex);

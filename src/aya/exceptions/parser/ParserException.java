@@ -9,13 +9,22 @@ import aya.parser.SourceStringRef;
 @SuppressWarnings("serial")
 public class ParserException extends AyaException {
 	
+	// Used by the linter to get just the error message without the extra context string
+	String errorMessageNoContext;
+	
 	protected ParserException(Symbol type, String msg, SourceStringRef source) {
 		super(type, msg + "\n" + source.getContextStr());
 		this.setSource(source);
+		this.errorMessageNoContext = msg;
 	}
 
 	public ParserException(String msg, SourceStringRef source) {
 		super(SymbolConstants.PARSER_ERR, msg + "\n" + source.getContextStr());
+		this.errorMessageNoContext = msg;
+	}
+	
+	public String getErrorMessageNoContext() {
+		return this.errorMessageNoContext;
 	}
 
 	@Override
