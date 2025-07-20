@@ -11,8 +11,8 @@ addr port socket.connect :conn;
 
 "Got connection!" :P
 
-{
-    {
+.K..({
+    W..{
         "> " .P
         :R :data;
         "Sending '$data'..." :P
@@ -22,7 +22,7 @@ addr port socket.connect :conn;
         "Server replied with '$reply'" :P
 
         1 .# Loop forever
-    } W
+    }
 } {e,
     "Connection closed" :P
-} .K
+})

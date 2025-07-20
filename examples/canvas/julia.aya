@@ -1,6 +1,6 @@
 import viewmat
 
-def ::julia { kwargs :
+:julia .. { kwargs :
     .# kwargs
     width(200)
     height(180)
@@ -33,7 +33,7 @@ def ::julia { kwargs :
     0 z :E L :div_time;
     1 z :E L :m; .# mask
 
-    max_iterations .R # {i,
+    max_iterations .R O..{i,
         .# z[m] = z[m]**2 + c[m]
         z 2 ^ c + z.:[m];
 
@@ -46,9 +46,13 @@ def ::julia { kwargs :
 
     div_time
 }
+{
 
-:{} julia 4 viewmat.draw_scaled.show
+.#:{} julia 4 viewmat.draw_scaled.show
 
 .# Higher resolution; may take ~20 seconds
-.# :{ 400:width 360:height 130:max_iterations } julia viewmat.show
+:{ 400:width 360:height 130:max_iterations } julia viewmat.show
 .# :{ 400:width 360:height 250:max_iterations :-0.7269i0.1889:c } julia viewmat.show
+}.time :P
+
+"Press enter to exit":P:R

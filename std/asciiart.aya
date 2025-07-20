@@ -42,24 +42,24 @@ class asciiart
 .# alias
 asciiart:aa;
 
-def asciiart::__init__ {str self,
-    str :T ::str = {
+asciiart.:__init__ .. {str self,
+    str :T ::str = .? ({
         [str] self.:list ;
     } {
         .# list
         .# Make sure all are at least as long as the longest
         str :&#E .max #.< :str ;
         str self.:list ;
-    } .?
-}
+    })
+};
 
-def asciiart::__eq__ {self c::char,
-    self.list :# { :# {; c}} self.M!
-}
+asciiart.:__eq__ .. {self c::char,
+    self.list O.. { O.. {; c}} self.M!
+};
 
-def asciiart::__str__ {self,
+asciiart.:__str__ .. {self,
     self.list "\n" %
-}
+};
 
 def asciiart::__repr__ {self,
     "asciiart:\n$(self.__str__)\n"

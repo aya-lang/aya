@@ -363,7 +363,7 @@ def importlib::is_main {
 }
 
 def ::main {{
-    ~ __aya__.importlib.is_main {~} ?
+    ~ __aya__.importlib.is_main {"main":P~~} ?
 } 1 :`}
 
 

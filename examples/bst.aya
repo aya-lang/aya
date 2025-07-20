@@ -4,83 +4,85 @@
 class bst
 
 
-def bst::__init__ {data self,
-    data  self.:data;
-    ::nil self.:left;
-    ::nil self.:right;
-}
+    bst.:__init__ .. {data self,
+        data  self.:data;
+        ::nil self.:left;
+        ::nil self.:right;
+    };
 
 
-def bst::_print {node depth bst,
-    " |" depth 1 + L W .P
-    node :T ::bst = {
-        node.right depth 1+ bst._print
-        node.left  depth 1+ bst._print
-    } { "-":P } .?
-}
-
-def bst::_insert {data node parent::bst side::sym bst,
-    node :T ::bst = {
-        data node.data > {
-            data node.right node ::right bst._insert
+    bst.:_print {node depth bst,
+        " |" depth 1 + L W .P
+        node :T ::bst = .?..({
+            node.right depth 1+ bst._print
+            node.left  depth 1+ bst._print
         } {
-            data node.data < {
-                data node.left node ::left bst._insert
-            } ?
-        } .?
-    } {
-        data bst! parent.:[side];
-    } .?
-}
+            "-":P
+        })
+    };
+
+    bst.:_insert .. {data node parent::bst side::sym bst,
+        node :T ::bst = .?..({
+            data node.data > .?..({
+                data node.right node ::right bst._insert
+            } {
+                data node.data < ?..{
+                    data node.left node ::left bst._insert
+                }
+            })
+        } {
+            data bst! parent.:[side];
+        })
+    };
 
 
-def bst::insert {data self : bst^,
-    data self.data > {
-        data self.right self ::right bst._insert
-    } {
-        data self.left  self ::left  bst._insert
-    } .?
-}
+    bst.:insert .. {data self : bst^,
+        data self.data > .?..({
+            data self.right self ::right bst._insert
+        } {
+            data self.left  self ::left  bst._insert
+        })
+    };
 
 
 .# Tree printing algorithm from: https://stackoverflow.com/a/50650932
-def ::printtree {b::bst,
-  b ::nil = ! {
-    b.data :P
-    b "" printsubtree
-  } ?
-}
+:printtree .. {b::bst,
+    b ::nil = ! ?..{
+        b.data :P
+        b "" printsubtree
+    }
+};
 
-def ::printsubtree {t::bst prefix::str : hasleft hasright,
-  t ::nil = ! {
-    t.right ::nil = ! :hasright;
-    t.left  ::nil = ! :hasleft;
+:printsubtree .. {t::bst prefix::str : hasleft hasright,
+    t ::nil = ! ?..{
+        t.right ::nil = ! :hasright;
+        t.left  ::nil = ! :hasleft;
 
-    hasleft hasright | {
-      prefix .P
-      hasleft  hasright & "├── " "" .? .P
-      hasleft! hasright & "└── " "" .? .P
+        hasleft hasright | ?..{
+            prefix .P
+            hasleft  hasright & "├── " "" .? .P
+            hasleft! hasright & "└── " "" .? .P
 
-      hasright {: print_strand(0) newprefix,
-        hasleft hasright & {
-          t.right.right ::nil = !
-          t.right.left  ::nul = !
-          | :print_strand;
-        } ?
-        prefix (print_strand "│   " "    " .?) + :newprefix;
-        t.right.data :P
-        t.right newprefix printsubtree
-      } ?
+            hasright ?..{: print_strand(0) newprefix,
+                hasleft hasright & ?..{
+                    t.right.right ::nil = !
+                    t.right.left  ::nul = !
+                    | :print_strand;
+                }
+                prefix (print_strand "│   " "    " .?) + :newprefix;
+                t.right.data :P
+                t.right newprefix printsubtree
+            }
 
-      hasleft {
-        (hasright prefix "" .?) .P
-        "└── " .P
-        t.left.data :P
-        t.left "$prefix    " printsubtree
-      } ?
-    } ?
-  } ?
-}
+            hasleft ?..{
+                (hasright prefix "" .?) .P
+                "└── " .P
+                t.left.data :P
+                t.left "$prefix    " printsubtree
+            }
+        }
+    }
+};
 
 50 bst! :b;
 .# Insert 10 random values

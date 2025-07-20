@@ -12,6 +12,6 @@
 };
 
 .# print the doors
-list E.R :# {door,
+list E.R O..{door,
   list.[door] {"door $(doorB) is open" :P} ?
 };

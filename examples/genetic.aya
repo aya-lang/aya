@@ -13,57 +13,61 @@ struct dna {data fitness}
 
 .# The fitness is defined as the number of matches
 .# over the length of the array
-def dna::calc_fitness {target::dna self,
+dna.:calc_fitness..{target::dna self,
     .# Leave the fitness on the stack
     target.data self.data {=} .& .E \W\ / $ self.:fitness;
-}
+};
 
 .# Apply a random mutation to the dna
-def dna::mutate {self,
-    self.data :# {.Q 0.02 < {; new_char} ? } self.:data;
+dna.:mutate..{self,
+    self.data O..{
+        .Q 0.02 < ?..{
+            ; new_char
+        }
+    } self.:data;
     self
-}
+};
 
 .# Overload = operator
-def dna::__eq__ {other self,
+dna.:__eq__..{other self,
     other.data self.data =
-}
+};
 
 .# Take half of one and half of the other
 .# Assume equal length
-{a::dna b::dna : half len,
+:crossover..{a::dna b::dna : half len,
     a.data E :len;
     len 2 .% :half;
     a.data half .< 
     b.data len half - .>
     + 0 dna!
-}:crossover;
+};
 
 
 struct population { pop pop_fitness }
 
 .# Generate a random population
-{pop_size dna_size,
+:rand_pop..{pop_size dna_size,
     [pop_size,; dna_size rand_dna] 0.0 population!
-}:rand_pop;
+};
 
-def population::__repr__ {self,
+population.:__repr__..{self,
     self.pop #P "\n" %
-}
+};
 
 .# Calculate the fitness for each dna and
 .# then calculate the overall fitness
 .# Do not leave fitness on stack
-def population::calc_fitness {target::dna self,
+population.:calc_fitness..{target::dna self,
     self.pop #{target \.calc_fitness} ;
-}
+};
 
-{
+:pickweighted.. {
     cumsum        .# Create a cumultive sum list
     :&.[-1] .Q *  .# Generate a random number between 0 and the total sum
     <             .# All items less than the number become 1, else 0
     0 N \;        .# Find the first 0
-}:pickweighted;
+};
 
 .# Select a random DNA from the population based on
 .# the fitness of the DNA (higher fitness = more
@@ -79,11 +83,11 @@ def population::pick {self : fit_list,
 .#   2) apply the crossover function to create a child
 .#   3) apply a random mutation to the child
 .#   4) repeat for each DNA in the population
-{pop::population,
-    pop.pop ER :# {;
+:next_gen .. {pop::population,
+    pop.pop ER O..{;
         pop.pick pop.pick crossover.mutate
     } 0.0 population!
-}:next_gen;
+}
 
 .# Select the DNA with the highest fithess from
 .#    the population
