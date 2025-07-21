@@ -35,14 +35,20 @@ public class StandaloneAya {
     
     // An extremely basic linter that catches syntax errors only
     // Currently the parser will stop after the first error, may need to update later
-    public static ArrayList<ParserException> lint(String input) {
+    public static ArrayList<ParserException> lint(String input, String filename) {
     	ArrayList<ParserException> errors = new ArrayList<ParserException>();
         try {
-        	Parser.compile(new SourceString(input, "<main>"));
+        	Parser.compile(new SourceString(input, filename));
         } catch (ParserException err) {
         	errors.add(err);
         }
         return errors;
+    }
+    
+    // An extremely basic linter that catches syntax errors only
+    // Currently the parser will stop after the first error, may need to update later
+    public static ArrayList<ParserException> lint(String input) {
+    	return lint(input, "<main>");
     }
     
     public static void runIsolated(String input, AyaStdIO io) {

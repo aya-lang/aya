@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -31,13 +30,16 @@ import aya.AyaStdIO;
 import aya.AyaThread;
 import aya.ExecutionRequest;
 import aya.InteractiveAya;
+import aya.StandaloneAya;
 import aya.StaticData;
+import aya.exceptions.parser.ParserException;
 import aya.io.fs.FilesystemIO;
 import aya.io.http.HTTPDownloader;
 import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;
+import aya.parser.SourceStringRef;
 import aya.util.FileUtils;
 
 
@@ -367,6 +369,8 @@ public class AyaIDE extends JFrame
 		public static final int SPECIAL_MODE_NONE = 0; // Print help text and exit
 		public static final int SPECIAL_MODE_PRINT_HELP = 1; // Print help text and exit
 		public static final int SPECIAL_MODE_PRINT_VERSION = 2; // Print help text and exit
+		public static final int SPECIAL_MODE_CHECK= 3; // Check the file then exit
+
 
 
 		
@@ -383,8 +387,8 @@ public class AyaIDE extends JFrame
 		public int mode = MODE_EXIT;
 		// Special args that don't require the aya runtime
 		public int specialMode = SPECIAL_MODE_NONE;
-		// File to run
-		public String fileToRun = null;
+		// File to run (private: use getFileToRun and hasFileToRun)
+		private String fileToRun = null;
 		// If not null, run this package
 		public String packageToRun = null;
 		
@@ -437,9 +441,15 @@ public class AyaIDE extends JFrame
 						if (arg.contains("i")) {
 							options.mode = MODE_REPL;							
 						}
+						
 						// Enter REPL after running initial requests
 						if (arg.contains("x")) {
 							options.mode = MODE_GUI;							
+						}
+						
+						// Check the file for errors, print any if they exist, then exit
+						if (arg.contains("c") ) {
+							options.specialMode = SPECIAL_MODE_CHECK;
 						}
 						
 						// Options that require a 3rd argument
@@ -474,6 +484,14 @@ public class AyaIDE extends JFrame
 				
 			return options;
 		}
+		
+		public File getFileToRun() {
+			return FileUtils.resolveFile(this.fileToRun);
+		}
+		
+		public boolean hasFileToRun() {
+			return this.fileToRun != null;
+		}
 	}
 	
 
@@ -501,19 +519,43 @@ public class AyaIDE extends JFrame
 			StaticData.IO.out().print(e.getMessage());
 			System.exit(RESCODE_ERR);
 		}
+		
 
 		// Special cases
 		
 		if (options.specialMode == CLIOptions.SPECIAL_MODE_PRINT_HELP) {
-			StaticData.IO.out().print(InteractiveAya.HELP_TEXT);
+			StaticData.IO.out().println(InteractiveAya.HELP_TEXT);
 			System.exit(RESCODE_OK);
 		} else if (options.specialMode == CLIOptions.SPECIAL_MODE_PRINT_VERSION) {
-			StaticData.IO.out().print(StaticData.VERSION_NAME);
+			StaticData.IO.out().println(StaticData.VERSION_NAME);
 			System.exit(RESCODE_OK);						
+		} else if (options.specialMode == CLIOptions.SPECIAL_MODE_CHECK) {
+			File sourceFile = options.getFileToRun();
+			try {
+				String input = FileUtils.readAllText(sourceFile);
+		    	ArrayList<ParserException> errors = StandaloneAya.lint(input, sourceFile.getAbsolutePath());
+		    	
+		    	for (ParserException pex : errors) {
+		    		SourceStringRef source = pex.getSource();
+		    		StaticData.IO.out().println(source.getFile() + ":" + 
+		    								    source.getLineNumber() + ":" + 
+		    									source.getLineCharNumber() + " : " +
+		    								    pex.getErrorMessageNoContext());
+		    	}
+		    	
+		    	if (errors.size() == 0) {
+		    		System.exit(RESCODE_OK);
+		    	} else {
+		    		System.exit(RESCODE_ERR);
+		    	}
+		    	
+			} catch (IOException e) {
+				StaticData.IO.out().println("ERROR : File does not exist: " + options.getFileToRun().getPath());
+			}
+
 		}
 		
 		InteractiveAya iaya = InteractiveAya.createInteractiveSession(options.workingDir);
-		
 
 		
 		if (options.autoImportGolf) {
@@ -533,11 +575,11 @@ public class AyaIDE extends JFrame
 			iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
 		}
 
-		if (options.fileToRun != null) {
-				File f = FileUtils.resolveFile(options.fileToRun);
-				String pathString = f.getPath().toString().replace("\\", "\\\\");
-				iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
+		if (options.hasFileToRun()) {
+			String pathString = options.getFileToRun().getPath().toString().replace("\\", "\\\\");
+			iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
 		}
+
 
 		if (options.mode == CLIOptions.MODE_EXIT) {
 			iaya.setInteractive(false); // Exit once complete

@@ -78,7 +78,7 @@ public class SourceString {
 					c = getChar(idx);
 				}
 			}
-			return new IndexedSourceLine(line.toString(), indexInLine, this.getLineNumber(charIndex));
+			return new IndexedSourceLine(line.toString(), indexInLine, this.getLineIndex(charIndex));
 		}
 	}
 	
@@ -90,7 +90,8 @@ public class SourceString {
 		return this.source;
 	}
 	
-	public int getLineNumber(int charIndex) {
+	// Zero indexed, use getLineNumber for line number
+	public int getLineIndex(int charIndex) {
 		int lineCount = 0;
 		if (this.length() > 0) {
 			for (int i = 0; i < charIndex; i++) {
@@ -99,6 +100,17 @@ public class SourceString {
 		}
 		return lineCount;
 	}
+	
+	public int getLineNumber(int charIndex) {
+		return getLineIndex(charIndex) + 1;
+	}
+	
+	
+	public int getLineCharNumber(int charIndex) {
+		IndexedSourceLine isl = this.getIndexedLine(charIndex);
+		return isl.index + 1;
+	}
+
 	
 	public String getContextStr(int charIndex) {
 		StringBuilder sb = new StringBuilder();
