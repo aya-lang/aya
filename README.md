@@ -62,12 +62,12 @@ aya> 3 4 hypot
 Pure stack based (no local function variables)
 
 ```
-aya> {J2^S.^}:hypot;
+aya> {J2^W.^}:hypot;
 ```
 
   - `x y J`: Wrap `x` and `y` in a list (`[x y]`)
   - `[] 2 ^`: Broadcast `2 ^` across the list
-  - `[] S`: Sum the list
+  - `[] W`: Sum the list
   - `z .^`: Square root
 
 Operator breakdown: 
@@ -77,22 +77,22 @@ aya> 3 4 J
 [ 3 4 ] 
 aya> 3 4 J 2 ^
 [ 9 16 ] 
-aya> 3 4 J 2 ^ S
+aya> 3 4 J 2 ^ W
 25 
-aya> 3 4 J 2 ^ S .^
+aya> 3 4 J 2 ^ W .^
 5 
 ```
 
 ### Primality Test
 
-Test if a number is prime *(without using aya's built-in primaity test operator `G`)*
+Test if a number is prime *(without using aya's built-in primality test operator `G`)*
 
-Algorithm utilzing stack-based concatenative programming and aya's operators
+Algorithm utilizing stack-based concatenative programming and aya's operators
 
 Note that `R`, `B`, and `S` (and all other uppercase letters) are operators just like `+`, `-`, `*`, `/`, etc.
 
 ```
-aya> { RB\%0.=S1= }:isprime;
+aya> { RB\:%0.=W1= }:isprime;
 aya> 11 isprime
 1
 ```
@@ -103,15 +103,18 @@ Same algorithm using more verbose syntax
     n 2 < {
         .# n is less than 2, not prime
         0
+    } n 2 = {
+        .# n is 2, prime
+        1
     } {
         .# n is greater than or equal to 2, check for any factors
         .# for each number in the set [2 to (n-1)] `i`, do..
-        [2 (n 1 -),] #: {i,
+        [2 (n 1 -),] :# {i,
             .# check if (n%i == 0)
-            n i % 0 =
+            n i :% 0 =
         }
-        .# If any are true (equal to 1), the number is not prime
-        {1 =} any !
+        .# If any are true (the list contains a 1), then the number is not prime
+        1 N 0 <
     } .?
 }:isprime;
 ```
@@ -125,7 +128,7 @@ Type definition:
 struct vec {x y}
 
 .# Member function
-def vec::len {self,
+def vec::__len__ {self,
     self.x 2^ self.y 2^ + .^
 }
 
@@ -136,7 +139,7 @@ def vec::__repr__ {self,
 }
 
 .# Operator overload
-def vec::+ {self other,
+def vec::__add__ {self other,
     self.x other.x +
     self.y other.y +
     vec!
@@ -153,7 +156,7 @@ aya> 3 4 vec! :v
 Perform operations on the type:
 
 ```
-aya> v.len
+aya> v E .# 'E' is the length Operator
 5
 
 aya> 10 10 vec! v +
@@ -166,7 +169,7 @@ aya> 10 10 vec! v +
 Complex numbers are built in to aya's number system can can be used seamlessly with other numeric types. Aya also includes a graphics library. The `viewmat` module uses it to draw a 2d intensity image.
 
 ```
-import ::viewmat
+import viewmat
 
 400 :width;
 width 0.8* :height;
@@ -192,17 +195,17 @@ y :0i1 * x `+ :* :a;
 Use aya's `turtle` and `color` modules to draw a pattern
 
 ```
-import ::turtle
-import ::color
+require turtle {turtle}
+require color {colors}
 
 :{
     400:width;
     400:height;
-    color.colors.darkblue :bg_color;
+    colors.darkblue :bg_color;
 } turtle!:t;
 
 5 :n;
-color.colors.blue :c;
+colors.blue :c;
 
 {
     n t.fd
@@ -220,9 +223,9 @@ color.colors.blue :c;
 ### Load, Examine, and Visualize Datasets
 
 ```
-import ::dataframe
-import ::plot
-import ::stats
+require dataframe *
+import plot
+import stats
 
 "Downloading file..." :P
 :{
@@ -275,4 +278,4 @@ See install instructions here: [https://aya-readthedocs.readthedocs.io/en/latest
 
 ## Contributing
 
-If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternively, implement any feature or bugfix yourself and submit a pull request.
+If you find any bugs or have any feature or operator ideas, please submit an issue on the issue page. Alternatively, implement any feature or bugfix yourself and submit a pull request.
