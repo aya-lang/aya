@@ -84,3 +84,16 @@ img "out.png" :(image.write)
 .# Read an image
 "out.png" image.read :img;
 {img.pixels [[41 164 34 255]]} test.test
+
+.# Write bytes to a file
+[0 -1 255 -128 128 -192 64] "file.bin" 0 .G
+.# Append a byte to a file
+192 "file.bin" 1 .G
+.# Append a character to a file
+'a "file.bin" 1 .G
+
+.# Read bytes from a file
+{
+    "file.bin" :(fileutils.readallbytes) :0xff &
+    [0 -1 255 -128 128 -192 64 192 ('a :')] :0xff &
+} test.test

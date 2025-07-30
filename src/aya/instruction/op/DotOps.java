@@ -6,6 +6,7 @@ import static aya.obj.Obj.CHAR;
 import static aya.obj.Obj.DICT;
 import static aya.obj.Obj.LIST;
 import static aya.obj.Obj.NUMBER;
+import static aya.obj.Obj.NUMBERLIST;
 import static aya.obj.Obj.STR;
 import static aya.obj.Obj.SYMBOL;
 import static aya.util.Casting.asChar;
@@ -1005,49 +1006,57 @@ class OP_Dot_Write extends Operator {
 
 	public OP_Dot_Write() {
 		init(".G");
-		arg("ASN", "write A as a string to file located at S. N = 0, overwrite. N = 1, append");
+		arg("SSN", "write string S1 to file located at S2. N = 0, overwrite. N = 1, append");
+		arg("CSN", "write char C to file located at S. N = 0, overwrite. N = 1, append");
+		arg("LSN", "write list of bytes L to file located at S. N = 0, overwrite. N = 1, append");
+		arg("NSN", "write byte N1 to file located at S. N2 = 0, overwrite. N2 = 1, append");
 	}
 
 	@Override
 	public void execute(BlockEvaluator blockEvaluator) {
-		final Obj n = blockEvaluator.pop();
-		final Obj s = blockEvaluator.pop();
-		final Obj a = blockEvaluator.pop();
+		final Obj optionObj = blockEvaluator.pop();
+		final Obj filenameObj = blockEvaluator.pop();
+		final Obj valueObj = blockEvaluator.pop();
 
-		if (s.isa(STR) && n.isa(NUMBER)) {
-			final int option = ((Number)n).toInt();
-			final String filename = s.str();
-			final String write = a.str();
-			final File file = FileUtils.resolveFile(filename);
-			final String absFilePath = file.getAbsolutePath();
+		if (!filenameObj.isa(STR))
+			throw new TypeError(this, "filename is not a string", filenameObj);
+		if (!optionObj.isa(NUMBER))
+			throw new TypeError(this, "write_option is not a number", filenameObj);
 
-
-			if(option == 0) {
-				try {
-					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-				}catch (IOException e) {
-				    throw new IOError(".G", absFilePath, e);
-				} catch (InvalidPathException ipe) {
-				    throw new IOError(".G", absFilePath, "Invalid path");
-				}
-			}
-
-			else if (option == 1) {
-				try {
-					StaticData.FILESYSTEM.write(file, write.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-				}catch (IOException e) {
-				    throw new IOError(".G", absFilePath, e);
-				} catch (InvalidPathException ipe) {
-				    throw new IOError(".G", absFilePath, "Invalid path");
-				}
-			}
-
-			else {
-			    throw new ValueError(".G: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
-			}
-			return;
+		final int option = ((Number) optionObj).toInt();
+		final StandardOpenOption openOption;
+		if (option == 0) {
+			openOption = StandardOpenOption.TRUNCATE_EXISTING;
+		} else if (option == 1) {
+			openOption = StandardOpenOption.APPEND;
+		} else {
+			throw new ValueError(".G: Option " + option + "is not valid. Please use 0 for overwrite and 1 for append");
 		}
-		throw new TypeError(this, n);
+
+		final String filename = filenameObj.str();
+		final File file = FileUtils.resolveFile(filename);
+		final String absFilePath = file.getAbsolutePath();
+
+		final byte[] value;
+		if (valueObj.isa(STR)) {
+			value = valueObj.str().getBytes();
+		} else if (valueObj.isa(CHAR)) {
+			value = Character.toString(((Char) valueObj).charValue()).getBytes();
+		} else if (valueObj.isa(NUMBERLIST)) {
+			value = ((List) valueObj).toNumberList().toByteArray();
+		} else if (valueObj.isa(NUMBER)) {
+			value = new byte[]{((Number) valueObj).toByte()};
+		} else {
+			throw new TypeError(this, valueObj);
+		}
+
+		try {
+			StaticData.FILESYSTEM.write(file, value, StandardOpenOption.CREATE, openOption);
+		} catch (IOException e) {
+			throw new IOError(".G", absFilePath, e);
+		} catch (InvalidPathException ipe) {
+			throw new IOError(".G", absFilePath, "Invalid path");
+		}
 	}
 }
 
