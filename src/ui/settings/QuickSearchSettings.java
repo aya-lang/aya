@@ -14,6 +14,7 @@ public class QuickSearchSettings implements ISettings {
 	private int detailPanelWidth = 400;
 	private int panelHeight = 500;
 	private int summaryLines = 1;
+	private boolean showDetailsPanel = true;
 
 	public SearchMode getSearchMode() {
 		return searchMode;
@@ -71,6 +72,14 @@ public class QuickSearchSettings implements ISettings {
 		this.summaryLines = summaryLines;
 	}
 
+	public boolean isShowDetailsPanel() {
+		return showDetailsPanel;
+	}
+
+	public void setShowDetailsPanel(boolean showDetailsPanel) {
+		this.showDetailsPanel = showDetailsPanel;
+	}
+
 	@Override
 	public void loadFromJson(JSONObject storedSettings) {
 		searchMode = storedSettings.optEnum(SearchMode.class, "searchMode", searchMode);
@@ -82,6 +91,7 @@ public class QuickSearchSettings implements ISettings {
 		detailPanelWidth = storedSettings.optInt("detailPanelWidth", detailPanelWidth);
 		panelHeight = storedSettings.optInt("panelHeight", panelHeight);
 		summaryLines = storedSettings.optInt("summaryLines", summaryLines);
+		showDetailsPanel = storedSettings.optBoolean("showDetailsPanel", showDetailsPanel);
 	}
 
 	@Override
@@ -94,6 +104,7 @@ public class QuickSearchSettings implements ISettings {
 		result.put("detailPanelWidth", detailPanelWidth);
 		result.put("panelHeight", panelHeight);
 		result.put("summaryLines", summaryLines);
+		result.put("showDetailsPanel", showDetailsPanel);
 		return result;
 	}
 }

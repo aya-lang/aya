@@ -35,6 +35,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
@@ -106,6 +107,7 @@ public class QuickSearch extends JPanel {
 	private final JScrollPane scrollResults;
 	private final CodeTextPane searchBar = new CodeTextPane();
 	private final JPanel results = new JPanel();
+	private final JSplitPane resultSplitPane;
 	private final StringDisplay detailsPanel;
 
 	private int maxItemsToDisplay = Integer.MAX_VALUE;
@@ -178,7 +180,7 @@ public class QuickSearch extends JPanel {
 		ccCheckbox.setForeground(StyleTheme.DEFAULT.getFgColor());
 		topPanel.add(Box.createRigidArea(topPadding));
 		topPanel.add(ccCheckbox);
-		ccCheckbox.addActionListener(e -> {
+		ccCheckbox.addChangeListener(e -> {
 			boolean caseSensitive = ccCheckbox.isSelected();
 			strings.setCaseSensitive(caseSensitive);
 			getSettings().setCaseSensitive(caseSensitive);
@@ -207,21 +209,25 @@ public class QuickSearch extends JPanel {
 		extraOptsButton.setBackground(StyleTheme.DEFAULT.getBgColor());
 		extraOptsButton.setPreferredSize(new Dimension(20, 20));
 		JPopupMenu extraOptsMenu = new JPopupMenu();
-		extraOptsMenu.setForeground(StyleTheme.DEFAULT.getFgColor());
 		extraOptsMenu.setBackground(StyleTheme.DEFAULT.getBgColor());
 		extraOptsMenu.setBorder(new EmptyBorder(6, 8, 6, 8));
 		topPanel.add(Box.createRigidArea(topPadding));
 		topPanel.add(extraOptsButton);
 		extraOptsButton.addActionListener(e -> {
 			// first, open the popup without showing it to determine the size
-			extraOptsMenu.setVisible(false);
 			extraOptsMenu.show(extraOptsButton, 0, 0);
+			extraOptsMenu.setVisible(false);
 			// then position it correctly
 			javax.swing.SwingUtilities.invokeLater(() -> {
 				extraOptsMenu.show(extraOptsButton, extraOptsButton.getWidth() - extraOptsMenu.getWidth(), extraOptsButton.getHeight());
 				extraOptsMenu.setVisible(true);
 			});
 		});
+
+		JPanel extraOptsMenuFlow = new JPanel();
+		extraOptsMenuFlow.setLayout(new BoxLayout(extraOptsMenuFlow, BoxLayout.Y_AXIS));
+		extraOptsMenuFlow.setBackground(StyleTheme.DEFAULT.getBgColor());
+		extraOptsMenu.add(extraOptsMenuFlow);
 
 		// TopPanel -> extra options -> number-input 'Summary Lines'
 		JPanel summaryLinesOptRow = new JPanel();
@@ -241,12 +247,26 @@ public class QuickSearch extends JPanel {
 		summaryLinesOptRow.add(summaryLinesLabel);
 		summaryLinesOptRow.add(Box.createRigidArea(topPadding));
 		summaryLinesOptRow.add(summaryLinesSpinner);
-		extraOptsMenu.add(summaryLinesOptRow);
+		extraOptsMenuFlow.add(summaryLinesOptRow);
+		summaryLinesOptRow.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+		// TopPanel -> extra options -> checkbox 'Show Details Panel'
+		JCheckBox bShowDetailsCheckbox = new JCheckBox("Show Details Panel", getSettings().isShowDetailsPanel());
+		bShowDetailsCheckbox.setForeground(StyleTheme.DEFAULT.getFgColor());
+		bShowDetailsCheckbox.setBackground(StyleTheme.DEFAULT.getBgColor());
+		bShowDetailsCheckbox.setHorizontalTextPosition(SwingConstants.LEFT);
+		bShowDetailsCheckbox.addChangeListener(e -> {
+			boolean newShowDetails = bShowDetailsCheckbox.isSelected();
+			getSettings().setShowDetailsPanel(newShowDetails);
+			startConfigSaveTimer();
+			onShowDetailsChanged(newShowDetails);
+		});
+		extraOptsMenuFlow.add(bShowDetailsCheckbox);
+		bShowDetailsCheckbox.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
 		// Main Content Split
-		JSplitPane resultSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		resultSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		resultSplitPane.setResizeWeight(0.5);
-		add(resultSplitPane);
 
 		// Main Content Split -> Summary -> Result Items
 		results.setLayout(new BoxLayout(results, BoxLayout.Y_AXIS));
@@ -270,8 +290,10 @@ public class QuickSearch extends JPanel {
 		scrollResults.getViewport().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				getSettings().setSummaryPanelWidth(scrollResults.getWidth());
-				getSettings().setPanelHeight(scrollResults.getHeight());
+				QuickSearchSettings settings = getSettings();
+				settings.setSummaryPanelWidth(scrollResults.getWidth());
+				settings.setPanelHeight(scrollResults.getHeight());
+				scrollResults.setPreferredSize(new Dimension(settings.getDetailPanelWidth(), settings.getPanelHeight()));
 				startConfigSaveTimer();
 
 				Component viewPort = e.getComponent();
@@ -281,7 +303,6 @@ public class QuickSearch extends JPanel {
 				}
 			}
 		});
-		resultSplitPane.add(scrollResults);
 
 		// Main Content Split -> Details
 		detailsPanel = new StringDisplay();
@@ -295,12 +316,21 @@ public class QuickSearch extends JPanel {
 		detailScroll.getViewport().addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				getSettings().setDetailPanelWidth(detailScroll.getWidth());
-				getSettings().setPanelHeight(detailScroll.getHeight());
+				QuickSearchSettings settings = getSettings();
+				settings.setDetailPanelWidth(detailScroll.getWidth());
+				settings.setPanelHeight(detailScroll.getHeight());
+				detailScroll.setPreferredSize(new Dimension(settings.getDetailPanelWidth(), settings.getPanelHeight()));
 				startConfigSaveTimer();
 			}
 		});
-		resultSplitPane.add(detailScroll);
+
+		if (getSettings().isShowDetailsPanel()) {
+			resultSplitPane.add(scrollResults);
+			resultSplitPane.add(detailScroll);
+			add(resultSplitPane);
+		} else {
+			add(scrollResults);
+		}
 
 		doReRender();
 	}
@@ -320,6 +350,23 @@ public class QuickSearch extends JPanel {
 	 */
 	public void setMaxItemsToDisplay(int max) {
 		maxItemsToDisplay = max;
+	}
+
+	private void onShowDetailsChanged(boolean newShowDetails) {
+		if (newShowDetails) {
+			remove(scrollResults);
+			resultSplitPane.setLeftComponent(scrollResults);
+			scrollResults.setPreferredSize(new Dimension(getSettings().getSummaryPanelWidth(), scrollResults.getPreferredSize().height));
+			detailsPanel.setPreferredSize(new Dimension(getSettings().getDetailPanelWidth(), detailsPanel.getPreferredSize().height));
+			add(resultSplitPane);
+		} else {
+			remove(resultSplitPane);
+			scrollResults.setPreferredSize(new Dimension(getSettings().getSummaryPanelWidth(), scrollResults.getPreferredSize().height));
+			add(scrollResults);
+		}
+		validate();
+		activeFrame.pack();
+		repaint();
 	}
 
 	private void setCurrentSelection(int newSelection) {
