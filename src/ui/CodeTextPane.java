@@ -164,7 +164,7 @@ public class CodeTextPane extends JTextPane {
 	public void tabPressed() {
 		if (inFocus) {
 			int carat = getCaretPosition();
-			int offset = (carat-14)>0 ? carat-14 : 0;
+			int offset = Math.max((carat - 14), 0);
 			String s = null;
 			try {
 				s = getDocument().getText(offset, carat-offset);

@@ -11,7 +11,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -487,6 +487,19 @@ public final class ColorFactory {
 		}
 
 		return web(value);
+	}
+
+	public static String toWebString(Color color) {
+		if (color.getAlpha() < 255) {
+			return "#" + componentToString(color.getRed()) + componentToString(color.getGreen()) + componentToString(color.getBlue()) + componentToString(color.getAlpha());
+		} else {
+			return "#" + componentToString(color.getRed()) + componentToString(color.getGreen()) + componentToString(color.getBlue());
+		}
+	}
+
+	private static String componentToString(int component) {
+		String hex = Integer.toHexString(component);
+		return hex.length() == 1 ? "0" + hex : hex;
 	}
 
 	@SuppressWarnings("unused")
@@ -1408,7 +1421,7 @@ public final class ColorFactory {
 		private static Color get(String name) {
 			return namedColors.get(name);
 		}
-		
+
 		private static ArrayList<String> createNamedColorsList() {
 			ArrayList<String> names = new ArrayList<String>();
 			for (Map.Entry<String, Color> e : namedColors.entrySet()) {

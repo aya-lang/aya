@@ -7,9 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import aya.eval.ExecutionContext;
-import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
-import aya.exceptions.parser.SyntaxError;
 import aya.io.stdin.ScannerInputWrapper;
 import aya.obj.Obj;
 import aya.obj.block.StaticBlock;
@@ -102,8 +100,8 @@ public class InteractiveAya {
 				searchText = searchText.substring(0, searchText.length()-1);
 				
 				StaticData.getInstance().getHelpData().clearFilter();
-				StaticData.getInstance().getHelpData().applyNewFilter(searchText);
-				if(StaticData.getInstance().getHelpData().getFilteredItems().size() == 0) {
+				StaticData.getInstance().getHelpData().applyFilter(searchText);
+				if(StaticData.getInstance().getHelpData().getFilteredItems().isEmpty()) {
 					_io().out().println("No help data matching \"" + searchText + "\"");
 				} else {
 					for(String s : StaticData.getInstance().getHelpData().getFilteredItems()) {
