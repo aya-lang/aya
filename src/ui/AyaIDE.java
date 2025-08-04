@@ -148,7 +148,7 @@ public class AyaIDE extends JFrame
 
 		//File
 		_menu = new JMenu("File");
-		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.setMnemonic(KeyEvent.VK_F);
 		_menu.getAccessibleContext().setAccessibleDescription("");
 		//Load
 		JMenuItem mi =new JMenuItem(new Action() {
@@ -177,7 +177,7 @@ public class AyaIDE extends JFrame
 
 		//Tools
 		_menu = new JMenu("Tools");
-		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.setMnemonic(KeyEvent.VK_T);
 		_menu.getAccessibleContext().setAccessibleDescription("");
 		//Insert Filename
 		mi =new JMenuItem(new Action() {
@@ -231,7 +231,7 @@ public class AyaIDE extends JFrame
 		//Help
 		//Quick Search
 		_menu = new JMenu("Help");
-		_menu.setMnemonic(KeyEvent.VK_A);
+		_menu.setMnemonic(KeyEvent.VK_H);
 		_menu.getAccessibleContext().setAccessibleDescription("");
 		mi = new JMenuItem(new Action() {
 			public void actionPerformed(ActionEvent e) {

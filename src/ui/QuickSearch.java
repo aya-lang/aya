@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -55,8 +56,6 @@ public class QuickSearch extends JPanel {
 	// Pro: this prevents the slow Swing rendering from blocking input, making the UI feel less laggy while typing.
 	// Con: UI might feel less responsive on fast machines.
 	private static final int reRenderTimeoutMillis = 150;
-	// Avoid hammering the filesystem just because the user is fiddling with the window size.
-	private static final int configSaveTimeoutMillis = 5000;
 
 	private static final CompoundBorder BORDER = new CompoundBorder(
 			BorderFactory.createMatteBorder(2, 0, 2, 4, StyleTheme.DEFAULT.getBgColor()),
@@ -109,11 +108,11 @@ public class QuickSearch extends JPanel {
 	private final JPanel results = new JPanel();
 	private final JSplitPane resultSplitPane;
 	private final StringDisplay detailsPanel;
+	private final JScrollPane detailScroll;
 
 	private int maxItemsToDisplay = Integer.MAX_VALUE;
 	private StringSearch strings;
 	private Timer reRenderTimer;
-	private Timer configSaveTimer;
 	private int currentSelection;
 
 	public QuickSearch(String[] stringList) {
@@ -184,7 +183,7 @@ public class QuickSearch extends JPanel {
 			boolean caseSensitive = ccCheckbox.isSelected();
 			strings.setCaseSensitive(caseSensitive);
 			getSettings().setCaseSensitive(caseSensitive);
-			startConfigSaveTimer();
+			SettingsManager.scheduleSaveUiSettings();
 			startReRenderTimer();
 		});
 
@@ -199,7 +198,7 @@ public class QuickSearch extends JPanel {
 			SearchMode newSearchMode = (SearchMode) searchModeCombo.getSelectedItem();
 			strings.setSearchMode(newSearchMode);
 			getSettings().setSearchMode(newSearchMode);
-			startConfigSaveTimer();
+			SettingsManager.scheduleSaveUiSettings();
 			startReRenderTimer();
 		});
 
@@ -241,7 +240,7 @@ public class QuickSearch extends JPanel {
 		summaryLinesSpinner.addChangeListener(e -> {
 			int newNumSummaryLines = (int) summaryLinesSpinner.getValue();
 			getSettings().setSummaryLines(newNumSummaryLines);
-			startConfigSaveTimer();
+			SettingsManager.scheduleSaveUiSettings();
 			startReRenderTimer();
 		});
 		summaryLinesOptRow.add(summaryLinesLabel);
@@ -258,7 +257,7 @@ public class QuickSearch extends JPanel {
 		bShowDetailsCheckbox.addChangeListener(e -> {
 			boolean newShowDetails = bShowDetailsCheckbox.isSelected();
 			getSettings().setShowDetailsPanel(newShowDetails);
-			startConfigSaveTimer();
+			SettingsManager.scheduleSaveUiSettings();
 			onShowDetailsChanged(newShowDetails);
 		});
 		extraOptsMenuFlow.add(bShowDetailsCheckbox);
@@ -294,7 +293,7 @@ public class QuickSearch extends JPanel {
 				settings.setSummaryPanelWidth(scrollResults.getWidth());
 				settings.setPanelHeight(scrollResults.getHeight());
 				scrollResults.setPreferredSize(new Dimension(settings.getDetailPanelWidth(), settings.getPanelHeight()));
-				startConfigSaveTimer();
+				SettingsManager.scheduleSaveUiSettings();
 
 				Component viewPort = e.getComponent();
 				int width = viewPort.getWidth();
@@ -303,10 +302,13 @@ public class QuickSearch extends JPanel {
 				}
 			}
 		});
+		Insets textInsets = BORDER.getBorderInsets(null);
+		int lineHeight = this.getFontMetrics(StyleTheme.MONO_11).getHeight();
+		scrollResults.getVerticalScrollBar().setUnitIncrement(lineHeight + textInsets.top + textInsets.bottom);
 
 		// Main Content Split -> Details
 		detailsPanel = new StringDisplay();
-		JScrollPane detailScroll = new JScrollPane(detailsPanel);
+		detailScroll = new JScrollPane(detailsPanel);
 		detailScroll.setBackground(StyleTheme.DEFAULT.getBgColor());
 		detailScroll.setBorder(BorderFactory.createEmptyBorder());
 		detailScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -320,7 +322,7 @@ public class QuickSearch extends JPanel {
 				settings.setDetailPanelWidth(detailScroll.getWidth());
 				settings.setPanelHeight(detailScroll.getHeight());
 				detailScroll.setPreferredSize(new Dimension(settings.getDetailPanelWidth(), settings.getPanelHeight()));
-				startConfigSaveTimer();
+				SettingsManager.scheduleSaveUiSettings();
 			}
 		});
 
@@ -383,6 +385,7 @@ public class QuickSearch extends JPanel {
 			MatchInfo match = matches.get(newSelection);
 			String fullText = strings.getItem(match);
 			detailsPanel.updateContent(fullText, match);
+			javax.swing.SwingUtilities.invokeLater(() -> detailScroll.getVerticalScrollBar().setValue(0));
 		} else {
 			detailsPanel.updateContent("", null);
 		}
@@ -407,19 +410,6 @@ public class QuickSearch extends JPanel {
 				doReRender();
 			}
 		}, reRenderTimeoutMillis);
-	}
-
-	private void startConfigSaveTimer() {
-		if (configSaveTimer != null) {
-			configSaveTimer.cancel();
-		}
-		configSaveTimer = new Timer();
-		configSaveTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				SettingsManager.saveUiSettings();
-			}
-		}, configSaveTimeoutMillis);
 	}
 
 	private void doReRender() {

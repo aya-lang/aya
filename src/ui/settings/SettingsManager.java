@@ -10,15 +10,20 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardOpenOption;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SettingsManager {
 	private static final String uiSettingsFileName = "ui-settings.json";
+	// Avoid hammering the filesystem for multiple save requests. (e.g. if the user is fiddling with the window size)
+	private static final int uiSaveTimeoutMillis = 5000;
 
 	/**
 	 * The File in which ui-settings are stored. Do not access directly, use {@link #getSettingsFile()} instead.
 	 */
 	private static File _uiSettingsFile;
 	private static UiSettings _uiSettings;
+	private static Timer uiSaveTimer;
 
 	private static File getSettingsFile() {
 		if (_uiSettingsFile == null) {
@@ -41,6 +46,23 @@ public class SettingsManager {
 			_uiSettings = loadUiSettings();
 		}
 		return _uiSettings;
+	}
+
+	/**
+	 * Schedule the uiSettings for saving.
+	 * This avoids repeatedly writing to the settings file if multiple save-events a fired in quick succession.
+	 */
+	public static void scheduleSaveUiSettings() {
+		if (uiSaveTimer != null) {
+			uiSaveTimer.cancel();
+		}
+		uiSaveTimer = new Timer();
+		uiSaveTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				saveUiSettings();
+			}
+		}, uiSaveTimeoutMillis);
 	}
 
 	public static void saveUiSettings() {
