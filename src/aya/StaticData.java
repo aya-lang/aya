@@ -1,7 +1,6 @@
 package aya;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,6 +26,7 @@ import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.ext.thread.ThreadInstructionStore;
+import aya.ext.xml.XmlInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
@@ -147,6 +147,7 @@ public class StaticData {
 	private void initNamedInstructions() {
 		addNamedInstructionStore(new DebugInstructionStore());
 		addNamedInstructionStore(new JSONInstructionStore());
+		addNamedInstructionStore(new XmlInstructionStore());
 		addNamedInstructionStore(new ImageInstructionStore());
 		addNamedInstructionStore(new GraphicsInstructionStore());
 		addNamedInstructionStore(new FStreamInstructionStore());
