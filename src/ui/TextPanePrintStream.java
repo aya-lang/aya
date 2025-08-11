@@ -1,5 +1,7 @@
 package ui;
 
+import ui.components.FixedTextPane;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class TextPanePrintStream extends OutputStream {
 	MutableAttributeSet _col;
 	
 	public TextPanePrintStream() {
-		_textPane = new JTextPane();
+		_textPane = new FixedTextPane();
 		_textPane.setEditable(false);
 		_doc = _textPane.getStyledDocument();
 		_textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));

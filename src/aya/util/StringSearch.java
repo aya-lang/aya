@@ -1,157 +1,153 @@
 package aya.util;
+
+import aya.util.stringsearch.MatchInfo;
+import aya.util.stringsearch.MatchPosition;
+import aya.util.stringsearch.SearchMode;
+import aya.util.stringsearch.StringMatcher;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * A easily filter-able collection of strings
- * @author Nick
+ * An easily filter-able collection of strings
  *
+ * @author Nick
  */
 public class StringSearch {
-	ArrayList<String> allItems;
-	ArrayList<String> filteredItems;
-	String filter;
-	
+	private final List<String> allItems;
+	private List<MatchInfo> matches;
+	private String filter;
+	private SearchMode searchMode = SearchMode.Exact;
+	private boolean caseSensitive = true;
+
 	public StringSearch(String[] items) {
-		allItems = new ArrayList<String>(Arrays.asList(items));
-		filteredItems = allItems;
+		allItems = new ArrayList<>(Arrays.asList(items));
+		clearFilter();
 	}
-	
-	public StringSearch(ArrayList<String> items) {
-		allItems = new ArrayList<String>(items);
-		filteredItems = allItems;
+
+	public StringSearch(List<String> items) {
+		allItems = new ArrayList<>(items);
+		clearFilter();
 	}
-	
-	/** Applies a new filter to the string list */
-	public ArrayList<String> applyNewFilter(String filter) {
-		this.filter = filter;
-		runFilter();
-		return filteredItems;
+
+	public void setSearchMode(SearchMode searchMode) {
+		this.searchMode = searchMode;
 	}
-	
-	/** Compares the current filter and s and adds the new content to the filter.
-	 * If the characters are different before the end of the current filter is reached,
-	 * create a brand new filter */
-	public ArrayList<String> appendToFilter(String strIn) {
-		if(filter == null) {
-			return applyNewFilter(strIn);
-		}
-		
-		//If the new string is shorter than the current filter, create a new filter
-		if(filter.length() <= strIn.length()) {
-			return applyNewFilter(strIn);
-		}
-		
-		//Check if the first few chars of the existing filter matches strIn
-		if (strIn.startsWith(filter)) {
-			return addToFilter(strIn.substring(filter.length(), strIn.length()));
-		}
-		return applyNewFilter(strIn);
+
+	public void setCaseSensitive(boolean caseSensitive) {
+		this.caseSensitive = caseSensitive;
 	}
-	
-	/** Appends a string to the current filter. Faster than creating a new filter
-	 * because it only searches through the previously filtered items.
+
+	/**
+	 * Applies a new filter to the string list
 	 */
-	public ArrayList<String> addToFilter(String str) {
-		if(filter == null) {
-			filter = str;
-		} else {
-			this.filter = this.filter + str;
+	public void applyFilter(String filter) {
+		// I'm leaving a potential optimization on the table here:
+		// If the previous mode and current mode are 'Exact', and caseSensitive has not changed, and oldFilter is a substring of newFilter.
+		// Then you can reuse the previous search result.
+		// The extra code for that does not seem worth the performance gain.
+
+		StringMatcher matcher = searchMode.matcherFactory.createMatcher(caseSensitive, filter);
+		matches = new ArrayList<>();
+		for (int i = 0; i < allItems.size(); i++) {
+			MatchPosition[] matchPositions = matcher.match(allItems.get(i));
+			if (matchPositions != null)
+				matches.add(new MatchInfo(i, matchPositions));
 		}
-		
-		ArrayList<String> newFilteredItems = new ArrayList<String>();
-		//Only search the already filtered items
-		for (String item : filteredItems) {
-			if(item.contains(filter)) {
-				newFilteredItems.add(item);
-			}
-		}
-		filteredItems = newFilteredItems;
-		return filteredItems;
+		this.filter = filter;
 	}
-	
-	/** Returns the items in the filtered list */
-	public ArrayList<String> getFilteredItems() {
+
+	/**
+	 * Sorts the current filtered items based on their match strength.
+	 */
+	public void sortFilterResults() {
+		switch (searchMode) {
+			case Exact:
+				break; // all matches are equal, do not sort.
+			case Regex:
+				// matches might differ by length. Prioritize longer matches.
+				matches.sort((a, b) -> Integer.compare(b.matchPositions[0].length, a.matchPositions[0].length));
+				break;
+			case Fuzzy:
+				// matches might differ by number of splits. Prioritize fewer splits.
+				matches.sort(Comparator.comparingInt(a -> a.matchPositions.length));
+				break;
+		}
+	}
+
+	/**
+	 * Returns the items in the filtered list
+	 */
+	public List<String> getFilteredItems() {
 		if (filter == null) {
 			return allItems;
 		}
-		return filteredItems;
+		return matches.stream().map(match -> allItems.get(match.index)).collect(Collectors.toList());
 	}
-	
-	/** Returns the filtered items as an array */
-	public String[] getFilteredItemsAsArray() {
-		if (filter == null) {
-			return allItems.toArray(new String[allItems.size()]);
-		}
-		return filteredItems.toArray(new String[filteredItems.size()]);
+
+	public String getItem(MatchInfo match) {
+		return allItems.get(match.index);
 	}
-	
-	/** Runs the current filter on all the items */
-	public void runFilter() {
-		this.filteredItems = new ArrayList<String>();
-		for (String item : allItems) {
-			if(item.contains(filter)) {
-				filteredItems.add(item);
-			}
-		}
+
+	public List<MatchInfo> getMatches() {
+		return matches;
 	}
-	
-	/** Returns the current filter */
+
+	/**
+	 * Returns the current filter
+	 */
 	public String getFilter() {
 		return this.filter;
 	}
-	
-	/** Returns all of the items (regardless of the filter)  */
+
+	/**
+	 * Returns all of the items (regardless of the filter)
+	 */
 	public String[] getAllItems() {
 		return this.allItems.toArray(new String[allItems.size()]);
 	}
-	
-	/** Adds s to the list of items. Does not update the filtered items */
+
+	/**
+	 * Adds s to the list of items. Does not update the filtered items
+	 */
 	public void add(String s) {
 		allItems.add(s);
 	}
-	
-	/** Adds s to the list if the list does not already contain s. Does not update filtered items */
+
+	/**
+	 * Adds s to the list if the list does not already contain s. Does not update filtered items
+	 */
 	public void addUnique(String s) {
-		if(!allItems.contains(s)) {
+		if (!allItems.contains(s)) {
 			allItems.add(s);
 		}
 	}
-	
-	/** Adds the list to the list of items. Does not
-	 * update the filtered items */
-	public void addAll(Collection<? extends String> list) {
-		allItems.addAll(list);
-	}
-	
-	/** Adds the list to the list of items. Does not
-	 * update the filtered items */
-	public void addAll(String[] list) {
-		allItems.addAll(new ArrayList<String>(Arrays.asList(list)));
-	}
-	
-	/** Clears the current filter */
+
+	/**
+	 * Clears the current filter
+	 */
 	public void clearFilter() {
 		this.filter = null;
-		this.filteredItems = allItems;
-	}
-	
-	@Override
-	public String toString() {
-		if(filter != null)
-			return filteredItems.toString();
-		return allItems.toString();
+		this.matches = IntStream.range(0, allItems.size())
+				.mapToObj(MatchInfo::new)
+				.collect(Collectors.toList());
 	}
 
-	/** Apply a search and return an arraylist but do not modify the object in any way */
-	public ArrayList<String> staticSearch(String str) {
-		ArrayList<String> out = new ArrayList<String>();
-		for (String item : allItems) {
-			if(item.contains(str)) {
-				out.add(item);
-			}
-		}
-		return out;
+	@Override
+	public String toString() {
+		return getFilteredItems().toString();
 	}
+
+	/**
+	 * Apply a search and return an arraylist but do not modify the object in any way
+	 */
+	public List<String> staticSearch(String str) {
+		StringMatcher matcher = SearchMode.Exact.matcherFactory.createMatcher(true, str);
+		return allItems.stream().filter(item -> matcher.match(item) != null).collect(Collectors.toList());
+	}
+
 }

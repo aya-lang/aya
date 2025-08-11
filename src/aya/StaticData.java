@@ -108,12 +108,11 @@ public class StaticData {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ArrayList<String> searchList = new ArrayList<String>();
+			ArrayList<String> searchList = new ArrayList<>();
 			searchList.addAll(OpDocReader.getAllOpDescriptions());
 			// Add additional help data
 			searchList.add(AyaPrefs.CONSTANTS_HELP);
 			searchList.add(SpecialNumberParser.STR_CONSTANTS_HELP);
-			searchList.toArray(new String[searchList.size()]);
 			_helpData = new StringSearch(searchList);
 		}
 	}

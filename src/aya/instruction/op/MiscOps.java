@@ -259,7 +259,7 @@ class OP_Help extends Operator {
 					items.mutAdd(List.fromString(a));
 				}
 			} else {
-				ArrayList<String> ss = StaticData.getInstance().getHelpData().staticSearch(s.str());
+				java.util.List<String> ss = StaticData.getInstance().getHelpData().staticSearch(s.str());
 				for (String a : ss) {
 					items.mutAdd(List.fromString(a));
 				}
