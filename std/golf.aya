@@ -13,6 +13,74 @@
     } ?
 };
 
+.# Golfing utility functions
+.{? pack_bits_to_unicode (L)
+    Creates a unicode string in which the 'bits' (list of 0,1) are stored.
+    The list can have any length, one output character encodes 20 bits.
+    Examples:
+      [1 0 1 0] pack_bits_to_unicode -> "U+01000A"
+      :0xfffff 10 2 .& pack_bits_to_unicode -> "U+10FFFF"
+.}
+{bits::list : out tail,
+    "":out;
+    {
+        bits E 0 > :& {
+            .# The available range for 4-byte UTF-8 is exactly 20 bits, but the start is offset by 0x010000
+            bits 20 .> 2 10 .& :0x010000 + :tail;
+            [
+                :0b11110000 tail 18 .) :0b111 & +
+                :0b10000000 tail 12 .) :0b111111 & +
+                :0b10000000 tail 6 .) :0b111111 & +
+                :0b10000000 tail :0b111111 & +
+            ] .' out + :out;
+            bits -20 S .[0] :bits;
+        }?
+    }W
+    out
+}:pack_bits_to_unicode;
+
+.{? unpack_unicode_bits (S)
+    Unpacks the bits from a string created by 'pack_bits_to_unicode'.
+    Examples:
+      "U+010068" unpack_unicode_bits -> [ 1 1 0 1 0 0 0 ]
+.}
+{str::str,
+    .# ':& E 4/./ 4J L' reshapes into [x 4] where x is the number of needed groups.
+    str :' :0xff& :& E 4/./ 4J L # {four_byte,
+        four_byte # {10 2 .&} [3 6 6 6] {.>~} .&
+            2 10 .& :0x010000 - .# remove the 0x010000 offset
+            10 2 .&
+    } {20 .> J} % .# pad all entries (except for the first) to 20 bits
+}:unpack_unicode_bits;
+
+.{? pack_ascii_to_unicode (S)
+    Packs an ascii string to a unicode string using 'pack_bits_to_unicode'.
+    Only the last 7 bits of each ascii character are used.
+    Examples:
+      "hello, world" pack_ascii_to_unicode -> "𐀍𩝦󝺱𗟟󛙤"
+.}
+{str::str : pack_bits_to_unicode^,
+    str :' # {10 2 .& 7 .>} .F pack_bits_to_unicode
+}:pack_ascii_to_unicode;
+
+.{? unpack_unicode_ascii (S)
+    Unpacks the ascii string from a string created by 'pack_ascii_to_unicode'.
+    Examples:
+      "𐀍𩝦󝺱𗟟󛙤" unpack_unicode_ascii -> "hello, world"
+.}
+{str::str : bits out unpack_unicode_bits^,
+    str unpack_unicode_bits :bits;
+    "":out;
+    {
+        .# check if at least 7 bits are left, otherwise only padding is left.
+        bits E 0 > :& {
+            bits 7 .> 2 10 .& .' out+ :out;
+            bits -7 S .[0] :bits;
+        }?
+    }W
+    out
+}:unpack_unicode_ascii;
+
 .# Standard library shortcuts
 :{
     0 .M :num;
@@ -82,6 +150,11 @@ matrix:m;
 .# pop font/back shortcuts
 {B\;} "\{iacute}" := ;
 {V\;} "\{igrave}" := ;
+.# unicode packing shortcuts
+{pack_bits_to_unicode} "\{ugrave}" := ; .# ù
+{unpack_unicode_bits} "\{uacute}" := ; .# ú
+{pack_ascii_to_unicode} "\{agrave}" := ; .# à
+{unpack_unicode_ascii} "\{aacute}" := ; .# á
 
 
 .# cdict variables
