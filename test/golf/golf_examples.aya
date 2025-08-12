@@ -112,3 +112,27 @@ YYYYYYYYYYYYYYYYYYYYYYYYYZ
 ZZZZZZZZZZZZZZZZZZZZZZZZZZ"
 
 } test.test
+
+
+
+.#
+.# Easter Eggs (pseudo-compression for strings)
+.# https://codegolf.stackexchange.com/questions/116477/make-me-an-easter-egg
+.#
+.# 19 bytes
+.#
+
+{
+    '#
+
+    "𘄅􋸩𒿽􊸊񯾿򎿗𕟏󯯷󿠪󵾿򎾯"á'~@.&
+
+[
+    "  __"
+    " /##\\"
+    "/####\\"
+    "|####|"
+    "\____/"
+] "\n" %
+
+} test.test
