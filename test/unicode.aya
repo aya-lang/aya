@@ -23,4 +23,59 @@
     [ 1  2  3  4  ]
 }
 
+{ "surrogate pairs as part of symbol names and strings" :P 1 1 }
+.# 0x10ffff (high=0x3ff, low=0x3ff)
+{ "􏿿" ::􏿿 :C }
+.# 10fc00 (high=0x3ff, low=0x0)
+{ "􏰀" ::􏰀 :C }
+.# 103ff (high=0x0, low=0x3ff)
+{ "𐏿" ::𐏿 :C }
+.# 10000 (high=0x0, low=0x0)
+{ "𐀀" ::𐀀 :C }
+.# 0xffff
+{ "￿" ::￿ :C }
+
+{ "assigning variables identified by surrogate pairs" :P 1 1 }
+.# [0x10ffff 10fc00 103ff 10000 0xffff]
+{
+    1:􏿿; 2:􏰀; 3:𐏿; 4:𐀀; 5:￿;
+    [1 2 3 4 5] [􏿿􏰀𐏿𐀀￿]
+}
+{
+    6:"􏿿"; 7:"􏰀"; 8:"𐏿"; 9:"𐀀"; 10:"￿";
+    [6 7 8 9 10] [􏿿􏰀𐏿𐀀￿]
+}
+
+{ "string to code-point conversions" :P 1 1 }
+{ [(:0x3ff 10.( :0x3ff | :0x10000+)] "􏿿" :(unicode.to_code_points) }
+{ [(:0x3ff 10.( :0x000 | :0x10000+)] "􏰀" :(unicode.to_code_points) }
+{ [(:0x000 10.( :0x3ff | :0x10000+)] "𐏿" :(unicode.to_code_points) }
+{ [(:0x000 10.( :0x000 | :0x10000+)] "𐀀" :(unicode.to_code_points) }
+{ [:0xffff] "￿" :(unicode.to_code_points) }
+{ "az"R:' "az"R :(unicode.to_code_points) }
+
+{ "code-point to string conversions" :P 1 1 }
+{ "􏿿" (:0x3ff 10.( :0x3ff | :0x10000+) :(unicode.from_code_points) }
+{ "􏰀" (:0x3ff 10.( :0x000 | :0x10000+) :(unicode.from_code_points) }
+{ "𐏿" (:0x000 10.( :0x3ff | :0x10000+) :(unicode.from_code_points) }
+{ "𐀀" (:0x000 10.( :0x000 | :0x10000+) :(unicode.from_code_points) }
+{ "￿" :0xffff :(unicode.from_code_points) }
+{ "az"R "az"R:' :(unicode.from_code_points) }
+
+{ "string to utf-16 code-unit conversions" :P 1 1 }
+{ [(:0xd800 :0x3ff+) (:0xdc00 :0x3ff+)] "􏿿" :(utf16.to_code_units) }
+{ [(:0xd800 :0x3ff+) (:0xdc00 :0x000+)] "􏰀" :(utf16.to_code_units) }
+{ [(:0xd800 :0x000+) (:0xdc00 :0x3ff+)] "𐏿" :(utf16.to_code_units) }
+{ [(:0xd800 :0x000+) (:0xdc00 :0x000+)] "𐀀" :(utf16.to_code_units) }
+{ [:0xffff] "￿" :(utf16.to_code_units) }
+{ "az"R:' "az"R :(utf16.to_code_units) }
+
+{ "utf-16 code-unit to string conversions" :P 1 1 }
+{ "􏿿" [(:0xd800 :0x3ff+) (:0xdc00 :0x3ff+)] :(utf16.from_code_units) }
+{ "􏰀" [(:0xd800 :0x3ff+) (:0xdc00 :0x000+)] :(utf16.from_code_units) }
+{ "𐏿" [(:0xd800 :0x000+) (:0xdc00 :0x3ff+)] :(utf16.from_code_units) }
+{ "𐀀" [(:0xd800 :0x000+) (:0xdc00 :0x000+)] :(utf16.from_code_units) }
+{ "￿" :0xffff :(utf16.from_code_units) }
+{ "az"R "az"R:' :(utf16.from_code_units) }
+
 ] :# {test.test}

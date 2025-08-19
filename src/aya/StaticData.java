@@ -27,6 +27,7 @@ import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.ext.thread.ThreadInstructionStore;
+import aya.ext.unicode.UnicodeInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
@@ -159,6 +160,7 @@ public class StaticData {
 		addNamedInstructionStore(new ThreadInstructionStore());
 		addNamedInstructionStore(new LibraryInstructionStore());
 		addNamedInstructionStore(new DownloadInstructionStore());
+		addNamedInstructionStore(new UnicodeInstructionStore());
 	}
 	
 	public ArrayList<NamedInstructionStore> loadLibrary(File path) { 
