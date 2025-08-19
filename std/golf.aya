@@ -26,13 +26,8 @@
     {
         bits E 0 > :& {
             .# The available range for 4-byte UTF-8 is exactly 20 bits, but the start is offset by 0x010000
-            bits 20 .> 2 10 .& :0x010000 + :tail;
-            [
-                :0b11110000 tail 18 .) :0b111 & +
-                :0b10000000 tail 12 .) :0b111111 & +
-                :0b10000000 tail 6 .) :0b111111 & +
-                :0b10000000 tail :0b111111 & +
-            ] .' out + :out;
+            bits 20 .> 2 10 .& :0x010000 +
+			:(unicode.from_code_points) out + :out;
             bits -20 S .[0] :bits;
         }?
     }W
@@ -45,12 +40,9 @@
       "U+010068" unpack_unicode_bits -> [ 1 1 0 1 0 0 0 ]
 .}
 {str::str,
-    .# ':& E 4/./ 4J L' reshapes into [x 4] where x is the number of needed groups.
-    str :' :0xff& :& E 4/./ 4J L # {four_byte,
-        four_byte # {10 2 .&} [3 6 6 6] {.>~} .&
-            2 10 .& :0x010000 - .# remove the 0x010000 offset
-            10 2 .&
-    } {20 .> J} % .# pad all entries (except for the first) to 20 bits
+	str :(unicode.to_code_points)
+		{ :0x010000 - 10 2 .& } O
+		{20 .> J} % .# pad all entries (except for the first) to 20 bits
 }:unpack_unicode_bits;
 
 .{? pack_ascii_to_unicode (S)
