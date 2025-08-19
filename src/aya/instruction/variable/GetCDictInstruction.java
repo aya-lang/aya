@@ -27,7 +27,7 @@ public class GetCDictInstruction extends VariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(Parser.CDICT_CHAR + variable_.name());
+		stream.print(Parser.CDICT_CHAR + varName_);
 		return stream;
 	}
 	

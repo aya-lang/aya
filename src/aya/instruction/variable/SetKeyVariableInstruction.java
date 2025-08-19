@@ -19,14 +19,16 @@ public class SetKeyVariableInstruction extends VariableInstruction {
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;
 			dict = (Dict)kv_obj;
-			dict.set(variable_, b.pop());
+			for (int i = variables_.length - 1; i >= 0; i--) {
+				dict.set(variables_[i], b.pop());
+			}
 			b.push(dict);
 		}
 	}
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(".:" + variable_.name());
+		stream.print(".:" + varName_);
 		return stream;
 	}
 }

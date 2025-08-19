@@ -1,6 +1,8 @@
 package aya.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import aya.AyaStdIO;
 import aya.StaticData;
@@ -34,6 +36,7 @@ import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
 import aya.obj.list.List;
 import aya.obj.number.Number;
+import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.token.TokenQueue;
 import aya.parser.token.TokenStack;
@@ -617,7 +620,7 @@ public class Parser {
 				// Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
+					is.push(new SetVariableInstruction(current.getSourceStringRef(), v.getOriginalVar()));
 				} else {
 					throw new SyntaxError("':' not followed by operator", current.getSourceStringRef());
 				}
@@ -648,7 +651,12 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new GetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							Symbol[] symbols = ((GetVariableInstruction) instructions.get(0)).getSymbols();
+							if (symbols.length != 1) {
+								String symbolsStr = Arrays.stream(symbols).map(Symbol::name).collect(Collectors.joining(" "));
+								throw new SyntaxError("Invalid index: (" + symbolsStr + "). Currently, only single variable indices are supported.", current.getSourceStringRef());
+							}
+							is.push(new GetVarIndexInstruction(current.getSourceStringRef(), symbols[0]));
 						} else {
 							is.push(new GetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}
@@ -664,7 +672,7 @@ public class Parser {
 				// Key Variable Assignment
 				if (next instanceof GetVariableInstruction) {
 					GetVariableInstruction v = ((GetVariableInstruction) next);
-					is.push(new SetKeyVariableInstruction(current.getSourceStringRef(), v.getSymbol()));
+					is.push(new SetKeyVariableInstruction(current.getSourceStringRef(), v.getOriginalVar()));
 				}
 
 				// Index assignment
@@ -687,7 +695,12 @@ public class Parser {
 						ArrayList<Instruction> instructions = lli.getInstructions().getInstrucionList();
 						if (instructions.size() == 1 && instructions.get(0) instanceof GetVariableInstruction) {
 							// Small optimization for single variable indices
-							is.push(new SetVarIndexInstruction(current.getSourceStringRef(), ((GetVariableInstruction) instructions.get(0)).getSymbol()));
+							Symbol[] symbols = ((GetVariableInstruction) instructions.get(0)).getSymbols();
+							if (symbols.length != 1) {
+								String symbolsStr = Arrays.stream(symbols).map(Symbol::name).collect(Collectors.joining(" "));
+								throw new SyntaxError("Invalid index: (" + symbolsStr + "). Currently, only single variable indices are supported.", current.getSourceStringRef());
+							}
+							is.push(new SetVarIndexInstruction(current.getSourceStringRef(), symbols[0]));
 						} else {
 							is.push(new SetExprIndexInstruction(current.getSourceStringRef(), BlockUtils.fromIS(lli.getInstructions())));
 						}

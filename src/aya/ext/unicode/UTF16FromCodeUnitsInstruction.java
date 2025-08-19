@@ -13,7 +13,7 @@ public class UTF16FromCodeUnitsInstruction extends NamedOperator {
 
 	public UTF16FromCodeUnitsInstruction() {
 		super("utf16.from_code_units");
-		_doc = "(L) convert list of code units (16 bit numbers) to a string using utf-16 encoding";
+		_doc = "(L|N) convert list of code unit(s) (16 bit numbers) to a string using utf-16 encoding";
 	}
 
 	@Override

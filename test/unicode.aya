@@ -35,17 +35,6 @@
 .# 0xffff
 { "￿" ::￿ :C }
 
-{ "assigning variables identified by surrogate pairs" :P 1 1 }
-.# [0x10ffff 10fc00 103ff 10000 0xffff]
-{
-    1:􏿿; 2:􏰀; 3:𐏿; 4:𐀀; 5:￿;
-    [1 2 3 4 5] [􏿿􏰀𐏿𐀀￿]
-}
-{
-    6:"􏿿"; 7:"􏰀"; 8:"𐏿"; 9:"𐀀"; 10:"￿";
-    [6 7 8 9 10] [􏿿􏰀𐏿𐀀￿]
-}
-
 { "string to code-point conversions" :P 1 1 }
 { [(:0x3ff 10.( :0x3ff | :0x10000+)] "􏿿" :(unicode.to_code_points) }
 { [(:0x3ff 10.( :0x000 | :0x10000+)] "􏰀" :(unicode.to_code_points) }
@@ -77,5 +66,24 @@
 { "𐀀" [(:0xd800 :0x000+) (:0xdc00 :0x000+)] :(utf16.from_code_units) }
 { "￿" :0xffff :(utf16.from_code_units) }
 { "az"R "az"R:' :(utf16.from_code_units) }
+
+{ "symbols to tuples using utf-16 surrogate pairs" :P 1 1 }
+{ [ 'a 'b "foo" 'c "bar" "d" "e" ] :(utf16.to_tuples) [ "𨑢" "foo" "c" "bar" "𩁥" ] }
+
+{ "split tuples to their original symbols" :P 1 1 }
+{ [ "𨑢" "foo" "c" "bar" "𩁥" ] :(utf16.from_tuples) [ "a" "b" "foo" "c" "bar" "d" "e" ] }
+
+{ "assigning tuples" :P 1 1 }
+{ 1 2 :𨑢;; [𨑢] [1 2] }
+{ 3 4 :"𨑢";; 5 6 :"𩁥";; [𨑢𩁥] [3 4 5 6] }
+{ :{}:d; 7 8 d.:𨑢; d :{7:a; 8:b;} }
+{ "string interpolation with tuples" :P 1 1 }
+{ 9 10 :𨑢;; "$(𨑢)" "[ 9 10 ]" }
+{ ".~ for tuples" :P 1 1 }
+{ {𨑢}.~ ::"𨑢" }
+{ ":S for tuples" :P 1 1 }
+{ {𩁥}:S [::"𩁥"] }
+{ ".+ for tuples" :P 1 1 }
+{ {𨑢 x.𨑢} :{1 2:𨑢;} .+ P {1 2 x.𨑢} P }
 
 ] :# {test.test}

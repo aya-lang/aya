@@ -17,8 +17,10 @@ public class GetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Obj o = b.getContext().getVars().getVar(variable_);
-		this.addOrDumpVar(o, b);
+		for (Symbol variable : variables_) {
+			Obj o = b.getContext().getVars().getVar(variable);
+			this.addOrDumpVar(o, b);
+		}
 	}
 	
 	/**
@@ -43,7 +45,7 @@ public class GetVariableInstruction extends VariableInstruction {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(variable_.name());
+		stream.print(varName_);
 		return stream;
 	}
 }

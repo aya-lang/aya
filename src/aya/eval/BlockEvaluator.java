@@ -76,6 +76,17 @@ public class BlockEvaluator {
 	public Obj peek() {
 		return stack.peek();
 	}
+
+	/**
+	 * Peeks into the output stack
+	 * @param depth index into the stack, starting at 0
+	 */
+	public Obj peek(int depth) {
+		int idx = stack.size() - (depth + 1);
+		if (idx < 0 || idx >= stack.size())
+			throw new EmptyStackError("Unexpected empty stack (expected depth of at least " + (depth + 1) + ")");
+		return stack.get(idx);
+	}
 	
 	/** Pops the next instruction from the instruction list */
 	public Instruction next() {

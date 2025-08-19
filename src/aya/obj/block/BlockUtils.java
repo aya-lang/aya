@@ -1,8 +1,13 @@
 package aya.obj.block;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import aya.ReprStream;
 import aya.eval.ExecutionContext;
@@ -12,6 +17,7 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.op.Operator;
 import aya.instruction.op.OperatorInstruction;
+import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
@@ -174,7 +180,20 @@ public class BlockUtils {
 
 
 	public static StaticBlock assignVarValues(Dict d, StaticBlock blk) {
-		ArrayList<Instruction> new_is = new ArrayList<Instruction>(blk.getInstructions());
+		// Pre-processing: convert GetVariableInstructions so that they access exactly one variable to make replacing them easier
+		ArrayList<Instruction> new_is = blk.getInstructions().stream()
+				.flatMap(inst -> {
+					// do not apply to GetKeyVariableInstruction
+					if (inst.getClass() == GetVariableInstruction.class) {
+						GetVariableInstruction getVarInst = (GetVariableInstruction) inst;
+						Symbol[] symbols = (getVarInst).getSymbols();
+						return IntStream.range(0, symbols.length)
+								.map(i -> symbols.length - (i + 1)) // reverse order
+								.mapToObj(i -> new GetVariableInstruction(getVarInst.getSource(), symbols[i]));
+					} else {
+						return Stream.of(inst);
+					}
+				}).collect(Collectors.toCollection(ArrayList::new));
 
 		for (Pair<Symbol, Obj> pair : d.items()) {
 			Symbol var = pair.first();
@@ -183,12 +202,12 @@ public class BlockUtils {
 			// Finds all vars with id matching varid and swaps them with item
 			for (int i = 0; i < new_is.size(); i++) {
 				final Instruction o = new_is.get(i);
-				if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getSymbol().id() == var.id()) {
+				if (o.getClass() == GetVariableInstruction.class && ((GetVariableInstruction) o).getSymbols()[0].id() == var.id()) {
 					new_is.set(i, new DataInstruction(item));
 				}
 			}
 		}
-		
+
 		return replaceInstructions(blk, new_is);
 	}
 
@@ -222,7 +241,7 @@ public class BlockUtils {
 			Instruction i = is.get(0);
 			if (i instanceof VariableInstruction) {
 				VariableInstruction v = (VariableInstruction)i;
-				return v.getSymbol();
+				return v.getOriginalVar();
 			}
 		}
 		// Cannot convert, return original
@@ -287,7 +306,7 @@ public class BlockUtils {
 		if (instructions.size() == 1) {
 			Instruction i = instructions.get(0);
 			if (i instanceof VariableInstruction) {
-				out.add( ((VariableInstruction)i).getSymbol() );
+				out.add(((VariableInstruction) i).getOriginalVar());
 			} else if (i instanceof OperatorInstruction) {
 				Operator op = ((OperatorInstruction)i).getOperator();
 				if (op.overload() != null) {

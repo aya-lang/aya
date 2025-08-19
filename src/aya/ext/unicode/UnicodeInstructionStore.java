@@ -14,7 +14,9 @@ public class UnicodeInstructionStore implements NamedInstructionStore {
 				new FromCodePointsInstruction(),
 				new ToCodePointsInstruction(),
 				new UTF16FromCodeUnitsInstruction(),
-				new UTF16ToCodeUnitsInstruction()
+				new UTF16ToCodeUnitsInstruction(),
+				new UTF16ToTuplesInstruction(),
+				new UTF16FromTuplesInstruction()
 		);
 	}
 }
