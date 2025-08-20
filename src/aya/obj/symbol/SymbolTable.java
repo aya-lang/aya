@@ -1,5 +1,7 @@
 package aya.obj.symbol;
 
+import aya.util.UTF16;
+
 import java.util.HashMap;
 
 public class SymbolTable {
@@ -37,6 +39,11 @@ public class SymbolTable {
 	/** Returns true if the string contains only lowercase alpha and underscores */
 	public static boolean isBasicSymbolString(String name) {
 		return isValidStr(name);
+	}
+
+	/** Returns true if the string contains only lowercase alpha and underscores */
+	public static boolean isBasicSymbolChar(int c) {
+		return UTF16.is2Byte(c) && isValidChar((char) c);
 	}
 
 	/** Returns true if the string contains only lowercase alpha and underscores */

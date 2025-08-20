@@ -2,6 +2,7 @@ package aya.parser.tokens;
 
 import aya.instruction.Instruction;
 import aya.parser.SourceStringRef;
+import aya.util.UTF16;
 
 public class SpecialToken extends Token {
 	String name;
@@ -24,6 +25,11 @@ public class SpecialToken extends Token {
 	@Override
 	public Instruction getInstruction() {
 		throw new RuntimeException("Cannot generate aya code for special token");
+	}
+
+	/** Converts a character into a token representation */
+	public static SpecialToken get(int c, SourceStringRef source) {
+		return UTF16.is2Byte(c) ? get((char) c, source) : null;
 	}
 
 	/** Converts a character into a token representation */

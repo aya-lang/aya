@@ -66,6 +66,7 @@ import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
+import aya.util.UTF16;
 import aya.util.VectorizedFunctions;
 
 public class Ops {
@@ -168,7 +169,11 @@ public class Ops {
 		}
 		return false;
 	}
-	
+
+	public static boolean isOpChar(int c) {
+		return UTF16.is2Byte(c) && isOpChar((char) c);
+	}
+
 	public static boolean isOpChar(char c) {
 		char[] op_exceptions = {
 				',','(',')','[',']','`','.','"','\'', '#','_'
