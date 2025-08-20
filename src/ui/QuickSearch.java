@@ -52,6 +52,7 @@ import ui.settings.QuickSearchSettings;
 import ui.settings.SettingsManager;
 
 
+@SuppressWarnings("serial")
 public class QuickSearch extends JPanel {
 	// Pro: this prevents the slow Swing rendering from blocking input, making the UI feel less laggy while typing.
 	// Con: UI might feel less responsive on fast machines.
