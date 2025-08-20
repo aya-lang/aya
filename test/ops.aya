@@ -4,6 +4,43 @@
 { [[1 2 3]] 0 I [1 2 3] }
 { [[1 2 3]] [0] I [[1 2 3]] }
 
+{ 1 1 & 1}
+{ 1 0 & 0}
+{ 0 1 & 0}
+{ 0 0 & 0}
+
+{ 1 1 | 1}
+{ 1 0 | 1}
+{ 0 1 | 1}
+{ 0 0 | 0}
+
+{ 1 {1} & 1}
+{ 1 {0} & 0}
+{ 0 {1} & 0}
+{ 0 {0} & 0}
+{ 1 {1} | 1}
+{ 1 {0} | 1}
+{ 0 {1} | 1}
+{ 0 {0} | 0}
+
+{ {1} {1} & 1}
+{ {1} {0} & 0}
+{ {0} {1} & 0}
+{ {0} {0} & 0}
+{ {1} {1} | 1}
+{ {1} {0} | 1}
+{ {0} {1} | 1}
+{ {0} {0} | 0}
+
+.# Short circuit, second condition is never evaluated
+{:x("a"), 0 {"b":x 1} & ; x "a"}
+.# Short circuit but second condition is evaluated since first condition is true
+{:x("a"), 1 {"b":x 1} & ; x "b"}
+.# Short circuit, second condition is never evaluated
+{:x("a"), 1 {"b":x 1} | ; x "a"}
+.# Short circuit but second condition is evaluated since first condition is false
+{:x("a"), 0 {"b":x 1} | ; x "b"}
+
 { [1] 2 L [ [1] [1] ] }
 { 1 2 L  [1 1] }
 { 0 [2 2] L [ [0 0] [0 0] ] }

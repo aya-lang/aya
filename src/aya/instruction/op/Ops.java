@@ -363,6 +363,7 @@ class OP_And extends Operator {
 	public OP_And() {
 		init("&");
 		arg("NN", "bitwise and");
+		arg("NB|BB", "and (short circuit)");
 		arg("SS", "list all expressions matching the regex");
 		setOverload(2, "and");
 		vect();
@@ -372,7 +373,36 @@ class OP_And extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		
+		if (b.isa(BLOCK)) {
+			// Get the boolean value of a
+			boolean aVal = false;
+			if (a.isa(NUMBER)) {
+				aVal = a.bool();
+			} else if (a.isa(BLOCK)) {
+				// aVal = block.eval
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(a));
+				be.eval();
+				aVal = be.pop().bool();
+			} else {
+				throw new TypeError(this, b, a); // Stack order
+			}
+			
+			
+			if (aVal) {
+				// Evaluate b and return that
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(b));
+				be.eval();
+				blockEvaluator.push(be.pop());
+			} else {
+				// Do not evaluate b, just return false
+				blockEvaluator.push(Num.ZERO);
+			}
+		} else {
+			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		}
 	}
 
 	private static NumberListOp NUML_OP = new NumberListOp() {
@@ -1657,6 +1687,7 @@ class OP_Bar extends Operator {
 	public OP_Bar() {
 		init("|");
 		arg("NN", "logical or");
+		arg("NB|BB", "or (short circuit)");
 		setOverload(2,  "or");
 	}
 
@@ -1671,7 +1702,36 @@ class OP_Bar extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		
+		if (b.isa(BLOCK)) {
+			// Get the boolean value of a
+			boolean aVal = false;
+			if (a.isa(NUMBER)) {
+				aVal = a.bool();
+			} else if (a.isa(BLOCK)) {
+				// aVal = block.eval
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(a));
+				be.eval();
+				aVal = be.pop().bool();
+			} else {
+				throw new TypeError(this, b, a); // Stack order
+			}
+			
+			
+			if (aVal) {
+				// Do not evaluate b, just return true
+				blockEvaluator.push(Num.ONE);
+			} else {
+				// Evaluate b and return that
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(b));
+				be.eval();
+				blockEvaluator.push(be.pop());
+			}
+		} else {
+			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		}
 	}
 
 	// a b | => "a | b"
