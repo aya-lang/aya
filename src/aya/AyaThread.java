@@ -79,6 +79,12 @@ public class AyaThread extends Thread {
 		}
 	}
 	
+	public ExecutionResult waitForResponseBlocked() throws InterruptedException, ThreadError {
+		ExecutionResult res = _output.take();
+		_pending_task_count--;
+		return res;
+	}
+	
 	public ExecutionResult eval(ExecutionRequest request) {
 		ExecutionResult result;
 		BlockEvaluator b = _root.createEvaluator();

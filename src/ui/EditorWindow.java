@@ -217,17 +217,6 @@ public class EditorWindow extends JPanel {
 		StaticBlock blk = Parser.compileSafeOrNull(new SourceString(txt, "<editor>"), StaticData.IO);
 		if (blk != null) {
 			_aya.queueInput(new ExecutionRequest(99999, blk)); // TODO change req id
-			
-			// This is kind of broken since the REPL and this window are using the same AyaThread
-			// This call could be getting a task from the REPL and is not guaranteed to be the one we just sent
-			try {
-				ExecutionResult res = _aya.waitForResponse();
-				InteractiveAya.printResult(StaticData.IO, res, false);
-			} catch (ThreadError e) {
-				StaticData.IO.err().print(e.getMessage());
-			} catch (InterruptedException e) {
-				e.printStackTrace(StaticData.IO.err());
-			}
 		}
 	}
 	
