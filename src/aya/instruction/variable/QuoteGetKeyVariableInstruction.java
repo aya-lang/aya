@@ -20,18 +20,21 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;
 			dict = (Dict)kv_obj;
-			Obj o = dict.get(variable_);
-			b.push(o);
+			for (Symbol variable : variables_) {
+				Obj o = dict.get(variable);
+				b.push(o);
+			}
 		} else {
 			Symbol typeSym = Obj.IDToSym(kv_obj.type());
 			Obj builtin_dict = b.getContext().getVars().getGlobals().get(typeSym);
 			if (builtin_dict.isa(Obj.DICT)) {
 				Dict dict = (Dict)builtin_dict;
-				Obj o;
 				try {
-					o = dict.get(variable_);
-					//b.push(kv_obj);
-					b.push(o);
+					for (Symbol variable : variables_) {
+						Obj o = dict.get(variable);
+						//b.push(kv_obj);
+						b.push(o);
+					}
 				} catch (IndexError e) {
 					throw new IndexError("Built in type " + typeSym + 
 							" does not contain member '" + varName() + "'");
@@ -45,7 +48,7 @@ public class QuoteGetKeyVariableInstruction extends VariableInstruction {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("." + variable_.name() + ".`");
+		stream.print("." + varName_ + ".`");
 		return stream;
 	}
 }

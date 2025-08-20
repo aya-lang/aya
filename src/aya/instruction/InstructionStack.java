@@ -8,7 +8,6 @@ import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
-import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
@@ -137,19 +136,6 @@ public class InstructionStack {
 		}
 	}
 
-	
-	/** Finds all vars with id matching varid and swaps them
-	 * with `item`
-	 */
-	public void assignVarValue(Symbol var, Obj item) {
-		for (int i = 0; i < instructions.size(); i++) {
-			final Instruction o = instructions.get(i);
-			if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getSymbol().id() == var.id()) {
-				instructions.set(i, new DataInstruction(item));
-			}
-		}
-	}
-	
 
 	///////////////////////
 	// String Conversion //

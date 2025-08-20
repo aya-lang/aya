@@ -7,6 +7,7 @@ import aya.exceptions.runtime.UndefVarException;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.list.List;
+import aya.obj.symbol.Symbol;
 import aya.parser.SourceStringRef;
 import aya.util.Casting;
 
@@ -34,7 +35,9 @@ public class InterpolateStringInstruction extends Instruction  {
 			if (current instanceof GetVariableInstruction) {
 				GetVariableInstruction var = (GetVariableInstruction)current;
 				try {
-					sb.append(context.getVars().getVar(var.getSymbol()).str());
+					for (Symbol symbol : var.getSymbols()) {
+						sb.append(context.getVars().getVar(symbol).str());
+					}
 				} catch (UndefVarException e) {
 					e.setSource(var.getSource());
 					throw e;
