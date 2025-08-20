@@ -1,18 +1,18 @@
 package aya.ext.image.instruction;
 
-import aya.eval.BlockEvaluator;
-import aya.instruction.named.NamedOperator;
-import aya.obj.Obj;
-import aya.obj.dict.Dict;
-import aya.obj.list.List;
-import aya.obj.list.Str;
-
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageWriterSpi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Collectors;
+
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageWriterSpi;
+
+import aya.eval.BlockEvaluator;
+import aya.instruction.named.NamedOperator;
+import aya.obj.Obj;
+import aya.obj.list.List;
+import aya.obj.list.Str;
 
 public class GetImageFormatsInstruction extends NamedOperator {
 

@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 /**
  * Mirrors the reasonable overrides of {@link javax.swing.JTextArea} that were forgotten in all other Text Components...
  */
+@SuppressWarnings("serial")
 public class FixedTextPane extends JTextPane {
 	private int rowHeight = 0;
 	private int columnWidth = 0;

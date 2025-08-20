@@ -8,8 +8,6 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.STR;
 import static aya.util.Casting.asNumber;
 
-import java.util.ArrayList;
-
 import aya.StaticData;
 import aya.eval.BlockEvaluator;
 import aya.eval.ExecutionContext;

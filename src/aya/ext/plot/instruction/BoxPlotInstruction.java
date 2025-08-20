@@ -167,14 +167,15 @@ public class BoxPlotInstruction extends NamedOperator {
         input.renderConfig.renderChart(opName, chart);
     }
 
-    private static class BoxAndWhiskerItemWrapper extends BoxAndWhiskerItem {
+    @SuppressWarnings("serial")
+	private static class BoxAndWhiskerItemWrapper extends BoxAndWhiskerItem {
 
         public BoxAndWhiskerItemWrapper(BoxAndWhiskerItem other, boolean enableFarOutlier) {
             super(
                     other.getMean(), other.getMedian(), other.getQ1(), other.getQ3(),
                     other.getMinRegularValue(), other.getMaxRegularValue(),
-                    enableFarOutlier ? other.getMinOutlier() : new Double(Double.NEGATIVE_INFINITY),
-                    enableFarOutlier ? other.getMaxOutlier() : new Double(Double.POSITIVE_INFINITY),
+                    enableFarOutlier ? other.getMinOutlier() : Double.NEGATIVE_INFINITY,
+                    enableFarOutlier ? other.getMaxOutlier() : Double.POSITIVE_INFINITY,
                     other.getOutliers()
             );
         }
