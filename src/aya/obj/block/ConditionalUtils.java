@@ -9,6 +9,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.obj.Obj;
+import aya.util.Casting;
 
 public class ConditionalUtils {
 
@@ -28,7 +29,11 @@ public class ConditionalUtils {
 	private static Obj evalResult(ExecutionContext context, Instruction instruction) {
 		BlockEvaluator b = context.createEvaluator();
 		if (instruction instanceof BlockLiteralInstruction) {
-			b.dump(((BlockLiteralInstruction)instruction).getRawBlock());
+			//Convert the block instruction into an actual block
+			BlockEvaluator b2 = context.createEvaluator();
+			b2.add(instruction);
+			b2.eval();
+			b.dump(Casting.asStaticBlock(b2.pop()));
 		} else {
 			b.add(instruction);
 		}
