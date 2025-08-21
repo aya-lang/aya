@@ -218,43 +218,52 @@ public class InteractiveAya {
 		
 		// interactive is set on startup. If true, this is an infinite REPL loop
 		if (_interactive) {
-			while (running) {
+			
+			// Read input on a different thread
+			new Thread(() -> {
+				// Show the prompt for the first time 
+				// Future prints are done in the execution loop
 				if (_showPromptText) {
 					out.print(AyaPrefs.getPrompt());
 				}
-				
-				String input;
-				try {
-					input = scanner.nextLine();
-				} catch (NoSuchElementException e) {  // Ctrl+D
-					running = false;
-					continue;
-				}
-
-				if (input.equals("")) {
-					continue;
-				}
-				
-				if (_echo && _interactive) {
-					out.println(AyaPrefs.getPrompt() + input);
-				}
-				
-				ExecutionRequest request = processInput(input);
-	
-				if (request != null) {	
-					_aya.queueInput(request);
+				while (true) {
+					String input;
 					try {
-						while (_aya.hasPendingTasks()) {
-							ExecutionResult result = _aya.waitForResponse();
-							if (result.id() == request.id()) {
-								printResult(_io(), result, rawOutput);
-							}
-						}
-					} catch (InterruptedException e) {
-						out.println("Aya interrupted");
-						e.printStackTrace(err);
+						input = scanner.nextLine();
+					} catch (NoSuchElementException e) {  // Ctrl+D
 						running = false;
+						continue;
 					}
+
+					if (input.equals("")) {
+						continue;
+					}
+					
+					if (_echo && _interactive) {
+						out.println(AyaPrefs.getPrompt() + input);
+					}
+					
+					ExecutionRequest request = processInput(input);
+					if (request != null) {
+						_aya.queueInput(request);
+					}
+				}
+			}).start();
+				
+			// Evaluation Loop
+			while (running) {
+				try {
+					ExecutionResult result = _aya.waitForResponseBlocked();
+					printResult(_io(), result, rawOutput);
+					
+					if (_showPromptText) {
+						out.print(AyaPrefs.getPrompt());
+					}
+					
+				} catch (InterruptedException e) {
+					out.println("Aya interrupted");
+					e.printStackTrace(err);
+					running = false;
 				}
 				
 				if (!running) _aya.interrupt();
