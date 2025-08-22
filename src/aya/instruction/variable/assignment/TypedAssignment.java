@@ -7,15 +7,9 @@ import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
 
-public class TypedAssignment extends SimpleAssignment {
+public class TypedAssignment extends CopyAssignment {
 
 	public Symbol type;
-
-	
-	public TypedAssignment(SourceStringRef source, Symbol var) {
-		super(source, var);
-		this.type = SymbolConstants.ANY;
-	}
 	
 	public TypedAssignment(SourceStringRef source, Symbol var, Symbol type, boolean copy) {
 		super(source, var, copy);
@@ -49,11 +43,6 @@ public class TypedAssignment extends SimpleAssignment {
 	public void toDict(Dict d) {
 		super.toDict(d);
 		d.set(SymbolConstants.TYPE, this.type);
-	}
-
-	@Override
-	public Symbol assignmentType() {
-		return SymbolConstants.TYPED;
 	}
 
 }
