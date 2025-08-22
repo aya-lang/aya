@@ -4,12 +4,14 @@ package aya.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import aya.AyaPrefs;
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
+import aya.instruction.variable.assignment.CopyAssignment;
 import aya.instruction.variable.assignment.SimpleAssignment;
 import aya.instruction.variable.assignment.TypedAssignment;
 import aya.instruction.variable.assignment.UnpackAssignment;
@@ -80,11 +82,17 @@ public class HeaderUtils {
 				arg_type = sym_token.getSymbol();
 			}
 			
-			if (copy || arg_type != null) {
-				return new TypedAssignment(var.getSourceStringRef(), var.getSymbol(), arg_type, copy);
+			// No type checking to do
+			if (arg_type == null || !AyaPrefs.isTypeCheckerEnabled()) {
+				if (copy) {
+					return new CopyAssignment(var.getSourceStringRef(), var.getSymbol(), true);
+				} else {
+					return new SimpleAssignment(var.getSourceStringRef(), var.getSymbol());
+				}
 			} else {
-				return new SimpleAssignment(var.getSourceStringRef(), var.getSymbol());
+				return new TypedAssignment(var.getSourceStringRef(), var.getSymbol(), arg_type, copy);
 			}
+			
 		} else if (current.isa(Token.LIST)) {
 			ListToken unpack = (ListToken)current;
 			TokenQueue tq = new TokenQueue(unpack.getCol());

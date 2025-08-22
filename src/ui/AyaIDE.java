@@ -370,9 +370,6 @@ public class AyaIDE extends JFrame
 		public static final int SPECIAL_MODE_PRINT_HELP = 1; // Print help text and exit
 		public static final int SPECIAL_MODE_PRINT_VERSION = 2; // Print help text and exit
 		public static final int SPECIAL_MODE_CHECK= 3; // Check the file then exit
-
-
-
 		
 		// Options
 		
@@ -391,6 +388,8 @@ public class AyaIDE extends JFrame
 		private String fileToRun = null;
 		// If not null, run this package
 		public String packageToRun = null;
+		// If set, the type checker will be disabled
+		public boolean disableTypeChecker = false;
 		
 		public CLIOptions() { }
 		
@@ -450,6 +449,11 @@ public class AyaIDE extends JFrame
 						// Check the file for errors, print any if they exist, then exit
 						if (arg.contains("c") ) {
 							options.specialMode = SPECIAL_MODE_CHECK;
+						}
+						
+						// Disable type checker
+						if (arg.contains("t")) {
+							options.disableTypeChecker = true;							
 						}
 						
 						// Options that require a 3rd argument
@@ -520,6 +524,9 @@ public class AyaIDE extends JFrame
 			System.exit(RESCODE_ERR);
 		}
 		
+		if (options.disableTypeChecker) {
+			AyaPrefs.setTypeCheckerEnabled(false);
+		}
 
 		// Special cases
 		
