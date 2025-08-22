@@ -17,7 +17,7 @@ public class SimpleAssignment extends Assignment {
 
 	@Override
 	public void assign(Dict vars, Obj o) {
-		vars.set(_var, o);
+		vars.set(this._var, o);
 	}
 
 	@Override
@@ -25,11 +25,6 @@ public class SimpleAssignment extends Assignment {
 		d.set(SymbolConstants.NAME, _var);
 	}
 
-	@Override
-	public Symbol assignmentType() {
-		return SymbolConstants.SIMPLE;
-	}
-	
 	@Override
 	public String toString() {
 		return _var.name();

@@ -168,12 +168,5 @@ public class UnpackAssignment extends Assignment {
 		}
 		d.set(SymbolConstants.ARGS, args);
 	}
-
-
-	@Override
-	public Symbol assignmentType() {
-		return SymbolConstants.UNPACK;
-	}
-	
-	
+		
 }

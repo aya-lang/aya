@@ -236,22 +236,17 @@
     [
         :{
           ::a:name;
-          ::simple:argtype;
         } :{
           ::num:type;
           1:copy;
           ::b:name;
-          ::typed:argtype;
         } :{
           ::str:type;
           0:copy;
           ::c:name;
-          ::typed:argtype;
         } :{
-          ::any:type;
           1:copy;
           ::d:name;
-          ::typed:argtype;
         }
     ]:args;
 
