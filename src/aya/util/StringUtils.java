@@ -50,6 +50,16 @@ public class StringUtils {
 		}
 		return true;
 	}
+	
+	/** Test if a string contains all lowercase alphabetical letters or underscores */
+	public static boolean lalphau(String str) {
+		for (char c : str.toCharArray()) {
+			if (!(('a' <= c && c <= 'z') || c == '_')) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 
 	/** Returns true if all characters in a string are digits */

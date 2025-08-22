@@ -379,7 +379,9 @@ public class Dict extends Obj {
 				for (Symbol sym : _vars.keySet()) {
 					if (sym.id() != SymbolConstants.KEYVAR_META.id()) {
 						_vars.get(sym).repr(stream);
-						stream.println(":" + StringUtils.quote(sym.name()) + ";");
+						stream.print(":");
+						stream.print(sym.reprName());
+						stream.println(";");
 					}
 				}
 				stream.decIndent();
