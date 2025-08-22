@@ -3,42 +3,32 @@ package aya.instruction.variable.assignment;
 import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
-import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
 import aya.obj.symbol.SymbolConstants;
 import aya.parser.SourceStringRef;
 
-public class TypedAssignment extends Assignment {
+public class TypedAssignment extends SimpleAssignment {
 
-	public Symbol var;
 	public Symbol type;
-	public boolean copy;
+
 	
 	public TypedAssignment(SourceStringRef source, Symbol var) {
-		super(source);
-		this.var = var;
+		super(source, var);
 		this.type = SymbolConstants.ANY;
-		this.copy = false;
 	}
 	
 	public TypedAssignment(SourceStringRef source, Symbol var, Symbol type, boolean copy) {
-		super(source);
+		super(source, var, copy);
 		if (type == null) type = SymbolConstants.ANY;
-		this.var = var;
 		this.type = type;
-		this.copy = copy;
 	}
 	
 	public void assign(Dict vars, Obj o) {
 		if (Obj.isInstance(o, this.type)) {
-			if (this.copy) {
-				vars.set(this.var, o.deepcopy());
-			} else {
-				vars.set(this.var, o);
-			}
+			super.assign(vars, o);
 		} else {
-			TypeError e = new TypeError("{ARGS}\n\tExpected:" + this.type.repr()
-						+ "\n\tReceived:" + o);
+			TypeError e = new TypeError("Type error at argument: " + this.toString() + "\n\tExpected type: " + this.type.repr()
+						+ "\n\tReceived: " + o);
 			e.setSource(getSource());
 			throw e;
 		}
@@ -47,9 +37,9 @@ public class TypedAssignment extends Assignment {
 
 	@Override
 	public String toString() {
-		String s = var.name() + (copy ? "$" : "");
+		String s = super.toString();
 		if (this.type.id() != SymbolConstants.ANY.id()) {
-			s += "::" + type.name();
+			s += "::" + type.reprName();
 		}
 		return s;
 	}
@@ -57,8 +47,7 @@ public class TypedAssignment extends Assignment {
 	
 	@Override
 	public void toDict(Dict d) {
-		d.set(SymbolConstants.NAME, this.var);
-		d.set(SymbolConstants.COPY, Num.fromBool(this.copy));
+		super.toDict(d);
 		d.set(SymbolConstants.TYPE, this.type);
 	}
 
