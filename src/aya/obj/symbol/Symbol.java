@@ -26,7 +26,7 @@ public class Symbol extends Obj {
 	 */
 	public String reprName() {
 		String n = name();
-		if (StringUtils.lalphau(n)) {
+		if (StringUtils.lalphau(n) && n.length() > 0) {
 			return n;
 		} else {
 			return StringUtils.quote(n);
