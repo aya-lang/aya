@@ -184,6 +184,12 @@ public class InteractiveAya {
 			}
 		}
 	}
+	
+	public void printPrompt() {
+		if (_showPromptText) {
+			_io().out().print(AyaPrefs.getPrompt());
+		}
+	}
 
 	/**
 	 * @return the resultCode of the last executed request
@@ -223,30 +229,35 @@ public class InteractiveAya {
 			new Thread(() -> {
 				// Show the prompt for the first time 
 				// Future prints are done in the execution loop
-				if (_showPromptText) {
-					out.print(AyaPrefs.getPrompt());
-				}
+				printPrompt();
 				while (true) {
-					String input;
+					String input = "";
 					try {
 						input = scanner.nextLine();
 					} catch (NoSuchElementException e) {  // Ctrl+D
-						running = false;
-						continue;
+						_aya.interrupt();
+						_io().out().flush();
+						System.exit(0);
 					}
 
 					if (input.equals("")) {
-						continue;
+						// If no input, just re print the prompt and go back to reading the next line
+						printPrompt();
+					} else {
+						if (_echo && _interactive) {
+							out.println(AyaPrefs.getPrompt() + input);
+						}
+						
+						ExecutionRequest request = processInput(input);
+						if (request != null) {
+							_aya.queueInput(request);
+							// Request was sent, prompt will be printed when it is complete
+						} else {
+							// No request but enter was pressed so we need to re print the prompt
+							printPrompt();
+						}
 					}
 					
-					if (_echo && _interactive) {
-						out.println(AyaPrefs.getPrompt() + input);
-					}
-					
-					ExecutionRequest request = processInput(input);
-					if (request != null) {
-						_aya.queueInput(request);
-					}
 				}
 			}).start();
 				
