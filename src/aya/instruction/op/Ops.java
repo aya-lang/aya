@@ -66,6 +66,7 @@ import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
+import aya.util.TypeUtils;
 import aya.util.UTF16;
 import aya.util.VectorizedFunctions;
 
@@ -121,7 +122,7 @@ public class Ops {
 		/* 67 C  */ new OP_Sort(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ null,
+		/* 70 F  */ new OP_F(),
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
@@ -135,7 +136,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ null, 
+		/* 84 T  */ new OP_T(), 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),
@@ -922,6 +923,29 @@ class OP_D extends Operator {
 
 }
 
+// F - 69
+// TODO: REMOVE
+class OP_F extends Operator {
+	
+	public OP_F() {
+		init("F");
+		arg("AD", "isinstance");
+	}
+
+
+	@Override
+	public void execute(final BlockEvaluator blockEvaluator) {
+		Obj type  = blockEvaluator.pop();
+		Obj value = blockEvaluator.pop();
+		
+		if (type.isa(DICT)) {
+			blockEvaluator.push(Num.fromBool(TypeUtils.typeCheck(value, asDict(type), blockEvaluator.getContext())));
+		} else {
+			throw new TypeError(this, type, value);
+		}	
+	}
+}
+
 // E - 69
 class OP_E extends Operator {
 	
@@ -1398,35 +1422,23 @@ class OP_T extends Operator {
 	
 	public OP_T() {
 		init("T");
-		arg("N", "negate");
-		vect();
-		setOverload(1, "negate");
+		arg("LD", "type");
 	}
 
-	private static NumberListOp NUML_OP = new NumberListOp() {
-		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
-		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
-		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
-		public NumberList l(NumberList a) { return a.negate(); }
-	};
 
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
-		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
-	}
-
-	@Override
-	public Obj exec1arg(ExecutionContext context, final Obj a) {
-		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(context, a)) != null) return res;
+		Obj type  = blockEvaluator.pop();
+		Obj inner = blockEvaluator.pop();
 		
-		if (a.isa(NUMBER)) {
-			return ((Number)a).negate();
+		if (inner.isa(LIST) && type.isa(DICT)) {
+			blockEvaluator.push(TypeUtils.makeType(asList(inner), asDict(type)));
+		} else if (inner.isa(Obj.NUM) && !inner.bool() && type.isa(Obj.NUM) && !type.bool()) {
+			// 0 0 T -> returns base type
+			blockEvaluator.push(TypeUtils.TYPE);
 		} else {
-			throw new TypeError(this, a);
-		}
+			throw new TypeError(this, type, inner);
+		}	
 	}
 }
 

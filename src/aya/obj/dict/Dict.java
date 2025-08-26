@@ -17,7 +17,6 @@ import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
-import aya.util.StringUtils;
 
 /**
  * A set of key-value pairs accessible as a runtime object
@@ -144,6 +143,11 @@ public class Dict extends Obj {
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(Symbol key) {
 		return _get(key) != null;
+	}
+	
+	/** Alias for containsKey */
+	public boolean hasKey(Symbol key) {
+		return containsKey(key);
 	}
 	
 	/** The number of items in this dict */
