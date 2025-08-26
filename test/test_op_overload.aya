@@ -37,7 +37,7 @@
   {o self, o:T ::vec = {o.l self.l =} 0 .?}:__eq__;
 
   {self, self.l U self.:l }:__reverse__;
-  {self, self.l T self.M!}:__negate__;
+  {self, self.l K self.M!}:__negate__;
   {self, self.l C self.:l }:__sort__;
 
   {self, self.l #B self.:l}:__inc__;
@@ -187,7 +187,7 @@
 "negate..." :P
 :{
     [1 2 3] vec! :v;
-    { v T P "< -1 -2 -3 >" } test.test
+    { v K P "< -1 -2 -3 >" } test.test
 };
 
 "sort..." :P

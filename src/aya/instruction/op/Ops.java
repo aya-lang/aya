@@ -126,7 +126,7 @@ public class Ops {
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
-		/* 75 K  */ null,
+		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
 		/* 78 N  */ new OP_N(),
@@ -135,7 +135,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ new OP_T(), 
+		/* 84 T  */ null, 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),
@@ -1115,6 +1115,44 @@ class OP_Join extends Operator {
 		}
 	}
 }
+// K - 75
+class OP_K extends Operator {
+	
+	public OP_K() {
+		init("K");
+		arg("N", "negate");
+		vect();
+		setOverload(1, "negate");
+	}
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.negate(); }
+	};
+
+	@Override
+	public void execute(final BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
+	}
+
+	@Override
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res;
+		
+		if (a.isa(NUMBER)) {
+			return ((Number)a).negate();
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 
 
 // L - 76
@@ -1166,18 +1204,6 @@ class OP_L extends Operator {
 	}
 }
 
-// K - 76
-class OP_K extends Operator {
-	
-	public OP_K() {
-		//init("K");
-	}
-
-	@Override
-	public void execute (final BlockEvaluator blockEvaluator) {
-
-	}
-}
 
 // N - 78
 class OP_N extends Operator {

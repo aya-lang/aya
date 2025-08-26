@@ -129,8 +129,8 @@
 {1\/MC}:asec;               .#? N asec \n  inverse secant
 {1\/MT}:acot;               .#? N acot \n  inverse cotangent
 
-{$Me\TMe- 2/}:sinh;          .#? N sinh \n  hyperbolic sine
-{$Me\TMe+2/}:cosh;          .#? N cosh \n  hyperbolic cosine
+{$Me\KMe- 2/}:sinh;          .#? N sinh \n  hyperbolic sine
+{$Me\KMe+2/}:cosh;          .#? N cosh \n  hyperbolic cosine
 [{$} sinh.` {\}
      cosh.` {/}].* :tanh;   .#? N tanh \n  hyperbolic tangent
 [sinh.` {1\/}].* :csch;     .#? N csch \n  hyperbolic cosecant
