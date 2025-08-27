@@ -1,217 +1,4 @@
-
 "running types test":P
-.# :{
-    .# ::type :name;
-.# }:type;
-.# 
-.#[:{::num:name}] :{::list:name}T .__meta__ :type;
-0 0T :type;
-
-.# :{
-.#     .# When checking a type, the following will
-.#     .# be checked in order from top to bottom
-.# 
-.#     .# 1. Any type
-.#     .# If true, match with any type
-.#     0 :any; .# ::bool
-.# 
-.#     0 :union;
-.# 
-.#     .# Must be overwritten
-.#     .# :name;
-.# 
-.#     .# Container types
-.#     .#For container types, the name must match AND the interal type must match
-.#     .# list and dict have built in methods for checking
-.#     .# for custom types, call:
-.#     .#  value type.__type_check__
-.#     .# custom types can implement custom type checking
-.#     .# __type_check__ is implemented automatically by the struct keyword
-.#     .# union implements a custom __type_check__ also
-.#     .#[]:internal;
-.# 
-.# 
-.#     type :__type__;
-.# }:type_meta;
-.# 
-.# type_meta type.:__meta__;
-
-type.__meta__ :type_meta;
-
-
-:{
-    ::any :name;
-    1 :any;
-    type_meta :__meta__;
-}:any;
-
-:{
-    ::union:name;
-    1:union;
-    type_meta :__meta__;
-} :union;
-
-:{ ::num   :name; type_meta :__meta__; } :num;
-:{ ::str   :name; type_meta :__meta__; } :str;
-:{ ::char  :name; type_meta :__meta__; } :char;
-:{ ::sym   :name; type_meta :__meta__; } :sym;
-:{ ::block :name; type_meta :__meta__; } :block;
-:{ ::list  :name; type_meta :__meta__; } :list;
-:{ ::dict  :name; type_meta :__meta__; } :dict;
-
-
-num 0 .M.:_type;
-str "" .M.:_type;
-char 'c .M.:_type;
-sym ::_ .M.:_type;
-block {} .M.:_type;
-list [] .M.:_type;
-
-{value::any type : value_type dict^,
-
-    .# type may be a ::type or an ::object (i.e. point)
-    .# the struct macro should be update so a point has type type
-    .#   and an instance of a point has type point
-    type ::object :@ {
-        type.__type__ :type;
-    } ?
-
-    .# Here we need to get the type of the value
-    .#The interpreter should generate this unless the object
-    .#   is a dict that overloads the __type__ field
-    .#   the logic is a bit messy here since we are implementing in aya
-    value ::dict :@ {
-        .# Value is a dict or object, if it has a __type__, use that
-        .#   otherwise just use dict
-        value ::__type__ H {
-            value.__type__ :value_type;
-        } {
-            dict :value_type;
-        } .?
-    } {
-        .# Value is not a dict or user object, get the _type
-        .#    (this should be done internally by the interpreter)
-        value._type :value_type;
-
-        .# For built-ins, the original value is left on the stack
-        .# pop it so it is consistent with user objects
-        .#This should always be true since uer types are handled above
-        [::num ::str ::char ::sym ::block ::list] value:T H 1 :!
-        ;
-    } .?
-
-    {
-        .# special case for classes
-        .# interpreter should handle this differently
-        ([{value ::object :@} {value :K ::__type__ H} {type ::name H} {type.name ::type}] {&}%) {
-            1
-        } (type.any) {
-            1
-        } (type.union) {
-            .# Union: return true if any type in the union list matches
-            type.inner :# {t : value^,
-                value t type_check
-            }
-            {+}% 0> .# any
-        } (type ::name H value_type ::name H & {type.name value_type.name =} &) {
-            (type ::inner H) {
-                .#There is an inner type specification, need to run custom type check
-                {
-                    .# List: Return true if
-                    .#   the type is a list and all elements inside the list match the list type
-                    (type.name ::list =) {:inner_type(type.inner.[0]),
-                        type.inner E 1 :!
-
-                        .# Check each element inside
-                        value :# {e,
-                            e inner_type type_check
-                        }
-                        {+}% value E = .# all
-                    } 
-                    
-                    .# Custom generic types can override __type_check__
-                    (type ::outer H {type.outer ::__type_check__ H} &) {
-                        value type.inner type.outer.__type_check__
-                    }
-                    
-                    .# Fallback: dict. Return true if
-                    .#   all values inside the dict match the inner type (except __meta__)
-                    {:inner_type(type.inner.[0]) all_correct_type(1) value^,
-                        type.inner E 1 =! {bp}?
-                        .# Check each element inside
-                        value :# {k v : inner_type^,
-                            k ::__meta__ = ! {
-                                v inner_type type_check ! {
-                                    .# Found a mismatch, set the flag to false
-                                    0 :all_correct_type;
-                                } ? 
-                            } ?
-                        }
-                        all_correct_type
-                    }
-                } :?
-            } {
-                .# No inner type specification: match
-                1
-            } .?
-        } {
-        0
-        }
-    } :?
-}:type_check;
-
-{b val,
-    {:b^ type_check^ val^, b type_check val} test.test
-} :tc;
-
-
-.#{inner::list type : outer,
-.#    .# If inner has lists, recursively create types
-.#    inner {:T::list=}O {+}% 0> { : buf(::nil) out([]),
-.#        inner :# {x, 
-.#            x :T ::list = {
-.#                .# this entry is a list, save it to the buf
-.#                .# if buf already has something (i.e. two lists in a row, error)
-.#                buf ::nil :!
-.#                x :buf;
-.#            } {
-.#                buf ::nil = {
-.#                    .# previous entry was not a list, add as normal
-.#                    x out.B; .# append
-.#                } {
-.#                    .# the previous entry was a list, recurse
-.#                    buf x t out.B;
-.#                    .# reset buf
-.#                    ::nil :buf;
-.#                } .?
-.#            } .?
-.#        };
-.#        .# inner is now the fully assembled type
-.#        out :inner;
-.#    } ?
-.#
-.#    .# See note above in type_check
-.#    type ::object :@ {
-.#        type :outer;
-.#        type.__type__ :type;
-.#    } ?
-.#
-.#    type.name ::list = {
-.#        innerE 1 :!
-.#    } ?
-.#    type.name ::dict = {
-.#        innerE 1 :!
-.#    } ?
-.#    type.union {
-.#        innerE 0 >  1:!
-.#    } ?
-.#
-.#    :{
-.#        inner:inner;
-.#        type:__meta__;
-.#        outer 0 =! {outer:outer;} ?
-.#    }
-.#}:t;
 
 list type F 1 :!
 
@@ -283,7 +70,7 @@ struct foo {x} ;
 .# new type format
 def foo::__type__ :{
     ::foo:name;
-    type_meta :__meta__;
+    type.__meta__ :__meta__;
 }
 
 
@@ -295,17 +82,18 @@ foo type F 1 :!
 
 struct point {x y} ;
 
+
 .# new type format
 def point::__type__ :{
     ::point:name;
-    type_meta :__meta__;
+    type.__meta__ :__meta__;
 }
 
 def point::__type_check__ {value inner self : inner_type, 
     inner.[0] :inner_type;
 
-    value.x inner_type type_check
-    value.y inner_type type_check
+    value.x inner_type F
+    value.y inner_type F
     &
 }
 
@@ -314,19 +102,19 @@ def point::__type_check__ {value inner self : inner_type,
 1 2 point! [num]pointT F 1 :!
 "a" "b" point! [num]pointT F 0 :!
 
-point type 1 tc
+point type F 1 :!
 
 
 struct pair {first second} ;
 
 def pair::__type__ :{
     ::pair :name;
-    type_meta :__meta__;
+    type.__meta__ :__meta__;
 }
 
 def pair::__type_check__ {value inner self,
-    value.first  inner.[0] type_check
-    value.second inner.[1] type_check
+    value.first  inner.[0] F
+    value.second inner.[1] F
     &
 }
 
@@ -341,12 +129,12 @@ struct optional {value valid} ;
 
 def optional::__type__ :{
     ::optional :name;
-    type_meta :__meta__;
+    type.__meta__ :__meta__;
 }
 
 def optional::__type_check__ {value inner self,
     value.valid {
-        value.value inner.[0] type_check
+        value.value inner.[0] F
     } {
         .# if empty, we don't care what the value is
         1

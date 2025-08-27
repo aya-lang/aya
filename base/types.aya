@@ -1,0 +1,45 @@
+.# Base type
+0 0T :type;
+
+.# Any
+.#
+.# Represents any type
+:{
+    ::any :name;
+    1 :any;
+    type.__meta__ :__meta__;
+}:any;
+
+.# Union
+.# 
+.# Must specify an inner type with [..]unionT
+.# For example:
+.#   [str num]unionT
+:{
+    ::union :name;
+    1 :union;
+    type.__meta__ :__meta__;
+}:union;
+
+.# Types for builtins
+:{ ::num   :name; type.__meta__ :__meta__; } :num;
+:{ ::str   :name; type.__meta__ :__meta__; } :str;
+:{ ::char  :name; type.__meta__ :__meta__; } :char;
+:{ ::sym   :name; type.__meta__ :__meta__; } :sym;
+:{ ::block :name; type.__meta__ :__meta__; } :block;
+:{ ::list  :name; type.__meta__ :__meta__; } :list;
+:{ ::dict  :name; type.__meta__ :__meta__; } :dict;
+
+.# Store refs in __aya__
+:{
+    type  :type;
+    any   :any;
+    union :union;
+    num   :num;
+    str   :str;
+    char  :char;
+    sym   :sym;
+    block :block;
+    list  :list;
+    dict  :dict;
+} __aya__.:types;
