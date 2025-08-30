@@ -122,7 +122,7 @@ public class Ops {
 		/* 67 C  */ new OP_Sort(),
 		/* 68 D  */ new OP_D(),
 		/* 69 E  */ new OP_E(),
-		/* 70 F  */ new OP_F(),
+		/* 70 F  */ null,
 		/* 71 G  */ new OP_G(),
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
@@ -921,29 +921,6 @@ class OP_D extends Operator {
 		
 	}
 
-}
-
-// F - 69
-// TODO: REMOVE
-class OP_F extends Operator {
-	
-	public OP_F() {
-		init("F");
-		arg("AD", "isinstance");
-	}
-
-
-	@Override
-	public void execute(final BlockEvaluator blockEvaluator) {
-		Obj type  = blockEvaluator.pop();
-		Obj value = blockEvaluator.pop();
-		
-		if (type.isa(DICT)) {
-			blockEvaluator.push(Num.fromBool(TypeUtils.typeCheck(value, asDict(type), blockEvaluator.getContext())));
-		} else {
-			throw new TypeError(this, type, value);
-		}	
-	}
 }
 
 // E - 69

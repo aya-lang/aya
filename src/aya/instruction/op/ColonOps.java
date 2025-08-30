@@ -1211,9 +1211,9 @@ class OP_IsInstance extends Operator {
 		final Obj type = blockEvaluator.pop();
 		final Obj obj = blockEvaluator.pop();
 		
-		try {
-			blockEvaluator.push(Num.fromBool(TypeUtils.isInstance(obj, type)));
-		} catch (ValueError e) {
+		if (type.isa(DICT)) {
+			blockEvaluator.push(Num.fromBool(TypeUtils.isInstance(obj, Casting.asDict(type), blockEvaluator.getContext())));
+		} else {
 			throw new TypeError(this, obj, type);
 		}
 	}

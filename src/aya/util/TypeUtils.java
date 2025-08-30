@@ -1,7 +1,6 @@
 package aya.util;
 
 import static aya.obj.Obj.DICT;
-import static aya.obj.Obj.SYMBOL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +35,8 @@ public class TypeUtils {
 		}
 		
 		public static boolean isClassType(Obj value, Dict type) {
-			return Obj.isInstance(value, SymbolConstants.OBJECT)
+			//return Obj.isInstance(value, SymbolConstants.OBJECT)
+			return isClassOrStruct(value)
 					&& Casting.asDict(value).containsKey(SymbolConstants.__TYPE__)
 					&& type.containsKey(SymbolConstants.NAME)
 					&& Casting.asSymbol(type.get(SymbolConstants.NAME)).id() == SymbolConstants.TYPE.id();
@@ -93,21 +93,32 @@ public class TypeUtils {
 		TYPE.setMetaTable(TYPE_META);		
 	}
 	
-	
-	public static boolean isInstance(Obj obj, Obj type) {
-		Symbol type_name = null;
-		if (type.isa(DICT)) {
-			Obj type_name_obj = Casting.asDict(type).getSafe(SymbolConstants.KEYVAR_TYPE);
-			if (type_name_obj.isa(SYMBOL)) type_name = Casting.asSymbol(type_name_obj);
-		} else if (type.isa(SYMBOL)) {
-			type_name = Casting.asSymbol(type);
+
+	// TODO: Change after struct macro is changed
+	public static boolean isClassOrStruct(Obj obj) {
+		final Symbol obj_type = SymbolConstants.OBJECT;
+		
+		if (obj.isa(DICT)) {			
+			// Check type chain
+			Dict cls = Casting.asDict(obj);
+			while (cls.hasMetaTable()) {
+				Obj cls_type = cls.getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
+				if (obj_type.equiv(cls_type)) {
+					return true;
+				}
+				
+				Obj next_cls = cls.get(SymbolConstants.KEYVAR_META);
+				if (next_cls.isa(DICT)) {
+					cls = Casting.asDict(next_cls);
+				} else {
+					break;
+				}
+			}
 		}
 		
-		if (type_name == null){
-			throw new ValueError("Invalid type");
-		} else {
-			return Obj.isInstance(obj, type_name);
-		}
+		// ::object not found in type tree
+		return false;
+		
 	}
 	
 	
@@ -157,7 +168,8 @@ public class TypeUtils {
 		
 		// This is due to the way types are handled in the struct macro, this should be changed at some point
 		Dict outer = null;
-		if (Obj.isInstance(type_dict, SymbolConstants.OBJECT)) {
+		//if (Obj.isInstance(type_dict, SymbolConstants.OBJECT)) {
+		if (isClassOrStruct(type_dict)) {
 			outer = Casting.asDict(type_dict);
 			type_dict = type.getDict(SymbolConstants.__TYPE__);
 			type = new DictReader(type_dict);
@@ -190,12 +202,13 @@ public class TypeUtils {
 		return result;
 	}
 	
-	public static boolean typeCheck(Obj value, Dict type, ExecutionContext ctx) {
+	public static boolean isInstance(Obj value, Dict type, ExecutionContext ctx) {
 		
 	    // type may be a ::type or an ::object (i.e. point)
 	    // the struct macro should be update so a point has type type
 	    //   and an instance of a point has type point
-		if (Obj.isInstance(type, SymbolConstants.OBJECT)) {
+		//if (Obj.isInstance(type, SymbolConstants.OBJECT)) {
+		if (isClassOrStruct(type)) {
 			type = StaticDictReader.getDictEx(type, SymbolConstants.__TYPE__, "Object must have a __type__ field of type dict");
 	    }
 	
@@ -230,7 +243,7 @@ public class TypeUtils {
 				List inner = TypeDict.getInner(type);
 				// Return true if any type in the union matches
 				for (int i = 0; i < inner.length(); i++) {
-					if (typeCheck(value, TypeDict.getInnerAt(inner, i), ctx)) {
+					if (isInstance(value, TypeDict.getInnerAt(inner, i), ctx)) {
 						return true;
 					}
 				}
@@ -258,7 +271,7 @@ public class TypeUtils {
 					// TODO: Add optimization for number lists
 					List value_list = Casting.asList(value);
 					for (int i = 0; i < value_list.length(); i++) {
-						if (!typeCheck(value_list.getExact(i), inner_type, ctx)) {
+						if (!isInstance(value_list.getExact(i), inner_type, ctx)) {
 							return false; // type mismatch found
 						}
 					}
@@ -300,7 +313,7 @@ public class TypeUtils {
 						if (items.get(i).first().id() == SymbolConstants.KEYVAR_META.id()) {
 							// Skip __meta__
 							continue;
-						} else if (!typeCheck(items.get(i).second(), inner_type, ctx)) {
+						} else if (!isInstance(items.get(i).second(), inner_type, ctx)) {
 							return false; // type mismatch found
 						}
 					}

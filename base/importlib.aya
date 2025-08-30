@@ -406,7 +406,7 @@ def importlib::_parse_identifiers {
 
     .# If still a block, we need to parse one level deeper
     .# We do not handle any additional nested blocks
-    :&.[0] ::block :@ {
+    :&.[0] block :@ {
         .[0] .* :#{
             importlib._block_to_str_list.[0]
         }
