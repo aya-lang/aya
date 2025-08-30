@@ -336,23 +336,25 @@ public class TypeUtils {
 			return false;
 		}
 	}
+	
 
+	public static Dict makeType(Symbol type_name) {
+		if (!TYPE_CACHE.containsKey(type_name)) {
+			Dict t = new Dict();
+			t.set(SymbolConstants.NAME, type_name);
+			t.setMetaTable(TYPE_META);
+			TYPE_CACHE.put(type_name, t);
+		}
 
+		return TYPE_CACHE.get(type_name);
+	}
+	
 	private static Dict getBuiltinType(Obj value) {
 		return getBuiltinType(value.type());
 	}
 	
 	private static Dict getBuiltinType(byte type) {
-		Symbol s = Obj.IDToSym(type);
-		
-		if (!TYPE_CACHE.containsKey(s)) {
-			Dict t = new Dict();
-			t.set(SymbolConstants.NAME, Obj.IDToSym(type));
-			t.setMetaTable(TYPE_META);
-			TYPE_CACHE.put(s, t);
-		}
-
-		return TYPE_CACHE.get(s);
+		return makeType(Obj.IDToSym(type));
 	}
 
 }

@@ -16,7 +16,7 @@ import aya.parser.SourceStringRef;
  *
  */
 public class BlockLiteralInstruction extends Instruction {
-	
+		
 	StaticBlock _block;
 	HashMap<Symbol, StaticBlock> _defaults;
 	boolean _auto_eval;
@@ -45,6 +45,9 @@ public class BlockLiteralInstruction extends Instruction {
 	@Override
 	public void execute(BlockEvaluator b) {
 		StaticBlock blk = _block;
+		
+		// Set type info for arguments
+		blk = BlockUtils.copySetTypeInfo(blk, b.getContext());
 
 		// If there are defaults, evaluate them and push a new blockEvaluator
 		if (_defaults != null) {
@@ -57,6 +60,7 @@ public class BlockLiteralInstruction extends Instruction {
 			}
 			blk = BlockUtils.mergeLocals(blk, defaults);
 		}
+		
 		
 		if (_auto_eval) {
 			b.dump(blk);

@@ -53,7 +53,7 @@ public class BlockHeader extends Instruction {
 	
 	private static void setArgs(ArrayList<Assignment> args, Dict vars, BlockEvaluator b) {
 		for (Assignment arg : args) {
-			arg.assign(vars, b.pop());
+			arg.assign(vars, b.pop(), b.getContext());
 		}	
 	}
 

@@ -1,5 +1,6 @@
 package aya.instruction.variable.assignment;
 
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
@@ -8,7 +9,7 @@ import aya.parser.SourceStringRef;
 
 public class SimpleAssignment extends Assignment {
 	
-	private Symbol _var;
+	protected Symbol _var;
 	
 	public SimpleAssignment(SourceStringRef source, Symbol var) {
 		super(source);
@@ -16,7 +17,7 @@ public class SimpleAssignment extends Assignment {
 	}
 
 	@Override
-	public void assign(Dict vars, Obj o) {
+	public void assign(Dict vars, Obj o, ExecutionContext ctx) {
 		vars.set(this._var, o);
 	}
 

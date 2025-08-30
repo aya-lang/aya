@@ -2,6 +2,7 @@ package aya.parser;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import aya.AyaPrefs;
@@ -9,6 +10,8 @@ import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
+import aya.instruction.InstructionStack;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.instruction.variable.assignment.CopyAssignment;
@@ -63,12 +66,12 @@ public class HeaderUtils {
 		return out;
 	}
 	
-	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError {
+	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError, ParserException {
 		Token current = tokens.next();
 		if (current.isa(Token.VAR)) {
 			VarToken var = (VarToken)current;
 			boolean copy = false;
-			Symbol arg_type = null;
+			StaticBlock arg_type = null;
 			
 			// Copy?
 			if (tokens.hasNext() && tokens.peek().isa(Token.OP) && tokens.peek().getData().equals("$")) {
@@ -76,10 +79,50 @@ public class HeaderUtils {
 				copy = true;
 			}
 		
-			// Type annotation?
+			// Plain type annotation?
+			// { a::my_type ... }
 			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
 				SymbolToken sym_token = (SymbolToken)tokens.next();
-				arg_type = sym_token.getSymbol();
+				arg_type = BlockUtils.makeBlockWithSingleInstruction(new GetVariableInstruction(sym_token.getSourceStringRef(), sym_token.getSymbol()));
+			}
+			
+			// Nested type annotation?
+			// { a::[num]list ... }
+			// { a::[[num]list]my_type ... }
+			// { a::[module.point]module.list ... }
+			if (tokens.hasNext() && tokens.peek().isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET)) {
+				ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+				
+				// Collect instructions until we either hit the end or find the SECOND normal variable instruction
+				// { a::[num]list b c , }
+				// ...............^
+				// { a::[[num]list]my_type , }
+				// ........................^
+				// { a::[module.point]module.foo.list b c , }
+				// ...................................^
+				
+				tokens.next(); // Discard ::
+				boolean found_var_token = false;
+				boolean done = false;
+				while (tokens.hasNext() && !done) {
+					current = tokens.next();
+					if (current.isa(Token.VAR)) {
+						// Is this the second one we've seen?
+						if (found_var_token == true) {
+							// This is the second one we found, we are done
+							done = true;
+							break;
+						} else {
+							// This is only the first one we've seen
+							found_var_token = true;
+						}
+					}
+					instructions.add(current.getInstruction());
+				}				
+				Collections.reverse(instructions);
+				InstructionStack is = new InstructionStack();
+				is.addAll(instructions);
+				arg_type = BlockUtils.fromIS(is);
 			}
 			
 			// No type checking to do

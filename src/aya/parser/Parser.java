@@ -342,7 +342,7 @@ public class Parser {
 
 				if (in.hasNext()) {
 
-					// Symbol
+					// Symbol or type declaration in block header
 					if (in.peek() == ':') {
 						in.next(); // Move to the next colon
 						String sym = "";
@@ -352,6 +352,14 @@ public class Parser {
 							in.next(); // Skip '
 							sym = StringParseUtils.goToEnd(in, '"');
 							varIsExplicitlyTerminated = true;
+							tokens.add(new SymbolToken(sym, in.currentRef(), varIsExplicitlyTerminated));
+							
+						} else if (in.peek() == '[') {
+							// Type in block header
+							// {a::[num]list b::foo, ... }
+							//     ^
+							tokens.add(new SpecialToken(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET, "::", in.currentRef()));
+							
 						} else {
 
 							// Fist, try to parse as simple variable
@@ -377,9 +385,9 @@ public class Parser {
 								}
 							}
 							varIsExplicitlyTerminated = false;
+							tokens.add(new SymbolToken(sym, in.currentRef(), varIsExplicitlyTerminated));
 						}
 
-						tokens.add(new SymbolToken(sym, in.currentRef(), varIsExplicitlyTerminated));
 					}
 
 					// Named Operator

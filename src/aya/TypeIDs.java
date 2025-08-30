@@ -36,4 +36,6 @@ public class TypeIDs {
 	public static final byte T_DICT 		   = 91;  // :{...} dict
 	
 	public static final int T_NEXT_BLOCK_IS_DICT = 92; // :{}
+	public static final int T_DOUBLE_COLON_BEFORE_SQUARE_BRACKET = 93; // ::[]
+
 }

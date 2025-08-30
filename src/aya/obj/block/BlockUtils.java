@@ -1,9 +1,7 @@
 package aya.obj.block;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,7 +15,6 @@ import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
 import aya.instruction.op.Operator;
 import aya.instruction.op.OperatorInstruction;
-import aya.instruction.variable.GetKeyVariableInstruction;
 import aya.instruction.variable.GetVariableInstruction;
 import aya.instruction.variable.VariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
@@ -329,6 +326,35 @@ public class BlockUtils {
 				throw new ValueError("No doc found for " + block.str());
 			}
 		}
+	}
+
+	public static StaticBlock copySetTypeInfo(StaticBlock block, ExecutionContext ctx) {
+		if (block.getArgs() == null) {
+			return block;
+		} else {
+			
+			// Check if anything has type info
+			boolean has_type_info = false;
+			for (Assignment a : block.getArgs()) {
+				if (a.hasTypeInfo()) {
+					has_type_info = true;
+					break;
+				}
+			}
+			
+			if (has_type_info) {
+				ArrayList<Assignment> args = new ArrayList<Assignment>();
+				for (Assignment a : block.getArgs()) {
+					args.add(a.setTypeInfo(ctx));
+				}
+				return new StaticBlock(block.getInstructions(), block.getLocals(), args);
+			} else {
+				// Nothing to do
+				return block;
+			}
+		}
+			
+
 	}
 
 }
