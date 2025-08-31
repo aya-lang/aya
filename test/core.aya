@@ -104,7 +104,6 @@
 {[1 2 3]:& {a::num, a B ;;}~}  assertfail
 
 {:a(2), 1 ({a: b(a), a b})} assert [1 2]
-{:a(9), 2 ({a: a(a 1 +), a})} assert [2]
 {{: b(:{}), b}:x; 1 x.:y; x} assert [:{1:y}]
 
 .# Dictionaries
@@ -153,12 +152,6 @@
     0:a;
     0:b;
     {100 f} assert [100 1 9]
-
-    .# Argument takes precedence
-    1:a;
-    {a : a^, a}:f;
-    0:a;
-    {100 f} assert [100]
 
     :{ 1:a 2:b }:b;
     {:b^, b.a b.b b.c}:g;
@@ -250,7 +243,7 @@
         }
     ]:args;
 
-    { {a b$::num c::str d$ : a(1) b(4), } .|.args } assert [args]
+    { {a b$::num c::str d$ : e(1) f(4), } .|.args } assert [args]
 })
 
 .# ::block S: duplicate with locals

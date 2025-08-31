@@ -18,6 +18,23 @@ x y :!
 [[1 2][3 4]] x :@ 1 :!
 [[1 2][3 4]] y :@ 1 :!
 
+:{
+    list:my_list;
+}:my_module
+
+[1 2] my_module.my_list :@ 1 :!
+[1 2] [num]my_module.my_list :@ 1 :!
+[1 2] {a::[num]my_module.my_list, ::ok}~ ::ok :!
+[1 2] {a::my_module.my_list, ::ok}~ ::ok :!
+0 [1 2] 0 {a b::[num]my_module.my_list c, ::ok}~ ::ok :!
+0 0 [1 2] 0 0 {a b c::[num]my_module.my_list d e, ::ok}~ ::ok :!
+[1 2] 0 0 {a::[num]my_module.my_list b c, ::ok}~ ::ok :!
+0 0 [1 2] {a b c::[num]my_module.my_list, ::ok}~ ::ok :!
+0 0 [1 2] {a b c::[num]my_module.my_list, ::ok}~ ::ok :!
+[1 2] {a::[num]my_module.my_list : l, ::ok}~ ::ok :!
+0 [1 2] {a b::[num]my_module.my_list : l, ::ok}~ ::ok :!
+[1 2] 0 {a::[num]my_module.my_list b : l, ::ok}~ ::ok :!
+
 
 .#
 .# Any
