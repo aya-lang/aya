@@ -20,16 +20,6 @@
 
 }:__aya__;
 
-.#:{
-.#    :{ 
-.#        ::__nil :__type__;
-.#        "nil" :__str__;
-.#        "nil" :__repr__'
-.#        1 :__pushself__;
-.#        {:T ::__nil =}:__eq__;
-.#    }:__meta__;
-.#}:nil;
-
 
 .###################
 .#      TYPES      #
@@ -173,11 +163,11 @@
             .# aya> {mod name block, mod ::_fn =! {;} ? [mod name block.`]} :f
 
             .# Jump ahead 3 items
-            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   :{} ::foo {+}
+            .# aya> (```(\:& sym :@! {\`}{\}.? f) ::_fn)   :{} ::foo {+}
             .# [ :{} ::foo {+} ]
 
             .# Jump ahead 2 items
-            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
+            .# aya> (```(\:& sym :@! {\`}{\}.? f) ::_fn)   ::foo {+}
             .# [ ::_fn ::foo {+} ]
 
             \:& __aya__.types.sym :@! {\(1 hold)}{\}.?

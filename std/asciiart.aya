@@ -42,14 +42,14 @@ class asciiart
 .# alias
 asciiart:aa;
 
-def asciiart::__init__ {str self,
-    str :T ::str = {
-        [str] self.:list ;
+def asciiart::__init__ {s self,
+    s str :@ {
+        [s] self.:list ;
     } {
         .# list
         .# Make sure all are at least as long as the longest
-        str :&#E .max #.< :str ;
-        str self.:list ;
+        s :&#E .max #.< :s ;
+        s self.:list ;
     } .?
 }
 
@@ -116,7 +116,7 @@ def asciiart::__negate__ {self,
     #..~#..
 .}
 def asciiart::__add__ {other self,
-    other :T ::char = other :T ::str = | {
+    other char :@ other str :@ | {
         self.list #{other \+} self.M!
     } {
         other.list .T self.list.T :J .T self.M!
@@ -209,11 +209,11 @@ def asciiart::__rpow__ {self num,
 .}
 def asciiart::__getindex__ {index self,
     {
-        (index :T ::str =) {
+        (index str :@) {
             index self.replace
-        } (index :T ::char =) {
+        } (index char :@) {
             index self.fill
-        } (index :T ::asciiart =) {
+        } (index asciiart :@) {
             index self.replace_aa
         } {
             "asciiart::__getindex__ invalid index type" .D
@@ -234,7 +234,7 @@ def asciiart::__getindex__ {index self,
 .}
 
 def asciiart::fill {c self,
-    c :T ::str = {c.[0] :c;} ?
+    c str :@ {c.[0] :c;} ?
     self.list :# { :# {; c}} self.M!
 }
 

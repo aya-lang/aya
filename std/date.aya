@@ -16,12 +16,6 @@
 
     {:{M$:ms} date :M}:now;
 
-    .# {in meta, [
-    .#     in:T ::num = {:{in:ms} meta :M} ?
-    .#     in:T ::str = {:{in "yyyy-MM-dd" :(date.parse):ms} meta :M} ?
-    .#     {"Expected S|D, recieved: $in".D}
-    .# ].S }:__new__;
-
     {in::[str num]union meta,
         {
             (in num :@) {

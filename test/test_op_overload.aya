@@ -265,7 +265,7 @@
 
 :{
     [:2r3 :2z 2] vec! :v;
-    { v Md .l #:T [num num num] } test.test
+    { v Md .l [num]listT :@ 1 } test.test
 };
 
 "head/tail..." :P

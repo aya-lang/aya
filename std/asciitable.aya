@@ -158,12 +158,12 @@ def asciitable::_render_subtables {rows self : subtable_cells_by_column,
         rows # {row,
             {
                 (row.type 'h =) {
-                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
                         row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_header
                     };
                 }
                 (row.type 'r =) {
-                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
                         row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_row
                     };
                 }
@@ -177,7 +177,7 @@ def asciitable::_render_subtables {rows self : subtable_cells_by_column,
         
         .# write subtable cells back into the ::list cells of this table
         rows {row, "hr" row.type H} I # {row,
-            row.data E .R {col_idx, subtable_cells_by_column col_idx P H} I {col_idx, row.data.[col_idx] :T ::list =} I # {col_idx,
+            row.data E .R {col_idx, subtable_cells_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
                 subtable_cells_by_column.[col_idx P] V\; row.data.:[col_idx] ;
             };
         };

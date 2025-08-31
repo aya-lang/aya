@@ -6,7 +6,7 @@
 class bitset
 
 def bitset::__new__ {s meta,
-    s :T ::num = {
+    s num :@ {
         :{ s:size 0sL:bits } meta :M
     } {
         s meta.fromlist

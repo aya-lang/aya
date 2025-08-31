@@ -59,10 +59,10 @@
 
 { arg : _read_kw^ ,
     {
-        (arg :T ::str =) {
+        (arg str :@) {
             .# convert to dict
             :{ arg :filename }
-        } (arg :T ::dict =) {
+        } (arg dict :@) {
             arg
         } {
             "Unsupported arg type $(arg:T). Must be ::str or ::dict" .D

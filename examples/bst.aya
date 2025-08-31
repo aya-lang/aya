@@ -13,14 +13,14 @@ def bst::__init__ {data self,
 
 def bst::_print {node depth bst,
     " |" depth 1 + L W .P
-    node :T ::bst = {
+    node bst :@ {
         node.right depth 1+ bst._print
         node.left  depth 1+ bst._print
     } { "-":P } .?
 }
 
 def bst::_insert {data node parent::bst side::sym bst,
-    node :T ::bst = {
+    node bst :@ {
         data node.data > {
             data node.right node ::right bst._insert
         } {

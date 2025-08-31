@@ -2,7 +2,6 @@ require queue {queue}
 
 [
 
-    { [1 2 3] queue! :T  ::queue }
     { [1 2 3] queue! .next  1 }
     {: q, [1 2] queue!:q .next; q.next  2 }
     {: q, [1 2] queue!:q .peek; q.next  1 }

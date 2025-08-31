@@ -13,7 +13,7 @@ def ::iswindows {:9s"\\"=}
 def ::cd {dirname : path^,
     dirname
     .# If it is a string, conv to path
-    dirname :T ::str = { path! } ?
+    dirname str :@ { path! } ?
     P :(sys.cd)
 }
 
