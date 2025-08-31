@@ -81,6 +81,7 @@ public class TypedAssignment extends CopyAssignment {
 	public String toString() {
 		if (_type_block != null) {
 			ReprStream s = new ReprStream();
+			s.setTight(true);
 			s.print(super.toString());
 			s.print("::");
 			BlockUtils.repr(s, _type_block, false, null);

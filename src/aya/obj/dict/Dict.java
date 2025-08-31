@@ -331,13 +331,7 @@ public class Dict extends Obj {
 		// Is __type__ defined?
 		Obj type = _vars.get(SymbolConstants.KEYVAR_TYPE);
 		if (type != null) {
-			String typename;
-			if (type.isa(Obj.SYMBOL)) {
-				typename = Casting.asSymbol(type).name();
-			} else {
-				typename = type.str();
-			}
-			stream.print("<type '" + typename + "'>");
+			stream.print(type.str());
 			return stream;
 		} 
 		

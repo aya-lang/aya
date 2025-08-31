@@ -156,7 +156,7 @@ public class InstructionStack {
 		} else {
 			for(int i = instructions.size()-1; i >= 0; i--) {
 				instructions.get(i).repr(stream);
-				stream.print(" ");
+				if (!stream.isTight()) stream.print(" ");
 			}
 		}
 		stream.delTrailingSpaces();

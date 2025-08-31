@@ -81,13 +81,14 @@ public class BlockUtils {
 				if (args != null) {
 					for (Assignment arg : args) {
 						stream.print(arg.toString());
-						stream.print(" ");
+						if (!stream.isTight()) stream.print(" ");
 					}
 				}
 				
 				// Non-arg locals
 				if (locals.size() != 0) {
-					stream.print(": ");
+					stream.print(":");
+					if (!stream.isTight()) stream.print(" ");
 				
 					// Print locals
 					for (Symbol key : locals.keys()) {
@@ -104,7 +105,8 @@ public class BlockUtils {
 					for (Symbol v : defaults.keySet()) {
 						stream.print(v.name() + "(");
 						repr(stream, defaults.get(v), false, null);
-						stream.print(") ");
+						stream.print(")");
+						if (!stream.isTight()) stream.print(" ");
 					}
 				}
 
@@ -116,7 +118,7 @@ public class BlockUtils {
 			ArrayList<Instruction> is = block.getInstructions();
 			for(int i = is.size() - 1; i >= 0; i--) {
 				is.get(i).repr(stream);
-				stream.print(" ");
+				if (!stream.isTight()) stream.print(" ");
 			}
 
 			// Remove trailing space

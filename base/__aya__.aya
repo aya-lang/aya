@@ -29,6 +29,22 @@
 .# Base type
 0 0T :type;
 
+{self,
+    {
+        (self.any) {
+            "any"
+        } (self ::inner H!) {
+            self.name:C
+        } {
+            "$(self.inner)$(self.name:C)T"
+            "\[ " "[" .&
+            " ]"  "]" .&
+        }
+    } :?
+} type.__meta__.:__str__;
+
+type.__meta__.__str__.` type.__meta__.:__repr__;
+
 .# Any
 .#
 .# Represents any type
@@ -293,17 +309,17 @@
 .# `extend`: Keyword for extending a class
 .#
 
-{type::sym super : type^,
+{typename::sym super : type^,
     :{
         super:__meta__;
         :{
-            type:name;
+            typename:name;
             type.__meta__:__meta__;
         }:__type__;
         .# copy new from super directly
         super.__new__.` :__new__;
         0:__pushself__;
-    } type :=
+    } typename :=
 } __aya__.:extend;
 
 __aya__.extend.` :extend;
