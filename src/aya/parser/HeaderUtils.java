@@ -4,6 +4,7 @@ package aya.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import aya.AyaPrefs;
 import aya.exceptions.parser.EndOfInputError;
@@ -43,20 +44,53 @@ public class HeaderUtils {
 	
 		// Args
 		ArrayList<Assignment> args = generateBlockHeaderArgs(arg_tokens);
+		// Get all variable names used by args
+		HashSet<Symbol> names = checkDuplicateArgs(args);
 
 		// Locals & Captures
-		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens);
+		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);
 		Dict locals = locals_and_captures.first();
 		HashMap<Symbol, StaticBlock> captures = locals_and_captures.second();
-		
+				
 		// Null checks
 		if (args.size() == 0) args = null;
 		if (locals.size() == 0) locals = null;
 		if (captures.size() == 0) captures = null;
-
+		
 		return new Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>>(args, locals, captures);
 	}
 	
+	/** Check to make sure there are no duplicate names in the locals and arguments
+	 * 
+	 * @param tokens
+	 * @return
+	 * @throws SyntaxError 
+	 * @throws ParserException
+	 */
+	private static HashSet<Symbol> checkDuplicateArgs(ArrayList<Assignment> args) throws SyntaxError {
+		HashSet<Symbol> names = new HashSet<Symbol>();
+		for (Assignment a : args) {
+			for (Symbol s : a.getNames()) {
+				checkDuplicate(names, s, a.getSource());
+			}
+		}
+		return names;
+	}
+	
+	/** Helper function for checkDuplicateArgs
+	 * 
+	 * @param names
+	 * @param a
+	 * @throws SyntaxError 
+	 */
+	private static void checkDuplicate(HashSet<Symbol> names, Symbol name, SourceStringRef ref) throws SyntaxError {
+		if (names.contains(name)) {
+			throw new SyntaxError("Duplicate variable name", ref);
+		} else {
+			names.add(name);
+		}	
+	}
+
 	private static ArrayList<Assignment> generateBlockHeaderArgs(TokenQueue tokens) throws ParserException {
 		ArrayList<Assignment> out = new ArrayList<Assignment>();
 		while (tokens.hasNext()) {
@@ -180,9 +214,10 @@ public class HeaderUtils {
 	}
 	
 	/** Assumes args have already been set 
+	 * @param existing_names 
 	 * @param captures 
 	 * @throws ParserException */
-	private static Pair<Dict, HashMap<Symbol, StaticBlock>> generateBlockHeaderDefaults(TokenQueue tokens) throws ParserException {
+	private static Pair<Dict, HashMap<Symbol, StaticBlock>> generateBlockHeaderDefaults(TokenQueue tokens, HashSet<Symbol> existing_names) throws ParserException {
 		Dict locals = new Dict();
 		HashMap<Symbol, StaticBlock> captures = new HashMap<Symbol, StaticBlock>();
 
@@ -191,16 +226,22 @@ public class HeaderUtils {
 			if (current.isa(Token.VAR)) {
 				VarToken var = (VarToken)current;
 				if (!tokens.hasNext() || tokens.peek().isa(Token.VAR)) {
-					locals.set(var.getSymbol(), Num.ZERO);
+					Symbol name = var.getSymbol();
+					checkDuplicate(existing_names, name, var.getSourceStringRef());
+					locals.set(name, Num.ZERO);
 				} else if (tokens.peek().isa(Token.LAMBDA)){
 					LambdaToken lambda = (LambdaToken)tokens.next();
-					captures.put(var.getSymbol(), BlockUtils.fromIS(lambda.generateInstructionsForFirst()));
+					Symbol name = var.getSymbol();
+					checkDuplicate(existing_names, name, var.getSourceStringRef());
+					captures.put(name, BlockUtils.fromIS(lambda.generateInstructionsForFirst()));
 				} else if (tokens.peek().isa(Token.OP)) {
 					OperatorToken opt = (OperatorToken)tokens.next();
 					if (opt.getData().equals("^")) {
 						Instruction i = new QuoteGetVariableInstruction(current.getSourceStringRef(), var.getSymbol());
 						StaticBlock b = BlockUtils.makeBlockWithSingleInstruction(i);
-						captures.put(var.getSymbol(), b);
+						Symbol name = var.getSymbol();
+						checkDuplicate(existing_names, name, var.getSourceStringRef());
+						captures.put(name, b);
 					} else {
 						generateBlockHeaderDefaultsError(current.getSourceStringRef());
 					}

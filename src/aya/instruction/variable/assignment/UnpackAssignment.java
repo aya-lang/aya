@@ -169,5 +169,15 @@ public class UnpackAssignment extends Assignment {
 		}
 		d.set(SymbolConstants.ARGS, args);
 	}
+
+
+	@Override
+	public ArrayList<Symbol> getNames() {
+		var out = new ArrayList<Symbol>();
+		for (var arg : _args) {
+			out.addAll(arg.assignment.getNames());
+		}
+		return out;
+	}
 		
 }

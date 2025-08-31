@@ -1,5 +1,8 @@
 package aya.instruction.variable.assignment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
@@ -29,6 +32,11 @@ public class SimpleAssignment extends Assignment {
 	@Override
 	public String toString() {
 		return _var.name();
+	}
+
+	@Override
+	public ArrayList<Symbol> getNames() {
+		return new ArrayList<>(List.of(_var));
 	}
 
 }
