@@ -179,5 +179,36 @@ public class UnpackAssignment extends Assignment {
 		}
 		return out;
 	}
+
+	@Override
+	public boolean hasTypeInfo() {
+		for (var a : _args) {
+			if (a.assignment.hasTypeInfo()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	@Override
+	public UnpackAssignment setTypeInfo(ExecutionContext ctx) {
+		if (hasTypeInfo()) {
+			var args = new ArrayList<Arg>();
+			for (var arg : _args) {
+				args.add(new Arg(arg.assignment.setTypeInfo(ctx), arg.slurp));
+			}
+			try {
+				return fromArgList(args, _catchall, _source);
+			} catch (SyntaxError e) {
+				// This shouldn't happen
+				// The error should have been found when the code was originally parsed, not when assigning types
+				throw new ValueError("PARSER BUG: " + e.getMessage());
+			}
+		} else {
+			// No type info, just return this
+			return this;
+		}
+	}
 		
 }
