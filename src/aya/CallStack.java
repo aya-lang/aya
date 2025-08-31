@@ -130,7 +130,7 @@ public class CallStack {
 			stack_list.add(_stack[i]);
 		}
 
-		Collections.reverse(stack_list);
+		//Collections.reverse(stack_list);
 		for (CallStackFrame l : stack_list)
 		{
 			if (l.isCheckpoint()) continue;

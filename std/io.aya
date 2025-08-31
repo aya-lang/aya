@@ -2,13 +2,13 @@ class path
 
 .# Create a new path (accepts relative or abs paths)
 .# Custom constructor
-{dir meta : absolute_path(0),
+{dir::[str path]union meta : absolute_path(0) path^,
     .# Already a path?
-    dir:T ::path = {
-        dir
-    } {
-        .# Input is a string?
-        dir:T ::str = {
+    {
+        (dir path :@) {
+            dir
+        }
+        (dir str :@) {
             .# If direct path
             dir meta._isabs ! {
                 0 :absolute_path;
@@ -19,10 +19,11 @@ class path
                 dir meta._split :dirs;
                 absolute_path :is_absolute_path;
             } meta :M
-        } {
+        }
+        {
             "Cannot create path from $dir" .D
-        } .?
-    } .?
+        }
+    } :?
 } path.:__new__;
 
 

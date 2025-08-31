@@ -2,6 +2,8 @@
 
 list type :@ 1 :!
 
+list :T type :!
+
 [[num]list T]list T:x;
 [[num]list]list T :y;
 
@@ -10,8 +12,11 @@ x y :!
 [[1 2][3 4]] x :@ 1 :!
 [[1 2][3 4]] y :@ 1 :!
 
-1 any  :@ 1 :!
+1  any  :@ 1 :!
 "" any :@ 1 :!
+
+1  ${a::any, a}~ :!
+"" ${a::any, a}~ :!
 
 .# basic types
 "" str :@ 1 :!
@@ -52,6 +57,10 @@ x y :!
 'c [str num]unionT :@ 0 :!
 "" [str]unionT :@ 1 :!
 1 [str]unionT :@ 0 :!
+
+1 ${a::[str num]union, a}~ :!
+
+1 2 {a::[str num]union b, a b +}~ 3 :!
 
 .# .# list/union combinations
 [1 2 'c] [[num char]union]listT :@ 1 :!

@@ -47,11 +47,11 @@ def dataset::__init__ {x y params self,
 
 .# Get y as a list
 .# If y is a block, apply it to x and return a list
-def plot::_get_y {x::list y plot,
+def plot::_get_y {x::list y::[list block]union plot,
     {
-        (y.` :T ::block =) {
+        (y.` block :@) {
             x y :y;
-        } (y.` :T ::list =) {
+        } (y.` list :@) {
             .# noop
         } {
             "invalid" .D

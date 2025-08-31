@@ -105,7 +105,7 @@ public class HeaderUtils {
 				boolean found_var_token = false;
 				boolean done = false;
 				while (tokens.hasNext() && !done) {
-					current = tokens.next();
+					current = tokens.peek();
 					if (current.isa(Token.VAR)) {
 						// Is this the second one we've seen?
 						if (found_var_token == true) {
@@ -118,6 +118,7 @@ public class HeaderUtils {
 						}
 					}
 					instructions.add(current.getInstruction());
+					tokens.next();
 				}				
 				Collections.reverse(instructions);
 				InstructionStack is = new InstructionStack();

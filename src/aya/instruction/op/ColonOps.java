@@ -46,7 +46,6 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -1036,26 +1035,12 @@ class OP_Colon_T extends Operator {
 	
 	public OP_Colon_T() {
 		init(":T");
-		arg("A", "type of (returns a symbol)");
+		arg("A", "type of");
 	}
-	
-	private static final Symbol TYPE_ID = SymbolTable.getSymbol("__type__");
-	
+		
 	@Override
 	public void execute(BlockEvaluator blockEvaluator) {
-		final Obj a = blockEvaluator.pop();
-		Obj type = null;
-		
-		if (a.isa(DICT)) {
-			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
-			if (type == null || !type.isa(Obj.SYMBOL)) {
-				type = SymbolConstants.DICT;
-			}
-		} else {
-			type = Obj.IDToSym(a.type());
-		}
-		
-		blockEvaluator.push(type);
+		blockEvaluator.push(TypeUtils.getType(blockEvaluator.pop()));
 	}
 }
 

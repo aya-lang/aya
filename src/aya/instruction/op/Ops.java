@@ -87,6 +87,7 @@ public class Ops {
 	public static final char MAX_OP = (char)126;
 	protected static final Operator OP_PLUS = new OP_Plus();
 	public static final Operator OP_I_INSTANCE = new OP_GetIndex();
+	public static final Operator OP_T_MAKE_TYPE = new OP_T();
 	public static final Operator OP_POUND = new OP_Pound();
 
 	
@@ -136,7 +137,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ new OP_T(), 
+		/* 84 T  */ OP_T_MAKE_TYPE, 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),

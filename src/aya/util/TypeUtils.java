@@ -96,15 +96,16 @@ public class TypeUtils {
 
 	// TODO: Change after struct macro is changed
 	public static boolean isClassOrStruct(Obj obj) {
-		final Symbol obj_type = SymbolConstants.OBJECT;
-		
 		if (obj.isa(DICT)) {			
 			// Check type chain
 			Dict cls = Casting.asDict(obj);
 			while (cls.hasMetaTable()) {
 				Obj cls_type = cls.getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
-				if (obj_type.equiv(cls_type)) {
-					return true;
+				if (cls_type.isa(DICT)) {
+					Obj cls_name = Casting.asDict(cls_type).getSafe(SymbolConstants.NAME);
+					if (cls_name != null && cls_name.equiv(SymbolConstants.OBJECT)) {
+						return true;
+					}
 				}
 				
 				Obj next_cls = cls.get(SymbolConstants.KEYVAR_META);
@@ -355,6 +356,24 @@ public class TypeUtils {
 	
 	private static Dict getBuiltinType(byte type) {
 		return makeType(Obj.IDToSym(type));
+	}
+
+
+	//* Get the type of the object
+	public static Dict getType(Obj a) {		
+		if (a.isa(Obj.DICT)) {
+			Obj type = Casting.asDict(a).getFromMetaTableOrNull(SymbolConstants.__TYPE__);
+			if (type == null) {
+				return getBuiltinType(Obj.DICT);
+			} else if (type.isa(Obj.DICT)) {
+				return Casting.asDict(type);
+			} else {
+				throw new ValueError("__type__ must be a dict with a ::name field");
+			}
+		} else {
+			return getBuiltinType(a);
+		}
+		
 	}
 
 }

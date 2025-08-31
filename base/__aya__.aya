@@ -20,15 +20,15 @@
 
 }:__aya__;
 
-:{
-    :{ 
-        ::__nil :__type__;
-        "nil" :__str__;
-        "nil" :__repr__'
-        1 :__pushself__;
-        {:T ::__nil =}:__eq__;
-    }:__meta__;
-}:nil;
+.#:{
+.#    :{ 
+.#        ::__nil :__type__;
+.#        "nil" :__str__;
+.#        "nil" :__repr__'
+.#        1 :__pushself__;
+.#        {:T ::__nil =}:__eq__;
+.#    }:__meta__;
+.#}:nil;
 
 
 .###################
@@ -60,26 +60,28 @@
 }:union;
 
 .# Types for builtins
-:{ ::num   :name; type.__meta__ :__meta__; } :num;
-:{ ::str   :name; type.__meta__ :__meta__; } :str;
-:{ ::char  :name; type.__meta__ :__meta__; } :char;
-:{ ::sym   :name; type.__meta__ :__meta__; } :sym;
-:{ ::block :name; type.__meta__ :__meta__; } :block;
-:{ ::list  :name; type.__meta__ :__meta__; } :list;
-:{ ::dict  :name; type.__meta__ :__meta__; } :dict;
+:{ ::num     :name; type.__meta__ :__meta__; } :num;
+:{ ::str     :name; type.__meta__ :__meta__; } :str;
+:{ ::char    :name; type.__meta__ :__meta__; } :char;
+:{ ::sym     :name; type.__meta__ :__meta__; } :sym;
+:{ ::block   :name; type.__meta__ :__meta__; } :block;
+:{ ::list    :name; type.__meta__ :__meta__; } :list;
+:{ ::dict    :name; type.__meta__ :__meta__; } :dict;
+:{ ::object  :name; type.__meta__ :__meta__; } :object;
 
 .# Store refs in __aya__
 :{
-    type  :type;
-    any   :any;
-    union :union;
-    num   :num;
-    str   :str;
-    char  :char;
-    sym   :sym;
-    block :block;
-    list  :list;
-    dict  :dict;
+    type    :type;
+    any     :any;
+    union   :union;
+    num     :num;
+    str     :str;
+    char    :char;
+    sym     :sym;
+    block   :block;
+    list    :list;
+    dict    :dict;
+    object  :object;
 } __aya__.:types;
 
 .#######################################
@@ -178,7 +180,7 @@
             .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
             .# [ ::_fn ::foo {+} ]
 
-            \:&:T ::sym=! {\(1 hold)}{\}.?
+            \:& __aya__.types.sym :@! {\(1 hold)}{\}.?
 
 
             ( {mod name obj : is_module with_mod no_mod,
@@ -291,7 +293,7 @@
         "($(self.__type__:C) 0x$(self M# 10 16 .&))"
     }:__repr__;
 
-    ::object:__type__;
+    __aya__.types.object :__type__;
     0 :__pushself__;
 
 } __aya__.:object;
@@ -301,10 +303,13 @@
 .# `extend`: Keyword for extending a class
 .#
 
-{type::sym super,
+{type::sym super : type^,
     :{
         super:__meta__;
-        type:__type__;
+        :{
+            type:name;
+            type.__meta__:__meta__;
+        }:__type__;
         .# copy new from super directly
         super.__new__.` :__new__;
         0:__pushself__;

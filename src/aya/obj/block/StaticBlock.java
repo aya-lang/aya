@@ -130,4 +130,8 @@ public class StaticBlock extends Obj {
 		return this.str();
 	}
 
+	public int numInstructions() {
+		return _instructions.size();
+	}
+
 }

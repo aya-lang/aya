@@ -38,6 +38,7 @@
 "test/unicode" load_test
 "test/misc" load_test
 "test/test_op_overload" load_test
+"test/types" load_test
 
 .# Base
 "test/base/test_sym" load_test
@@ -68,7 +69,12 @@
 
 .# Import entire standard library
 "Importing standard library..." :P
-:(sys.ad) "/std"+ :(sys.readdir):# {".aya".^ S W} :# {name, "importing $name...":P name __aya__.importlib.import} ;
+:(sys.ad) "/std"+ :(sys.readdir):# {
+    ".aya".^ S W
+} :# {name,
+    "importing $name...":P 
+    name __aya__.importlib.import
+} ;
 "Import finished!" :P
 "":P
 

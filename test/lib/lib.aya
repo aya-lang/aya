@@ -1,27 +1,23 @@
-[
-
 .# check loaded namedOps match expected
 {
     "$(:(sys.ad))/test/lib/example/target/example.jar" :lib_path;
     "load example.jar from $(lib_path)" :P
     lib_path :(library.load) :ops;
     "example.jar ops: $(ops)" :P
-    ops [":(example.put)" ":(example.get)"]
-}
+    ops [":(example.put)" ":(example.get)"] :!
+}~
 
 .# verify that accessing namedOp that does not exist still causes an error
 {
     { :(does.not.exist) "ok" } {"failed"} .K :call_result;
     "calling undefined namedOp: $(call_result)" :P
-    call_result "failed"
-}
+    call_result "failed" :!
+}~
 
 .# verify that basic library usage works
 {
     "my-data" :(example.put)
     :(example.get) :lib_output;
     "obtained data from lib: $(lib_output)":P
-    lib_output "my-data"
-}
-
-] :# { test.test }
+    lib_output "my-data" :!
+}~

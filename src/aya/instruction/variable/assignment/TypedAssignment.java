@@ -1,12 +1,12 @@
 package aya.instruction.variable.assignment;
 
-import java.util.HashMap;
-
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.eval.ExecutionContext;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
+import aya.instruction.op.OperatorInstruction;
+import aya.instruction.op.Ops;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
@@ -38,9 +38,7 @@ public class TypedAssignment extends CopyAssignment {
 		this(source, var, null, type, copy);
 	}
 	
-	public void assign(Dict vars, Obj o, ExecutionContext ctx) {
-		evalTypeBlock(ctx);
-		
+	public void assign(Dict vars, Obj o, ExecutionContext ctx) {	
 		// if type is null, assume "any"
 		if (_type == null || TypeUtils.isInstance(o, _type, ctx)) {
 			super.assign(vars, o, ctx);
@@ -51,11 +49,6 @@ public class TypedAssignment extends CopyAssignment {
 			throw e;
 		}
 	}
-	
-	// TODO Remove
-	private void evalTypeBlock(ExecutionContext ctx) {
-
-	}
 
 	@Override
 	public Assignment setTypeInfo(ExecutionContext ctx) {
@@ -63,6 +56,9 @@ public class TypedAssignment extends CopyAssignment {
 			return this;
 		} else {
 			BlockEvaluator be = ctx.createEvaluator();
+			if (_type_block.numInstructions() > 1) {
+				be.add(new OperatorInstruction(_source, Ops.OP_T_MAKE_TYPE));
+			}
 			_type_block.dumpToBlockEvaluator(be);
 			be.eval();
 			Obj res = be.pop();

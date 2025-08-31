@@ -41,7 +41,7 @@
 
 
     .#? S.isnum\n  returns true if the string is a valid number
-    {.! :T ::num =}:isnum;
+    {.! num :@}:isnum;
 
 
     .#? S.titlecase\n  convert a string to titlecase
@@ -67,7 +67,7 @@
     .#? S.parsenum\n  If num, return num, else return str (rm surrounding quotes)
     {
         .!
-        $:T ::str = {
+        $ str :@ {
             .# If it is a string, test if it has quotes and remove them
             .trim $ [0 -1]I "\"\"" = {B;V;} ?
         } ?
