@@ -115,16 +115,16 @@ public class HeaderUtils {
 		
 			// Plain type annotation?
 			// { a::my_type ... }
-			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
-				SymbolToken sym_token = (SymbolToken)tokens.next();
-				arg_type = BlockUtils.makeBlockWithSingleInstruction(new GetVariableInstruction(sym_token.getSourceStringRef(), sym_token.getSymbol()));
-			}
+//			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
+//				SymbolToken sym_token = (SymbolToken)tokens.next();
+//				arg_type = BlockUtils.makeBlockWithSingleInstruction(new GetVariableInstruction(sym_token.getSourceStringRef(), sym_token.getSymbol()));
+//			}
 			
 			// Nested type annotation?
 			// { a::[num]list ... }
 			// { a::[[num]list]my_type ... }
 			// { a::[module.point]module.list ... }
-			if (tokens.hasNext() && tokens.peek().isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET)) {
+			if (tokens.hasNext() && (tokens.peek().isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET) || tokens.peek().isa(Token.SYMBOL))) {
 				ArrayList<Instruction> instructions = new ArrayList<Instruction>();
 				
 				// Collect instructions until we either hit the end or find the SECOND normal variable instruction
@@ -135,7 +135,16 @@ public class HeaderUtils {
 				// { a::[module.point]module.foo.list b c , }
 				// ...................................^
 				
-				tokens.next(); // Discard ::
+				if (tokens.peek().isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET)) {
+					tokens.next(); // Discard ::
+				}
+				
+				// If the token is a symbol, convert it to a variable token
+				if (tokens.peek().isa(Token.SYMBOL)) {
+					SymbolToken symtoken = (SymbolToken)tokens.peek();
+					tokens.replaceNext(new VarToken(symtoken.getSymbol().name(), symtoken.getSourceStringRef(), false));
+				}
+				
 				boolean found_var_token = false;
 				boolean done = false;
 				while (tokens.hasNext() && !done) {

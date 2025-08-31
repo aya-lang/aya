@@ -56,7 +56,7 @@ public class TypedAssignment extends CopyAssignment {
 			return this;
 		} else {
 			BlockEvaluator be = ctx.createEvaluator();
-			if (_type_block.numInstructions() > 1) {
+			if (_type_block.isLastInstructionListLiteral()) {
 				be.add(new OperatorInstruction(_source, Ops.OP_T_MAKE_TYPE));
 			}
 			_type_block.dumpToBlockEvaluator(be);

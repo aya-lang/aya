@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.instruction.Instruction;
+import aya.instruction.ListLiteralInstruction;
 import aya.instruction.flag.PopVarFlagInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
@@ -129,9 +130,9 @@ public class StaticBlock extends Obj {
 	public String toString() {
 		return this.str();
 	}
-
-	public int numInstructions() {
-		return _instructions.size();
+	
+	public boolean isLastInstructionListLiteral() {
+		return _instructions.size() > 0 && (_instructions.get(_instructions.size()-1) instanceof ListLiteralInstruction);
 	}
 
 }
