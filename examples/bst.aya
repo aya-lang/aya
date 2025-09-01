@@ -83,7 +83,7 @@ def ::printsubtree {t::bst prefix::str : hasleft hasright,
 }
 
 50 bst! :b;
-.# Insert 10 random values
+.# Insert 20 random values
 { 100Q b.insert } 20 %
 .# print
 b printtree

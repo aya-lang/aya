@@ -12,7 +12,6 @@ import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.variable.GetVariableInstruction;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.instruction.variable.assignment.CopyAssignment;

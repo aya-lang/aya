@@ -44,28 +44,6 @@ public class InteractiveAya {
 		_request_id_counter++;
 		return _request_id_counter;
 	}
-
-	public static final String HELP_TEXT = "aya " + StaticData.VERSION_NAME + "\n"
-			+ "  aya\n"
-			+ "    Running aya with no args will open the GUI IDE at the default working directory\n"
-			+ "    Note: Default setting is GUI so that double clicking the jar from a file explorer opens the IDE\n"
-			+ "    Use `aya <workingDir> -x` to open the GUI at a specified directory\n"
-			+ "  aya <workingDir>\n"
-			+ "    Open a command line REPL\n"
-			+ "  aya <workingDir> <filename>\n"
-			+ "    Run the file and exit\n"
-			+ "  aya <workingDir> -<flags> <option1>\n"
-			+ "    g: Import std/golf and bring all variables into scope\n"
-			+ "    e: Run the expression given by <option1>\n"
-			+ "    p: Run the package name given by <opion1>\n"
-			+ "    i: Enter the REPL after finishing CLI tasks\n"
-			+ "    x: Launch the GUI\n"
-			+ "    If <option1> is an aya source file, run it\n"
-			+ "  aya --help\n"
-			+ "    Print this message.\n"
-			+ "  aya --version\n"
-			+ "    Print version information\n"
-			+ "";
 	
 	public ExecutionRequest processInput(String input) {
 		//Empty Input
@@ -88,7 +66,7 @@ public class InteractiveAya {
 			
 			//Help
 			else if(command.equals("H") || command.equals("HELP")) {
-				_io().out().println(HELP_TEXT);
+				_io().out().println(CLIOptions.HELP_TEXT);
 			}
 			
 			//Search

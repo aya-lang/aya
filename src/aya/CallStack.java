@@ -1,7 +1,6 @@
 package aya;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EmptyStackException;
 
 import aya.exceptions.runtime.AyaStackOverflowError;
