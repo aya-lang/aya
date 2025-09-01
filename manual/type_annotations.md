@@ -1,5 +1,52 @@
 # Type Annotations
 
+
+## Get type `:T`
+
+Use `:T` to get the type of an object:
+
+```
+aya> [1 2 3] :T
+list
+aya> "Hello" :T
+str
+aya> [1 2 3] :T
+list
+aya> list :T
+type
+aya> list :T :T
+type
+```
+
+## Is instance `:@`
+
+Use `:@` to check if something is an instance of a type:
+
+```
+aya> "Hello" str :@
+1
+aya> [1 2 3] list :@
+1
+aya> "Hello" str :@
+1
+aya> list type :@
+1
+aya> "cat" num :@
+0
+```
+
+Instance operator respects inheritance for use types (more on user types below).
+
+```
+aya> class base
+aya> ::derived base extend
+derived
+aya> derived! base :@
+1
+```
+
+## Type Annotations
+
 Type annotations have the form `parameter_name::type_name` and can only appear in a block header:
 
 ```
@@ -142,51 +189,6 @@ aya> {x::my_module.l y::my_module.n, x y}:f
 {x::my_module.l y::my_module.n,x y}
 aya> [1 2 3] 4 f
 [ 1 2 3 ] 4
-```
-
-
-## Get type `:T`
-
-Use `:T` to get the type of an object:
-
-```
-aya> [1 2 3] :T
-list
-aya> "Hello" :T
-str
-aya> [1 2 3] :T
-list
-aya> list :T
-type
-aya> list :T :T
-type
-```
-
-## Is instance `:@`
-
-Use `:@` to check if something is an instance of a type:
-
-```
-aya> "Hello" str :@
-1
-aya> [1 2 3] list :@
-1
-aya> "Hello" str :@
-1
-aya> list type :@
-1
-aya> "cat" num :@
-0
-```
-
-Instance operator respects inheritance for use types (more on uer types below).
-
-```
-aya> class base
-aya> ::derived base extend
-derived
-aya> derived! base :@
-1
 ```
 
 ## Create container type `T`
