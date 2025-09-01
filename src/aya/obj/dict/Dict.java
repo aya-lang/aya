@@ -395,8 +395,16 @@ public class Dict extends Obj {
 	// OTHER //
 	///////////
 	
-	public Obj getMetaDict() {
+	/** Create a metatable if it does not exist
+	 * 
+	 * @return
+	 */
+	public Dict getMetatableMut() {
 		if (_meta == null) setMetaTable(new Dict());
+		return _meta;
+	}
+	
+	public Dict getMetatableOrNull() {
 		return _meta;
 	}
 	
@@ -464,6 +472,8 @@ public class Dict extends Obj {
 			}
 		}
 	}
+
+
 	
 	
 }

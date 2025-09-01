@@ -64,13 +64,22 @@ public class TypeUtils {
 			}
 		}
 		
+		// Check if the names match
+		// This function will walk up the type tree of the value type in case it is a derived type
 		public static boolean namesMatch(Dict type, Dict value_type) {
 			Symbol type_name       = StaticDictReader.getSymbol(type,       SymbolConstants.NAME, null);
 			Symbol value_type_name = StaticDictReader.getSymbol(value_type, SymbolConstants.NAME, null);
 			if (type_name != null && value_type_name != null && type_name.id() == value_type_name.id()) {
 				return true;
 			} else {
-				return false;
+				// Walk up the type of the value
+				Dict value_type_meta = value_type.getMetatableOrNull();
+				if (value_type_meta != null) {
+					return namesMatch(type, value_type_meta);
+				} else {
+					// We reached the top of the type tree aid didn't find a match
+					return false;
+				}
 			}
 		}
 		
@@ -101,7 +110,7 @@ public class TypeUtils {
 			Dict cls = Casting.asDict(obj);
 			while (cls.hasMetaTable()) {
 				Obj cls_type = cls.getFromMetaTableOrNull(SymbolConstants.KEYVAR_TYPE);
-				if (cls_type.isa(DICT)) {
+				if (cls_type != null && cls_type.isa(DICT)) {
 					Obj cls_name = Casting.asDict(cls_type).getSafe(SymbolConstants.NAME);
 					if (cls_name != null && cls_name.equiv(SymbolConstants.OBJECT)) {
 						return true;

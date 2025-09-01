@@ -309,12 +309,12 @@ type.__meta__.__str__.` type.__meta__.:__repr__;
 .# `extend`: Keyword for extending a class
 .#
 
-{typename::sym super : type^,
+{typename::sym super,
     :{
         super:__meta__;
         :{
             typename:name;
-            type.__meta__:__meta__;
+            super.__type__:__meta__;
         }:__type__;
         .# copy new from super directly
         super.__new__.` :__new__;
