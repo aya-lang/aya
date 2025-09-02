@@ -35,7 +35,7 @@ aya> "cat" num :@
 0
 ```
 
-Instance operator respects inheritance for use types (more on user types below).
+Instance operator respects inheritance for user types (more on user types below).
 
 ```
 aya> class base
@@ -162,7 +162,7 @@ aya> list.name
 ::list
 ```
 
-The can be assigned and used like normal variables:
+They can be assigned and used like normal variables:
 
 ```
 aya> list :t
@@ -193,7 +193,7 @@ aya> [1 2 3] 4 f
 
 ## Create container type `T`
 
-Container types are just a list followed by a type.To create a single container type from them we use the `T` operator. They have the same syntax as block headers.
+Container types are just a list followed by a type. To create a single container type from them we use the `T` operator. They have the same syntax as block headers.
 
 
 ```
@@ -207,7 +207,7 @@ aya> ["a" "b" "c"] [num]listT :@
 
 ## User types
 
-User types are supported like any other type. Object support inheritance. All user objects are a sub-type of `object`:
+User types are supported like any other type. Objects support inheritance. All user objects are a sub-type of `object`:
 
 
 ```
