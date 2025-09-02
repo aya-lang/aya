@@ -116,10 +116,7 @@ public class BlockUtils {
 			}
 			
 			ArrayList<Instruction> is = block.getInstructions();
-			for(int i = is.size() - 1; i >= 0; i--) {
-				is.get(i).repr(stream);
-				if (!stream.isTight()) stream.print(" ");
-			}
+			InstructionStack.reprInstructions(stream, is);
 
 			// Remove trailing space
 			stream.delTrailingSpaces();
