@@ -327,13 +327,14 @@ public class BlockUtils {
 		}
 	}
 
-	public static StaticBlock copySetTypeInfo(StaticBlock block, ExecutionContext ctx) {
-		if (block.getArgs() == null) {
+	public static StaticBlock copySetTypeInfo(StaticBlock block, CheckReturnTypeGenerator ret_type, ExecutionContext ctx) {
+		if (block.getArgs() == null && ret_type == null) {
 			return block;
 		} else {
 			
 			// Check if anything has type info
 			boolean has_type_info = false;
+			if (ret_type != null) has_type_info = true;
 			for (Assignment a : block.getArgs()) {
 				if (a.hasTypeInfo()) {
 					has_type_info = true;
@@ -341,12 +342,14 @@ public class BlockUtils {
 				}
 			}
 			
+			
 			if (has_type_info) {
 				ArrayList<Assignment> args = new ArrayList<Assignment>();
 				for (Assignment a : block.getArgs()) {
 					args.add(a.setTypeInfo(ctx));
 				}
-				return new StaticBlock(block.getInstructions(), block.getLocals(), args);
+				CheckReturnTypeInstance ret = ret_type != null ? ret_type.makeCheckReturnTypeInstruction(ctx) : null;
+				return new StaticBlock(block.getInstructions(), block.getLocals(), args, ret);
 			} else {
 				// Nothing to do
 				return block;

@@ -37,7 +37,10 @@ public class GetVariableInstruction extends VariableInstruction {
 	}
 
 	public void dumpBlock(StaticBlock block_to_dump, BlockEvaluator evaluator) {
-		evaluator.getContext().getCallStack().push(this);
+		evaluator.getContext().getCallStack().push(this,
+				block_to_dump.getReturnTypeCheck(),
+				block_to_dump.getNumArgs(),
+				evaluator.getStack().size());
 		evaluator.add(PopCallstackInstruction.INSTANCE);
 		//b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());
 		evaluator.dump(block_to_dump);

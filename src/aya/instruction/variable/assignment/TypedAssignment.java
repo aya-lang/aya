@@ -55,19 +55,24 @@ public class TypedAssignment extends CopyAssignment {
 		if (_type_block == null) {
 			return this;
 		} else {
-			BlockEvaluator be = ctx.createEvaluator();
-			if (_type_block.isLastInstructionListLiteral()) {
-				be.add(new OperatorInstruction(_source, Ops.OP_T_MAKE_TYPE));
-			}
-			_type_block.dumpToBlockEvaluator(be);
-			be.eval();
-			Obj res = be.pop();
-			if (res.isa(Obj.DICT)) {
-				// Return a copy
-				return new TypedAssignment(_source, _var, Casting.asDict(res), _type_block, _copy);
-			} else {
-				throw new ValueError("Type must be a dict");
-			}
+			Dict type_dict = getTypeDictFromBlock(_type_block, _source, ctx);
+			return new TypedAssignment(_source, _var, type_dict, _type_block, _copy);
+		}
+	}
+	
+	public static Dict getTypeDictFromBlock(StaticBlock type_block, SourceStringRef source, ExecutionContext ctx) {
+		BlockEvaluator be = ctx.createEvaluator();
+		if (type_block.isLastInstructionListLiteral()) {
+			be.add(new OperatorInstruction(source, Ops.OP_T_MAKE_TYPE));
+		}
+		type_block.dumpToBlockEvaluator(be);
+		be.eval();
+		Obj res = be.pop();
+		if (res.isa(Obj.DICT)) {
+			// Return a copy
+			return Casting.asDict(res);
+		} else {
+			throw new ValueError("Type must be a dict");
 		}
 	}
 	

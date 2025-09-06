@@ -3,8 +3,10 @@ package aya;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 
+import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.AyaStackOverflowError;
 import aya.instruction.variable.GetVariableInstruction;
+import aya.obj.block.CheckReturnTypeInstance;
 import aya.parser.SourceString;
 import aya.parser.SourceStringRef;
 
@@ -16,18 +18,26 @@ import aya.parser.SourceStringRef;
 public class CallStack {
 
 	private static int MAX_STACK_DEPTH = 1024;
+	private final boolean _check_return_types;
 
 	public static class CallStackFrame {
 		private GetVariableInstruction _instruction;
+		// For try/catch
 		private boolean _is_checkpoint;
+		// Size of the stack when this frame was added (minus arg len)
+		private int _stack_size;
+		// Return type check
+		private CheckReturnTypeInstance _ret_type;
 		
 		public CallStackFrame() {
-			reset(null);
+			reset(null, null, 0);
 		}
 
-		public void reset(GetVariableInstruction instruction) {
+		public void reset(GetVariableInstruction instruction, CheckReturnTypeInstance ret_type, int stack_size) {
 			_instruction = instruction;
 			_is_checkpoint = instruction == null;
+			_stack_size = stack_size;
+			_ret_type = ret_type;
 		}
 		
 		public boolean isCheckpoint() {
@@ -61,6 +71,8 @@ public class CallStack {
 	private int _stack_index;
 	
 	public CallStack() {
+		_check_return_types = true;
+		
 		_stack = new CallStackFrame[MAX_STACK_DEPTH];
 		for (int i = 0; i < MAX_STACK_DEPTH; i++) {
 			_stack[i] = new CallStackFrame();
@@ -68,20 +80,36 @@ public class CallStack {
 		_stack_index = -1;
 	}
 	
-	public void push(GetVariableInstruction var) {
+	public boolean shouldCheckReturnTypes() {
+		return _check_return_types;
+	}
+	
+	public void push(GetVariableInstruction var, CheckReturnTypeInstance ret_type, int arg_len, int stack_size) {
 		if (_stack_index < _stack.length-1) {
 			_stack_index++;
-			_stack[_stack_index].reset(var);
+			_stack[_stack_index].reset(var, ret_type, stack_size - arg_len);
 		} else {
 			throw new AyaStackOverflowError("Call stack overflow");
 		}
 	}
 	
-	public CallStackFrame pop() {
+	private CallStackFrame peek() {
+		// >= : stack_index is allowed to get to -1 (empty stack)
+		if (_stack_index >= 0) {
+			return _stack[_stack_index];
+		} else {
+			throw new EmptyStackException();
+		}
+	}
+	
+	public CallStackFrame pop(final BlockEvaluator blockEvaluator) {
 		// >= : stack_index is allowed to get to -1 (empty stack)
 		if (_stack_index >= 0) {
 			CallStackFrame frame = _stack[_stack_index];
 			_stack_index--;
+			if (shouldCheckReturnTypes() && frame._ret_type != null && blockEvaluator != null) {
+				frame._ret_type.check(blockEvaluator, frame._stack_size);
+			}
 			return frame;
 		} else {
 			throw new EmptyStackException();
@@ -89,11 +117,11 @@ public class CallStack {
 	}
 	
 	public void setCheckpoint() {
-		push(null);
+		push(null, null, 0, 0);
 	}
 	
 	public void popCheckpoint() {
-		CallStackFrame csf = pop();
+		CallStackFrame csf = pop(null);
 		if (!csf.isCheckpoint()) {
 			throw new RuntimeException("Attempted to pop callstack checkpoint but the top of the stack was " + csf);
 		}
@@ -101,12 +129,12 @@ public class CallStack {
 	
 	public void rollbackCheckpoint() {
 		try {
-			CallStackFrame csf = pop();
+			CallStackFrame csf = pop(null);
 			// If this loop throws an exception, there is a bug somewhere that
 			// is either rolling back when there is no checkpoint or removing a checkpoint
 			// when it should not be
 			while (!csf.isCheckpoint()) {
-				csf = pop();
+				csf = pop(null);
 			}
 		} catch (EmptyStackException e) {
 			throw new RuntimeException("Failed attempt to rollback checkpoint in call stack");
@@ -142,5 +170,9 @@ public class CallStack {
 	public boolean isEmpty() {
 		// -1 means empty stack
 		return _stack_index < 0;
+	}
+	
+	public int getCurrentFrameStartStackSize() {
+		return peek()._stack_size;
 	}
 }

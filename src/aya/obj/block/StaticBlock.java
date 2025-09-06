@@ -19,14 +19,16 @@ public class StaticBlock extends Obj {
 	private ArrayList<Instruction> _instructions;
 	private ArrayList<Assignment> _args;
 	private NewLocalsInstruction _new_locals_instruction;
+	private CheckReturnTypeInstance _ret_type;
 	
-	protected StaticBlock(ArrayList<Instruction> instructions, Dict locals, ArrayList<Assignment> args) {
+	protected StaticBlock(ArrayList<Instruction> instructions, Dict locals, ArrayList<Assignment> args, CheckReturnTypeInstance ret_type) {
 		// If args is empty, just use null
 		if (args != null && args.size() == 0) args = null;
 
 		_locals = locals;
 		_args = args;
 		_instructions = instructions;
+		_ret_type = ret_type;
 
 		// If we have args, locals is implied
 		if (_args != null && _locals == null) {
@@ -40,8 +42,12 @@ public class StaticBlock extends Obj {
 		}
 	}
 
+	protected StaticBlock(ArrayList<Instruction> instructions, Dict locals, ArrayList<Assignment> args) {
+		this(instructions, locals, args, null);
+	}
+	
 	protected StaticBlock(ArrayList<Instruction> instructions) {
-		this(instructions, null, null);
+		this(instructions, null, null, null);
 	}
 	
 	public void dumpToBlockEvaluator(BlockEvaluator b) {
@@ -65,6 +71,10 @@ public class StaticBlock extends Obj {
 		} else {
 			return _args.size();
 		}
+	}
+	
+	public CheckReturnTypeInstance getReturnTypeCheck() {
+		return _ret_type;
 	}
 	
 	//////////////////////

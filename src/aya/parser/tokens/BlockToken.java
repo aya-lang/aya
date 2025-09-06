@@ -11,6 +11,7 @@ import aya.instruction.InstructionStack;
 import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
+import aya.obj.block.CheckReturnTypeGenerator;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
@@ -52,7 +53,8 @@ public class BlockToken extends CollectionToken {
 					InstructionStack main_instructions = Parser.generate(blockData.get(1));
 					Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = HeaderUtils.generateBlockHeader(blockData.get(0));
 					StaticBlock blk = BlockUtils.fromIS(main_instructions, p.second(), p.first());
-					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
+					CheckReturnTypeGenerator ret = null;
+					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third(), null);
 				}
 			} else {
 				throw new SyntaxError("BlockEvaluator contains too many parts", getSourceStringRef());
