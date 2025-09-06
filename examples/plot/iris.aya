@@ -17,3 +17,4 @@ species :# {s_name : sp_df,
 };
 
 plt.view
+plt.wait

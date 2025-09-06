@@ -6,4 +6,6 @@ import plot
 t#{n,nMs nMs 1 2/*-}:x;
 t#{n,n17 8/*Mc nMc-}:y;
 
-x y plot.line.view
+x y plot.line :p;
+p.view
+p.wait

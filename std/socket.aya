@@ -11,12 +11,13 @@ struct socket_server {
     _srv
 }
 
-def socket_server::accept {self : socket^,
+def socket_server::accept {self: socket^,
     self._srv :(socket.accept) socket!
 }
 
-def socket_server::listen {addr port : socket_server^,
-    addr port :(socket.open_server) socket_server!
+.# static method
+def socket_server::listen {addr::str port::num cls,
+    addr port :(socket.open_server) cls!
 }
 
 def socket_server::close {self,
@@ -31,8 +32,8 @@ def socket_server::addr {self,
     self._srv :(socket.get_addr)
 }
 
-def socket::connect {addr port : socket^,
-    addr port :(socket.open_client) socket!
+def socket::connect {addr::str port::num cls,
+    addr port :(socket.open_client) cls!
 }
 
 def socket::recv {self,

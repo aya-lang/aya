@@ -18,3 +18,4 @@ x {w} :{} plt.plot
 "Weierstrass Function" plt.:title;
 0 plt.:legend;
 plt.view
+plt.wait

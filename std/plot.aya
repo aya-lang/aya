@@ -88,6 +88,12 @@ def plot::view {self,
 
 }
 
+def plot::wait {self,
+    self.M._supress_windows ! {
+        "Press enter to continue" :P :R
+    } ?
+}
+
 .# Multi-Plot
 .##############
 
@@ -106,6 +112,12 @@ def multiplot::view {self : plot^,
     plot._supress_windows ! {
         "" self.:filename;
         self :(plot.multiplot)
+    } ?
+}
+
+def multiplot::wait {self : plot^,
+    plot._supress_windows ! {
+        "Press enter to continue" :P :R
     } ?
 }
 

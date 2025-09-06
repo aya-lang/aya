@@ -36,4 +36,5 @@ x :& #{fn.`dx} :{ "f'":label } p.plot
 x :& #f_       :{ "tangent@$t":label  } p.plot
 
 p.view
+p.wait
 

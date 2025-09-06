@@ -33,3 +33,4 @@ x {r} :{ "Trend":label} plt.plot
 2 plt.:stroke;
 
 plt.view
+plt.wait

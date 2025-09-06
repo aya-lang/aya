@@ -150,7 +150,7 @@ def asciitable::set_col_subtable {col_idx options::dict self : asciitable^,
 }
 
 .# modify rows such that each ::list in a subtable-column is replaced with the rendered ::str
-def asciitable::_render_subtables {rows self : subtable_cells_by_column,
+def asciitable::_render_subtables {rows self : subtable_cells_by_column list^,
     self.subtable_by_column :K E 0 > {
         self.subtable_by_column :V # {subtable, subtable.clear} ;
     

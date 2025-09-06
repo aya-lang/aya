@@ -8,11 +8,11 @@ require color {colors}
 :{
     400:width;
     400:height;
-    color.colors.darkblue :bg_color;
+    colors.darkblue :bg_color;
 } turtle.turtle!:t;
 
 5 :n;
-color.colors.blue :c;
+colors.blue :c;
 
 {
     n t.fd
@@ -21,3 +21,6 @@ color.colors.blue :c;
     c t.pencolor 
     n 0.75 + :n;
 } 400 %
+
+
+t.wait

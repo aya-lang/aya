@@ -34,6 +34,7 @@ import plot
 0.3 plt.:stroke;
 
 plt.view
+plt.wait
 
 .# Lorenz attractor golfed (61 chars)
 {

@@ -19,7 +19,7 @@ def ::draw_scaled { data scale : cvs canvas^ matrix^,
 
 def ::draw { data : width height scale size draw_scaled^ matrix^,
     .# special case for matrix
-    data matrix :@ = {data.rows :data;} ?
+    data matrix :@ {data.rows :data;} ?
 
     data E :height;
     data.[0] E :width;

@@ -18,3 +18,5 @@
 		:{ 6:value  "c":label }
 	]:data
 } :(plot.pie_chart)
+
+"Press enter to continue" :P :R

@@ -93,3 +93,5 @@ col.r col.g col.b g :(graphics.set_color)
 
 "Courier New" "bolditalic" 24 g :(graphics.set_font)
 "Hello world!" 20 80 g :(graphics.text)
+
+"Press enter to continue" :P :R

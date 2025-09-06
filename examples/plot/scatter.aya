@@ -14,3 +14,4 @@ x y :{} plt.scatter
 0 plt.:legend;
 
 plt.view
+plt.wait

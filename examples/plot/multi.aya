@@ -32,6 +32,7 @@ b mp.add
 
 .# Open the plot window
 mp.view
+mp.wait
 
 .# Uncomment to save the plot
 .# "sample_plot.png" mp.save

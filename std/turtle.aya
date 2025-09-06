@@ -77,6 +77,10 @@ def turtle::__repr__ {self,
     "turtle: pos=($(self._x), $(self._y)) dir=$(self._r)"
 }
 
+def turtle::wait {self,
+    self._cvs.wait
+}
+
 .#################
 .# Turtle Motion #
 .#################
