@@ -18,6 +18,10 @@ public class SimpleAssignment extends Assignment {
 		super(source);
 		_var = var;
 	}
+	
+	public Symbol getVarName() {
+		return _var;
+	}
 
 	@Override
 	public void assign(Dict vars, Obj o, ExecutionContext ctx) {

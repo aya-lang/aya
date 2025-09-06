@@ -76,6 +76,10 @@ public class TypedAssignment extends CopyAssignment {
 		}
 	}
 	
+	public StaticBlock getTypeBlock() {
+		return _type_block;
+	}
+	
 	@Override
 	public boolean hasTypeInfo() {
 		return true;

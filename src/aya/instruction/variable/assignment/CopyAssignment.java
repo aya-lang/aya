@@ -16,6 +16,10 @@ public class CopyAssignment extends SimpleAssignment {
 		super(source, var);
 		_copy = copy;
 	}
+	
+	public boolean getCopy() {
+		return _copy;
+	}
 
 	@Override
 	public void assign(Dict vars, Obj o, ExecutionContext ctx) {

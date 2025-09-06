@@ -9,6 +9,7 @@ import aya.exceptions.runtime.TypeError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 import aya.util.Triple;
 import aya.util.TypeUtils;
 
@@ -83,11 +84,14 @@ public class CheckReturnTypeInstance {
 	public ReprStream repr(ReprStream stream) {
 		boolean tight = stream.isTight();
 		stream.setTight(true);
-		for (var item : _items) {
-			stream.print(item.first().name());
+		for (int i = 0; i < _items.size(); i++) {
+			final var item = _items.get(i);
+			if (item.first().id() != SymbolConstants.UNDERSCORE.id()) {
+				stream.print(item.first().name());
+			}
 			stream.print("::");
-			item.third().repr(stream);
-			stream.print(" ");
+			BlockUtils.repr(stream, item.third(), false);
+			if (i < _items.size()) stream.print(" ");
 		}
 		// return back to original state
 		stream.setTight(tight);

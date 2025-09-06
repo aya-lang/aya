@@ -131,7 +131,5 @@ public class SymbolConstants {
 	public static final Symbol RUNTIME_EXCEPTION    = S("runtime_exception");
 
 	public static final Symbol __CDICT__    = S("__cdict__");
-
-
-
+	public static final Symbol UNDERSCORE   = S("_");
 }

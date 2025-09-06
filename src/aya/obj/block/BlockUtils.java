@@ -75,16 +75,30 @@ public class BlockUtils {
 			Dict locals = block.getLocals();
 			ArrayList<Assignment> args = block.getArgs();
 			
+			//
 			// Header
-			if (locals != null) {
-				// Args
-				if (args != null) {
-					for (Assignment arg : args) {
-						stream.print(arg.toString());
-						if (!stream.isTight()) stream.print(" ");
-					}
+			//
+			boolean print_comma = false;
+			
+			// Args
+			if (args != null) {
+				print_comma = true;
+				for (Assignment arg : args) {
+					stream.print(arg.toString());
+					if (!stream.isTight()) stream.print(" ");
 				}
-				
+			}
+
+			
+			// Return types
+			if (block.getReturnTypeCheck() != null) {
+				print_comma = true;
+				stream.print("-> ");
+				block.getReturnTypeCheck().repr(stream);
+			}
+			
+			if (locals != null) {
+				print_comma = true;
 				// Non-arg locals
 				if (locals.size() != 0) {
 					stream.print(":");
@@ -112,7 +126,11 @@ public class BlockUtils {
 
 				// Trim off the final space
 				stream.delTrailingSpaces();
+			}
+			
+			if (print_comma) {
 				stream.print(",");
+				if (!stream.isTight()) stream.print(" ");
 			}
 			
 			ArrayList<Instruction> is = block.getInstructions();
@@ -328,35 +346,42 @@ public class BlockUtils {
 	}
 
 	public static StaticBlock copySetTypeInfo(StaticBlock block, CheckReturnTypeGenerator ret_type, ExecutionContext ctx) {
-		if (block.getArgs() == null && ret_type == null) {
-			return block;
-		} else {
-			
-			// Check if anything has type info
-			boolean has_type_info = false;
-			if (ret_type != null) has_type_info = true;
+		// Check if any args has type info
+		boolean args_has_type_info = false;			
+		if (block.getArgs() != null) {
 			for (Assignment a : block.getArgs()) {
 				if (a.hasTypeInfo()) {
-					has_type_info = true;
+					args_has_type_info = true;
 					break;
 				}
 			}
+		}
+		
+		// Check if ret_type has type info
+		boolean ret_has_type_info = ret_type != null;
+		
+		if (ret_has_type_info || args_has_type_info) {
+			// Something has type info, need to make a copy
 			
-			
-			if (has_type_info) {
+			// Make a copy of args if needed
+			ArrayList<Assignment> args_out = block.getArgs();
+			if (args_has_type_info) {
 				ArrayList<Assignment> args = new ArrayList<Assignment>();
 				for (Assignment a : block.getArgs()) {
 					args.add(a.setTypeInfo(ctx));
 				}
-				CheckReturnTypeInstance ret = ret_type != null ? ret_type.makeCheckReturnTypeInstruction(ctx) : null;
-				return new StaticBlock(block.getInstructions(), block.getLocals(), args, ret);
-			} else {
-				// Nothing to do
-				return block;
+				args_out = args;
 			}
-		}
 			
+			// Make a copy of ret if needed
+			CheckReturnTypeInstance ret = ret_type != null ? ret_type.makeCheckReturnTypeInstruction(ctx) : null;
+			
+			return new StaticBlock(block.getInstructions(), block.getLocals(), args_out, ret);
 
+		} else {
+			// Nothing has type info, just return the block
+			return block;
+		}
 	}
 
 }

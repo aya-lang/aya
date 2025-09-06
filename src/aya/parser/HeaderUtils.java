@@ -19,10 +19,12 @@ import aya.instruction.variable.assignment.SimpleAssignment;
 import aya.instruction.variable.assignment.TypedAssignment;
 import aya.instruction.variable.assignment.UnpackAssignment;
 import aya.obj.block.BlockUtils;
+import aya.obj.block.CheckReturnTypeGenerator;
 import aya.obj.block.StaticBlock;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
 import aya.obj.symbol.Symbol;
+import aya.obj.symbol.SymbolConstants;
 import aya.parser.token.TokenQueue;
 import aya.parser.tokens.LambdaToken;
 import aya.parser.tokens.ListToken;
@@ -31,20 +33,42 @@ import aya.parser.tokens.SymbolToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
 import aya.util.Pair;
-import aya.util.Triple;
 
 public class HeaderUtils {
+	
+	public static class HeaderInfo {
+		public ArrayList<Assignment> args;
+		public Dict locals;
+		public HashMap<Symbol, StaticBlock> captures;
+		public CheckReturnTypeGenerator ret_types;
+		
+		public HeaderInfo(ArrayList<Assignment> args, Dict locals, HashMap<Symbol, StaticBlock> captures,
+				CheckReturnTypeGenerator ret_types) {
+			this.args = args;
+			this.locals = locals;
+			this.captures = captures;
+			this.ret_types = ret_types;
+			
+		}
+	}
 
 	// args, locals, captures
-	public static Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> generateBlockHeader(TokenQueue tokens) throws ParserException {
-		Pair<TokenQueue, TokenQueue> split_tokens = splitAtColon(tokens);
-		TokenQueue arg_tokens = split_tokens.first();
+	public static HeaderInfo generateBlockHeader(TokenQueue tokens) throws ParserException {
+		var split_tokens = splitAtColon(tokens);
+		var arg_and_ret_type_tokens = splitAtArrow(split_tokens.first());
+
+		TokenQueue arg_tokens = arg_and_ret_type_tokens.first();
+		TokenQueue ret_type_tokens = arg_and_ret_type_tokens.second();
 		TokenQueue locals_and_captures_tokens = split_tokens.second();
 	
 		// Args
 		ArrayList<Assignment> args = generateBlockHeaderArgs(arg_tokens);
 		// Get all variable names used by args
 		HashSet<Symbol> names = checkDuplicateArgs(args);
+		
+		// Return Types
+		// ret_types may be null
+		CheckReturnTypeGenerator ret_types = generateReturnTypes(ret_type_tokens);
 
 		// Locals & Captures
 		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);
@@ -56,9 +80,11 @@ public class HeaderUtils {
 		if (locals.size() == 0) locals = null;
 		if (captures.size() == 0) captures = null;
 		
-		return new Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>>(args, locals, captures);
+		return new HeaderInfo(args, locals, captures, ret_types);
 	}
 	
+
+
 	/** Check to make sure there are no duplicate names in the locals and arguments
 	 * 
 	 * @param tokens
@@ -100,9 +126,16 @@ public class HeaderUtils {
 	}
 	
 	private static Assignment nextArg(TokenQueue tokens) throws EndOfInputError, SyntaxError, ParserException {
-		Token current = tokens.next();
-		if (current.isa(Token.VAR)) {
-			VarToken var = (VarToken)current;
+		Token current = tokens.peek();
+		
+		// If we encounter a symbol or double colon, make the name an underscore
+		if (current.isa(Token.VAR) || current.isa(Token.SYMBOL) || current.isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET)) {
+			Symbol var_name = SymbolConstants.UNDERSCORE;
+			if (current.isa(Token.VAR)) {
+				var_name = ((VarToken)current).getSymbol();
+				current = tokens.next(); // Move on only if it is a VarToken
+			}
+			
 			boolean copy = false;
 			StaticBlock arg_type = null;
 			
@@ -112,14 +145,8 @@ public class HeaderUtils {
 				copy = true;
 			}
 		
-			// Plain type annotation?
-			// { a::my_type ... }
-//			if (tokens.hasNext() && tokens.peek().isa(Token.SYMBOL)) {
-//				SymbolToken sym_token = (SymbolToken)tokens.next();
-//				arg_type = BlockUtils.makeBlockWithSingleInstruction(new GetVariableInstruction(sym_token.getSourceStringRef(), sym_token.getSymbol()));
-//			}
 			
-			// Nested type annotation?
+			// Type annotation?
 			// { a::[num]list ... }
 			// { a::[[num]list]my_type ... }
 			// { a::[module.point]module.list ... }
@@ -158,9 +185,15 @@ public class HeaderUtils {
 							// This is only the first one we've seen
 							found_var_token = true;
 						}
+					} else if (current.isa(Token.SYMBOL)) {
+						done = true;
+						break;
+					} else if (current.isa(Token.DOUBLE_COLON_BEFORE_SQUARE_BRACKET)) {
+						done = true;
+						break;
 					}
 					instructions.add(current.getInstruction());
-					tokens.next();
+					tokens.next(); 
 				}				
 				Collections.reverse(instructions);
 				InstructionStack is = new InstructionStack();
@@ -171,15 +204,16 @@ public class HeaderUtils {
 			// No type checking to do
 			if (arg_type == null || !AyaPrefs.isTypeCheckerEnabled()) {
 				if (copy) {
-					return new CopyAssignment(var.getSourceStringRef(), var.getSymbol(), true);
+					return new CopyAssignment(current.getSourceStringRef(), var_name, true);
 				} else {
-					return new SimpleAssignment(var.getSourceStringRef(), var.getSymbol());
+					return new SimpleAssignment(current.getSourceStringRef(), var_name);
 				}
 			} else {
-				return new TypedAssignment(var.getSourceStringRef(), var.getSymbol(), arg_type, copy);
+				return new TypedAssignment(current.getSourceStringRef(), var_name, arg_type, copy);
 			}
 			
 		} else if (current.isa(Token.LIST)) {
+			tokens.next(); // "accept" the peek
 			ListToken unpack = (ListToken)current;
 			TokenQueue tq = new TokenQueue(unpack.getCol());
 			ArrayList<UnpackAssignment.Arg> args = new ArrayList<UnpackAssignment.Arg>();
@@ -218,6 +252,42 @@ public class HeaderUtils {
 			}
 		} else {
 			throw new SyntaxError("All arguments should follow the format name[$][::type]", current.getSourceStringRef());
+		}
+	}
+	
+	private static CheckReturnTypeGenerator generateReturnTypes(TokenQueue tokens) throws EndOfInputError, ParserException {
+		if (tokens.size() == 0 ) {
+			return null;
+		} else {
+			var out = new ArrayList<Pair<Symbol, StaticBlock>>();
+			
+			while (tokens.hasNext()) {
+				// Use the argument parser
+				// TODO: Should probably create an intermediate object for the output of nextArg
+				//       instead of overloading Assignment like this
+				Assignment arg;
+				try {
+					arg = nextArg(tokens);
+				} catch (SyntaxError e) {
+					throw new SyntaxError("Invalid return type syntax", e.getSource());
+
+				}
+				// Validate arg
+				if (arg instanceof TypedAssignment) {
+					var ta = (TypedAssignment)arg;
+					if (ta.getCopy()) {
+						throw new SyntaxError("Invalid return type syntax", ta.getSource());
+					} else {
+						out.add(new Pair<Symbol, StaticBlock>(ta.getVarName(), ta.getTypeBlock()));
+					}
+				} else if (arg instanceof SimpleAssignment) {
+					throw new SyntaxError("Invalid return type syntax, must specify a type", arg.getSource());
+				} else {
+					throw new SyntaxError("Invalid return type syntax", arg.getSource());
+				}
+			}
+			
+			return new CheckReturnTypeGenerator(out);
 		}
 	}
 	
@@ -270,6 +340,25 @@ public class HeaderUtils {
 		
 	
 	
+	
+	private static Pair<TokenQueue, TokenQueue> splitAtArrow(TokenQueue tokens) throws SyntaxError {
+		ArrayList<Token> ts = tokens.getArrayList();
+		for (int i = 0; i < ts.size(); i++) {
+			if (ts.get(i).isa(Token.OP) && ts.get(i).getData().equals("-")) {
+				if (i+1 < ts.size() 
+						&& ts.get(i+1).isa(Token.OP) 
+						&& ts.get(i+1).getData().equals(">")) {
+					var pair = splitAtIndex(tokens, i+1); // Removes the `>`
+					pair.first().popBack(); // Pop the `-`
+					return pair;
+				} else {
+					throw new SyntaxError("`-` should be followed by `>` in block header", ts.get(i).getSourceStringRef());
+				}
+			}
+		}
+		return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
+	}
+	
 	/** Split a single tokenQueue into two at the location of the colon
 	 * t1 contains all tokens before the colon
 	 * t2 contains all tokens after the colon
@@ -281,33 +370,31 @@ public class HeaderUtils {
 	 */
 	private static Pair<TokenQueue, TokenQueue> splitAtColon(TokenQueue tokens) throws SyntaxError {
 		ArrayList<Token> ts = tokens.getArrayList();
-		int colons = 0;
-		int colon_index = 0;
 		for (int i = 0; i < ts.size(); i++) {
 			if (ts.get(i).isa(Token.COLON)) {
-				colon_index = i;
-				colons++;
+				return splitAtIndex(tokens, i);
 			}
+		}
+		return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());		
+	}
+	
+	private static Pair<TokenQueue, TokenQueue> splitAtIndex(TokenQueue tokens, int index) {
+		ArrayList<Token> ts = tokens.getArrayList();
+		ArrayList<Token> t1 = new ArrayList<Token>(index);
+		ArrayList<Token> t2 = new ArrayList<Token>(ts.size()-index);
+		for (int i = 0; i < index; i++) {
+			t1.add(ts.get(i));
 		}
 		
-		if (colons == 0) {
-			return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
-		} else if (colons > 1) {
-			throw new SyntaxError("Expected only one colon (:) token in blockEvaluator header", tokens.peek().getSourceStringRef());
-		} else {
-			ArrayList<Token> t1 = new ArrayList<Token>(colon_index);
-			ArrayList<Token> t2 = new ArrayList<Token>(ts.size()-colon_index);
-			for (int i = 0; i < colon_index; i++) {
-				t1.add(ts.get(i));
-			}
-			// colon_index+1 skip the colon itself
-			for (int i = colon_index+1; i < ts.size(); i++) {
-				t2.add(ts.get(i));
-			}
-			
-			return new Pair<TokenQueue, TokenQueue>(new TokenQueue(t1),
-													new TokenQueue(t2));
+		// colon_index+1 skip the index itself
+		for (int i = index+1; i < ts.size(); i++) {
+			t2.add(ts.get(i));
 		}
+		
+		return new Pair<TokenQueue, TokenQueue>(new TokenQueue(t1),
+												new TokenQueue(t2));
 	}
+	
+
 	
 }

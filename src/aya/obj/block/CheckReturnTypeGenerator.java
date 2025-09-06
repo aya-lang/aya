@@ -12,6 +12,7 @@ import aya.util.Pair;
 import aya.util.Triple;
 
 public class CheckReturnTypeGenerator {
+	// StaticBlock may be null (represents any)
 	private ArrayList<Pair<Symbol, StaticBlock>> _items;
 	private SourceStringRef _source;
 	
@@ -23,7 +24,10 @@ public class CheckReturnTypeGenerator {
 		
 		var out = new ArrayList<Triple<Symbol, Dict, StaticBlock>>();
 		for (var item : _items) {
-			Dict type_dict = TypedAssignment.getTypeDictFromBlock(item.second(), _source, ctx);
+			Dict type_dict = null;
+			if (item.second() != null) {
+				type_dict = TypedAssignment.getTypeDictFromBlock(item.second(), _source, ctx);
+			}
 			out.add(new Triple<Symbol, Dict, StaticBlock>(item.first(), type_dict, item.second()));
 		}
 		
