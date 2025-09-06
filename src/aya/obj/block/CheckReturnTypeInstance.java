@@ -60,7 +60,10 @@ public class CheckReturnTypeInstance {
 			
 			// Create the error message
 			ReprStream msg = new ReprStream();
-			msg.println("Function returned " + (current_size - expected_size) + " additional values");
+			msg.print("Error when checking return types in { ... -> ");
+			repr(msg);
+			msg.println(", ...}");
+			msg.println("Function returned " + (current_size - expected_size) + " additional value(s):");
 			Stack<Obj> stk = blockEvaluator.getStack();
 			for (int i = stk.size() - 1; i >= expected_size; i--) {
 				msg.print("  - ");
@@ -73,7 +76,10 @@ public class CheckReturnTypeInstance {
 			
 			// Create error message
 			ReprStream msg = new ReprStream();
-			msg.println("Function missing return values. Previous stack size was " + start_stack_size + ". Current stack size is " + current_size);
+			msg.print("Error when checking return types in { ... -> ");
+			repr(msg);
+			msg.println(", ...}");
+			msg.println("Function missing return values. Expected stack size is " + expected_size + ". Current stack size is " + current_size);
 			throw new TypeError(msg.toString());
 		
 		} else {

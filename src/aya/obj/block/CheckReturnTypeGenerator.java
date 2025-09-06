@@ -12,6 +12,8 @@ import aya.util.Pair;
 import aya.util.Triple;
 
 public class CheckReturnTypeGenerator {
+	public static final CheckReturnTypeGenerator EMPTY = new CheckReturnTypeGenerator(new ArrayList<Pair<Symbol,StaticBlock>>());
+	
 	// StaticBlock may be null (represents any)
 	private ArrayList<Pair<Symbol, StaticBlock>> _items;
 	private SourceStringRef _source;

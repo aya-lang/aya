@@ -33,6 +33,7 @@ import aya.parser.tokens.SymbolToken;
 import aya.parser.tokens.Token;
 import aya.parser.tokens.VarToken;
 import aya.util.Pair;
+import aya.util.Triple;
 
 public class HeaderUtils {
 	
@@ -57,8 +58,9 @@ public class HeaderUtils {
 		var split_tokens = splitAtColon(tokens);
 		var arg_and_ret_type_tokens = splitAtArrow(split_tokens.first());
 
-		TokenQueue arg_tokens = arg_and_ret_type_tokens.first();
-		TokenQueue ret_type_tokens = arg_and_ret_type_tokens.second();
+		boolean has_arrow = arg_and_ret_type_tokens.first();
+		TokenQueue arg_tokens = arg_and_ret_type_tokens.second();
+		TokenQueue ret_type_tokens = arg_and_ret_type_tokens.third();
 		TokenQueue locals_and_captures_tokens = split_tokens.second();
 	
 		// Args
@@ -68,7 +70,7 @@ public class HeaderUtils {
 		
 		// Return Types
 		// ret_types may be null
-		CheckReturnTypeGenerator ret_types = generateReturnTypes(ret_type_tokens);
+		CheckReturnTypeGenerator ret_types = generateReturnTypes(ret_type_tokens, has_arrow);
 
 		// Locals & Captures
 		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);
@@ -255,9 +257,21 @@ public class HeaderUtils {
 		}
 	}
 	
-	private static CheckReturnTypeGenerator generateReturnTypes(TokenQueue tokens) throws EndOfInputError, ParserException {
+	/**
+	 * 
+	 * @param tokens
+	 * @param has_arrow: If true, there is an arrow meaning that the return type is explicitly set to 0 items returned
+	 * @return
+	 * @throws EndOfInputError
+	 * @throws ParserException
+	 */
+	private static CheckReturnTypeGenerator generateReturnTypes(TokenQueue tokens, boolean has_arrow) throws EndOfInputError, ParserException {
 		if (tokens.size() == 0 ) {
-			return null;
+			if (has_arrow) {
+				return CheckReturnTypeGenerator.EMPTY;
+			} else {
+				return null;
+			}
 		} else {
 			var out = new ArrayList<Pair<Symbol, StaticBlock>>();
 			
@@ -340,8 +354,13 @@ public class HeaderUtils {
 		
 	
 	
-	
-	private static Pair<TokenQueue, TokenQueue> splitAtArrow(TokenQueue tokens) throws SyntaxError {
+	/**
+	 * 
+	 * @param tokens
+	 * @return (has_arrow, before_arrow, after_arrow)
+	 * @throws SyntaxError
+	 */
+	private static Triple<Boolean, TokenQueue, TokenQueue> splitAtArrow(TokenQueue tokens) throws SyntaxError {
 		ArrayList<Token> ts = tokens.getArrayList();
 		for (int i = 0; i < ts.size(); i++) {
 			if (ts.get(i).isa(Token.OP) && ts.get(i).getData().equals("-")) {
@@ -350,13 +369,13 @@ public class HeaderUtils {
 						&& ts.get(i+1).getData().equals(">")) {
 					var pair = splitAtIndex(tokens, i+1); // Removes the `>`
 					pair.first().popBack(); // Pop the `-`
-					return pair;
+					return new Triple<Boolean, TokenQueue, TokenQueue>(true, pair.first(), pair.second());
 				} else {
 					throw new SyntaxError("`-` should be followed by `>` in block header", ts.get(i).getSourceStringRef());
 				}
 			}
 		}
-		return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());
+		return new Triple<Boolean, TokenQueue, TokenQueue>(false, tokens, new TokenQueue());
 	}
 	
 	/** Split a single tokenQueue into two at the location of the colon
