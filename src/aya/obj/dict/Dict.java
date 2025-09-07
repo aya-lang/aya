@@ -17,7 +17,6 @@ import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.util.Casting;
 import aya.util.Pair;
-import aya.util.StringUtils;
 
 /**
  * A set of key-value pairs accessible as a runtime object
@@ -144,6 +143,11 @@ public class Dict extends Obj {
 	/** Returns true if this dict contains the input key */
 	public boolean containsKey(Symbol key) {
 		return _get(key) != null;
+	}
+	
+	/** Alias for containsKey */
+	public boolean hasKey(Symbol key) {
+		return containsKey(key);
 	}
 	
 	/** The number of items in this dict */
@@ -327,13 +331,7 @@ public class Dict extends Obj {
 		// Is __type__ defined?
 		Obj type = _vars.get(SymbolConstants.KEYVAR_TYPE);
 		if (type != null) {
-			String typename;
-			if (type.isa(Obj.SYMBOL)) {
-				typename = Casting.asSymbol(type).name();
-			} else {
-				typename = type.str();
-			}
-			stream.print("<type '" + typename + "'>");
+			stream.print(type.str());
 			return stream;
 		} 
 		
@@ -397,8 +395,16 @@ public class Dict extends Obj {
 	// OTHER //
 	///////////
 	
-	public Obj getMetaDict() {
+	/** Create a metatable if it does not exist
+	 * 
+	 * @return
+	 */
+	public Dict getMetatableMut() {
 		if (_meta == null) setMetaTable(new Dict());
+		return _meta;
+	}
+	
+	public Dict getMetatableOrNull() {
 		return _meta;
 	}
 	
@@ -466,6 +472,8 @@ public class Dict extends Obj {
 			}
 		}
 	}
+
+
 	
 	
 }

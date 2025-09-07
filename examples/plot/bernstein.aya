@@ -22,6 +22,7 @@ coeff B .R # {i : f,
 "B_(i,$coeff(t))" plt.y.:label;
 0 plt.:legend;
 plt.view
+plt.wait
 
 .# Uncomment to save
 .# "bernstein.png" plt.save

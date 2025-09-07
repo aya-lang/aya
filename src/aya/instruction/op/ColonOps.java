@@ -46,7 +46,6 @@ import aya.obj.number.Num;
 import aya.obj.number.Number;
 import aya.obj.number.NumberMath;
 import aya.obj.symbol.Symbol;
-import aya.obj.symbol.SymbolConstants;
 import aya.obj.symbol.SymbolTable;
 import aya.parser.Parser;
 import aya.parser.SourceString;
@@ -54,6 +53,7 @@ import aya.parser.SourceStringRef;
 import aya.parser.tokens.StringToken;
 import aya.util.Casting;
 import aya.util.FileUtils;
+import aya.util.TypeUtils;
 import aya.util.VectorizedFunctions;
 
 
@@ -1035,26 +1035,12 @@ class OP_Colon_T extends Operator {
 	
 	public OP_Colon_T() {
 		init(":T");
-		arg("A", "type of (returns a symbol)");
+		arg("A", "type of");
 	}
-	
-	private static final Symbol TYPE_ID = SymbolTable.getSymbol("__type__");
-	
+		
 	@Override
 	public void execute(BlockEvaluator blockEvaluator) {
-		final Obj a = blockEvaluator.pop();
-		Obj type = null;
-		
-		if (a.isa(DICT)) {
-			type = ((Dict)a).getFromMetaTableOrNull(TYPE_ID);
-			if (type == null || !type.isa(Obj.SYMBOL)) {
-				type = SymbolConstants.DICT;
-			}
-		} else {
-			type = Obj.IDToSym(a.type());
-		}
-		
-		blockEvaluator.push(type);
+		blockEvaluator.push(TypeUtils.getType(blockEvaluator.pop()));
 	}
 }
 
@@ -1207,22 +1193,14 @@ class OP_IsInstance extends Operator {
 
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
-		final Obj a = blockEvaluator.pop();
-		final Obj b = blockEvaluator.pop();
+		final Obj type = blockEvaluator.pop();
+		final Obj obj = blockEvaluator.pop();
 		
-		Symbol type_name = null;
-		if (a.isa(DICT)) {
-			Obj type_name_obj = Casting.asDict(a).getSafe(SymbolConstants.KEYVAR_TYPE);
-			if (type_name_obj.isa(SYMBOL)) type_name = Casting.asSymbol(type_name_obj);
-		} else if (a.isa(SYMBOL)) {
-			type_name = Casting.asSymbol(a);
+		if (type.isa(DICT)) {
+			blockEvaluator.push(Num.fromBool(TypeUtils.isInstance(obj, Casting.asDict(type), blockEvaluator.getContext())));
+		} else {
+			throw new TypeError(this, obj, type);
 		}
-		
-		if (type_name == null){
-			throw new TypeError(this, a, b);
-		}
-		
-		blockEvaluator.push(Num.fromBool(Obj.isInstance(b, type_name)));
 	}
 }
 	

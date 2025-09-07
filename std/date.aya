@@ -9,24 +9,20 @@
 
 :{
 
-    ::date :__type__;
+    :{
+        ::date :name;
+    }:__type__;
     1 :__pushself__;
 
     {:{M$:ms} date :M}:now;
 
-    .# {in meta, [
-    .#     in:T ::num = {:{in:ms} meta :M} ?
-    .#     in:T ::str = {:{in "yyyy-MM-dd" :(date.parse):ms} meta :M} ?
-    .#     {"Expected S|D, recieved: $in".D}
-    .# ].S }:__new__;
-
-    {in meta,
+    {in::[str num]union meta,
         {
-            (in :T ::num =) {
+            (in num :@) {
                 :{ 
                     in:ms
                 } meta :M
-            } (in :T ::str =) {
+            } (in str :@) {
                 :{ 
                     in "yyyy-MM-dd" :(date.parse) :ms;
                 } meta :M

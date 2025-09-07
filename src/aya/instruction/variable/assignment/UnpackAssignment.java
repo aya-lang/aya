@@ -2,6 +2,7 @@ package aya.instruction.variable.assignment;
 
 import java.util.ArrayList;
 
+import aya.eval.ExecutionContext;
 import aya.exceptions.parser.SyntaxError;
 import aya.exceptions.runtime.TypeError;
 import aya.exceptions.runtime.ValueError;
@@ -96,7 +97,7 @@ public class UnpackAssignment extends Assignment {
 	}
 
 	
-	public void assign(Dict vars, Obj o) {
+	public void assign(Dict vars, Obj o, ExecutionContext ctx) {
 		if (o.isa(Obj.LIST)) {
 			List l = Casting.asList(o);
 
@@ -109,7 +110,7 @@ public class UnpackAssignment extends Assignment {
 				if (l.length() == _args.size()) {
 					for (int i = 0; i < l.length(); i++) {
 						Arg a = _args.get(i);
-						a.assignment.assign(vars, l.getExact(i));
+						a.assignment.assign(vars, l.getExact(i), ctx);
 					}
 				} else {
 					if (_catchall == null) {
@@ -124,17 +125,17 @@ public class UnpackAssignment extends Assignment {
 					// Before Slurp
 					for (int i = 0; i < _before_slurp.size(); i++) {
 						Arg a = _before_slurp.get(i);
-						a.assignment.assign(vars, l.getExact(i));
+						a.assignment.assign(vars, l.getExact(i), ctx);
 					}
 					// After Slurp
 					for (int i = 0; i < _after_slurp.size(); i++) {
 						Arg arg = _after_slurp.get((_after_slurp.size()-1) - i);
 						Obj x = l.getExact((l.length()-1) - i);
-						arg.assignment.assign(vars, x);
+						arg.assignment.assign(vars, x, ctx);
 					}
 					// Slurp itself
 					List slurp = l.sliceExact(_before_slurp.size(), l.length() - _after_slurp.size());
-					_slurp.assignment.assign(vars, slurp);
+					_slurp.assignment.assign(vars, slurp, ctx);
 				} else {
 					if (_catchall == null) {
 						ValueError e = new ValueError("Cannot unpack " + o.repr() + ". List length does not match number of args (excluding slurp ~)");
@@ -167,6 +168,47 @@ public class UnpackAssignment extends Assignment {
 			args.mutAdd(a);
 		}
 		d.set(SymbolConstants.ARGS, args);
+	}
+
+
+	@Override
+	public ArrayList<Symbol> getNames() {
+		var out = new ArrayList<Symbol>();
+		for (var arg : _args) {
+			out.addAll(arg.assignment.getNames());
+		}
+		return out;
+	}
+
+	@Override
+	public boolean hasTypeInfo() {
+		for (var a : _args) {
+			if (a.assignment.hasTypeInfo()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	@Override
+	public UnpackAssignment setTypeInfo(ExecutionContext ctx) {
+		if (hasTypeInfo()) {
+			var args = new ArrayList<Arg>();
+			for (var arg : _args) {
+				args.add(new Arg(arg.assignment.setTypeInfo(ctx), arg.slurp));
+			}
+			try {
+				return fromArgList(args, _catchall, _source);
+			} catch (SyntaxError e) {
+				// This shouldn't happen
+				// The error should have been found when the code was originally parsed, not when assigning types
+				throw new ValueError("PARSER BUG: " + e.getMessage());
+			}
+		} else {
+			// No type info, just return this
+			return this;
+		}
 	}
 		
 }

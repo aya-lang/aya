@@ -1,7 +1,10 @@
-require color {colors}
+require color {color colors}
 require image {image}
 
 class canvas
+
+.# If true, canvas.wait does nothing
+def canvas::_supress_wait 0
 
 def canvas::__init__ {params::dict self : colors^,
 
@@ -145,7 +148,9 @@ def canvas::viewmat {data self,
 
 .# Block until the canvas is closed
 def canvas::wait {self,
-    { 100:Z self.isopen } W
+    self.M._supress_wait ! {
+        { 100:Z self.isopen } W
+    } ?
 }
 
 def canvas::move_events {self,

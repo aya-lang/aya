@@ -22,10 +22,7 @@ import javax.swing.border.CompoundBorder;
 
 import aya.AyaThread;
 import aya.ExecutionRequest;
-import aya.ExecutionResult;
-import aya.InteractiveAya;
 import aya.StaticData;
-import aya.exceptions.runtime.ThreadError;
 import aya.obj.block.StaticBlock;
 import aya.parser.Parser;
 import aya.parser.SourceString;

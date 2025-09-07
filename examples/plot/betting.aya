@@ -64,3 +64,5 @@ games R :x;
 "cash" plt.y.:label;
 "games" plt.x.:label;
 plt.view
+
+plt.wait

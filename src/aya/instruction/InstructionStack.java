@@ -8,6 +8,7 @@ import aya.ReprStream;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.ValueError;
 import aya.instruction.flag.FlagInstruction;
+import aya.instruction.variable.GetVariableInstruction;
 import aya.obj.Obj;
 import aya.obj.block.BlockHeader;
 import aya.obj.symbol.Symbol;
@@ -150,19 +151,35 @@ public class InstructionStack {
 		return repr(stream, null);
 	}
 	
+	public static void reprInstructions(ReprStream stream, ArrayList<Instruction> instructions) {
+		Instruction prev = null;
+		for(int i = instructions.size()-1; i >= 0; i--) {
+			Instruction current = instructions.get(i);
+			if (stream.isTight()) {
+				// In tight mode, only print a space first if there are two variable instructions next to each other
+				if (prev != null && prev instanceof GetVariableInstruction && current instanceof GetVariableInstruction) {
+					stream.print(" ");
+				}
+				current.repr(stream);
+			} else {
+				current.repr(stream);
+				stream.print(" ");
+			}
+			
+			prev = current;
+		}
+	}
+	
 	public ReprStream repr(ReprStream stream, HashMap<Symbol, BlockEvaluator> captures) {
 		if (captures != null) {
 			reprWithCaptures(stream, captures);
 		} else {
-			for(int i = instructions.size()-1; i >= 0; i--) {
-				instructions.get(i).repr(stream);
-				stream.print(" ");
-			}
+			reprInstructions(stream, instructions);
 		}
 		stream.delTrailingSpaces();
 		return stream;
 	}
-
+	
 	/** Called from a blockEvaluator literal instruction */
 	private ReprStream reprWithCaptures(ReprStream stream, HashMap<Symbol, BlockEvaluator> captures) {
 		if (instructions.size() == 0) return stream;

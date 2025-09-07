@@ -1,0 +1,27 @@
+require canvas {canvas}
+
+.# Create a new canvas
+:{
+    "Circles":name
+    500:width
+    500:height
+    1:show
+    .# Display drawings immediately after every graphics operation
+    1:autoflush
+} canvas! :c;
+
+{x::num y::num radius::num,
+    radius 4 > {
+        x y radius c.circle
+
+        (x radius 2 / +, y, radius 2 /) drawcircle
+        (x radius 2 / -, y, radius 2 /) drawcircle
+        (x, y radius 2 / +, radius 2 /) drawcircle
+        (x, y radius 2 / -, radius 2 /) drawcircle
+        1 :Z .# animate
+    } ?
+}:drawcircle;
+
+c.width 2/ c.height 2/ $ drawcircle
+
+c.wait

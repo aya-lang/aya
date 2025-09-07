@@ -1,52 +1,49 @@
-[
-    { "  abc\t \n".trim "abc" }
-    { "abc".trim "abc" }
-    {"\n\t abc \t \n".trim "abc" }
-    {"\n\t ".trim "" }
+"  abc\t \n".trim "abc" :!
+"abc".trim "abc" :!
+"\n\t abc \t \n".trim "abc" :!
+"\n\t ".trim "" :!
 
-    {5 '- "abc".lpad "--abc" }
-    {3 '- "abc".lpad "abc" }
-    {0 '- "abc".lpad "abc" }
+5 '- "abc".lpad "--abc" :!
+3 '- "abc".lpad "abc" :!
+0 '- "abc".lpad "abc" :!
 
-    {5 '- "abc".rpad "abc--" }
-    {3 '- "abc".rpad "abc" }
-    {0 '- "abc".rpad "abc" }
+5 '- "abc".rpad "abc--" :!
+3 '- "abc".rpad "abc" :!
+0 '- "abc".rpad "abc" :!
 
-    {"aBc!1".upper "ABC!1" }
-    {"".upper "" }
+"aBc!1".upper "ABC!1" :!
+"".upper "" :!
 
-    {"aBc!1".lower "abc!1" }
-    {"".lower "" }
+"aBc!1".lower "abc!1" :!
+"".lower "" :!
 
-    {"12.34".isnum 1 }
-    {"12..123".isnum 0 }
-    {"".isnum 0 }
+"12.34".isnum 1 :!
+"12..123".isnum 0 :!
+"".isnum 0 :!
 
-    {"to be or not to be".titlecase "To Be Or Not To Be" }
+"to be or not to be".titlecase "To Be Or Not To Be" :!
 
-    {"1\n2\n\n3\n\n".lines ["1" "2" "" "3"] }
+"1\n2\n\n3\n\n".lines ["1" "2" "" "3"] :!
 
-    {"abc".bytes [97 98 99] }
+"abc".bytes [97 98 99] :!
 
-    {"1".parsenum 1 }
-    {"1.2".parsenum 1.2 }
-    {"hello".parsenum "hello" }
-    {"\"hello\"".parsenum "hello" }
+"1".parsenum 1 :!
+"1.2".parsenum 1.2 :!
+"hello".parsenum "hello" :!
+"\"hello\"".parsenum "hello" :!
 
-    {', "1,2,3".readdlm [[1 2 3]] }
-    {"," "1,2,3\n4,5,6".readdlm [[1 2 3][4 5 6]] }
+', "1,2,3".readdlm [[1 2 3]] :!
+"," "1,2,3\n4,5,6".readdlm [[1 2 3][4 5 6]] :!
 
-    { "abc" "c".endswith 1 }
-    { "abc" "bc".endswith 1 }
-    { "abc" "abc".endswith 1 }
-    { "abcabc" "bc".endswith 1 }
-    { "" "c".endswith 0 }
-    { "abc" "d".endswith 0 }
-    { "abc" "de".endswith 0 }
-    { "abc" "abcdef".endswith 0 }
+"abc" "c".endswith 1 :!
+"abc" "bc".endswith 1 :!
+"abc" "abc".endswith 1 :!
+"abcabc" "bc".endswith 1 :!
+"" "c".endswith 0 :!
+"abc" "d".endswith 0 :!
+"abc" "de".endswith 0 :!
+"abc" "abcdef".endswith 0 :!
 
-    { "A".rmquote "A" }
-    {"\"A\"".rmquote "A" }
-    {"\"A\"b".rmquote "\"A\"b" }
-
-] :# { test.test }
+"A".rmquote "A" :!
+"\"A\"".rmquote "A" :!
+"\"A\"b".rmquote "\"A\"b" :!

@@ -322,6 +322,15 @@ def importlib::_load_file {path_to_import::str : importlib^,
         .# If we've already imported the file, just return the dict
         importlib._imported.[path_to_import]
     } {
+        .# if the path is already in the import stack, we are in a cycle
+        importlib._import_stack path_to_import H {
+            [
+                "Import cycle detected when importing $path_to_import"
+                "Import stack:"
+                importlib._import_stack~
+            ] "\n" % .D
+        } ?
+
         .# Push the path we are importing onto the import stack
         path_to_import importlib._import_stack .B;
 
@@ -406,7 +415,7 @@ def importlib::_parse_identifiers {
 
     .# If still a block, we need to parse one level deeper
     .# We do not handle any additional nested blocks
-    :&.[0] ::block :@ {
+    :&.[0] block :@ {
         .[0] .* :#{
             importlib._block_to_str_list.[0]
         }

@@ -5,7 +5,7 @@ class matrix
 .# Test if list is a valid matrix
 def matrix::_is_valid_list {m::list matrix,
     .# Both of the following must be true:
-    m :#{:T::list=} .allt   .# The list is made up of only other lists
+    m :#{list :@} .allt   .# The list is made up of only other lists
     {
         m :#{Em0IE=} .allt  .# All of the list lengths are the same
     } 0 .?
@@ -59,9 +59,9 @@ def matrix::__repr__ {self,
 
     def matrix op_sym {other self : op^ rop^,
         {
-            (other :T ::matrix =) {
+            (other matrix :@) {
                 other.rows self.rows op.` .& self.M._new
-            } (other :T ::num =) {
+            } (other num :@) {
                 self.rows :# rop.` self.M._new
             } { 
                 "TypeError: Invalid operation $(other:T) $(self:T) *" .D
@@ -72,15 +72,15 @@ def matrix::__repr__ {self,
     def matrix rop_sym {self n::num : op_to_n^, self.rows :# {op_to_n} self.M._new}
 }
 
-def matrix ::__mul__ { other self,
+def matrix ::__mul__ { other self : matrix^,
     {
-        (other :T ::matrix =) {
+        (other matrix :@) {
             selfE otherE = {
                 other.rows self.rows {*} .& self.M._new
             } {
                 self.rows other.rows  {{*}:*{~}O}:*{~}O self.M._new
             } .?
-        } (other :T ::num =) {
+        } (other num :@) {
             self.rows {other *} O self.M._new
         } {
             "TypeError: Invalid operation $(other:T) $(self.T) *" .D
@@ -98,13 +98,13 @@ def matrix::matmul {other self,
 
 def matrix ::__add__ { other self,
     {
-        (other :T ::matrix =) {
+        (other matrix :@) {
             selfE otherE = {
                 other.rows self.rows {+} .& self.M._new
             } {
                 self.rows other.rows  {{+}:*{~}O}:*{~}O self.M._new
             } .?
-        } (other :T ::num =) {
+        } (other num :@) {
             self.rows {other \+} O self.M._new
         } {
             "TypeError: Invalid operation $(other:T) $(self.T) *" .D
@@ -158,7 +158,7 @@ def matrix::_eq_mat {a b,
 def matrix::__eq__ ({a b,
     a b
     .# swap args if b is not a matrix
-    b :T ::matrix =! {\} ?
+    b matrix :@! {\} ?
     __fn 3.$ :T I ~
 } :{
     :{
@@ -408,13 +408,13 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 
     .# Get the data
     mat.rows r I
-    r :T ::num = {A} ?
+    r num :@ {A} ?
     #{cI}
 
     .# Transform the data based on input type
     .# Return a new matrix if possible
-    c :T ::num = {
-        r :T ::num = {
+    c num :@ {
+        r num :@ {
             .# `r` and `c` both nums, return a single item
             0I
         } {
@@ -429,15 +429,15 @@ def matrix::__getindex__ {ix mat : r c matrix^,
 
 def matrix::__setindex__ {val ix self : r c matrix^,
     {
-        (ix :T ::matrix =) {
-            val :T ::matrix = {val.rows :val;} ?
-            val :T ::list = {
+        (ix matrix :@) {
+            val matrix :@ {val.rows :val;} ?
+            val list :@ {
                 val self.rows ix.rows [3|,D];
             } {
                 self.rows ix.rows {val @@ D} .&;
             } .?
             self
-        } (ix :T ::list =) {
+        } (ix list :@) {
             val ix.[0] ix.[1] self._set
         } {
             "TypeError: Invalid operation $(other:T) $(self.T) *" .D

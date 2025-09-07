@@ -28,6 +28,7 @@ public class ReprStream {
 	// In safe mode, do not try to call __repr__ on objects
 	private boolean _safe_mode;
 	private boolean _full_strings; // If long strings will be printed completely or with "abc ... xyz"
+	private boolean _tight; // If true, don't print spaces between tokens unless needed
 	
 	public ReprStream() {
 		_lines = new ArrayList<ReprStream.Line>();
@@ -37,6 +38,7 @@ public class ReprStream {
 		_current_line = new Line(_current_indent);
 		_safe_mode = false;
 		_full_strings = false;
+		_tight = false;
 	}
 
 	
@@ -205,5 +207,13 @@ public class ReprStream {
 	
 	public boolean isFullStrings() {
 		return _full_strings;
+	}
+	
+	public void setTight(boolean tight) {
+		_tight = tight;
+	}
+	
+	public boolean isTight() {
+		return _tight;
 	}
 }

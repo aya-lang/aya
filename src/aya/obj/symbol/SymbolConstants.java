@@ -78,6 +78,14 @@ public class SymbolConstants {
 	public static final Symbol ARGTYPE      = S("argtype");
 	public static final Symbol SIMPLE       = S("simple");
 	public static final Symbol TYPED        = S("typed");
+	public static final Symbol OBJECT       = S("object");
+	public static final Symbol UNION        = S("union");
+	public static final Symbol INNER        = S("inner");
+	public static final Symbol OUTER        = S("outer");
+
+
+
+
 
 	public static final Symbol KEYVAR_EQ		= S("__eq__");
 	public static final Symbol KEYVAR_NEW 		= S("__new__");
@@ -98,6 +106,10 @@ public class SymbolConstants {
 	public static final Symbol KEYVAR_BOOL    	= S("__bool__");
 	public static final Symbol KEYVAR_PUSHSELF  = S("__pushself__");
 	public static final Symbol __CALL__    		= S("__call__");
+	public static final Symbol __TYPE__    		= S("__type__");
+	public static final Symbol __TYPE_CHECK__ 	= S("__type_check__");
+
+
 
 	public static final Symbol UNDEF_VAR 		= S("undef_var_err");
 	public static final Symbol SYNTAX_ERR 		= S("syntax_err");
@@ -119,7 +131,5 @@ public class SymbolConstants {
 	public static final Symbol RUNTIME_EXCEPTION    = S("runtime_exception");
 
 	public static final Symbol __CDICT__    = S("__cdict__");
-
-
-
+	public static final Symbol UNDERSCORE   = S("_");
 }

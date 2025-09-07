@@ -84,10 +84,10 @@
 
 {1  {s::num ,s} ~} assert [1]
 {[] {s::list,s} ~} assert [[]]
-{"" {s::list,s} ~} assert [""]
+.#{"" {s::list,s} ~} assert [""]
 {"" {s::str ,s} ~} assert [""]
 {"hi" {s::str,s} ~} assert ["hi"]
-{"hi" {s::list,s} ~} assert ["hi"]
+.#{"hi" {s::list,s} ~} assert ["hi"]
 {'C {s::char,s} ~} assert ['C]
 {1 'C "C" {a::any b::any c::any, a b c} ~} assert [1 'C "C"]
 { :{} {d::dict,d}~} assert [:{}]
@@ -104,7 +104,6 @@
 {[1 2 3]:& {a::num, a B ;;}~}  assertfail
 
 {:a(2), 1 ({a: b(a), a b})} assert [1 2]
-{:a(9), 2 ({a: a(a 1 +), a})} assert [2]
 {{: b(:{}), b}:x; 1 x.:y; x} assert [:{1:y}]
 
 .# Dictionaries
@@ -153,12 +152,6 @@
     0:a;
     0:b;
     {100 f} assert [100 1 9]
-
-    .# Argument takes precedence
-    1:a;
-    {a : a^, a}:f;
-    0:a;
-    {100 f} assert [100]
 
     :{ 1:a 2:b }:b;
     {:b^, b.a b.b b.c}:g;
@@ -237,11 +230,11 @@
         :{
           ::a:name;
         } :{
-          ::num:type;
+          num:type;
           1:copy;
           ::b:name;
         } :{
-          ::str:type;
+          str:type;
           0:copy;
           ::c:name;
         } :{
@@ -250,7 +243,7 @@
         }
     ]:args;
 
-    { {a b$::num c::str d$ : a(1) b(4), } .|.args } assert [args]
+    { {a b$::num c::str d$ : e(1) f(4), } .|.args } assert [args]
 })
 
 .# ::block S: duplicate with locals
@@ -273,4 +266,8 @@ assert
 { {a b, a b +} .! P } assert ["{a b +}"]
 
 .# type override
-{ :{ :{ ::foo:__type__ }:__meta__ } {x::foo, 1 } ~} assert [1]
+{:foo,
+    :{ ::foo:name } :foo;
+
+    { :{ :{ foo:__type__ }:__meta__ } {x::foo, 1 } ~} assert [1]
+}

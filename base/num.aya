@@ -46,7 +46,7 @@
     .}
     {
         $           .# dup n so we can use the sign later
-        .| $TR\R    .# create negative and positive versions of the list
+        .| $KR\R    .# create negative and positive versions of the list
         0\:J:J        .# join lists with a 0 between
         \0<{U}?     .# If the sign is negative, reverse
     }:i;

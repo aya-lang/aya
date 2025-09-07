@@ -1,16 +1,13 @@
 require stack {stack}
 
-[
+[1 2 3] stack! stack :@ 1 :!
+[1 2 3] stack! .pop  1 :!
+[1 2] stack!:s .pop; s.pop  2 :!
+[1 2] stack!:s .peek; s.pop  1 :!
+[1 2] stack! .clear .list  [] :!
+3 [1 2] stack! + .pop  3 :!
+[1 2 3] stack! E  3 :!
+[1] stack!:s .pop; s.isempty  1 :!
+[1] stack! .isempty  0 :!
+[] stack! .isempty  1 :!
 
-    { [1 2 3] stack! :T  ::stack }
-    { [1 2 3] stack! .pop  1 }
-    { [1 2] stack!:s .pop; s.pop  2 }
-    { [1 2] stack!:s .peek; s.pop  1 }
-    { [1 2] stack! .clear .list  [] }
-    { 3 [1 2] stack! + .pop  3 }
-    { [1 2 3] stack! E  3 }
-    { [1] stack!:s .pop; s.isempty  1 }
-    { [1] stack! .isempty  0 }
-    { [] stack! .isempty  1 }
-
-] :# { test.test }

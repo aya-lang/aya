@@ -18,3 +18,4 @@ plot.plot!:p;
 };
 
 p.view
+p.wait

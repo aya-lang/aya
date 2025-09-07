@@ -32,7 +32,7 @@ public class NewLocalsInstruction extends Instruction {
 			// aya> 1 2 3 {a b c, a b}
 			// 1 2
 			for (int i = _args.size()-1; i >= 0; i--) {
-				_args.get(i).assign(locals, blockEvaluator.pop());
+				_args.get(i).assign(locals, blockEvaluator.pop(), blockEvaluator.getContext());
 			}	
 		}
 		

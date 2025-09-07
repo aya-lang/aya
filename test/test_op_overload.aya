@@ -3,41 +3,44 @@
 
 :{
 
-  ::vec :__type__;
+  :{
+    ::vec :name;
+  } :__type__;
+
   1 :__pushself__;
 
   {l meta, :{ l:l} meta :M}:__new__;
   {self, "<" self.lPB;V; ">" ++}:__str__:__repr__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l + self.M!}:__add__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l + self.M!}:__add__;
   {self o, self.l o + self.M!}:__radd__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l * self.M!}:__mul__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l * self.M!}:__mul__;
   {self o, self.l o * self.M!}:__rmul__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l - self.M!}:__sub__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? - self.M!}:__rsub__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l - self.M!}:__sub__;
+  {self o : __type__^, self.l o __type__ :@ {o.l} {o} .? - self.M!}:__rsub__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l / self.M!}:__div__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? / self.M!}:__rdiv__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l / self.M!}:__div__;
+  {self o : __type__^, self.l o __type__ :@ {o.l} {o} .? / self.M!}:__rdiv__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l ^ self.M!}:__pow__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? ^ self.M!}:__rpow__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l ^ self.M!}:__pow__;
+  {self o : __type__^, self.l o __type__ :@ {o.l} {o} .? ^ self.M!}:__rpow__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l :% self.M!}:__mod__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? :% self.M!}:__rmod__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l :% self.M!}:__mod__;
+  {self o : __type__^, self.l o __type__ :@ {o.l} {o} .? :% self.M!}:__rmod__;
 
-  {o self, o:T ::vec = {o.l} {o} .? self.l .% self.M!}:__idiv__;
-  {self o, self.l o:T ::vec = {o.l} {o} .? .% self.M!}:__ridiv__;
+  {o self : __type__^, o __type__ :@ {o.l} {o} .? self.l .% self.M!}:__idiv__;
+  {self o : __type__^, self.l o __type__ :@ {o.l} {o} .? .% self.M!}:__ridiv__;
 
   {o self, o self.l < self.M!}:__lt__;
   {o self, o self.l > self.M!}:__gt__;
   {o self, o self.l :< self.M!}:__leq__;
   {o self, o self.l :> self.M!}:__geq__;
-  {o self, o:T ::vec = {o.l self.l =} 0 .?}:__eq__;
+  {o self : __type__^, o __type__ :@ {o.l self.l =} 0 .?}:__eq__;
 
   {self, self.l U self.:l }:__reverse__;
-  {self, self.l T self.M!}:__negate__;
+  {self, self.l K self.M!}:__negate__;
   {self, self.l C self.:l }:__sort__;
 
   {self, self.l #B self.:l}:__inc__;
@@ -187,7 +190,7 @@
 "negate..." :P
 :{
     [1 2 3] vec! :v;
-    { v T P "< -1 -2 -3 >" } test.test
+    { v K P "< -1 -2 -3 >" } test.test
 };
 
 "sort..." :P
@@ -262,7 +265,7 @@
 
 :{
     [:2r3 :2z 2] vec! :v;
-    { v Md .l #:T [::num ::num ::num] } test.test
+    { v Md .l [num]listT :@ 1 } test.test
 };
 
 "head/tail..." :P

@@ -1,5 +1,6 @@
 package aya.instruction.variable.assignment;
 
+import aya.eval.ExecutionContext;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.number.Num;
@@ -9,16 +10,20 @@ import aya.parser.SourceStringRef;
 
 public class CopyAssignment extends SimpleAssignment {
 	
-	private boolean _copy;
+	protected boolean _copy;
 	
 	public CopyAssignment(SourceStringRef source, Symbol var, boolean copy) {
 		super(source, var);
 		_copy = copy;
 	}
+	
+	public boolean getCopy() {
+		return _copy;
+	}
 
 	@Override
-	public void assign(Dict vars, Obj o) {
-		super.assign(vars, _copy ? o.deepcopy() : o);
+	public void assign(Dict vars, Obj o, ExecutionContext ctx) {
+		super.assign(vars, _copy ? o.deepcopy() : o, ctx);
 	}
 
 	@Override

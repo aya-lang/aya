@@ -14,3 +14,4 @@ plot.plot!:plt;
 1.5 plt.:stroke;
 
 plt.view
+plt.wait
