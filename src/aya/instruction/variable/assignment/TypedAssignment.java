@@ -93,7 +93,7 @@ public class TypedAssignment extends CopyAssignment {
 			s.setTight(true);
 			s.print(super.toString());
 			s.print("::");
-			BlockUtils.repr(s, _type_block, false, null);
+			BlockUtils.repr(s, _type_block, false, null, null);
 			return s.toStringOneline();
 		} else {
 			return "::any";

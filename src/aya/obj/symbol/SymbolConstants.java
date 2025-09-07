@@ -12,6 +12,8 @@ public class SymbolConstants {
 	public static final Symbol G 		= S("g");
 	public static final Symbol B 		= S("b");
 	public static final Symbol A 		= S("a");
+	public static final Symbol F 		= S("f");
+
 
 	public static final Symbol ANY 		= S("any");
 	public static final Symbol CHAR 	= S("char");

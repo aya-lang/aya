@@ -872,7 +872,7 @@ class OP_Colon_M extends Operator {
 	public OP_Colon_M() {
 		init(":M");
 		arg("DD", "set D1's meta to D2 leave D1 on stack");
-		arg("BD", "update a copy of the blockEvaluator locals with the dict");
+		arg("BD", "update a copy of the blockEvaluator locals with the dict. Warning: since this creates a copy, a pre-existing self reference will point to the original block");
 	}
 
 	@Override
@@ -884,7 +884,7 @@ class OP_Colon_M extends Operator {
 			((Dict)obj).setMetaTable((Dict)meta);
 			blockEvaluator.push(obj);
 		} else if(obj.isa(BLOCK) && meta.isa(DICT)) {
-			StaticBlock new_block = BlockUtils.mergeLocals(Casting.asStaticBlock(obj), asDict(meta));
+			StaticBlock new_block = BlockUtils.mergeLocals(Casting.asStaticBlock(obj), asDict(meta), null);
 			blockEvaluator.push(new_block);
 		} else {
 			throw new TypeError(this, meta, obj);

@@ -47,7 +47,7 @@ public class BlockToken extends CollectionToken {
 					InstructionStack main_instructions = Parser.generate(blockData.get(1));
 					var h = HeaderUtils.generateBlockHeader(blockData.get(0));
 					StaticBlock blk = BlockUtils.fromIS(main_instructions, h.locals, h.args);
-					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, h.captures, h.ret_types);
+					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, h.captures, h.ret_types, h.self_reference);
 				}
 			} else {
 				throw new SyntaxError("BlockEvaluator contains too many parts", getSourceStringRef());
