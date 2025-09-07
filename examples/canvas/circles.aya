@@ -10,14 +10,15 @@ require canvas {canvas}
     1:autoflush
 } canvas! :c;
 
-{x::num y::num radius::num,
+.# * creates a self reference to this function named f
+{x::num y::num radius::num : f*,
     radius 4 > {
         x y radius c.circle
 
-        (x radius 2 / +, y, radius 2 /) drawcircle
-        (x radius 2 / -, y, radius 2 /) drawcircle
-        (x, y radius 2 / +, radius 2 /) drawcircle
-        (x, y radius 2 / -, radius 2 /) drawcircle
+        (x radius 2 / +, y, radius 2 /) f
+        (x radius 2 / -, y, radius 2 /) f
+        (x, y radius 2 / +, radius 2 /) f
+        (x, y radius 2 / -, radius 2 /) f
         1 :Z .# animate
     } ?
 }:drawcircle;
