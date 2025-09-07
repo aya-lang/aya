@@ -70,7 +70,10 @@ public class HeaderUtils {
 		
 		// Return Types
 		// ret_types may be null
-		CheckReturnTypeGenerator ret_types = generateReturnTypes(ret_type_tokens, has_arrow);
+		CheckReturnTypeGenerator ret_types = null;
+		if (AyaPrefs.isTypeCheckerEnabled()) {
+			ret_types = generateReturnTypes(ret_type_tokens, has_arrow);
+		}
 
 		// Locals & Captures
 		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);

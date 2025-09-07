@@ -151,7 +151,7 @@
 { f } {err, err.msg "Expected stack size is 2. Current stack size is 0"H} .K 1:! 
 
 .# Return type is two numbers but we return one
-{-> _::num _::num, 1}:f;
+{-> _::num _::num, 99}:f;
 { f } {err, err.msg "Expected stack size is 2. Current stack size is 1"H} .K 1:! 
 
 .# Return type is three values but we return one
@@ -159,7 +159,7 @@
 { f } {err, err.msg "Expected stack size is 3. Current stack size is 1"H} .K 1:!
 
 .# Arguments exist but explicitly defined empty return types - function returns value
-{a::num -> , 1 }:f;
+{a::num -> , 99 }:f;
 { 1 f } {err, err.msg "1 additional value(s)"H} .K 1:!
 
 .# Arguments exist, empty return types - function returns multiple values

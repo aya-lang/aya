@@ -350,3 +350,15 @@ Which can be used like so. (`:!` is the assert operator)
 .# valid, we DO care what the inner type is
 ::value 1 optional! [str]optionalT :@ 0 :!
 ```
+
+## Performance
+
+Runtime type checking is helpful for development and debugging but comes at a small performance cost. For high performance situations, disable the type checker using the `-r` CLI flag. The syntax for return types will remain valid but will be ignored by the parser.
+
+**Warning:** When the `-r` flag is enabled, the type information is completely stripped. Be aware when writing code that may read type information from blocks that it will not exist in `-r` mode.
+
+```
+$ aya -ri
+aya> {a::str b::num -> c::list, }
+{a b,}
+```

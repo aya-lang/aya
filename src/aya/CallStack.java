@@ -18,7 +18,6 @@ import aya.parser.SourceStringRef;
 public class CallStack {
 
 	private static int MAX_STACK_DEPTH = 1024;
-	private final boolean _check_return_types;
 
 	public static class CallStackFrame {
 		private GetVariableInstruction _instruction;
@@ -70,18 +69,12 @@ public class CallStack {
 	// -1 for empty stack
 	private int _stack_index;
 	
-	public CallStack() {
-		_check_return_types = true;
-		
+	public CallStack() {	
 		_stack = new CallStackFrame[MAX_STACK_DEPTH];
 		for (int i = 0; i < MAX_STACK_DEPTH; i++) {
 			_stack[i] = new CallStackFrame();
 		}
 		_stack_index = -1;
-	}
-	
-	public boolean shouldCheckReturnTypes() {
-		return _check_return_types;
 	}
 	
 	public void push(GetVariableInstruction var, CheckReturnTypeInstance ret_type, int arg_len, int stack_size) {
@@ -107,7 +100,8 @@ public class CallStack {
 		if (_stack_index >= 0) {
 			CallStackFrame frame = _stack[_stack_index];
 			_stack_index--;
-			if (shouldCheckReturnTypes() && frame._ret_type != null && blockEvaluator != null) {
+			// If there is a return type on the frame, check it
+			if (frame._ret_type != null && blockEvaluator != null) {
 				frame._ret_type.check(blockEvaluator, frame._stack_size);
 			}
 			return frame;
