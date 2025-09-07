@@ -76,6 +76,35 @@ Expected type num, received: "foo"
 Function call traceback:
 ```
 
+Return types check the size of the stack before and after execution, then checks the types of the top N values:
+
+```
+aya> {a -> ::num, 1 2}:returns_too_many
+{a -> ::num, 1 2}
+aya> 3 returns_too_many
+Error when checking return types in {... -> ::num , ...}
+Function returned 1 additional value(s):
+  - 2
+
+aya> {a -> ::num, }:missing_return
+{a -> ::num,}
+aya> 1 missing_return
+Error when checking return types in {... -> ::num , ...}
+Function missing return values. Expected stack size is 1. Current stack size is 0
+```
+
+Note that the checker uses the **size** of the stack only. A function still has access to the global stack and can make additional modifications not included in the arguments or return types and the operations would still be considered valid as long as the size of the stack matches at the end.
+
+This function removes one extra parameter off the global stack (;) and adds an additional one it its place (99). Since the final returned values (10 and "A") match the return types, the operation is valid.
+
+
+```
+aya> {a b -> ::num ::str, ; 99 10 "A"}:f
+{a b -> ::num ::str, ; 99 10 "A"}
+aya> 0 1 2 3 f
+0 99 10 "A"
+```
+
 If return type is empty, explicitly check that nothing was returned
 
 ```
