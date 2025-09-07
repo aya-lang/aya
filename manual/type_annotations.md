@@ -60,11 +60,50 @@ Type error at argument: l::list
         Received: 3
 ```
 
+Return types can be specified after a `->`
+
+```
+aya> {l::list -> ::num, l E}:length
+{l::list, l E}
+aya> [1 2 3] length
+3
+aya> {l::list -> ::num, "foo"}:length
+{l::list -> ::num, "foo"}
+aya> [1 2 3] length
+Expected type num, received: "foo"
+Function call traceback:
+```
+
+If return type is empty, explicitly check that nothing was returned
+
+```
+aya> {a ->, }:f
+{a ->,}
+aya> 1 f
+aya> {a ->, 10}:f
+{a ->, 10}
+aya> 1 f
+Error when checking return types in {... -> , ...}
+Function returned 1 additional value(s):
+  - 10
+```
+
+A function that takes no input and produces no output:
+
+```
+aya> {->, "Hello world!":P }:f
+{-> , "Hello world!" :P}
+aya> f
+Hello world!
+```
+
+
 ## Built in types
 
 The following built-in types are available:
 
 ```
+NAME   : EXAMPLES
 num    : 4 3.14 :1i0
 char   : 'a '\n'
 str    : "hello"

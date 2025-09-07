@@ -1,0 +1,486 @@
+.#
+.# Correct tests
+.#
+
+.# These tests have the following format
+.#   { arg_a::type arg_b::type ... -> _::return_type _::return_type ..., X}:f;
+.#   [arg_a arg_b ... f] [X] :!
+.# Where X is a list of values that match the return types
+
+.# Basic single return type - Input a number and a string, output a number
+{a::num b::str -> _::num, 1}:f;
+[10 "A" f] [1] :!
+
+.# Basic container return type - Input a list and number, output a string list
+{a::[num]list b::num -> _::[str]list, ["A" "B" "C"]}:f;
+[[1 2 3] 10 f] [["A" "B" "C"]] :!
+
+.# Multiple return types - Input number, return number and string
+{a::num -> _::num _::str, a "result"}:f;
+[5 f] [5 "result"] :!
+
+.# Multiple return types with different containers - Input string, return list and dict
+{s::str -> _::[num]list _::[str]dict, [1 2 3] :{"one":a "two":b}}:f;
+["test" f] [[1 2 3] :{"one":a "two":b}] :!
+
+.# Union return type - Function can return either number or string
+{flag::num -> _::[num str]union, flag {42} {"hello"} .?}:f;
+[1 f] [42] :!
+[0 f] ["hello"] :!
+
+.# Nested container return type - Return list of number lists
+{n::num -> _::[[num]list]list, [[1 2] [3 4] [5 6]]}:f;
+[3 f] [[[1 2] [3 4] [5 6]]] :!
+
+.# Complex nested containers - Return dict of string lists
+{-> _::[[str]list]dict, :{["a" "b"]:a ["c" "d"]:b}}:f;
+[f] [:{["a" "b"]:a ["c" "d"]:b}] :!
+
+.# Multiple union return types - Return either (num or str) and (list or dict)
+{flag::num -> _::[num str]union _::[list dict]union, 
+    flag {42 [1 2 3]} {"hello" :{1:a}} .?}:f;
+[1 f] [42 [1 2 3]] :!
+[0 f] ["hello" :{1:a}] :!
+
+.# No arguments, single return type
+{-> _::num, 42}:f;
+[f] [42] :!
+
+.# No arguments, container return type
+{-> _::[num]list, [1 2 3]}:f;
+[f] [[1 2 3]] :!
+
+.# No arguments, multiple return types
+{-> _::str _::num, "hello" 42}:f;
+[f] ["hello" 42] :!
+
+.# Arguments exist but explicitly defined empty return types
+{a::num -> , }:f;
+[1 f] [] :! 
+
+.# Complex argument types with simple return
+{a::[[str]list]list b::[num str]union -> _::num, 42}:f;
+[[["a" "b"] ["c"]] 5 f] [42] :!
+[[["a" "b"] ["c"]] "test" f] [42] :!
+
+.# All basic types as return types
+{-> _::num _::str _::char _::list _::dict _::sym, 
+    42 "test" 'x [1 2] :{1:a} ::symbol}:f;
+[f] [42 "test" 'x [1 2] :{1:a} ::symbol] :!
+
+.# Mixed container and basic types
+{-> _::[num]list _::str _::[char]dict, [1 2 3] "hello" :{'a:1 'b:2}}:f;
+[f] [[1 2 3] "hello" :{'a:1 'b:2}] :!
+
+.# Any type as return
+{x::any -> _::any, x}:f;
+[42 f] [42] :!
+["test" f] ["test"] :!
+[[1 2] f] [[1 2]] :!
+
+.# Union with any
+{flag::num -> _::[any num]union, flag {42} {[1 2 3]} .?}:f;
+[1 f] [42] :!
+[0 f] [[1 2 3]] :!
+
+.#
+.# Empty containers (should pass regardless of inner type)
+.#
+
+.# Empty list with various container type specifications - all should pass
+{-> _::[num]list, []}:f;
+[f] [[]] :!
+
+{-> _::[str]list, []}:f;
+[f] [[]] :!
+
+{-> _::[[num]list]list, []}:f;
+[f] [[]] :!
+
+{-> _::[[[str]list]list]list, []}:f;
+[f] [[]] :!
+
+.# Empty dict with various container type specifications - all should pass
+{-> _::[num]dict, :{}}:f;
+[f] [:{} ] :!
+
+{-> _::[str]dict, :{}}:f;
+[f] [:{} ] :!
+
+{-> _::[[num]list]dict, :{}}:f;
+[f] [:{} ] :!
+
+.# Empty containers in multiple returns
+{-> _::[num]list _::[str]dict, [] :{}}:f;
+[f] [[] :{}] :!
+
+.#
+.# Negative cases
+.#
+
+.# Negative cases have the format
+.#   { arg_a::type arg_b::type ... -> _::return_type _::return_type ..., X}:f;
+.#   { ... f} {err, err.msg "expected error message"H} .K 1:!
+
+.#
+.# Stack size checks
+.#
+
+.# Return type specifies 1 number, but we return 2 numbers
+{-> _::num, 1 2}:f;
+{ f } {err, err.msg "1 additional value(s)"H} .K 1:!
+
+.# Return type specifies 1 number, but we return 2 strings (stack size checked first)
+{-> _::num, "A" "B"}:f;
+{ f } {err, err.msg "1 additional value(s)"H} .K 1:!
+
+.# Return type specifies 2 numbers, but we return 3
+{-> _::num _::num, 1 2 3}:f;
+{ f } {err, err.msg "1 additional value(s)"H} .K 1:!
+
+.# Return type specifies 3 values, but we return 5
+{-> _::num _::str _::list, 1 "A" [1] "extra1" "extra2"}:f;
+{ f } {err, err.msg "2 additional value(s)"H} .K 1:!
+
+.# Return type is one number but we return nothing
+{-> _::num, }:f;
+{ f } {err, err.msg "Expected stack size is 1. Current stack size is 0"H} .K 1:! 
+
+.# Return type is two numbers but we return nothing
+{-> _::num _::num, }:f;
+{ f } {err, err.msg "Expected stack size is 2. Current stack size is 0"H} .K 1:! 
+
+.# Return type is two numbers but we return one
+{-> _::num _::num, 1}:f;
+{ f } {err, err.msg "Expected stack size is 2. Current stack size is 1"H} .K 1:! 
+
+.# Return type is three values but we return one
+{-> _::num _::str _::list, 42}:f;
+{ f } {err, err.msg "Expected stack size is 3. Current stack size is 1"H} .K 1:!
+
+.# Arguments exist but explicitly defined empty return types - function returns value
+{a::num -> , 1 }:f;
+{ 1 f } {err, err.msg "1 additional value(s)"H} .K 1:!
+
+.# Arguments exist, empty return types - function returns multiple values
+{a::num b::str -> , 1 2 3}:f;
+{ 5 "test" f } {err, err.msg "3 additional value(s)"H} .K 1:!
+
+.#
+.# Type checks
+.#
+
+.# Return type is a list of numbers but we return a string
+{-> _::[num]list, "A"}:f;
+{ f } {err, err.msg "Expected type [num]listT, received: \"A\""H} .K 1:!
+
+.# Return type is number but we return string
+{-> _::num, "not a number"}:f;
+{ f } {err, err.msg "Expected type num, received: \"not a number\""H} .K 1:!
+
+.# Return type is string but we return number
+{-> _::str, 42}:f;
+{ f } {err, err.msg "Expected type str, received: 42"H} .K 1:!
+
+.# Return type is list but we return dict
+{-> _::list, :{1:a}}:f;
+{ f } {err, err.msg "Expected type list, received: :{"H} .K 1:!
+
+.# Multiple return types - first correct, second wrong
+{-> _::num _::str, 42 123}:f;
+{ f } {err, err.msg "Expected type str, received: 123"H} .K 1:!
+
+.# Multiple return types - first wrong, second correct  
+{-> _::str _::num, 42 "hello"}:f;
+{ f } {err, err.msg "Expected type str, received: 42"H} .K 1:!
+
+.# Multiple return types - both wrong
+{-> _::str _::num, [1] :{1:a}}:f;
+{ f } {err, err.msg "Expected type str, received: [ 1 ]"H} .K 1:!
+
+.# Container type mismatch - return list of strings instead of numbers
+{-> _::[num]list, ["a" "b" "c"]}:f;
+{ f } {err, err.msg "Expected type [num]listT, received: [ \"a\""H} .K 1:!
+
+.# Container type mismatch - return dict of numbers instead of strings  
+{-> _::[str]dict, :{1:a 2:b}}:f;
+{ f } {err, err.msg "Expected type [str]dictT, received: :{"H} .K 1:! 
+
+.# Nested container type mismatch - return list of string lists instead of number lists
+{-> _::[[num]list]list, [["a" "b"] ["c" "d"]]}:f;
+{ f } {err, err.msg "Expected type [[num]listT]listT, received: ["H} .K 1:!
+
+.# Union type mismatch - return char when expecting num or str
+{-> _::[num str]union, 'x }:f;
+{ f } {err, err.msg "Expected type [num str]unionT, received: 'x"H} .K 1:!
+
+.#
+.# Complex combinations and edge cases
+.#
+
+.# Function with complex args and wrong return type
+{a::[[num]list]list b::[str num]union -> _::[char]dict, "wrong"}:f;
+{ [[1 2] [3 4]] "test" f } {err, err.msg "Expected type [char]dictT, received: \"wrong\""H} .K 1:!
+
+.# Function with union args and wrong union return
+{a::[num str]union -> _::[char list]union, :{1:a}}:f;
+{ 42 f } {err, err.msg "Expected type [char list]unionT, received: :{"H} .K 1:! 
+
+.# Multiple mixed errors - wrong stack size takes precedence
+{-> _::num _::str, "wrong" 42 "extra"}:f;
+{ f } {err, err.msg "1 additional value"H} .K 1:!
+
+.# Very deeply nested container types
+{-> _::[[[[[num]list]list]list]list]list, [[[[[1]]]]]}:f;
+[f] [[[[[[1]]]]]] :!
+
+.# Wrong deeply nested type
+{-> _::[[[[[num]list]list]list]list]list, [[[[["string"]]]]]}:f;
+{ f } {err, err.msg "Expected type [[[[[num]listT]listT]listT]listT]listT, received:"H} .K 1:! 
+
+.# Mixed container types in multiple returns
+{-> _::[num]list _::[str]dict _::[[num]list]list, [1 2] :{"a":a} [[1 2] [3]]}:f;
+[f] [[1 2] :{"a":a} [[1 2] [3]]] :!
+
+.# Wrong mixed container types  
+{-> _::[num]list _::[str]dict, ["wrong"] :{1:a}}:f;
+{ f } {err, err.msg "Expected type [num]listT, received: ["H} .K 1:! 
+
+.# Function arguments with return type mismatch
+{a::num b::str -> _::num, b}:f; .# Return string instead of number
+{ 5 "hello" f } {err, err.msg "Expected type num, received: \"hello\""H} .K 1:!
+
+.# Complex union with containers
+{-> _::[[num]list [str]dict]union, :{"test":a "ok":b}}:f;
+[f] [:{"test":a "ok":b}] :!
+
+{-> _::[[num]list [str]dict]union, [1 2 3]}:f;
+[f] [[1 2 3]] :!
+
+{-> _::[[num]list [str]dict]union, "wrong"}:f;
+{ f } {err, err.msg "Expected type [[num]listT [str]dictT]unionT, received: \"wrong\""H} .K 1:!
+
+.# Edge case: function that modifies arguments and returns them
+{a::num -> _::num, a 1 + :a; a}:f;
+[5 f] [6] :!
+
+.#
+.# User defined types
+.#
+
+struct point {x y} ;
+
+def point::__type_check__ {value inner self : inner_type, 
+    inner.[0] :inner_type;
+
+    value.x inner_type :@
+    value.y inner_type :@
+    &
+}
+
+.# Basic point return type - no generic parameter
+{-> _::point, 1 2 point!}:f;
+[f] [1 2 point!] :!
+
+{-> _::point, "a" "b" point!}:f;
+[f] ["a" "b" point!] :!
+
+.# Point with generic parameter - numeric point
+{-> _::[num]point, 1 2 point!}:f;
+[f] [1 2 point!] :!
+
+.# Point with generic parameter - string point
+{-> _::[str]point, "hello" "world" point!}:f;
+[f] ["hello" "world" point!] :!
+
+.# Multiple point return types
+{-> _::point _::[num]point, 1 2 point! 3 4 point!}:f;
+[f] [1 2 point! 3 4 point!] :!
+
+.# Point in container types
+{-> _::[point]list, [1 2 point! 3 4 point!]}:f;
+[f] [[1 2 point! 3 4 point!]] :!
+
+{-> _::[[num]point]list, [1 2 point! 3 4 point!]}:f;
+[f] [[1 2 point! 3 4 point!]] :!
+
+.# Point in union types
+{flag::num -> _::[point num]union, flag {1 2 point!} {42} .?}:f;
+[1 f] [1 2 point!] :!
+[0 f] [42] :!
+
+.# Negative cases for point
+.# Return plain number instead of point
+{-> _::point, 42}:f;
+{ f } {err, err.msg "Expected type point, received: 42"H} .K 1:!
+
+.# Return string point when expecting numeric point
+{-> _::[num]point, "a" "b" point!}:f;
+{ f } {err, err.msg "Expected type [num]pointT, received:"H} .K 1:!
+
+.# Return numeric point when expecting string point  
+{-> _::[str]point, 1 2 point!}:f;
+{ f } {err, err.msg "Expected type [str]pointT, received:"H} .K 1:!
+
+.#
+.# Inheritance
+.#
+
+class base
+
+::derived base extend;
+
+.# Basic inheritance return types - base type
+{-> _::base, base!}:f;
+[f] [base!] :!
+
+{-> _::base, derived!}:f; .# derived is a base
+[f] [derived!] :!
+
+.# Derived type - only accepts derived
+{-> _::derived, derived!}:f;
+[f] [derived!] :!
+
+.# Multiple inheritance return types
+{-> _::base _::derived, derived! derived!}:f;
+[f] [derived! derived!] :!
+
+.# Inheritance in containers
+{-> _::[base]list, [base! derived! derived!]}:f;
+[f] [[base! derived! derived!]] :!
+
+.# Inheritance in unions
+{flag::num -> _::[base derived]union, flag {base!} {derived!} .?}:f;
+[1 f] [base!] :!
+[0 f] [derived!] :!
+
+.# Negative inheritance cases
+.# base is not a derived
+{-> _::derived, base!}:f;
+{ f } {err, err.msg "Expected type derived, received:"H} .K 1:!
+
+.# Wrong type entirely
+{-> _::base, 42}:f;
+{ f } {err, err.msg "Expected type base, received: 42"H} .K 1:!
+
+.#
+.# Multiple generic parameters
+.#
+
+struct pair {first second} ;
+
+def pair::__type_check__ {value inner self,
+    value.first  inner.[0] :@
+    value.second inner.[1] :@
+    &
+}
+
+.# Basic pair return type - no generic parameters
+{-> _::pair, 1 2 pair!}:f;
+[f] [1 2 pair!] :!
+
+{-> _::pair, "a" 'b pair!}:f;
+[f] ["a" 'b pair!] :!
+
+.# Pair with two generic parameters - both numbers
+{-> _::[num num]pair, 1 2 pair!}:f;
+[f] [1 2 pair!] :!
+
+.# Pair with two generic parameters - number and string
+{-> _::[num str]pair, 5 "hello" pair!}:f;
+[f] [5 "hello" pair!] :!
+
+.# Pair with two generic parameters - string and char
+{-> _::[str char]pair, "test" 'x pair!}:f;
+[f] ["test" 'x pair!] :!
+
+.# Pair with complex generic parameters - lists
+{-> _::[[num]list [str]list]pair, [1 2 3] ["a" "b"] pair!}:f;
+[f] [[1 2 3] ["a" "b"] pair!] :!
+
+.# Multiple pair return types
+{-> _::pair _::[num str]pair, 1 2 pair! 5 "test" pair!}:f;
+[f] [1 2 pair! 5 "test" pair!] :!
+
+.# Pair in containers
+{-> _::[pair]list, [1 2 pair! "a" 'b pair!]}:f;
+[f] [[1 2 pair! "a" 'b pair!]] :!
+
+{-> _::[[num str]pair]list, [1 "a" pair! 2 "b" pair!]}:f;
+[f] [[1 "a" pair! 2 "b" pair!]] :!
+
+.# Pair in unions
+{flag::num -> _::[pair num]union, flag {1 2 pair!} {42} .?}:f;
+[1 f] [1 2 pair!] :!
+[0 f] [42] :!
+
+.# Negative cases for pair
+.# Return wrong type instead of pair
+{-> _::pair, 42}:f;
+{ f } {err, err.msg "Expected type pair, received: 42"H} .K 1:!
+
+.# Return pair with wrong first type  
+{-> _::[num str]pair, "wrong" "second" pair!}:f;
+{ f } {err, err.msg "Expected type [num str]pairT, received:"H} .K 1:!
+
+.# Return pair with wrong second type
+{-> _::[num str]pair, 1 'x pair!}:f;
+{ f } {err, err.msg "Expected type [num str]pairT, received:"H} .K 1:!
+
+.# Return pair with both wrong types
+{-> _::[num str]pair, 'x 42 pair!}:f;
+{ f } {err, err.msg "Expected type [num str]pairT, received:"H} .K 1:!
+
+.#
+.# Combination tests
+.# 
+
+.# User types with built-in container types
+{-> _::[point]list _::[pair]dict, [1 2 point! 3 4 point!] :{1 2 pair!:a "a" 'b pair!:b}}:f;
+[f] [[1 2 point! 3 4 point!] :{1 2 pair!:a "a" 'b pair!:b}] :!
+
+.# Generic user types with built-in container types
+{-> _::[[num]point]list _::[[str char]pair]dict, [1 2 point! 3 4 point!] :{"hello" 'x pair!:test}}:f;
+[f] [[1 2 point! 3 4 point!] :{"hello" 'x pair!:test}] :!
+
+.# User types in unions with built-in types
+{flag::num -> _::[point [num]list]union, flag {1 2 point!} {[1 2 3]} .?}:f;
+[1 f] [1 2 point!] :!
+[0 f] [[1 2 3]] :!
+
+.# Complex nested combinations - list of pairs containing points
+{-> _::[[[num]point [str]point]pair]list, [1 2 point! "a" "b" point! pair! 3 4 point! "c" "d" point! pair!]}:f;
+[f] [[1 2 point! "a" "b" point! pair! 3 4 point! "c" "d" point! pair!]] :!
+
+.# Inheritance with containers and generics
+{-> _::[[base]list derived]pair, [base! derived!] derived! pair!}:f;
+[f] [[base! derived!] derived! pair!] :!
+
+.# Multiple user types with different generic parameters
+{-> _::[num]point _::[str char]pair _::base, 1 2 point! "test" 'x pair! derived!}:f;
+[f] [1 2 point! "test" 'x pair! derived!] :!
+
+.# Very complex nesting - dict of lists of pairs of points
+{-> _::[[[[num]point [str]point]pair]list]dict, :{[1 2 point! "a" "b" point! pair!]:group_a [3 4 point! "c" "d" point! pair!]:group_b}}:f;
+[f] [:{[1 2 point! "a" "b" point! pair!]:group_a [3 4 point! "c" "d" point! pair!]:group_b}] :!
+
+.# Negative combination cases
+.# Wrong user type in container
+{-> _::[point]list, [1 2 pair!]}:f;
+{ f } {err, err.msg "Expected type [point]listT, received: ["H} .K 1:!
+
+.# Wrong generic parameter in nested user types
+{-> _::[[num]point [num]point]pair, 1 2 point! "a" "b" point! pair!}:f;
+{ f } {err, err.msg "Expected type [[num]pointT [num]pointT]pairT, received:"H} .K 1:!
+
+.# Inheritance violation in containers
+{-> _::[derived]list, [base!]}:f;
+{ f } {err, err.msg "Expected type [derived]listT, received:"H} .K 1:!
+
+.# Mixed user and built-in type errors
+{-> _::[point num]union, "string"}:f;
+{ f } {err, err.msg "Expected type [point num]unionT, received: \"string\""H} .K 1:!
+
+.# Complex nested error - wrong inner type deep in structure
+{-> _::[[[[num]point]list]dict]list, [:{["a" "b" point!]:a}]}:f;
+{ f } {err, err.msg "Expected type [[[[num]pointT]listT]dictT]listT, received:"H} .K 1:!

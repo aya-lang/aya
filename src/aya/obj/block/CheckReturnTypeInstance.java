@@ -28,16 +28,16 @@ public class CheckReturnTypeInstance {
 		final Stack<Obj> stk = blockEvaluator.getStack();
 		for (int i = 0; i < _items.size(); i++) {
 			if (!TypeUtils.isInstance(stk.get(start_stack_size + i), _items.get(i).second(), blockEvaluator.getContext())) {
-				typeErr(_items.get(i).second(), _items.get(i).third());
+				typeErr(stk.get(start_stack_size + i), _items.get(i).second());
 			}
 		}
 	}
 	
-	private static void typeErr(Obj value, StaticBlock type_block) throws TypeError {
+	private static void typeErr(Obj value, Dict type) throws TypeError {
 		ReprStream msg = new ReprStream();
 		msg.setTight(true);
 		msg.print("Expected type ");
-		type_block.repr(msg);
+		type.repr(msg);
 		msg.print(", received: ");
 		msg.setTight(false);
 		value.repr(msg);
@@ -60,7 +60,7 @@ public class CheckReturnTypeInstance {
 			
 			// Create the error message
 			ReprStream msg = new ReprStream();
-			msg.print("Error when checking return types in { ... -> ");
+			msg.print("Error when checking return types in {... -> ");
 			repr(msg);
 			msg.println(", ...}");
 			msg.println("Function returned " + (current_size - expected_size) + " additional value(s):");
@@ -76,7 +76,7 @@ public class CheckReturnTypeInstance {
 			
 			// Create error message
 			ReprStream msg = new ReprStream();
-			msg.print("Error when checking return types in { ... -> ");
+			msg.print("Error when checking return types in {... -> ");
 			repr(msg);
 			msg.println(", ...}");
 			msg.println("Function missing return values. Expected stack size is " + expected_size + ". Current stack size is " + current_size);

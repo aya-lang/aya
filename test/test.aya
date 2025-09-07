@@ -39,6 +39,7 @@
 "test/misc" load_test
 "test/test_op_overload" load_test
 "test/types" load_test
+"test/return_types" load_test
 
 .# Base
 "test/base/test_sym" load_test
