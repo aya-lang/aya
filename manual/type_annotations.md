@@ -60,6 +60,8 @@ Type error at argument: l::list
         Received: 3
 ```
 
+## Return Types
+
 Return types can be specified after a `->`
 
 ```
@@ -95,6 +97,59 @@ aya> {->, "Hello world!":P }:f
 {-> , "Hello world!" :P}
 aya> f
 Hello world!
+```
+
+**Important**: Return types are not checked for anonymous functions. For performance reasons, the checker relies on the call stack to take snapshots of the stack when a function is called. A new call stack frame is created only when a name is dereferenced.
+
+```
+.# Anon function, return type is not checked
+aya> {->::num, "A"} ~
+"A"
+
+.# Named function, return type is checked
+aya> {->::num, "A"}:f
+{-> ::num , "A"}
+aya> f
+Expected type num, received: "A"
+Function call traceback:
+```
+
+Note that argument types are always checked:
+
+```
+aya> 1 {a::str, } ~
+Type error at argument: a::str
+        Expected type: str
+        Received: 1
+```
+
+## Argument and Return Type Names
+
+Return types may be given an optional name. The name is for documentation only, it has no effect on the runtime
+
+```
+{a::list b::num -> value_out::num,
+    ...
+}
+```
+
+Note that the same parsing rule is used for arguments so they may be provided with or without names as well. By default a missing name will be changed to the name `_`. 
+
+```
+aya> {::num, _ 2 *} :double
+{_::num, _ 2 *}
+aya> 3 double
+6
+```
+
+Practically speaking, since argument names must be unique, only one missing name is permitted
+
+
+```
+aya> {::num ::str, } 
+Syntax Error: Duplicate variable name
+{::num ::str, } 
+~~~~~~~~~~~^
 ```
 
 
