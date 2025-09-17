@@ -85,7 +85,7 @@ public class DictLiteralInstruction extends Instruction {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(":");
-		BlockUtils.repr(stream, _block, true, null);
+		BlockUtils.repr(stream, _block, true, null, null);
 		return stream;
 	}
 }

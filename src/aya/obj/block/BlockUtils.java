@@ -57,17 +57,23 @@ public class BlockUtils {
 		}
 	}
 	
-	public static StaticBlock mergeLocals(StaticBlock block, Dict locals) {
+	public static StaticBlock mergeLocals(StaticBlock block, Dict locals, Symbol self_reference) {
 		Dict new_locals = copyLocals(block);
 		new_locals.update(locals);
-		return new StaticBlock(block.getInstructions(), new_locals, block.getArgs());
+		var out = new StaticBlock(block.getInstructions(), new_locals, block.getArgs());
+		if (self_reference != null) {
+			new_locals.set(self_reference, out);
+		}
+		return out;
+
 	}
 
 	/** If print_braces is true, return "{instructions}" else just "instructions" */
 	public static ReprStream repr(ReprStream stream,
 			               StaticBlock block,
 			               boolean print_braces,
-			               HashMap<Symbol, StaticBlock> defaults) {
+			               HashMap<Symbol, StaticBlock> defaults,
+			               Symbol self_reference) {
 
 		if (stream.visit(block)) {
 			if (print_braces) stream.print("{");
@@ -97,11 +103,13 @@ public class BlockUtils {
 				block.getReturnTypeCheck().repr(stream);
 			}
 			
+			boolean printed_colon = false;
 			if (locals != null) {
 				print_comma = true;
 				// Non-arg locals
 				if (locals.size() != 0) {
 					stream.print(":");
+					printed_colon = true;
 					if (!stream.isTight()) stream.print(" ");
 				
 					// Print locals
@@ -110,6 +118,7 @@ public class BlockUtils {
 						stream.print("(");
 						locals.get(key).repr(stream);
 						stream.print(")");
+						if (!stream.isTight()) stream.print(" ");
 					}
 				}
 				
@@ -118,7 +127,7 @@ public class BlockUtils {
 				if (defaults != null) {
 					for (Symbol v : defaults.keySet()) {
 						stream.print(v.name() + "(");
-						repr(stream, defaults.get(v), false, null);
+						repr(stream, defaults.get(v), false, null, null);
 						stream.print(")");
 						if (!stream.isTight()) stream.print(" ");
 					}
@@ -126,6 +135,15 @@ public class BlockUtils {
 
 				// Trim off the final space
 				stream.delTrailingSpaces();
+			}
+			
+			if (self_reference != null) {
+				print_comma = true;
+				if (!printed_colon) {
+					stream.print(": ");
+				}
+				stream.print(self_reference.name());
+				stream.print("*");
 			}
 			
 			if (print_comma) {
@@ -153,7 +171,7 @@ public class BlockUtils {
 	public static ReprStream repr(ReprStream stream,
 			               StaticBlock block,
 			               boolean print_braces) {
-		return repr(stream, block, print_braces, null);
+		return repr(stream, block, print_braces, null, null);
 	}
 	
 	public static StaticBlock makeBlockWithSingleInstruction(Instruction i) {
@@ -382,6 +400,11 @@ public class BlockUtils {
 			// Nothing has type info, just return the block
 			return block;
 		}
+	}
+
+	public static StaticBlock addSelfReference(StaticBlock blk) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

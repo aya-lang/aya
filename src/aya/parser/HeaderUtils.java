@@ -12,6 +12,7 @@ import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
+import aya.instruction.op.Ops;
 import aya.instruction.variable.QuoteGetVariableInstruction;
 import aya.instruction.variable.assignment.Assignment;
 import aya.instruction.variable.assignment.CopyAssignment;
@@ -42,13 +43,15 @@ public class HeaderUtils {
 		public Dict locals;
 		public HashMap<Symbol, StaticBlock> captures;
 		public CheckReturnTypeGenerator ret_types;
+		public Symbol self_reference;
 		
 		public HeaderInfo(ArrayList<Assignment> args, Dict locals, HashMap<Symbol, StaticBlock> captures,
-				CheckReturnTypeGenerator ret_types) {
+				CheckReturnTypeGenerator ret_types, Symbol self_reference) {
 			this.args = args;
 			this.locals = locals;
 			this.captures = captures;
 			this.ret_types = ret_types;
+			this.self_reference = self_reference;
 			
 		}
 	}
@@ -76,16 +79,17 @@ public class HeaderUtils {
 		}
 
 		// Locals & Captures
-		Pair<Dict, HashMap<Symbol, StaticBlock>> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);
+		Triple<Dict, HashMap<Symbol, StaticBlock>, Symbol> locals_and_captures = generateBlockHeaderDefaults(locals_and_captures_tokens, names);
 		Dict locals = locals_and_captures.first();
 		HashMap<Symbol, StaticBlock> captures = locals_and_captures.second();
+		Symbol self_reference = locals_and_captures.third();
 				
 		// Null checks
 		if (args.size() == 0) args = null;
 		if (locals.size() == 0) locals = null;
 		if (captures.size() == 0) captures = null;
 		
-		return new HeaderInfo(args, locals, captures, ret_types);
+		return new HeaderInfo(args, locals, captures, ret_types, self_reference);
 	}
 	
 
@@ -312,9 +316,10 @@ public class HeaderUtils {
 	 * @param existing_names 
 	 * @param captures 
 	 * @throws ParserException */
-	private static Pair<Dict, HashMap<Symbol, StaticBlock>> generateBlockHeaderDefaults(TokenQueue tokens, HashSet<Symbol> existing_names) throws ParserException {
+	private static Triple<Dict, HashMap<Symbol, StaticBlock>, Symbol> generateBlockHeaderDefaults(TokenQueue tokens, HashSet<Symbol> existing_names) throws ParserException {
 		Dict locals = new Dict();
 		HashMap<Symbol, StaticBlock> captures = new HashMap<Symbol, StaticBlock>();
+		Symbol self_reference = null;
 
 		while (tokens.hasNext()) {
 			Token current = tokens.next();
@@ -337,9 +342,25 @@ public class HeaderUtils {
 						Symbol name = var.getSymbol();
 						checkDuplicate(existing_names, name, var.getSourceStringRef());
 						captures.put(name, b);
+					} else if (opt.getData().equals("*")) {
+						// Null check: only one self reference name is permitted
+						if (self_reference == null) {
+							self_reference = var.getSymbol();
+						} else {
+							generateBlockHeaderDefaultsError(current.getSourceStringRef());
+						}
 					} else {
 						generateBlockHeaderDefaultsError(current.getSourceStringRef());
 					}
+				} else {
+					generateBlockHeaderDefaultsError(current.getSourceStringRef());
+				}
+			}
+			// Anonymous self reference defaults to the name `f`
+			else if (current.isa(Token.OP) && ((OperatorToken)current).getData().equals("*")) {
+				// Null check: only one self reference name is permitted
+				if (self_reference == null) {
+					self_reference = SymbolConstants.F;
 				} else {
 					generateBlockHeaderDefaultsError(current.getSourceStringRef());
 				}
@@ -348,7 +369,7 @@ public class HeaderUtils {
 			}
 		}
 		
-		return new Pair<Dict, HashMap<Symbol, StaticBlock>>(locals, captures);
+		return new Triple<Dict, HashMap<Symbol, StaticBlock>, Symbol>(locals, captures, self_reference);
 	}
 	
 	private static void generateBlockHeaderDefaultsError(SourceStringRef source) throws SyntaxError {
@@ -393,8 +414,17 @@ public class HeaderUtils {
 	private static Pair<TokenQueue, TokenQueue> splitAtColon(TokenQueue tokens) throws SyntaxError {
 		ArrayList<Token> ts = tokens.getArrayList();
 		for (int i = 0; i < ts.size(); i++) {
-			if (ts.get(i).isa(Token.COLON)) {
+			var t = ts.get(i);
+			if (t.isa(Token.COLON)) {
 				return splitAtIndex(tokens, i);
+			}
+			// Special case if the function self reference is the first item and there is no space, it will be
+			//    parsed as the operator `:*` instead of `: *`, we check for that here and split them up
+			else if (t.isa(Token.OP) && ((OperatorToken)t).getOpType() == OperatorToken.COLON_OP && ((OperatorToken)t).getData().equals("*")) {
+				var o = tokens.getArrayList().get(i);
+				var pair = splitAtIndex(tokens, i);
+				pair.second().addFront(new OperatorToken("*", OperatorToken.STD_OP, o.getSourceStringRef()));
+				return pair;
 			}
 		}
 		return new Pair<TokenQueue, TokenQueue>(tokens, new TokenQueue());		

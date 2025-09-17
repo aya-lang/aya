@@ -112,12 +112,12 @@ public class StaticBlock extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		return BlockUtils.repr(stream, this, true, null);
+		return BlockUtils.repr(stream, this, true, null, null);
 	}
 
 	@Override
 	public String str() {
-		return BlockUtils.repr(new ReprStream(), this, true, null).toStringOneline();
+		return BlockUtils.repr(new ReprStream(), this, true, null, null).toStringOneline();
 	}
 
 	@Override
