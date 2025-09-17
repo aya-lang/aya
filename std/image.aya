@@ -36,3 +36,27 @@ def image::pixels_rgb {self,
 def image::channels {self,
     [self.r self.g self.b self.a]
 }
+
+def image::channels_rgb {self,
+    [self.r self.g self.b]
+}
+
+def image::set_channels_rgb {[r g b] self,
+    [::r ::g ::b] :# {k,
+        self.[k] E k~ E = {
+            k~ self.:[k];
+        } {
+            "Length incorrect" .D
+        } .?
+    };
+}
+
+def image::set_channels {[r g b a] self,
+    [::r ::g ::b ::a] :# {k,
+        self.[k] E k~ E = {
+            k~ self.:[k];
+        } {
+            "Length incorrect" .D
+        } .?
+    };
+}

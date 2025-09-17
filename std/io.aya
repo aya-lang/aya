@@ -9,6 +9,8 @@ class path
             dir
         }
         (dir str :@) {
+            dir :(sys.resolvehome) :dir;
+
             .# If direct path
             dir meta._isabs ! {
                 0 :absolute_path;
