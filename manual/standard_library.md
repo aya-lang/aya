@@ -232,30 +232,6 @@ Library for reading and writing json
 
 The `math` library provides many math functions
 
-### `matrix`
-
-The `matrix` library provides a basic interface and operator overloads for working with matrices.
-
-```
-aya> 3 3 10 matrix.randint :mat
-|  7  8  2 |
-|  8  7  3 |
-|  8  4  4 |
-
-aya> mat [[0 1] 0] I
-|  7 |
-|  8 |
-
-aya> mat [[0 1] 0] I .t
-|  7  8 |
-
-aya> mat 2 ^ 100 -
-|   29   20  -54 |
-|   36   25  -51 |
-|   20    8  -56 |
-
-```
-
 ### `missing`
 
 Provides the `missing` type for working with missing data

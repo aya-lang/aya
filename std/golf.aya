@@ -100,9 +100,6 @@
     list.irange.` list.:i;
 }
 
-matrix.matrix.rotate_cols.` matrix.matrix.:n;
-matrix.matrix.rotate_rows.` matrix.matrix.:z;
-
 .# Single letter variables
 
 1:a;
@@ -117,7 +114,7 @@ dataframe:f;
 .#:j;
 1000:k;
 {[]}:l;
-matrix:m;
+.#:m;
 '\n':n;
 .#:o;
 :0c :p;
