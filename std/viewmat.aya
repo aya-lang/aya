@@ -1,10 +1,6 @@
 require canvas {canvas}
-require matrix {matrix}
 
-def ::draw_scaled { data scale : cvs canvas^ matrix^,
-    .# special case for matrix
-    data matrix :@ {data.rows :data;} ?
-
+def ::draw_scaled { data scale : cvs canvas^,
     :{
         data E :height;
         data.[0] E :width;
@@ -17,10 +13,7 @@ def ::draw_scaled { data scale : cvs canvas^ matrix^,
     cvs
 }
 
-def ::draw { data : width height scale size draw_scaled^ matrix^,
-    .# special case for matrix
-    data matrix :@ {data.rows :data;} ?
-
+def ::draw { data : width height scale size draw_scaled^,
     data E :height;
     data.[0] E :width;
     width height .< :size;
