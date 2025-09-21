@@ -154,7 +154,7 @@ def canvas::wait {self,
 }
 
 def canvas::draw_image {x::num y::num img::image self, 
-    x y img cvs.id :(graphics.drawimage)
+    x y img self.id :(graphics.drawimage)
 }
 
 def canvas::move_events {self,
