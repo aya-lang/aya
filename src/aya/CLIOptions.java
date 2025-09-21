@@ -3,6 +3,7 @@ package aya;
 import java.io.File;
 
 import aya.util.FileUtils;
+import aya.util.Pair;
 
 public class CLIOptions {
 		public static final String HELP_TEXT = "aya " + StaticData.VERSION_NAME + "\n"
@@ -14,11 +15,18 @@ public class CLIOptions {
 				+ "    Open a command line REPL\n"
 				+ "  aya <workingDir> <filename>\n"
 				+ "    Run the file and exit\n"
+				+ "  aya <workingDit> pkg <command> <option>\n"
+				+ "    CLI interface to the package manager. Runs \"import pkg <option> pkg.[<command>]\"\n"
+				+ "    Examples:\n"
+				+ "      aya pkg add aya-lang/sample.aya\n"
+				+ "      aya pkg remove sample.aya\n"
+				+ "      aya pkg.run sample\n"
 				+ "  aya <workingDir> -<flags> <option1>\n"
-				+ "    g: Import std/golf and bring all variables into scope\n"
+				+ "    c: Check the file for syntax errors, then exit\n"
 				+ "    e: Run the expression given by <option1>\n"
-				+ "    p: Run the package name given by <opion1>\n"
+				+ "    g: Import std/golf and bring all variables into scope\n"
 				+ "    i: Enter the REPL after finishing CLI tasks\n"
+				+ "    p: Run the package name given by <opion1>\n"
 				+ "    r: Disable argument type checking\n"
 				+ "    x: Launch the GUI\n"
 				+ "    If <option1> is an aya source file, run it\n"
@@ -37,6 +45,11 @@ public class CLIOptions {
 		public static final int SPECIAL_MODE_PRINT_HELP = 1; // Print help text and exit
 		public static final int SPECIAL_MODE_PRINT_VERSION = 2; // Print help text and exit
 		public static final int SPECIAL_MODE_CHECK= 3; // Check the file then exit
+		public static final int SPECIAL_MODE_PKG= 4; // Package manager interface
+		
+		// Store the args
+		String[] args = null;
+
 		
 		// Options
 		
@@ -62,6 +75,7 @@ public class CLIOptions {
 		
 		public static CLIOptions parse(String[] args, String pipedInput) throws RuntimeException {
 			CLIOptions options = new CLIOptions();
+			options.args = args;
 			
 			// Special case for double clicking the jar icon: Just launch the GUI
 			if (args.length == 0) {
@@ -89,6 +103,8 @@ public class CLIOptions {
 					options.specialMode = SPECIAL_MODE_PRINT_HELP;
 				} else if (arg.equals("--version")) {
 					options.specialMode = SPECIAL_MODE_PRINT_VERSION;
+				} else if (arg.equals("pkg")) {
+					options.specialMode = SPECIAL_MODE_PKG;
 				} else {
 					// aya <file>.aya
 					if (arg.endsWith(".aya")) {
@@ -162,6 +178,25 @@ public class CLIOptions {
 		
 		public boolean hasFileToRun() {
 			return this.fileToRun != null;
+		}
+		
+		/**
+		 * 
+		 * @return (command_name, command_arg (optional))
+		 */
+		public Pair<String, String> getPkgArgs() {
+			String commandName = null;
+			String commandArg = null;
+			if (args.length >= 3) {
+				commandName = args[2];
+			} else {
+				throw new RuntimeException("Error: No pkg arguments provided");
+			}
+			if (args.length >= 4) {
+				commandArg = args[3];
+			}
+			
+			return new Pair<String, String>(commandName, commandArg);
 		}
 	}
 	

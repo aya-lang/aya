@@ -167,6 +167,10 @@ Package manager for aya
     _install^ _list_package_metadata^ _load_source_data^
     allow_replace(1),
 
+    name ".aya" H! {
+        name ".aya" + :name;
+    } ?
+
     _list_package_metadata local :md;
     md name H {
         .# Get the URL to the zip file
@@ -217,9 +221,15 @@ Package manager for aya
     _load_source_data^ _save_source_data^,
 
     _list_package_metadata local :md;
+
+    name ".aya" H! {
+        name ".aya" + :name;
+    } ?
+
     md name H {
         _load_source_data name .- _save_source_data
         get_pkg_dir name :(sys.joinpath) :(sys.rm)
+        "Package removed: $name" :P
     } {
         "Package $name does not exist. Nothing to remove" :P
     } .?

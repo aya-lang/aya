@@ -426,52 +426,62 @@ public class AyaIDE extends JFrame
 		}
 		
 		InteractiveAya iaya = InteractiveAya.createInteractiveSession(options.workingDir);
-
 		
-		if (options.autoImportGolf) {
-			iaya.compileAndQueueSystemInput("<system>", "require golf *");
-		}
-		
-		if (options.expressionToRun != null) {
-			iaya.compileAndQueueSystemInput("-e", options.expressionToRun);
-		}
-		
-		if (options.packageToRun != null) {
-			iaya.compileAndQueueSystemInput("-p", "import pkg");
-			iaya.compileAndQueueSystemInput("-p", "\"\"\"" + options.packageToRun + "\"\"\" pkg.run");
-		}
-		
-		if (pipedInput != null) {
-			iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
-		}
-
-		if (options.hasFileToRun()) {
-			String pathString = options.getFileToRun().getPath().toString().replace("\\", "\\\\");
-			iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
-		}
-
-
-		if (options.mode == CLIOptions.MODE_EXIT) {
+		if (options.specialMode == CLIOptions.SPECIAL_MODE_PKG) {
+			var opts = options.getPkgArgs();
+			iaya.compileAndQueueSystemInput("pkg", "import pkg");
+			if (opts.second() != null) {
+				iaya.compileAndQueueSystemInput("pkg", "\"" + opts.second() + "\" pkg." + opts.first());
+			} else {
+				iaya.compileAndQueueSystemInput("pkg", "pkg." + opts.first());
+			}
 			iaya.setInteractive(false); // Exit once complete
-		} else if (options.mode == CLIOptions.MODE_REPL) {
-			iaya.setInteractive(true);
-		} else if (options.mode == CLIOptions.MODE_GUI) {
-			iaya.setInteractive(true);
+		} else {
+			if (options.autoImportGolf) {
+				iaya.compileAndQueueSystemInput("<system>", "require golf *");
+			}
 			
-			//Load and initialize the ide
-			AyaIDE ide = new AyaIDE(iaya.getMainThread());
-
-			// Redirect IO to GUI
-			StaticData.IO.setOut(ide.getOutputStream());
-			StaticData.IO.setErr(ide.getOutputStream());
-			StaticData.IO.setIn(ide.getInputStream(), new ScannerInputWrapper(ide.getInputStream()));
-
-			// InteractiveAya Prefs
-			iaya.setPromptText(false);
-			iaya.setEcho(true);
-
-			//Grab focus
-			ide._interpreter.getInputLine().grabFocus();
+			if (options.expressionToRun != null) {
+				iaya.compileAndQueueSystemInput("-e", options.expressionToRun);
+			}
+			
+			if (options.packageToRun != null) {
+				iaya.compileAndQueueSystemInput("-p", "import pkg");
+				iaya.compileAndQueueSystemInput("-p", "\"\"\"" + options.packageToRun + "\"\"\" pkg.run");
+			}
+			
+			if (pipedInput != null) {
+				iaya.compileAndQueueSystemInput("<stdin>", pipedInput);
+			}
+	
+			if (options.hasFileToRun()) {
+				String pathString = options.getFileToRun().getPath().toString().replace("\\", "\\\\");
+				iaya.compileAndQueueSystemInput("<ayarc loader>", "\"\"\"" + pathString + "\"\"\" :F");
+			}
+	
+	
+			if (options.mode == CLIOptions.MODE_EXIT) {
+				iaya.setInteractive(false); // Exit once complete
+			} else if (options.mode == CLIOptions.MODE_REPL) {
+				iaya.setInteractive(true);
+			} else if (options.mode == CLIOptions.MODE_GUI) {
+				iaya.setInteractive(true);
+				
+				//Load and initialize the ide
+				AyaIDE ide = new AyaIDE(iaya.getMainThread());
+	
+				// Redirect IO to GUI
+				StaticData.IO.setOut(ide.getOutputStream());
+				StaticData.IO.setErr(ide.getOutputStream());
+				StaticData.IO.setIn(ide.getInputStream(), new ScannerInputWrapper(ide.getInputStream()));
+	
+				// InteractiveAya Prefs
+				iaya.setPromptText(false);
+				iaya.setEcho(true);
+	
+				//Grab focus
+				ide._interpreter.getInputLine().grabFocus();
+			}
 		}
 
 

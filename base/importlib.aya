@@ -29,8 +29,8 @@ Use `sample.foo` & `sample.bar` to access imported names
     - import ".relative.aya" (extension optional, no extension preferred)
     - import ".src/relative.aya"
 
-  - Package imports: If the import points to a directory, it will look for <path>/__pkg__.aya
-    - import "src/package" (assumes src/package/__pkg__.aya exists)
+  - Package imports: If the import points to a directory, it will look for <path>/init.aya
+    - import "src/package" (assumes src/package/init.aya exists)
 
   - Identifier imports: Itentifiers will be converted to strings before importing
     - import example (same as import "example")
@@ -134,8 +134,8 @@ def importlib::import {__name::str : __path importlib^,
         .# Get the name of the identifier to assign to
         __path importlib._filename_no_extension .# str
 
-        :& "__pkg__" = {
-            ; .# pop "__pkg__"
+        :& "init" = {
+            ; .# pop "init"
             .# replace it with the package name
             __path :(sys.parent) importlib._filename_no_extension
         } ?
@@ -248,7 +248,7 @@ def importlib::_endswith { :& E@\.>= }
 .#      - ".relative"
 .#      - ".relative.aya"
 .#      - ".src/relative.aya"
-.#      - "src/package" (assumes src/package/__pkg__.aya exists
+.#      - "src/package" (assumes src/package/init.aya exists
 .#
 .# If a name has a leading "." resolve it to a path relative
 .#   to the file currently being imported (not relative to the
@@ -257,7 +257,7 @@ def importlib::_endswith { :& E@\.>= }
 .# Check the following three files:
 .#   - "_path/<name>" (an exact match)
 .#   - "_path/<name>.aya" (append aya file extension)
-.#   - "_path/<name>/__pkg__.aya" (package path)
+.#   - "_path/<name>/init.aya" (package path)
 .# 
 .# Return the absolute path that was found. Only one path is returned
 def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ files_to_check valid_paths,
@@ -282,8 +282,8 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
         [
             rel_path
             rel_path ".aya" +
-            rel_path "__pkg__.aya" importlib._join_path
-            rel_path ".aya" + "__pkg__.aya" importlib._join_path
+            rel_path "init.aya" importlib._join_path
+            rel_path ".aya" + "init.aya" importlib._join_path
         ] :files_to_check;
 
     } {
@@ -292,8 +292,8 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
             path_entry name importlib._join_path :path_entry;
             path_entry .# regular name
             path_entry ".aya" + .# name.aya
-            path_entry "__pkg__.aya" importlib._join_path .# package
-            path_entry ".aya" + "__pkg__.aya" importlib._join_path .# .aya package
+            path_entry "init.aya" importlib._join_path .# package
+            path_entry ".aya" + "init.aya" importlib._join_path .# .aya package
         } :files_to_check;
     } .?
 
