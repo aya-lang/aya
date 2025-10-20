@@ -85,17 +85,7 @@ aya> "I saw $jane the other day"
 
 ### Operator Overloading
 
-Many operators can be overloaded for user types. Type `\? overloadable` in the repl for a full list. Many of the standard libraries use this feature to seamlessly integrate with the base library. For example, the matrix library uses it for all math operators:
-
-```
-aya> import ::matrix
-aya> [[1 2][3 4]] matrix! :m
-[[ 1 2 ]
- [ 3 4 ]] 
-aya> m 10 + 2 /
-[[ 5.5 6 ]
- [ 6.5 7 ]] 
-```
+Many operators can be overloaded for user types. Type `\? overloadable` in the repl for a full list. Many of the standard libraries use this feature to seamlessly integrate with the base library. 
 
 It is especially useful when writing libraries for code golf. The `asciiart` library uses it to create specialized operators on it's custom string type. Here is a 13 character function for creating a size `N` serpinski triangle:
 

@@ -1,0 +1,269 @@
+def ::make_transposable {data::list pad_element : num_cols,
+    data # `E `.< % :num_cols;
+
+    data # {row,
+        row (pad_element (num_cols row E -) L) :J ;
+    };
+}
+
+.{?
+    Pads a string to a desired width
+    IN:
+        text::str  - the text that will be padded
+        width::num - the width to pad to
+        mode::num  - how to position the padded text:
+            left: -1 (or less)
+            center: 0
+            right: 1 (or more)
+        pad_char::char - character used for padding
+    OUT:
+        ::str - the padded text
+.}
+def ::pad_str {text::str width::num mode::num pad_char::char,
+    text E width :> {
+        text
+    }{
+        mode 0 < {
+            text
+            pad_char width text E - L
+            +
+        }{
+            mode 0 > {
+                pad_char width text E - L
+                text
+                +
+            }{
+                pad_char width text E - 2 .% L
+                text
+                pad_char width text E - :& 2 .% - L
+                ++
+            }.?
+        }.?
+    }.?
+}
+
+.{? type: asciitable
+    Presents 2D data as an Ascii Table.
+
+    :{} asciitable! :table;
+    ["foo" "bar"] table.add_header
+    table.add_row_sep
+    [ [ 3.R :{} ] "xy" ] table.add_rows
+    table :P
+      > |    foo    | bar |
+      > |-----------|-----|
+      > | [ 0 1 2 ] | :{} |
+      > | x         | y   |
+.}
+class asciitable
+
+def asciitable::__init__ {options::dict self,
+    :{
+        ' :pad_char;		.# padding character in table cells
+        '|:col_sep;			.# separator char between columns
+
+        .# header options
+        '=:header_sep;		.# separator char for header row
+        0:header_align;		.# how to position header text (-1=left, 0:center, 1=right)
+
+        .# row options
+        '-:row_sep;			.# separator char between rows
+        -1:row_align;		.# how to position row text (-1=left, 0:center, 1=right)
+
+        .# border options
+        0:border_top;		.# char to use for top border, or 0 to disable
+        0:border_bottom;    .# char to use for top border, or 0 to disable
+        '|:border_left;		.# char to use for left border, or 0 to disable
+        '|:border_right;	.# char to use for left border, or 0 to disable
+    }
+    options .+ self.:options; .# merge with user-defined
+
+    :{} self.:column_align; .# stores columns that should be aligned differently (key=col_idx, value=mode)
+
+    :{} self.:subtable_by_column; .# allow user to define columns that contain multiple values
+
+    [] self.:rows; .# start empty
+}
+
+.# remove all rows from this table
+def asciitable::clear {self,
+    [] self.:rows;
+}
+
+.# make all columns use the default alignment again
+def asciitable::reset_align {self,
+    :{} self.:column_align;
+}
+
+.# adds a 1D list as a header row
+def asciitable::add_header {header::list self,
+    :{
+        'h:type;
+        header:data;
+    } self.rows .B ;
+}
+
+.# adds a 2D list as multiple header rows
+def asciitable::add_headers {headers::list self,
+    self.rows headers # {header,
+        :{
+            'h:type;
+            header:data;
+        }
+    } :J ;
+}
+
+def asciitable::add_header_sep {self,
+    :{ 'H:type; } self.rows .B ;
+}
+
+.# adds a 1D list as a row
+def asciitable::add_row {row::list self,
+    :{
+        'r:type;
+        row:data;
+    } self.rows .B ;
+}
+
+.# adds a 2D list as multiple rows
+def asciitable::add_rows {rows::list self,
+    self.rows rows # {row,
+        :{
+            'r:type;
+            row:data;
+        }
+    } :J ;
+}
+
+def asciitable::add_row_sep {self,
+    :{ 'R:type; } self.rows .B ;
+}
+
+.# apply a custom alignment for a single column.
+def asciitable::set_col_align {col_idx align_mode self,
+    align_mode self.column_align.:[col_idx P] ;
+}
+
+.# make a column a subtable.
+def asciitable::set_col_subtable {col_idx options::dict self : asciitable^,
+    self.options $\; options .+ asciitable! self.subtable_by_column.:[col_idx P] ;
+}
+
+.# modify rows such that each ::list in a subtable-column is replaced with the rendered ::str
+def asciitable::_render_subtables {rows self : subtable_cells_by_column list^,
+    self.subtable_by_column :K E 0 > {
+        self.subtable_by_column :V # {subtable, subtable.clear} ;
+    
+        .# write ::list cells into their subtables
+        rows # {row,
+            {
+                (row.type 'h =) {
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
+                        row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_header
+                    };
+                }
+                (row.type 'r =) {
+                    row.data E .R {col_idx, self.subtable_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
+                        row.data.[col_idx] self.subtable_by_column.[col_idx P] .add_row
+                    };
+                }
+            }:?
+        };
+        
+        :{} :subtable_cells_by_column;
+        self.subtable_by_column :K # {col_sym,
+            0 self.subtable_by_column.[col_sym] ._get_repr_cells; subtable_cells_by_column.:[col_sym] ;
+        };
+        
+        .# write subtable cells back into the ::list cells of this table
+        rows {row, "hr" row.type H} I # {row,
+            row.data E .R {col_idx, subtable_cells_by_column col_idx P H} I {col_idx, row.data.[col_idx] list :@} I # {col_idx,
+                subtable_cells_by_column.[col_idx P] V\; row.data.:[col_idx] ;
+            };
+        };
+    }?
+}
+
+.# pad_left_right ::bool if true: apply left padding on leftmost cell and right padding on rightmost cell
+.# returns (cell_rows::list[::str] col_widths::list[::num])
+def asciitable::_get_repr_cells {pad_left_right self : rows col_sep row_data col_data col_widths formatters border_left_width make_transposable^ pad_str^,
+    .# take a deep-copy to avoid modifying the original data
+    self.rows $ :rows;;
+    rows self._render_subtables
+    rows {row, "hr" row.type H } I # {.data} :row_data;
+    row_data "" make_transposable
+
+    .# figure out how wide each column is
+    row_data # {row,
+        row # {cell,
+            cell P .lines # `E `.< %
+        }
+    } .T # {col, col `.< %} :col_widths;
+
+
+    " $(self.options.col_sep) " :col_sep; .# "wide" column separator for content rows ('h and 'r)
+    :{
+        {row,
+            row.data # {P.lines}
+            :& "" make_transposable .T
+            # {text_row, text_row E .R # {col_idx,
+                text_row.[col_idx]
+                col_widths.[col_idx]
+                self.options.header_align
+                self.options.pad_char
+                pad_str
+            } col_sep % pad_left_right {self.options.pad_char \.V self.options.pad_char \.B}? }~
+        }:"h"
+        {row,
+            col_widths 2+ # {width, self.options.header_sep width L} self.options.col_sep %
+        }:"H"
+        {row,
+            row.data # {P.lines}
+            :& "" make_transposable .T
+            # {text_row, text_row E .R # {col_idx,
+                text_row.[col_idx]
+                col_widths.[col_idx]
+                self.column_align col_idx P H { self.column_align.[col_idx P] }{ self.options.row_align }.?
+                self.options.pad_char
+                pad_str
+            } col_sep % pad_left_right {self.options.pad_char \.V self.options.pad_char \.B}? }~
+        }:"r"
+        {row,
+            col_widths 2+ # {width, self.options.row_sep width L} self.options.col_sep %
+        }:"R"
+    }:formatters;
+
+    .# convert row objects to row ascii lines
+    rows # {row,
+        row formatters.[row.type P]~
+    }
+    col_widths
+}
+
+def asciitable::__repr__ {self : col_widths,
+    1 self._get_repr_cells :col_widths;
+    .# ::list[::str] stack
+
+    .# apply borders if enabled
+    self.options.border_left 0 = ! {
+        self.options.border_left \+
+    }?
+    self.options.border_right 0 = ! {
+        self.options.border_right +
+    }?
+
+    self.options.border_left 0 = { 0 }{ self.options.border_left P E }.? :border_left_width;
+    self.options.border_top 0 = ! {
+        '  border_left_width L
+        col_widths 2+ # {width, self.options.border_top width L} self.options.col_sep %
+        + \.V .# insert first line
+    }?
+    self.options.border_bottom 0 = ! {
+        '  border_left_width L
+        col_widths 2+ # {width, self.options.border_bottom width L} self.options.col_sep %
+        + \.B .# insert last line
+    }?
+
+    .# join rows to str
+    "\n" %
+}

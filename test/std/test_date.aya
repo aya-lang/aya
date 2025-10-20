@@ -1,14 +1,10 @@
 require date {date dates}
 
-[
-
-    { "1707-04-15" date! .mmddyy  "04/15/07" }
-    { "1707-04-15" date! .mmddyyyy  "04/15/1707" }
-    { "1707-04-15" date! .timestr  "12:00 AM" }
-    { "1707-04-15" date! 2 dates.month + .month  "June" }
-    { "1707-04-15" date! 1 dates.day - .dayofmonth  14 }
-    { "1707-04-15" date! 100 dates.year + .year  1807 }
-    { "1707-04-15" date! 2 dates.hour + .hour  2 }
-    { "1707-04-15" date! 2 dates.minute + .min  2 }
-
-] :# { test.test }
+"1707-04-15" date! .mmddyy  "04/15/07" :!
+"1707-04-15" date! .mmddyyyy  "04/15/1707" :!
+"1707-04-15" date! .timestr  "12:00 AM" :!
+"1707-04-15" date! 2 dates.month + .month  "June" :!
+"1707-04-15" date! 1 dates.day - .dayofmonth  14 :!
+"1707-04-15" date! 100 dates.year + .year  1807 :!
+"1707-04-15" date! 2 dates.hour + .hour  2 :!
+"1707-04-15" date! 2 dates.minute + .min  2 :!

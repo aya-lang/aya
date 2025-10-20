@@ -44,3 +44,5 @@
 		:{ [0 0.9 1 1.1 2] 0.6 + :values  "group2" :group  "3" :entry}
 	] :data
 } :(plot.box_plot)
+
+"Press enter to continue" :P :R

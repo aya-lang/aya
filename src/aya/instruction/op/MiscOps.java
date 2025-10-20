@@ -8,8 +8,6 @@ import static aya.obj.Obj.NUMBER;
 import static aya.obj.Obj.STR;
 import static aya.util.Casting.asNumber;
 
-import java.util.ArrayList;
-
 import aya.StaticData;
 import aya.eval.BlockEvaluator;
 import aya.eval.ExecutionContext;
@@ -259,7 +257,7 @@ class OP_Help extends Operator {
 					items.mutAdd(List.fromString(a));
 				}
 			} else {
-				ArrayList<String> ss = StaticData.getInstance().getHelpData().staticSearch(s.str());
+				java.util.List<String> ss = StaticData.getInstance().getHelpData().staticSearch(s.str());
 				for (String a : ss) {
 					items.mutAdd(List.fromString(a));
 				}

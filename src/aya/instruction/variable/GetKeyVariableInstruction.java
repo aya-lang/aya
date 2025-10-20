@@ -22,23 +22,25 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 		if (kv_obj.isa(Obj.DICT)) {
 			Dict dict;
 			dict = (Dict)kv_obj;
-			Obj o = dict.get(variable_);
+			for (Symbol variable : variables_) {
+				Obj o = dict.get(variable);
 
-			if (o.isa(Obj.BLOCK)) {
-				// If user object function, leave it as the first item on the stack
-				if (dict.pushSelf()) b.push(dict);
-				dumpBlock(Casting.asStaticBlock(o), b);
-			} else {
-				b.push(o);
+				if (o.isa(Obj.BLOCK)) {
+					// If user object function, leave it as the first item on the stack
+					if (dict.pushSelf()) b.push(dict);
+					dumpBlock(Casting.asStaticBlock(o), b);
+				} else {
+					b.push(o);
+				}
 			}
 		} else {
 			Dict builtin_dict = b.getContext().getVars().getBuiltinMeta(kv_obj);
-			Dict dict = (Dict)builtin_dict;
-			Obj o;
 			try {
-				o = dict.get(variable_);
-				if (variable_ != SymbolConstants.KEYVAR_META) b.push(kv_obj); // Don't push if we are accessing the meta dict
-				this.addOrDumpVar(o, b);
+				for (Symbol variable : variables_) {
+					Obj o = builtin_dict.get(variable);
+					if (variable != SymbolConstants.KEYVAR_META) b.push(kv_obj); // Don't push if we are accessing the meta dict
+					this.addOrDumpVar(o, b);
+				}
 			} catch (IndexError e) {
 				throw new IndexError("Built in type " + Obj.IDToSym(kv_obj.type()) + 
 						" does not contain member '" + varName() + "'");
@@ -49,7 +51,7 @@ public class GetKeyVariableInstruction extends GetVariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("." + variable_.name());
+		stream.print("." + varName_);
 		return stream;
 	}
 	

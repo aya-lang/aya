@@ -37,7 +37,7 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
         1 :autodraw;
         c_white :bg_color;
         c_black :fg_color;
-        nil :canvas;
+        (-1) :canvas;
     }
 
     .# Merge user defined
@@ -50,7 +50,7 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
     params.units [::deg ::degrees].in self.:_use_deg;
 
     .# Use the provided canvas or generate one?
-    params.canvas nil = {
+    params.canvas (-1) = {
         params.width self.:_w;
         params.height self.:_h;
         :{ self._w:width self._h:height "Turtle":name } canvas! self.:_cvs;
@@ -75,6 +75,10 @@ def turtle::__init__ {params::dict self : canvas^ c_black^ c_white^,
 
 def turtle::__repr__ {self,
     "turtle: pos=($(self._x), $(self._y)) dir=$(self._r)"
+}
+
+def turtle::wait {self,
+    self._cvs.wait
 }
 
 .#################

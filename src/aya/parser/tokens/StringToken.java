@@ -14,6 +14,7 @@ import aya.parser.Parser;
 import aya.parser.ParserString;
 import aya.parser.SourceStringRef;
 import aya.parser.StringParseUtils;
+import aya.util.UTF16;
 
 public class StringToken extends StdToken {
 		
@@ -46,7 +47,7 @@ public class StringToken extends StdToken {
 		InstructionStack instrs = new InstructionStack();
 		
 		while(in.hasNext()) {
-			char c = in.next();
+			int c = in.next();
 			
 			//Escaped dollar sign
 			if (c == '\\' && in.hasNext() && in.peek() == '$') {
@@ -60,9 +61,9 @@ public class StringToken extends StdToken {
 				
 				//Normal Var
 				if (SymbolTable.isBasicSymbolChar(c)) {
-					String var_name = ""+c;
+					StringBuilder var_name = new StringBuilder(UTF16.surrogateToStr(c));
 					while (in.hasNext() && SymbolTable.isBasicSymbolChar(in.peek())) {
-						var_name += in.next();
+						var_name.append(in.nextStr());
 					}
 					
 					//Add and reset the string builder
@@ -73,7 +74,7 @@ public class StringToken extends StdToken {
 					sb.setLength(0);
 					
 					//Add the variable
-					instrs.insert(0, new GetVariableInstruction(ref, SymbolTable.getSymbol(var_name)));
+					instrs.insert(0, new GetVariableInstruction(ref, SymbolTable.getSymbol(var_name.toString())));
 					
 				}
 				
@@ -106,7 +107,7 @@ public class StringToken extends StdToken {
 						
 						//Other
 						else {
-							block.append(in.next());
+							block.append(in.nextStr());
 						}
 					}
 					
@@ -131,13 +132,13 @@ public class StringToken extends StdToken {
 				
 				//No Interpolation, just place the chars normally
 				else {
-					sb.append('$').append(c);
+					sb.append('$').append(UTF16.surrogateToStr(c));
 				}
 			} 
 			
 			//Normal char; do nothing
 			else {
-				sb.append(c);
+				sb.append(UTF16.surrogateToStr(c));
 			}
 		}
 		

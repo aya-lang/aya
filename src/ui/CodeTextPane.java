@@ -10,7 +10,6 @@ import java.awt.event.KeyListener;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -28,9 +27,10 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import aya.parser.CharacterParser;
+import ui.components.FixedTextPane;
 
 @SuppressWarnings("serial")
-public class CodeTextPane extends JTextPane {
+public class CodeTextPane extends FixedTextPane {
 	private boolean inFocus = false;
 	
 	final UndoManager undo = new UndoManager();
@@ -164,7 +164,7 @@ public class CodeTextPane extends JTextPane {
 	public void tabPressed() {
 		if (inFocus) {
 			int carat = getCaretPosition();
-			int offset = (carat-14)>0 ? carat-14 : 0;
+			int offset = Math.max((carat - 14), 0);
 			String s = null;
 			try {
 				s = getDocument().getText(offset, carat-offset);

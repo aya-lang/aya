@@ -12,4 +12,4 @@ y :0i1 * x `+ :* :a;
 {0 a :E L {2^a+} 30 % .|}.time :P
 
 .# Display
-{3 .>} .O viewmat.show
+{3 .>} .O viewmat.draw $ .show .wait

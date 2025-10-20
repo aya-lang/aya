@@ -13,7 +13,7 @@ public class PopCallstackInstruction extends FlagInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		b.getContext().getCallStack().pop();
+		b.getContext().getCallStack().pop(b);
 	}
 	
 	@Override

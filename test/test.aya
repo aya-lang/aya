@@ -33,10 +33,13 @@
 "test/dot_ops" load_test
 "test/colon_ops" load_test
 "test/range" load_test
+"test/repr" load_test
 "test/broadcast" load_test
 "test/unicode" load_test
 "test/misc" load_test
 "test/test_op_overload" load_test
+"test/types" load_test
+"test/return_types" load_test
 
 .# Base
 "test/base/test_sym" load_test
@@ -58,7 +61,6 @@
     "xml"
     "la"
     "map"
-    "matrix"
     "set"
     "stats"
     "stack"
@@ -68,7 +70,12 @@
 
 .# Import entire standard library
 "Importing standard library..." :P
-:(sys.ad) "/std"+ :(sys.readdir):# {".aya".^ S W} :# {name, "importing $name...":P name __aya__.importlib.import} ;
+:(sys.ad) "/std"+ :(sys.readdir):# {
+    ".aya".^ S W
+} :# {name,
+    "importing $name...":P 
+    name __aya__.importlib.import
+} ;
 "Import finished!" :P
 "":P
 

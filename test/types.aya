@@ -1,0 +1,292 @@
+.#
+.# Builtins
+.#
+
+list type :@ 1 :!
+list :T type :!
+
+
+.#
+.# Types are objects
+.#
+
+[[num]list T]list T:x;
+[[num]list]list T :y;
+x y :!
+[[1 2][3 4]] x :@ 1 :!
+[[1 2][3 4]] y :@ 1 :!
+
+:{
+    list:my_list;
+}:my_module
+
+[1 2] my_module.my_list :@ 1 :!
+[1 2] [num]my_module.my_list :@ 1 :!
+[1 2] {a::[num]my_module.my_list, ::ok}~ ::ok :!
+[1 2] {a::my_module.my_list, ::ok}~ ::ok :!
+0 [1 2] 0 {a b::[num]my_module.my_list c, ::ok}~ ::ok :!
+0 0 [1 2] 0 0 {a b c::[num]my_module.my_list d e, ::ok}~ ::ok :!
+[1 2] 0 0 {a::[num]my_module.my_list b c, ::ok}~ ::ok :!
+0 0 [1 2] {a b c::[num]my_module.my_list, ::ok}~ ::ok :!
+0 0 [1 2] {a b c::[num]my_module.my_list, ::ok}~ ::ok :!
+[1 2] {a::[num]my_module.my_list : l, ::ok}~ ::ok :!
+0 [1 2] {a b::[num]my_module.my_list : l, ::ok}~ ::ok :!
+[1 2] 0 {a::[num]my_module.my_list b : l, ::ok}~ ::ok :!
+
+
+.#
+.# Any
+.#
+
+.# :@
+1  any  :@ 1 :!
+"" any :@ 1 :!
+.# args
+1  ${a::any, a}~ :!
+"" ${a::any, a}~ :!
+
+
+.#
+.# Basic types
+.#
+
+.# :@
+"" str :@ 1 :!
+1 str  :@ 0 :!
+
+.# args
+{1  {a::str, a}~} {;::err} .K ::err :!
+"" ${a::str, a}~ :!
+
+
+.#
+.# Basic lists
+.#
+
+.# :@
+[1 2 3] list :@ 1:!
+[1 2 3] [any]listT :@ 1:!
+[1 2 3] [num]listT :@ 1:!
+[1 2 'c] [num]listT :@ 0:!
+.# args
+[1 2 3]   ${a::list, a}~ :!
+[1 2 3]   ${a::[any]list, a}~ :!
+[1 2 3]   ${a::[num]list, a}~ :!
+{[1 2 'c]  {a::[num]list, a}~} {;::err} .K ::err :!
+
+
+.#
+.# Nested lists
+.#
+
+.# :@
+[[1 2][3 4]] [[num]list]listT :@ 1 :!
+[[1 2][3 4]] [list]listT :@ 1 :!
+[[1 2][3 4]] [any]listT :@ 1 :!
+[[1 2][3 4]] list :@ 1 :!
+.# args
+[[1 2][3 4]] ${a::[[num]list]list, a}~ :!
+[[1 2][3 4]] ${a::[list]list, a}~ :!
+[[1 2][3 4]] ${a::[any]list, a}~ :!
+[[1 2][3 4]] ${a::list, a}~ :!
+
+.# :@
+[[1 2]['c "d"]] [[any]list]listT :@ 1 :!
+[[1 2]['c "d"]] [list]listT :@ 1 :!
+[[1 2]['c "d"]] [any]listT :@ 1 :!
+[[1 2]['c "d"]] list :@ 1 :!
+.# args
+[[1 2]['c "d"]] ${a::[[any]list]list, a}~ :!
+[[1 2]['c "d"]] ${a::[list]list, a}~ :!
+[[1 2]['c "d"]] ${a::[any]list, a}~ :!
+[[1 2]['c "d"]] ${a::list, a}~ :!
+
+.# :@
+[[1 2]['c "d"]] [[num]list]listT :@ 0 :!
+[[1 2]['c "d"]] [num]listT :@ 0 :!
+.# args
+{[[1 2]['c "d"]] {a::[[num]list]list, a}~} {;::err} .K ::err :!
+{[[1 2]['c "d"]] {a::[num]list, a}~} {;::err} .K ::err :!
+
+
+.#
+.# Empty lists (always true)
+.#
+
+.# :@
+[] [[num]list]listT :@ 1 :!
+[] [[any]list]listT :@ 1 :!
+[] [list]listT :@ 1 :!
+[] [any]listT :@ 1 :!
+[] [num]listT :@ 1 :!
+[] list :@ 1 :!
+.# args
+[] ${a::[[num]list]list, a}~ :!
+[] ${a::[[any]list]list, a}~ :!
+[] ${a::[list]list, a}~ :!
+[] ${a::[any]list, a}~ :!
+[] ${a::[num]list, a}~ :!
+[] ${a::list, a}~ :!
+
+
+.#
+.# Unions
+.#
+
+.# :@
+"" [str num]unionT :@ 1 :!
+1  [str num]unionT :@ 1 :!
+"" [str]unionT :@ 1 :!
+.# args
+"" ${a::[str num]union, a}~ :!
+1  ${a::[str num]union, a}~ :!
+"" ${a::[str]union, a}~ :!
+.# negative cases
+{'c {a::[str num]union, a}~} {;::err} .K ::err :!
+{1  {a::[str]union, a}~} {;::err} .K ::err :!
+
+
+.#
+.# Combinations (list/union)
+.#
+
+.# :@
+[1 2 'c] [[num char]union]listT :@ 1 :!
+1 [[num]list num]unionT :@ 1 :!
+[1 2 3] [[num]list num]unionT :@ 1 :!
+1 [[num]list num]unionT :@ 1 :!
+.# args
+[1 2 'c] ${a::[[num char]union]list, a}~ :!
+1        ${a::[[num]list num]union,  a}~ :!
+[1 2 3]  ${a::[[num]list num]union,  a}~ :!
+1        ${a::[[num]list num]union,  a}~ :!
+
+.#
+.# Dict
+.#
+
+.# :@
+:{1:a} dict :@ 1 :!
+:{1:a} [num]dictT :@ 1 :!
+:{1:a} [str]dictT :@ 0 :!
+
+.# args
+:{1:a} ${a::dict, a}~ :!
+:{1:a} ${a::[num]dict, a}~ :!
+{:{1:a} {a::[str]dict, a}~} {;::err} .K ::err :!
+
+
+.#
+.# User defined types
+.#
+
+struct foo {x} ;
+
+.# :@
+0 foo! foo :@ 1 :!
+"foo" foo :@ 0 :!
+foo type :@ 1 :!
+.# args
+0 foo! {a::foo, ::ok}~ ::ok :!
+{"foo"  {a::foo, }~} {;::err} .K ::err :!
+foo {a::type, ::ok}~ ::ok :!
+
+.#
+.# User defined types with generics
+.#
+
+struct point {x y} ;
+
+def point::__type_check__ {value inner self : inner_type, 
+    inner.[0] :inner_type;
+
+    value.x inner_type :@
+    value.y inner_type :@
+    &
+}
+
+.# :@
+point          type :@ 1 :!
+1 2 point!     point :@ 1 :!
+"a" "b" point! point :@ 1 :!
+1 2 point!     [num]pointT :@ 1 :!
+.# args
+point          {a::type,       ::ok}~ ::ok :!
+1 2 point!     {a::point,      ::ok}~ ::ok :!
+"a" "b" point! {a::point,      ::ok}~ ::ok :!
+1 2 point!     {a::[num]point, ::ok}~ ::ok :!
+.# negative cases
+"a" "b" point! [num]pointT :@ 0 :!
+{"a" "b" point! {a::[num]point, a}~} {;::err} .K ::err :!
+
+
+struct pair {first second} ;
+
+def pair::__type_check__ {value inner self,
+    value.first  inner.[0] :@
+    value.second inner.[1] :@
+    &
+}
+
+.# :@
+1 2 pair! pair :@ 1 :!
+1 "a" pair! pair :@ 1 :!
+1 1 pair! [num num]pairT :@ 1 :!
+1 "a" pair! [num str]pairT :@ 1 :!
+.# args
+1 2 pair!   {a::pair,          ::ok}~ ::ok :!
+1 "a" pair! {a::pair,          ::ok}~ ::ok :!
+1 1 pair!   {a::[num num]pair, ::ok}~ ::ok :!
+1 "a" pair! {a::[num str]pair, ::ok}~ ::ok :!
+.# negative cases
+1 1 pair! [str str]pairT :@ 0 :!
+1 "a" pair! [str num]pairT :@ 0 :!
+{1 1 pair!   {a::[str str]pair, a}~} {;::err} .K ::err :!
+{1 "a" pair! {a::[str num]pair, a}~} {;::err} .K ::err :!
+
+
+
+struct optional {value valid} ;
+
+def optional::__type_check__ {value inner self,
+    value.valid {
+        value.value inner.[0] :@
+    } {
+        .# if empty, we don't care what the value is
+        1
+    } .?
+}
+
+"value" 1 optional! optional :@ 1 :!
+"value" 1 optional! [str]optionalT :@ 1 :!
+"value" 0 optional! [str]optionalT :@ 1 :!
+.# invalid, we don't care what the inner type is
+::value 0 optional! [str]optionalT :@ 1 :!
+.# valid, we DO care what the inner type is
+::value 1 optional! [str]optionalT :@ 0 :!
+0 0 optional! [str]optionalT :@ 1 :!
+
+
+.#
+.# Mixed types
+.#
+
+((0 0 point!, 0 0 point!)pair!, 1)optional! [[[num]point [num]point]pair]optionalT :@ 1 :!
+((0 "nope" point!, 0 0 point!)pair!, 1)optional! [[[num]point [num]point]pair]optionalT :@ 0 :!
+
+
+class base
+
+::derived base extend;
+
+base     type    :@ 1 :!
+derived  type    :@ 1 :!
+base!    base    :@ 1 :!
+derived! base    :@ 1 :!
+base!    derived :@ 0 :!
+
+base     {a::type,    ::ok}~ ::ok :!
+derived  {a::type,    ::ok}~ ::ok :!
+base!    {a::base,    ::ok}~ ::ok :!
+derived! {a::base,    ::ok}~ ::ok :!
+{base!   {a::derived, ::ok}~} {;::err} .K ::err :!

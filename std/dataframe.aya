@@ -89,7 +89,7 @@ def dataframe::to_csv { kwargs self : csv^ noindex(0) colnames(1) sep(","), kwar
 .##########
 
 def dataframe::_get_col_index {colname self,
-    colname :T ::sym = {colname :C :colname; } ?
+    colname sym :@ {colname :C :colname; } ?
     self._colnames colname N\; :colindex;
     colindex 0 < {
         "Column $colname not found" .D
@@ -122,11 +122,11 @@ def dataframe::__getindex__ { index self : dataframe^,
     .# If input is a string, look up that column, return a list
     .# If input is a list, use it as a row mask, return a dataframe
     {
-        (index :T ::num =) {
+        (index num :@) {
             index self._numgetindex
-        } (index :T ::str =) {
+        } (index str :@) {
             index self._get_col
-        } (index :T ::list =) {
+        } (index list :@) {
             index E self._data E = {
                 :{
                     self._data index .i :data;
@@ -158,7 +158,7 @@ def dataframe::__getindex__ { index self : dataframe^,
 .}
 def dataframe::row {(1 hold)({self index : data,
     self._data.[index~]:data;
-    [ index~ :T ::num = { [data]:data } ? ];
+    [ index~ num :@ { [data]:data } ? ];
 
     :{ self._colnames:colnames data:data } dataframe!
 })}

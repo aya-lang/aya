@@ -14,6 +14,18 @@ public class SourceStringRef {
 		return this.source.getContextStr(this.idx);
 	}
 	
+	public String getFile() {
+		return this.source.getFilename();
+	}
+	
+	public int getLineNumber() {
+		return this.source.getLineNumber(this.idx);
+	}
+	
+	public int getLineCharNumber() {
+		return this.source.getLineCharNumber(this.idx);
+	}
+	
 	public int getIndex() {
 		return this.idx;
 	}

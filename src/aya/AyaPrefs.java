@@ -19,6 +19,7 @@ public class AyaPrefs {
 	private static String workingDir = null;
 	private static String defaultWorkingDir = null;
 	private static String[] args = null;
+	private static boolean typeCheckerEnabled = true;
 	
 	protected static final String BUG_MESSAGE =  "An unhandled exception occurred. If this is a bug, please submit an issue to "
 			+ "https://github.com/nick-paul/aya-lang/issues with the stacktrace below.\n"
@@ -190,6 +191,19 @@ public class AyaPrefs {
 	
 	public static String[] getArgs() {
 		return args;
+	}
+	
+	/** This should only ever be set once when Aya starts up
+	 * It changes the way instructions are generated and should not
+	 * be changed after parsing any code
+	 * @param x
+	 */
+	public static void setTypeCheckerEnabled(boolean x) {
+		typeCheckerEnabled = x;
+	}
+	
+	public static boolean isTypeCheckerEnabled() {
+		return typeCheckerEnabled;
 	}
 	
 

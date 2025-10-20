@@ -6,6 +6,7 @@ import aya.ext.graphics.instruction.ClearGraphicsInstruction;
 import aya.ext.graphics.instruction.ClearRectGraphicsInstruction;
 import aya.ext.graphics.instruction.CloseGraphicsInstruction;
 import aya.ext.graphics.instruction.CopyRectGraphicsInstruction;
+import aya.ext.graphics.instruction.DrawImageGraphicsInstruction;
 import aya.ext.graphics.instruction.EllipseGraphicsInstruction;
 import aya.ext.graphics.instruction.GetPixelsGraphicsInstruction;
 import aya.ext.graphics.instruction.IsOpenGraphicsInstruction;
@@ -56,6 +57,7 @@ public class GraphicsInstructionStore implements NamedInstructionStore {
 				new ClickEventsInstruction(canvas_table),
 				new CloseGraphicsInstruction(canvas_table),
 				new CopyRectGraphicsInstruction(canvas_table),
+				new DrawImageGraphicsInstruction(canvas_table),
 				new EllipseGraphicsInstruction(canvas_table),
 				new GetPixelsGraphicsInstruction(canvas_table),
 				new IsOpenGraphicsInstruction(canvas_table),
@@ -87,6 +89,7 @@ public class GraphicsInstructionStore implements NamedInstructionStore {
 				new TranslateGraphicsInstruction(canvas_table),
 				new TypedCharsInstruction(canvas_table),
 				new ViewmatGraphicsInstruction(canvas_table)
+
 		);
 	}
 }

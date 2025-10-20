@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import aya.ReprStream;
+import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.list.List;
@@ -585,16 +586,24 @@ public class DoubleList extends NumberList {
 		return new DoubleList(Arrays.copyOfRange(_list, i, j));
 	}
 
+	private double _get(int i) {
+		if (i < 0 || i >= _list.length) {
+			throw new IndexError(this, Num.fromInt(i));
+		} else {
+			return _list[i];
+		}
+	}
+	
 	@Override
 	public Number get(int i) {
-		return new Num(_list[i]);
+		return new Num(_get(i));
 	}
 	
 	@Override
 	public DoubleList get(int[] is) {
 		double[] out = new double[is.length];
 		for (int i = 0; i < is.length; i++) {
-			out[i] = _list[is[i]];
+			out[i] = _get(is[i]);
 		}
 		return new DoubleList(out);
 	}
@@ -654,7 +663,19 @@ public class DoubleList extends NumberList {
 	public void sort() {
 		Arrays.sort(_list);
 	}
-	
+
+	@Override
+	public boolean canAccept( Obj item )
+	{
+		return item.isa(Obj.NUM);
+	}
+
+	@Override
+	public boolean canAcceptAll( ListImpl otherList )
+	{
+		return otherList.length() <= 0 || otherList.isa(Obj.DOUBLELIST);
+	}
+
 	@Override
 	public void set(int i, Obj o) {
 		_list[i] = ((Num)o).toDouble();
@@ -702,7 +723,10 @@ public class DoubleList extends NumberList {
 
 	@Override
 	public void addAll(ListImpl l) {
-		double[] other = ((DoubleList)l)._list;
+		if (l.length() <= 0)
+			return;
+
+		double[] other = ((DoubleList) l)._list;
 		final int len = _list.length;
 		final int o_len = other.length;
 
@@ -717,11 +741,6 @@ public class DoubleList extends NumberList {
 		double[] out = new double[_list.length];
 		for (int i = 0; i < _list.length; i++) out[i] = _list[i];
 		return new DoubleList(out);
-	}
-	
-	@Override
-	public boolean canInsert(Obj o) {
-		return o.isa(Obj.NUM);
 	}
 
 	@Override

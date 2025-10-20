@@ -99,14 +99,14 @@
 
 {
 [["A" "B" "CCC"]["D" "EE" "F"]] .matstr
-"""A B  CCC
-D EE F  """
+["A B  CCC"
+"D EE F  "] "\n" %
 }
 
 {
 [["A" pi "CCC"]["hello world" "EE" 2]] .matstr
-"""A           3.14159265 CCC
-hello world EE         2  """
+["A           3.14159265 CCC"
+"hello world EE         2  "] "\n" %
 }
 
 ] :# { test.test }

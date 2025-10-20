@@ -1,6 +1,6 @@
 .# Golfed stack based version
 {
-0\1{$@+}@%;
+    0\1{$@+}@%;
 }:fib_stack;
 
 "" :P
@@ -27,11 +27,13 @@
 "15 fib_iter is $(15 fib_iter)" :P
 
 .# Classic recursive algorithm
-{n,
-    n 0 = n 1 = | {
+.# * creates a self reference to this function named f
+{n : f*,
+    .# Parenthesis are optional in Aya; they are sometimes useful for readability
+    (n 0 =) (n 1 =) | {
         n
     } {
-        n 1 - fib_rec n 2 - fib_rec +
+        (n 1 -)f (n 2 -)f +
     } .?
 }:fib_rec;
 

@@ -5,25 +5,4 @@
 
 :{ } :test;
 
-.# New simpler test function
-{blk,
-.{
-    {
-        blk :!
-    } {ex,
-        ex.` :T ::dict = {
-            ex ::type 0 .I ::assert_err = {
-                ["Test Failed: $blk"
-                 "\tExpected: $(ex.expected.`)"
-                 "\tReceived: $(ex.received.`)"] "\n"* :P
-            } {
-                ex .D
-            } .?
-        } {
-            ex .D
-        } .?
-    } .K
-
-.}
-    blk :!
-} test.:test;
+{blk, blk :! } test.:test;

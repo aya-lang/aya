@@ -1,17 +1,17 @@
 .# The 100 Doors Problem
 
-.# initialize list
-0 100L:list;
+.# initialize doors
+0 100L:doors;
 
 .# do 100 passes
 [100,] # {pass,
   [pass $$+ 100,] # {door,
     .# Swap the state of the door
-    list.[doorV] ! list.:[doorV];
+    doors.[doorV] ! doors.:[doorV];
   }
 };
 
 .# print the doors
-list E.R :# {door,
-  list.[door] {"door $(doorB) is open" :P} ?
+doors E.R :# {door,
+  doors.[door] {"door $(doorB) is open" :P} ?
 };

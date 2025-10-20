@@ -71,42 +71,7 @@ aya> 2:n 3{n, n2^}~ n
 
 ## Argument Type Assertions
 
-Arguments may have type assertions. Write a variable name followed by a symbol corresponding to the type.
-
-```
-1 2 {a::num b::num, a b +}~    .# => 3
-"1" 2 {a::num b::num, a b +}~   .# TYPE ERROR: Type error at ({ARGS}):
-                             Expected (::num)
-                             Recieved ("1" )
-```
-
-If a user defined type defines a `type` variable as a symbol. The symbol will be used for type assertions.
-
-```
-:{
-  ::vec :type;
-
-  ... define vec variables and functions ...
-}:vec;
-
-{v::vec,
-  v :P
-}:printvec;
-```
-
-The type checker will use the `.type` variable:
-
-```
-aya> 1 2 vec! :v
-<1,2>
-aya> v printvec
-<1,2>
-aya> 3 printvec
-TYPE ERROR: Type error at ({ARGS}):
-	Expected (::vec)
-	Recieved (3 )
-```
-
+See *Type Annotations* page.
 
 ## Local Declarations
 
@@ -152,6 +117,30 @@ aya> .# define a as a list which evaluates to l
 aya> {: a([l]), a} ~
 [ 99 ]
 ```
+
+## Self Reference
+
+Use `*` in the local declarations section to create a self reference. The name does not need to match the name of the function
+
+```
+{n : f*,
+    .# Parenthesis are optional in Aya; they are sometimes useful for readability
+    (n 0 =) (n 1 =) | {
+        n
+    } {
+        (n 1 -)f (n 2 -)f +
+    } .?
+}:fib_rec;
+```
+
+
+For golfing purposes, providing a name is optional and will default to `f` is not provided.
+
+```
+aya> {:*, }
+{: f({...}),}
+```
+
 
 ## Keyword Arguments
 

@@ -182,6 +182,10 @@ public class Canvas {
 		}
 	}	
 	
+	public void drawImage(BufferedImage image, int x_offset, int y_offset) {
+		getG2D().drawImage(image, x_offset, y_offset, _frame);
+	}
+	
 	public Graphics2D getG2D() {
 		return _g2d;
 	}

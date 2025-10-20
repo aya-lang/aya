@@ -5,7 +5,7 @@ require io {file}
 {:(json.dumps)} :dumps;
 
 {json_file : file^ loads^,
-    json_file :T ::str = {
+    json_file str :@ {
         json_file 'r file! :json_file;
     } ?
 
@@ -15,7 +15,7 @@ require io {file}
 } :load;
 
 {data json_file : file^ dumps^,
-    json_file :T ::str = {
+    json_file str :@ {
         json_file 'w file! :json_file;
     } ?
 

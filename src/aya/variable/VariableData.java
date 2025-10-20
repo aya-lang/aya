@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-import aya.InteractiveAya;
+import aya.CLIOptions;
 import aya.StaticData;
 import aya.exceptions.runtime.UndefVarException;
 import aya.obj.Obj;
@@ -82,7 +82,7 @@ public class VariableData {
 		Dict globals = new Dict();
 		
 		globals.set(SymbolConstants.VERSION, List.fromString(StaticData.VERSION_NAME));
-		globals.set(SymbolConstants.HELP, List.fromString(InteractiveAya.HELP_TEXT));
+		globals.set(SymbolConstants.HELP, List.fromString(CLIOptions.HELP_TEXT));
 
 		globals.set(SymbolConstants.E, Num.E);				
 		globals.set(SymbolConstants.PI, Num.PI);

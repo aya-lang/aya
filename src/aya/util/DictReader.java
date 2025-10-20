@@ -4,9 +4,7 @@ import java.awt.Color;
 
 import aya.StaticData;
 import aya.exceptions.runtime.AyaRuntimeException;
-import aya.exceptions.runtime.IndexError;
 import aya.exceptions.runtime.UndefVarException;
-import aya.exceptions.runtime.ValueError;
 import aya.obj.Obj;
 import aya.obj.dict.Dict;
 import aya.obj.list.List;
@@ -38,11 +36,11 @@ public class DictReader {
 	}
 	
 	public AyaRuntimeException notFound(Symbol key) throws AyaRuntimeException {
-		return new IndexError(_dict, key, "Error at " + _err_name);
+		return StaticDictReader.notFound(_err_name, _dict, key);
 	}
 	
 	public AyaRuntimeException badType(Symbol key, String type_expected, Obj got) throws AyaRuntimeException {
-		return new ValueError(_err_name + ": Expected type ::" + type_expected +" for key '" + key.name() + "' but got " + got.repr());
+		return StaticDictReader.badType(_err_name, key, type_expected, got);
 	}
 	
 	public double[] getDoubleArrayEx(Symbol key) {
@@ -143,14 +141,7 @@ public class DictReader {
 	}
 
 	public Symbol getSymbolEx(Symbol key) {
-		Obj o = _dict.getSafe(key);
-		if (o == null) {
-			throw notFound(key);
-		} else if (!o.isa(Obj.SYMBOL)) {
-			throw badType(key, "sym", o);
-		} else {
-			return (Symbol)o;
-		}
+		return StaticDictReader.getSymbolEx(_dict, key, _err_name);
 	}
 	
 
@@ -279,23 +270,11 @@ public class DictReader {
 	}
 	
 	public Symbol getSymbol(Symbol key, Symbol dflt) {
-		Obj o = _dict.getSafe(key);
-		
-		if (o == null || !o.isa(Obj.SYMBOL)) {
-			return dflt;
-		} else {
-			return (Symbol)o;
-		}
+		return StaticDictReader.getSymbol(_dict, key, dflt);
 	}
 
 	public boolean getBool(Symbol key, boolean dflt) {
-		Obj o = _dict.getSafe(key);
-		
-		if (o == null) {
-			return dflt;
-		} else {
-			return o.bool();
-		}
+		return StaticDictReader.getBool(_dict, key, dflt);
 	}
 
 	public boolean hasKey(Symbol key) {

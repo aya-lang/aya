@@ -66,6 +66,8 @@ import aya.parser.SourceStringRef;
 import aya.util.Casting;
 import aya.util.FileUtils;
 import aya.util.Pair;
+import aya.util.TypeUtils;
+import aya.util.UTF16;
 import aya.util.VectorizedFunctions;
 
 public class Ops {
@@ -85,6 +87,7 @@ public class Ops {
 	public static final char MAX_OP = (char)126;
 	protected static final Operator OP_PLUS = new OP_Plus();
 	public static final Operator OP_I_INSTANCE = new OP_GetIndex();
+	public static final Operator OP_T_MAKE_TYPE = new OP_T();
 	public static final Operator OP_POUND = new OP_Pound();
 
 	
@@ -125,7 +128,7 @@ public class Ops {
 		/* 72 H  */ new OP_H(),
 		/* 73 I  */ OP_I_INSTANCE,
 		/* 74 J  */ new OP_Join(),
-		/* 75 K  */ null,
+		/* 75 K  */ new OP_K(),
 		/* 76 L  */ new OP_L(),
 		/* 77 M  */ null, //Math Library
 		/* 78 N  */ new OP_N(),
@@ -134,7 +137,7 @@ public class Ops {
 		/* 81 Q  */ new OP_Q(),
 		/* 82 R  */ new OP_R(),
 		/* 83 S  */ new OP_S(),
-		/* 84 T  */ new OP_T(), 
+		/* 84 T  */ OP_T_MAKE_TYPE, 
 		/* 85 U  */ new OP_U(),
 		/* 86 V  */ new OP_V(),
 		/* 87 W  */ new OP_W(),
@@ -168,7 +171,11 @@ public class Ops {
 		}
 		return false;
 	}
-	
+
+	public static boolean isOpChar(int c) {
+		return UTF16.is2Byte(c) && isOpChar((char) c);
+	}
+
 	public static boolean isOpChar(char c) {
 		char[] op_exceptions = {
 				',','(',')','[',']','`','.','"','\'', '#','_'
@@ -358,6 +365,7 @@ class OP_And extends Operator {
 	public OP_And() {
 		init("&");
 		arg("NN", "bitwise and");
+		arg("NB|BB", "and (short circuit)");
 		arg("SS", "list all expressions matching the regex");
 		setOverload(2, "and");
 		vect();
@@ -367,7 +375,36 @@ class OP_And extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		
+		if (b.isa(BLOCK)) {
+			// Get the boolean value of a
+			boolean aVal = false;
+			if (a.isa(NUMBER)) {
+				aVal = a.bool();
+			} else if (a.isa(BLOCK)) {
+				// aVal = block.eval
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(a));
+				be.eval();
+				aVal = be.pop().bool();
+			} else {
+				throw new TypeError(this, b, a); // Stack order
+			}
+			
+			
+			if (aVal) {
+				// Evaluate b and return that
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(b));
+				be.eval();
+				blockEvaluator.push(be.pop());
+			} else {
+				// Do not evaluate b, just return false
+				blockEvaluator.push(Num.ZERO);
+			}
+		} else {
+			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		}
 	}
 
 	private static NumberListOp NUML_OP = new NumberListOp() {
@@ -1080,6 +1117,44 @@ class OP_Join extends Operator {
 		}
 	}
 }
+// K - 75
+class OP_K extends Operator {
+	
+	public OP_K() {
+		init("K");
+		arg("N", "negate");
+		vect();
+		setOverload(1, "negate");
+	}
+
+	private static NumberListOp NUML_OP = new NumberListOp() {
+		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
+		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
+		public NumberList l(NumberList a) { return a.negate(); }
+	};
+
+	@Override
+	public void execute(final BlockEvaluator blockEvaluator) {
+		Obj a = blockEvaluator.pop();
+		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
+	}
+
+	@Override
+	public Obj exec1arg(ExecutionContext context, final Obj a) {
+		Obj res;
+		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
+		if ((res = overload().executeAndReturn(context, a)) != null) return res;
+		
+		if (a.isa(NUMBER)) {
+			return ((Number)a).negate();
+		} else {
+			throw new TypeError(this, a);
+		}
+	}
+}
+
+
 
 
 // L - 76
@@ -1131,18 +1206,6 @@ class OP_L extends Operator {
 	}
 }
 
-// K - 76
-class OP_K extends Operator {
-	
-	public OP_K() {
-		//init("K");
-	}
-
-	@Override
-	public void execute (final BlockEvaluator blockEvaluator) {
-
-	}
-}
 
 // N - 78
 class OP_N extends Operator {
@@ -1337,35 +1400,23 @@ class OP_T extends Operator {
 	
 	public OP_T() {
 		init("T");
-		arg("N", "negate");
-		vect();
-		setOverload(1, "negate");
+		arg("LD", "type");
 	}
 
-	private static NumberListOp NUML_OP = new NumberListOp() {
-		public NumberList ln(NumberList a, Number b) { throw new UnimplementedError(); }
-		public NumberList nl(Number a, NumberList b) { throw new UnimplementedError(); }
-		public NumberList ll(NumberList a, NumberList b) { throw new UnimplementedError(); }
-		public NumberList l(NumberList a) { return a.negate(); }
-	};
 
 	@Override
 	public void execute(final BlockEvaluator blockEvaluator) {
-		Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec1arg(blockEvaluator.getContext(), a));
-	}
-
-	@Override
-	public Obj exec1arg(ExecutionContext context, final Obj a) {
-		Obj res;
-		if ((res = VectorizedFunctions.vectorize1arg(context, this, a, NUML_OP)) != null) return res;
-		if ((res = overload().executeAndReturn(context, a)) != null) return res;
+		Obj type  = blockEvaluator.pop();
+		Obj inner = blockEvaluator.pop();
 		
-		if (a.isa(NUMBER)) {
-			return ((Number)a).negate();
+		if (inner.isa(LIST) && type.isa(DICT)) {
+			blockEvaluator.push(TypeUtils.makeType(asList(inner), asDict(type)));
+		} else if (inner.isa(Obj.NUM) && !inner.bool() && type.isa(Obj.NUM) && !type.bool()) {
+			// 0 0 T -> returns base type
+			blockEvaluator.push(TypeUtils.TYPE);
 		} else {
-			throw new TypeError(this, a);
-		}
+			throw new TypeError(this, type, inner);
+		}	
 	}
 }
 
@@ -1652,6 +1703,7 @@ class OP_Bar extends Operator {
 	public OP_Bar() {
 		init("|");
 		arg("NN", "logical or");
+		arg("NB|BB", "or (short circuit)");
 		setOverload(2,  "or");
 	}
 
@@ -1666,7 +1718,36 @@ class OP_Bar extends Operator {
 	public void execute(final BlockEvaluator blockEvaluator) {
 		final Obj b = blockEvaluator.pop();
 		final Obj a = blockEvaluator.pop();
-		blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		
+		if (b.isa(BLOCK)) {
+			// Get the boolean value of a
+			boolean aVal = false;
+			if (a.isa(NUMBER)) {
+				aVal = a.bool();
+			} else if (a.isa(BLOCK)) {
+				// aVal = block.eval
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(a));
+				be.eval();
+				aVal = be.pop().bool();
+			} else {
+				throw new TypeError(this, b, a); // Stack order
+			}
+			
+			
+			if (aVal) {
+				// Do not evaluate b, just return true
+				blockEvaluator.push(Num.ONE);
+			} else {
+				// Evaluate b and return that
+				BlockEvaluator be = blockEvaluator.getContext().createEvaluator();
+				be.dump(Casting.asStaticBlock(b));
+				be.eval();
+				blockEvaluator.push(be.pop());
+			}
+		} else {
+			blockEvaluator.push(exec2arg(blockEvaluator.getContext(), a, b));
+		}
 	}
 
 	// a b | => "a | b"

@@ -21,7 +21,7 @@ public class GetExprIndexInstruction extends GetIndexInstruction {
 	@Override
 	public ReprStream repr(ReprStream stream) {
 		stream.print(".[");
-		BlockUtils.repr(stream, _index, false, null);
+		BlockUtils.repr(stream, _index, false, null, null);
 		stream.print("]");
 		return stream;
 	}

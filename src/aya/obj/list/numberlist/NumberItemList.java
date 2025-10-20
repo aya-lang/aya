@@ -534,7 +534,22 @@ public class NumberItemList extends NumberList {
 	public void sort() {
 		Collections.sort(_list);
 	}
-	
+
+	@Override
+	public boolean canAccept(Obj item) {
+		return item.isa(Obj.NUMBER);
+	}
+
+	@Override
+	public boolean canAcceptAll(ListImpl otherList) {
+		for (int i = 0; i < otherList.length(); i++) {
+			if (!canAccept(otherList.get(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public void set(int i, Obj o) {
 		_list.set(i, asNumber(o));
@@ -587,11 +602,6 @@ public class NumberItemList extends NumberList {
 		ArrayList<Number> out = emptyAL();
 		out.addAll(_list);
 		return new NumberItemList(out, _doubles);
-	}
-	
-	@Override
-	public boolean canInsert(Obj o) {
-		return o.isa(Obj.NUMBER);
 	}
 
 	@Override

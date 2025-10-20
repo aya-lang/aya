@@ -161,7 +161,7 @@ public class JSONUtils {
 				if (vc.hasVisited(e.second())) {
 					throw new ValueError("JSON: Circular reference detected when serializing json object. key: " + e.first());
 				} else {
-					out.put(e.first().unquotedName(), toJSON(e.second(), params, vc));
+					out.put(e.first().name(), toJSON(e.second(), params, vc));
 				}
 			}
 			vc.pop(d);
@@ -188,7 +188,7 @@ public class JSONUtils {
 		} else if (o.isa(Obj.SYMBOL)) {
 			Symbol sym = (Symbol)o;
 			if (params.parse_symbol) {
-				return "::" + sym.name();
+				return sym.str();
 			} else {
 				return sym.name();
 			}

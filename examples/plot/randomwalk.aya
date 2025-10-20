@@ -13,4 +13,4 @@ import plot
 [] {v step [v.x v.y]\.V} 20000 %
 
 .# Transpose the list and plot the line
-.T ~ plot.line.view
+.T ~ plot.line $ .view .wait

@@ -3,6 +3,9 @@ package aya.obj.block;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import aya.ReprStream;
 import aya.eval.ExecutionContext;
@@ -54,17 +57,23 @@ public class BlockUtils {
 		}
 	}
 	
-	public static StaticBlock mergeLocals(StaticBlock block, Dict locals) {
+	public static StaticBlock mergeLocals(StaticBlock block, Dict locals, Symbol self_reference) {
 		Dict new_locals = copyLocals(block);
 		new_locals.update(locals);
-		return new StaticBlock(block.getInstructions(), new_locals, block.getArgs());
+		var out = new StaticBlock(block.getInstructions(), new_locals, block.getArgs());
+		if (self_reference != null) {
+			new_locals.set(self_reference, out);
+		}
+		return out;
+
 	}
 
 	/** If print_braces is true, return "{instructions}" else just "instructions" */
 	public static ReprStream repr(ReprStream stream,
 			               StaticBlock block,
 			               boolean print_braces,
-			               HashMap<Symbol, StaticBlock> defaults) {
+			               HashMap<Symbol, StaticBlock> defaults,
+			               Symbol self_reference) {
 
 		if (stream.visit(block)) {
 			if (print_braces) stream.print("{");
@@ -72,19 +81,36 @@ public class BlockUtils {
 			Dict locals = block.getLocals();
 			ArrayList<Assignment> args = block.getArgs();
 			
+			//
 			// Header
-			if (locals != null) {
-				// Args
-				if (args != null) {
-					for (Assignment arg : args) {
-						stream.print(arg.toString());
-						stream.print(" ");
-					}
+			//
+			boolean print_comma = false;
+			
+			// Args
+			if (args != null) {
+				print_comma = true;
+				for (Assignment arg : args) {
+					stream.print(arg.toString());
+					if (!stream.isTight()) stream.print(" ");
 				}
-				
+			}
+
+			
+			// Return types
+			if (block.getReturnTypeCheck() != null) {
+				print_comma = true;
+				stream.print("-> ");
+				block.getReturnTypeCheck().repr(stream);
+			}
+			
+			boolean printed_colon = false;
+			if (locals != null) {
+				print_comma = true;
 				// Non-arg locals
 				if (locals.size() != 0) {
-					stream.print(": ");
+					stream.print(":");
+					printed_colon = true;
+					if (!stream.isTight()) stream.print(" ");
 				
 					// Print locals
 					for (Symbol key : locals.keys()) {
@@ -92,6 +118,7 @@ public class BlockUtils {
 						stream.print("(");
 						locals.get(key).repr(stream);
 						stream.print(")");
+						if (!stream.isTight()) stream.print(" ");
 					}
 				}
 				
@@ -100,21 +127,32 @@ public class BlockUtils {
 				if (defaults != null) {
 					for (Symbol v : defaults.keySet()) {
 						stream.print(v.name() + "(");
-						repr(stream, defaults.get(v), false, null);
-						stream.print(") ");
+						repr(stream, defaults.get(v), false, null, null);
+						stream.print(")");
+						if (!stream.isTight()) stream.print(" ");
 					}
 				}
 
 				// Trim off the final space
 				stream.delTrailingSpaces();
+			}
+			
+			if (self_reference != null) {
+				print_comma = true;
+				if (!printed_colon) {
+					stream.print(": ");
+				}
+				stream.print(self_reference.name());
+				stream.print("*");
+			}
+			
+			if (print_comma) {
 				stream.print(",");
+				if (!stream.isTight()) stream.print(" ");
 			}
 			
 			ArrayList<Instruction> is = block.getInstructions();
-			for(int i = is.size() - 1; i >= 0; i--) {
-				is.get(i).repr(stream);
-				stream.print(" ");
-			}
+			InstructionStack.reprInstructions(stream, is);
 
 			// Remove trailing space
 			stream.delTrailingSpaces();
@@ -133,7 +171,7 @@ public class BlockUtils {
 	public static ReprStream repr(ReprStream stream,
 			               StaticBlock block,
 			               boolean print_braces) {
-		return repr(stream, block, print_braces, null);
+		return repr(stream, block, print_braces, null, null);
 	}
 	
 	public static StaticBlock makeBlockWithSingleInstruction(Instruction i) {
@@ -174,7 +212,20 @@ public class BlockUtils {
 
 
 	public static StaticBlock assignVarValues(Dict d, StaticBlock blk) {
-		ArrayList<Instruction> new_is = new ArrayList<Instruction>(blk.getInstructions());
+		// Pre-processing: convert GetVariableInstructions so that they access exactly one variable to make replacing them easier
+		ArrayList<Instruction> new_is = blk.getInstructions().stream()
+				.flatMap(inst -> {
+					// do not apply to GetKeyVariableInstruction
+					if (inst.getClass() == GetVariableInstruction.class) {
+						GetVariableInstruction getVarInst = (GetVariableInstruction) inst;
+						Symbol[] symbols = (getVarInst).getSymbols();
+						return IntStream.range(0, symbols.length)
+								.map(i -> symbols.length - (i + 1)) // reverse order
+								.mapToObj(i -> new GetVariableInstruction(getVarInst.getSource(), symbols[i]));
+					} else {
+						return Stream.of(inst);
+					}
+				}).collect(Collectors.toCollection(ArrayList::new));
 
 		for (Pair<Symbol, Obj> pair : d.items()) {
 			Symbol var = pair.first();
@@ -183,12 +234,12 @@ public class BlockUtils {
 			// Finds all vars with id matching varid and swaps them with item
 			for (int i = 0; i < new_is.size(); i++) {
 				final Instruction o = new_is.get(i);
-				if (o instanceof GetVariableInstruction && ((GetVariableInstruction)o).getSymbol().id() == var.id()) {
+				if (o.getClass() == GetVariableInstruction.class && ((GetVariableInstruction) o).getSymbols()[0].id() == var.id()) {
 					new_is.set(i, new DataInstruction(item));
 				}
 			}
 		}
-		
+
 		return replaceInstructions(blk, new_is);
 	}
 
@@ -222,7 +273,7 @@ public class BlockUtils {
 			Instruction i = is.get(0);
 			if (i instanceof VariableInstruction) {
 				VariableInstruction v = (VariableInstruction)i;
-				return v.getSymbol();
+				return v.getOriginalVar();
 			}
 		}
 		// Cannot convert, return original
@@ -287,7 +338,7 @@ public class BlockUtils {
 		if (instructions.size() == 1) {
 			Instruction i = instructions.get(0);
 			if (i instanceof VariableInstruction) {
-				out.add( ((VariableInstruction)i).getSymbol() );
+				out.add(((VariableInstruction) i).getOriginalVar());
 			} else if (i instanceof OperatorInstruction) {
 				Operator op = ((OperatorInstruction)i).getOperator();
 				if (op.overload() != null) {
@@ -310,6 +361,50 @@ public class BlockUtils {
 				throw new ValueError("No doc found for " + block.str());
 			}
 		}
+	}
+
+	public static StaticBlock copySetTypeInfo(StaticBlock block, CheckReturnTypeGenerator ret_type, ExecutionContext ctx) {
+		// Check if any args has type info
+		boolean args_has_type_info = false;			
+		if (block.getArgs() != null) {
+			for (Assignment a : block.getArgs()) {
+				if (a.hasTypeInfo()) {
+					args_has_type_info = true;
+					break;
+				}
+			}
+		}
+		
+		// Check if ret_type has type info
+		boolean ret_has_type_info = ret_type != null;
+		
+		if (ret_has_type_info || args_has_type_info) {
+			// Something has type info, need to make a copy
+			
+			// Make a copy of args if needed
+			ArrayList<Assignment> args_out = block.getArgs();
+			if (args_has_type_info) {
+				ArrayList<Assignment> args = new ArrayList<Assignment>();
+				for (Assignment a : block.getArgs()) {
+					args.add(a.setTypeInfo(ctx));
+				}
+				args_out = args;
+			}
+			
+			// Make a copy of ret if needed
+			CheckReturnTypeInstance ret = ret_type != null ? ret_type.makeCheckReturnTypeInstruction(ctx) : null;
+			
+			return new StaticBlock(block.getInstructions(), block.getLocals(), args_out, ret);
+
+		} else {
+			// Nothing has type info, just return the block
+			return block;
+		}
+	}
+
+	public static StaticBlock addSelfReference(StaticBlock blk) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

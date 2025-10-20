@@ -26,6 +26,7 @@ import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.ext.thread.ThreadInstructionStore;
+import aya.ext.unicode.UnicodeInstructionStore;
 import aya.ext.xml.XmlInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
@@ -45,7 +46,7 @@ import aya.util.StringSearch;
 public class StaticData {
 
 	public static final boolean DEBUG = true;
-	public static final String VERSION_NAME = "v0.6.0-SNAPSHOT";
+	public static final String VERSION_NAME = "v0.6.0";
 	public static final String ayarcPath = "ayarc.aya";
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
@@ -108,12 +109,11 @@ public class StaticData {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ArrayList<String> searchList = new ArrayList<String>();
+			ArrayList<String> searchList = new ArrayList<>();
 			searchList.addAll(OpDocReader.getAllOpDescriptions());
 			// Add additional help data
 			searchList.add(AyaPrefs.CONSTANTS_HELP);
 			searchList.add(SpecialNumberParser.STR_CONSTANTS_HELP);
-			searchList.toArray(new String[searchList.size()]);
 			_helpData = new StringSearch(searchList);
 		}
 	}
@@ -161,6 +161,7 @@ public class StaticData {
 		addNamedInstructionStore(new ThreadInstructionStore());
 		addNamedInstructionStore(new LibraryInstructionStore());
 		addNamedInstructionStore(new DownloadInstructionStore());
+		addNamedInstructionStore(new UnicodeInstructionStore());
 	}
 	
 	public ArrayList<NamedInstructionStore> loadLibrary(File path) { 

@@ -1,25 +1,20 @@
 package aya.parser.tokens;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
 import aya.instruction.BlockLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.variable.assignment.Assignment;
 import aya.obj.Obj;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
-import aya.obj.dict.Dict;
 import aya.obj.number.Num;
-import aya.obj.symbol.Symbol;
 import aya.parser.HeaderUtils;
 import aya.parser.Parser;
 import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
-import aya.util.Triple;
 
 public class BlockToken extends CollectionToken {
 	
@@ -50,9 +45,9 @@ public class BlockToken extends CollectionToken {
 				//Non-empty header, args and local variables
 				else {
 					InstructionStack main_instructions = Parser.generate(blockData.get(1));
-					Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = HeaderUtils.generateBlockHeader(blockData.get(0));
-					StaticBlock blk = BlockUtils.fromIS(main_instructions, p.second(), p.first());
-					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, p.third());
+					var h = HeaderUtils.generateBlockHeader(blockData.get(0));
+					StaticBlock blk = BlockUtils.fromIS(main_instructions, h.locals, h.args);
+					return new BlockLiteralInstruction(this.getSourceStringRef(), blk, h.captures, h.ret_types, h.self_reference);
 				}
 			} else {
 				throw new SyntaxError("BlockEvaluator contains too many parts", getSourceStringRef());

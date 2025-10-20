@@ -59,10 +59,10 @@
 
 { arg : _read_kw^ ,
     {
-        (arg :T ::str =) {
+        (arg str :@) {
             .# convert to dict
             :{ arg :filename }
-        } (arg :T ::dict =) {
+        } (arg dict :@) {
             arg
         } {
             "Unsupported arg type $(arg:T). Must be ::str or ::dict" .D
@@ -80,7 +80,7 @@
             .# If it is na, make it emptystr
             :& na = {;""} ?
             .# If it is a string, surround with quotes
-            :& P \ ::str :@ {"\""+ "\""\+} ?
+            :& P \ str :@ {"\""+ "\""\+} ?
         }
         sep %
     } "\n" %

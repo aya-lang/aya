@@ -17,16 +17,20 @@ public class Symbol extends Obj {
 	}
 	
 	public String name() {
-		String s = SymbolTable.getName(this);
-		if (SymbolTable.isBasicSymbolString(s)) {
-			return s;
-		} else {
-			return StringUtils.quote(s);
-		}
+		return SymbolTable.getName(this);
 	}
 	
-	public String unquotedName() {
-		return SymbolTable.getName(this);
+	/**
+	 * Quote the name if it is not all lowercase alpha
+	 * @return
+	 */
+	public String reprName() {
+		String n = name();
+		if (StringUtils.lalphau(n) && n.length() > 0) {
+			return n;
+		} else {
+			return StringUtils.quote(n);
+		}
 	}
 	
 	@Override
@@ -46,13 +50,14 @@ public class Symbol extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print("::" + name());
+		stream.print("::");
+		stream.print(reprName());
 		return stream;
 	}
 
 	@Override
 	public String str() {
-		return "::" + name();
+		return "::" + StringUtils.quote(name());
 	}
 
 	@Override
