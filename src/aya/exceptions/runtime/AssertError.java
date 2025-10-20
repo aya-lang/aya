@@ -10,16 +10,22 @@ public class AssertError extends InternalAyaRuntimeException {
 
 	private Obj _expected;
 	private Obj _received;
-	
+
+	private static ReprStream getReprStream() {
+		ReprStream reprStream = ReprStream.newSafe();
+		reprStream.setFullStrings(true); // do not truncate text in assertion errors
+		return reprStream;
+	}
+
 	public AssertError(String msg, Obj expected, Obj recv) {
-		super(SymbolConstants.ASSERT_ERROR, msg + ": \n  Expected: " 
-											    + expected.repr(ReprStream.newSafe()) 
-											    + "\n  Received: " 
-											    + recv.repr(ReprStream.newSafe()));
+		super(SymbolConstants.ASSERT_ERROR, msg + ": \n  Expected: "
+				+ expected.repr(getReprStream())
+				+ "\n  Received: "
+				+ recv.repr(getReprStream()));
 		_expected = expected;
 		_received = recv;
 	}
-	
+
 	@Override
 	public Dict getDict() {
 		Dict d = super.getDict();
