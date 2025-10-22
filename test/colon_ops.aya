@@ -51,5 +51,7 @@
 { { (0) {"a"} {"b"} } :? "b" }
 { [ {(0) {"a"}} :?] [ ]  }
 { [ {(0) {"a"} (0) {"b"}} :?] [ ] }
+{ [ {(0) {"a"} (1) {"b" "c"}} :?] [ "b" "c" ] } .# handle multiple return values
+{ { {1} "a" {"err".D} "b" }:? "a" } .# allow conditions to be blocks, too
 
 ] :# {test.test}
