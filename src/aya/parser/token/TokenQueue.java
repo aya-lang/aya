@@ -25,6 +25,14 @@ public class TokenQueue  {
 		queue.add(t);
 	}
 	
+	public void addFront(Token t) {
+		queue.add(0, t);
+	}
+	
+	public void replaceNext(Token t) {
+		queue.set(0, t);
+	}
+	
 	/** Removes and returns the next token in the queue */
 	public Token next() throws EndOfInputError {
 		Token tmp = queue.get(0);

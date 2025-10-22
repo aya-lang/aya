@@ -14,7 +14,7 @@
     .# Parse as number
     guess .! :guess;
     .# Check if input was a valid number
-    guess :T ::num = {
+    guess num :@ = {
         .# Compare guess to the secret number
         {
             (guess secret <) {

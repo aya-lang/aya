@@ -93,7 +93,7 @@ public class ListToken extends CollectionToken {
 		if (arr.size() > 1 
 				&& arr.get(0).isa(Token.NUMERIC)
 				&& arr.get(1).isa(Token.OP)
-				&& arr.get(1).data.equals("|")) {
+				&& (arr.get(1).data.equals("|") || arr.get(1).data.equals(">"))) {
 			NumberToken nt = (NumberToken)arr.get(0);
 			try {
 				pops = nt.numValue().toInt();

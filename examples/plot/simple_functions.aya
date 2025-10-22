@@ -28,3 +28,5 @@ p.view
 
 .# Uncomment to save the plot
 .# "sample_plot.png" p.save
+
+p.wait

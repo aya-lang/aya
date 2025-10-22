@@ -1,7 +1,6 @@
 package aya;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,6 +26,7 @@ import aya.ext.plot.PlotInstructionStore;
 import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.ext.thread.ThreadInstructionStore;
+import aya.ext.unicode.UnicodeInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
@@ -45,7 +45,7 @@ import aya.util.StringSearch;
 public class StaticData {
 
 	public static final boolean DEBUG = true;
-	public static final String VERSION_NAME = "v0.6.0-SNAPSHOT";
+	public static final String VERSION_NAME = "v0.6.0";
 	public static final String ayarcPath = "ayarc.aya";
 	public static final boolean PRINT_LARGE_ERRORS = true;
 	public static final String QUIT = "\\Q";
@@ -159,6 +159,7 @@ public class StaticData {
 		addNamedInstructionStore(new ThreadInstructionStore());
 		addNamedInstructionStore(new LibraryInstructionStore());
 		addNamedInstructionStore(new DownloadInstructionStore());
+		addNamedInstructionStore(new UnicodeInstructionStore());
 	}
 	
 	public ArrayList<NamedInstructionStore> loadLibrary(File path) { 

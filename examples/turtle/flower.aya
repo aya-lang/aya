@@ -10,3 +10,5 @@ import turtle
     } 12 %
     30 t.right
 } 12 %
+
+t.wait

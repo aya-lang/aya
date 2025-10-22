@@ -1,7 +1,6 @@
 package aya.parser.tokens;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import aya.exceptions.parser.ParserException;
 import aya.exceptions.parser.SyntaxError;
@@ -9,16 +8,12 @@ import aya.instruction.DictLiteralInstruction;
 import aya.instruction.EmptyDictLiteralInstruction;
 import aya.instruction.Instruction;
 import aya.instruction.InstructionStack;
-import aya.instruction.variable.assignment.Assignment;
 import aya.obj.block.BlockUtils;
 import aya.obj.block.StaticBlock;
-import aya.obj.dict.Dict;
-import aya.obj.symbol.Symbol;
 import aya.parser.HeaderUtils;
 import aya.parser.Parser;
 import aya.parser.SourceStringRef;
 import aya.parser.token.TokenQueue;
-import aya.util.Triple;
 
 public class DictToken extends CollectionToken {
 
@@ -47,9 +42,12 @@ public class DictToken extends CollectionToken {
 			
 			if (header.size() > 0) {
 				InstructionStack main_instructions = Parser.generate(blockData.get(1));
-				Triple<ArrayList<Assignment>, Dict, HashMap<Symbol, StaticBlock>> p = HeaderUtils.generateBlockHeader(blockData.get(0));
-				StaticBlock blk = BlockUtils.fromIS(main_instructions, p.second(), p.first());
-				return new DictLiteralInstruction(this.getSourceStringRef(), blk, p.third());
+				var h = HeaderUtils.generateBlockHeader(blockData.get(0));
+				StaticBlock blk = BlockUtils.fromIS(main_instructions, h.locals, h.args);
+				if (h.ret_types != null) {
+					throw new SyntaxError("Dict literal cannot have return types", source);
+				}
+				return new DictLiteralInstruction(this.getSourceStringRef(), blk, h.captures);
 			} else {
 				throw new SyntaxError("Empty header not allowed in dict literal", source);
 			}

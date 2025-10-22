@@ -44,28 +44,6 @@ public class InteractiveAya {
 		_request_id_counter++;
 		return _request_id_counter;
 	}
-
-	public static final String HELP_TEXT = "aya " + StaticData.VERSION_NAME + "\n"
-			+ "  aya\n"
-			+ "    Running aya with no args will open the GUI IDE at the default working directory\n"
-			+ "    Note: Default setting is GUI so that double clicking the jar from a file explorer opens the IDE\n"
-			+ "    Use `aya <workingDir> -x` to open the GUI at a specified directory\n"
-			+ "  aya <workingDir>\n"
-			+ "    Open a command line REPL\n"
-			+ "  aya <workingDir> <filename>\n"
-			+ "    Run the file and exit\n"
-			+ "  aya <workingDir> -<flags> <option1>\n"
-			+ "    g: Import std/golf and bring all variables into scope\n"
-			+ "    e: Run the expression given by <option1>\n"
-			+ "    p: Run the package name given by <opion1>\n"
-			+ "    i: Enter the REPL after finishing CLI tasks\n"
-			+ "    x: Launch the GUI\n"
-			+ "    If <option1> is an aya source file, run it\n"
-			+ "  aya --help\n"
-			+ "    Print this message.\n"
-			+ "  aya --version\n"
-			+ "    Print version information\n"
-			+ "";
 	
 	public ExecutionRequest processInput(String input) {
 		//Empty Input
@@ -88,7 +66,7 @@ public class InteractiveAya {
 			
 			//Help
 			else if(command.equals("H") || command.equals("HELP")) {
-				_io().out().println(HELP_TEXT);
+				_io().out().println(CLIOptions.HELP_TEXT);
 			}
 			
 			//Search
@@ -184,6 +162,12 @@ public class InteractiveAya {
 			}
 		}
 	}
+	
+	public void printPrompt() {
+		if (_showPromptText) {
+			_io().out().print(AyaPrefs.getPrompt());
+		}
+	}
 
 	/**
 	 * @return the resultCode of the last executed request
@@ -218,43 +202,57 @@ public class InteractiveAya {
 		
 		// interactive is set on startup. If true, this is an infinite REPL loop
 		if (_interactive) {
-			while (running) {
-				if (_showPromptText) {
-					out.print(AyaPrefs.getPrompt());
-				}
-				
-				String input;
-				try {
-					input = scanner.nextLine();
-				} catch (NoSuchElementException e) {  // Ctrl+D
-					running = false;
-					continue;
-				}
-
-				if (input.equals("")) {
-					continue;
-				}
-				
-				if (_echo && _interactive) {
-					out.println(AyaPrefs.getPrompt() + input);
-				}
-				
-				ExecutionRequest request = processInput(input);
-	
-				if (request != null) {	
-					_aya.queueInput(request);
+			
+			// Read input on a different thread
+			new Thread(() -> {
+				// Show the prompt for the first time 
+				// Future prints are done in the execution loop
+				printPrompt();
+				while (true) {
+					String input = "";
 					try {
-						while (_aya.hasPendingTasks()) {
-							ExecutionResult result = _aya.waitForResponse();
-							if (result.id() == request.id()) {
-								printResult(_io(), result, rawOutput);
-							}
-						}
-					} catch (InterruptedException e) {
-						out.println("Aya interrupted");
-						e.printStackTrace(err);
-						running = false;
+						input = scanner.nextLine();
+					} catch (NoSuchElementException e) {  // Ctrl+D
+						_aya.interrupt();
+						_io().out().flush();
+						System.exit(0);
 					}
+
+					if (input.equals("")) {
+						// If no input, just re print the prompt and go back to reading the next line
+						printPrompt();
+					} else {
+						if (_echo && _interactive) {
+							out.println(AyaPrefs.getPrompt() + input);
+						}
+						
+						ExecutionRequest request = processInput(input);
+						if (request != null) {
+							_aya.queueInput(request);
+							// Request was sent, prompt will be printed when it is complete
+						} else {
+							// No request but enter was pressed so we need to re print the prompt
+							printPrompt();
+						}
+					}
+					
+				}
+			}).start();
+				
+			// Evaluation Loop
+			while (running) {
+				try {
+					ExecutionResult result = _aya.waitForResponseBlocked();
+					printResult(_io(), result, rawOutput);
+					
+					if (_showPromptText) {
+						out.print(AyaPrefs.getPrompt());
+					}
+					
+				} catch (InterruptedException e) {
+					out.println("Aya interrupted");
+					e.printStackTrace(err);
+					running = false;
 				}
 				
 				if (!running) _aya.interrupt();

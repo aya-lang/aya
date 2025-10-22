@@ -1,7 +1,5 @@
 package web;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -13,7 +11,6 @@ import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.list.List;
 import aya.obj.list.Str;
-import aya.util.FileUtils;
 
 public class WebAvailableNamedInstructionStore implements NamedInstructionStore {
 	/**

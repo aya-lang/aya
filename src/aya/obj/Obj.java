@@ -142,7 +142,7 @@ public abstract class Obj {
 		}
 	}
 	
-	public static boolean isInstance(Obj o, Symbol type) {
+	public static boolean isInstanceBuiltin(Obj o, Symbol type) {
 		// Special type "any"
 		if (type.id() == SymbolConstants.ANY.id()) return true;
 		

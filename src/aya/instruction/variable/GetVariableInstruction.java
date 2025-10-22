@@ -17,8 +17,10 @@ public class GetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Obj o = b.getContext().getVars().getVar(variable_);
-		this.addOrDumpVar(o, b);
+		for (Symbol variable : variables_) {
+			Obj o = b.getContext().getVars().getVar(variable);
+			this.addOrDumpVar(o, b);
+		}
 	}
 	
 	/**
@@ -35,7 +37,10 @@ public class GetVariableInstruction extends VariableInstruction {
 	}
 
 	public void dumpBlock(StaticBlock block_to_dump, BlockEvaluator evaluator) {
-		evaluator.getContext().getCallStack().push(this);
+		evaluator.getContext().getCallStack().push(this,
+				block_to_dump.getReturnTypeCheck(),
+				block_to_dump.getNumArgs(),
+				evaluator.getStack().size());
 		evaluator.add(PopCallstackInstruction.INSTANCE);
 		//b.getInstructions().addAll(block_to_dump.getInstructions().getInstrucionList());
 		evaluator.dump(block_to_dump);
@@ -43,7 +48,7 @@ public class GetVariableInstruction extends VariableInstruction {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(variable_.name());
+		stream.print(varName_);
 		return stream;
 	}
 }

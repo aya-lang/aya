@@ -1,7 +1,7 @@
-import canvas
+require canvas {canvas}
 require color {colors}
 
-{colors radius : cvs, 
+{colors radius : cvs canvas^, 
     :{ colors :E radius *~ :height; :width;} canvas!:cvs;
     colors.enumerate #{[x cols],
         cols.enumerate #{[y col],
@@ -12,4 +12,7 @@ require color {colors}
     cvs
 }:color_table;
 
-[0 30 360, colors.red.hueshift 10\ colors.white.grad] 30 color_table.show
+[0 30 360, colors.red.hueshift 10\ colors.white.grad] 30 color_table:c;
+c.show
+c.wait
+

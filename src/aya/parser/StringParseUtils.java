@@ -2,21 +2,22 @@ package aya.parser;
 
 import aya.exceptions.parser.EndOfInputError;
 import aya.exceptions.parser.SyntaxError;
+import aya.util.UTF16;
 
 public class StringParseUtils {
 
 	public static String goToEnd(ParserString in, char termination) throws EndOfInputError {
 		StringBuilder out = new StringBuilder();
 		while (in.hasNext()) {
-			char c = in.next();
+			int c = in.next();
 
 			if (c == '\\' && in.hasNext()) {
-				out.append(c);
-				out.append(in.next());
+				out.append(UTF16.surrogateToStr(c));
+				out.append(in.nextStr());
 			} else if (c == termination) {
 				return out.toString();
 			} else {
-				out.append(c);
+				out.append(UTF16.surrogateToStr(c));
 			}
 		}
 		// End of input
@@ -26,9 +27,9 @@ public class StringParseUtils {
 	public static String unescape(ParserString in) throws SyntaxError, EndOfInputError {
 		StringBuilder str = new StringBuilder();
 		while (in.hasNext()) {
-			char c = in.next();
+			int c = in.next();
 			if (c == '\\') {
-				char escape = in.next();
+				int escape = in.next();
 				switch (escape) {
 				case '$':
 					str.append("$");
@@ -69,7 +70,7 @@ public class StringParseUtils {
 							in.next(); // Skip the closing '}'
 							break;
 						}
-						sc.append(in.next());
+						sc.append(in.nextStr());
 					}
 
 					if (!specialComplete) {
@@ -95,10 +96,10 @@ public class StringParseUtils {
 				default:
 					// throw new SyntaxError("'" + escape + "' is not a valid escape character....
 					// Always return a valid result
-					str.append('\\').append(escape);
+					str.append('\\').append(UTF16.surrogateToStr(escape));
 				}
 			} else {
-				str.append(c);
+				str.append(UTF16.surrogateToStr(c));
 			}
 		}
 		return str.toString();

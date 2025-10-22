@@ -23,8 +23,10 @@ cvs.show
 {
     cvs.typed_chars :# {ch,
         .# Tile hue is based of its key code
-        (ch :' 23* 360%, 0.8, 0.8) color.newhsv grid.:[index num_tiles 2^ %];
+        ch :P
+        (ch :' 23* 360:% $:P, 0.8, 0.8) color.newhsv grid.:[index num_tiles 2^ :%];
         index 1+ :index;
+        index :P
     };
 
     cvs.clear
@@ -34,7 +36,7 @@ cvs.show
       e.[0] :index;
       e.[1] :color;
 
-      index num_tiles %  :x;
+      index num_tiles :%  :x;
       index num_tiles .% :y;
 
       color cvs.set_color

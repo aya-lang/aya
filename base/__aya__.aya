@@ -20,15 +20,75 @@
 
 }:__aya__;
 
+
+.###################
+.#      TYPES      #
+.###################
+
+
+.# Base type
+0 0T :type;
+
+{self,
+    {
+        (self.any) {
+            "any"
+        } (self ::inner H!) {
+            self.name:C
+        } {
+            "$(self.inner)$(self.name:C)T"
+            "\[ " "[" .&
+            " ]"  "]" .&
+        }
+    } :?
+} type.__meta__.:__str__;
+
+type.__meta__.__str__.` type.__meta__.:__repr__;
+
+.# Any
+.#
+.# Represents any type
 :{
-    :{ 
-        ::__nil :__type__;
-        "nil" :__str__;
-        "nil" :__repr__'
-        1 :__pushself__;
-        {:T ::__nil =}:__eq__;
-    }:__meta__;
-}:nil;
+    ::any :name;
+    1 :any;
+    type.__meta__ :__meta__;
+}:any;
+
+.# Union
+.# 
+.# Must specify an inner type with [..]unionT
+.# For example:
+.#   [str num]unionT
+:{
+    ::union :name;
+    1 :union;
+    type.__meta__ :__meta__;
+}:union;
+
+.# Types for builtins
+:{ ::num     :name; type.__meta__ :__meta__; } :num;
+:{ ::str     :name; type.__meta__ :__meta__; } :str;
+:{ ::char    :name; type.__meta__ :__meta__; } :char;
+:{ ::sym     :name; type.__meta__ :__meta__; } :sym;
+:{ ::block   :name; type.__meta__ :__meta__; } :block;
+:{ ::list    :name; type.__meta__ :__meta__; } :list;
+:{ ::dict    :name; type.__meta__ :__meta__; } :dict;
+:{ ::object  :name; type.__meta__ :__meta__; } :object;
+
+.# Store refs in __aya__
+:{
+    type    :type;
+    any     :any;
+    union   :union;
+    num     :num;
+    str     :str;
+    char    :char;
+    sym     :sym;
+    block   :block;
+    list    :list;
+    dict    :dict;
+    object  :object;
+} __aya__.:types;
 
 .#######################################
 .# DEFINE __aya__ KEYWORDS AND GLOBALS #
@@ -119,14 +179,14 @@
             .# aya> {mod name block, mod ::_fn =! {;} ? [mod name block.`]} :f
 
             .# Jump ahead 3 items
-            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   :{} ::foo {+}
+            .# aya> (```(\:& sym :@! {\`}{\}.? f) ::_fn)   :{} ::foo {+}
             .# [ :{} ::foo {+} ]
 
             .# Jump ahead 2 items
-            .# aya> (```(\:&:T ::sym=! {\`}{\}.? f) ::_fn)   ::foo {+}
+            .# aya> (```(\:& sym :@! {\`}{\}.? f) ::_fn)   ::foo {+}
             .# [ ::_fn ::foo {+} ]
 
-            \:&:T ::sym=! {\(1 hold)}{\}.?
+            \:& __aya__.types.sym :@! {\(1 hold)}{\}.?
 
 
             ( {mod name obj : is_module with_mod no_mod,
@@ -239,7 +299,7 @@
         "($(self.__type__:C) 0x$(self M# 10 16 .&))"
     }:__repr__;
 
-    ::object:__type__;
+    __aya__.types.object :__type__;
     0 :__pushself__;
 
 } __aya__.:object;
@@ -249,14 +309,17 @@
 .# `extend`: Keyword for extending a class
 .#
 
-{type::sym super,
+{typename::sym super,
     :{
         super:__meta__;
-        type:__type__;
+        :{
+            typename:name;
+            super.__type__:__meta__;
+        }:__type__;
         .# copy new from super directly
         super.__new__.` :__new__;
         0:__pushself__;
-    } type :=
+    } typename :=
 } __aya__.:extend;
 
 __aya__.extend.` :extend;
@@ -374,16 +437,6 @@ __aya__.extend.` :extend;
 {(3 hold)(__aya__.with_ ~)}:with;
 
 
-.#? ::any ::sym isa\n  returns true if the item's type matches the input
-{item::any type::sym,
-   type ::any = {
-       1
-   } {
-       item type :@
-   } .?
-}:isa;
-
-
 .# Helper function for `with` keyword which generates wrapper code
 .{
     with {"foo.txt" file!} ::f {
@@ -425,7 +478,7 @@ __aya__.extend.` :extend;
     "importlib"
 
     .# Interpreter commands
-    "interpreter"
+    "interpreter" .# TODO: Remove
 
 ] :# {f,
     .# "Loading base/$f..." :P

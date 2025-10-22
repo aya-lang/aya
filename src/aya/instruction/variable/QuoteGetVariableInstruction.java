@@ -15,8 +15,10 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public void execute(BlockEvaluator b) {
-		Obj o = b.getContext().getVars().getVar(variable_);
-		b.push(o);
+		for (Symbol variable : variables_) {
+			Obj o = b.getContext().getVars().getVar(variable);
+			b.push(o);
+		}
 	}
 	
 	/**
@@ -35,7 +37,7 @@ public class QuoteGetVariableInstruction extends VariableInstruction {
 	
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(variable_.name() + ".`");
+		stream.print(varName_ + ".`");
 		return stream;
 	}
 }

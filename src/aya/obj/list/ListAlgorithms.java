@@ -281,10 +281,18 @@ public class ListAlgorithms {
 	}
 
 	public static <T extends Obj> ReprStream reprCompact(ReprStream stream, ArrayList<T> list) {
-		stream.print("[ ");
+		stream.print("[");
+		if (!stream.isTight()) stream.print(" ");
 		for (T o : list) {
 			o.repr(stream);
-			stream.print(" ");
+			// In tight mode, only print a space after if the obj is a number
+			if (stream.isTight()) {
+				if (o.isa(Obj.NUM)) {
+					stream.print(" ");
+				}
+			} else {
+				stream.print(" ");
+			}
 		}
 		stream.print("]");
 		return stream;

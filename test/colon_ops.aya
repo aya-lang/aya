@@ -51,7 +51,9 @@
 { { (0) {"a"} {"b"} } :? "b" }
 { [ {(0) {"a"}} :?] [ ]  }
 { [ {(0) {"a"} (0) {"b"}} :?] [ ] }
+{: x(0) y(1), [ {(1) {:x, 10:x; 100:y;}} :? x y] [0 100] }
 { [ {(0) {"a"} (1) {"b" "c"}} :?] [ "b" "c" ] } .# handle multiple return values
 { { {1} "a" {"err".D} "b" }:? "a" } .# allow conditions to be blocks, too
+{: x(0) y(1) z(2), [ {{:z, 20:x; 200:z; 1} {:x, 10:x; 100:y;}} :? x y z] [20 100 2] }
 
 ] :# {test.test}

@@ -1140,7 +1140,7 @@ class OP_Dot_M extends Operator {
 	public void execute (final BlockEvaluator blockEvaluator) {
 		Obj a = blockEvaluator.pop();
 		 if (a.isa(DICT)) {
-			blockEvaluator.push(((Dict)a).getMetaDict());
+			blockEvaluator.push(((Dict)a).getMetatableMut());
 		} else {
 			blockEvaluator.push(blockEvaluator.getContext().getVars().getBuiltinMeta(a));
 		}

@@ -20,6 +20,19 @@ public class Symbol extends Obj {
 		return SymbolTable.getName(this);
 	}
 	
+	/**
+	 * Quote the name if it is not all lowercase alpha
+	 * @return
+	 */
+	public String reprName() {
+		String n = name();
+		if (StringUtils.lalphau(n) && n.length() > 0) {
+			return n;
+		} else {
+			return StringUtils.quote(n);
+		}
+	}
+	
 	@Override
 	public int hashCode() {
 		return _id;
@@ -37,7 +50,8 @@ public class Symbol extends Obj {
 
 	@Override
 	public ReprStream repr(ReprStream stream) {
-		stream.print(str());
+		stream.print("::");
+		stream.print(reprName());
 		return stream;
 	}
 
