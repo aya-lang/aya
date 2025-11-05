@@ -6,7 +6,7 @@ import java.util.Collection;
 import aya.AyaPrefs;
 import aya.eval.BlockEvaluator;
 import aya.exceptions.runtime.UnimplementedError;
-import aya.ext.sys.FileExistsSystemInstruction;
+import aya.ext.sys.IsFileSystemInstruction;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.obj.list.List;
@@ -22,7 +22,7 @@ public class WebAvailableNamedInstructionStore implements NamedInstructionStore 
 	@Override
 	public Collection<NamedOperator> getNamedInstructions() {
 		return Arrays.asList(
-			new FileExistsSystemInstruction(),
+			new IsFileSystemInstruction(),
 
 			new NamedOperator("sys.ad", "get absolute path of aya dir") {
 				@Override

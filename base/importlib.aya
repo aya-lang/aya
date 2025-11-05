@@ -298,7 +298,7 @@ def importlib::_resolve_name_to_path {name::str : path_to_import importlib^ file
     } .?
 
 
-    files_to_check :~ .[{:(sys.file_exists)}] :valid_paths;
+    files_to_check :~ .[{:(sys.isfile)}] :valid_paths;
 
     valid_paths E 1 > { "Import error: Multiple valid paths found for import: $valid_paths" .D } ?
     valid_paths E 0 = { "Import error: Unable to find any files in path: $files_to_check" .D} ?

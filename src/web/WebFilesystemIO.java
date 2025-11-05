@@ -73,6 +73,11 @@ public class WebFilesystemIO extends AbstractFilesystemIO {
 	}
 
 	@Override
+	public boolean exists(File file) {
+		return isFile(file); // FIXME directories are not supported yet
+	}
+
+	@Override
 	public boolean isFile(File file) {
 		String path = toPath(file);
 		String[] sections = path.split("/");

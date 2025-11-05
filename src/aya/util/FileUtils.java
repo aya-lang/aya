@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -41,6 +44,10 @@ public class FileUtils {
 		Path path = Path.of(pathName);
 		return path.isAbsolute() ? path : Path.of(AyaPrefs.getWorkingDir(), pathName);
 		
+	}
+
+	public static boolean exists(String str) {
+		return StaticData.FILESYSTEM.isFile(resolveFile(str));
 	}
 
 	public static boolean isFile(String str) {
@@ -94,11 +101,46 @@ public class FileUtils {
 		}
 	}
 
-	public static void moveDir(Path src, Path dst) throws IOException {
-		// Check if the source exists and is a directory
-		if (Files.exists(src) && Files.isDirectory(src)) {
+	public static void moveFile(Path src, Path dst) throws IOException {
+		// Check if the source exists
+		if (Files.exists(src)) {
+			if (Files.isDirectory(dst)) {
+				FileUtils.deleteFileOrDirectory(dst);
+			}
+
 			// Perform the move or rename operation
 			Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
+		} else {
+			throw new IOException("Source file/directory does not exist.");
+		}
+	}
+
+	public static void copyFile(Path src, Path dst) throws IOException {
+		// Check if the source exists
+		if (Files.exists(src)) {
+			if (Files.isDirectory(dst)) {
+				FileUtils.deleteFileOrDirectory(dst);
+			}
+
+			// Perform the copy operation
+			Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+			if (Files.isDirectory(src)) {
+				// so far, only the directory and its attributes have been copied -> recurse
+				try (Stream<Path> srcItems = Files.list(src)) {
+					for (Path srcItem : srcItems.collect(Collectors.toList())) {
+						FileUtils.copyFile(srcItem, dst.resolve(srcItem.getFileName()));
+					}
+				}
+			}
+		} else {
+			throw new IOException("Source file/directory does not exist.");
+		}
+	}
+
+	public static void moveDir(Path src, Path dst) throws IOException {
+		// Check if the source exists and is a directory
+		if (Files.isDirectory(src)) {
+			moveFile(src, dst);
 		} else {
 			throw new IOException("Source directory does not exist or is not a directory.");
 		}

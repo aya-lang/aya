@@ -9,6 +9,7 @@ public abstract class AbstractFilesystemIO {
 
 	public abstract void write(File file, byte[] bytes, StandardOpenOption create,
 			StandardOpenOption truncateExisting) throws IOException;
-	
+
+	public abstract boolean exists(File file);
 	public abstract boolean isFile(File file);
 }

@@ -97,3 +97,176 @@ img "out.png" :(image.write)
     "file.bin" :(fileutils.readallbytes) :0xff &
     [0 -1 255 -128 128 -192 64 192 ('a :')] :0xff &
 } test.test
+
+.# Move a file
+{
+    [1 2 3] "file1.bin" 0 .G
+
+    "file1.bin" "file2.bin" :(sys.mv)
+
+    "file1.bin" :(sys.isfile) 0 :!
+    "file2.bin" :(sys.isfile) 1 :!
+    "file2.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# Copy a file
+{
+    .# relies on file1/file2 from the previous test
+    "file1.bin" :(sys.isfile) 0 :!
+    [4 5 6] "file2.bin" 0 .G
+
+    "file2.bin" "file1.bin" :(sys.cp)
+    "file1.bin" :(sys.isfile) 1 :!
+    "file2.bin" :(sys.isfile) 1 :!
+    "file1.bin" :(fileutils.readallbytes) :0xff & [4 5 6] :!
+    "file2.bin" :(fileutils.readallbytes) :0xff & [4 5 6] :!
+}~
+
+.# Copy a file replacing the existing file
+{
+    [1 2 3] "file1.bin" 0 .G
+    [4 5 6] "file2.bin" 0 .G
+
+    "file1.bin" "file2.bin" :(sys.cp)
+
+    "file1.bin" :(sys.isfile) 1 :!
+    "file2.bin" :(sys.isfile) 1 :!
+    "file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    "file2.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# Move a file replacing the existing file
+{
+    [1 2 3] "file1.bin" 0 .G
+    [4 5 6] "file2.bin" 0 .G
+
+    "file1.bin" "file2.bin" :(sys.mv)
+    
+    "file1.bin" :(sys.isfile) 0 :!
+    "file2.bin" :(sys.isfile) 1 :!
+    "file2.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# Move a directory with :(sys.mv) (instead of with sys.mvdir)
+{
+    "dir4" :(sys.isdir) 0 :!
+    "dir5" :(sys.isdir) 0 :!
+    
+    "dir4" :(sys.mkdir)
+    [1 2 3] "dir4/file1.bin" 0 .G
+    
+    "dir4" "dir5" :(sys.mv)
+    
+    "dir4" :(sys.isdir) 0 :!
+    "dir5" :(sys.isdir) 1 :!
+    "dir5" :(sys.readdir)E 1 :!
+    "dir5/file1.bin" :(sys.isfile) 1 :!
+    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# Move a directory replacing an existing directory with :(sys.mv)
+{
+    .# relies on dir4/dir5 from the previous test
+    "dir4" :(sys.isdir) 0 :!
+    "dir5" :(sys.isdir) 1 :!
+    
+    "dir4" :(sys.mkdir)
+    "dir5" "dir4" :(sys.mv) .# move onto empty directory
+    "dir4" :(sys.isdir) 1 :!
+    "dir5" :(sys.isdir) 0 :!
+    "dir4" :(sys.readdir)E 1 :!
+    "dir4/file1.bin" :(sys.isfile) 1 :!
+    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    
+    "dir5" :(sys.mkdir)
+    [4 5 6] "dir5/file2.bin" 0 .G
+    "dir4" "dir5" :(sys.mv) .# move onto non-empty directory
+    "dir4" :(sys.isdir) 0 :!
+    "dir5" :(sys.isdir) 1 :!
+    "dir5" :(sys.readdir)E 1 :!
+    "dir5/file1.bin" :(sys.isfile) 1 :!
+    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# Copy a directory
+{
+    .# relies on dir4/dir5 from the previous test
+    "dir4" :(sys.isdir) 0 :!
+    "dir5" :(sys.isdir) 1 :!
+
+    "dir5" "dir4" :(sys.cp)
+    
+    "dir4" :(sys.isdir) 1 :!
+    "dir5" :(sys.isdir) 1 :!
+    "dir4" :(sys.readdir)E 1 :!
+    "dir5" :(sys.readdir)E 1 :!
+    "dir4/file1.bin" :(sys.isfile) 1 :!
+    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    "dir5/file1.bin" :(sys.isfile) 1 :!
+    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    
+    .# Copy a directory replacing an existing non-empty directory
+    [4 5 6] "dir5/file2.bin" 0 .G
+    "dir4" "dir5" :(sys.cp)
+    "dir4" :(sys.isdir) 1 :!
+    "dir5" :(sys.isdir) 1 :!
+    "dir4" :(sys.readdir)E 1 :!
+    "dir5" :(sys.readdir)E 1 :!
+    "dir4/file1.bin" :(sys.isfile) 1 :!
+    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    "dir5/file1.bin" :(sys.isfile) 1 :!
+    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    
+    .# Copy a directory replacing an existing empty directory
+    "dir5" :(sys.rm)
+    "dir5" :(sys.mkdir)
+    "dir4" "dir5" :(sys.cp)
+    "dir4" :(sys.isdir) 1 :!
+    "dir5" :(sys.isdir) 1 :!
+    "dir4" :(sys.readdir)E 1 :!
+    "dir5" :(sys.readdir)E 1 :!
+    "dir4/file1.bin" :(sys.isfile) 1 :!
+    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+    "dir5/file1.bin" :(sys.isfile) 1 :!
+    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
+}~
+
+.# sys.mv and sys.cp for (file directory) or (directory file)
+{
+    .# relies on dir4/dir5 from the previous test
+    "dir4" :(sys.isdir) 1 :!
+    "dir5" :(sys.isdir) 1 :!
+    [7 8 9] "file.bin" 0 .G
+    
+    .# sys.mv (file dir)
+    "file.bin" "dir4" :(sys.mv)
+    "file.bin" :(sys.isfile) 0 :!
+    "file.bin" :(sys.isdir) 0 :!
+    "dir4" :(sys.isfile) 1 :!
+    
+    .# sys.mv (dir file)
+    "dir5" "file.bin" :(sys.mv)
+    "dir5" :(sys.isfile) 0 :!
+    "dir5" :(sys.isdir) 0 :!
+    "file.bin" :(sys.isdir) 1 :!
+    
+    .# restore the initial state because the names will be confusing otherwise.
+    ["dir4" "dir5"] {d,
+        d :(sys.exists) { d :(sys.rm) }?
+        d :(sys.mkdir)
+    }O;
+    "file.bin" :(sys.rm)
+    [7 8 9] "file.bin" 0 .G
+    [1 2 3] "dir4/file1.bin" 0 .G
+    [4 5 6] "dir5/file2.bin" 0 .G
+    
+    .# sys.cp (file dir)
+    "file.bin" "dir4" :(sys.cp)
+    "file.bin" :(sys.isfile) 1 :!
+    "dir4" :(sys.isfile) 1 :!
+    
+    .# sys.mv (dir file)
+    "dir5" "file.bin" :(sys.cp)
+    "dir5" :(sys.isdir) 1 :!
+    "file.bin" :(sys.isdir) 1 :!
+}~

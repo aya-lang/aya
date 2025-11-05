@@ -153,6 +153,7 @@ public class SystemInstructionStore implements NamedInstructionStore {
 			},
 		
 			// Test if file exists
+			new IsFileSystemInstruction(),
 			new FileExistsSystemInstruction(),
 
 			// Resolve home (replace ~/ with /path/to/home)
@@ -227,6 +228,34 @@ public class SystemInstructionStore implements NamedInstructionStore {
 						FileUtils.unzip(FileUtils.resolveFile(zip_path), FileUtils.resolvePath(dest_path));
 					} catch (IOException e) {
 						throw new IOError("sys.unzip", zip_path + " -> " + dest_path, e);
+					}
+				}
+			},
+
+			new NamedOperator("sys.mv", "src::str dst::str rename/move a file/directory") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String dest_path = blockEvaluator.pop().str();
+					final String src_path  = blockEvaluator.pop().str();
+
+					try {
+						FileUtils.moveFile(FileUtils.resolvePath(src_path), FileUtils.resolvePath(dest_path));
+					} catch (IOException e) {
+						throw new IOError("sys.mv", src_path + " -> " + dest_path, e);
+					}
+				}
+			},
+
+			new NamedOperator("sys.cp", "src::str dst::str copy a file/directory") {
+				@Override
+				public void execute(BlockEvaluator blockEvaluator) {
+					final String dest_path = blockEvaluator.pop().str();
+					final String src_path  = blockEvaluator.pop().str();
+
+					try {
+						FileUtils.copyFile(FileUtils.resolvePath(src_path), FileUtils.resolvePath(dest_path));
+					} catch (IOException e) {
+						throw new IOError("sys.cp", src_path + " -> " + dest_path, e);
 					}
 				}
 			},
