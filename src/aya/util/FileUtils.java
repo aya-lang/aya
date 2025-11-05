@@ -25,8 +25,8 @@ public class FileUtils {
 	public static String readAllText(File file) throws IOException {
 		return new String(readAllBytes(file), StandardCharsets.UTF_8); // in Java 11 you can also do Files.readString(Path)
 	}
-	
-	public static byte[] readAllBytes(File file) throws IOException { 
+
+	public static byte[] readAllBytes(File file) throws IOException {
 		return StaticData.FILESYSTEM.readAllBytes(file);
 	}
 
@@ -38,12 +38,12 @@ public class FileUtils {
 		File file = new File(pathName);
 		return file.isAbsolute() ? file : new File(AyaPrefs.getWorkingDir(), pathName);
 	}
-	
+
 	/** See resolveFile(String) */
 	public static Path resolvePath(String pathName) {
 		Path path = Path.of(pathName);
 		return path.isAbsolute() ? path : Path.of(AyaPrefs.getWorkingDir(), pathName);
-		
+
 	}
 
 	public static boolean exists(String str) {
@@ -102,26 +102,16 @@ public class FileUtils {
 	}
 
 	public static void moveFile(Path src, Path dst) throws IOException {
-		// Check if the source exists
-		if (Files.exists(src)) {
-			if (Files.isDirectory(dst)) {
-				FileUtils.deleteFileOrDirectory(dst);
-			}
-
+		// Validate operation parameters
+		if (prepareMoveOrCopy(src, dst, "move")) {
 			// Perform the move or rename operation
 			Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
-		} else {
-			throw new IOException("Source file/directory does not exist.");
 		}
 	}
 
 	public static void copyFile(Path src, Path dst) throws IOException {
-		// Check if the source exists
-		if (Files.exists(src)) {
-			if (Files.isDirectory(dst)) {
-				FileUtils.deleteFileOrDirectory(dst);
-			}
-
+		// Validate operation parameters
+		if (prepareMoveOrCopy(src, dst, "copy")) {
 			// Perform the copy operation
 			Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 			if (Files.isDirectory(src)) {
@@ -132,9 +122,37 @@ public class FileUtils {
 					}
 				}
 			}
-		} else {
+		}
+	}
+
+	private static boolean prepareMoveOrCopy(Path src, Path dst, String opName) throws IOException {
+		if (!Files.exists(src)) {
 			throw new IOException("Source file/directory does not exist.");
 		}
+		if (src.equals(dst)) {
+			return false; // no-op
+		}
+
+		if (Files.isDirectory(src) && contains(src, dst)) {
+			throw new IOException("Refusing to " + opName + " the source directory into itself.");
+		}
+		if (Files.isDirectory(dst) && contains(dst, src)) {
+			throw new IOException("Refusing to " + opName + " replace the destination directory with a descendant of itself.");
+		}
+
+		if (Files.isDirectory(dst)) {
+			FileUtils.deleteFileOrDirectory(dst);
+		}
+		return true;
+	}
+
+	/**
+	 * Test if the outer file is a parent of the inner file
+	 */
+	public static boolean contains(Path outer, Path inner) throws IOException {
+		String innerStr = inner.toFile().getCanonicalPath();
+		String outerStr = outer.toFile().getCanonicalPath();
+		return innerStr.startsWith(outerStr);
 	}
 
 	public static void moveDir(Path src, Path dst) throws IOException {
@@ -145,7 +163,7 @@ public class FileUtils {
 			throw new IOException("Source directory does not exist or is not a directory.");
 		}
 	}
-	
+
 	 /**
      * Deletes a file or directory. If the directory is not empty, it recursively deletes all contents.
      * Ensures safety checks to prevent accidental deletion of root directories.
@@ -189,7 +207,7 @@ public class FileUtils {
         // On Windows, root paths like "C:\" will have no parent that differs from themselves.
         return parent == null || parent.equals(path.getRoot());
     }
-    
+
     public static String joinPaths(String basePath, String relativePath) {
         if (basePath == null || basePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Base path cannot be null or empty.");

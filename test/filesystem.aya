@@ -270,3 +270,55 @@ img "out.png" :(image.write)
     "dir5" :(sys.isdir) 1 :!
     "file.bin" :(sys.isdir) 1 :!
 }~
+
+{blk::block,
+    .# use evaluation in list to obtain a separate stack
+    [{blk} {;::__fail} .K] [::__fail] =! {
+        "assertfail: code $(blk.`) should have failed but did not" .D
+    }?
+}:assertfail;
+
+.# Block mv/cp of directories into themselves
+{
+    "dir6" :(sys.mkdir)
+    "dir6/dir7" :(sys.mkdir)
+    "dir6/dir7/dir8" :(sys.mkdir)
+    [1 2 3] "dir6/file" 0 .G
+    
+    {
+        "dir6" :(sys.isdir) 1 :!
+        "dir6/dir7" :(sys.isdir) 1 :!
+        "dir6/dir7/dir8" :(sys.isdir) 1 :!
+        "dir6/file" :(sys.isfile) 1 :!
+    }:verify_files;
+
+    .# (outer inner mv) : this is an impossible operation (dir6 would have no parent)
+    { "dir6" "dir6/foo" :(sys.mv) } assertfail verify_files
+    { "dir6" "dir6/dir7" :(sys.mv) } assertfail verify_files
+    { "dir6" "dir6/dir7/dir8" :(sys.mv) } assertfail verify_files
+    { "dir6" "dir6/file" :(sys.mv) } assertfail verify_files
+    { "./" "dir6" :(sys.mv) } assertfail verify_files
+    
+    .# (inner outer mv) : this is an undesirable operation (inner files replacing the outer directory)
+    { "dir6/file" "dir6/" :(sys.mv) } assertfail verify_files
+    { "dir6/dir7" "dir6/" :(sys.mv) } assertfail verify_files
+    { "dir6/dir7/dir8" "dir6/" :(sys.mv) } assertfail verify_files
+    { "dir6/dir7/dir8" "dir6/dir7" :(sys.mv) } assertfail verify_files
+    { "dir6/file" "./" :(sys.mv) } assertfail verify_files
+
+    .# (outer inner cp)
+    .# this is somewhat risky: if the request is not rejected this will create directories until a stackoverflow is reached..
+    .# currently sys.mv and sys.cp share the same sanity checks, so it should be safe. (the above checks would fail first)
+    { "dir6" "dir6/foo" :(sys.cp) } assertfail verify_files
+    { "dir6" "dir6/dir7" :(sys.cp) } assertfail verify_files
+    { "dir6" "dir6/dir7/dir8" :(sys.cp) } assertfail verify_files
+    { "dir6" "dir6/file" :(sys.cp) } assertfail verify_files
+    { "./" "dir6" :(sys.cp) } assertfail verify_files
+    
+    .# (inner outer cp)
+    { "dir6/file" "dir6/" :(sys.cp) } assertfail verify_files
+    { "dir6/dir7" "dir6/" :(sys.cp) } assertfail verify_files
+    { "dir6/dir7/dir8" "dir6/" :(sys.cp) } assertfail verify_files
+    { "dir6/dir7/dir8" "dir6/dir7" :(sys.cp) } assertfail verify_files
+    { "dir6/file" "./" :(sys.cp) } assertfail verify_files
+}~
