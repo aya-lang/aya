@@ -169,33 +169,33 @@ img "out.png" :(image.write)
     "dir6" :(sys.mkdir)
     "dir6/dir7" :(sys.mkdir)
     "dir6/dir7/dir8" :(sys.mkdir)
-	"dir6/dir9" :(sys.mkdir)
+    "dir6/dir9" :(sys.mkdir)
     "dir6/dir9/dir10" :(sys.mkdir)
     [1 2 3] "dir6/file" 0 .G
-	[4 5 6] "dir6/file2" 0 .G
+    [4 5 6] "dir6/file2" 0 .G
     
     {
         "dir6" :(sys.isdir) 1 :!
         "dir6/dir7" :(sys.isdir) 1 :!
         "dir6/dir7/dir8" :(sys.isdir) 1 :!
-		"dir6/dir9" :(sys.isdir) 1 :!
+        "dir6/dir9" :(sys.isdir) 1 :!
         "dir6/dir9/dir10" :(sys.isdir) 1 :!
         "dir6/file" :(sys.isfile) 1 :!
-		"dir6/file2" :(sys.isfile) 1 :!
-		"dir6" :(sys.readdir)E 4 :!
-		"dir6/dir7" :(sys.readdir)E 1 :!
-		"dir6/dir7/dir8" :(sys.readdir)E 0 :!
-		"dir6/dir9" :(sys.readdir)E 1 :!
-		"dir6/dir9/dir10" :(sys.readdir)E 0 :!
+        "dir6/file2" :(sys.isfile) 1 :!
+        "dir6" :(sys.readdir)E 4 :!
+        "dir6/dir7" :(sys.readdir)E 1 :!
+        "dir6/dir7/dir8" :(sys.readdir)E 0 :!
+        "dir6/dir9" :(sys.readdir)E 1 :!
+        "dir6/dir9/dir10" :(sys.readdir)E 0 :!
     }:verify_files;
-	
+    
 .# Block mv/cp where the destination exists
-	["dir6/file" "dir6/dir7/dir8" "dir6/dir7"] .# sources (existing [file empty-dir non-empty-dir])
-	["dir6/file2" "dir6/dir9/dir10" ("./" "dir6" "dir6/dir9")] .# destinations (existing [file empty-dir non-empty-dir]), note that these are different from the source files
-	{src dst,
-		{ src dst :(sys.mv) } assertfail verify_files
-		{ src dst :(sys.cp) } assertfail verify_files
-	} :*;
+    ["dir6/file" "dir6/dir7/dir8" "dir6/dir7"] .# sources (existing [file empty-dir non-empty-dir])
+    ["dir6/file2" "dir6/dir9/dir10" ("./" "dir6" "dir6/dir9")] .# destinations (existing [file empty-dir non-empty-dir]), note that these are different from the source files
+    {src dst,
+        { src dst :(sys.mv) } assertfail verify_files
+        { src dst :(sys.cp) } assertfail verify_files
+    } :*;
 
 .# Block mv/cp of directories into themselves
     .# (outer inner mv) : this is an impossible operation (dir6 would have no parent)
