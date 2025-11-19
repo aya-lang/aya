@@ -3,6 +3,7 @@ package web;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+import aya.ext.xml.XmlInstructionStore;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
@@ -46,6 +47,7 @@ public class AyaWeb {
 		WebAvailableNamedInstructionStore wsi = new WebAvailableNamedInstructionStore();
 		sd.addNamedInstructionStore(wsi);
 		sd.addNamedInstructionStore(new JSONInstructionStore());
+		sd.addNamedInstructionStore(new XmlInstructionStore());
 		sd.addNamedInstructionStore(new DateInstructionStore());
 		sd.addNamedInstructionStore(new ColorInstructionStore());
 		sd.addNamedInstructionStore(new LinearAlgebraInstructionStore());

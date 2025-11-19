@@ -5,6 +5,9 @@ import static aya.util.Casting.asNumber;
 import static aya.util.Casting.asNumberList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import aya.ReprStream;
 import aya.eval.ExecutionContext;
@@ -67,6 +70,14 @@ public class List extends Obj {
 			l.mutAdd(new List(sublist));
 		}
 		return l;
+	}
+
+	/**
+	 * Returns a list whose elements are the specified objs.
+	 * @see java.util.stream.Stream#of(Object[])
+	 */
+	public static List of(Obj... objs) {
+		return new List(new GenericList(new ArrayList<>(Arrays.asList(objs))));
 	}
 
 	private void promote() {
@@ -833,6 +844,10 @@ public class List extends Obj {
 	 */
 	public NumberList toNumberList() {
 		return _list.toNumberList();
+	}
+
+	public Stream<Obj> stream() {
+		return IntStream.range(0, this.length()).mapToObj(this::getExact);
 	}
 	
 	//////////////////////

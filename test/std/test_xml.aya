@@ -1,0 +1,195 @@
+"Test :(xml.loads) on simple xml nodes":P
+"  pattern 1":P
+    "<e/>" :{} :(xml.loads) :{ ::null :e} test.test
+    "<f> </f>" :{1:trim_whitespace;} :(xml.loads) :{ ::null :f} test.test
+"  pattern 2":P
+    "<e> </e>" :{0:trim_whitespace;} :(xml.loads) :{" ":e} test.test
+    "<f> text </f>" :{} :(xml.loads) :{"text":f} test.test
+"  pattern 3":P
+    "<e name=\"value\" />" :{} :(xml.loads) :{:{"value":"@name"}:e} test.test
+"  pattern 4":P
+    "<e name=\"value\">text</e>" :{} :(xml.loads) :{:{"value":"@name"; "text":"#text";}:e} test.test
+"  pattern 5":P
+    "<e><a>text</a><b>text</b></e>" :{} :(xml.loads) :{:{"text":a; "text":b;}:e} test.test
+"  pattern 6":P
+    "<e><a>text</a><a>text</a></e>" :{} :(xml.loads) :{:{["text" "text"]:a}:e} test.test
+"  pattern 7":P
+    "<e> text <a>text</a> </e>" :{} :(xml.loads) :{:{"text":a; "text":"#text";}:e} test.test
+
+"Test :(xml.dumps) on simple xml nodes":P
+"  pattern 1":P
+    :{ ::null :e} :{0:xml_decl;} :(xml.dumps) "<e/>" test.test
+"  pattern 2":P
+    :{" ":e} :{0:xml_decl;} :(xml.dumps) "<e> </e>" test.test
+    :{"text":f} :{0:xml_decl;} :(xml.dumps) "<f>text</f>" test.test
+"  pattern 3":P
+    :{:{"value":"@name"}:e} :{0:xml_decl;} :(xml.dumps) "<e name=\"value\"/>" test.test
+"  pattern 4":P
+    :{:{"value":"@name"; "text":"#text";}:e} :{0:xml_decl;} :(xml.dumps) "<e name=\"value\">text</e>" test.test
+.# pattern 5 cannot be tested, because the order of children cannot be preserved
+"  pattern 6":P
+    :{:{["text" "text"]:a}:e} :{0:xml_decl;} :(xml.dumps) "<e><a>text</a><a>text</a></e>" test.test
+.# pattern 7 cannot be tested, because the order of mixed content cannot be preserved
+
+
+.# test entity references
+"""
+<!DOCTYPE note [
+    <!ENTITY nbsp " ">
+]>
+<root>&lt; &nbsp; &gt;</root>
+""" .trim :erxml;
+:{"<   >":root}:erxml_d;
+"test :(xml.loads) with entity references":P
+erxml :{} :(xml.loads) erxml_d test.test
+
+
+.# tests with namespace definitions
+"""
+<root xmlns:a="uri1" xmlns:b="uri2">
+    <a:x>
+        text
+        <b:y>text</b:y>
+    </a:x>
+</root>
+""" .trim :nsxml;
+:{
+    :{
+        "uri1":"@xmlns:a";"uri2":"@xmlns:b";
+        :{
+            "text":"#text";
+            "text":"b:y";
+        }:"a:x";
+    }:root;
+}:nsxml_d;
+"test :(xml.loads) on an xml document with namespace declarations":P
+nsxml :{} :(xml.loads) nsxml_d test.test
+"test :(xml.dumps) :(xml.loads) on an xml document with namespace declarations":P
+nsxml_d :{} :(xml.dumps) :{} :(xml.loads) nsxml_d test.test
+"test :(xml.dumps) with an undefined namespace":P
+:{"test":"ns:x";} :{0:xml_decl;} :(xml.dumps) "<ns:x>test</ns:x>" test.test
+
+
+"test :(xml.loads) opts":P
+"  test ns_mode 0":P
+    nsxml :{0:ns_mode;} :(xml.loads) :{
+        :{
+            "uri1":"@a";"uri2":"@b";
+            :{
+                "text":"#text";
+                "text":"y";
+            }:"x";
+        }:root;
+    } test.test
+"  test ns_mode 2":P
+    nsxml :{2:ns_mode;} :(xml.loads) :{
+        :{
+            "uri1":"@http://www.w3.org/2000/xmlns/:a";"uri2":"@http://www.w3.org/2000/xmlns/:b";
+            :{
+                "text":"#text";
+                "text":"uri2:y";
+            }:"uri1:x";
+        }:root;
+    } test.test
+"  test ns_mapping":P
+    nsxml :{2:ns_mode; :{"c":"uri1";"d":"uri2";"":"http://www.w3.org/2000/xmlns/"}:ns_mapping} :(xml.loads) :{
+        :{
+            "uri1":"@a";"uri2":"@b";
+            :{
+                "text":"#text";
+                "text":"d:y";
+            }:"c:x";
+        }:root;
+    } test.test
+"  test ns_separator, attr_prefix and cdata_key":P
+    nsxml :{2:ns_mode; "::":ns_separator; "@@":attr_prefix; "##":cdata_key;} :(xml.loads) :{
+        :{
+            "uri1":"@@http://www.w3.org/2000/xmlns/::a";"uri2":"@@http://www.w3.org/2000/xmlns/::b";
+            :{
+                "text":"##";
+                "text":"uri2::y";
+            }:"uri1::x";
+        }:root;
+    } test.test
+"  test trim_whitespace":P
+    "<a x=\"y\">  <b> a </b>  c </a>" :{0:trim_whitespace} :(xml.loads) :{:{ "y":"@x"; ["  " "  c "]:"#text"; " a ":b; }:a;} test.test
+"  test force_list":P
+    "<a x=\"y\">  <b> a </b>  c </a>" :{1:force_list} :(xml.loads) :{[:{ "y":"@x"; ["c"]:"#text"; ["a"]:b; }]:a;} test.test
+    "<b x=\"y\">  <b> a </b>  c </b>" :{["b"]:force_list} :(xml.loads) :{[:{ "y":"@x"; "c":"#text"; ["a"]:b; }]:b;} test.test
+"test :(xml.dumps) opts":P
+"  test pretty":P
+    :{:{["a" "b"]:y;}:x;} :{0:xml_decl; 0:pretty;} :(xml.dumps) "<x><y>a</y><y>b</y></x>" test.test
+    :{:{["a" "b"]:y;}:x;} :{0:xml_decl; 1:pretty;} :(xml.dumps) "\r" "" .&.trim ["<x>" "    <y>a</y>" "    <y>b</y>" "</x>"]"\n"% test.test
+"  test xml_decl":P
+    .# the default encoding is OS dependent -> remove from output
+    :{:{["a" "b"]:y;}:x;} :{1:xml_decl;} :(xml.dumps) "\\s*encoding=\".*?\"" "" .& "<?xml version=\"1.0\"?><x><y>a</y><y>b</y></x>" test.test
+"  test encoding":P
+    .# note: I don't think this option does anything significant (other than setting the value in the xml-declaration) because the output is a String.
+    :{:{["a" "b"]:y;}:x;} :{1:xml_decl; "UTF-16":encoding;} :(xml.dumps) "<?xml version=\"1.0\" encoding=\"UTF-16\"?><x><y>a</y><y>b</y></x>" test.test
+"  test attr_prefix and cdata_key":P
+    :{:{"c":"@@d"; ["a" "b"]:"##";}:x;} :{0:xml_decl; "@@":attr_prefix; "##":cdata_key;} :(xml.dumps) "<x d=\"c\">ab</x>" test.test
+
+
+"test :(xml.dumps) with nested lists":P .# based on https://pypi.org/project/xmltodict/ #Roundtripping
+:{:{[[1 5][2 6]]:points;}:line;} :{0:xml_decl;} :(xml.dumps) "<line><points>$([1 5])</points><points>$([2 6])</points></line>" test.test
+
+
+.# tests on a real-world xml document
+"""
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+    <!-- comment 1 -->
+    <UrlV1>http://localhost:12345/v1</UrlV1>
+    <UrlV2>http://localhost:12345/v2</UrlV2>
+    <UrlV3>http://localhost:12345/v3</UrlV3>
+    <!-- comment 2 -->
+    <Server defaultThreads="10" maxThreads="20"/>
+    <Locale>
+        <ID>es-MX</ID>
+        <Variant>es</Variant>
+        <Variant>es-ES</Variant>
+        <Variant>es-LA</Variant>
+    </Locale>
+    <Locale>
+        <ID>pt-BR</ID>
+        <Variant>pt</Variant>
+        <Variant>pt-PT</Variant>
+        <Variant>pt_BR</Variant>
+    </Locale>
+</Config>
+""" .trim :rwxml;
+:{
+    :{
+        "http://localhost:12345/v1":"UrlV1";
+        "http://localhost:12345/v2":"UrlV2";
+        "http://localhost:12345/v3":"UrlV3";
+        :{
+            "10":"@defaultThreads";
+            "20":"@maxThreads";
+        }:"Server";
+        [
+            :{
+                "es-MX":"ID";
+                ["es" "es-ES" "es-LA"]:"Variant";
+            }
+            :{
+                "pt-BR":"ID";
+                ["pt" "pt-PT" "pt_BR"]:"Variant";
+            }
+        ]:"Locale";
+    }:"Config";
+}:rwxml_d;
+"test :(xml.loads) on a real-world xml document":P
+rwxml :{} :(xml.loads) rwxml_d test.test
+"test :(xml.dumps) :(xml.loads) returns the original input (roundtripping)":P
+rwxml_d :{} :(xml.dumps) :{} :(xml.loads) rwxml_d test.test
+
+
+.# detect unexpected operands on stack
+.A :& E :& 0 > {
+    .# stack has leak_stack::list len::num
+    :{}
+    \"Operand leak! There are "\+ " items on the stack. Expected 0"+ \.:["msg"]
+    .:["stack"]
+    .D
+}{;}.?

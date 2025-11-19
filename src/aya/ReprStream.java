@@ -31,21 +31,23 @@ public class ReprStream {
 	private boolean _tight; // If true, don't print spaces between tokens unless needed
 	
 	public ReprStream() {
-		_lines = new ArrayList<ReprStream.Line>();
+		this(false, false);
+	}
+
+	public ReprStream(boolean full, boolean safe) {
+		_lines = new ArrayList<>();
 		_current_indent = 0;
 		_indent_str = "  ";
-		_visited = new Stack<Obj>();
+		_visited = new Stack<>();
 		_current_line = new Line(_current_indent);
-		_safe_mode = false;
-		_full_strings = false;
+		_safe_mode = safe;
+		_full_strings = full;
 		_tight = false;
 	}
 
 	
 	public static ReprStream newSafe() {
-		ReprStream rs = new ReprStream();
-		rs.setSafeMode(true);
-		return rs;
+		return new ReprStream(false, true);
 	}
 	
 	public void println() {

@@ -311,7 +311,7 @@ public class ListAlgorithms {
 	public static <T extends Obj> String str(ArrayList<T> list) {
 		StringBuilder sb = new StringBuilder("[ ");
 		for (T o : list) {
-			sb.append(o.repr(new ReprStream()) + " ");
+			sb.append(o.repr(new ReprStream(true, false)) + " ");
 		}
 		return sb.append(']').toString();
 	}
