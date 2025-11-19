@@ -1,6 +1,7 @@
 package aya.obj.block;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import aya.ReprStream;
 import aya.eval.ExecutionContext;
@@ -15,7 +16,11 @@ public class ConditionalUtils {
 
 	private static boolean evalCondition(ExecutionContext context, Instruction instruction) {
 		BlockEvaluator b = context.createEvaluator();
-		b.add(instruction);
+		if (instruction instanceof BlockLiteralInstruction) {
+			b.dump(((BlockLiteralInstruction)instruction).getRawBlock());
+		} else {
+			b.add(instruction);
+		}
 		b.eval();
 		if (!b.getStack().isEmpty()) {
 			return b.pop().bool();
@@ -26,7 +31,7 @@ public class ConditionalUtils {
 		}
 	}
 	
-	private static Obj evalResult(ExecutionContext context, Instruction instruction) {
+	private static Stack<Obj> evalResult(ExecutionContext context, Instruction instruction) {
 		BlockEvaluator b = context.createEvaluator();
 		if (instruction instanceof BlockLiteralInstruction) {
 			//Convert the block instruction into an actual block
@@ -38,14 +43,10 @@ public class ConditionalUtils {
 			b.add(instruction);
 		}
 		b.eval();
-		if (!b.getStack().isEmpty()) {
-			return b.pop();
-		} else {
-			return null;
-		}
+		return b.getStack();
 	}
 	
-	public static Obj runConditional(ExecutionContext context, StaticBlock block) {
+	public static Stack<Obj> runConditional(ExecutionContext context, StaticBlock block) {
 		ArrayList<Instruction> instructions = block.getInstructions();
 		int i;
 		for (i = instructions.size()-1; i > 0; i-=2) {

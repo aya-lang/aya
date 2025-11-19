@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Stack;
 
 import aya.StaticData;
 import aya.eval.BlockEvaluator;
@@ -546,16 +547,19 @@ class OP_Colon_Bool extends Operator {
 	
 	public OP_Colon_Bool() {
 		init(":?");
-		arg("A", "if/else");
+		arg("B", "if/else. B is a block consisting of condition-action pairs, and a final optional default-action. Example: `{0 'a {1 1=} {'b}}:?` -> `'b`");
 	}
 
 	@Override
 	public void execute (BlockEvaluator blockEvaluator) {		
 		Obj a = blockEvaluator.pop();
 		if (a.isa(Obj.BLOCK)) {
-			Obj result = ConditionalUtils.runConditional(blockEvaluator.getContext(), Casting.asStaticBlock(a));
+			Stack<Obj> result = ConditionalUtils.runConditional(blockEvaluator.getContext(), Casting.asStaticBlock(a));
 			if (result != null) {
-				blockEvaluator.push(result);
+				for (Obj item : result) {
+					blockEvaluator.push(item);
+				}
+				result.clear();
 			}
 		} else {
 			throw new TypeError(this, a);
