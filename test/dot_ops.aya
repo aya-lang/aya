@@ -23,3 +23,13 @@ aya> {: a(1) b, }.locals
   0:b;
 } 
 .}
+
+.# (SSN) .& find groups using regex
+{ ("abcd" "b(.)" 0 .&)    ["bc" "c"]        } test.test
+{ ("abcd" "b(.)" 1 .&)    [[1 3] [2 3]]     } test.test
+{ ("abc" "b(..)?" 0 .&)   ["b" ""]          } test.test
+{ ("abc" "b(..)?" 1 .&)   [[1 2] [-1 -1]]   } test.test
+{ ("abc" "b(..)" 0 .&)    ["" ""]           } test.test
+{ ("abc" "b(..)" 1 .&)    [[-1 -1] [-1 -1]] } test.test
+{ ("ae"R "(.)(.)(.)(.)(.)" 0 .&)   ["abcde" "a" "b" "c" "d" "e"] } test.test
+{ ("ae"R "(.)(.)(.)(.)(.)" 1 .&)   [[0 5] [0 1] [1 2] [2 3] [3 4] [4 5]] } test.test

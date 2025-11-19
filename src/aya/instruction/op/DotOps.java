@@ -25,7 +25,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import aya.StaticData;
 import aya.eval.BlockEvaluator;
@@ -49,9 +51,11 @@ import aya.obj.character.Char;
 import aya.obj.dict.Dict;
 import aya.obj.dict.DictIndexing;
 import aya.obj.list.List;
+import aya.obj.list.ListCollector;
 import aya.obj.list.ListIterationFunctions;
 import aya.obj.list.ListRangeUtils;
 import aya.obj.list.Str;
+import aya.obj.list.numberlist.DoubleList;
 import aya.obj.list.numberlist.NumberList;
 import aya.obj.list.numberlist.NumberListOp;
 import aya.obj.number.BaseConversion;
@@ -368,6 +372,7 @@ class OP_Dot_And extends Operator {
 		arg("SSS", "replace all occurrences of the regex S2 with S3 in S1");
 		arg("LLB", "zip with");
 		arg("SNN|LNN|NNN", "convert base of N|S|L from N1 to N2");
+		arg("SSN", "find regex S2 in S1.; Returns all groups of the expression as a list.; Group.[0] is the match of the entire pattern.; If N=false then groups are returned as their string-value, otherwise groups are returned as [begin end] index pairs, or [-1 -1] if a group did not match.");
 	}
 
 	@Override
@@ -387,6 +392,23 @@ class OP_Dot_And extends Operator {
 			zip_block = BlockUtils.addObjToStack(zip_block, c);
 			ListBuilderInstruction lb = new ListBuilderInstruction(null, zip_block, asStaticBlock(a), null, 0);
 			blockEvaluator.add(lb);
+		}else if( c.isa(STR) && a.isa(NUMBER) && b.isa(STR)) {
+			String haystack = c.str();
+			Matcher matcher = Pattern.compile(b.str()).matcher(haystack);
+			boolean found = matcher.find();
+			boolean returnAsIdxLen = asNumber(a).bool();
+			List groups = IntStream.range(0, matcher.groupCount() + 1)
+					.mapToObj(groupIdx -> {
+						int start = found ? matcher.start(groupIdx) : -1;
+						int end = found ? matcher.end(groupIdx) : -1;
+						if (returnAsIdxLen) {
+							return new List(new DoubleList(new double[]{start, start < 0 ? -1 : end}));
+						} else {
+							return List.fromString(start < 0 ? "" : haystack.substring(start, end));
+						}
+					})
+					.collect(new ListCollector());
+			blockEvaluator.push(groups);
 		} else {
 			throw new TypeError(this,a,b,c);
 		}
