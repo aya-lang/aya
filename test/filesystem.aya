@@ -157,6 +157,16 @@ img "out.png" :(image.write)
     "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
 }~
 
+.# test sys.exists
+{
+    .# relies on files that were created by the above tests
+    "file1.bin" :(sys.exists) 1 :!
+    "dir4" :(sys.exists) 1 :!
+    "./" :(sys.exists) 1 :!
+    "not-a-file" :(sys.exists) 0 :!
+    "not/a/dir" :(sys.exists) 0 :!
+}~
+
 {blk::block,
     .# use evaluation in list to obtain a separate stack
     [{blk} {;::__fail} .K] [::__fail] =! {

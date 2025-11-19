@@ -46,7 +46,7 @@ public class FileUtils {
 	}
 
 	public static boolean exists(String str) {
-		return StaticData.FILESYSTEM.isFile(resolveFile(str));
+		return StaticData.FILESYSTEM.exists(resolveFile(str));
 	}
 
 	public static boolean isFile(String str) {
