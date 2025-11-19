@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -22,8 +24,8 @@ public class FileUtils {
 	public static String readAllText(File file) throws IOException {
 		return new String(readAllBytes(file), StandardCharsets.UTF_8); // in Java 11 you can also do Files.readString(Path)
 	}
-	
-	public static byte[] readAllBytes(File file) throws IOException { 
+
+	public static byte[] readAllBytes(File file) throws IOException {
 		return StaticData.FILESYSTEM.readAllBytes(file);
 	}
 
@@ -35,12 +37,16 @@ public class FileUtils {
 		File file = new File(pathName);
 		return file.isAbsolute() ? file : new File(AyaPrefs.getWorkingDir(), pathName);
 	}
-	
+
 	/** See resolveFile(String) */
 	public static Path resolvePath(String pathName) {
 		Path path = Path.of(pathName);
 		return path.isAbsolute() ? path : Path.of(AyaPrefs.getWorkingDir(), pathName);
-		
+
+	}
+
+	public static boolean exists(String str) {
+		return StaticData.FILESYSTEM.exists(resolveFile(str));
 	}
 
 	public static boolean isFile(String str) {
@@ -94,16 +100,66 @@ public class FileUtils {
 		}
 	}
 
-	public static void moveDir(Path src, Path dst) throws IOException {
-		// Check if the source exists and is a directory
-		if (Files.exists(src) && Files.isDirectory(src)) {
+	public static void moveFile(Path src, Path dst) throws IOException {
+		// Validate operation parameters
+		if (prepareMoveOrCopy(src, dst, "move")) {
 			// Perform the move or rename operation
 			Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	public static void copyFile(Path src, Path dst) throws IOException {
+		// Validate operation parameters
+		if (prepareMoveOrCopy(src, dst, "copy")) {
+			// Perform the copy operation
+			Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+			if (Files.isDirectory(src)) {
+				// so far, only the directory and its attributes have been copied -> recurse
+				try (Stream<Path> srcItems = Files.list(src)) {
+					for (Path srcItem : srcItems.collect(Collectors.toList())) {
+						FileUtils.copyFile(srcItem, dst.resolve(srcItem.getFileName()));
+					}
+				}
+			}
+		}
+	}
+
+	private static boolean prepareMoveOrCopy(Path src, Path dst, String opName) throws IOException {
+		if (!Files.exists(src)) {
+			throw new IOException("Source file/directory does not exist.");
+		}
+		if (src.equals(dst)) {
+			return false; // no-op
+		}
+
+		if (Files.isDirectory(src) && contains(src, dst)) {
+			throw new IOException("Refusing to " + opName + " the source directory into itself.");
+		}
+
+		if (Files.exists(dst)) {
+			throw new IOException("Cannot " + opName + " because the destination already exists");
+		}
+		return true;
+	}
+
+	/**
+	 * Test if the outer file is a parent of the inner file
+	 */
+	public static boolean contains(Path outer, Path inner) throws IOException {
+		String innerStr = inner.toFile().getCanonicalPath();
+		String outerStr = outer.toFile().getCanonicalPath();
+		return innerStr.startsWith(outerStr);
+	}
+
+	public static void moveDir(Path src, Path dst) throws IOException {
+		// Check if the source exists and is a directory
+		if (Files.isDirectory(src)) {
+			moveFile(src, dst);
 		} else {
 			throw new IOException("Source directory does not exist or is not a directory.");
 		}
 	}
-	
+
 	 /**
      * Deletes a file or directory. If the directory is not empty, it recursively deletes all contents.
      * Ensures safety checks to prevent accidental deletion of root directories.
@@ -147,7 +203,7 @@ public class FileUtils {
         // On Windows, root paths like "C:\" will have no parent that differs from themselves.
         return parent == null || parent.equals(path.getRoot());
     }
-    
+
     public static String joinPaths(String basePath, String relativePath) {
         if (basePath == null || basePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Base path cannot be null or empty.");

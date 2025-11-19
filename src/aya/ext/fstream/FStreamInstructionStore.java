@@ -26,7 +26,7 @@ public class FStreamInstructionStore implements NamedInstructionStore {
 				// Utility Instructions
 				//
 
-				new NamedOperator("fileutils.readallbytes") {
+				new NamedOperator("fileutils.readallbytes", "file::str -> bytes::[num]list read all bytes from a file") {
 					@Override
 					public void execute(BlockEvaluator blockEvaluator) {
 						String path = blockEvaluator.pop().str();
@@ -38,7 +38,7 @@ public class FStreamInstructionStore implements NamedInstructionStore {
 							}
 							blockEvaluator.push(new List(new DoubleList(doubles)));
 						} catch (IOException e) {
-							throw new IOError("{fstream.readallbytes}", path, e);
+							throw new IOError("{fileutils.readallbytes}", path, e);
 						}
 					}
 				}
