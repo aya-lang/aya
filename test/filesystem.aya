@@ -122,31 +122,6 @@ img "out.png" :(image.write)
     "file2.bin" :(fileutils.readallbytes) :0xff & [4 5 6] :!
 }~
 
-.# Copy a file replacing the existing file
-{
-    [1 2 3] "file1.bin" 0 .G
-    [4 5 6] "file2.bin" 0 .G
-
-    "file1.bin" "file2.bin" :(sys.cp)
-
-    "file1.bin" :(sys.isfile) 1 :!
-    "file2.bin" :(sys.isfile) 1 :!
-    "file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    "file2.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-}~
-
-.# Move a file replacing the existing file
-{
-    [1 2 3] "file1.bin" 0 .G
-    [4 5 6] "file2.bin" 0 .G
-
-    "file1.bin" "file2.bin" :(sys.mv)
-    
-    "file1.bin" :(sys.isfile) 0 :!
-    "file2.bin" :(sys.isfile) 1 :!
-    "file2.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-}~
-
 .# Move a directory with :(sys.mv) (instead of with sys.mvdir)
 {
     "dir4" :(sys.isdir) 0 :!
@@ -157,30 +132,6 @@ img "out.png" :(image.write)
     
     "dir4" "dir5" :(sys.mv)
     
-    "dir4" :(sys.isdir) 0 :!
-    "dir5" :(sys.isdir) 1 :!
-    "dir5" :(sys.readdir)E 1 :!
-    "dir5/file1.bin" :(sys.isfile) 1 :!
-    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-}~
-
-.# Move a directory replacing an existing directory with :(sys.mv)
-{
-    .# relies on dir4/dir5 from the previous test
-    "dir4" :(sys.isdir) 0 :!
-    "dir5" :(sys.isdir) 1 :!
-    
-    "dir4" :(sys.mkdir)
-    "dir5" "dir4" :(sys.mv) .# move onto empty directory
-    "dir4" :(sys.isdir) 1 :!
-    "dir5" :(sys.isdir) 0 :!
-    "dir4" :(sys.readdir)E 1 :!
-    "dir4/file1.bin" :(sys.isfile) 1 :!
-    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    
-    "dir5" :(sys.mkdir)
-    [4 5 6] "dir5/file2.bin" 0 .G
-    "dir4" "dir5" :(sys.mv) .# move onto non-empty directory
     "dir4" :(sys.isdir) 0 :!
     "dir5" :(sys.isdir) 1 :!
     "dir5" :(sys.readdir)E 1 :!
@@ -204,71 +155,6 @@ img "out.png" :(image.write)
     "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
     "dir5/file1.bin" :(sys.isfile) 1 :!
     "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    
-    .# Copy a directory replacing an existing non-empty directory
-    [4 5 6] "dir5/file2.bin" 0 .G
-    "dir4" "dir5" :(sys.cp)
-    "dir4" :(sys.isdir) 1 :!
-    "dir5" :(sys.isdir) 1 :!
-    "dir4" :(sys.readdir)E 1 :!
-    "dir5" :(sys.readdir)E 1 :!
-    "dir4/file1.bin" :(sys.isfile) 1 :!
-    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    "dir5/file1.bin" :(sys.isfile) 1 :!
-    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    
-    .# Copy a directory replacing an existing empty directory
-    "dir5" :(sys.rm)
-    "dir5" :(sys.mkdir)
-    "dir4" "dir5" :(sys.cp)
-    "dir4" :(sys.isdir) 1 :!
-    "dir5" :(sys.isdir) 1 :!
-    "dir4" :(sys.readdir)E 1 :!
-    "dir5" :(sys.readdir)E 1 :!
-    "dir4/file1.bin" :(sys.isfile) 1 :!
-    "dir4/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-    "dir5/file1.bin" :(sys.isfile) 1 :!
-    "dir5/file1.bin" :(fileutils.readallbytes) :0xff & [1 2 3] :!
-}~
-
-.# sys.mv and sys.cp for (file directory) or (directory file)
-{
-    .# relies on dir4/dir5 from the previous test
-    "dir4" :(sys.isdir) 1 :!
-    "dir5" :(sys.isdir) 1 :!
-    [7 8 9] "file.bin" 0 .G
-    
-    .# sys.mv (file dir)
-    "file.bin" "dir4" :(sys.mv)
-    "file.bin" :(sys.isfile) 0 :!
-    "file.bin" :(sys.isdir) 0 :!
-    "dir4" :(sys.isfile) 1 :!
-    
-    .# sys.mv (dir file)
-    "dir5" "file.bin" :(sys.mv)
-    "dir5" :(sys.isfile) 0 :!
-    "dir5" :(sys.isdir) 0 :!
-    "file.bin" :(sys.isdir) 1 :!
-    
-    .# restore the initial state because the names will be confusing otherwise.
-    ["dir4" "dir5"] {d,
-        d :(sys.exists) { d :(sys.rm) }?
-        d :(sys.mkdir)
-    }O;
-    "file.bin" :(sys.rm)
-    [7 8 9] "file.bin" 0 .G
-    [1 2 3] "dir4/file1.bin" 0 .G
-    [4 5 6] "dir5/file2.bin" 0 .G
-    
-    .# sys.cp (file dir)
-    "file.bin" "dir4" :(sys.cp)
-    "file.bin" :(sys.isfile) 1 :!
-    "dir4" :(sys.isfile) 1 :!
-    
-    .# sys.mv (dir file)
-    "dir5" "file.bin" :(sys.cp)
-    "dir5" :(sys.isdir) 1 :!
-    "file.bin" :(sys.isdir) 1 :!
 }~
 
 {blk::block,
@@ -278,20 +164,40 @@ img "out.png" :(image.write)
     }?
 }:assertfail;
 
-.# Block mv/cp of directories into themselves
+.# verify that illegal and destructive operations are rejected by sys.mv and sys.cp
 {
     "dir6" :(sys.mkdir)
     "dir6/dir7" :(sys.mkdir)
     "dir6/dir7/dir8" :(sys.mkdir)
+	"dir6/dir9" :(sys.mkdir)
+    "dir6/dir9/dir10" :(sys.mkdir)
     [1 2 3] "dir6/file" 0 .G
+	[4 5 6] "dir6/file2" 0 .G
     
     {
         "dir6" :(sys.isdir) 1 :!
         "dir6/dir7" :(sys.isdir) 1 :!
         "dir6/dir7/dir8" :(sys.isdir) 1 :!
+		"dir6/dir9" :(sys.isdir) 1 :!
+        "dir6/dir9/dir10" :(sys.isdir) 1 :!
         "dir6/file" :(sys.isfile) 1 :!
+		"dir6/file2" :(sys.isfile) 1 :!
+		"dir6" :(sys.readdir)E 4 :!
+		"dir6/dir7" :(sys.readdir)E 1 :!
+		"dir6/dir7/dir8" :(sys.readdir)E 0 :!
+		"dir6/dir9" :(sys.readdir)E 1 :!
+		"dir6/dir9/dir10" :(sys.readdir)E 0 :!
     }:verify_files;
+	
+.# Block mv/cp where the destination exists
+	["dir6/file" "dir6/dir7/dir8" "dir6/dir7"] .# sources (existing [file empty-dir non-empty-dir])
+	["dir6/file2" "dir6/dir9/dir10" ("./" "dir6" "dir6/dir9")] .# destinations (existing [file empty-dir non-empty-dir]), note that these are different from the source files
+	{src dst,
+		{ src dst :(sys.mv) } assertfail verify_files
+		{ src dst :(sys.cp) } assertfail verify_files
+	} :*;
 
+.# Block mv/cp of directories into themselves
     .# (outer inner mv) : this is an impossible operation (dir6 would have no parent)
     { "dir6" "dir6/foo" :(sys.mv) } assertfail verify_files
     { "dir6" "dir6/dir7" :(sys.mv) } assertfail verify_files
@@ -299,13 +205,6 @@ img "out.png" :(image.write)
     { "dir6" "dir6/file" :(sys.mv) } assertfail verify_files
     { "./" "dir6" :(sys.mv) } assertfail verify_files
     
-    .# (inner outer mv) : this is an undesirable operation (inner files replacing the outer directory)
-    { "dir6/file" "dir6/" :(sys.mv) } assertfail verify_files
-    { "dir6/dir7" "dir6/" :(sys.mv) } assertfail verify_files
-    { "dir6/dir7/dir8" "dir6/" :(sys.mv) } assertfail verify_files
-    { "dir6/dir7/dir8" "dir6/dir7" :(sys.mv) } assertfail verify_files
-    { "dir6/file" "./" :(sys.mv) } assertfail verify_files
-
     .# (outer inner cp)
     .# this is somewhat risky: if the request is not rejected this will create directories until a stackoverflow is reached..
     .# currently sys.mv and sys.cp share the same sanity checks, so it should be safe. (the above checks would fail first)
@@ -314,11 +213,4 @@ img "out.png" :(image.write)
     { "dir6" "dir6/dir7/dir8" :(sys.cp) } assertfail verify_files
     { "dir6" "dir6/file" :(sys.cp) } assertfail verify_files
     { "./" "dir6" :(sys.cp) } assertfail verify_files
-    
-    .# (inner outer cp)
-    { "dir6/file" "dir6/" :(sys.cp) } assertfail verify_files
-    { "dir6/dir7" "dir6/" :(sys.cp) } assertfail verify_files
-    { "dir6/dir7/dir8" "dir6/" :(sys.cp) } assertfail verify_files
-    { "dir6/dir7/dir8" "dir6/dir7" :(sys.cp) } assertfail verify_files
-    { "dir6/file" "./" :(sys.cp) } assertfail verify_files
 }~

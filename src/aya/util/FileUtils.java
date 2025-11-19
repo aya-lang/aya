@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -136,12 +135,9 @@ public class FileUtils {
 		if (Files.isDirectory(src) && contains(src, dst)) {
 			throw new IOException("Refusing to " + opName + " the source directory into itself.");
 		}
-		if (Files.isDirectory(dst) && contains(dst, src)) {
-			throw new IOException("Refusing to " + opName + " replace the destination directory with a descendant of itself.");
-		}
 
-		if (Files.isDirectory(dst)) {
-			FileUtils.deleteFileOrDirectory(dst);
+		if (Files.exists(dst)) {
+			throw new IOException("Cannot " + opName + " because the destination already exists");
 		}
 		return true;
 	}
