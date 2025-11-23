@@ -9,7 +9,8 @@ public class LoadJSONInstruction extends NamedOperator {
 	
 	public LoadJSONInstruction() {
 		super("json.loads");
-		_doc = "Convert a JSON string into a dict";
+		_doc = "json::str -> object::any\n" +
+				"Convert a JSON string into an object";
 	}
 
 	@Override
