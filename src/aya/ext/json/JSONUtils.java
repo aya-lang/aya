@@ -84,10 +84,9 @@ public class JSONUtils {
 	}
 	
 	
-	private static JSONObject readJSON(String str) {
+	private static Object readJSON(String str) {
 		JSONTokener tokener = new JSONTokener(str);
-		JSONObject json = new JSONObject(tokener);
-		return json;
+		return tokener.nextValue();
 	}
 	
 	private static JSONObject readXML(String str) {
@@ -96,7 +95,7 @@ public class JSONUtils {
 	}
 	
 	private static Obj toObj(Object object, JSONParams params) throws AyaException {
-		if (object == null) {
+		if (JSONObject.NULL.equals(object)) {
 			return params.obj_null;
 		} else if (object instanceof JSONObject) {
 			JSONObject json = (JSONObject)object;
@@ -147,7 +146,7 @@ public class JSONUtils {
 	
 	private static Object toJSON(Obj o, JSONParams params, VisitedChecker vc) {
 		if (o.equiv(params.obj_null)) {
-			return null;
+			return JSONObject.NULL;
 		} else if (o.equiv(params.obj_false)) {
 			return false;
 		} else if (o.equiv(params.obj_true)) {
@@ -244,7 +243,7 @@ public class JSONUtils {
 				+ "  \"other\": null\n"
 				+ "}";
 		
-		JSONObject json = readJSON(example);
+		Object json = readJSON(example);
 		try {
 			Obj o  = toObj(json, JSONUtils.JSONParams.getDefaultDecode());
 			System.out.println(o.repr());
@@ -252,7 +251,7 @@ public class JSONUtils {
 			throw new RuntimeException(e);
 		}
  
-		
+
 	}
 
 }
