@@ -12,6 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <runtime.zip.file>${project.build.directory}/${project.artifactId}-${project.version}-runtime.zip</runtime.zip.file>
     </properties>
 
 
@@ -62,6 +63,45 @@
                                 <property name="build-dir" value="${project.build.directory}"/>
                                 <ant antfile="${project.basedir}/build-scripts/run-aya-tests-build.xml"/>
                             </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package-runtime-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="runtime.zip.file" value="${runtime.zip.file}"/>
+                                <ant antfile="${project.basedir}/build-scripts/runtime-zip-build.xml"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <!-- Make the files required to run aya available to dependants under the classifier 'runtime'.
+                         The primary use-case of this is to allow package developers to run tests without duplicating Aya's files or resorting to git submodules.
+                    -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <classifier>runtime</classifier>
+                                    <type>zip</type>
+                                    <file>${runtime.zip.file}</file>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>

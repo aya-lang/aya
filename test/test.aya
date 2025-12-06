@@ -58,6 +58,7 @@
     "csv"
     "io"
     "json"
+    "xml"
     "la"
     "map"
     "set"

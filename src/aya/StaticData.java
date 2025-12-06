@@ -27,6 +27,7 @@ import aya.ext.socket.SocketInstructionStore;
 import aya.ext.sys.SystemInstructionStore;
 import aya.ext.thread.ThreadInstructionStore;
 import aya.ext.unicode.UnicodeInstructionStore;
+import aya.ext.xml.XmlInstructionStore;
 import aya.instruction.named.NamedInstructionStore;
 import aya.instruction.named.NamedOperator;
 import aya.instruction.op.ColonOps;
@@ -146,6 +147,7 @@ public class StaticData {
 	private void initNamedInstructions() {
 		addNamedInstructionStore(new DebugInstructionStore());
 		addNamedInstructionStore(new JSONInstructionStore());
+		addNamedInstructionStore(new XmlInstructionStore());
 		addNamedInstructionStore(new ImageInstructionStore());
 		addNamedInstructionStore(new GraphicsInstructionStore());
 		addNamedInstructionStore(new FStreamInstructionStore());
