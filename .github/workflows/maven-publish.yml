@@ -68,7 +68,7 @@ jobs:
           git add pom.xml src/
           git commit -m "Release v${{ steps.version.outputs.version }}"
           git tag "v${{ steps.version.outputs.version }}"
-          git push origin master --tags
+          git push origin HEAD --tags
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
