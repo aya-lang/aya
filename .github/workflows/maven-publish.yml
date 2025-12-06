@@ -1,13 +1,21 @@
-# Package and Upload a release.zip
-# See https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-maven
-
 name: Publish release
 
 on:
-  push:
-    branches: [ "master" ]
-  # Allows you to manually run the workflow (for testing)
   workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: release
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -17,22 +25,55 @@ jobs:
       checks: write
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          # Use PAT if you have one to avoid triggering workflows on push
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Run install phase
-        run: mvn install --batch-mode
-      - name: Extract version from POM
+
+      # Verify build works before bumping version
+      - name: Run tests
+        run: mvn test --batch-mode
+
+      - name: Build package
+        run: mvn package --batch-mode -DskipTests
+
+      # Increment patch version in pom.xml
+      - name: Bump version
+        run: |
+          mvn build-helper:parse-version versions:set \
+            -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} \
+            versions:commit
+
+      - name: Get new version
         id: version
         run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+      # Update hardcoded version string in source file
+      - name: Update version in source
+        run: |
+          sed -i 's/VERSION_NAME = "[0-9.]*"/VERSION_NAME = "${{ steps.version.outputs.version }}"/' src/aya/StaticData.java
+
+      # Commit both pom.xml and source file changes, create tag
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pom.xml src/
+          git commit -m "Release v${{ steps.version.outputs.version }}"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin master --tags
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}-${{ github.sha }}
-          name: Release v${{ steps.version.outputs.version }}-${{ github.sha }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Release v${{ steps.version.outputs.version }}
           files: target/aya-*.zip
           generate_release_notes: true
