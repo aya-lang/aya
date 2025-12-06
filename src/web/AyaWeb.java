@@ -22,9 +22,9 @@ import aya.io.stdin.EmptyInputWrapper;
 public class AyaWeb {
 
 	private static final StringOut output = new StringOut();
-	
+
     public static void main(String[] args) {
-    	
+
     	//
     	// Set up StaticData
     	//
@@ -35,10 +35,10 @@ public class AyaWeb {
 				new PrintStream(output.getErrStream()),
 				null,
 				new EmptyInputWrapper());
-		
+
 		WebFilesystemIO fs = new WebFilesystemIO();
 		StaticData.FILESYSTEM = fs;
-		
+
 		//
 		// Named Instructions
 		// Web build only supports a limited set of named instructions
@@ -47,7 +47,6 @@ public class AyaWeb {
 		WebAvailableNamedInstructionStore wsi = new WebAvailableNamedInstructionStore();
 		sd.addNamedInstructionStore(wsi);
 		sd.addNamedInstructionStore(new JSONInstructionStore());
-		sd.addNamedInstructionStore(new XmlInstructionStore());
 		sd.addNamedInstructionStore(new DateInstructionStore());
 		sd.addNamedInstructionStore(new ColorInstructionStore());
 		sd.addNamedInstructionStore(new LinearAlgebraInstructionStore());
@@ -59,11 +58,11 @@ public class AyaWeb {
 			StandaloneAya.runIsolated(s, StaticData.IO);
 			return output.flushOut() + output.flushErr();
 		});
-    	
+
     	exportAddFile((path, content) -> ((WebFilesystemIO)(StaticData.FILESYSTEM)).addFile(path, content));
-    	
+
     	exportListFiles(() -> String.join(",", fs.listFiles()));
-    	
+
     	exportLint(source -> {
 			ArrayList<ParserException> errors = StandaloneAya.lint(source);
 			if (errors.size() > 0) {
@@ -75,13 +74,13 @@ public class AyaWeb {
 				return "";
 			}
 		});
-    	
+
     }
-    
+
     //
     // Exported Functions
     //
-    
+
     @JSBody(params = "runIsolated", script = "main.runIsolated = runIsolated;")
     private static native void exportRunIsolated(ExportFunctionRunIsolated fn);
 
