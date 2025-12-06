@@ -76,8 +76,7 @@
             ] :"valuesArray";
         }
     ]
-] {pair : json_str aya_obj json_obj,
-    pair~ :aya_obj; :json_str;
+] {[json_str aya_obj] : json_obj,
     json_str :(json.loads) :json_obj;
     
     json_obj aya_obj test.test
