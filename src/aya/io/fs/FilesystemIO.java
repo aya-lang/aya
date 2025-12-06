@@ -18,6 +18,11 @@ public class FilesystemIO extends AbstractFilesystemIO {
 	}
 
 	@Override
+	public boolean exists(File file) {
+		return file.exists();
+	}
+
+	@Override
 	public boolean isFile(File file) {
 		return file.isFile();
 	}

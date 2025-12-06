@@ -20,8 +20,13 @@ public class UnimplementedFilesystemIO extends AbstractFilesystemIO {
 	}
 
 	@Override
+	public boolean exists(File file) {
+		throw new IOError("", "UnimplementedFilesystemReader.exists", "filesystem unavailable");
+	}
+
+	@Override
 	public boolean isFile(File file) {
-		throw new IOError("", "UnimplementedFilesystemReader.write", "filesystem unavailable");
+		throw new IOError("", "UnimplementedFilesystemReader.isFile", "filesystem unavailable");
 	}
 
 }
