@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       checks: write
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -26,8 +26,13 @@ jobs:
           cache: maven
       - name: Run install phase
         run: mvn install --batch-mode
-      - name: Publish the artifact
-        uses: actions/upload-artifact@v4
+      - name: Extract version from POM
+        id: version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: aya.zip
-          path: target/aya-*.zip
+          tag_name: v${{ steps.version.outputs.version }}-${{ github.sha }}
+          name: Release v${{ steps.version.outputs.version }}-${{ github.sha }}
+          files: target/aya-*.zip
+          generate_release_notes: true
